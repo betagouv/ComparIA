@@ -31,9 +31,6 @@
             "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
             "question": "Quali modelli desideri confrontare?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "La scelta dei modelli è limitata per garantire un accesso equo a tutti. Puoi continuare a utilizzare la modalità casuale oppure riprovare più tardi."
-        },
         "modelSelection": "Selezione del modello",
         "prompt": {
             "label": "Scrivi il tuo primo messaggio",
@@ -129,19 +126,17 @@
         "links": {
             "accessibility": "Accessibilità: non conforme",
             "legal": "Avviso legale",
-            "privacy": "Politica sulla riservatezza",
             "rgesn": "Ecodesign",
-            "sources": "Codice sorgente",
-            "tos": "Termini di utilizzo"
+            "sources": "Codice sorgente"
         }
     },
     "general": {
         "a11y": {
-            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>compara.beta.gouv.fr</strong> .",
+            "desc": "La presente dichiarazione di accessibilità si applica al sito web <strong>{domain}</strong> .",
             "disclaimer": "<strong>compar:IA</strong> si impegna a rendere accessibili i propri servizi digitali, in conformità all'articolo 47 della legge n. 2005-102 dell'11 febbraio 2005.",
             "improveAdress": "Indirizzo: DINUM, 20 avenue de Ségur 75007 Parigi",
             "improveDelay": "Cerchiamo di rispondere entro 2 giorni lavorativi.",
-            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di beta.gouv.fr per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
+            "improveDesc": "Se non riesci ad accedere a un contenuto o a un servizio, puoi contattare il responsabile di {domain} per essere indirizzato a un'alternativa accessibile o per ottenere il contenuto in un altro formato.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Miglioramento e contatto",
             "remedyAdvocate": "Scrivi un messaggio al <a {linkProps}>Difensore dei diritti</a>",
@@ -150,7 +145,7 @@
             "remedyDesc": "Questa procedura deve essere utilizzata nel seguente caso: hai segnalato un problema di accessibilità, al gestore del sito web, che ti impedisce di accedere a contenuti o a uno dei servizi del portale e non hai ricevuto una risposta soddisfacente.",
             "remedyList": "Puoi :",
             "remedyTitle": "Procedura di ricorso",
-            "stateDesc": "Il sito web comparia.beta.gouv.fr non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
+            "stateDesc": "Il sito web {domain} non è conforme alla norma RGAA 4.1. Il sito non è <strong>ancora stato verificato</strong>. Tuttavia è stato progettato per essere accessibile al pubblico più ampio possibile. Dovresti quindi essere in grado di:",
             "stateNavigate": "naviga tra tutte le pagine del sito utilizzando una tastiera",
             "statePrefs": "adatta il sito alle tue preferenze (dimensione del carattere, zoom dello schermo, modifica della tipografia, ecc.) senza perdita di contenuti",
             "stateScreenReader": "visualizza il sito web con un lettore di schermo.",
@@ -623,7 +618,7 @@
             "title": "Come vengono distribuite le preferenze degli utenti?"
         },
         "ranking": {
-            "desc": "Grazie per il tuo contributo!<br> La classifica di <strong>compar:IA</strong> si basa su tutti i voti e le reazioni del <strong>confronto cieco</strong> dei modelli, raccolti dall'apertura del servizio al pubblico nell'ottobre 2024.<br> Sviluppata in collaborazione con il Digital Regulation Expertise Center (<a {linkProps}>PEReN</a>), la classifica dei modelli si basa sul <strong>punteggio di soddisfazione</strong> calcolato utilizzando il modello statistico <strong>Bradley Terry</strong>, un metodo ampiamente utilizzato per convertire i voti binari in una classifica probabilistica.<br> La classifica di compar:IA non intende essere una raccomandazione ufficiale né valutare le prestazioni tecniche dei modelli. Riflette le <strong>preferenze soggettive</strong> degli utenti della piattaforma e non l'accuratezza o la veridicità fattuale delle risposte.",
+            "desc": "Questa classifica è calcolata a partire dai voti raccolti attraverso <strong>confronti alla cieca</strong>, secondo il modello statistico <strong>Bradley-Terry</strong>. Riflette <strong>preferenze soggettive</strong> e va interpretata con prudenza: non misura né l'accuratezza fattuale delle risposte né le prestazioni complessive dei modelli.",
             "tabLabel": "Classifica"
         },
         "styleControl": {
@@ -663,42 +658,6 @@
         "title": "Dai voti alla classifica dei modelli"
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub> emesso",
-                "tooltip": "La CO<sub>2</sub> emessa è equivalente alle emissioni di anidride carbonica prodotte dall'energia utilizzata per far funzionare il modello. Riflette l'impatto ambientale legato al consumo energetico. Il calcolo dell'equivalenza Wattheures/CO<sub>2</sub> varia a seconda del mix energetico di ciascun paese. Tuttavia, i server utilizzati per l'inferenza del modello non sono tutti situati in Francia. Pertanto, il calcolo dell'equivalenza si basa sulla media globale del tasso di emissione d CO<sub>2</sub> per energia consumata.",
-                "unit": "tonnellate"
-            },
-            "desc": "Se tutti i francesi che utilizzano l'IA generativa (48%) avessero avuto questa discussione, ciò rappresenterebbe:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Dati calcolati in base all'impronta carbonio della produzione di baguette. (fonte <a {linkProps}>ADEME</a>)",
-                    "unit": "Baguette prodotte"
-                },
-                "mango_import": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio dalla produzione alla consegna dei manghi importati per via aerea. (fonte <a {linkProps}>ADEME</a>)",
-                    "unit": "Manghi importati"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Stima basata su una media: un albero maturo assorbe circa ~22 kg CO₂/anno (≈48 lb). Questo risultato è un ordine di grandezza; varia a seconda della specie, dell'età, del clima e del tipo di terreno. (Source <a {linkProps}>USDA</a>)",
-                    "unit": "Alberi che sono grado di assorbire CO2 per 1 anno"
-                },
-                "package_delivery": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio delle consegne a domicilio di pacchi da 1 kg. (fonte <a {linkProps}>ADEME</a>)",
-                    "unit": "Consegne di pacchi"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Dati calcolati in base all'impronta di carbonio di un viaggio di andata e ritorno tra Parigi e New York su un volo a lungo raggio. (fonte <a {linkProps}>ADEME</a>)",
-                    "unit": "Viaggio di andata e ritorno Parigi - NYC in aereo"
-                },
-                "pool_filing": {
-                    "tooltip": "Dati calcolati in base all'impatto ambientale del riempimento di una piscina privata di 8 x 4 metri (fonte <a {linkProps}>ADEME</a>)",
-                    "unit": "Riempimento della piscina"
-                }
-            },
-            "title": "Equivalenti in tonnellate di CO2",
-            "title_tooltip": "Le equivalenze sono proiezioni per illustrare l'effetto di massa; abbiamo moltiplicato l'impatto della tua discussione con questo modello per tutti gli utenti di IA in Francia: il 48% dei francesi dichiara ora di utilizzare l'IA generativa; mai prima d'ora una tecnologia digitale è stata adottata così rapidamente. (fonte: CREDOC Digital Barometer)"
-        },
         "feedback": {
             "description": "Aiuta a promuovere compar:IA condividendo i modelli di IA con cui hai interagito! Tramite questo link saranno visibili solo i nomi e l'impatto energetico della discussione, senza accesso ai messaggi scambiati.",
             "example": "Esempio di condivisione dei risultati",
@@ -723,19 +682,17 @@
         }
     },
     "seo": {
-        "desc": "compar:IA è uno strumento che consente il confronto alla cieca di diversi modelli di IA conversazionale per sensibilizzare sulle problematiche dell'IA generativa (pregiudizi, impatto ambientale) e per creare dataset sulle preferenze in francese.",
-        "title": "compar:AI, il comparatore di intelligenza artificiale conversazionale",
+        "desc": "{platformName} è uno strumento che consente il confronto alla cieca di diversi modelli di IA conversazionale per sensibilizzare sulle problematiche dell'IA generativa (pregiudizi, impatto ambientale) e per creare dataset sulle preferenze in francese.",
+        "title": "{platformName}, il comparatore di intelligenza artificiale conversazionale",
         "titles": {
             "accessibilite": "Dichiarazione di accessibilità",
             "arene": "Chat",
             "donnees-personnelles": "Politica sulla riservatezza",
-            "home": "Home",
             "mentions-legales": "Avviso legale",
             "modalites": "Termini d'uso",
             "modeles": "Elenco dei modelli",
             "ranking": "Classifica",
-            "rgesn": "Dichiarazione di ecodesign",
-            "share": "I miei risultati"
+            "rgesn": "Dichiarazione di ecodesign"
         }
     },
     "vote": {
@@ -769,17 +726,6 @@
             "important": "Il tuo voto è importante: contribuisce a un migliore allineamento con le <a {linkProps}>preferenze francofone</a>."
         },
         "yours": "Il tuo voto"
-    },
-    "welcome": {
-        "errors": "L'IA può commettere errori: vi invitiamo a verificare le informazioni fornite.",
-        "go": "Partiamo",
-        "privacy": "Non condividere informazioni personali come nome, cognome o indirizzo.",
-        "title": "Benvenuti su compar:IA!",
-        "tos": {
-            "desc": "Le conversazioni e le preferenze che esprimi su compar:AI vengono utilizzate in forma anonima per creare dataset rappresentativi delle lingue e degli usi europei, al fine di ridurre i pregiudizi culturali e proporre in futuro modelli di intelligenza artificiale più inclusivi.",
-            "moreInfos": "Scopri di più sul progetto."
-        },
-        "use": "Non utilizzare il comparatore per scopi illegali o dannosi."
     },
     "words": {
         "NA": "N/A",

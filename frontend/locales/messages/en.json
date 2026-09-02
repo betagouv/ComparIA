@@ -29,7 +29,9 @@
         },
         "discover": "Discover",
         "downloadData": "Download data",
+        "expandMenu": "Expand the menu",
         "home": "Homepage",
+        "reduceMenu": "Collapse the menu",
         "returnArena": "Return to the arena",
         "returnHome": "Return to homepage",
         "scrollLeft": "Scroll left",
@@ -39,10 +41,62 @@
         "selectLanguage": "Select a language"
     },
     "admin": {
+        "endpointKey": {
+            "hint": "Leave the field empty to keep the current key. Enter a new one to replace it.",
+            "remove": "Remove the key",
+            "removeConfirm": "Confirm removal",
+            "removed": "Key removed. The models on this endpoint are no longer served.",
+            "set": "Key saved",
+            "unset": "No key"
+        },
         "legal": {
             "back": "Back to legal documents",
+            "document": {
+                "backToWriting": "Back to writing",
+                "confirm": "I have reread the document and understand that this version can no longer be changed.",
+                "continue": "Continue to “Review and publish”",
+                "create": "Publish a first version",
+                "effectiveAt": "Effective date",
+                "effectiveAtHelp": "Leave empty to publish immediately.",
+                "effectiveSince": "In force since {date}.",
+                "emptyTitle": "No version published",
+                "history": "History",
+                "historyEmpty": "No earlier version.",
+                "inForce": "In force",
+                "leave": "Leave without publishing",
+                "loading": "Loading the document…",
+                "locale": "Language",
+                "nextStep": "Next step:",
+                "prepare": "Prepare a new version",
+                "preview": "Preview",
+                "previewEmpty": "The preview will appear here.",
+                "publicPage": "View the public page",
+                "publish": "Publish this version",
+                "published": "The new version has been published.",
+                "publishing": "Publishing…",
+                "read": "Read the version in force",
+                "scheduled": "Scheduled publications",
+                "seededDescription": "The terms installed when the platform was set up are still the ones visitors accept. Publish your own terms of use.",
+                "seededTitle": "Example terms in force",
+                "stepReview": "Review and publish",
+                "stepState": "Step {current} of 2",
+                "stepWrite": "Write the document",
+                "unpublished": "Not published",
+                "version": "Version {version}",
+                "versionHelp": "For example 2026.2. This reference must be unique.",
+                "versionLabel": "Reference for the new version",
+                "versionOn": "Version {version} of {date}"
+            },
             "hub": {
-                "informationalDescription": "Legal notice, accessibility and ecodesign, hosted on the platform or linked to an external website."
+                "documentsGroup": "Legal documents",
+                "informationalDescription": "Legal notice, accessibility and ecodesign, hosted on the platform or linked to an external website.",
+                "journeyDescription": "Texts shown before the first message and at sign-in.",
+                "journeyGroup": "Acceptance journey",
+                "journeyLink": "Participation journey",
+                "privacyDescription": "Information about the use of personal data.",
+                "subtitle": "Each piece of content has its own space for editing and publishing.",
+                "termsDescription": "Document that must be accepted.",
+                "title": "Legal documents and journeys"
             },
             "informational": {
                 "contentLabel": "Content in {locale}",
@@ -50,7 +104,7 @@
                 "externalUrl": "External page address",
                 "externalUrlError": "Enter a valid HTTPS address.",
                 "externalUrlHelp": "The address must start with https://.",
-                "internal": "Page hosted on Compar:IA",
+                "internal": "Page hosted on this platform",
                 "loading": "Loading information pages…",
                 "locale": "Content language",
                 "modeLabel": "Destination",
@@ -68,16 +122,424 @@
                 "visibleInLegalMenu": "The Legal menu",
                 "visibleInSettings": "The Settings page"
             },
-            "markdownHelp": "Markdown formatting is supported: **bold**, *italics*, [link](https://example.com)."
+            "markdownHelp": "Markdown formatting is supported: **bold**, *italics*, [link](https://example.com).",
+            "participation": {
+                "arenaDescription": "This content appears when someone who is not signed in tries to send their first message.",
+                "arenaTitle": "Before the first message",
+                "buttonLabel": "Text of the confirmation button",
+                "buttonPlaceholder": "Continue",
+                "checkboxLabel": "Text next to the mandatory checkbox",
+                "checkboxPlaceholder": "The text next to the checkbox will appear here.",
+                "formTitle": "Edit the journey",
+                "introduction": "Introductory text",
+                "introductionPlaceholder": "The introductory text will appear here.",
+                "loading": "Loading the journey…",
+                "modalTitle": "Window title",
+                "preview": "User preview",
+                "save": "Save the journey",
+                "saved": "The participation journey has been saved.",
+                "saving": "Saving…",
+                "signInDescription": "This checkbox appears before the sign-in code is sent and stays ticked while the code is entered.",
+                "signInTitle": "At sign-in",
+                "subtitle": "Set up the information shown before the first message and at sign-in.",
+                "title": "Participation journey"
+            },
+            "privacy": {
+                "contentLabel": "Content of the privacy policy",
+                "draftTitle": "New privacy policy",
+                "emptyDescription": "The public page still shows the content built into the application. Publish a first version to manage it from this back office.",
+                "subtitle": "Write and publish the information about how personal data is handled.",
+                "title": "Privacy policy"
+            },
+            "terms": {
+                "contentLabel": "Content of the terms of use",
+                "draftTitle": "New terms of use",
+                "emptyDescription": "Publish the terms of use before opening the arena to the public.",
+                "subtitle": "Write, review and publish the document accepted in order to take part in the arena.",
+                "title": "Terms of use"
+            }
+        },
+        "llms": {
+            "subTitle": "LLMs, labs, licenses and endpoints.",
+            "title": "LLMs data configuration"
         },
         "nav": {
-            "users": "Users",
-            "llms": "LLMs",
-            "customization": "Customization",
-            "locales": "Languages",
             "authentification": "Authentication",
-            "voteTags": "Vote tags",
-            "publishing": "Publishing"
+            "customization": "Customization",
+            "legal": "Legal documents",
+            "llms": "LLMs",
+            "locales": "Languages",
+            "promptChecks": "Checks",
+            "publishing": "Publishing",
+            "suggestions": "Suggestions",
+            "users": "Users",
+            "voteTags": "Vote tags"
+        },
+        "panelLink": "Admin panel",
+        "promptChecks": {
+            "actions": {
+                "block": "Refuse",
+                "help": {
+                    "block": "The message is not sent.",
+                    "log": "What was spotted is recorded, and the person sees nothing.",
+                    "off": "The category is not taken into account.",
+                    "title": "What each action does",
+                    "warn": "A window opens on sending. The person can send anyway or correct their message."
+                },
+                "legend": "Action",
+                "log": "Watch",
+                "off": "Ignore",
+                "warn": "Warn"
+            },
+            "apiKey": {
+                "cancel": "Cancel",
+                "label": "API key",
+                "placeholder": "New key",
+                "replace": "Replace",
+                "set": "Key saved",
+                "unset": "No key saved",
+                "willClear": "On saving, the stored key will be erased and the environment variable will take over."
+            },
+            "bench": {
+                "caption": "Score, threshold and result by category",
+                "columns": {
+                    "score": "Score",
+                    "verdict": "Result"
+                },
+                "decision": {
+                    "blocked": "Refused",
+                    "error": "The check did not answer",
+                    "logged": "Watched",
+                    "pass": "Passed, nothing done",
+                    "warned": "Warned"
+                },
+                "decisionLegend": "Result",
+                "empty": "Write a message before running the test.",
+                "ignored": "Not watched",
+                "label": "Message to check",
+                "labelHint": "Write the message here as a person would send it.",
+                "latency": "Answered in {count} ms",
+                "messageNone": "Nothing would be shown to them.",
+                "messageTitle": "What the person would see",
+                "notTriggered": "Below the threshold",
+                "resultTitle": "Test result",
+                "resultWaiting": "The result will appear here.",
+                "run": "Test",
+                "running": "Test running...",
+                "scoresHint": "Each bar shows the score obtained, and the vertical line marks the threshold. A score just under its threshold is the first thing to watch.",
+                "scoresTitle": "Breakdown by category",
+                "threshold": "Threshold {value}",
+                "title": "Test a message",
+                "triggered": "Triggered"
+            },
+            "categories": {
+                "criminal": "Criminal activity",
+                "dangerous": "Dangerous acts",
+                "financial": "Finance",
+                "hateAndDiscrimination": "Hate and discrimination",
+                "health": "Health",
+                "jailbreaking": "Working around the instructions",
+                "law": "Law",
+                "pii": "Personal data",
+                "selfharm": "Self-harm and suicide",
+                "sexual": "Sexual content",
+                "violenceAndThreats": "Violence and threats"
+            },
+            "categoriesTitle": "Categories",
+            "columns": {
+                "action": "Action",
+                "category": "Category",
+                "threshold": "Threshold"
+            },
+            "health": {
+                "failures": "{count} failures in a row",
+                "unhealthy": "The check no longer answers",
+                "unhealthyHint": "Calls to the moderation API are failing. The check lets every message through, which looks exactly like a check that finds nothing. Look at the Mistral key and the server logs."
+            },
+            "model": {
+                "label": "Moderation model"
+            },
+            "saveApiKey": "Save the key",
+            "saveCategories": "Save the categories",
+            "saveModel": "Save the model",
+            "saved": "Check updated",
+            "saving": "Saving...",
+            "settings": {
+                "disabledNotice": "Check turned off: no message is checked, whatever the rules below say.",
+                "enabled": "Message checking",
+                "title": "Settings"
+            },
+            "stats": {
+                "byCategoryNone": "No category was triggered over the period.",
+                "byCategoryTitle": "Categories triggered",
+                "byDecisionTitle": "Results",
+                "decision": {
+                    "blocked": "Refused",
+                    "error": "Failed",
+                    "logged": "Watched",
+                    "pass": "Passed, nothing done",
+                    "warned": "Warned"
+                },
+                "proceeded": "{count} sent anyway",
+                "title": "Activity over the last {days} days",
+                "totalLabel": "messages checked over the period",
+                "unavailable": "The counters are not available at the moment.",
+                "warningsHint": "These two counters do not follow the period above: showing a warning is not timestamped, so both are counted from the start.",
+                "warningsShown": "{count} shown",
+                "warningsTitle": "Warnings shown, from the start"
+            },
+            "subtitle": "When a message falls into one of these categories, you decide what happens to the person: nothing, a warning they can pass, or a refusal.",
+            "threshold": {
+                "invalid": "Enter a number between 0 and 1.",
+                "legend": "Threshold"
+            },
+            "title": "Message checks"
+        },
+        "publishing": {
+            "accessKeyLabel": "Access key",
+            "addTitle": "Add a destination",
+            "bucketLabel": "Bucket",
+            "cancel": "Cancel",
+            "colActions": "Actions",
+            "colDatasets": "Datasets",
+            "colKind": "Kind",
+            "colName": "Name",
+            "colStatus": "Status",
+            "colTarget": "Target",
+            "createSuccess": "Destination added",
+            "datasetNormal": "Open",
+            "datasetNormalHelp": "Everything analysis cleared.",
+            "datasetRaw": "Raw",
+            "datasetRawHelp": "Every conversation, including the ones held back. Not a thing to publish in the open.",
+            "datasetsError": "A destination receives at least one dataset.",
+            "datasetsLabel": "Datasets sent here",
+            "delete": "Delete",
+            "deleteConfirm": "Delete the destination “{name}”?",
+            "deleteSuccess": "Destination deleted",
+            "deleteWarning": "What is already published stays where it is. Only the sending stops.",
+            "destinations": "Destinations",
+            "disable": "Disable",
+            "disabled": "Disabled",
+            "edit": "Edit",
+            "editSuccess": "Destination saved",
+            "editTitle": "Edit the destination",
+            "enable": "Enable",
+            "enabled": "Enabled",
+            "enabledLabel": "Destination enabled",
+            "endpointHelp": "The host on its own, without https://.",
+            "endpointLabel": "Host",
+            "firstRunHelp": "The first publication starts as soon as you save this frequency.",
+            "frequencyDaily": "Every day",
+            "frequencyLabel": "Frequency",
+            "frequencyMonthly": "Every month, on the 1st",
+            "frequencyOff": "No automatic publishing",
+            "frequencyWeekly": "Every week, on Monday",
+            "historyDate": "Date",
+            "historyDetails": "Explanation",
+            "historyFailed": "Failed",
+            "historyNoDataset": "No dataset published",
+            "historyNoError": "Publication finished without error.",
+            "historyNoRows": "No conversation meets the publication criteria: it has to be analyzed, not archived, and hold neither personal data nor spam.",
+            "historyPending": "Publication under way",
+            "historyResult": "Result",
+            "historyRunning": "Running",
+            "historyStatus": "Status",
+            "historySucceeded": "Succeeded",
+            "historyTechnicalError": "The publication failed for a technical reason. Look at the server logs for the detail.",
+            "hourLabel": "Hour",
+            "kindHuggingface": "Hugging Face",
+            "kindLabel": "Kind of destination",
+            "kindS3": "S3 bucket",
+            "lastRun": "Last publication",
+            "lastRunNever": "Nothing has run yet.",
+            "nameLabel": "Name",
+            "nextRun": "Next publication: {date}",
+            "nextRunNever": "Nothing is scheduled.",
+            "noDestinations": "No destination: the dataset goes nowhere.",
+            "prefixHelp": "Put in front of every file, so one bucket can hold several instances.",
+            "prefixLabel": "Prefix",
+            "publishNow": "Publish",
+            "publishStarted": "Publication started",
+            "publishing": "Publishing…",
+            "rawWarning": "This destination receives the raw dataset, which holds the conversations kept back for personal information. Make sure it is private.",
+            "regionLabel": "Region",
+            "repoPathHelp": "As organisation/repository. The raw dataset goes to the same name followed by -raw.",
+            "repoPathLabel": "Repository",
+            "reviewerEndpointLabel": "Endpoint",
+            "reviewerEndpointNone": "No endpoint",
+            "reviewerHelp": "This model reads the conversations before publication to spot personal data and spam.",
+            "reviewerIncomplete": "Select an endpoint and fill in a model, or leave both fields empty.",
+            "reviewerModelHelp": "Identifier of the model the endpoint expects.",
+            "reviewerModelLabel": "Model",
+            "reviewerSave": "Save the analysis model",
+            "reviewerSuccess": "Analysis model saved",
+            "reviewerTitle": "Analysis model",
+            "runCounts": "Conversations published: {published} · held back: {heldBack}.",
+            "runCountsUnknown": "This run did not rebuild the open dataset.",
+            "runFailed": "Failed on {date}",
+            "runRunning": "Running since {date}",
+            "runSucceeded": "Succeeded on {date}",
+            "save": "Save",
+            "schedule": "Schedule",
+            "scheduleSuccess": "Schedule saved",
+            "secretKeep": "Leave empty to keep the keys already stored.",
+            "secretKeyLabel": "Secret key",
+            "secureLabel": "Connect over HTTPS",
+            "subtitle": "Where the dataset goes, how often, and what the last run did.",
+            "timezoneLabel": "Time zone",
+            "title": "Dataset publishing",
+            "tokenHelp": "A read-only token passes a read check and fails on the first real upload.",
+            "tokenKeep": "Leave empty to keep the token already stored.",
+            "tokenLabel": "Write token"
+        },
+        "settings": {
+            "authentification": {
+                "accessPolicy": {
+                    "anonymous": "Optional sign-in (anonymous_first)",
+                    "label": "Access mode",
+                    "required": "Sign-in required (sign_in_required)"
+                },
+                "domainAllowlist": {
+                    "help": "Comma-separated. Leave empty to allow all domains.",
+                    "label": "Allowed email domains"
+                }
+            },
+            "customization": {
+                "colors": {
+                    "contrastDark": "Choose a primary color with a contrast ratio of at least 4.5:1 against the dark background.",
+                    "contrastLight": "Choose a primary color with a contrast ratio of at least 4.5:1 against a white background.",
+                    "fieldHint": "Expected format: #RRGGBB.",
+                    "hint": "Use a hexadecimal color code in the #RRGGBB format.",
+                    "invalid": "Enter a color in the #RRGGBB format.",
+                    "primaryDark": "Primary color (dark theme)",
+                    "primaryLight": "Primary color (light theme)",
+                    "secondaryDark": "Secondary color (dark theme)",
+                    "secondaryLight": "Secondary color (light theme)",
+                    "title": "Platform colors"
+                },
+                "discard": "Discard changes",
+                "homepageUrl": {
+                    "hint": "This address opens when someone selects the logo or the platform name. Leave empty to use the local home page.",
+                    "invalid": "Enter a full HTTPS URL.",
+                    "label": "Home page URL"
+                },
+                "logo": {
+                    "chooseFile": "Choose a file",
+                    "hint": "PNG, JPEG, SVG or WebP, 2 MB maximum.",
+                    "label": "Logo",
+                    "reset": "Reset",
+                    "resetDone": "Logo reset",
+                    "updated": "Logo updated"
+                },
+                "platformName": "Platform name",
+                "votesObjective": "Votes objective"
+            },
+            "loading": "Loading...",
+            "locales": {
+                "default": {
+                    "label": "Default language"
+                },
+                "enabled": {
+                    "hint": "Unchecking a language removes it from the menu immediately. Visitors already reading in it switch to the default language on their next page load.",
+                    "label": "Enabled languages"
+                }
+            },
+            "save": "Save",
+            "saved": "Settings updated",
+            "saving": "Saving...",
+            "subtitle": "Application configuration."
+        },
+        "suggestions": {
+            "actions": "Actions",
+            "add": "Add a suggestion",
+            "addCategory": "Add a category",
+            "allCategories": "All categories",
+            "allLocales": "All languages",
+            "allStatuses": "All statuses",
+            "archive": "Archive",
+            "archiveCategory": "Archive the category",
+            "archiveConfirm": "Archive this suggestion? It will no longer be offered in the arena, but it can be restored.",
+            "archiveSuccess": "Suggestion archived.",
+            "archived": "Archived",
+            "available": "Available",
+            "cancel": "Cancel",
+            "categories": "Categories",
+            "category": "Category",
+            "categoryArchiveConfirm": "Archive “{title}” and hide its {count} suggestions from the arena? Their individual status is kept.",
+            "categoryArchiveSuccess": "Category archived.",
+            "categoryCountSummary": "{available} available out of {total} suggestions",
+            "categoryCreateSuccess": "Category added.",
+            "categoryDeleteConfirm": "Delete “{title}”?",
+            "categoryDeleteConflict": "This category holds suggestions and cannot be deleted.",
+            "categoryDeleteError": "The category could not be deleted. Try again.",
+            "categoryDeleteIntro": "A category holding at least one suggestion is protected and cannot be deleted.",
+            "categoryDeleteSuccess": "Category deleted.",
+            "categoryDeleteWarning": "This action is final. It is allowed only because the category is empty.",
+            "categoryDescription": "Description",
+            "categoryDescriptionHint": "This description is shown under the category name in the arena.",
+            "categoryDuplicateError": "A category with this name already exists for this language.",
+            "categoryEmpty": "Empty category",
+            "categoryIcon": "Icon",
+            "categoryIconPreview": "Preview of the selected icon",
+            "categoryRestoreConfirm": "Restore “{title}”? Only the suggestions with an “Available” status will be offered in the arena again.",
+            "categoryRestoreSuccess": "Category restored.",
+            "categorySuggestionCount": "1 suggestion — cannot be deleted",
+            "categorySuggestionsCount": "{count} suggestions — cannot be deleted",
+            "categoryTitle": "Category name",
+            "categoryTitleUnusableError": "The name must hold at least one letter or digit.",
+            "categoryTooltip": "Further information",
+            "categoryTooltipHint": "Optional. This information will be reachable from a tooltip.",
+            "categoryValidation": "Enter a name and a description, and choose an icon.",
+            "charactersMaximum": "{count} characters maximum",
+            "collapseCategory": "Collapse the category",
+            "confirm": "Confirm",
+            "createSuccess": "Suggestion added.",
+            "delete": "Delete",
+            "deleteCategory": "Delete the category",
+            "duplicateError": "This suggestion already exists in this category.",
+            "empty": "No suggestion matches the selected filters.",
+            "expandCategory": "Expand the category",
+            "filters": "Filters",
+            "iconArt": "Art",
+            "iconBook": "Book",
+            "iconCreative": "Creativity",
+            "iconDiscussion": "Discussion",
+            "iconDocument": "Document",
+            "iconEnvironment": "Environment",
+            "iconFolder": "Folder",
+            "iconFood": "Cooking",
+            "iconLearning": "Learning",
+            "iconLightbulb": "Idea",
+            "iconMusic": "Music",
+            "iconPresentation": "Presentation",
+            "iconProfile": "Profile",
+            "iconResearch": "Research",
+            "iconScience": "Science",
+            "iconSettings": "Settings",
+            "iconShopping": "Shopping",
+            "iconTechnology": "Technology",
+            "iconTranslation": "Translation",
+            "iconTravel": "Travel",
+            "iconWellbeing": "Wellbeing",
+            "iconWorld": "World",
+            "iconWriting": "Writing",
+            "locale": "Language",
+            "manageCategories": "Manage the categories",
+            "noCategories": "No category.",
+            "prompt": "Suggestion",
+            "promptHint": "The suggestion can hold fields to fill in between square brackets.",
+            "restore": "Restore",
+            "restoreCategory": "Restore the category",
+            "restoreConfirm": "Restore this suggestion? It will be offered in the arena again.",
+            "restoreSuccess": "Suggestion restored.",
+            "resultCount": "{count} suggestions found",
+            "search": "Search for a suggestion",
+            "searchFilter": "Search",
+            "status": "Status",
+            "subtitle": "Add and manage the suggestions offered in the arena.",
+            "tableCaption": "Prompt suggestions",
+            "title": "Prompt suggestions",
+            "validation": "Enter a suggestion and choose a category."
         },
         "voteTags": {
             "active": "Active",
@@ -123,118 +585,6 @@
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
             "title": "Vote tags"
-        },
-        "panelLink": "Admin panel",
-        "settings": {
-            "subtitle": "Application configuration.",
-            "loading": "Loading...",
-            "save": "Save",
-            "saving": "Saving...",
-            "saved": "Settings updated",
-            "locales": {
-                "enabled": {
-                    "label": "Enabled languages",
-                    "hint": "Unchecking a language removes it from the menu immediately. Visitors already reading in it switch to the default language on their next page load."
-                },
-                "default": {
-                    "label": "Default language"
-                }
-            },
-            "customization": {
-                "platformName": "Platform name",
-                "votesObjective": "Votes objective",
-                "logo": {
-                    "label": "Logo",
-                    "chooseFile": "Choose a file",
-                    "reset": "Reset",
-                    "updated": "Logo updated",
-                    "resetDone": "Logo reset",
-                    "hint": "PNG, JPEG, SVG or WebP, 2 MB maximum."
-                }
-            },
-            "authentification": {
-                "accessPolicy": {
-                    "label": "Access mode",
-                    "anonymous": "Optional sign-in (anonymous_first)",
-                    "required": "Sign-in required (sign_in_required)"
-                },
-                "domainAllowlist": {
-                    "label": "Allowed email domains",
-                    "help": "Comma-separated. Leave empty to allow all domains."
-                }
-            }
-        },
-        "publishing": {
-            "accessKeyLabel": "Access key",
-            "addTitle": "Add a destination",
-            "bucketLabel": "Bucket",
-            "cancel": "Cancel",
-            "colActions": "Actions",
-            "colDatasets": "Datasets",
-            "colKind": "Kind",
-            "colName": "Name",
-            "colStatus": "Status",
-            "colTarget": "Target",
-            "createSuccess": "Destination added",
-            "datasetNormal": "Open",
-            "datasetNormalHelp": "Everything analysis cleared.",
-            "datasetRaw": "Raw",
-            "datasetRawHelp": "Every conversation, including the ones held back. Not a thing to publish in the open.",
-            "datasetsError": "A destination receives at least one dataset.",
-            "datasetsLabel": "Datasets sent here",
-            "delete": "Delete",
-            "deleteConfirm": "Delete the destination “{name}”?",
-            "deleteSuccess": "Destination deleted",
-            "deleteWarning": "What is already published stays where it is. Only the sending stops.",
-            "destinations": "Destinations",
-            "disable": "Disable",
-            "disabled": "Disabled",
-            "edit": "Edit",
-            "editSuccess": "Destination saved",
-            "editTitle": "Edit the destination",
-            "enable": "Enable",
-            "enabled": "Enabled",
-            "enabledLabel": "Destination enabled",
-            "endpointHelp": "The host on its own, without https://.",
-            "endpointLabel": "Host",
-            "frequencyDaily": "Every day",
-            "frequencyLabel": "Frequency",
-            "frequencyMonthly": "Every month, on the 1st",
-            "frequencyOff": "No automatic publishing",
-            "frequencyWeekly": "Every week, on Monday",
-            "hourLabel": "Hour",
-            "kindHuggingface": "Hugging Face",
-            "kindLabel": "Kind of destination",
-            "kindS3": "S3 bucket",
-            "lastRun": "Last publication",
-            "lastRunNever": "Nothing has run yet.",
-            "nameLabel": "Name",
-            "nextRun": "Next publication: {date}",
-            "nextRunNever": "Nothing is scheduled.",
-            "noDestinations": "No destination: the dataset goes nowhere.",
-            "prefixHelp": "Put in front of every file, so one bucket can hold several instances.",
-            "prefixLabel": "Prefix",
-            "rawWarning": "This destination receives the raw dataset, which holds the conversations kept back for personal information. Make sure it is private.",
-            "regionLabel": "Region",
-            "repoPathHelp": "As organisation/repository. The raw dataset goes to the same name followed by -raw.",
-            "repoPathLabel": "Repository",
-            "runCounts": "Conversations published: {published} · held back: {heldBack}.",
-            "runCountsUnknown": "This run did not rebuild the open dataset.",
-            "runFailed": "Failed on {date}",
-            "runRunning": "Running since {date}",
-            "runSucceeded": "Succeeded on {date}",
-            "save": "Save",
-            "schedule": "Schedule",
-            "scheduleSuccess": "Schedule saved",
-            "secretKeep": "Leave empty to keep the keys already stored.",
-            "secretKeyLabel": "Secret key",
-            "secureLabel": "Connect over HTTPS",
-            "subtitle": "Where the dataset goes, how often, and what the last run did.",
-            "timezoneLabel": "Time zone",
-            "title": "Dataset publishing",
-            "tokenHelp": "A read-only token passes a read check and fails on the first real upload.",
-            "tokenKeep": "Leave empty to keep the token already stored.",
-            "tokenLabel": "Write token"
         }
     },
     "arenaHome": {
@@ -242,9 +592,6 @@
             "count": "{count}/2 models",
             "help": "If you only choose one, the second will be selected randomly",
             "question": "Which models would you like to compare?"
-        },
-        "errors": {
-            "rateLimitCustomSelection": "Model selection is limited to ensure fair access for everyone. You can continue using random mode, or try again later."
         },
         "modelSelection": "Model selection",
         "prompt": {
@@ -268,41 +615,49 @@
             "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
         }
     },
+    "arene": {
+        "promptWarning": {
+            "edit": "Edit my message",
+            "proceed": "Send anyway",
+            "title": "Before you send your message"
+        }
+    },
     "auth": {
         "discussions": {
-            "title": "Discussions",
-            "signIn": "Sign in"
+            "signIn": "Sign in",
+            "title": "Discussions"
         },
         "modal": {
-            "email": {
-                "title": "Sign in or create an account",
-                "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on compar:IA",
-                "emailLabel": "Email",
-                "submit": "Receive login code",
-                "submitting": "Sending..."
-            },
             "code": {
                 "changeEmail": "Change email address",
                 "label": "6-digit code",
                 "submit": "Verify",
                 "verifying": "Verifying...",
+                "notReceived": "Didn’t receive anything?",
                 "resend": "Resend a code",
                 "error": "Invalid or expired code."
             },
+            "email": {
+                "emailLabel": "Email",
+                "submit": "Receive login code",
+                "submitting": "Sending...",
+                "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on the arena",
+                "title": "Sign in or create an account"
+            },
             "info": {
+                "dataDesc": "Conversations and preferences you express on the arena are used anonymously to build representative datasets of European languages and uses, in order to reduce cultural biases and develop more inclusive AI models.",
                 "dataTitle": "How is my data used?",
-                "dataDesc": "Conversations and preferences you express on compar:IA are used anonymously to build representative datasets of European languages and uses, in order to reduce cultural biases and develop more inclusive AI models.",
-                "datasetsTitle": "The compar:IA datasets",
                 "datasetsDesc": "Conversations are published as open data in research datasets. That is why we ask you to <strong>never include</strong> in your conversations:",
-                "neverName": "your name, surname or that of a third party",
+                "datasetsTitle": "The arena's datasets",
+                "emailPrivacy": "Your email is never published or shared with third parties.",
                 "neverAddress": "addresses (postal, email)",
-                "neverPhone": "phone numbers",
-                "neverPersonal": "personal medical, financial or legal information",
+                "neverName": "your name, surname or that of a third party",
                 "neverOther": "any other element that could identify you",
-                "emailPrivacy": "Your email is never published or shared with third parties."
-            }
+                "neverPersonal": "personal medical, financial or legal information",
+                "neverPhone": "phone numbers"
+            },
+            "merge": "Merge existing conversations with your account"
         },
-        "success": "You are signed in!",
         "settings": {
             "account": {
                 "email": "Email address",
@@ -342,7 +697,8 @@
             "tabAccount": "Account",
             "tabsLabel": "Settings sections",
             "title": "Settings"
-        }
+        },
+        "success": "You are signed in!"
     },
     "chatbot": {
         "announce": {
@@ -400,6 +756,19 @@
             "title": "Display settings"
         }
     },
+    "consent": {
+        "close": "Close without sending",
+        "confirm": "Confirm",
+        "links": {
+            "privacy": "Privacy policy",
+            "terms": "Terms of use"
+        },
+        "loadFailed": "The terms of use could not be loaded.",
+        "required": "You must accept the terms of use to continue",
+        "retry": "Try again",
+        "saveFailed": "Your choice could not be saved. Check your connection, then try again.",
+        "saving": "Saving…"
+    },
     "errors": {
         "404": {
             "desc": "If you typed the URL into your browser, check if it's correct. The page may no longer be available.<br />You can continue by visiting our homepage.<br />If you struggle to find a page you are looking for, contact us so we can redirect you to the correct URL.",
@@ -423,19 +792,17 @@
         "links": {
             "accessibility": "Accessibility: non-compliant",
             "legal": "Legal notice",
-            "privacy": "Privacy policy",
             "rgesn": "Eco-design",
-            "sources": "Source code",
-            "tos": "Terms of use"
+            "sources": "Source code"
         }
     },
     "general": {
         "a11y": {
-            "desc": "This accessibility statement applies to the website <strong>comparia.beta.gouv.fr</strong> .",
+            "desc": "This accessibility statement applies to the <strong>{domain}</strong> website.",
             "disclaimer": "<strong>compar:IA</strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
             "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "We try to respond within 2 business days.",
-            "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
+            "improveDesc": "If you cannot reach a piece of content or a service, you can contact the manager of {domain} to be pointed to an accessible alternative or to get the content in another form.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Improvement and contact",
             "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
@@ -444,7 +811,7 @@
             "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
             "remedyList": "You can :",
             "remedyTitle": "Appeal",
-            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited. <strong>However, it has been designed to be accessible to as many people as possible</strong> . You should therefore be able to:",
+            "stateDesc": "The {domain} website is not compliant with RGAA 4.1. The site has <strong>not yet been audited</strong>. It was however designed to be accessible to as many people as possible. You should therefore be able to:",
             "stateNavigate": "navigate all pages of the site using a keyboard",
             "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
             "stateScreenReader": "view the website with a screen reader.",
@@ -599,6 +966,14 @@
                 "desc": "Several improvements have been or are still being identified, including:",
                 "title": "Improvements identified"
             },
+            "8": {
+                "1": "Stylesheet trimmed from 3.27 MB to 1.46 MB, which is 239 KB less after compression on each page: the service no longer carries the design system's 1,047 icons, only the twenty-five it uses.",
+                "2": "Removal of 344 KB of public files that no page called for.",
+                "3": "Session recording stopped: it watched mouse movements and page changes for the whole visit, producing recordings nobody looked at. Page counting is kept.",
+                "4": "Measured on 13 August 2026 on the chat screen: 111 requests and 1,152 KB. The service is still above the limits it set itself above, 40 requests and 600 KB per screen. The largest remaining item is the translation file, which carries all five languages on every page.",
+                "desc": "Since publication, the following corrections have been made to the arena:",
+                "title": "Improvements made"
+            },
             "desc": "published on December 11, 2025",
             "title": "Ecodesign statement"
         },
@@ -610,25 +985,216 @@
         "archs": {
             "dense": {
                 "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
+                "long_name": "",
                 "name": "Dense"
             },
             "matformer": {
                 "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
+                "long_name": "",
                 "name": "Matformer"
             },
             "moe": {
                 "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
+                "long_name": "Mixture of experts",
                 "name": "MoE"
             },
             "na": {
-                "desc": "The publisher has not made information about the model's architecture public.",
+                "desc": "The model lab has not made information about the model's architecture public.",
+                "long_name": "Not disclosed",
                 "name": "N/A"
+            }
+        },
+        "endpoint_upsert": {
+            "api_base": {
+                "help": "Base URL for the API endpoint.",
+                "label": "API base URL"
+            },
+            "api_key": {
+                "help": "if not given, all LLMs depending on this endpoint will be disabled.",
+                "label": "API secret key"
+            },
+            "api_type": {
+                "help": "API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).",
+                "label": "Api type"
+            },
+            "api_version": {
+                "help": "API version (optional)",
+                "label": "API version"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "name": {
+                "help": "Readable endpoint name (e.g. 'OpenRouter').",
+                "label": "Name"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
+        "lab_upsert": {
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "logo": {
+                "help": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.",
+                "label": "Logo"
+            },
+            "name": {
+                "label": "Name"
+            },
+            "origin_country": {
+                "help": "A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.",
+                "label": "Origin Country"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
+        "license_upsert": {
+            "commercial_use": {
+                "label": "Allows commercial use."
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "kind": {
+                "label": "Licence type"
+            },
+            "name": {
+                "help": "Licence name (e.g. 'Apache 2.0' or 'MIT').",
+                "label": "Name"
+            },
+            "reuse": {
+                "label": "Allows reuse/redistribution."
+            },
+            "updated_at": {
+                "label": "Updated At"
+            }
+        },
+        "llm_upsert": {
+            "active_params": {
+                "help": "Active parameters in billions (only for MoE LLMs).",
+                "label": "Active Params"
+            },
+            "api_model_id": {
+                "help": "Complete identifier used for API calls.",
+                "label": "API model id"
+            },
+            "arch": {
+                "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
+                "label": "Arch"
+            },
+            "context_tokens": {
+                "help": "Size of its context window in tokens.",
+                "label": "Context Tokens"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "endpoint_id": {
+                "help": "The LLM's endpoint information, create it first if not already available",
+                "label": "Endpoint"
+            },
+            "eu_hostable": {
+                "help": "Whether the LLM is hostable in the EU.",
+                "label": "Eu Hostable"
+            },
+            "human_id": {
+                "help": "(legacy id), usually the LLM id specified in 'api_model_id'",
+                "label": "Readable id"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "inputs": {
+                "help": "What kind of media the LLM can have in input.",
+                "label": "Modalities"
+            },
+            "knowledge_cutoff": {
+                "help": "Date after which the LLM no longer has knowledge.",
+                "label": "Knowledge Cutoff"
+            },
+            "lab_id": {
+                "help": "The lab that developed the LLM, create it first if not already available",
+                "label": "Lab"
+            },
+            "license_id": {
+                "help": "The LLM's license, create it first if not already available",
+                "label": "License"
+            },
+            "links": {
+                "help": "List of links to display in LLM card.",
+                "label": "Links"
+            },
+            "name": {
+                "label": "Readable name"
+            },
+            "params": {
+                "help": "Total parameters in billions.",
+                "label": "Params"
+            },
+            "price_in": {
+                "help": "Price per million input tokens in $.",
+                "label": "Price In"
+            },
+            "price_out": {
+                "help": "Price per million output tokens in $.",
+                "label": "Price Out"
+            },
+            "public_training_code": {
+                "help": "Whether the LLM training code is public.",
+                "label": "Public Training Code"
+            },
+            "public_training_data": {
+                "help": "Whether the LLM training data is public.",
+                "label": "Public Training Data"
+            },
+            "public_weights": {
+                "help": "Whether the LLM weights are public.",
+                "label": "Public Weights"
+            },
+            "quantization": {
+                "help": "Quantization scheme applied (q4, q8, or None for full precision).",
+                "label": "Quantization"
+            },
+            "rate_limited": {
+                "help": "Apply rate limits (usually for high API costs LLMs).",
+                "label": "Rate Limited"
+            },
+            "release_date": {
+                "label": "Release Date"
+            },
+            "status": {
+                "help": "enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.",
+                "label": "Status"
+            },
+            "system_prompt": {
+                "help": "System message to add in llm call if specified",
+                "label": "System Prompt"
+            },
+            "updated_at": {
+                "label": "Updated At"
             }
         }
     },
     "header": {
         "chatbot": {
-            "newDiscussion": "New chat"
+            "newDiscussion": "New chat",
+            "reveal": {
+                "description": "Discover the environmental impact of your conversations with each model",
+                "subtitle": "The model identities are revealed!",
+                "title": "Reveal"
+            }
         },
         "homeTitle": "Home - compar:IA",
         "legal": {
@@ -641,11 +1207,12 @@
             "count": "{count} votes",
             "legend": "Legend",
             "objective": "Goal: {count}",
-            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the compar:IA dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
+            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the arena dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
         }
     },
     "home": {
         "vote": {
+            "datasets": "Datasets",
             "steps": {
                 "datasets": {
                     "desc": "All questions and votes are compiled into datasets and published openly after anonymization.",
@@ -668,7 +1235,7 @@
         "accepting": "Signing in...",
         "backToLogin": "Sign in another way",
         "invalid": "This invite link is no longer valid. It may have expired or already been used.",
-        "title": "You've been invited to compar:IA"
+        "title": "You've been invited to the arena"
     },
     "maintenance": {
         "desc": "compar:IA is currently under maintenance. We'll be back shortly.",
@@ -679,8 +1246,77 @@
             "title": "Did you know?"
         },
         "cards": {
+            "arch": {
+                "title": "Architecture",
+                "tooltip": "The architecture describes how the model is organised to produce its answers, for instance a dense model or a mixture of experts (MoE).",
+                "withName": "{name} architecture"
+            },
+            "context": {
+                "chars_count": "Approx. {count}k characters",
+                "desc": "Can read roughly several hundred pages of text",
+                "title": "Context",
+                "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>tokens</span>",
+                "tooltip": "The context is the largest amount of text the model can take into account in a single conversation, counted in tokens."
+            },
+            "energy": {
+                "class": {
+                    "A": "Very low estimated consumption at inference",
+                    "B": "Low estimated consumption at inference",
+                    "C": "Moderate estimated consumption at inference",
+                    "D": "Middling estimated consumption at inference",
+                    "E": "High estimated consumption at inference",
+                    "F": "Very high estimated consumption at inference"
+                },
+                "desc": "The closer the class is to A, the lower the estimated consumption at inference.",
+                "title": "Energy consumption class",
+                "title_short": "Energy score",
+                "tooltip": "EcoLogits 0.10.2 estimate for generating 1 million output tokens. The calculation uses the total number of parameters and, for mixture of experts (MoE) models, the number of active parameters. Assumptions: data centre energy efficiency (PUE) of 1.2, latency not given, and the median value when the result is a range. Thresholds: A < 100 Wh; B < 300 Wh; C < 1,000 Wh; D < 3,000 Wh; E < 10,000 Wh; F ≥ 10,000 Wh. This is not a measurement from the provider: the actual hardware, the quantization, the length of the inputs and the latency can all change the consumption."
+            },
+            "license": {
+                "title": "License"
+            },
+            "modalities": {
+                "title": "Modalities",
+                "tooltip": "The modalities show which kinds of content the model can handle: text, image, audio or video.",
+                "types": {
+                    "audio": "Audio",
+                    "image": "Image",
+                    "text": "Text",
+                    "video": "Video"
+                }
+            },
+            "price": {
+                "desc": "Input = question sent, Output = answer generated",
+                "price_count": "{count}<span {midProps}>/M</span>",
+                "price_in": "Input price",
+                "price_out": "Output price",
+                "title": "Price",
+                "tooltip": "Indicative price for use through an API, per million tokens. The input is the request sent, the output the answer generated."
+            },
+            "rank": {
+                "detail": "/{count} models",
+                "single": "#{min}",
+                "title": "Leaderboard rank",
+                "title_short": "Leaderboard",
+                "to": "#{min} to {max}",
+                "tooltip": "The model's position in the arena leaderboard, drawn from the votes cast by its users."
+            },
+            "release": {
+                "title": "Release"
+            },
+            "size": {
+                "active_params_count": "Of which {count}bn active",
+                "desc": "The more parameters a model has, the more resources it needs",
+                "params_count": "{count}<span {midProps}>bn</span> <span {smallProps}>parameters</span>",
+                "params_count_short": "{count}<span {midProps}>bn</span> <span {smallProps}>param.</span>",
+                "title": "Size",
+                "title_estimated": "Estimated size",
+                "tooltip": "The parameters, or weights, counted in billions, are the variables a model learns during training and which shape its answers. The more parameters it has, the more resources it needs to run."
+            },
             "sovereignty": {
-                "title": "Openness level"
+                "sub": "Criteria met",
+                "title": "Openness level",
+                "tooltip": "A score built from openness and control criteria: licence, public weights, public training data and code, commercial use, reuse of the outputs, and whether it can be hosted in the European Union."
             }
         },
         "conso": {
@@ -691,15 +1327,48 @@
             },
             "filterLegend": "Filter by average energy consumption per 1000 tokens"
         },
+        "envImpact": {
+            "hardware": {
+                "title": "Hardware needed",
+                "tooltip": "An estimate of the memory needed to load the model's parameters, leaving out the KV cache, the context, the system and the overhead of the inference engine. Categories used: up to 3 GB, smartphone; up to 16 GB, laptop; up to 80 GB, workstation with one GPU; beyond that, server. The number of GPUs is rounded up on the assumption of 80 GB of memory per card. This is a theoretical minimum: the precision of the weights, the quantization, the length of the context, the batching and the inference software can all raise or lower the real need.",
+                "types": {
+                    "laptop": {
+                        "detail": "No graphics card needed",
+                        "name": "Computer",
+                        "title": "Runs on a laptop"
+                    },
+                    "server": {
+                        "detail": "Multi-GPU server",
+                        "name": "Server",
+                        "title": "Needs {count} graphics cards"
+                    },
+                    "smartphone": {
+                        "detail": "No graphics card needed",
+                        "name": "Smartphone",
+                        "title": "Runs on a smartphone"
+                    },
+                    "workstation": {
+                        "detail": "Powerful workstation (1 GPU)",
+                        "name": "Workstation",
+                        "title": "Needs a graphics card"
+                    }
+                }
+            },
+            "title": "Environmental impact"
+        },
+        "infosSources": {
+            "title": "More information and sources"
+        },
+        "knowledge": {
+            "badge": "Data up to {date}",
+            "tooltip": "The date up to which the information used to train the model is assumed to reach."
+        },
         "licenses": {
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Proprietary",
                 "semiOpen": "Open-weight"
             }
-        },
-        "opennessSovereignty": {
-            "title": "Openness level"
         },
         "list": {
             "filters": {
@@ -709,14 +1378,21 @@
                     "uncheckedLabel": "Not visible"
                 },
                 "editor": {
-                    "legend": "Publisher"
+                    "all": "All model labs",
+                    "legend": "Model lab"
                 },
                 "license": {
+                    "all": "All licenses",
                     "legend": "License"
                 },
                 "reset": "Clear all filters",
                 "size": {
+                    "all": "All sizes",
                     "legend": "Size (parameters)"
+                },
+                "statuses": {
+                    "all": "All statuses",
+                    "legend": "Status"
                 }
             },
             "model": "model",
@@ -727,7 +1403,7 @@
                 "options": {
                     "date-desc": "Release date (newest to oldest)",
                     "name-asc": "Model name (A to Z)",
-                    "org-asc": "Publisher (A to Z)",
+                    "org-asc": "Model lab (A to Z)",
                     "params-asc": "Size (smallest to largest)"
                 }
             }
@@ -742,6 +1418,37 @@
                 "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\"."
             }
         },
+        "opennessSovereignty": {
+            "fields": {
+                "commercial_use": "Commercial use",
+                "eu_hostable": "Can be hosted in the EU",
+                "license_name": "License",
+                "license_type": "Type",
+                "origin_country": "Model lab's country of origin",
+                "public_training_code": "Training code",
+                "public_training_data": "Training datasets",
+                "public_weights": "Model weights",
+                "reuse": "Reuse of the outputs"
+            },
+            "title": "Openness level"
+        },
+        "performance": {
+            "fields": {
+                "score": {
+                    "detail": "(confidence ±{count})",
+                    "title": "Bradley-Terry score"
+                },
+                "votes": {
+                    "title": "Votes recorded"
+                }
+            },
+            "group": "Group {count}",
+            "level": "Level {count} of {total}",
+            "rankFromTo": "Rank {min} to {max}",
+            "rankSingle": "Rank {min}",
+            "title": "Performance level compared with the other models",
+            "tooltip": "The performance level is worked out from the arena's votes with a Bradley-Terry score. It reflects the preference users showed, not an absolute truth about the model."
+        },
         "release": "Released on {date}",
         "size": {
             "count": {
@@ -753,6 +1460,9 @@
             },
             "estimated": "Estimated size ({size})",
             "title": "Size {size}"
+        },
+        "technical": {
+            "title": "Technical characteristics"
         }
     },
     "modes": {
@@ -788,30 +1498,8 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Comparisons",
-                "general_rank": "General rank",
-                "record": "Record (W-L-T)",
-                "score": "My score"
-            },
-            "loading": "Loading your ranking…",
-            "noVotes": "Vote in a comparison to start your ranking.",
-            "signedOut": "Sign in to see the ranking built from your votes.",
-            "title": "My ranking",
-            "tooltips": {
-                "score": "A model you have compared only a few times is pulled toward your own average rather than showing an extreme score."
-            },
-            "totalModels": "Models ranked:",
-            "totalVotes": "My votes:"
-        },
-        "views": {
-            "general": "General",
-            "legend": "Ranking view",
-            "personal": "My ranking"
-        },
         "energy": {
-            "desc": "This graph represents the satisfaction score (Bradley Terry score) for each model as a function of the estimated average energy consumption per 1000 tokens. Energy consumption is estimated using the Ecologits methodology and is based on two parameters: the size of the models (number of parameters) and their architecture. For proprietary models, this information is either not provided or only partially available. Therefore, they are excluded from the graph below.",
+            "desc": "This graph represents the satisfaction score (Bradley Terry score) for each model as a function of the estimated average energy consumption per 1000 tokens. Energy consumption is estimated using the <a {linkProps}>Ecologits</a> methodology and is based on two parameters: the size of the models (number of parameters) and their architecture. For proprietary models, this information is either not provided or only partially available. Therefore, they are excluded from the graph below.",
             "tabLabel": "Energy focus",
             "title": "Are the most popular models energy efficient?",
             "views": {
@@ -853,7 +1541,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "The arena uses the methodology developed by Ecologits (GenAI Impact) to provide an estimate of the energy footprint associated with inferring conversational generative AI models. This estimate allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-friendly AI models.",
+                            "1": "The arena uses the methodology developed by <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) to provide an estimate of the energy footprint associated with inferring conversational generative AI models. This estimate allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-friendly AI models.",
                             "2": "Ecologits applies the principles of life cycle assessment (LCA) in accordance with ISO 14044, focusing for the moment on the impact of inference (i.e., the use of models to answer queries) and the <strong>manufacturing of graphics cards</strong> (resource extraction, manufacturing and transport).",
                             "3": "The model's power consumption is estimated by taking into account various parameters such as the size and architecture of the AI model used, the location of the servers where the models are deployed, and the number of output tokens. The calculation of the global warming potential indicator, expressed in CO2 equivalent, is derived from the measurement of the model's power consumption.",
                             "4": "It is important to note that methodologies for assessing the environmental impact of AI are still under development."
@@ -869,7 +1557,7 @@
         "methodo": {
             "desc": {
                 "1": "Since 2024, thousands of users have used the arena to compare the responses of different models, generating hundreds of thousands of votes. Simply counting the number of wins is not enough to establish a ranking. A fair system must be statistically robust, adjust after each matchup, and truly reflect the value of the performances achieved.",
-                "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (<a {perenLinkProps}>PEReN</a>) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {lnotebookLinkProps}>methodological notebook</a>."
+                "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (<a {perenLinkProps}>PEReN</a>) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {notebookLinkProps}>methodological notebook</a>."
             },
             "impacts": {
                 "elo": {
@@ -889,6 +1577,7 @@
             },
             "methods": {
                 "cons": "Main problems",
+                "def": "",
                 "elo": {
                     "def": "<strong>Definition</strong>: Ranking system where the gain or loss of points depends on the result (victory/defeat/draw <strong>and</strong> the estimated level of the opponent: if a weaker model beats a stronger model, its progression in the ranking is greater.",
                     "list": {
@@ -922,10 +1611,45 @@
                 },
                 "title": "The personal ranking: how your score is worked out"
             },
+            "style": {
+                "coef": {
+                    "footnote": "Length and markdown markers are correlated: these coefficients should be read together, not as independent effects taken in isolation.",
+                    "hint": "Regression coefficients estimated over all votes. A positive value means that this presentation dimension is associated with a higher probability of winning once the strength of the model is taken into account. That is exactly the share style control removes from the ranking.",
+                    "title": "Measured effect of presentation"
+                },
+                "desc": {
+                    "1": "A model can climb the ranking simply by answering at greater length or with richer formatting (headings, bold, lists), without being more relevant on substance. Style control, inspired by LMArena's “Style Control”, removes this effect: a logistic regression separates, in each vote, what comes from the strength of the model from what comes from its presentation.",
+                    "2": "The displayed score then becomes a “style-debiased” Elo: the ranking you would get if the two compared answers were formatted in the same way. Style control is on by default; the “Style control” button at the top of the table switches back to the raw Bradley-Terry ranking for comparison."
+                },
+                "features": {
+                    "length": "Answer length",
+                    "md_bold": "Bold text",
+                    "md_headers": "Headings",
+                    "md_lists": "Bulleted lists"
+                },
+                "title": "Style control: neutralizing the effect of presentation"
+            },
             "tabLabel": "Methodology",
             "title": "How to choose the model classification method?"
         },
         "no_data": "The ranking is currently unavailable or being calculated.",
+        "personal": {
+            "cols": {
+                "battles": "Comparisons",
+                "general_rank": "General rank",
+                "record": "Record (W-L-T)",
+                "score": "My score"
+            },
+            "loading": "Loading your ranking…",
+            "noVotes": "Vote in a comparison to start your ranking.",
+            "signedOut": "Sign in to see the ranking built from your votes.",
+            "title": "My ranking",
+            "tooltips": {
+                "score": "A model you have compared only a few times is pulled toward your own average rather than showing an extreme score."
+            },
+            "totalModels": "Models ranked:",
+            "totalVotes": "My votes:"
+        },
         "preferences": {
             "desc": "When you vote, you can classify your preference according to different positive and negative labels. Compare their distribution across models.",
             "modal": {
@@ -959,6 +1683,10 @@
             "desc": "This ranking is calculated from votes collected through <strong>blind comparisons</strong>, using the <strong>Bradley-Terry</strong> statistical model. It reflects <strong>subjective preferences</strong> and should be interpreted with caution: it measures neither factual accuracy nor overall model performance.",
             "tabLabel": "Leaderboard"
         },
+        "styleControl": {
+            "help": "Removes the effect of formatting (answer length, headings, bold, lists) from the ranking, so that the score reflects substance rather than presentation. On by default. Details in the Methodology tab.",
+            "label": "Style control"
+        },
         "table": {
             "data": {
                 "billions": "{count} billion",
@@ -971,6 +1699,7 @@
                     "name": "Model",
                     "organisation": "Organization",
                     "rank": "Rank",
+                    "rank_number": "Rank",
                     "release": "Release date",
                     "size": "Size<br>(parameters)",
                     "trust_range": "Confidence (±)"
@@ -986,48 +1715,21 @@
                 }
             },
             "lastUpdate": "Updated on {date}",
+            "showRanks": {
+                "help": "Shows each model's exact position, from 1 to last. Two neighbouring ranks can almost never be told apart: the gap between 4th and 7th usually comes down to which votes happened to be cast. The classes say what the data supports.",
+                "label": "Show ranks"
+            },
             "totalModels": "Total models:",
             "totalVotes": "Total votes:"
         },
-        "title": "From votes to a leaderboard"
+        "title": "From votes to a leaderboard",
+        "views": {
+            "general": "General",
+            "legend": "Ranking view",
+            "personal": "My ranking"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub> emitted",
-                "tooltip": "The CO<sub>2</sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO<sub>2</sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO<sub>2</sub> emission rate per energy consumed.",
-                "unit": "tons"
-            },
-            "desc": "If all French people who use generative AI (48%) had had this discussion, it would represent:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Data calculated based on the carbon footprint of baguette production. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Baguettes produced"
-                },
-                "mango_import": {
-                    "tooltip": "Data calculated based on the carbon footprint from production to delivery of mangoes imported by air. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Imported mangoes"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimate based on an average: a mature tree absorbs ~22 kg CO₂/year (≈48 lb). This result is an order of magnitude; it varies depending on the species, age, climate, and soil. (Source <a {linkProps}>USDA</a>)",
-                    "unit": "Trees to absorb CO2 for 1 year"
-                },
-                "package_delivery": {
-                    "tooltip": "Data calculated based on the carbon footprint of home deliveries of 1kg parcels. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Parcel deliveries"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Data calculated based on the carbon footprint of a round trip between Paris and New York on a long-haul flight. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Round trip Paris - NYC by plane"
-                },
-                "pool_filing": {
-                    "tooltip": "Data calculated based on the carbon impact of filling a private 8 x 4m swimming pool (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Swimming pool refills"
-                }
-            },
-            "title": "Equivalents in tons of CO2",
-            "title_tooltip": "The equivalencies are projections to illustrate the mass effect; we have multiplied the impact of your discussion with this model to all AI users in France: 48% of French people now report using generative AI; never before has a digital technology been adopted so quickly (source <a {linkProps}>CREDOC Digital Barometer</a>)"
-        },
         "feedback": {
             "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
             "example": "Example of shared results",
@@ -1035,17 +1737,69 @@
             "shareResult": "Share your result"
         },
         "impacts": {
+            "cost": {
+                "comparison": {
+                    "less": "≈ {factor}× cheaper than the other model",
+                    "more": "≈ {factor}× dearer than the other model",
+                    "similar": "Cost comparable to the other model",
+                    "unavailable": "Cost not comparable with the other model"
+                },
+                "sub": "Standard price (input and output)",
+                "title": "Cost",
+                "tooltip": "An estimate based on the model's public input and output price. For the scenarios, it assumes a run without cache and can vary from one provider to another."
+            },
             "energy": {
+                "comparison": {
+                    "less": "≈ {factor}× less energy than the other model",
+                    "more": "≈ {factor}× more energy than the other model",
+                    "similar": "Energy comparable to the other model",
+                    "unavailable": "Energy not comparable with the other model"
+                },
+                "conso": "{count}<span {midProps}>mWh</span>",
+                "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimated</span>",
+                "equivalences": {
+                    "intro": "This energy is roughly the same as:",
+                    "led": {
+                        "description": "of light from a 6 W LED bulb",
+                        "title": "LED bulb",
+                        "tooltip": "A comparison with a 6 W LED bulb left on. A consumption of 6 Wh is one hour of light."
+                    },
+                    "phone": {
+                        "description": "of the capacity of a reference smartphone battery",
+                        "title": "Smartphone battery",
+                        "tooltip": "A comparison with the capacity of a reference smartphone battery (15 Wh). 100% is one full charge."
+                    },
+                    "tabs": {
+                        "label": "Choose an energy equivalent"
+                    },
+                    "tooltip": "Indicative equivalents: one hour of video streaming (80 Wh), a reference 6 W LED bulb and a reference 15 Wh smartphone battery.",
+                    "unavailable": "No equivalent is available for this estimate.",
+                    "video": {
+                        "description": "of video streaming (reference: 80 Wh per hour)",
+                        "title": "Video streaming",
+                        "tooltip": "A comparison with one hour of video streaming, estimated at 80 Wh. This reference covers playing the video and the equipment around it; it stays indicative."
+                    }
+                },
+                "estimate": "For the scenarios, this estimate covers generating the answer. It models neither the context sent to the model nor any effects of the cache.",
+                "title": "Estimated energy to generate",
                 "tooltip": "Measured in milliwatt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
+            },
+            "how": {
+                "tabs": {
+                    "equivalences": "Equivalents",
+                    "explanation": "Explanation",
+                    "label": "Consumption breakdown"
+                },
+                "title": "Why this consumption?"
             },
             "summary": {
                 "classification": {
                     "dense": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>dense</strong> architecture: it uses all its parameters for each response. Its energy class is <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>Matformer</strong> architecture: it adjusts how many of its parameters are used for each response. Its energy class is <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> is a <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response (about <strong>{activeParams} billion</strong> out of <strong>{params} billion</strong>). Its energy class is <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response. Its energy class is <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> is a <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
-                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>.",
-                    "moeProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model with a <strong>mixture-of-experts</strong> architecture: it activates only some of its parameters to generate each response. Its energy class is <strong>{energyClass}</strong>."
+                    "unknownProprietary": "<strong>{model}</strong> is a proprietary <strong>{size}</strong> model whose architecture has not been disclosed. Given its size, its energy class is <strong>{energyClass}</strong>."
                 },
                 "comparison": {
                     "comparable": "comparable to <strong>{otherModel}</strong>",
@@ -1055,7 +1809,7 @@
                     "percentageMore": "<strong>{percentage}% higher</strong> than <strong>{otherModel}</strong>",
                     "unavailable": "unavailable for comparison with <strong>{otherModel}</strong>"
                 },
-                "consumption": "In this conversation, generating <strong>{tokens} tokens</strong> used approximately <strong>{energy} mWh</strong>; this is {comparison}.",
+                "consumption": "For {usage}, generating <strong>{tokens} tokens</strong> used about <strong>{energy} mWh</strong>, which is {comparison}.",
                 "size": {
                     "estimatedL": "estimated large",
                     "estimatedM": "estimated medium-sized",
@@ -1071,7 +1825,31 @@
             },
             "title": "Estimated energy consumption of the chat",
             "tokens": {
-                "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens."
+                "max": "Max context: {count}k tokens",
+                "title": "Text generated",
+                "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens.",
+                "used": "{count}<span {midProps}> tokens</span><span {smallProps}> used</span>"
+            },
+            "usage": {
+                "assumption": "Assumption: a run without cache. Any price or energy savings from the cache are left out.",
+                "changeLabel": "Change the scenario for the estimate",
+                "coding": "an agentic coding session (500k tokens)",
+                "descriptionCoding": "An example agentic coding session (500k tokens). Its size can vary a great deal with the repository and the tasks.",
+                "descriptionDiscussion": "An estimate worked out from this chat.",
+                "descriptionDocument": "A projection if this model had to generate a 5-page document.",
+                "descriptionResearch": "A projection for deep research: web searches, reading sources and a cited summary.",
+                "discussion": "this chat",
+                "document": "a 5-page document",
+                "headingCoding": "for an agentic coding session",
+                "headingDiscussion": "of this chat",
+                "headingDocument": "Total for a 5-page document",
+                "headingResearch": "for deep research",
+                "label": "Use to estimate",
+                "menuCoding": "Agentic coding session",
+                "menuDiscussion": "This chat",
+                "menuDocument": "Document · 5 pages",
+                "menuResearch": "Deep research",
+                "research": "deep research (310k tokens)"
             }
         },
         "thanks": {
@@ -1083,20 +1861,18 @@
         }
     },
     "seo": {
-        "desc": "compar:IA is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
-        "title": "compar:IA, the AI chatbot arena",
+        "desc": "{platformName} is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
+        "title": "{platformName}, the AI chatbot arena",
         "titles": {
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
             "donnees-personnelles": "Privacy policy",
-            "home": "Home",
             "mentions-legales": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",
             "ranking": "Leaderboard",
             "rgesn": "Ecodesign statement",
-            "settings": "Settings",
-            "share": "My results"
+            "settings": "Settings"
         }
     },
     "statistics": {
@@ -1110,7 +1886,6 @@
         },
         "counterLink": "View platform statistics",
         "eyebrow": "Statistics",
-        "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
         "filters": {
             "allTime": "All time",
             "label": "Period",
@@ -1118,7 +1893,7 @@
             "sevenDays": "7 days",
             "thirtyDays": "30 days"
         },
-        "overview": "Overview",
+        "intro": "Discover how the conversations and preferences shared on the platform contribute to a common dataset.",
         "metrics": {
             "conversations": {
                 "label": "Conversations had"
@@ -1133,12 +1908,13 @@
                 "label": "Votes cast"
             }
         },
+        "overview": "Overview",
         "title": "Platform statistics"
     },
     "vote": {
-        "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
         "choices": {
             "negative": {
+                "comment": "Tell us what you did not like…",
                 "incorrect": "Incorrect",
                 "instructions_not_followed": "Instructions not followed",
                 "question": "Why did you not like the answer ?",
@@ -1146,43 +1922,56 @@
             },
             "positive": {
                 "clear_formatting": "Clear formatting",
+                "comment": "Tell us what you liked…",
                 "complete": "Complete",
                 "creative": "Creative",
                 "question": "What did you like about the answer?",
                 "useful": "Useful"
             }
         },
+        "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
+        "importantDesc": "Your preference feeds the arena's datasets, whose goal is to fine-tune future AI models on less-resourced languages.",
         "title": "Which AI model do you prefer ?",
-        "yours": "Your vote"
-    },
-    "welcome": {
-        "errors": "AI can make mistakes: we encourage you to check the information provided",
-        "go": "Here we go",
-        "privacy": "Do not share personal information such as your name, surname or address.",
-        "title": "Welcome to compar:IA!",
-        "tos": {
-            "desc": "The conversations and preferences you express on compar:IA are used anonymously to create datasets representative of European languages and usage, in order to reduce cultural bias and propose more inclusive future AI models.",
-            "moreInfos": "Learn more about the project."
+        "turn": {
+            "choices": {
+                "a_better": "A is better",
+                "b_better": "B is better",
+                "both_bad": "Both are bad",
+                "both_good": "Both are good",
+                "idk": "Skip the vote"
+            },
+            "important": "Your vote matters: it helps AI models align better with <a {linkProps}>local language preferences</a>."
         },
-        "use": "Do not use the comparator for illegal or harmful purposes"
+        "yours": "Your vote"
     },
     "words": {
         "NA": "N / A",
         "activated": "Activated",
+        "add": "Add",
+        "allowed": "allowed",
         "archived": "Archived",
+        "available": "Available",
         "back": "Back",
+        "cancel": "Cancel",
         "close": "Close",
         "deactivated": "Disabled",
+        "forbidden": "forbidden",
         "loading": "Loading",
         "new": "New",
+        "no": "No",
+        "private": "private",
+        "public": "public",
         "random": "Random",
         "regenerate": "Regenerate",
+        "remove": "Delete",
         "reset": "Reset",
         "restart": "Start again",
         "retry": "Start again",
+        "save": "Save",
         "search": "Search",
         "send": "Send",
         "tooltip": "Tooltip",
-        "validate": "Validate"
+        "validate": "Validate",
+        "yes": "Yes"
     }
 }

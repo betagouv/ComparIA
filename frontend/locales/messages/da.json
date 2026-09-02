@@ -1,6 +1,19 @@
 {
     "a11y": {
-        "externalLink": "{text}"
+        "energyGraphDesc": "Punktdiagram: Hver model er placeret efter sin præferencescore på den lodrette akse og sit energiforbrug på den vandrette akse. De samme data findes i tabelform.",
+        "externalLink": "{text}",
+        "graphAsTable": "Se i tabelform",
+        "languageNav": "Vælg sprog",
+        "mainNav": "Primær navigation",
+        "mobileMenu": "Menu",
+        "mobileNav": "Mobilnavigation",
+        "modeSelection": "Vælg modeller, der skal sammenlignes",
+        "modelSheet": "Modeloplysninger",
+        "newWindow": "nyt vindue",
+        "shareLinkLabel": "Link til deling",
+        "skipToContent": "Gå til hovedindholdet",
+        "suggestionCategories": "Kategorier med forslag til spørgsmål",
+        "voteTags": "Nøgleord, der beskriver svaret"
     },
     "actions": {
         "accessData": "Adgang til data",
@@ -15,8 +28,10 @@
             "done": "Besked kopieret"
         },
         "discover": "Opdag",
-        "downloadData": "Download data",
+        "downloadData": "Hent data",
+        "expandMenu": "Udvid menuen",
         "home": "Hjemmeside",
+        "reduceMenu": "Skjul menuen",
         "returnArena": "Tilbage til arenaen",
         "returnHome": "Tilbage til startsiden",
         "scrollLeft": "Rul til venstre",
@@ -26,53 +41,550 @@
         "selectLanguage": "Vælg sprog"
     },
     "admin": {
+        "endpointKey": {
+            "hint": "Lad feltet stå tomt for at beholde den aktuelle nøgle. Indtast en ny for at erstatte den.",
+            "remove": "Fjern nøgle",
+            "removeConfirm": "Bekræft fjernelse",
+            "removed": "Nøgle fjernet. Modellerne på dette slutpunkt er ikke længere tilgængelige.",
+            "set": "Nøgle gemt",
+            "unset": "Ingen nøgle"
+        },
+        "legal": {
+            "back": "Til juridiske dokumenter",
+            "document": {
+                "backToWriting": "Tilbage til redigering",
+                "confirm": "Jeg har genlæst dokumentet og forstår, at denne version ikke længere kan ændres.",
+                "continue": "Fortsæt til »Gennemse og publicer«",
+                "create": "Udgiv en første version",
+                "effectiveAt": "Ikrafttrædelsesdato",
+                "effectiveAtHelp": "Lad feltet stå tomt for at udgive med det samme.",
+                "effectiveSince": "I kraft siden {date}",
+                "emptyTitle": "Ingen version udgivet",
+                "history": "Historik",
+                "historyEmpty": "Ingen tidligere version.",
+                "inForce": "I kraft",
+                "leave": "Forlad uden at offentliggøre",
+                "loading": "Indlæser dokument…",
+                "locale": "Sprog",
+                "nextStep": "Næste trin:",
+                "prepare": "Forbered en ny version",
+                "preview": "Forhåndsvisning",
+                "previewEmpty": "Forhåndsvisningen vises her.",
+                "publicPage": "Se den offentlige side",
+                "publish": "Publicer denne version",
+                "published": "Den nye version er publiceret.",
+                "publishing": "Publicering…",
+                "read": "Se den gældende version",
+                "scheduled": "Planlagte publikationer",
+                "seededDescription": "De indstillinger, der blev installeret ved platformens opstart, er stadig dem, som besøgende accepterer. Publicer dine egne vilkår.",
+                "seededTitle": "Eksempler på gældende vilkår",
+                "stepReview": "Gennemse og publicer",
+                "stepState": "Trin {current} af 2",
+                "stepWrite": "Rediger dokumentet",
+                "unpublished": "Ikke publiceret",
+                "version": "Version {version}",
+                "versionHelp": "For eksempel 2026.2. Denne reference skal være unik.",
+                "versionLabel": "Reference for den nye version",
+                "versionOn": "Version {version} af {date}"
+            },
+            "hub": {
+                "documentsGroup": "Juridiske dokumenter",
+                "informationalDescription": "Juridiske meddelelser, tilgængelighed og bæredygtigt design, hostet på platformen eller linket til en ekstern hjemmeside.",
+                "journeyDescription": "Tekster vist før den første besked og ved login.",
+                "journeyGroup": "Accepteringsforløb",
+                "journeyLink": "Deltagelsesforløb",
+                "privacyDescription": "Oplysninger om brug af personlige data.",
+                "subtitle": "Hvert indhold har sit eget område til administration og udgivelse.",
+                "termsDescription": "Dokument, hvis accept er obligatorisk.",
+                "title": "Juridiske dokumenter og forløb"
+            },
+            "informational": {
+                "contentLabel": "Indholdet på {locale}",
+                "external": "Eksternt link",
+                "externalUrl": "Adresse til ekstern side",
+                "externalUrlError": "Indtast en gyldig HTTPS-adresse.",
+                "externalUrlHelp": "Adressen skal starte med https://.",
+                "internal": "Side hostet på denne platform",
+                "loading": "Indlæser informationssider...",
+                "locale": "Indholdets sprog",
+                "modeLabel": "Destination",
+                "pages": {
+                    "accessibility": "Tilgængelighedserklæring",
+                    "ecodesign": "Bæredygtigt design",
+                    "legal_notice": "Juridiske meddelelser"
+                },
+                "save": "Gem sider",
+                "saved": "Informationssiderne er gemt.",
+                "saving": "Gemmer…",
+                "subtitle": "Vælg, hvor hver side hostes, og hvor linket til den skal være tilgængeligt.",
+                "title": "Informationssider",
+                "visibilityLabel": "Vis linket i",
+                "visibleInLegalMenu": "Menuen »Juridisk«",
+                "visibleInSettings": "Siden Indstillinger"
+            },
+            "markdownHelp": "Understøttet Markdown-formatering: **fed**, *kursiv*, [link](https://example.com).",
+            "participation": {
+                "arenaDescription": "Dette indhold vises, når en ikke-logget bruger forsøger at sende sin første besked.",
+                "arenaTitle": "Første besked",
+                "buttonLabel": "Knaptekst",
+                "buttonPlaceholder": "Fortsæt",
+                "checkboxLabel": "Tekst ved obligatorisk afkrydsningsfelt",
+                "checkboxPlaceholder": "Teksten ved afkrydsningsfeltet vil blive vist her.",
+                "formTitle": "Rediger forløbet",
+                "introduction": "Introduktionstekst",
+                "introductionPlaceholder": "Introduktionsteksten vil blive vist her.",
+                "loading": "Indlæser forløbet…",
+                "modalTitle": "Vinduets titel",
+                "preview": "Brugerforhåndsvisning",
+                "save": "Gem forløbet",
+                "saved": "Deltagelsesforløbet er gemt.",
+                "saving": "Gemmer…",
+                "signInDescription": "Denne afkrydsningsboks vises før login-koden sendes og forbliver markeret under indtastningen af koden.",
+                "signInTitle": "Ved login",
+                "subtitle": "Konfigurer oplysningerne, der vises før den første besked og ved login.",
+                "title": "Deltagelsesforløb"
+            },
+            "privacy": {
+                "contentLabel": "Indhold af privatlivspolitikken",
+                "draftTitle": "Ny privatlivspolitik",
+                "emptyDescription": "Den offentlige side viser stadig indholdet, der er indbygget i applikationen. Udgiv en første version for at administrere den fra dette administrationsområde.",
+                "subtitle": "Skriv og udgiv information om behandling af personoplysninger.",
+                "title": "Privatlivspolitik"
+            },
+            "terms": {
+                "contentLabel": "Indhold af brugsbetingelser",
+                "draftTitle": "Nye brugsbetingelser",
+                "emptyDescription": "Publicér brugsbetingelserne før åbning af arenaen for offentligheden.",
+                "subtitle": "Udarbejd, verificer og offentliggør det accepterede dokument for at deltage i arenaen.",
+                "title": "Vilkår"
+            }
+        },
+        "llms": {
+            "subTitle": "LLM'er, labs, licenser og endepoints.",
+            "title": "LLM-datakonfiguration"
+        },
         "nav": {
-            "users": "Brugere",
-            "llms": "LLMs",
-            "customization": "Tilpasning",
-            "locales": "Sprog",
             "authentification": "Autentificering",
-            "publishing": "Udgivelse"
+            "customization": "Tilpasning",
+            "legal": "Juridiske dokumenter",
+            "llms": "LLMs",
+            "locales": "Sprog",
+            "promptChecks": "Tjek",
+            "publishing": "Udgivelse",
+            "suggestions": "Forslag",
+            "users": "Brugere",
+            "voteTags": "Stemmeetiketter"
         },
         "panelLink": "Administration",
-        "settings": {
-            "subtitle": "Applikationskonfiguration.",
-            "loading": "Indlæser...",
-            "save": "Gem",
-            "saving": "Gemmer...",
-            "saved": "Indstillinger opdateret",
-            "locales": {
-                "enabled": {
-                    "label": "Aktiverede sprog",
-                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning."
+        "promptChecks": {
+            "actions": {
+                "block": "Afvis",
+                "help": {
+                    "block": "Meddelelsen sendes ikke.",
+                    "log": "Det, der er opdaget, registreres, personen ser intet.",
+                    "off": "Kategorien tages ikke i betragtning.",
+                    "title": "Hvad hver handling gør",
+                    "warn": "Et vindue åbnes ved afsendelse. Personen kan stadig sende eller rette sin besked."
                 },
-                "default": {
-                    "label": "Standardsprog"
-                }
+                "legend": "Handling",
+                "log": "Overvåg",
+                "off": "Ignorér",
+                "warn": "Advarsel"
             },
-            "customization": {
-                "platformName": "Platformens navn",
-                "votesObjective": "Stemmemål",
-                "logo": {
-                    "label": "Logo",
-                    "chooseFile": "Vælg en fil",
-                    "reset": "Nulstil",
-                    "updated": "Logo opdateret",
-                    "resetDone": "Logo nulstillet",
-                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB."
-                }
+            "apiKey": {
+                "cancel": "Annuller",
+                "label": "API-nøgle",
+                "placeholder": "Ny nøgle",
+                "replace": "Erstat",
+                "set": "Nøgle gemt",
+                "unset": "Ingen nøgle gemt",
+                "willClear": "Når du gemmer, slettes den gemte nøgle, og miljøvariablen overtager."
             },
+            "bench": {
+                "caption": "Score, tærskel og resultat pr. kategori",
+                "columns": {
+                    "score": "Score",
+                    "verdict": "Resultat"
+                },
+                "decision": {
+                    "blocked": "Afvist",
+                    "error": "Kontrollen svarede ikke",
+                    "logged": "Overvåget",
+                    "pass": "Bestået uden handling",
+                    "warned": "Advaret"
+                },
+                "decisionLegend": "Resultat",
+                "empty": "Skriv en besked, før du starter testen.",
+                "ignored": "Ikke overvåget",
+                "label": "Besked at tjekke",
+                "labelHint": "Skriv beskeden her, som en bruger ville sende den.",
+                "latency": "Svar på {count} ms",
+                "messageNone": "Der vises ikke noget til personen.",
+                "messageTitle": "Hvad personen vil se",
+                "notTriggered": "Under tærsklen",
+                "resultTitle": "Testresultat",
+                "resultWaiting": "Resultatet vises her.",
+                "run": "Test",
+                "running": "Test i gang...",
+                "scoresHint": "Hver bjælke viser den opnåede score, og den lodrette linje markerer grænsen. En score lige under grænsen er det første, du skal holde øje med.",
+                "scoresTitle": "Detaljer efter kategori",
+                "threshold": "Grænse {value}",
+                "title": "Test en besked",
+                "triggered": "Udløst"
+            },
+            "categories": {
+                "criminal": "Kriminelle aktiviteter",
+                "dangerous": "Farlige handlinger",
+                "financial": "Finans",
+                "hateAndDiscrimination": "Had og diskrimination",
+                "health": "Sundhed",
+                "jailbreaking": "Omgåelse af instruktioner",
+                "law": "Jura",
+                "pii": "Personoplysninger",
+                "selfharm": "Selvskade og selvmord",
+                "sexual": "Seksuelt indhold",
+                "violenceAndThreats": "Vold og trusler"
+            },
+            "categoriesTitle": "Kategorier",
+            "columns": {
+                "action": "Handling",
+                "category": "Kategori",
+                "threshold": "Tærskel"
+            },
+            "health": {
+                "failures": "{count} fejl i træk",
+                "unhealthy": "Tjekket svarer ikke længere",
+                "unhealthyHint": "Kald til moderations-API'en fejler. Tjekket lader alle beskeder passere, hvilket ligner et tjek, der ikke finder noget. Kontrollér Mistral-nøglen og serverloggene."
+            },
+            "model": {
+                "label": "Moderationsmodel"
+            },
+            "saveApiKey": "Gem nøglen",
+            "saveCategories": "Gem kategorierne",
+            "saveModel": "Gem modellen",
+            "saved": "Tjekket opdateret",
+            "saving": "Gemmer...",
+            "settings": {
+                "disabledNotice": "Tjek deaktiveret: ingen beskeder tjekkes, uanset reglerne nedenfor.",
+                "enabled": "Beskedtjek",
+                "title": "Indstillinger"
+            },
+            "stats": {
+                "byCategoryNone": "Ingen kategori blev udløst i perioden.",
+                "byCategoryTitle": "Udløste kategorier",
+                "byDecisionTitle": "Resultater",
+                "decision": {
+                    "blocked": "Afvist",
+                    "error": "Fejl",
+                    "logged": "Overvåget",
+                    "pass": "Godkendt uden handling",
+                    "warned": "Advarsler"
+                },
+                "proceeded": "{count} sendt alligevel",
+                "title": "Aktivitet de sidste {days} dage",
+                "totalLabel": "beskeder verificeret i perioden",
+                "unavailable": "Tællerne er ikke tilgængelige i øjeblikket.",
+                "warningsHint": "Disse to tællere følger ikke den ovenstående periode: visning af advarsler er ikke tidsstemplet, så begge tælles fra starten.",
+                "warningsShown": "{count} vist",
+                "warningsTitle": "Viste advarsler siden starten"
+            },
+            "subtitle": "Når en besked falder ind under en af disse kategorier, bestemmer du, hvad der sker med personen: intet, en advarsel, som personen kan overse, eller en afvisning.",
+            "threshold": {
+                "invalid": "Indtast et tal mellem 0 og 1.",
+                "legend": "Tærskel"
+            },
+            "title": "Beskedtjek"
+        },
+        "publishing": {
+            "accessKeyLabel": "Adgangsnøgle",
+            "addTitle": "Tilføj destination",
+            "bucketLabel": "Bucketnavn",
+            "cancel": "Annuller",
+            "colActions": "Handlinger",
+            "colDatasets": "Datasæt",
+            "colKind": "Type",
+            "colName": "Navn",
+            "colStatus": "Status",
+            "colTarget": "Mål",
+            "createSuccess": "Destination tilføjet",
+            "datasetNormal": "Åben",
+            "datasetNormalHelp": "Alt, analysen har valideret.",
+            "datasetRaw": "Rå",
+            "datasetRawHelp": "Alle samtaler, også dem, der er sat til side. Må ikke offentliggøres åbent.",
+            "datasetsError": "En destination skal modtage mindst ét datasæt.",
+            "datasetsLabel": "Datasæt, der sendes hertil",
+            "delete": "Slet",
+            "deleteConfirm": "Slette destinationen »{name}«?",
+            "deleteSuccess": "Destination slettet",
+            "deleteWarning": "Allerede publicerede datasæt forbliver på plads. Kun afsendelsen stoppes.",
+            "destinations": "Destinationer",
+            "disable": "Deaktiver",
+            "disabled": "Deaktiveret",
+            "edit": "Rediger",
+            "editSuccess": "Destination opdateret",
+            "editTitle": "Rediger destination",
+            "enable": "Aktiver",
+            "enabled": "Aktiveret",
+            "enabledLabel": "Destination aktiveret",
+            "endpointHelp": "Kun værten, uden https://.",
+            "endpointLabel": "Værtsadresse",
+            "firstRunHelp": "Den første publikation starter, når du gemmer denne frekvens.",
+            "frequencyDaily": "Hver dag",
+            "frequencyLabel": "Frekvens",
+            "frequencyMonthly": "Den 1. i hver måned",
+            "frequencyOff": "Ingen automatisk publikation",
+            "frequencyWeekly": "Hver mandag",
+            "historyDate": "Dato",
+            "historyDetails": "Forklaring",
+            "historyFailed": "Fejl",
+            "historyNoDataset": "Ingen datasæt publiceret",
+            "historyNoError": "Publikation fuldført uden fejl.",
+            "historyNoRows": "Ingen samtaler opfylder publikationskriterierne: de skal analyseres, ikke arkiveres og indeholde hverken personoplysninger eller spam.",
+            "historyPending": "Publikation i gang",
+            "historyResult": "Resultat",
+            "historyRunning": "Kører",
+            "historyStatus": "Status",
+            "historySucceeded": "Succesfuld",
+            "historyTechnicalError": "Publikationen fejlede af tekniske årsager. Se serverloggene for detaljer.",
+            "hourLabel": "Tid",
+            "kindHuggingface": "Hugging Face",
+            "kindLabel": "Destinationstype",
+            "kindS3": "S3 bucket",
+            "lastRun": "Seneste publikation",
+            "lastRunNever": "Ingen publikation registreret.",
+            "nameLabel": "Navn",
+            "nextRun": "Næste publikation: {date}",
+            "nextRunNever": "Ingen publikation planlagt.",
+            "noDestinations": "Ingen destination: datasættet sendes ingen steder hen.",
+            "prefixHelp": "Tilføjes foran hver fil, så en bucket kan deles mellem flere instanser.",
+            "prefixLabel": "Præfiks",
+            "publishNow": "Publicer",
+            "publishStarted": "Publikation startet",
+            "publishing": "Publikation…",
+            "rawWarning": "Denne destination modtager rådata, som indeholder samtaler, der er sat til side på grund af personoplysninger. Sørg for, at den er privat.",
+            "regionLabel": "Region",
+            "repoPathHelp": "I formatet organisation/arkiv. Rådatasættet sendes til det samme navn efterfulgt af -raw.",
+            "repoPathLabel": "Arkiv",
+            "reviewerEndpointLabel": "Slutpunkt",
+            "reviewerEndpointNone": "Intet slutpunkt",
+            "reviewerHelp": "Denne model analyserer samtaler før offentliggørelse for at opdage personlige data og spam.",
+            "reviewerIncomplete": "Vælg et slutpunkt og angiv en model, eller lad begge felter stå tomme.",
+            "reviewerModelHelp": "Modellen, som slutpunktet forventer.",
+            "reviewerModelLabel": "Model",
+            "reviewerSave": "Gem analysemodellen",
+            "reviewerSuccess": "Analysemodel gemt",
+            "reviewerTitle": "Analysemodel",
+            "runCounts": "Offentliggjorte samtaler: {published} · sat til side: {heldBack}.",
+            "runCountsUnknown": "Denne kørsel genopbyggede ikke det åbne datasæt.",
+            "runFailed": "Mislykkedes den {date}",
+            "runRunning": "Kører siden {date}",
+            "runSucceeded": "Succesfuld den {date}",
+            "save": "Gem",
+            "schedule": "Frekvens",
+            "scheduleSuccess": "Frekvensen er gemt",
+            "secretKeep": "Lad feltet stå tomt for at beholde de gemte nøgler.",
+            "secretKeyLabel": "Hemmelig nøgle",
+            "secureLabel": "Forbindelse via HTTPS",
+            "subtitle": "Konfigurer destinationer og deres frekvens. Historikken samler alle publikationer.",
+            "timezoneLabel": "Tidszone",
+            "title": "Datasætpublicering",
+            "tokenHelp": "Et skrivebeskyttet token (read-only) består læsetjekket, men fejler ved første offentliggørelse.",
+            "tokenKeep": "Lad feltet stå tomt for at beholde det gemte token.",
+            "tokenLabel": "Skrive-token"
+        },
+        "settings": {
             "authentification": {
                 "accessPolicy": {
-                    "label": "Adgangstilstand",
                     "anonymous": "Valgfri login (anonymous_first)",
+                    "label": "Adgangstilstand",
                     "required": "Login påkrævet (sign_in_required)"
                 },
                 "domainAllowlist": {
-                    "label": "Tilladte e-maildomæner",
-                    "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner."
+                    "help": "Adskilt med kommaer. Lad stå tomt for at tillade alle domæner.",
+                    "label": "Tilladte e-maildomæner"
                 }
-            }
+            },
+            "customization": {
+                "colors": {
+                    "contrastDark": "Vælg en primærfarve med mindst 4,5:1 kontrast mod mørk baggrund.",
+                    "contrastLight": "Vælg en primærfarve med mindst 4,5:1 kontrast mod hvid baggrund.",
+                    "fieldHint": "Forventet format: #RRGGBB.",
+                    "hint": "Brug en hexadecimal farvekode i formatet #RRGGBB.",
+                    "invalid": "Indtast en farve i formatet #RRGGBB.",
+                    "primaryDark": "Primærfarve (mørkt tema)",
+                    "primaryLight": "Primærfarve (lyst tema)",
+                    "secondaryDark": "Sekundærfarve (mørkt tema)",
+                    "secondaryLight": "Sekundærfarve (lyst tema)",
+                    "title": "Platformfarver"
+                },
+                "discard": "Annuller ændringer",
+                "homepageUrl": {
+                    "hint": "Denne adresse åbnes, når en person vælger logoet eller platformens navn. Lad den stå tom for at bruge den lokale startside.",
+                    "invalid": "Indtast en fuld HTTPS-URL.",
+                    "label": "Hjemmesidens URL"
+                },
+                "logo": {
+                    "chooseFile": "Vælg en fil",
+                    "hint": "PNG, JPEG, SVG eller WebP, maks. 2 MB.",
+                    "label": "Logo",
+                    "reset": "Nulstil",
+                    "resetDone": "Logo nulstillet",
+                    "updated": "Logo opdateret"
+                },
+                "platformName": "Platformens navn",
+                "votesObjective": "Stemmemål"
+            },
+            "loading": "Indlæser...",
+            "locales": {
+                "default": {
+                    "label": "Standardsprog"
+                },
+                "enabled": {
+                    "hint": "Fjernes markeringen for et sprog, forsvinder det straks fra menuen. Besøgende, der allerede læser på det sprog, skifter til standardsproget ved næste sideindlæsning.",
+                    "label": "Aktiverede sprog"
+                }
+            },
+            "save": "Gem",
+            "saved": "Indstillinger opdateret",
+            "saving": "Gemmer...",
+            "subtitle": "Applikationskonfiguration."
+        },
+        "suggestions": {
+            "actions": "Handlinger",
+            "add": "Tilføj forslag",
+            "addCategory": "Tilføj kategori",
+            "allCategories": "Alle kategorier",
+            "allLocales": "Alle sprog",
+            "allStatuses": "Alle statusser",
+            "archive": "Arkiver",
+            "archiveCategory": "Arkiver kategori",
+            "archiveConfirm": "Arkiver dette forslag? Det vil ikke længere blive tilbudt i arenaen, men kan genoprettes.",
+            "archiveSuccess": "Forslag arkiveret.",
+            "archived": "Arkiveret",
+            "available": "Tilgængelig",
+            "cancel": "Annuller",
+            "categories": "Kategorier",
+            "category": "Kategori",
+            "categoryArchiveConfirm": "Arkiver »{title}«, og skjul dens {count} forslag i arenaen? Forslagenes individuelle status bevares.",
+            "categoryArchiveSuccess": "Kategori arkiveret.",
+            "categoryCountSummary": "{available} tilgængelige ud af {total} forslag",
+            "categoryCreateSuccess": "Kategori tilføjet.",
+            "categoryDeleteConfirm": "Slette »{title}«?",
+            "categoryDeleteConflict": "Denne kategori indeholder forslag og kan derfor ikke slettes.",
+            "categoryDeleteError": "Kategorien kunne ikke slettes. Prøv igen.",
+            "categoryDeleteIntro": "En kategori, der indeholder mindst ét forslag, er beskyttet og kan ikke slettes.",
+            "categoryDeleteSuccess": "Kategori slettet.",
+            "categoryDeleteWarning": "Denne handling er endelig. Den er kun tilladt, fordi kategorien er tom.",
+            "categoryDescription": "Beskrivelse",
+            "categoryDescriptionHint": "Denne beskrivelse vises under kategoriens navn i arenaen.",
+            "categoryDuplicateError": "Der findes allerede en kategori med dette navn på dette sprog.",
+            "categoryEmpty": "Tom kategori",
+            "categoryIcon": "Ikon",
+            "categoryIconPreview": "Forhåndsvisning af valgt ikon",
+            "categoryRestoreConfirm": "Gendan »{title}«? Kun forslag med statussen »Tilgængelig« vil igen blive vist i arenaen.",
+            "categoryRestoreSuccess": "Kategori gendannet.",
+            "categorySuggestionCount": "1 forslag — kan ikke slettes",
+            "categorySuggestionsCount": "{count} forslag — kan ikke slettes",
+            "categoryTitle": "Kategoriens navn",
+            "categoryTitleUnusableError": "Navnet skal indeholde mindst ét bogstav eller tal.",
+            "categoryTooltip": "Yderligere information",
+            "categoryTooltipHint": "Valgfrit. Denne information vil være tilgængelig via en tooltip.",
+            "categoryValidation": "Indtast et navn, en beskrivelse og vælg et ikon.",
+            "charactersMaximum": "{count} tegn maksimum",
+            "collapseCategory": "Fold kategorien sammen",
+            "confirm": "Bekræft",
+            "createSuccess": "Forslag tilføjet.",
+            "delete": "Slet",
+            "deleteCategory": "Slet kategori",
+            "duplicateError": "Dette forslag findes allerede i denne kategori.",
+            "empty": "Ingen forslag matcher de valgte filtre.",
+            "expandCategory": "Fold kategorien ud",
+            "filters": "Filtre",
+            "iconArt": "Kunst",
+            "iconBook": "Bog",
+            "iconCreative": "Kreativitet",
+            "iconDiscussion": "Diskussion",
+            "iconDocument": "Dokument",
+            "iconEnvironment": "Miljø",
+            "iconFolder": "Mappe",
+            "iconFood": "Mad",
+            "iconLearning": "Læring",
+            "iconLightbulb": "Idé",
+            "iconMusic": "Musik",
+            "iconPresentation": "Præsentation",
+            "iconProfile": "Profil",
+            "iconResearch": "Forskning",
+            "iconScience": "Videnskab",
+            "iconSettings": "Indstillinger",
+            "iconShopping": "Indkøb",
+            "iconTechnology": "Teknologi",
+            "iconTranslation": "Oversættelse",
+            "iconTravel": "Rejse",
+            "iconWellbeing": "Velvære",
+            "iconWorld": "Verden",
+            "iconWriting": "Skrivning",
+            "locale": "Sprog",
+            "manageCategories": "Administrer kategorier",
+            "noCategories": "Ingen kategorier.",
+            "prompt": "Forslag",
+            "promptHint": "Forslaget kan indeholde felter til udfyldelse i kantede parenteser.",
+            "restore": "Gendan",
+            "restoreCategory": "Gendan kategori",
+            "restoreConfirm": "Gendan dette forslag? Det vil blive tilbudt igen i arenaen.",
+            "restoreSuccess": "Forslag gendannet.",
+            "resultCount": "{count} forslag fundet",
+            "search": "Søg efter et forslag",
+            "searchFilter": "Søgning",
+            "status": "Status",
+            "subtitle": "Tilføj og administrer forslagene i arenaen.",
+            "tableCaption": "Promptforslag",
+            "title": "Promptforslag",
+            "validation": "Indtast et forslag, og vælg en kategori."
+        },
+        "voteTags": {
+            "active": "Aktiv",
+            "addTitle": "Tilføj en etiket",
+            "archive": "Skjul",
+            "archiveSuccess": "Etiket skjult",
+            "archived": "Skjult",
+            "cancel": "Annuller",
+            "colActions": "Handlinger",
+            "colKey": "Nøgle",
+            "colLabel": "Etiket",
+            "colOrder": "Rækkefølge",
+            "colStatus": "Status",
+            "colUsage": "Stemmer",
+            "conflictError": "Denne etiket findes allerede, eller også er der stemmer, der bruger den, så den skal skjules i stedet for at blive slettet.",
+            "createSuccess": "Etiket tilføjet",
+            "delete": "Slet",
+            "deleteConfirm": "Slette »{label}«?",
+            "deleteSuccess": "Etiket slettet",
+            "deleteWarning": "Ingen stemmer bruger det, så sletningen er permanent.",
+            "dragHint": "Træk i rækken for at flytte den.",
+            "edit": "Rediger",
+            "editSuccess": "Etiket opdateret",
+            "editTitle": "Rediger etiket",
+            "emojiError": "Indtast en emoji, ikke tekst.",
+            "emojiHelp": "Kun én emoji vises på etiketten i arenaen.",
+            "emojiLabel": "Emoji",
+            "emptySide": "Ingen aktive etiketter på denne side: det tilsvarende spørgsmål stilles ikke længere i arenaen.",
+            "keyFrozen": "Udgivet nøgle: {key}. Den ændrer sig ikke, selvom beskrivelsen rettes.",
+            "keyPreview": "Udgivet nøgle: {key}",
+            "labelError": "Indtast en emoji og mindst én etiket, der indeholder et bogstav eller et tal.",
+            "labelFor": "Etiket ({locale})",
+            "labelHelp": "Bruges til at opbygge den udgivne nøgle i datasættet.",
+            "moveDown": "Ned",
+            "moveUp": "Op",
+            "moved": "{label} flyttet til position {position} af {total}.",
+            "negative": "Negative etiketter",
+            "positive": "Positive etiketter",
+            "reserved": "Indbygget",
+            "restore": "Vis igen",
+            "restoreSuccess": "Etiketten genindført",
+            "save": "Gem",
+            "signLabel": "Type",
+            "subtitle": "Tilføj og administrer etiketterne, besøgende tilføjer til deres stemme.",
+            "title": "Stemmeetiketter"
         }
     },
     "arenaHome": {
@@ -80,9 +592,6 @@
             "count": "{count}/2 modeller",
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
             "question": "Hvilke modeller vil du gerne sammenligne?"
-        },
-        "errors": {
-            "rateLimitCustomSelection": "Modelvalg er begrænset for at sikre fair adgang for alle. Du kan fortsætte med at bruge tilfældig tilstand eller prøve igen senere."
         },
         "modelSelection": "Modelvalg",
         "prompt": {
@@ -94,6 +603,7 @@
             "question": "Hvilke modeller vil du gerne sammenligne?"
         },
         "suggestions": {
+            "fallback": "Udforsk kategorien: {category}",
             "generateAnother": "Generér en ny prompt",
             "title": "Foreslåede prompts"
         },
@@ -105,41 +615,49 @@
             "tooltip": "Aktivér websøgning for at lade modellerne bruge onlinekilder og citere mere opdateret information.<br><strong>Uden websøgning</strong> svarer modellerne baseret på det, de lærte under træning (deres træningsdata). De kan ikke verificere information online, så meget nye eller meget specifikke fakta kan være ufuldstændige."
         }
     },
+    "arene": {
+        "promptWarning": {
+            "edit": "Rediger min besked",
+            "proceed": "Send alligevel",
+            "title": "Før du sender din besked"
+        }
+    },
     "auth": {
         "discussions": {
-            "title": "Diskussioner",
-            "signIn": "Log ind"
+            "signIn": "Log ind",
+            "title": "Diskussioner"
         },
         "modal": {
             "email": {
-                "title": "Log ind eller opret konto",
-                "subtitle": "Få adgang til din samtalehistorik og et højere brugskvota ved at logge ind. Det er valgfrit at oprette en konto på compar:IA",
                 "emailLabel": "E-mail",
                 "submit": "Modtag loginkode",
-                "submitting": "Sender..."
+                "submitting": "Sender...",
+                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på platformen.",
+                "title": "Log ind eller opret konto"
             },
             "code": {
                 "changeEmail": "Skift e-mailadresse",
+                "error": "Ugyldig eller udløbet kode.",
                 "label": "6-cifret kode",
-                "submit": "Bekræft",
-                "verifying": "Verificerer...",
+                "notReceived": "Har du ikke modtaget noget?",
                 "resend": "Send koden igen",
-                "error": "Ugyldig eller udløbet kode."
+                "submit": "Bekræft",
+                "verifying": "Verificerer..."
             },
             "info": {
-                "dataTitle": "Hvordan bruges mine data?",
                 "dataDesc": "Samtaler og præferencer, du udtrykker på compar:IA, bruges anonymt til at opbygge repræsentative datasæt af europæiske sprog og brugsmønstre for at reducere kulturelle fordomme og udvikle mere inkluderende AI-modeller.",
-                "datasetsTitle": "compar:IA datasæt",
+                "dataTitle": "Hvordan bruges mine data?",
                 "datasetsDesc": "Samtaler offentliggøres som åbne data i forskningsdatasæt. Derfor beder vi dig om at <strong>aldrig inkludere</strong> følgende i dine samtaler:",
-                "neverName": "dit navn, efternavn eller en tredjeparters",
+                "datasetsTitle": "compar:IA datasæt",
+                "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter.",
                 "neverAddress": "adresser (post, e-mail)",
-                "neverPhone": "telefonnumre",
-                "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
+                "neverName": "dit fornavn, efternavn eller navne på tredjeparter",
                 "neverOther": "ethvert andet element der kan identificere dig",
-                "emailPrivacy": "Din e-mail offentliggøres aldrig eller deles med tredjeparter."
-            }
+                "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
+                "neverPhone": "telefonnumre"
+            },
+            "merge": "Flet eksisterende samtaler sammen med din konto"
         },
-        "success": "Du er nu logget ind!",
         "settings": {
             "account": {
                 "email": "E-mailadresse",
@@ -179,9 +697,14 @@
             "tabAccount": "Konto",
             "tabsLabel": "Indstillingssektioner",
             "title": "Indstillinger"
-        }
+        },
+        "success": "Du er nu logget ind!"
     },
     "chatbot": {
+        "announce": {
+            "generating": "Modellerne skriver deres svar…",
+            "ready": "Begge svar er klar."
+        },
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
         "conversation": "Chat",
         "errors": {
@@ -219,7 +742,8 @@
         "table": {
             "linePerPage": "Antal linjer per side",
             "pageCount": "{count} linjer per side",
-            "triage": "Sortér"
+            "triage": "Sortér",
+            "triageCol": "Sortér efter {col}"
         },
         "theme": {
             "legend": "Vælg et tema for at tilpasse sidens udseende.",
@@ -231,6 +755,19 @@
             },
             "title": "Visningsindstillinger"
         }
+    },
+    "consent": {
+        "close": "Luk uden at sende",
+        "confirm": "Bekræft",
+        "links": {
+            "privacy": "Privatlivspolitik",
+            "terms": "Brugsvilkår"
+        },
+        "loadFailed": "Brugsvilkårene kunne ikke indlæses.",
+        "required": "Du skal acceptere brugsvilkårene for at fortsætte",
+        "retry": "Prøv igen",
+        "saveFailed": "Dit valg kunne ikke gemmes. Kontrollér din forbindelse, og prøv igen.",
+        "saving": "Gemmer…"
     },
     "errors": {
         "404": {
@@ -253,21 +790,19 @@
             "mention": "Medmindre andet udtrykkeligt er angivet som tredjeparts intellektuel ejendom, tilbydes indholdet på dette websted under <a {linkProps}>Etalab 2.0-licensen</a>"
         },
         "links": {
-            "accessibility": "Tilgængelighed: ikke compliant",
+            "accessibility": "Tilgængelighed: ikke i overensstemmelse",
             "legal": "Om os",
-            "privacy": "Privatlivspolitik",
-            "rgesn": "Miljøvenligt design",
-            "sources": "Kildekode",
-            "tos": "Brugsbetingelser"
+            "rgesn": "Bæredygtigt design",
+            "sources": "Kildekode"
         }
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> ai-arenaen.dk </strong> .",
-            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
+            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> {domain} </strong> .",
+            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
-            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af ai-arenaen.dk for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
+            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en besked til <a {linkProps}>Ombudsmanden</a>",
@@ -276,7 +811,7 @@
             "remedyDesc": "Denne procedure skal anvendes i følgende tilfælde: Du har rapporteret en tilgængelighedsfejl til webstedsadministratoren, som forhindrer dig i at få adgang til indhold eller en af portalens tjenester, og du har ikke modtaget et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Klageadgang",
-            "stateDesc": "Hjemmesiden ai-arenaen.dk overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
+            "stateDesc": "Hjemmesiden {domain} overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
             "stateNavigate": "navigere på alle sider på webstedet ved hjælp af et tastatur",
             "statePrefs": "tilpasse siden til dine præferencer (skriftstørrelse, skærmzoom, ændring af typografi osv.) uden tab af indhold",
             "stateScreenReader": "se hjemmesiden med en skærmlæser.",
@@ -431,6 +966,14 @@
                 "desc": "Flere forbedringer er blevet eller er stadig ved at blive identificeret, herunder:",
                 "title": "Identificerede forbedringer"
             },
+            "8": {
+                "1": "Stilarket er reduceret fra 3,27 MB til 1,46 MB, hvilket er 239 KB mindre efter komprimering på hver side: Tjenesten indlæser ikke længere designsystemets 1.047 ikoner, men kun de 25, den bruger.",
+                "2": "Fjernelse af 344 KB ubrugte statiske filer.",
+                "3": "Optagelse af sessioner er stoppet: Funktionen registrerede musebevægelser og ændringer på siden under hele besøget og producerede optagelser, som ingen så. Optælling af sidevisninger er bevaret.",
+                "4": "Måling fra 13. august 2026 på chatsiden: 111 forespørgsler og 1.152 KB. Tjenesten ligger stadig over de grænser, den har fastsat ovenfor: 40 forespørgsler og 600 KB pr. side. Den største resterende post er oversættelsesfilen, som indeholder alle fem sprog på hver side.",
+                "desc": "Siden offentliggørelsen er følgende forbedringer blevet foretaget i arenaen:",
+                "title": "Gennemførte forbedringer"
+            },
             "desc": "offentliggjort den 11. december 2025",
             "title": "Erklæring om bæredygtigt design"
         },
@@ -442,19 +985,205 @@
         "archs": {
             "dense": {
                 "desc": "Den dense arkitektur betegner en type neuralt netværk, hvor hver neuron i et lag er forbundet til alle neuroner i det næste lag. Dette gør det muligt for alle parametrene i laget at bidrage til beregningen af outputtet.",
+                "long_name": "",
                 "name": "Dense"
             },
             "matformer": {
                 "desc": "Forestil dig russiske matryoshka dukker (matryoshkas → matryoshka transformer → Matformer): hver blok indeholder flere indlejrede undermodeller af stigende størrelser, som deler de samme parametre. Dette gør det muligt ved hver forespørgsel at vælge en model med passende kapacitet, afhængigt af den tilgængelige hukommelse eller latens, uden behov for at genoptræne forskellige modeller.",
+                "long_name": "",
                 "name": "Matformer"
             },
             "moe": {
                 "desc": "Mixture of Experts (MoE) arkitekturen bruger en routingmekanisme til kun at aktivere visse specialiserede delmængder (\"eksperter\") af det neurale netværk, afhængigt af input. Dette gør det muligt at konstruere meget store modeller, samtidig med at beregningsomkostningerne holdes lave, da kun en del af netværket bruges ved hvert trin.",
+                "long_name": "Blanding af eksperter",
                 "name": "MoE"
             },
             "na": {
                 "desc": "Udgiveren har ikke offentliggjort informationerne om modellens arkitektur.",
+                "long_name": "Ikke oplyst",
                 "name": "Proprietær"
+            }
+        },
+        "endpoint_upsert": {
+            "api_base": {
+                "help": "Basis-URL for API-slutpunktet.",
+                "label": "API-basis-URL"
+            },
+            "api_key": {
+                "help": "Hvis den ikke angives, deaktiveres alle sprogmodeller, der afhænger af dette slutpunkt.",
+                "label": "Hemmelig API-nøgle"
+            },
+            "api_type": {
+                "help": "API-format (f.eks. 'openrouter' eller 'openai' for OpenAI-kompatible API'er).",
+                "label": "API-type"
+            },
+            "api_version": {
+                "help": "API-version (valgfri)",
+                "label": "API-version"
+            },
+            "created_at": {
+                "label": "Oprettet"
+            },
+            "id": {
+                "label": "ID"
+            },
+            "name": {
+                "help": "Læsbar betegnelse for slutpunktet (f.eks. 'OpenRouter').",
+                "label": "Navn"
+            },
+            "updated_at": {
+                "label": "Opdateret"
+            }
+        },
+        "lab_upsert": {
+            "created_at": {
+                "label": "Oprettet"
+            },
+            "id": {
+                "label": "ID"
+            },
+            "logo": {
+                "help": "Et ikonnavn fra https://lobehub.com/icons eller et filnavn (f.eks. 'ai2.svg') fra `frontend/static/orgs/ai/`.",
+                "label": "Logo"
+            },
+            "name": {
+                "label": "Navn"
+            },
+            "origin_country": {
+                "help": "En kode på to bogstaver fra https://en.wikipedia.org/wiki/ISO_3166-1.",
+                "label": "Oprindelsesland"
+            },
+            "updated_at": {
+                "label": "Opdateret"
+            }
+        },
+        "license_upsert": {
+            "commercial_use": {
+                "label": "Tillader kommerciel brug."
+            },
+            "created_at": {
+                "label": "Oprettet"
+            },
+            "id": {
+                "label": "ID"
+            },
+            "kind": {
+                "label": "Licenstype"
+            },
+            "name": {
+                "help": "Licensnavn (f.eks. 'Apache 2.0' eller 'MIT').",
+                "label": "Navn"
+            },
+            "reuse": {
+                "label": "Tillader genbrug/videredistribution."
+            },
+            "updated_at": {
+                "label": "Opdateret"
+            }
+        },
+        "llm_upsert": {
+            "active_params": {
+                "help": "Aktive parametre i milliarder (kun for MoE-sprogmodeller).",
+                "label": "Aktive parametre"
+            },
+            "api_model_id": {
+                "help": "Komplet id, der bruges til API-kald.",
+                "label": "API-model-id"
+            },
+            "arch": {
+                "help": "Sprogmodellens arkitektur. Brug `maybe-*`, hvis oplysningerne ikke er bekræftet.",
+                "label": "Arkitektur"
+            },
+            "context_tokens": {
+                "help": "Størrelsen på kontekstvinduet i tokens.",
+                "label": "Konteksttokens"
+            },
+            "created_at": {
+                "label": "Oprettet"
+            },
+            "endpoint_id": {
+                "help": "Oplysninger om sprogmodellens slutpunkt. Opret det først, hvis det ikke allerede findes.",
+                "label": "Slutpunkt"
+            },
+            "eu_hostable": {
+                "help": "Om sprogmodellen kan hostes i EU.",
+                "label": "Kan hostes i EU"
+            },
+            "human_id": {
+                "help": "(ældre id), normalt det LLM-id, der er angivet i 'api_model_id'",
+                "label": "Læsbar id"
+            },
+            "id": {
+                "label": "ID"
+            },
+            "inputs": {
+                "help": "Hvilke typer medier sprogmodellen kan modtage som input.",
+                "label": "Modaliteter"
+            },
+            "knowledge_cutoff": {
+                "help": "Datoen, hvorefter sprogmodellen ikke længere har viden.",
+                "label": "Vidensgrænse"
+            },
+            "lab_id": {
+                "help": "Laboratoriet, der udviklede sprogmodellen. Opret det først, hvis det ikke allerede findes.",
+                "label": "Laboratorium"
+            },
+            "license_id": {
+                "help": "Sprogmodellens licens. Opret den først, hvis den ikke allerede findes.",
+                "label": "Licens"
+            },
+            "links": {
+                "help": "Liste over links, der skal vises på sprogmodellens kort.",
+                "label": "Links"
+            },
+            "name": {
+                "label": "Læsbar betegnelse"
+            },
+            "params": {
+                "help": "Samlet antal parametre i milliarder.",
+                "label": "Parametre"
+            },
+            "price_in": {
+                "help": "Pris pr. million inputtokens i $.",
+                "label": "Inputpris"
+            },
+            "price_out": {
+                "help": "Pris pr. million outputtokens i $.",
+                "label": "Outputpris"
+            },
+            "public_training_code": {
+                "help": "Om sprogmodellens træningskode er offentlig.",
+                "label": "Offentlig træningskode"
+            },
+            "public_training_data": {
+                "help": "Om sprogmodellens træningsdata er offentlige.",
+                "label": "Offentlige træningsdata"
+            },
+            "public_weights": {
+                "help": "Om sprogmodellens vægte er offentlige.",
+                "label": "Offentlige vægte"
+            },
+            "quantization": {
+                "help": "Anvendt kvantiseringsmetode (q4, q8 eller None for fuld præcision).",
+                "label": "Kvantisering"
+            },
+            "rate_limited": {
+                "help": "Anvend hastighedsbegrænsning (normalt for sprogmodeller med høje API-omkostninger).",
+                "label": "Hastighedsbegrænset"
+            },
+            "release_date": {
+                "label": "Udgivelsesdato"
+            },
+            "status": {
+                "help": "enabled: kan kaldes og vises på listen over sprogmodeller samt ranglisten; archived: kan ikke kaldes, men vises på listen over sprogmodeller samt ranglisten; disabled: kan ikke kaldes og skjules på listen over sprogmodeller samt ranglisten.",
+                "label": "Status"
+            },
+            "system_prompt": {
+                "help": "Systemmeddelelse, der føjes til kaldet til sprogmodellen, hvis den er angivet",
+                "label": "Systemprompt"
+            },
+            "updated_at": {
+                "label": "Opdateret"
             }
         }
     },
@@ -476,13 +1205,14 @@
         "title": "AI-Arenaen",
         "votes": {
             "count": "{count} stemmer",
-            "legend": "Legend",
+            "legend": "Tegnforklaring",
             "objective": "Mål: {count}",
             "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         }
     },
     "home": {
         "vote": {
+            "datasets": "Datasæt",
             "steps": {
                 "datasets": {
                     "desc": "Alle spørgsmål og stemmer samles i datasæt og offentliggøres efter anonymisering.",
@@ -516,8 +1246,77 @@
             "title": "Vidste du?"
         },
         "cards": {
+            "arch": {
+                "title": "Arkitektur",
+                "tooltip": "Arkitekturen beskriver, hvordan modellen er opbygget for at generere sine svar, f.eks. som en tæt model eller en blanding af eksperter (MoE).",
+                "withName": "Arkitektur: {name}"
+            },
+            "context": {
+                "chars_count": "Ca. {count}k tegn",
+                "desc": "Kan analysere op mod flere hundrede siders tekst",
+                "title": "Kontekst",
+                "tokens_count": "{count}<span {midProps}>k</span> <span {smallProps}>tokens</span>",
+                "tooltip": "Konteksten er den maksimale mængde tekst, som modellen kan tage højde for i én samtale, målt i tokens."
+            },
+            "energy": {
+                "class": {
+                    "A": "Meget lavt anslået energiforbrug ved inferens",
+                    "B": "Lavt anslået energiforbrug ved inferens",
+                    "C": "Moderat anslået energiforbrug ved inferens",
+                    "D": "Mellemstort anslået energiforbrug ved inferens",
+                    "E": "Højt anslået energiforbrug ved inferens",
+                    "F": "Meget højt anslået energiforbrug ved inferens"
+                },
+                "desc": "Jo tættere klassen er på A, desto lavere er det anslåede energiforbrug ved inferens.",
+                "title": "Energiforbrugsklasse",
+                "title_short": "Energiscore",
+                "tooltip": "EcoLogits 0.10.2-estimat for generering af 1 million outputtokens. Beregningen bruger antallet af aktive parametre til at estimere GPU-energiforbruget og det samlede antal parametre til at estimere hukommelses- og GPU-behovet. Den modellerer NVIDIA H100-GPU'er med 80 GB hukommelse i en server med otte GPU'er. Andre forudsætninger: energieffektivitet i datacenteret (PUE) på 1,2, ingen angivet latenstid og medianværdien, når resultatet er et interval. Grænser: A < 100 Wh; B < 300 Wh; C < 1.000 Wh; D < 3.000 Wh; E < 10.000 Wh; F ≥ 10.000 Wh. Dette er ikke en måling fra udbyderen: den faktiske hardware, kvantiseringen, inputlængden og latenstiden kan alle ændre forbruget."
+            },
+            "license": {
+                "title": "Licens"
+            },
+            "modalities": {
+                "title": "Modaliteter",
+                "tooltip": "Modaliteterne viser, hvilke typer indhold modellen kan behandle: tekst, billeder, lyd eller video.",
+                "types": {
+                    "audio": "Lyd",
+                    "image": "Billede",
+                    "text": "Tekst",
+                    "video": "Video"
+                }
+            },
+            "price": {
+                "desc": "Input = sendt spørgsmål, output = genereret svar",
+                "price_count": "{count}<span {midProps}>/M</span>",
+                "price_in": "Inputpris",
+                "price_out": "Outputpris",
+                "title": "Pris",
+                "tooltip": "Vejledende pris for brug via API pr. million tokens. Inputtet er den sendte anmodning, og outputtet er det genererede svar."
+            },
+            "rank": {
+                "detail": "/{count} modeller",
+                "single": "#{min}",
+                "title": "Placering på ranglisten",
+                "title_short": "Rangliste",
+                "to": "#{min} til {max}",
+                "tooltip": "Modellens placering på compar:IA-ranglisten, som er baseret på brugernes stemmer."
+            },
+            "release": {
+                "title": "Udgivelse"
+            },
+            "size": {
+                "active_params_count": "Heraf {count} mia. aktive",
+                "desc": "Flere parametre medfører ofte et højere ressourceforbrug",
+                "params_count": "{count}<span {midProps}> mia.</span> <span {smallProps}>parametre</span>",
+                "params_count_short": "{count}<span {midProps}> mia.</span> <span {smallProps}>param.</span>",
+                "title": "Størrelse",
+                "title_estimated": "Anslået størrelse",
+                "tooltip": "Parametrene eller vægtene, målt i milliarder, er de variabler, en model lærer under træningen, og som former dens svar. Antallet af parametre er en vigtig, men ikke den eneste faktor for modellens ressourceforbrug; arkitektur og andre optimeringer spiller også en rolle."
+            },
             "sovereignty": {
-                "title": "Åbenhedsgrad"
+                "sub": "Opfyldte kriterier",
+                "title": "Åbenhedsgrad",
+                "tooltip": "En score baseret på kriterier for åbenhed og kontrol: licens, offentlige vægte, offentlige træningsdata og offentlig træningskode, kommerciel brug, genbrug af output og muligheden for hosting i EU."
             }
         },
         "conso": {
@@ -528,15 +1327,48 @@
             },
             "filterLegend": "Filtrer efter gennemsnitligt energiforbrug for 1000 tokens"
         },
+        "envImpact": {
+            "hardware": {
+                "title": "Nødvendig hardware",
+                "tooltip": "Et estimat af den hukommelse, der kræves for at indlæse modellens parametre. Estimatet inkluderer ikke KV-cache, kontekst eller system- og inferensoverhead. Anvendte kategorier: op til 3 GB, smartphone; op til 16 GB, bærbar computer; op til 80 GB, arbejdsstation med én GPU; derover, server. Antallet af GPU'er rundes op ud fra en antagelse om 80 GB hukommelse pr. kort. Dette er et teoretisk minimum: vægtenes præcision, kvantiseringen, kontekstlængden, batchbehandlingen og inferenssoftwaren kan alle øge eller mindske det faktiske behov.",
+                "types": {
+                    "laptop": {
+                        "detail": "Intet grafikkort nødvendigt",
+                        "name": "Bærbar computer",
+                        "title": "Kan køre på en bærbar computer"
+                    },
+                    "server": {
+                        "detail": "Server med flere GPU'er",
+                        "name": "Server",
+                        "title": "Kræver {count} grafikkort"
+                    },
+                    "smartphone": {
+                        "detail": "Intet grafikkort nødvendigt",
+                        "name": "Smartphone",
+                        "title": "Kan køre på en smartphone"
+                    },
+                    "workstation": {
+                        "detail": "Kraftig arbejdsstation (1 GPU)",
+                        "name": "Arbejdsstation",
+                        "title": "Kræver et grafikkort"
+                    }
+                }
+            },
+            "title": "Miljøpåvirkning"
+        },
+        "infosSources": {
+            "title": "Flere oplysninger og kilder"
+        },
+        "knowledge": {
+            "badge": "Data til og med {date}",
+            "tooltip": "Den dato, som oplysningerne, der blev brugt til at træne modellen, antages at dække frem til."
+        },
         "licenses": {
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Ophavsretligt beskyttet",
                 "semiOpen": "Open-weight"
             }
-        },
-        "opennessSovereignty": {
-            "title": "Åbenhedsgrad"
         },
         "list": {
             "filters": {
@@ -546,17 +1378,24 @@
                     "uncheckedLabel": "Ikke synligt"
                 },
                 "editor": {
+                    "all": "Alle modeludviklere",
                     "legend": "Udgiver"
                 },
                 "license": {
+                    "all": "Alle licenser",
                     "legend": "Licens"
                 },
                 "reset": "Ryd alle filtre",
                 "size": {
+                    "all": "Alle størrelser",
                     "legend": "Størrelse (parametre)"
+                },
+                "statuses": {
+                    "all": "Alle statusser",
+                    "legend": "Status"
                 }
             },
-            "model": "model",
+            "model": "Model",
             "models": "modeller",
             "noresults": "Ingen modeller matcher dine søgekriterier.",
             "triage": {
@@ -579,6 +1418,37 @@
                 "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset). Få modeller betragtes som \"open source\"."
             }
         },
+        "opennessSovereignty": {
+            "fields": {
+                "commercial_use": "Kommerciel brug",
+                "eu_hostable": "Kan hostes i EU",
+                "license_name": "Licens",
+                "license_type": "Type",
+                "origin_country": "Modeludviklerens oprindelsesland",
+                "public_training_code": "Træningskode",
+                "public_training_data": "Træningsdatasæt",
+                "public_weights": "Modelvægte",
+                "reuse": "Genbrug af output"
+            },
+            "title": "Åbenhedsgrad"
+        },
+        "performance": {
+            "fields": {
+                "score": {
+                    "detail": "(konfidens ±{count})",
+                    "title": "Bradley-Terry-score"
+                },
+                "votes": {
+                    "title": "Registrerede stemmer"
+                }
+            },
+            "group": "Gruppe {count}",
+            "level": "Niveau {count} af {total}",
+            "rankFromTo": "Placering {min} til {max}",
+            "rankSingle": "Placering {min}",
+            "title": "Præstationsniveau sammenlignet med de andre modeller",
+            "tooltip": "Præstationsniveauet beregnes ud fra stemmerne i compar:IA med en Bradley-Terry-score. Det afspejler brugernes observerede præferencer, ikke en absolut sandhed om modellen."
+        },
         "release": "Udgivet {date}",
         "size": {
             "count": {
@@ -590,6 +1460,9 @@
             },
             "estimated": "Estimeret størrelse ({size})",
             "title": "Størrelse {size}"
+        },
+        "technical": {
+            "title": "Tekniske egenskaber"
         }
     },
     "modes": {
@@ -625,42 +1498,20 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Sammenligninger",
-                "general_rank": "Generel rang",
-                "record": "Resultat (S-N-U)",
-                "score": "Min score"
-            },
-            "loading": "Indlæser din rangliste…",
-            "noVotes": "Stem i en sammenligning for at starte din rangering.",
-            "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
-            "title": "Min rangering",
-            "tooltips": {
-                "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
-            },
-            "totalModels": "Rangerede modeller:",
-            "totalVotes": "Mine stemmer:"
-        },
-        "views": {
-            "general": "Generel",
-            "legend": "Visning af rangering",
-            "personal": "Min rangering"
-        },
         "energy": {
             "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley Terry-score) og det estimerede gennemsnitlige energiforbrug pr. 1000 tokens. Energiforbruget estimeres ved hjælp af <a {linkProps}>Ecologits</a>-metodologien, som tager højde for to faktorer: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. Da <strong>proprietære modeller</strong> ikke offentliggør disse oplysninger - eller kun gør det delvist - er de ikke medtaget i grafen nedenfor.",
-            "tabLabel": "Energi fokus",
+            "tabLabel": "Energifokus",
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
                 "graph": {
                     "desc": "Vælg en model for at kende dens Bradley-Terry (BT) score og energiforbrug",
                     "legends": {
-                        "arch": "Model arkitektur",
+                        "arch": "Modelarkitektur",
                         "size": "filtrer på størrelse",
                         "sizeSub": "(mia. parametre)"
                     },
                     "tabLabel": "Grafisk visning",
-                    "title": "Bradley-Terry (BT) tilfredshedsscore VS Gennemsnitsforbrug for 1000 tokens",
+                    "title": "Bradley-Terry-tilfredshedsscore (BT) kontra gennemsnitsforbrug for 1.000 tokens",
                     "tooltip": {
                         "active_params": "Aktive parametre (mia.)",
                         "arch": "Arkitektur",
@@ -669,7 +1520,7 @@
                         "params": "Parametre (mia.)"
                     },
                     "xLabel": "Forbrug pr. 1000 tokens (mWh)",
-                    "yLabel": "Bradley-Terry Score (BT)"
+                    "yLabel": "Bradley-Terry-score (BT)"
                 },
                 "methodo": {
                     "1": {
@@ -726,6 +1577,7 @@
             },
             "methods": {
                 "cons": "Hovedproblemer",
+                "def": "",
                 "elo": {
                     "def": "<strong>Definition</strong>: Rangordningssystem, hvor gevinst eller tab af point afhænger af resultatet (sejr/nederlag/uafgjort) <strong>og</strong> det estimerede niveau af modstanderen: hvis en svagere model slår en stærkere model, er dens fremgang i rangordningen større.",
                     "list": {
@@ -759,10 +1611,45 @@
                 },
                 "title": "Din personlige rangering: sådan beregnes din score"
             },
+            "style": {
+                "coef": {
+                    "footnote": "Længde og Markdown-markører er korrelerede: Disse koefficienter skal læses samlet og ikke som uafhængige effekter hver for sig.",
+                    "hint": "Regressionskoefficienter estimeret ud fra alle stemmer. En positiv værdi betyder, at dette præsentationstræk er forbundet med en højere sandsynlighed for at vinde, når der er taget højde for modellens styrke. Det er netop denne del, stilkontrollen fjerner fra ranglisten.",
+                    "title": "Målt effekt af præsentationen"
+                },
+                "desc": {
+                    "1": "En model kan rykke op på ranglisten blot ved at svare mere udførligt eller bruge mere formatering (overskrifter, fed skrift og lister), uden at indholdet er mere relevant. Stilkontrollen estimerer denne præsentationseffekt og fjerner den fra ranglisten.",
+                    "2": "Den viste score bliver dermed en Elo-score, der er »korrigeret for stil«: den rangliste, man ville få, hvis de to sammenlignede svar var formateret på samme måde. Stilkontrollen er slået til som standard. Med knappen »Stilkontrol« over tabellen kan du skifte tilbage til den rå Bradley-Terry-rangliste for at sammenligne."
+                },
+                "features": {
+                    "length": "Svarets længde",
+                    "md_bold": "Fed tekst",
+                    "md_headers": "Overskrifter",
+                    "md_lists": "Punktopstillinger"
+                },
+                "title": "Stilkontrol: neutralisering af præsentationens effekt"
+            },
             "tabLabel": "Metodologi",
             "title": "Hvordan vælger man metoden til rangordning af modeller?"
         },
         "no_data": "Rangeringen er i øjeblikket utilgængelig eller under beregning.",
+        "personal": {
+            "cols": {
+                "battles": "Sammenligninger",
+                "general_rank": "Generel rang",
+                "record": "Resultat (S-N-U)",
+                "score": "Min score"
+            },
+            "loading": "Indlæser din rangliste…",
+            "noVotes": "Stem i en sammenligning for at starte din rangering.",
+            "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
+            "title": "Min rangering",
+            "tooltips": {
+                "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
+            },
+            "totalModels": "Rangerede modeller:",
+            "totalVotes": "Mine stemmer:"
+        },
         "preferences": {
             "desc": "Når du stemmer, kan du kvalificere din præference efter forskellige positive og negative kategorier. Sammenlign deres fordeling fra en model til en anden.",
             "modal": {
@@ -796,6 +1683,10 @@
             "desc": "Denne rangering beregnes ud fra stemmer indsamlet gennem <strong>blinde sammenligninger</strong> ved hjælp af den statistiske <strong>Bradley-Terry-model</strong>. Den afspejler <strong>subjektive præferencer</strong> og bør fortolkes med forsigtighed: den måler hverken faktuel korrekthed eller modellernes samlede ydeevne.",
             "tabLabel": "Rangliste"
         },
+        "styleControl": {
+            "help": "Fjerner formateringens effekt (svarets længde, overskrifter, fed skrift og lister) fra ranglisten, så scoren afspejler indholdet frem for præsentationen. Slået til som standard. Se flere oplysninger under fanen Metode.",
+            "label": "Stilkontrol"
+        },
         "table": {
             "data": {
                 "billions": "{count} mia.",
@@ -808,6 +1699,7 @@
                     "name": "Model",
                     "organisation": "Organisation",
                     "rank": "Rang",
+                    "rank_number": "Placering",
                     "release": "Udgivelsesdato",
                     "size": "Størrelse<br>(parametre)",
                     "trust_range": "Konfidens (±)"
@@ -815,56 +1707,29 @@
                 "estimation": "(estimering)",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
-                    "consumption": "Målt i watttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtig information om størrelse og arkitektur for, som gråtonede ikke-analyserede (N/A).",
+                    "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, som ikke-analyseret (N/A).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",
                     "trust_range": "Interval, der angiver pålideligheden af rangordningen: jo smallere intervallet er, jo mere pålidelig er rangestimat. Der er 95% sandsynlighed for, at modellens sande rang ligger i dette spænd."
                 }
             },
-            "lastUpdate": "Updateret {date}",
+            "lastUpdate": "Opdateret {date}",
+            "showRanks": {
+                "help": "Viser hver models nøjagtige placering fra 1 til sidst. To placeringer ved siden af hinanden kan næsten aldrig skelnes med sikkerhed: Forskellen mellem 4.- og 7.-pladsen skyldes som regel tilfældigheder i stemmerne. Klasserne viser, hvad dataene gør det muligt at fastslå.",
+                "label": "Vis placeringer"
+            },
             "totalModels": "Total antal modeller:",
             "totalVotes": "Total antal stemmer:"
         },
-        "title": "Fra stemmer til en rangering af modeller"
+        "title": "Fra stemmer til en rangering af modeller",
+        "views": {
+            "general": "Generel",
+            "legend": "Visning af rangering",
+            "personal": "Min rangering"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO <sub> 2 </sub> udledt",
-                "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi.",
-                "unit": "ton"
-            },
-            "desc": "Hvis alle danskere der bruger generativ AI (48%) havde haft denne samtale, ville det svare til:",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Data beregnet ud fra kulstofsaftrykket ved produktion af traditionelle baguettes. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Producerede brød"
-                },
-                "mango_import": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen fra produktion til levering af mango importeret med fly. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Importerede mango"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimat baseret på et gennemsnit: et modent træ absorberer ~22 kg CO₂/år (≈48 lb). Resultatet er et størrelsesordensestimat: det varierer afhængigt af art, alder, klima og jordbund. (Kilde <a {linkProps}>USDA</a>)",
-                    "unit": "Træer til at absorbere CO₂ i 1 år"
-                },
-                "package_delivery": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved hjemmelevering af pakker på 1 kg. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Pakkeleveringer"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved en tur-retur flyvning Paris-New York med langrutefly. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Tur-retur Paris - NYC med fly"
-                },
-                "pool_filing": {
-                    "tooltip": "Beregnet ud fra kuldioxidpåvirkningen ved fyldning af en privat pool på 8 x 4 m. (kilde <a {linkProps}>ADEME</a>)",
-                    "unit": "Poolfyldninger"
-                }
-            },
-            "title": "Ækvivalenser i ton CO₂",
-            "title_tooltip": "Ækvivalenserne er projektioner for at illustrere masseeffekten – vi har ganget virkningen af din samtale med denne model op til samtlige AI-brugere i Danmark: 48% af danskerne erklærer i dag at benytte generativ AI, og aldrig tidligere er en digital teknologi blevet adopteret så hurtigt. (kilde <a {linkProps}>Baromètre du numérique fra CREDOC</a>)"
-        },
         "feedback": {
             "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
             "example": "Eksempel på delte resultater",
@@ -872,26 +1737,79 @@
             "shareResult": "Del dit resultat"
         },
         "impacts": {
+            "cost": {
+                "comparison": {
+                    "less": "≈ {factor}× billigere end den anden model",
+                    "more": "≈ {factor}× dyrere end den anden model",
+                    "similar": "Pris på niveau med den anden model",
+                    "unavailable": "Prisen kan ikke sammenlignes med prisen for den anden model"
+                },
+                "sub": "Standardpris (input og output)",
+                "title": "Pris",
+                "tooltip": "Et estimat baseret på modellens offentlige pris for input og output. For scenarierne forudsættes en kørsel uden cache, og prisen kan variere fra udbyder til udbyder."
+            },
             "energy": {
-                "tooltip": "Målt i milliwatttimer repræsenterer det forbrugte energi den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Jo større en model er (i milliarder af parametre), desto mere energi kræves der for at producere et token."
+                "comparison": {
+                    "less": "≈ {factor}× lavere energiforbrug end den anden model",
+                    "more": "≈ {factor}× højere energiforbrug end den anden model",
+                    "similar": "Energiforbrug på niveau med den anden model",
+                    "unavailable": "Energiforbruget kan ikke sammenlignes med den anden models energiforbrug"
+                },
+                "conso": "{count}<span {midProps}>mWh</span>",
+                "conso_estimated": "{count}<span {midProps}>mWh</span><span {smallProps}> estimeret</span>",
+                "equivalences": {
+                    "intro": "Denne energimængde svarer omtrent til:",
+                    "led": {
+                        "description": "belysning med en LED-pære på 6 W",
+                        "title": "LED-pære",
+                        "tooltip": "Sammenligning med en LED-pære på 6 W, der er tændt konstant. Et forbrug på 6 Wh svarer til en times belysning."
+                    },
+                    "phone": {
+                        "description": "af kapaciteten i et typisk smartphonebatteri",
+                        "title": "Smartphonebatteri",
+                        "tooltip": "Sammenligning med kapaciteten i et typisk smartphonebatteri (15 Wh). 100 % svarer til en fuld opladning."
+                    },
+                    "tabs": {
+                        "label": "Vælg en energisammenligning"
+                    },
+                    "tooltip": "Vejledende sammenligninger: en times videostreaming (80 Wh), en typisk LED-pære på 6 W og et typisk smartphonebatteri på 15 Wh.",
+                    "unavailable": "Der findes ingen sammenligning for dette estimat.",
+                    "video": {
+                        "description": "videostreaming (referenceværdi: 80 Wh pr. time)",
+                        "title": "Videostreaming",
+                        "tooltip": "Sammenligning med en times videostreaming, estimeret til 80 Wh. Denne reference omfatter videoafspilning og det tilhørende udstyr og er kun vejledende."
+                    }
+                },
+                "estimate": "For scenarierne omfatter dette estimat genereringen af svaret. Det medregner hverken den kontekst, der sendes til modellen, eller eventuelle effekter af cachen.",
+                "title": "Estimeret energi til generering",
+                "tooltip": "Målt i milliwatttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Jo større en model er (i milliarder af parametre), desto mere energi kræves der for at producere et token."
+            },
+            "how": {
+                "tabs": {
+                    "equivalences": "Sammenligninger",
+                    "explanation": "Forklaring",
+                    "label": "Detaljer om forbruget"
+                },
+                "title": "Hvorfor dette forbrug?"
             },
             "summary": {
                 "classification": {
                     "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>tæt</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Matformer</strong>-arkitektur: den tilpasser den andel af parametrene, der bruges i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Mixture of Experts</strong>-arkitektur: den aktiverer kun en del af sine parametre i hvert svar (omkring <strong>{activeParams} mia.</strong> ud af <strong>{params} mia.</strong>). Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> er en proprietær model af størrelsen <strong>{size}</strong> med en arkitektur baseret på en <strong>blanding af eksperter</strong>: den aktiverer kun en del af sine parametre for hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> er en <strong>{size}</strong> model, hvis arkitektur ikke er offentliggjort. På grund af sin størrelse er dens energiklasse <strong>{energyClass}</strong>.",
                     "unknownProprietary": "<strong>{model}</strong> er en proprietær <strong>{size}</strong> model, hvis arkitektur ikke er offentliggjort. På grund af sin størrelse er dens energiklasse <strong>{energyClass}</strong>."
                 },
                 "comparison": {
-                    "comparable": "på niveau med <strong>{otherModel}</strong>",
+                    "comparable": "et energiforbrug <strong>på niveau</strong> med <strong>{otherModel}</strong>",
                     "multipleLess": "næsten <strong>{count} gange så lidt</strong> som <strong>{otherModel}</strong>",
                     "multipleMore": "næsten <strong>{count} gange så meget</strong> som <strong>{otherModel}</strong>",
                     "percentageLess": "<strong>{percentage} % lavere</strong> end <strong>{otherModel}</strong>",
                     "percentageMore": "<strong>{percentage} % højere</strong> end <strong>{otherModel}</strong>",
                     "unavailable": "uden mulighed for sammenligning med <strong>{otherModel}</strong>"
                 },
-                "consumption": "I denne samtale brugte genereringen af <strong>{tokens} tokens</strong> cirka <strong>{energy} mWh</strong>, {comparison}.",
+                "consumption": "For {usage} brugte genereringen af <strong>{tokens} tokens</strong> cirka <strong>{energy} mWh</strong>, hvilket svarer til {comparison}.",
                 "size": {
                     "estimatedL": "anslået stor",
                     "estimatedM": "anslået mellemstor",
@@ -905,9 +1823,33 @@
                     "xs": "meget lille"
                 }
             },
-            "title": "Chatens estimerede energiforbrug",
+            "title": "Samtalens estimerede energiforbrug",
             "tokens": {
-                "tooltip": "AI analyserer og genererer sætninger ud fra ord eller dele af ord på cirka fire bogstaver; denne tekstdel kaldes et token. Jo længere en tekst er, jo større er antallet af tokens."
+                "max": "Maks. kontekst: {count}k tokens",
+                "title": "Genereret tekst",
+                "tooltip": "AI analyserer og genererer sætninger ud fra ord eller dele af ord på cirka fire bogstaver; denne tekstdel kaldes et token. Jo længere en tekst er, jo større er antallet af tokens.",
+                "used": "{count}<span {midProps}> tokens</span><span {smallProps}> brugt</span>"
+            },
+            "usage": {
+                "assumption": "Forudsætning: kørsel uden cache. Eventuelle pris- eller energibesparelser fra cachen er ikke medregnet.",
+                "changeLabel": "Skift estimatets scenarie",
+                "coding": "en agentbaseret kodningssession (500.000 tokens)",
+                "descriptionCoding": "Eksempel på en agentbaseret kodningssession (500.000 tokens). Omfanget kan variere meget afhængigt af kodebasen og opgaverne.",
+                "descriptionDiscussion": "Estimat beregnet ud fra denne samtale.",
+                "descriptionDocument": "Fremskrivning, hvis modellen skulle generere et dokument på fem sider.",
+                "descriptionResearch": "Fremskrivning for dybdegående research: websøgninger, læsning af kilder og en sammenfatning med kildehenvisninger.",
+                "discussion": "denne samtale",
+                "document": "et dokument på fem sider",
+                "headingCoding": "for en agentbaseret kodningssession",
+                "headingDiscussion": "for denne samtale",
+                "headingDocument": "Samlet for et dokument på fem sider",
+                "headingResearch": "for dybdegående research",
+                "label": "Anvendelse, der skal estimeres",
+                "menuCoding": "Agentbaseret kodningssession",
+                "menuDiscussion": "Denne samtale",
+                "menuDocument": "Dokument · 5 sider",
+                "menuResearch": "Dybdegående research",
+                "research": "dybdegående research (310.000 tokens)"
             }
         },
         "thanks": {
@@ -919,20 +1861,18 @@
         }
     },
     "seo": {
-        "desc": "compar:IA er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
-        "title": "compar:IA, arenaen for AI-chatbots",
+        "desc": "{platformName} er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
+        "title": "{platformName}, arenaen for AI-chatbots",
         "titles": {
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
-            "home": "Hjem",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
             "ranking": "Rangliste",
             "rgesn": "Erklæring om bæredygtigt design",
-            "settings": "Indstillinger",
-            "share": "Mine resultater"
+            "settings": "Indstillinger"
         }
     },
     "statistics": {
@@ -946,7 +1886,6 @@
         },
         "counterLink": "Se platformens statistik",
         "eyebrow": "Statistik",
-        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
         "filters": {
             "allTime": "Hele perioden",
             "label": "Periode",
@@ -954,7 +1893,7 @@
             "sevenDays": "7 dage",
             "thirtyDays": "30 dage"
         },
-        "overview": "Overblik",
+        "intro": "Se, hvordan samtaler og præferencer på platformen bidrager til et fælles datasæt.",
         "metrics": {
             "conversations": {
                 "label": "Gennemførte samtaler"
@@ -969,10 +1908,10 @@
                 "label": "Afgivne stemmer"
             }
         },
+        "overview": "Overblik",
         "title": "Platformens statistik"
     },
     "vote": {
-        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "choices": {
             "negative": {
                 "comment": "Uddyb hvad du ikke kunne lide…",
@@ -990,6 +1929,7 @@
                 "useful": "Brugbart"
             }
         },
+        "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
         "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
         "title": "Hvilken AI-model foretrækker du?",
         "turn": {
@@ -1004,34 +1944,34 @@
         },
         "yours": "Din stemme"
     },
-    "welcome": {
-        "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
-        "go": "Så er vi klar",
-        "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse.",
-        "title": "Velkommen til AI Arenaen!",
-        "tos": {
-            "desc": "Samtalerne og de præferencer, du udtrykker på AI-arenaen, bruges anonymt til at udgøre datasæt, der er repræsentative for europæiske sprog og anvendelser for at reducere kulturelle bias og tilbyde fremtidige AI-modeller, der er mere inkluderende.",
-            "moreInfos": "Lær mere om projektet"
-        },
-        "use": "Brug ikke arenaen til ulovlige eller skadelige formål."
-    },
     "words": {
         "NA": "N/A",
         "activated": "Aktiveret",
+        "add": "Tilføj",
+        "allowed": "tilladt",
         "archived": "Arkiveret",
+        "available": "Tilgængelig",
         "back": "Tilbage",
+        "cancel": "Annuller",
         "close": "Luk",
         "deactivated": "Deaktiveret",
+        "forbidden": "forbudt",
         "loading": "Indlæser",
         "new": "Ny",
+        "no": "Nej",
+        "private": "privat",
+        "public": "offentlig",
         "random": "Tilfældig",
         "regenerate": "Regenerer",
+        "remove": "Slet",
         "reset": "Nulstil",
         "restart": "Start forfra",
-        "retry": "Start forfra",
+        "retry": "Prøv igen",
+        "save": "Gem",
         "search": "Søg",
         "send": "Send",
         "tooltip": "Tip",
-        "validate": "Validér"
+        "validate": "Validér",
+        "yes": "Ja"
     }
 }

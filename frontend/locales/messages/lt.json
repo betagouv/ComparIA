@@ -24,9 +24,6 @@
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
             "question": "Kuriuos modelius norėtumėte palyginti?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modelių pasirinkimas yra ribotas, kad būtų užtikrinta vienoda prieiga visiems. Galite toliau naudoti atsitiktinį režimą arba bandyti vėliau."
-        },
         "modelSelection": "Modelių pasirinkimas",
         "prompt": {
             "label": "Parašykite savo pirmąją žinutę",
@@ -127,43 +124,21 @@
             "title": "Atvirumo lygis"
         }
     },
-    "statistics": {
-        "activity": {
-            "conversationsLabel": "Pokalbiai",
-            "dateLabel": "Data",
-            "promptsLabel": "Pateiktos užklausos",
-            "sectionTitle": "Aktyvumas",
-            "tableLabel": "Rodyti duomenis lentelėje",
-            "title": "Platformos aktyvumas"
-        },
-        "counterLink": "Peržiūrėti platformos statistiką",
-        "eyebrow": "Statistika",
-        "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
-        "filters": {
-            "allTime": "Visas laikotarpis",
-            "label": "Laikotarpis",
-            "ninetyDays": "90 dienų",
-            "sevenDays": "7 dienos",
-            "thirtyDays": "30 dienų"
-        },
-        "overview": "Apžvalga",
-        "metrics": {
-            "conversations": {
-                "label": "Įvykę pokalbiai"
-            },
-            "models": {
-                "label": "Išbandyti modeliai"
-            },
-            "prompts": {
-                "label": "Pateiktos užklausos"
-            },
-            "votes": {
-                "label": "Pateikti balsai"
+    "ranking": {
+        "methodo": {
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Nė vienas neteko</strong>: po 0 taškų kiekvienam modeliui — skaičiuojamas jūsų nepasitenkinimas, o ne tik santykinis pasirinkimas.",
+                    "both_good": "<strong>Abu geri</strong>: po 0,5 taško kiekvienam modeliui.",
+                    "idk": "<strong>Nežinau</strong>: neįtraukiama į skaičiavimą, neįskaitoma nė vienam modeliui."
+                },
+                "desc": {
+                    "1": "Bradley-Terry metodui reikia sujungto palyginimų tinklo: jūsų balsai daugiausia sudaro išsibarsčiusias, nesusijusias poras, todėl metodas netinka vienai paskyrai. Asmeninis įvertis yra <strong>sumažintas laimėjimų rodiklis</strong>:",
+                    "2": "<strong>points</strong> – jūsų taškų suma už modelį, <strong>battles</strong> – įvertintų palyginimų su juo skaičius, o <strong>m</strong> – jūsų vidutinis taškų skaičius už palyginimą visuose modeliuose. Sumažinimas retai lyginamą modelį priartina prie šio vidurkio: vienas laimėjimas rodo 0,667, o ne 100 %, o dvidešimt kartų lygintas modelis lenkia vieną kartą lygintą modelį esant panašiam santykiui."
+                },
+                "title": "Asmeninis reitingas: kaip apskaičiuojamas jūsų įvertis"
             }
         },
-        "title": "Platformos statistika"
-    },
-    "ranking": {
         "personal": {
             "cols": {
                 "battles": "Palyginimai",
@@ -185,20 +160,6 @@
             "general": "Bendras",
             "legend": "Reitingo rodinys",
             "personal": "Mano reitingas"
-        },
-        "methodo": {
-            "personal": {
-                "choices": {
-                    "both_bad": "<strong>Nė vienas neteko</strong>: po 0 taškų kiekvienam modeliui — skaičiuojamas jūsų nepasitenkinimas, o ne tik santykinis pasirinkimas.",
-                    "both_good": "<strong>Abu geri</strong>: po 0,5 taško kiekvienam modeliui.",
-                    "idk": "<strong>Nežinau</strong>: neįtraukiama į skaičiavimą, neįskaitoma nė vienam modeliui."
-                },
-                "desc": {
-                    "1": "Bradley-Terry metodui reikia sujungto palyginimų tinklo: jūsų balsai daugiausia sudaro išsibarsčiusias, nesusijusias poras, todėl metodas netinka vienai paskyrai. Asmeninis įvertis yra <strong>sumažintas laimėjimų rodiklis</strong>:",
-                    "2": "<strong>points</strong> – jūsų taškų suma už modelį, <strong>battles</strong> – įvertintų palyginimų su juo skaičius, o <strong>m</strong> – jūsų vidutinis taškų skaičius už palyginimą visuose modeliuose. Sumažinimas retai lyginamą modelį priartina prie šio vidurkio: vienas laimėjimas rodo 0,667, o ne 100 %, o dvidešimt kartų lygintas modelis lenkia vieną kartą lygintą modelį esant panašiam santykiui."
-                },
-                "title": "Asmeninis reitingas: kaip apskaičiuojamas jūsų įvertis"
-            }
         }
     },
     "reveal": {
@@ -234,5 +195,41 @@
                 }
             }
         }
+    },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Pokalbiai",
+            "dateLabel": "Data",
+            "promptsLabel": "Pateiktos užklausos",
+            "sectionTitle": "Aktyvumas",
+            "tableLabel": "Rodyti duomenis lentelėje",
+            "title": "Platformos aktyvumas"
+        },
+        "counterLink": "Peržiūrėti platformos statistiką",
+        "eyebrow": "Statistika",
+        "filters": {
+            "allTime": "Visas laikotarpis",
+            "label": "Laikotarpis",
+            "ninetyDays": "90 dienų",
+            "sevenDays": "7 dienos",
+            "thirtyDays": "30 dienų"
+        },
+        "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
+        "metrics": {
+            "conversations": {
+                "label": "Įvykę pokalbiai"
+            },
+            "models": {
+                "label": "Išbandyti modeliai"
+            },
+            "prompts": {
+                "label": "Pateiktos užklausos"
+            },
+            "votes": {
+                "label": "Pateikti balsai"
+            }
+        },
+        "overview": "Apžvalga",
+        "title": "Platformos statistika"
     }
 }

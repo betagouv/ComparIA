@@ -7,8 +7,8 @@
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",
-        "modelSheet": "Fiche du modèle",
         "modeSelection": "Choix des modèles à comparer",
+        "modelSheet": "Fiche du modèle",
         "newWindow": "nouvelle fenêtre",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
@@ -261,8 +261,8 @@
             },
             "saveApiKey": "Enregistrer la clé",
             "saveCategories": "Enregistrer les catégories",
-            "saved": "Vérification mise à jour",
             "saveModel": "Enregistrer le modèle",
+            "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
             "settings": {
                 "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",
@@ -358,9 +358,9 @@
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",
-            "publishing": "Publication…",
             "publishNow": "Publier",
             "publishStarted": "Publication démarrée",
+            "publishing": "Publication…",
             "rawWarning": "Cette destination reçoit le jeu brut, qui contient les conversations mises de côté pour données personnelles. Vérifiez qu'elle est privée.",
             "regionLabel": "Région",
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
@@ -459,8 +459,8 @@
             "archive": "Archiver",
             "archiveCategory": "Archiver la catégorie",
             "archiveConfirm": "Archiver cette suggestion ? Elle ne sera plus proposée dans l’arène, mais pourra être restaurée.",
-            "archived": "Archivée",
             "archiveSuccess": "Suggestion archivée.",
+            "archived": "Archivée",
             "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
             "categoryArchiveSuccess": "Catégorie archivée.",
             "categoryCountSummary": "{available} disponibles sur {total} suggestions",
@@ -545,8 +545,8 @@
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
             "archive": "Masquer",
-            "archived": "Masquée",
             "archiveSuccess": "Étiquette masquée",
+            "archived": "Masquée",
             "cancel": "Annuler",
             "colActions": "Actions",
             "colKey": "Clé",
@@ -573,9 +573,9 @@
             "labelError": "Renseignez un emoji et au moins un libellé contenant une lettre ou un chiffre.",
             "labelFor": "Libellé ({locale})",
             "labelHelp": "Sert à construire la clé publiée dans le jeu de données.",
-            "moved": "{label} déplacée en position {position} sur {total}.",
             "moveDown": "Descendre",
             "moveUp": "Monter",
+            "moved": "{label} déplacée en position {position} sur {total}.",
             "negative": "Étiquettes négatives",
             "positive": "Étiquettes positives",
             "reserved": "Livrée",
@@ -592,9 +592,6 @@
             "count": "{count}/2 modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
             "question": "Quels modèles voulez-vous comparer ?"
-        },
-        "errors": {
-            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
@@ -649,9 +646,9 @@
             },
             "info": {
                 "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
                 "datasetsTitle": "Les jeux de données compar:IA",
-                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers.",
                 "neverAddress": "des adresses (postale, email)",
                 "neverName": "votre nom, prénom ou celui d'un tiers",
@@ -795,10 +792,8 @@
         "links": {
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
-            "privacy": "Politique de confidentialité",
             "rgesn": "Écoconception",
-            "sources": "Code source",
-            "tos": "Modalités d'utilisation"
+            "sources": "Code source"
         }
     },
     "general": {
@@ -1417,6 +1412,12 @@
             "a": "Modèle A",
             "b": "Modèle B"
         },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
+                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
+            }
+        },
         "opennessSovereignty": {
             "fields": {
                 "commercial_use": "Usage commercial",
@@ -1430,12 +1431,6 @@
                 "reuse": "Réutilisation des sorties"
             },
             "title": "Niveau d’ouverture"
-        },
-        "openWeight": {
-            "tooltips": {
-                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
-                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
-            }
         },
         "performance": {
             "fields": {
@@ -1503,28 +1498,6 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Comparaisons",
-                "general_rank": "Rang général",
-                "record": "Bilan (V-D-É)",
-                "score": "Mon score"
-            },
-            "loading": "Chargement de votre classement…",
-            "noVotes": "Votez lors d’une comparaison pour commencer votre classement.",
-            "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
-            "title": "Mon classement",
-            "tooltips": {
-                "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
-            },
-            "totalModels": "Modèles classés :",
-            "totalVotes": "Mes votes :"
-        },
-        "views": {
-            "general": "Général",
-            "legend": "Vue du classement",
-            "personal": "Mon classement"
-        },
         "energy": {
             "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
@@ -1660,6 +1633,23 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
+        "personal": {
+            "cols": {
+                "battles": "Comparaisons",
+                "general_rank": "Rang général",
+                "record": "Bilan (V-D-É)",
+                "score": "Mon score"
+            },
+            "loading": "Chargement de votre classement…",
+            "noVotes": "Votez lors d’une comparaison pour commencer votre classement.",
+            "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
+            "title": "Mon classement",
+            "tooltips": {
+                "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
+            },
+            "totalModels": "Modèles classés :",
+            "totalVotes": "Mes votes :"
+        },
         "preferences": {
             "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
             "modal": {
@@ -1732,45 +1722,14 @@
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
-        "title": "Des votes… au classement des modèles"
+        "title": "Des votes… au classement des modèles",
+        "views": {
+            "general": "Général",
+            "legend": "Vue du classement",
+            "personal": "Mon classement"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub> émis",
-                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée.",
-                "unit": "tonnes"
-            },
-            "desc": "Si tous les Français qui utilisent l’IA générative (48%) avaient eu cette discussion, cela représenterait :",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de la production de baguettes traditions. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Baguettes produites"
-                },
-                "mango_import": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de la production à la livraison de mangues importées en avion. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Mangues importées"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimation basée sur une moyenne : un arbre mature absorbe ~22 kg CO₂/an (≈48 lb). Le résultat est un ordre de grandeur : cela varie selon l’espèce, l’âge, le climat et le sol. (Source <a {linkProps}>USDA</a>)",
-                    "unit": "Arbres pour absorber le CO2 pendant 1 an"
-                },
-                "package_delivery": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de livraisons à domicile de colis de 1kg. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Livraisons de colis"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris New York en avion long courrier. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "A/R Paris - NYC en avion"
-                },
-                "pool_filing": {
-                    "tooltip": "Donnée calculée selon l’impact carbone d’un remplissage d’une piscine d’un particulier 8 x 4m (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Remplissages de piscine"
-                }
-            },
-            "title": "Équivalences en tonnes de CO2",
-            "title_tooltip": "Les équivalences sont des projections pour illustrer l'effet de masse, nous avons multiplié l'impact de votre discussion avec ce modèle à l'ensemble des utilisateurs d'IA en France : 48% des Français déclarent aujourd’hui avoir recours à l’IA générative, jamais une technologie numérique n'avait été adoptée aussi vite.(source <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
-        },
         "feedback": {
             "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
             "example": "Exemple de partage de résultat",
@@ -1838,9 +1797,9 @@
                     "dense": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>dense</strong> : il mobilise l’ensemble de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>Matformer</strong> : il adapte la part de ses paramètres mobilisée à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse (environ <strong>{activeParams} milliards</strong> sur <strong>{params} milliards</strong>). Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> est un modèle <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
-                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
-                    "moeProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>."
+                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
                 },
                 "comparison": {
                     "comparable": "une consommation <strong>comparable</strong> à celle de <strong>{otherModel}</strong>",
@@ -1902,20 +1861,18 @@
         }
     },
     "seo": {
-        "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
-        "title": "compar:IA, le comparateur d'IA conversationnelles",
+        "desc": "{platformName} est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
+        "title": "{platformName}, le comparateur d'IA conversationnelles",
         "titles": {
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
-            "home": "Accueil",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
-            "settings": "Paramètres",
-            "share": "Mon bilan"
+            "settings": "Paramètres"
         }
     },
     "statistics": {
@@ -1987,18 +1944,8 @@
         },
         "yours": "Votre vote"
     },
-    "welcome": {
-        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées.",
-        "go": "C'est parti",
-        "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
-        "title": "Bienvenue sur compar:IA !",
-        "tos": {
-            "desc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d’IA plus inclusifs.",
-            "moreInfos": "En savoir plus sur le projet."
-        },
-        "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
-    },
     "words": {
+        "NA": "N/A",
         "activated": "Activé",
         "add": "Ajouter",
         "allowed": "autorisé",
@@ -2010,7 +1957,6 @@
         "deactivated": "Désactivé",
         "forbidden": "interdit",
         "loading": "Chargement",
-        "NA": "N/A",
         "new": "Nouveau",
         "no": "Non",
         "private": "privé",
