@@ -2,7 +2,7 @@ import asyncio
 import os
 import sys
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -28,7 +28,9 @@ class FakeResult:
 class FakeSession:
     def __init__(self) -> None:
         self.statements = []
-        day = datetime(2026, 8, 1)
+        # A day inside every period window, so the row lands in the activity
+        # series whatever date the suite runs on.
+        day = datetime.combine(date.today() - timedelta(days=1), time.min)
         self.results = [
             9,
             [(day, 42, 17)],
@@ -60,7 +62,9 @@ def test_get_statistics_summary_aggregates_activity(monkeypatch):
     assert summary.models_count == 9
     assert summary.range_end == services.date.today()
     activity_point = next(
-        point for point in summary.activity if point.date.isoformat() == "2026-08-01"
+        point
+        for point in summary.activity
+        if point.date == date.today() - timedelta(days=1)
     )
     assert activity_point.prompts == 42
     assert activity_point.conversations == 12
