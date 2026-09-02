@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, ValidationError } from '$lib/fastapi-client'
+import { api, StreamTimeoutError, ValidationError } from '$lib/fastapi-client'
 import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
@@ -155,12 +155,32 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
   }
 }
 
-function parseAPIComparison(comparison: APIComparison): Comparison {
-  return {
+export function parseAPIComparison(
+  comparison: APIComparison,
+  recoverInterrupted = false
+): Comparison {
+  const parsed: Comparison = {
     ...comparison,
     error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
+
+  // Data loaded by a fresh page is not attached to the old SSE request. Any
+  // incomplete turn therefore cannot make further progress and must not be
+  // presented as if it were still generating forever. This includes turns where
+  // only one side answered: parseAPITurn calls those 'complete', but the missing
+  // side would otherwise stay pending with no stream to fill it.
+  const interruptedTurn = recoverInterrupted
+    ? parsed.turns.findLast((turn) => turn.a.status === 'pending' || turn.b.status === 'pending')
+    : undefined
+  if (interruptedTurn) {
+    parsed.error ??= 'provider_error'
+    interruptedTurn.status = 'error'
+    if (interruptedTurn.a.status === 'pending') interruptedTurn.a.status = 'error'
+    if (interruptedTurn.b.status === 'pending') interruptedTurn.b.status = 'error'
+  }
+
+  return parsed
 }
 
 export function parseAPIRevealData(data: APIRevealData): RevealData {
@@ -175,9 +195,15 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function queryComparisons(_fetch: typeof fetch = fetch) {
+/**
+ * `recoverInterrupted` is only safe on a fresh page load: it rewrites any
+ * still-pending turn as interrupted. Passing it on an in-session refresh (e.g.
+ * after sign-in) would clobber a comparison that is actively streaming in this
+ * tab.
+ */
+export async function queryComparisons(_fetch: typeof fetch = fetch, recoverInterrupted = false) {
   const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
-  return data.map((c) => parseAPIComparison(c))
+  return data.map((c) => parseAPIComparison(c, recoverInterrupted))
 }
 
 export function initComparisonsContext(data: ComparisonsCtx) {
@@ -280,6 +306,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         promptError = err.errors ? err.errors[0].msg : err.message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
+      } else if (err instanceof StreamTimeoutError && comparison) {
+        comparison.error = 'timeout'
+        if (turn) turn.status = 'error'
       } else {
         throw err
       }

@@ -6,6 +6,6 @@ export const load: LayoutLoad = async ({ data, fetch }) => {
 
   return {
     ...data,
-    comparisons: await queryComparisons(fetch)
+    comparisons: await queryComparisons(fetch, true)
   }
 }

@@ -84,6 +84,16 @@ export class InternalError extends Error {
   }
 }
 
+/** Longer than the backend's longest provider timeout, but still terminal. */
+export const SSE_INACTIVITY_TIMEOUT_MS = 90_000
+
+export class StreamTimeoutError extends Error {
+  constructor() {
+    super('The response stream stopped sending data')
+    this.name = 'StreamTimeoutError'
+  }
+}
+
 type PydanticValidationError = { loc: string[]; msg: string }
 
 export class ValidationError extends Error {
@@ -191,6 +201,7 @@ export class FastAPIClient {
    */
   async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
+    const controller = new AbortController()
 
     console.debug(`Streaming from ${path}`)
 
@@ -201,7 +212,8 @@ export class FastAPIClient {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        credentials: 'include'
+        credentials: 'include',
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -214,7 +226,24 @@ export class FastAPIClient {
       let buffer = ''
 
       while (true) {
-        const { done, value } = await reader.read()
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const timeout = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new StreamTimeoutError()), SSE_INACTIVITY_TIMEOUT_MS)
+        })
+        let result: ReadableStreamReadResult<Uint8Array>
+        try {
+          result = await Promise.race([reader.read(), timeout])
+        } catch (error) {
+          if (error instanceof StreamTimeoutError) {
+            void reader.cancel(error).catch(() => undefined)
+            controller.abort(error)
+          }
+          throw error
+        } finally {
+          clearTimeout(timer)
+        }
+
+        const { done, value } = result
 
         if (done) break
 

@@ -5,7 +5,8 @@
   import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
-  import { PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
+  import { shouldShowInitialPrompt } from './arenaPageState'
+  import { ErrorDisplay, PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
 
   let { data }: PageProps = $props()
 
@@ -13,7 +14,9 @@
   fetchAndSolveSilently()
 
   const comparator = getComparison(undefined)
-  const showInitialPrompt = $derived(!comparator.comparisonId)
+  const showInitialPrompt = $derived(
+    shouldShowInitialPrompt(comparator.comparisonId, comparator.comparison)
+  )
 
   const revealed = $derived(comparator.status === 'revealed')
 
@@ -25,8 +28,13 @@
     await tosModal?.runAfterAcceptance(action)
   }
 
-  function submitInitialPrompt(args: APIModeAndPromptData): void {
-    void runAfterAcceptance(() => comparator.askFirst(args))
+  // Kept so the error banner below can resend the exact same prompt when
+  // initialization dies before the first turn is shown.
+  let lastPromptArgs = $state<APIModeAndPromptData>()
+
+  async function submitInitialPrompt(args: APIModeAndPromptData): Promise<void> {
+    lastPromptArgs = args
+    await runAfterAcceptance(() => comparator.askFirst(args))
   }
 </script>
 
@@ -62,6 +70,17 @@
   {/snippet}
 
   {#if showInitialPrompt}
+    <!-- The stream died after /add_first_text opened but before the first turn
+         rendered: ViewPrompt has no turn to attach the error to, so surface it
+         here and let the user resend the prompt they still have typed. -->
+    {#if comparator.error && !comparator.loading}
+      <ErrorDisplay
+        error={comparator.error}
+        onRetry={() => {
+          if (lastPromptArgs) void submitInitialPrompt(lastPromptArgs)
+        }}
+      />
+    {/if}
     <ViewPrompt
       loading={comparator.loading}
       promptError={comparator.promptError}
