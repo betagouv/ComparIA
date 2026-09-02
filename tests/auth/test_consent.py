@@ -144,7 +144,12 @@ def routed(**overrides):
     """Serve the router with the plumbing every login route needs stubbed out."""
 
     async def app_settings():
-        return SimpleNamespace(auth_domain_allowlist=[])
+        return SimpleNamespace(
+            auth_domain_allowlist=[],
+            platform_name="Compar:IA",
+            primary_color_light="#6464F3",
+            secondary_color_light="#FF9575",
+        )
 
     with patched(
         auth_router,
@@ -480,7 +485,7 @@ def test_login_code_is_not_blocked_when_nothing_is_published():
     async def request_login_code(_email):
         return "123456"
 
-    async def send_login_code(email, _code):
+    async def send_login_code(email, _code, **_colors):
         sent.append(email)
 
     with (
