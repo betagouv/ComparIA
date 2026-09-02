@@ -1,16 +1,17 @@
 import uuid
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, ValidationInfo, computed_field, model_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from backend.arena.reveal import RevealData, get_reveal_data
 from backend.config import CustomModelsSelection, SelectionMode
 from utils.validation import StripAndEmptyAsNone
 
-from .turn import BotPos, Turn, TurnPublic, TurnRead
-from .utils import AutoDatetime, ModelId, OptionalDatetime
+from .turn import Turn, TurnPublic, TurnRead
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 ArchivedReason = Literal[
     # FIXME remove commented archived reasons (should not happen anymore)
@@ -41,32 +42,49 @@ ArchivedReason = Literal[
 #   - remove corresponding UserMessage + LLMMessage
 # - "corrupted_model_stream": reparse LLMMessage content
 
+LLMDataId = Annotated[uuid.UUID, Field(foreign_key="llm_data.id")]
+# Marker for comparisons created before the accepted terms were recorded.
+LEGACY_PARTICIPATION_TERMS_VERSION = "legacy-pre-versioning"
+
+
+# What the browser and the dataset are allowed to learn about a failure. The
+# provider's own message names the endpoint, the provider and often the model
+# itself, which would undo the blind arena, so it stays in the log and only one
+# of these codes travels.
+ErrorCode = Literal["timeout", "context_too_long", "empty_response", "provider_error"]
+
 
 class ErrorDetails(BaseModel):
+    # Optional, because rows written before the codes existed hold the raw
+    # provider text in `message` and still have to load. New rows put the code
+    # in both fields: clients read `message`.
+    code: ErrorCode | None = None
     message: str
     # turn_index: int
     pos: BotPos | None = None
     is_timeout: bool = False
 
 
-class ComparisonBase(SQLModel):
-    id: ModelId
-    created_at: AutoDatetime
-    updated_at: AutoDatetime
+class ComparisonBase(BaseDBModel):
     ip: str  # WARNING: PII
     visitor_id: str | None = None
+    user_id: Annotated[uuid.UUID | None, Field(foreign_key="auth_user.id")] = None
+    anonymous_user_hash: str | None = None
+    participation_terms_version: str = LEGACY_PARTICIPATION_TERMS_VERSION
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
     mode: Annotated[SelectionMode, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    revealed: bool = False
+    revealed_at: OptionalDatetime = None
 
     # a
-    llm_id_a: str
+    llm_id_a: LLMDataId
     system_msg_a: str | None = None
 
     # b
-    llm_id_b: str
+    llm_id_b: LLMDataId
     system_msg_b: str | None = None
 
     error: Annotated[ErrorDetails | None, Field(sa_type=JSONB)] = None
@@ -110,6 +128,39 @@ class ComparisonPublic(SQLModel):
     custom_models_selection: CustomModelsSelection
     error: ErrorDetails | None
     turns: list[TurnPublic]
+    revealed: bool
+    reveal_data: RevealData | None = None
+
+    # Used to build reveal_data, FIXME maybe compute reveal_data outside and pass it in ctx
+    llm_id_a: uuid.UUID | None
+    llm_id_b: uuid.UUID | None
+    system_msg_a: str | None = None
+    system_msg_b: str | None = None
+
+    @model_validator(mode="after")
+    def inject_reveal_data(self, info: ValidationInfo) -> Self:
+        if self.revealed:
+            if self.reveal_data is None and info.context is not None:
+                llms = info.context.get("llms_data")
+                # A model disabled since the comparison has left the catalogue,
+                # so its impact cannot be computed. The conversation itself
+                # stays readable rather than taking the whole list down.
+                if (
+                    llms is not None
+                    and self.llm_id_a in llms.all
+                    and self.llm_id_b in llms.all
+                ):
+                    self.reveal_data = get_reveal_data(self, llms)
+        else:
+            self.llm_id_a = None
+            self.llm_id_b = None
+            # A system prompt is often written for one model and names it, so
+            # withholding the ids while sending these through would hand the
+            # answer to anyone reading the response.
+            self.system_msg_a = None
+            self.system_msg_b = None
+
+        return self
 
 
 class ComparisonArchiveUpdate(SQLModel):

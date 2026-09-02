@@ -1,0 +1,709 @@
+{
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "accessData": "Få tilgang til data",
+        "contact": "Kontakt oss",
+        "contactUs": "Kontakt oss",
+        "copyLink": {
+            "do": "Kopier lenken",
+            "done": "Lenke kopiert til utklippstavlen"
+        },
+        "copyMessage": {
+            "do": "Kopier meldingen",
+            "done": "Melding kopiert"
+        },
+        "discover": "Oppdage",
+        "downloadData": "Last ned data",
+        "home": "Hjemmeside",
+        "returnArena": "Gå tilbake til arenaen",
+        "returnHome": "Tilbake til hjemmesiden",
+        "scrollLeft": "bla til venstre",
+        "scrollRight": "Bla til høyre",
+        "searchModel": "Søk etter en modell",
+        "seeMore": "Se mer",
+        "selectLanguage": "Velg språk"
+    },
+    "arenaHome": {
+        "compareModels": {
+            "count": "{count}/2 modeller",
+            "help": "Hvis du bare velger én, velges den andre tilfeldig",
+            "question": "Hvilke modeller vil du sammenligne?"
+        },
+        "modelSelection": "Valg av modeller",
+        "prompt": {
+            "label": "Skriv din første melding",
+            "placeholder": "Skriv din første melding her"
+        },
+        "selectModels": {
+            "help": "Velg sammenligningsmodus",
+            "question": "Hvilke modeller vil du sammenligne?"
+        },
+        "suggestions": {
+            "generateAnother": "Generer et nytt prompt",
+            "title": "Foreslått prompt"
+        },
+        "title": "Hva kan jeg hjelpe deg med i dag?",
+        "webSearch": {
+            "disabled": "Nettsøk deaktivert",
+            "enabled": "Nettsøk aktivert",
+            "label": "Nettsøk",
+            "tooltip": "Aktiver nettsøk for å la modellene bruke nettkilder og sitere mer oppdatert informasjon.<br><strong>Uten nettsøk</strong> svarer modellene basert på det de lærte under trening (treningsdataene sine). De kan ikke verifisere informasjon på nettet, så svært nye eller svært spesifikke fakta kan være ufullstendige."
+        }
+    },
+    "chatbot": {
+        "continuePrompt": "Fortsett samtalen med KI-modellene",
+        "conversation": "Samtale",
+        "errors": {
+            "other": {
+                "message": "Det har oppstått en midlertidig feil.",
+                "retry": "Du kan prøve å spørre modellene på nytt.",
+                "title": "Oops, midlertidig feil"
+            },
+            "tooLong": {
+                "message": "Hver modell har begrensninger på hvor lange samtaler de kan håndtere.",
+                "retry": "Du kan gjenoppta samtalen med to nye modeller.",
+                "title": "Oops, samtalen er for lang for en av modellene."
+            }
+        },
+        "loading": "Laster inn svar",
+        "reasoning": {
+            "finished": "Resonnement ferdig",
+            "inProgress": "Resonnerer…"
+        },
+        "revealButton": "Avslør modellene",
+        "webSearch": {
+            "label": "Tilknyttede nettsøkresultater."
+        }
+    },
+    "closeModal": "Lukk popup-vinduet",
+    "components": {
+        "pagination": {
+            "first": "Første side",
+            "label": "Sider",
+            "last": "Siste side",
+            "next": "Neste side",
+            "nth": "Side {count}",
+            "previous": "Forrige side"
+        },
+        "table": {
+            "linePerPage": "Antall linjer per side",
+            "pageCount": "{count} linjer per side",
+            "triage": "Sorter"
+        },
+        "theme": {
+            "legend": "Velg et tema for å tilpasse nettstedets utseende.",
+            "options": {
+                "dark": "Nattmodus",
+                "light": "Dagmodus",
+                "system": "System",
+                "systemSub": "Bruk systeminnstillinger"
+            },
+            "title": "Skjerminnstillinger"
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Hvis du skrev inn URL-en i nettleseren, sjekk om den er riktig. Siden er kanskje ikke tilgjengelig lenger. <br />Gå til hjemmesiden vår, så kan du fortsette derfra. <br />Kontakt oss hvis du har problemer med å finne frem, så peker vi deg til riktig URL.",
+            "error": "Feil 404",
+            "sorry": "Siden du leter etter finnes ikke. Vi beklager ulempen dette medfører.",
+            "title": "Siden ble ikke funnet"
+        },
+        "unexpected": {
+            "desc": "Prøv å oppdatere siden eller prøv igjen senere.",
+            "error": "Feil {code}",
+            "sorry": "Vi beklager, det er et problem med tjenesten. Vi jobber med å løse det så raskt som mulig.",
+            "title": "Uventet feil"
+        },
+        "unknown": "Det har oppstått en feil"
+    },
+    "footer": {
+        "license": {
+            "linkTitle": "Etalab-lisens - nytt vindu",
+            "mention": "Med mindre noe er uttrykkelig angitt som tredjeparts immaterielle rettigheter, tilbys innholdet på dette nettstedet under <a {linkProps}>Etalab 2.0-lisensen</a>"
+        },
+        "links": {
+            "accessibility": "Tilgjengelighet: ikke kompatibel",
+            "legal": "Juridisk merknad",
+            "rgesn": "Økodesign",
+            "sources": "Kildekode"
+        }
+    },
+    "general": {
+        "a11y": {
+            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>{domain}</strong>.",
+            "disclaimer": "<strong>compar:IA</strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
+            "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "Vi prøver å svare innen to virkedager.",
+            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av {domain} for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
+            "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Forbedring og kontakt",
+            "remedyAdvocate": "Skriv en melding til <a {linkProps}>Défenseur des droits</a>",
+            "remedyAdvocateAdress": "Send et brev i posten (gratis, ikke bruk frimerke): Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
+            "remedyDelegateAdvocate": "Kontakt <a {linkProps}>Likestillings- og diskrimineringsombudet</a>",
+            "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
+            "remedyList": "Du kan:",
+            "remedyTitle": "Anke",
+            "stateDesc": "Nettstedet {domain} er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
+            "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
+            "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
+            "stateScreenReader": "se nettsiden med en skjermleser.",
+            "stateTitle": "Status for samsvar",
+            "title": "Tilgjengelighetserklæring"
+        },
+        "legal": {
+            "a11yDesc": "Overholdelse av standarder for digital tilgjengelighet er et framtidig mål, men vi etterstreber å gjøre dette nettstedet tilgjengelig for alle.",
+            "a11yTitle": "Tilgjengelighet",
+            "directorDesc": "Herr Romain Delassus, leder for den sentrale digitale enheten i det franske kulturdepartementet",
+            "directorTitle": "Ansvarlig redaktør",
+            "editorDesc": "Denne nettsiden er publisert av det franske kulturdepartementet, 182, rue Saint-Honoré, 75001 Paris",
+            "editorTitle": "Publisert",
+            "hostingDesc": "Dette nettstedet driftes av OVH SAS (<a {linkProps}>https://www.ovh.com</a>), med registrert kontoradresse på 2 rue Kellermann, 59100 Roubaix, Frankrike.",
+            "hostingTitle": "Drift av nettstedet",
+            "reportA11y": "Hvis du støter på et tilgjengelighetsproblem som hindrer deg i å få tilgang til innhold eller funksjoner på nettstedet, vennligst gi oss beskjed.",
+            "reportA11yDesc": "For å lære mer om statens tilgjengelighetspolicy for digitale tjenester: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "reportDesc": "Hvis du ikke mottar et raskt svar fra oss, har du rett til å sende inn en klage eller be om henvisning til Likestillings- og diskrimineringsombudet.",
+            "reportTitle": "Rapporter et problem",
+            "securityCertif": "Nettstedet er beskyttet av et elektronisk sertifikat, representert i de fleste nettlesere som en hengelås. Denne beskyttelsen bidrar til å sikre konfidensialitet i dataoverføringen.",
+            "securityNoMail": "Tjenestene tilknyttet plattformen vil ikke under noen omstendigheter sende ut e-poster som ber deg sende inn personopplysninger.",
+            "securityTitle": "Sikkerhet",
+            "sources": "Med mindre annet er oppgitt, er all tekst på dette nettstedet under lisensen <a {etalabLinkProps}>Etalab Open 2.0</a>. Kildekoden til applikasjonen kan gjenbrukes fritt og er tilgjengelig på <a {githubLinkProps}>GitHub</a>.",
+            "title": "Juridisk merknad"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "Det er sant, du trengte ikke å klikke i en boks som dekker halve siden for å si at du godtar bruken av informasjonskapsler – selv om du ikke vet hva det betyr!",
+            "cookiesBannerNoNeed": "Ingenting eksepsjonelt, ingen spesialbehandling knyttet til et .gouv.fr-domene. Vi respekterer rett og slett loven, som sier at visse verktøy for målgruppesporing, riktig konfigurert for å respektere personvernet, er unntatt fra forhåndsgodkjenning.",
+            "cookiesBannerTitle": "Hvorfor popper det ikke opp en boks for samtykke til informasjonskapsler på dette nettstedet?",
+            "cookiesBannerTools": "Vi bruker <a {matomoLinkProps}>Matomo</a>, et <a {libreLinkProps}>gratis</a> verktøy, konfigurert til å overholde CNILs <a {cnilLinkProps}>anbefaling</a> om informasjonskapsler. Dette betyr at for eksempel IP-adressen din blir anonymisert før den registreres. Det er derfor umulig å knytte besøkene dine på dette nettstedet til din person.",
+            "cookiesDesc": "Dette nettstedet plasserer en liten tekstfil (en «informasjonskapsel») på datamaskinen din når du besøker det. Dette lar oss måle antall besøk slik at vi forstår hvilke sider som er mest besøkt.",
+            "cookiesDescMore": "Du kan velge å ikke la deg spore på dette nettstedet. Dette vil beskytte personvernet ditt, men det vil også hindre eieren i å lære av handlingene dine og skape en bedre opplevelse for deg og andre brukere.",
+            "cookiesTitle": "Informasjonskapsler og samtykke",
+            "dataAccessDatasets": "Brukerdialog- og preferansedata distribueres under Etalabs Open License 2.0 på plattformen Hugging Face gjennom det franske kulturdepartementets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Så klart! Bruksstatistikken for nettstedet er fritt tilgjengelig på <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Jeg bidrar til å berike dataene deres, kan jeg få tilgang til dem?",
+            "dataExtraCountry": "Destinasjonsland: Frankrike",
+            "dataExtraHost": "Underleverandør: OVH",
+            "dataExtraTitle": "Hvem hjelper oss med databehandling?",
+            "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Utført behandling: Tilrettelegging",
+            "dataRespDesc": "Det franske kulturdepartementets digitale enhet er ansvarlig for behandlingen av personopplysningene dine.",
+            "dataRespTitle": "Hvem er ansvarlig for databehandlingen?",
+            "dataTimeDesc": "Data knyttet til brukere og deres interaksjon med modeller lagres fra tidspunktet preferansevalget blir registrert.",
+            "dataTimeTitle": "Hvor lenge lagrer vi disse dataene?",
+            "dataUseDesc": "Utgiveren forplikter seg uansett til å implementere tiltak for å sikre anonymisering av dialogdata før de gjøres offentlig tilgjengelige.",
+            "dataUseTitle": "Hvilken behandling utføres på samtaledataene?",
+            "desc": "Tjenesten publiseres av den digitale enheten i det franske kulturdepartementet.",
+            "privacyData": "Dataene som samles inn på nettstedet er som følger:",
+            "privacyDataArena": "Data relatert til brukernes samtaler med modellene: spørsmål stilt av brukerne, modellsvar og brukernes preferanser mellom svarene til de to modellene",
+            "privacyDataForm": "Data relatert til spørreskjemaet «Hjelp oss å forbedre compar:IA».",
+            "privacyDesc": "Tjenesten behandler ikke personopplysninger som definert av CNIL, det vil si informasjon knyttet til en identifiserbar fysisk person, direkte eller indirekte.",
+            "privacyResp": "Brukeren er ansvarlig for dataene eller innholdet brukeren oppgir i prompter som plattformen foreslår. Ved å godta <a {linkProps}>bruksvilkårene</a> samtykker brukeren i å ikke overføre informasjon som kan identifisere brukeren selv eller en tredjepart.",
+            "privacyTitle": "Behandler vi personopplysninger?",
+            "tallyData": "Når du fyller ut et av disse skjemaene, blir dataene du oppgir overført til og lagret av Tally (Tally BV, Belgia). Tally er forpliktet til ikke å bruke dataene dine til kommersielle formål og til å overholde GDPR. For mer informasjon, se Tallys <a {tallyPrivacyLinkProps}>personvernerklæring</a>.",
+            "tallyDesc": "Dette nettstedet bruker <a {tallyLinkProps}>Tally</a>, en tjeneste for oppretting av skjemaer på nett, til to funksjoner:",
+            "tallyFeedback": "Skjemaet \"Din mening\" lar oss samle inn tilbakemeldinger fra deg om tjenesten",
+            "tallyNewsletter": "Abonnementsskjema for nyhetsbrev fra compar:IA",
+            "tallyTitle": "Tally-skjemaer",
+            "title": "Personvernerklæring"
+        },
+        "rgesn": {
+            "1": {
+                "1": "Nettstedet compar:IA gir enkel og gratis tilgang til et bredt utvalg av konversasjonsbaserte KI-modeller, med mål om å øke den offentlig bevisstheten rundt de ulike utfordringene med generativ KI: mangfold, skjevheter og miljøpåvirkning. Videre deles datasettene med spørsmål og preferanser som er samlet inn som åpen kildekode under lisensen MIT/Etalab 2.0.",
+                "2": "Målgruppen av brukere av tjenesten Compar:IA ble identifisert ved å gjennomføre brukerintervjuer og en innledende fase med behovsundersøkelse.",
+                "3": "Dermed er alle borgere ansett som potensielle brukere, men spesielt lærere, elever, studenter, workshop-arrangører, KI-instruktører, samt forskere (innen informatikk, KI, humaniora og samfunnsvitenskap) og bedrifter som er interessert i å analysere eller bruke delte datasett med åpen kildekode. Følgelig dekker den digitale tjenesten deres behov gjennom følgende funksjoner: gratis testing og sammenligning av modeller, og bruk av delte data med åpen kildekode.",
+                "4": "Tjenesten compar:IA er en del av en økodesigntilnærming som tar sikte på å redusere miljøpåvirkning. For dette formålet ble denne erklæringen utarbeidet innenfor rammen av implementeringen av det generelle rammeverket for økodesign for digitale tjenester (RGESN, versjon 2024). RGESN, produsert av Arcep og Arcom, i samarbeid med ADEME, DINUM, CNIL og Inria, er tilgjengelig på <a {linkProps}>Arceps nettsted</a>.",
+                "title": "Formålet med denne tjenesten"
+            },
+            "2": {
+                "1": "Økodesign av digitale tjenester er en tilnærming som tar sikte på å redusere og begrense miljøpåvirkningen av en tjeneste fra designfasen og gjennom hele livssyklusen.",
+                "2": {
+                    "1": "Utforme mer bærekraftige digitale tjenester for å forlenge levetiden til enheter;",
+                    "2": "Fremme en tilnærming basert på miljømessig nøkternhet som svar på strategier for å fange brukernes oppmerksomhet, i tråd med internasjonale miljømål;",
+                    "3": "Reduser bruken av IT-ressurser, optimaliser datatrafikk og bruken av digital infrastruktur;",
+                    "4": "Øk nivået av åpenhet om det miljømessige fotavtrykket til den digitale tjenesten.",
+                    "title": "Implementeringen har fire hovedmål:"
+                },
+                "3": {
+                    "1": "Begrens størrelsen på en side",
+                    "2": "Begrens kompleksiteten til en side",
+                    "3": "Begrens antall serverforespørsler",
+                    "4": "Begrens energiforbruket som kreves for å være vert for tjenesten",
+                    "title": "I praksis betyr økodesign et sett med beste praksis som skal følges før, under og etter etableringen eller forbedringen av en tjeneste, noe som særlig muliggjør:"
+                },
+                "4": "Dette er en prosess som innebærer kontinuerlig og kollektiv forbedring.",
+                "title": "Hva er økodesign?"
+            },
+            "3": {
+                "1": {
+                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i compar:IA-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
+                    "2": "Øke bevisstheten blant brukerne om tjenestens økologiske fotavtrykk: fremheve indikatorer for energipåvirkning på spørsmål stilt til KI; fremme \"sparsommelig\" bruk, med en modus dedikert til å spørre etter \"små\" konversasjonsbaserte KI-modeller med mindre miljøpåvirkning.",
+                    "3": "Bruk av State Design System (DSFR)-grensesnittkomponenter: de er tilgjengelige, og fotavtrykket deres er minimalt.",
+                    "4": "Den mest intuitive navigasjonen som er mulig for å redusere tiden man bruker på å finne informasjon.",
+                    "5": "Mobilorientert design: mobile enheter kan vise alt innhold. Nettstedet tilpasser seg alle skjermstørrelser.",
+                    "6": "Utelukke integrasjon av video på nettstedet.",
+                    "title": "Hovedutfordringen er å sikre at compar:IA fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
+                },
+                "title": "Strategi implementert og mål for reduksjon eller begrensning av miljøpåvirkninger"
+            },
+            "4": {
+                "1": "Egenvurderingen, som ble utført mellom mai og oktober 2025 av produktteamet (to personer var ansvarlige for å gjennomgå og validere alle kriteriene), dekket alle sidene på nettstedet. Verktøyene som ble brukt til å evaluere visse tekniske indikatorer var nettleserens utviklerverktøys «nettverksinspektør», utvidelsen <a {greenitLinkProps}>Green IT Analysis</a> og verktøyet <a {ecoindexLinkProps}>EcoIndex</a>.",
+                "title": "RGESN-diagnose"
+            },
+            "5": {
+                "1": {
+                    "1": "Score for fremdrift i implementeringen av RGESN per 12.10.2025: 89 %",
+                    "title": "Selvdiagnostiseringen gir en grad av samsvar med <a {linkProps}>RGESN</a> (generell referanse for økodesign) på 89 %."
+                },
+                "2": "Den digitale tjenesten compar:IA har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
+                "3": {
+                    "1": "Strategi: 100 %",
+                    "2": "Spesifikasjoner: 78 %",
+                    "3": "Arkitektur: 100 %",
+                    "4": "Brukeropplevelse og grensesnitt (UX/UI): 100 %",
+                    "5": "Innhold: 67 %",
+                    "6": "Frontend: 82 %",
+                    "7": "Backend: 64%",
+                    "8": "Hosting: 90 %",
+                    "9": "Algoritmer: 100 %",
+                    "title": "Poengsum etter tema:"
+                },
+                "4": {
+                    "date": "10. desember 2025",
+                    "title": "Revisjonstabell for RGESN"
+                },
+                "title": "Poengsum i implementeringen av rammeverket"
+            },
+            "6": {
+                "1": "Nettstedet er designet for å være tilgjengelig på alle mobile enheter fra 2017 eller senere.",
+                "2": "Minimumstilkobling som kreves for komfortabel tilgang og bruk av tjenesten: 3G på mobil og 512 Kbps på fastnett.",
+                "3": "Nettstedet er designet for forskjellige skjermstørrelser (minimum 320 pikslers bredde).",
+                "4": "Nettstedet er ikke tilgjengelig via nettleseren Internet Explorer. ",
+                "title": "Minimumskrav for å få tilgang til nettstedet"
+            },
+            "7": {
+                "1": "Sett opp tjenesten med en gjennomgang av design og kode, der ett av målene er å redusere miljøpåvirkningen av hver funksjon (kriterium 2.1)",
+                "2": "Implementer perioder for datalagring med formål å slette eller arkivere: regelmessig sletting av logger i filserveren «S3» og spesielt i databasen (Postgres).",
+                "3": {
+                    "1": "Maksimalt antall serverforespørsler per skjerm: 40",
+                    "2": "Maksimal ressursstørrelse per skjerm: 600 KB",
+                    "title": "Overholde en maksimal vekt og en grense for antall forespørsler per skjerm (kriterium 6.1):"
+                },
+                "4": "Konvertere illustrasjonene til WebP, AVIF, JPEG XL eller et mer effektivt bildeformat for rasterbilder (kriterium 5.1).",
+                "5": "Tillate muligheten til å avbryte inferens (lasting av svar) under sammenligning av modeller.",
+                "6": "Resultatene for EcoIndex-analyse viser et betydelig avvik i effektmålinger, der noen sider får poengsummer på opptil E eller F (relativt høy sidevekt, kompleksitet og antall forespørsler). Utfordringen nå er å forstå disse resultatene mer presist fra sak til sak, til tross for implementeringen av en god praksis, for å identifisere ytterligere forbedringer.",
+                "desc": "Flere forbedringer har blitt eller blir fortsatt identifisert, inkludert:",
+                "title": "Identifiserte forbedringer"
+            },
+            "desc": "publisert 11. desember 2025",
+            "title": "Erklæring om økodesign"
+        },
+        "tos": {
+            "title": "Vilkår for bruk"
+        }
+    },
+    "generated": {
+        "archs": {
+            "dense": {
+                "desc": "Tett koblet arkitektur refererer til en type nevralt nettverk der hvert nevron i ett lag er koblet til alle nevroner i det neste laget. Dette gjør at alle parametere i laget kan bidra til beregningen av utdata.",
+                "name": "Tett kobling"
+            },
+            "matformer": {
+                "desc": "Tenk deg **russiske dukker** (matrjosjkaer → matrjosjka-transformator → Matformer): hver blokk inneholder flere **nestede delmodeller** av økende størrelse, som deler de samme parameterne. Dette gjør det mulig å velge en modell med tilpasset kapasitet for hver forespørsel, i henhold til tilgjengelig minne eller latens, uten å måtte trene opp forskjellige modeller på nytt.",
+                "name": "Matformer"
+            },
+            "moe": {
+                "desc": "En type arkitektur kalt «Mixture of Experts» (MoE) bruker en rutingsmekanisme for å aktivere, avhengig av input, kun visse spesialiserte delmengder («eksperter») av det nevrale nettverket. Dette muliggjør konstruksjon av svært store modeller samtidig som beregningskostnadene holdes lave, fordi bare en del av nettverket brukes i hvert trinn.",
+                "name": "MoE"
+            },
+            "na": {
+                "desc": "Utgiveren har ikke offentliggjort informasjon om modellens arkitektur.",
+                "name": "Proprietær"
+            }
+        }
+    },
+    "header": {
+        "chatbot": {
+            "newDiscussion": "Ny chat"
+        },
+        "homeTitle": "Hjem - compar:IA",
+        "menu": "Meny",
+        "title": "compar:IA",
+        "votes": {
+            "count": "{count} stemmer",
+            "legend": "Forklaring",
+            "objective": "Mål: {count}",
+            "tooltip": "Diskuter, stem og hjelp oss med å nå dette målet!<br /><strong>Dine stemmer teller</strong>: de legges til compar:IA-datasettet. Datasettet er fritt tilgjengelig for å forbedre fremtidige modellers prestasjoner på underrepresenterte språk.<br />Denne digitale ressursen bidrar til større <strong>respekt for språklig og kulturelt mangfold i fremtidige språkmodeller.</strong>"
+        }
+    },
+    "home": {
+        "vote": {
+            "steps": {
+                "datasets": {
+                    "desc": "Alle stilte spørsmål og stemmegivning samles i ulike datasett og publiseres åpent etter anonymisering.",
+                    "title": "Datasett etter språk"
+                },
+                "finetune": {
+                    "desc": "Næringslivet og akademiske aktører kan bruke datasettene til å trene nye modeller som er mer respektfulle med tanke på språklig og kulturelt mangfold.",
+                    "title": "Modeller som er finjustert for bestemte språk"
+                },
+                "prefs": {
+                    "desc": "Etter å ha diskutert med KI-ene, kan du angi din preferanse for en modell basert på gitte kriterier, som for eksempel relevansen eller nytten av svarene.",
+                    "title": "Dine preferanser"
+                }
+            },
+            "title": "Hvorfor er din stemme viktig?"
+        }
+    },
+    "models": {
+        "arch": {
+            "title": "Visste du det?"
+        },
+        "conso": {
+            "count": {
+                "L": "> 5000 mWh",
+                "M": "fra 150 til 5000 mWh",
+                "S": "< 150 mWh"
+            },
+            "filterLegend": "Filtrer etter gjennomsnittlig energiforbruk per 1000 tokens"
+        },
+        "licenses": {
+            "type": {
+                "openSource": "Åpen kildekode",
+                "proprietary": "Proprietær",
+                "semiOpen": "Åpne vekter"
+            }
+        },
+        "list": {
+            "filters": {
+                "archived": {
+                    "checkedLabel": "Synlig",
+                    "label": "Utgåtte modeller",
+                    "uncheckedLabel": "Ikke synlig"
+                },
+                "editor": {
+                    "legend": "Utgiver"
+                },
+                "license": {
+                    "legend": "Lisens for bruk"
+                },
+                "reset": "Nullstill alle filtre",
+                "size": {
+                    "legend": "Størrelse (parametere)"
+                }
+            },
+            "model": "modell",
+            "models": "modeller",
+            "noresults": "Ingen modeller samsvarer med søkekriteriene dine.",
+            "triage": {
+                "label": "Sorter etter",
+                "options": {
+                    "date-desc": "Slippdato (nyest til eldst)",
+                    "name-asc": "Modellnavn (A til Å)",
+                    "org-asc": "Utgiver (A til Å)",
+                    "params-asc": "Størrelse (minst til størst)"
+                }
+            }
+        },
+        "names": {
+            "a": "Modell A",
+            "b": "Modell B"
+        },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "Treningsdataene, koden og vektene til denne modellen (dvs. parameterne som læres under treningen) kan lastes ned og modifiseres av andre, slik at de kan kjøre og modifisere modellen på egen maskinvare. Hvorvidt en modell er \"åpen kildekode\" er mer restriktivt enn \"åpne vekter\", spesielt på grunn av behovet for åpenhet i treningskorpuset. Det er få modeller som regnes som \"åpen kildekode\".",
+                "openWeight": "En modell med \"åpne vekter\" der vektene, dvs. parameterne som læres under trening, kan lastes ned av publikum, slik at de kan kjøre modellen på egen maskinvare. Hvorvidt en modell er \"åpen kildekode\" er mer restriktivt (hovedsakelig i forhold til gjennomsiktigheten i treningskorpuset), og få modeller regnes som \"åpen kildekode\"."
+            }
+        },
+        "release": "Utgitt {date}",
+        "size": {
+            "count": {
+                "L": "100 til 400 milliarder",
+                "M": "60 til 100 milliarder",
+                "S": "15 til 60 milliarder",
+                "XL": "> 400 milliarder",
+                "XS": "< 15 milliarder"
+            },
+            "estimated": "Estimert størrelse ({size})",
+            "title": "Størrelse {size}"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "David mot Goliat-modellutvalg",
+            "description": "En liten modell mot en stor modell, begge valgt tilfeldig",
+            "label": "David mot Goliat",
+            "title": "David mot Goliat-modus"
+        },
+        "custom": {
+            "altLabel": "Manuelt valg av modeller",
+            "description": "Vil du kjenne igjen de to modellene du har valgt?",
+            "label": "Manuelt valg",
+            "title": "Modus for valg"
+        },
+        "random": {
+            "altLabel": "Tilfeldig valg av modeller",
+            "description": "To modeller valgt tilfeldig fra hele listen",
+            "label": "Tilfeldig",
+            "title": "Tilfeldig-modus"
+        },
+        "reasoning": {
+            "altLabel": "Modeller med resonnering",
+            "description": "To tilfeldig valgte modeller fra de som er optimalisert for komplekse oppgaver",
+            "label": "Resonnering",
+            "title": "Resonneringsmodus"
+        },
+        "small-models": {
+            "altLabel": "Valg av ressurssparende modeller",
+            "description": "To tilfeldig valgte små modeller",
+            "label": "Ressurssparende",
+            "title": "Ressurssparende modus"
+        }
+    },
+    "ranking": {
+        "energy": {
+            "desc": "Denne grafen representerer tilfredshetspoengsummen (Bradley Terry-score) for hver modell som en funksjon av det estimerte gjennomsnittlige energiforbruket per 1000 tokens. Energiforbruket er estimert ved hjelp av <a {linkProps}>Ecologits</a>-metodikken og er basert på to parametere: størrelsen på modellene (antall parametere) og arkitekturen deres. For proprietære modeller er denne informasjonen enten ikke oppgitt eller bare delvis tilgjengelig. Derfor er de ekskludert fra grafen nedenfor.",
+            "tabLabel": "Energifokus",
+            "title": "Er de mest populære modellene energieffektive?",
+            "views": {
+                "graph": {
+                    "desc": "Velg en modell for å finne Bradley-Terry-poengsummen (BT) og det estimerte energiforbruket",
+                    "legends": {
+                        "arch": "Modellarkitektur",
+                        "size": "Filtrer etter størrelse",
+                        "sizeSub": "(milliarder parametere)"
+                    },
+                    "tabLabel": "Grafisk visning",
+                    "title": "Bradley-Terry-tilfredshetspoengsum (BT) stilt opp mot gjennomsnittlig forbruk per 1000 tokens",
+                    "tooltip": {
+                        "active_params": "Aktive parametere (milliarder)",
+                        "arch": "Arkitektur",
+                        "consumption": "Gjennomsnittlig forbruk (mWh)",
+                        "elo": "BT-poengsum",
+                        "params": "Parametere (milliarder)"
+                    },
+                    "xLabel": "Gjennomsnittlig forbruk per 1000 tokens (mWh)",
+                    "yLabel": "Bradley-Terry-poengsum (BT)"
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Jo høyere en modell befinner seg på grafen</strong>, desto høyere er Bradley-Terry-tilfredshetspoengsummen. <strong>Jo lenger til venstre en modell befinner seg på grafen</strong>, desto mindre energi bruker den sammenlignet med andre modeller.",
+                            "2": "<strong>Øverst til venstre</strong> er modellene som er populære og bruker mindre energi sammenlignet med andre modeller.",
+                            "3": "Utover størrelsen har <strong>arkitekturen</strong> en innvirkning på det gjennomsnittlige energiforbruket til modeller. Med en lignende størrelse, bruker for eksempel Llama 3 405B-modellen (tett arkitektur, 405 milliarder parametere) 10 ganger mer energi i gjennomsnitt enn GLM 4.5-modellen (MoE-arkitektur, 355 milliarder parametere og 32 milliarder aktive parametere)."
+                        },
+                        "subTitle": "Eksempler på hvordan man leser grafen",
+                        "title": "Hvordan finne den riktige balansen mellom opplevd ytelse og energieffektivitet?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "Estimeringen av energiforbruk for modellinferens er basert på Ecologits-metoden, som tar hensyn til modellenes størrelse og arkitektur. Denne informasjonen blir imidlertid ikke offentliggjort av modellutviklere for proprietære modeller.",
+                            "2": "Vi har derfor valgt å ikke integrere proprietære modeller i grafen før informasjonen som bidrar til beregning av energiforbruk er transparent."
+                        },
+                        "title": "Hvorfor vises ikke de proprietære modellene på grafen?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "Arenaen bruker metoden utviklet av <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) for å gi et estimat av energifotavtrykket knyttet til bruken av konversasjonsbaserte KI-modeller. Dette estimatet lar brukere sammenligne miljøpåvirkningen av ulike KI-modeller for samme spørring. Denne åpenheten er viktig for å oppmuntre til utvikling og bruk av mer miljøvennlige KI-modeller.",
+                            "2": "Ecologits anvender prinsippene for livssyklusanalyse (LCA) i samsvar med ISO 14044. For øyeblikket er fokuset på virkningen av inferens (dvs. bruk av modeller for å svare på spørsmål) og <strong>produksjon av grafikkort</strong> (ressursutvinning, produksjon og transport).",
+                            "3": "Modellens strømforbruk estimeres ved å ta hensyn til ulike parametere som størrelsen og arkitekturen til KI-modellen som brukes, plasseringen av serverne der modellen er distribuert og antall outputtokener. Beregningen av indikatoren for globalt oppvarmingspotensial, uttrykt i CO2-ekvivalenter, er avledet fra målingen av modellens strømforbruk.",
+                            "4": "Det er viktig å merke seg at metodene for å vurdere miljøpåvirkningen fra KI fortsatt er under utvikling."
+                        },
+                        "title": "Hvordan beregnes modellenes energipåvirkning?"
+                    }
+                },
+                "table": {
+                    "title": "Diagramdata i tabellformat"
+                }
+            }
+        },
+        "methodo": {
+            "desc": {
+                "1": "Siden 2024 har tusenvis av brukere brukt arenaen til å sammenligne svarene fra ulike modeller, noe som har generert hundretusenvis av stemmer. Det er ikke nok å bare telle antall stemmer for å etablere en rangering. Et rettferdig system må være statistisk robust, justeres kontinuerlig og gjenspeile verdien av de oppnådde prestasjonene.",
+                "2": "Det er på denne bakgrunnen at en <strong>rangering basert på Bradley-Terry-modellen</strong> ble etablert, utviklet i samarbeid med et team fra <strong>Pôle d’Expertise de la Régulation Numérique</strong> (<a {perenLinkProps}>PEReN</a>)</strong>, basert på alle stemmene og reaksjonene som er samlet inn på plattformen. For å lære mer, se vår <a {notebookLinkProps}>metodiske notatbok</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "<strong>Bradley-Terry</strong>-modellen omdanner et sett med lokale og potensielt ufullstendige sammenligninger til et konsistent og statistisk robust globalt rangeringssystem, der den empiriske seiersraten forblir begrenset til direkte observasjoner."
+                    },
+                    "title": "Topp 10 modeller i rangeringen basert på estimert seiersrate med Bradley-Terry-modellen"
+                },
+                "title": "Innvirkning av metodevalg på modellrangering",
+                "winrate": {
+                    "desc": {
+                        "1": "Basert utelukkende på den <strong>gjennomsnittlige seiersraten</strong>, kan man få frem en samlet rangering, men denne beregningen forutsetter at hver modell har spilt mot alle andre.",
+                        "2": "Denne metoden er ikke ideell fordi den krever data fra alle kombinasjoner av modeller, og så snart antallet modeller øker, blir den raskt dyr og tungvint å vedlikeholde."
+                    },
+                    "title": "Topp 10 modeller i rangeringen basert på \"empiriske\" seiersrater"
+                }
+            },
+            "methods": {
+                "cons": "Hovedproblemer",
+                "elo": {
+                    "def": "<strong>Definisjon</strong>: Rangeringssystem der poenggevinst eller -tap avhenger av resultatet (seier/tap/uavgjort <strong>og</strong> motstanderens estimerte nivå: hvis en svakere modell slår en sterkere modell, er førstnevntes progresjon i rangeringen større.",
+                    "list": {
+                        "1": "<strong>Probabilistisk modell</strong>: Vi kan estimere det sannsynlige utfallet av enhver \"duell\", selv mellom modeller som aldri har blitt sammenlignet direkte.",
+                        "2": "<strong>Ta hensyn til kampens vanskelighetsgrad</strong>: Poengsummene som er estimert fra Bradley Terry-modellen tar hensyn til nivået på motstanderne som møtes, noe som gir en rettferdig sammenligning mellom modellene.",
+                        "3": "<strong>Forbedret håndtering av usikkerhet</strong>: Konfidensintervallet integrerer hele nettverket av sammenligninger. Dette gir en mer nøyaktig estimering av usikkerhet, spesielt for modeller med få direkte konfrontasjoner, men mange felles motstandere."
+                    },
+                    "title": "Bradley-Terry-tabell"
+                },
+                "pros": "Fordeler",
+                "title": "To måter å klassifisere modeller på",
+                "winrate": {
+                    "def": "<strong>Definisjon</strong> Et empirisk rangeringssystem for modeller basert på prosentandelen av dueller vunnet av en modell mot alle andre modeller.",
+                    "list": {
+                        "1": "<strong>Skjevhet i antall dueller</strong>: En modell som har vunnet tre av tre dueller har en seiersrate på 100 %, men denne poengsummen er ikke veldig meningsfull fordi den er basert på svært lite data.",
+                        "2": "<strong>Ingen hensyn til duellens vanskelighetsgrad</strong>: Det å slå en «nybegynner»- eller en «ekspert»-modell teller likt. Seiersrater er urettferdige siden de ikke tar hensyn til duellens vanskelighetsgrad.",
+                        "3": "<strong>Stagnasjon</strong>: I det lange løp ender mange gode modeller opp med en seiersrate på rundt 50 % fordi de møter modeller på sitt eget ferdighetsnivå, noe som gjør rangeringene mindre diskriminerende."
+                    },
+                    "title": "Rangering etter antall seire"
+                }
+            },
+            "tabLabel": "Metodikk",
+            "title": "Hvordan velge metode for klassifisering av modeller?"
+        },
+        "no_data": "Rangeringen er for øyeblikket utilgjengelig eller under beregning.",
+        "preferences": {
+            "desc": "Når du stemmer, kan du kategorisere preferansene dine ved hjelp av ulike positive og negative etiketter. Sammenlign fordelingen deres på tvers av modellene.",
+            "modal": {
+                "cta": "Hva er en preferanse?",
+                "title": "Positive og negative preferanser"
+            },
+            "tabLabel": "Visning basert på preferanse",
+            "table": {
+                "cols": {
+                    "clear_formatting": "Fjern formatering<br>",
+                    "complete": "Fullstendig",
+                    "creative": "Kreativ",
+                    "incorrect": "Uriktig",
+                    "instructions_not_followed": "Instruksjoner<br> ikke fulgt",
+                    "n_match": "Totalt antall treff",
+                    "name": "Modell",
+                    "positive_prefs_ratio": "Fordeling av preferanser",
+                    "superficial": "Overfladisk",
+                    "total_negative_prefs": "Totalt antall preferanser<br> Negativt",
+                    "total_positive_prefs": "Totalt antall preferanser<br> Positivt",
+                    "useful": "Nyttig"
+                },
+                "percentLabel": "Preferanser i prosent",
+                "tooltips": {
+                    "positive_prefs_ratio": "Under avstemningen kunne du bruke etiketter til å spesifisere årsakene til preferansen din. Denne kolonnen viser den prosentvise fordelingen av disse etikettene (positive eller negative) for alle stemmer."
+                }
+            },
+            "title": "Hvordan fordeler brukernes preferanser seg?"
+        },
+        "ranking": {
+            "desc": "Denne rangeringen er beregnet ut fra stemmer samlet inn gjennom <strong>blinde sammenligninger</strong>, etter den statistiske modellen <strong>Bradley-Terry</strong>. Den gjenspeiler <strong>subjektive preferanser</strong> og må tolkes med varsomhet: den måler verken svarenes faktiske riktighet eller modellenes samlede ytelse.",
+            "tabLabel": "Rangering"
+        },
+        "table": {
+            "data": {
+                "billions": "{count} milliarder",
+                "cols": {
+                    "arch": "Arkitektur",
+                    "consumption": "Gjennomsnittlig energiforbruk<br>(1000 tokens)",
+                    "elo": "BT-score <br> for tilfredshet",
+                    "license": "Lisens",
+                    "n_match": "Totalt antall stemmer",
+                    "name": "Modell",
+                    "organisation": "Organisasjon",
+                    "rank": "Plassering",
+                    "release": "Lanseringsdato",
+                    "size": "Størrelse<br>(parametere)",
+                    "trust_range": "Konfidens (±)"
+                },
+                "estimation": "(estimat)",
+                "tooltips": {
+                    "arch": "Arkitekturen til en LLM-modell refererer til designprinsippene som definerer hvordan komponentene i et nevralt nettverk er ordnet og samhandler for å transformere input-data til prediktiv output. Dette inkluderer modusen for parameteraktivering (tett vs. sparsom), spesialisering av komponenter og informasjonsbehandlingsmekanismer (transformatorer, konvolusjonelle nettverk, hybridarkitekturer).",
+                    "consumption": "Målt i milliwattimer representerer energiforbruket elektrisiteten som modellen bruker til å behandle en forespørsel og generere det tilhørende svaret. Modellens energiforbruk avhenger av modellens størrelse og arkitektur. Vi har valgt å vise proprietære modeller som vi ikke har transparent informasjon om størrelse og arkitektur for, i grått som \"uanalysert\" (N/A).",
+                    "elo": "Den statistiske poengsummen, estimert i henhold til Bradley-Terry-modellen, gjenspeiler sannsynligheten for at en modell foretrekkes fremfor en annen. Denne poengsummen blir beregnet ut fra alle brukerstemmer og reaksjoner. Gå til metodefanen for mer informasjon.",
+                    "rank": "Rangering tildelt, basert på Bradley-Terry-score for tilfredshet",
+                    "size": "Modellstørrelsen måles i milliarder parametere, kategorisert i fem klasser. For proprietære modeller er ikke denne størrelsen oppgitt.",
+                    "trust_range": "Intervall som indikerer rangeringens pålitelighet: jo smalere intervallet er, desto mer pålitelig er rangeringsestimatet. Det er 95 % sjanse for at modellens sanne rangering er innenfor dette området."
+                }
+            },
+            "lastUpdate": "Sist oppdatert {date}",
+            "totalModels": "Totalt antall modeller:",
+            "totalVotes": "Totalt antall stemmer:"
+        },
+        "title": "Fra stemmer til modellrangering"
+    },
+    "reveal": {
+        "feedback": {
+            "description": "Bidra til å fremme compar:IA ved å dele KI-modellene du har samhandlet med! Bare navnene på modellene og energipåvirkningen fra diskusjonen vil være synlige via denne lenken, meldingene i samtalen blir ikke delt.",
+            "example": "Eksempel på delte resultater",
+            "moreOnVotes": "Lær mer om avstemningen",
+            "shareResult": "Del resultatet ditt"
+        },
+        "impacts": {
+            "energy": {
+                "tooltip": "Energiforbruket, målt i milliwattimer, representerer elektrisiteten modellen bruker til å behandle en spørring og generere et svar. Jo større en modell er (i milliarder av parametere), desto mer energi kreves det generelt sett for å produsere et token."
+            },
+            "title": "Estimert energiforbruk for chatten",
+            "tokens": {
+                "tooltip": "KI analyserer og genererer setninger fra ord eller deler av ord (omtrent fire bokstaver); denne tekstenheten kalles et token. Jo lengre en tekst er, desto flere tokener inneholder den."
+            }
+        },
+        "thanks": {
+            "cta": "Få tilgang til rangeringene",
+            "desc": "Se hvordan dine preferansener sammenlignes med den generelle rangeringen av modeller i compar:IA.",
+            "graphAlt": "Oversikt over grafen som representerer poengsummen og strømforbruket til modellene",
+            "rankingAlt": "Oversikt over rangeringen i tabellformat",
+            "title": "Takk for bidraget ditt!"
+        }
+    },
+    "seo": {
+        "desc": "{platformName} er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
+        "title": "{platformName}, arena for sammenligning av KI-chatboter",
+        "titles": {
+            "accessibilite": "Tlgjengelighetserklæring",
+            "arene": "Chat",
+            "donnees-personnelles": "Personvernerklæring",
+            "mentions-legales": "Juridisk merknad",
+            "modalites": "Vilkår for bruk",
+            "modeles": "Liste over modeller",
+            "ranking": "Rangering",
+            "rgesn": "Økodesign-erklæring"
+        }
+    },
+    "vote": {
+        "choices": {
+            "negative": {
+                "incorrect": "Uriktig",
+                "instructions_not_followed": "Instruksjoner ikke fulgt",
+                "question": "Hvorfor passer ikke svaret?",
+                "superficial": "Overfladisk"
+            },
+            "positive": {
+                "clear_formatting": "Fjern formatering",
+                "complete": "Fullstendig",
+                "creative": "Kreativ",
+                "question": "Hva likte du med dette svaret?",
+                "useful": "Nyttig"
+            }
+        },
+        "title": "Hvilken KI-modell foretrekker du?",
+        "yours": "Din stemme"
+    },
+    "words": {
+        "NA": "Ikke aktuelt",
+        "activated": "Aktivert",
+        "archived": "Arkivert",
+        "back": "Tilbake",
+        "close": "Lukke",
+        "deactivated": "Deaktivert",
+        "loading": "Laster",
+        "new": "Ny",
+        "random": "Tilfeldig",
+        "regenerate": "Generer på nytt",
+        "reset": "Tilbakestill",
+        "restart": "Start på nytt",
+        "retry": "Start på nytt",
+        "search": "Søk",
+        "send": "Send",
+        "tooltip": "Verktøytips",
+        "validate": "Validere"
+    }
+}

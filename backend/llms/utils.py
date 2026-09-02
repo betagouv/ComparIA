@@ -9,42 +9,18 @@ Functions:
 - convert_range_to_value: Normalize impact ranges to single values
 - get_total_params: Get the total number of parameters for a LLM
 - get_active_params: Get the number of active parameters for a LLM
-- get_llm_impact: Calculate environmental impact for a model
+- get_llm_impact: Calculate environmental impact for a LLM
 - get_llm_consumption: Calculates environmental impact
 """
 
-from enum import Enum
-from typing import TYPE_CHECKING, TypedDict, Union
+from typing import TYPE_CHECKING, TypedDict
 
 from ecologits.impacts import Impacts
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 from ecologits.utils.range_value import RangeValue, ValueOrRange
 
-from backend.config import CONSUMPTION_SCALE_FACTOR
-
 if TYPE_CHECKING:
-    from backend.llms.models import LLMData
-    from utils.models.llms import LLMDataRaw
-
-
-# Equivalence types for scaled impact comparisons
-class EquivalenceType(Enum):
-    PARIS_NYC_FLIGHTS = "paris_nyc_flights"
-    BAGUETTE_PRODUCTION = "baguette_production"
-    ONE_YEAR_TREE_ABSORTION = "one_year_tree_absortion"
-    PACKAGE_DELIVERY = "package_delivery"
-    MANGO_IMPORT = "mango_import"
-    POOL_FILING = "pool_filing"
-
-
-CO2_KG_EQUIVALENCE: dict[EquivalenceType, float] = {
-    EquivalenceType.PARIS_NYC_FLIGHTS: 0.177894 * 5837,
-    EquivalenceType.BAGUETTE_PRODUCTION: 0.7767000000000001,
-    EquivalenceType.ONE_YEAR_TREE_ABSORTION: 22,
-    EquivalenceType.PACKAGE_DELIVERY: 0.576,
-    EquivalenceType.MANGO_IMPORT: 11.655508000000001,
-    EquivalenceType.POOL_FILING: 7.54,
-}
+    from backend.llms.models import APILLMDataBase
 
 
 def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
@@ -67,63 +43,64 @@ def convert_range_to_value(value_or_range: ValueOrRange) -> int | float:
         return value_or_range
 
 
-def get_total_params(model: Union["LLMDataRaw", "LLMData"]) -> int:
+def get_total_params(llm: "APILLMDataBase") -> int:
     """
-    Get the total number of parameters for a model.
+    Get the total number of parameters for a LLM.
 
     Accounts for q8 quantization which reduces effective parameters by half.
 
     Args:
-        model: LLMDataRaw or LLMData with 'params' and optional 'quantization'
+        llm: APILLMDataBase with 'params' and optional 'quantization'
 
     Returns:
         int: Total parameters, or None if params not available
     """
     # Q8 quantization reduces parameter count (2x compression)
-    if model.quantization == "q8":
-        return int(model.params) // 2
+    if llm.quantization == "q8":
+        return int(llm.params) // 2
     else:
-        return int(model.params)
+        return int(llm.params)
 
 
-def get_active_params(model: Union["LLMDataRaw", "LLMData"]) -> int:
+def get_active_params(llm: "APILLMDataBase") -> int:
     """
-    Get the number of active parameters for a model.
+    Get the number of active parameters for a LLM.
 
-    For Mixture of Experts (MoE) models, this is different from total parameters.
+    For Mixture of Experts (MoE) LLMs, this is different from total parameters.
     Active params represent how many parameters are used for each token.
 
     Args:
-        model: LLMDataRaw or LLMData
+        llm: APILLMDataBase
 
     Returns:
         int: Active parameters, or total params if not available
     """
-    if model.active_params:
+    if llm.active_params:
         # Account for Q8 quantization if present
-        if model.quantization == "q8":
-            return int(model.active_params) // 2
+        if llm.quantization == "q8":
+            return int(llm.active_params) // 2
         else:
-            return int(model.active_params)
+            return int(llm.active_params)
     else:
-        # Fallback to total params if active_params is not available (non-MoE models)
-        return get_total_params(model)
+        # Fallback to total params if active_params is not available (non-MoE LLMs)
+        return get_total_params(llm)
 
 
 def get_llm_impact(
-    model: Union["LLMDataRaw", "LLMData"],
+    llm: "APILLMDataBase",
     token_count: int,
     request_latency: float | None,
 ) -> Impacts:
     """
     Calculate environmental impact (energy, CO2) for LLM inference.
 
-    Uses the ecologits library to compute impact based on model parameters and token usage.
-    Currently not all models are in ecologits' database, so this uses estimated parameters instead.
+    Uses the ecologits library to compute impact based on LLM parameters and token usage.
+    Currently not all LLMs are in ecologits' database, so this uses estimated parameters instead.
 
     Args:
-        model: LLMDataRaw or LLMData with 'params' and optional 'active_params' (MoE)
-        token_count: Total output tokens generated
+        llm: APILLMDataBase with 'params' and optional 'active_params' (MoE)
+        tokens: Total output tokens generated
+        input_tokens: Total input tokens sent to the model
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
     Returns:
@@ -138,16 +115,16 @@ def get_llm_impact(
     Note:
         - Uses World (WOR) electricity mix as baseline
         - Could be moved to config.py for different regional electricity mixes
-        - MoE models use active_params for more accurate inference cost
-        - Standard models use total params
+        - MoE LLMs use active_params for more accurate inference cost
+        - Standard LLMs use total params
     """
 
-    # Extract model parameters
-    # Note: Most custom models won't appear in ecologits' database
-    # TODO: Contribute custom model data back to ecologits project
+    # Extract LLM parameters
+    # Note: Most custom LLMs won't appear in ecologits' database
+    # TODO: Contribute custom LLM data back to ecologits project
     # Alternative approach: could use llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    model_active_parameter_count = get_active_params(model)
-    model_total_parameter_count = get_total_params(model)
+    llm_active_parameter_count = get_active_params(llm)
+    llm_total_parameter_count = get_total_params(llm)
 
     # TODO: Move electricity mix zone to config.py for regional customization
     # Currently uses World (WOR) average; could use specific countries (FR, DE, US, etc.)
@@ -161,8 +138,8 @@ def get_llm_impact(
 
     # Calculate impact using ecologits library
     return compute_llm_impacts(
-        model_active_parameter_count=model_active_parameter_count,
-        model_total_parameter_count=model_total_parameter_count,
+        model_active_parameter_count=llm_active_parameter_count,
+        model_total_parameter_count=llm_total_parameter_count,
         output_token_count=token_count,
         if_electricity_mix_adpe=electricity_mix.adpe,  # Abiotic Depletion Potential
         if_electricity_mix_pe=electricity_mix.pe,  # Primary Energy
@@ -177,36 +154,29 @@ def get_llm_impact(
     )
 
 
-class Equivalence(TypedDict):
-    type: EquivalenceType
-    value: float
-
-
 class Consumption(TypedDict):
     # Token usage
     tokens: int
+    input_tokens: int
+    total_tokens: int
     # Environmental metrics (CO2)
     co2_kg: int | float
-    # Scaled CO2
-    scaled_co2_kg: int | float
-    scaled_co2_t: int | float
     # Energy metrics
     energy_mwh: int | float
     energy_kwh: int | float
-    # Scaled equivalence values
-    equivalences: list[Equivalence]
 
 
 def get_llm_consumption(
-    llm: Union["LLMDataRaw", "LLMData"],
+    llm: "APILLMDataBase",
     tokens: int,
+    input_tokens: int = 0,
     request_latency: float | None = None,
 ) -> Consumption:
     """
     Calculates environmental impact (energy, CO2 emissions)
 
     Args:
-        llm: LLMDataRaw or LLMData with 'params' and optional 'active_params' (MoE)
+        llm: APILLMDataBase with 'params' and optional 'active_params' (MoE)
         token_count: Total output tokens generated
         request_latency: Time taken for inference (optional, for more accurate calculations)
 
@@ -218,22 +188,12 @@ def get_llm_consumption(
     # Get raw kWh and CO2 kg values for equivalence calculations
     kwh = convert_range_to_value(impact.energy.value)
     co2_kg = convert_range_to_value(impact.gwp.value)
-    # co2 scaled to population using generative AI
-    scaled_co2_kg = co2_kg * CONSUMPTION_SCALE_FACTOR
 
     return {
         "tokens": tokens,
+        "input_tokens": input_tokens,
+        "total_tokens": input_tokens + tokens,
         "co2_kg": co2_kg,
-        "scaled_co2_kg": scaled_co2_kg,
-        "scaled_co2_t": scaled_co2_kg / 1000,
         "energy_mwh": kwh * 1000 * 1000,
         "energy_kwh": kwh,
-        # Compute all equivalences
-        "equivalences": [
-            {
-                "type": eq_type,
-                "value": scaled_co2_kg / CO2_KG_EQUIVALENCE[eq_type],
-            }
-            for eq_type in list(EquivalenceType)
-        ],
     }

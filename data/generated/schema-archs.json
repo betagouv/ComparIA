@@ -1,0 +1,43 @@
+{
+  "$defs": {
+    "Arch": {
+      "additionalProperties": false,
+      "description": "LLM architecture definition.\n\nDefines LLMs architecture and properties.\nUsed to validate `utils/models/archs.json`.",
+      "properties": {
+        "id": {
+          "description": "Architecture identifier (e.g. 'dense', 'moe')",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Human-readable architecture name",
+          "title": "Name",
+          "type": "string"
+        },
+        "long_name": {
+          "description": "Human-readable architecture complete name (e.g: 'Mixture of Experts')",
+          "title": "Long Name",
+          "type": "string"
+        },
+        "desc": {
+          "description": "Detailed description of the architecture",
+          "title": "Desc",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "long_name",
+        "desc"
+      ],
+      "title": "Arch",
+      "type": "object"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/Arch"
+  },
+  "title": "RootModel[list[Arch]]",
+  "type": "array"
+}

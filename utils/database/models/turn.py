@@ -1,10 +1,15 @@
 import uuid
-from typing import TYPE_CHECKING, Annotated, Literal, get_args
+from typing import TYPE_CHECKING, Annotated
 
+from pydantic import StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from backend.config import NegativePref, PositivePref, TurnChoice
+from backend.config import (
+    MAX_VOTE_CUSTOM_ANNOTATION_LEN,
+    MAX_VOTE_KEYWORD_ANNOTATIONS,
+    TurnChoice,
+)
 from utils.validation import StripAndEmptyAsNone
 
 from .messages import (
@@ -14,33 +19,27 @@ from .messages import (
     UserMessage,
     UserMessageRead,
 )
-from .utils import AutoDatetime, ModelId, OptionalDatetime
+from .prompt_check import PromptCheckResult
+from .utils import BaseDBModel, BotPos, OptionalDatetime
 
 if TYPE_CHECKING:
     from .comparison import Comparison
 
-BotPos = Literal["a", "b"]
-BOT_POS: tuple[BotPos, ...] = get_args(BotPos)
 LLMMessageId = Annotated[
     uuid.UUID | None, Field(foreign_key="llm_message.id", unique=True)
 ]
-KeywordAnnotations = Annotated[
-    list[PositivePref] | list[NegativePref], Field(sa_type=JSONB)
-]
+# Vote tag keys. The vocabulary lives in the 'vote_tag' table, so keys are
+# checked against the active tags when a vote comes in, not by this type.
+KeywordAnnotations = Annotated[list[str], Field(sa_type=JSONB)]
 
 
-class TurnBase(SQLModel):
-    id: ModelId
+class TurnBase(BaseDBModel):
     comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id")]
-    created_at: AutoDatetime
-    updated_at: AutoDatetime
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
     # Set when the user submits their choice vote (once per turn). Used to
     # measure how long they took to vote after both models finished.
     voted_at: OptionalDatetime = None
-    # Content-safety guardrail verdict for this turn's user prompt (see
-    # backend/arena/moderation.py GuardrailVerdict.as_record). Raw-only: not
-    # exposed in TurnPublic, intended for the -raw dataset, not the public one.
+    # Legacy prompt check format (replaced by "prompt_check_result")
     guardrail: Annotated[dict | None, Field(sa_type=JSONB)] = None
 
     # a
@@ -76,10 +75,17 @@ class Turn(TurnBase, table=True):
             "single_parent": True,
         },
     )
+    # One verdict per prompt check that ran on this turn's user prompt.
+    # Not exposed in TurnPublic, intended for the -raw dataset, not the public one.
+    prompt_check_result: PromptCheckResult | None = Relationship(
+        cascade_delete=True,
+        sa_relationship_kwargs={"uselist": False, "lazy": "joined"},
+    )
 
 
 class TurnCreate(TurnBase):
     user_msg: UserMessage
+    prompt_check_result: PromptCheckResult | None
 
 
 class TurnRead(TurnBase):
@@ -107,9 +113,25 @@ class TurnVoteChoice(SQLModel):
     choice: TurnChoice
 
 
-# TODO assert keywords are positive/negative depending on vote choice
 class TurnVoteAnnotate(SQLModel):
     turn_id: Annotated[uuid.UUID, Field(exclude=True)]
     pos: Annotated[BotPos, Field(exclude=True)]
-    keyword_annotations: list[PositivePref] | list[NegativePref]
-    custom_annotation: Annotated[str | None, StripAndEmptyAsNone]
+    # Both go into JSONB exactly as sent, so they are bounded here rather than
+    # by the column.
+    keyword_annotations: Annotated[
+        list[str], Field(max_length=MAX_VOTE_KEYWORD_ANNOTATIONS)
+    ]
+    # The bound sits on the str, not on the union: StripAndEmptyAsNone turns an
+    # empty annotation into None, and a length check has nothing to measure.
+    custom_annotation: Annotated[
+        Annotated[str, StringConstraints(max_length=MAX_VOTE_CUSTOM_ANNOTATION_LEN)]
+        | None,
+        StripAndEmptyAsNone,
+    ]
+
+    @field_validator("keyword_annotations")
+    @classmethod
+    def deduplicate_keywords(cls, value: list[str]) -> list[str]:
+        # A tag means the same thing said twice; order is kept so the vote reads
+        # back the way it was cast.
+        return list(dict.fromkeys(value))

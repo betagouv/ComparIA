@@ -1,4 +1,23 @@
 {$PUBLIC_DOMAIN} {
+    # CSP is set by the SvelteKit app itself, not here.
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Frame-Options "DENY"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    }
+
+    # Files under frontend/static are served by the Node adapter with an ETag
+    # and no Cache-Control, so every repeat visit re-validates each one: a
+    # round trip per logo and icon for a 304. They are not content-hashed, so
+    # this is a day rather than a year — long enough to kill the repeat
+    # fetches, short enough that a replaced logo appears the next day.
+    # (Everything under /_app/immutable is hashed and already sent with a
+    # one-year immutable header by SvelteKit.)
+    @static path /icons/* /orgs/* /favicon/* /flags/* /artworks/* /images/*
+    header @static Cache-Control "public, max-age=86400"
+
     reverse_proxy /counter* backend:80
     reverse_proxy /models/* backend:80
     reverse_proxy /arena/* backend:80

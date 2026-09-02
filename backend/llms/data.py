@@ -1,49 +1,51 @@
-import json
 import logging
-from functools import lru_cache
 from typing import TYPE_CHECKING, Annotated, Any
+from uuid import UUID
 
 import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
+from sqlmodel import select
 
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
     CustomModelsSelection,
     SelectionMode,
-    settings,
 )
-from backend.llms.models import LLMDataArchived, LLMDataEnabled
-from utils.utils import LLMS_GENERATED_DATA_FILE
+from backend.llms.currency import CurrencyInfo, get_currency_info
+from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
+from backend.utils.countries import get_ranking
+from utils.database.models.llms import LLMData
+from utils.database.session import get_session
+from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
 
 if TYPE_CHECKING:
     from utils.database.models import BotPos, ComparisonRead
-
 
 logger = logging.getLogger("languia")
 
 
 class LLMsData(BaseModel):
     all: dict[
-        str,
+        UUID,
         Annotated[LLMDataEnabled | LLMDataArchived, Field(discriminator="status")],
     ]
 
     @field_validator("all", mode="before")
     @classmethod
-    def filter_disabled(cls, values: Any) -> dict[str, Any]:
+    def filter_disabled(cls, llms: Any) -> dict[str, Any]:
         """
         Filter out disabled LLMs.
-        Also remove LLMs that are only available in some portals
         """
         return {
-            _id: model
-            for _id, model in values.items()
-            if model["status"] != "disabled"
-            and (
-                not model["specific_portals"]
-                or settings.DEFAULT_COUNTRY_PORTAL in model["specific_portals"]
+            llm.id: llm
+            for llm in llms
+            if (
+                llm.status == "enabled"
+                and llm.endpoint is not None
+                and llm.endpoint.api_key is not None
             )
+            or llm.status == "archived"
         }
 
     @computed_field  # type: ignore[prop-decorator]
@@ -60,7 +62,7 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def random_models(self) -> list[str]:
+    def random_models(self) -> list[UUID]:
         """
         All models (for standard random selection)
         """
@@ -68,7 +70,7 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def small_models(self) -> list[str]:
+    def small_models(self) -> list[UUID]:
         """
         Models with parameters <= 60B (for "small-models" selection mode)
         """
@@ -80,7 +82,7 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def big_models(self) -> list[str]:
+    def big_models(self) -> list[UUID]:
         """
         Models with parameters >= 100B (for "big-vs-small" selection mode)
         """
@@ -92,14 +94,14 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def pricey_models(self) -> list[str]:
+    def pricey_models(self) -> list[UUID]:
         """
         Commercial models with higher API costs (e.g., Claude, GPT-4)
         These have stricter rate limits applied
         """
-        return [model.id for model in self.enabled.values() if model.pricey]
+        return [model.id for model in self.enabled.values() if model.rate_limited]
 
-    def pick_one(self, models: list[str], excluded: list[str] = []) -> str:
+    def pick_one(self, models: list[UUID], excluded: list[UUID] = []) -> UUID:
         """
         Randomly select a model from a list, excluding specified models.
 
@@ -108,7 +110,7 @@ class LLMsData(BaseModel):
             excluded: List of model names to exclude from selection
 
         Returns:
-            str: Selected model name
+            UUID: Selected LLM id
 
         Raises:
             Error: If no models are available after filtering
@@ -147,8 +149,8 @@ class LLMsData(BaseModel):
         self,
         mode: SelectionMode | None = "random",
         custom_selection: CustomModelsSelection = None,
-        unavailable_models: list[str] = [],
-    ) -> tuple[str, str]:
+        unavailable_models: list[UUID] = [],
+    ) -> tuple[UUID, UUID]:
         """
         Select two models based on the comparison mode.
 
@@ -183,6 +185,15 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
+            # `AddFirstTextBody` already refuses anything but one or two UUIDs,
+            # but this is also called from the CLI, where nothing has checked.
+            if len(custom_selection) > 2:
+                raise ValueError("At most two models can be selected.")
+            try:
+                custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+            except ValueError:
+                raise ValueError("Custom LLMs selection contains invalid ids")
+
             if unknown_llms := [
                 llm_id
                 for llm_id in custom_selection
@@ -218,21 +229,52 @@ class LLMsData(BaseModel):
         return (model_a_id, model_b_id)
 
 
-@lru_cache
-def get_llms_data() -> LLMsData:
+@redis_cache(REDIS_LLMS_DATA_CACHE_KEY)
+async def get_llms_data() -> LLMsData:
     """
-    Load model definitions from generated configuration.
+    Load LLMs definitions from database.
     File contains metadata: params, pricing, reasoning capability, licenses, etc.
     """
-    data = json.loads(LLMS_GENERATED_DATA_FILE.read_text())
 
-    return LLMsData.model_validate({"all": data["models"]})
+    try:
+        async with get_session() as session:
+            llms = (await session.exec(select(LLMData))).all()
+            return LLMsData.model_validate({"all": llms})
+    except Exception as e:
+        logger.error(f"[DB] Error loading LLMsData: {e}")
+        raise
 
 
-def pick_replacement_model(comparison: "ComparisonRead", pos: "BotPos") -> str | None:
+class LLMList(BaseModel):
+    data_timestamp: float | None
+    models: list[APILLMData]
+    style_coefficients: dict[str, float] | None
+    currency: CurrencyInfo
+
+
+# FIXME use cache?
+async def get_llms_list() -> LLMList:
+    llms = await get_llms_data()
+    ranking = get_ranking()
+    currency = await get_currency_info()
+
+    return LLMList.model_validate(
+        {
+            "models": llms.all.values(),
+            "data_timestamp": ranking.timestamp if ranking else None,
+            "style_coefficients": ranking.style_coefficients if ranking else None,
+            "currency": currency,
+        },
+        context={"ranking": ranking},
+    )
+
+
+async def pick_replacement_model(
+    comparison: "ComparisonRead", pos: "BotPos"
+) -> str | None:
     """Pick a replacement model from the appropriate pool, excluding both current models."""
-    models = get_llms_data()
-    other_pos: BotPos = "b" if pos == "a" else "a"
+    models = await get_llms_data()
+    other_pos: "BotPos" = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
     other = getattr(comparison, f"llm_id_{other_pos}")
     excluded = [failing, other]

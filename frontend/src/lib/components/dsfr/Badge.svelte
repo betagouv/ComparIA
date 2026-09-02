@@ -16,6 +16,7 @@
       | 'purple'
       | 'red'
       | 'blue-ecume'
+      | 'brown'
     text?: string
     tooltip?: string
     noTooltip?: boolean
@@ -42,7 +43,8 @@
     yellow: 'yellow-tournesol',
     purple: 'purple-glycine',
     red: 'error',
-    'blue-ecume': 'blue-ecume'
+    'blue-ecume': 'blue-ecume',
+    brown: 'brown-cafe-creme'
   } as const
 </script>
 

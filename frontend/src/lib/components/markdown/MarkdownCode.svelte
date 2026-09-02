@@ -2,10 +2,11 @@
   // This is the base MarkdownCode component from gradio migrated to svelte 5
   // https://github.com/gradio-app/gradio/tree/main/js/markdown-code
   // TODO could be reworked
+  import 'katex/dist/katex.min.css'
   import { tick } from 'svelte'
+  import { normalizeDocumentHeadings } from './headings'
   import { standardHtmlAndSvgTags } from './html-tags'
   import './prism.css'
-  import 'katex/dist/katex.min.css'
   import { copy, create_marked, sanitize } from './utils'
 
   let {
@@ -17,7 +18,8 @@
     header_links = false,
     allow_tags = false,
     theme_mode = 'system',
-    kind = 'bot'
+    kind = 'bot',
+    variant = 'chat'
   }: {
     message: string
     chatbot?: boolean
@@ -28,15 +30,13 @@
     allow_tags?: string[] | boolean
     theme_mode?: 'system' | 'light' | 'dark'
     kind?: 'bot' | 'user'
+    variant?: 'chat' | 'document'
   } = $props()
 
   let el = $state<HTMLElement>()
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
-  const marked = create_marked({
-    header_links,
-    line_breaks,
-  })
+  const marked = create_marked({ header_links, line_breaks })
 
   function escapeTags(content: string, tagsToEscape: string[] | boolean): string {
     if (tagsToEscape === true) {
@@ -72,7 +72,7 @@
   }
 
   function process_message(value: string): string {
-    let parsedValue = value
+    let parsedValue = variant === 'document' ? normalizeDocumentHeadings(value) : value
     if (render_markdown) {
       parsedValue = marked.parse(parsedValue) as string
     }
@@ -97,7 +97,8 @@
         mermaid.initialize({
           startOnLoad: false,
           theme: theme_mode === 'dark' ? 'dark' : 'default',
-          securityLevel: 'antiscript'
+          // Diagram source comes from the model, so it is treated as untrusted.
+          securityLevel: 'strict'
         })
         await mermaid.run({
           nodes: Array.from(mermaidDivs).map((node) => node as HTMLElement)
@@ -145,6 +146,7 @@
 <span
   {@attach copy}
   class:chatbot
+  class:document={variant === 'document'}
   bind:this={el}
   class={['md', kind]}
   class:prose={render_markdown}
@@ -188,6 +190,52 @@
 
   span :global(p:not(:first-child)) {
     margin-top: var(--spacing-xxl);
+  }
+
+  span.document {
+    display: block;
+  }
+
+  span.document :global(p),
+  span.document :global(p:not(:first-child)) {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  span.document :global(h2),
+  span.document :global(h3),
+  span.document :global(h4),
+  span.document :global(h5),
+  span.document :global(h6) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.35;
+  }
+
+  span.document :global(h2) {
+    font-size: 1.5rem;
+  }
+
+  span.document :global(h3) {
+    font-size: 1.25rem;
+  }
+
+  span.document :global(ul),
+  span.document :global(ol) {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  span.document :global(li) {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  span.document :global(blockquote) {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 
   span :global(.md-header-anchor) {

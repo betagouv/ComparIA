@@ -14,6 +14,7 @@ captured from the first batch).
     uv run --group data python tests/dataset/test_streaming_export.py
 """
 
+import os
 import sys
 import tempfile
 from datetime import datetime
@@ -22,6 +23,8 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.dataset.export import StreamingDatasetExporter
 
@@ -161,15 +164,20 @@ def check_reference_schema(failures):
                 voted_at=datetime(2024, 1, 1, 12, 0, 5),
             )
         ],
-        sys_a=fix.system_msg("s"),
-        sys_b=fix.system_msg("s"),
+        sys_a="s",
+        sys_b="s",
         mode="custom",
         custom_models_selection=["model-a", "model-b"],
         categories=["c"],
         languages=["fr"],
         short_summary="s",
         cohorts="c",
-        error={"message": "e", "pos": "a", "is_timeout": False},
+        error={
+            "code": "provider_error",
+            "message": "e",
+            "pos": "a",
+            "is_timeout": False,
+        },
         llm_analyzed=True,
         contains_pii=False,
         contains_spam=False,
@@ -178,7 +186,7 @@ def check_reference_schema(failures):
         archived_at=datetime(2024, 1, 1),
     )
     real = pa.Table.from_pandas(
-        pd.DataFrame(compute.comparison_to_turns(full)), preserve_index=False
+        pd.DataFrame(fix.comparison_to_turns(full)), preserve_index=False
     ).schema
     ref = pa.Table.from_pandas(
         pd.DataFrame(compute._reference_rows()), preserve_index=False

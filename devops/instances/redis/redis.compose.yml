@@ -1,8 +1,15 @@
 services:
   redis:
-    image: redis
+    image: redis:7@sha256:e9b2e45ecd47fbb69b877cf8d045d5cccaaaed52524b6e098b4abe8212994f73
+    # REDIS_PASSWORD must be exported in the shell before `docker compose up`
+    # (e.g. via KeePass or direnv). The same value goes into COMPARIA_REDIS_PASSWORD
+    # for every backend that talks to this shared instance.
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD is required}"]
     ports:
       - "127.0.0.1:6379:6379"
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 100
     networks:
       - comparia-net
 

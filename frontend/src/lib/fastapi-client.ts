@@ -16,14 +16,20 @@ import type {
 function getBackendUrl(): string {
   const ssr = !browser // browser false if SSR
 
+  // /api: every backend route lives there (see backend/main.py) so it never
+  // collides with a same-named SvelteKit page once both sit behind the same
+  // host with no base path (e.g. /admin, /models, /settings are pages too).
   if (ssr) {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
-    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (
+      (publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') +
+      '/api'
+    )
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
-    return publicEnv.PUBLIC_API_URL || 'http://localhost:8008'
+    return (publicEnv.PUBLIC_API_URL || 'http://localhost:8008') + '/api'
   } else {
     // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') + '/api'
   }
 }
 
@@ -57,12 +63,20 @@ export interface SSEErrorEvent {
   error: string
 }
 
+/** Sole event of the stream when a check asks the user to confirm the prompt. */
+export interface SSEWarningEvent {
+  type: 'warning'
+  warnings: { kind: string; message: string }[]
+  warning_token: string
+}
+
 export type SSEEvent =
   | SSEInitEvent
   | SSEUpdateEvent
   | SSECompleteEvent
   | SSEChunkEvent
   | SSEErrorEvent
+  | SSEWarningEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
@@ -70,18 +84,45 @@ export class InternalError extends Error {
   }
 }
 
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message)
+/** Longer than the backend's longest provider timeout, but still terminal. */
+export const SSE_INACTIVITY_TIMEOUT_MS = 90_000
+
+export class StreamTimeoutError extends Error {
+  constructor() {
+    super('The response stream stopped sending data')
+    this.name = 'StreamTimeoutError'
   }
 }
+
+type PydanticValidationError = { loc: string[]; msg: string }
+
+export class ValidationError extends Error {
+  errors?: PydanticValidationError[]
+
+  constructor(errors: PydanticValidationError[] | string) {
+    const simple = typeof errors === 'string'
+    const message = simple ? errors : 'Error in form'
+    super(message)
+    this.errors = simple ? undefined : errors
+    this.name = 'ValidationError'
+  }
+}
+
+export class UnauthorizedError extends Error {
+  constructor(key: string) {
+    super(key)
+    this.name = 'UnauthorizedError'
+  }
+}
+
+/** Any error thrown by the client, carrying the HTTP status it came from. */
+export type ApiError = Error & { status?: number }
 
 /**
  * FastAPI client class
  */
 export class FastAPIClient {
   private baseUrl: string
-  private comparisonId: string | null = null
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl
@@ -90,79 +131,62 @@ export class FastAPIClient {
   /**
    * Get full URL for an endpoint
    */
-  private getUrl(path: string): string {
+  getUrl(path: string): string {
     return `${this.baseUrl}${path}`
-  }
-
-  /**
-   * Get current comparison id (or retrieve from localStorage)
-   */
-  getComparisonId(): string | null {
-    if (this.comparisonId) return this.comparisonId
-
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      const stored = sessionStorage.getItem('arena-comparison-id')
-      if (stored) {
-        this.comparisonId = stored
-        return stored
-      }
-    }
-
-    return null
   }
 
   async parseErrorResponse(
     response: Response,
     path: string,
     method: RequestInit['method'] = 'GET'
-  ): Promise<Error> {
+  ): Promise<ApiError> {
     const message = `Error ${response.status} [${method}](${path}): `
     const content = await response.text()
+    let error: Error
     try {
       const detail = JSON.parse(content).detail
-
-      if (response.status === 422) {
-        return new ValidationError(detail[0].msg)
+      if (response.status === 401 || response.status === 403) {
+        error = new UnauthorizedError(detail)
+      } else if (response.status === 422) {
+        error = new ValidationError(detail)
       } else if (response.status === 429) {
-        return new ValidationError(detail)
+        error = new ValidationError(detail)
       } else {
-        return new InternalError(message + detail)
+        error = new InternalError(message + detail)
       }
     } catch {
-      return new Error(message + content)
+      error = new Error(message + content)
     }
-  }
-
-  /**
-   * Set comparison id and store in sessionStorage
-   */
-  setComparisonId(id: string): void {
-    this.comparisonId = id
-    if (typeof window !== 'undefined' && window.sessionStorage) {
-      sessionStorage.setItem('arena-comparison-id', id)
-    }
+    return Object.assign(error, { status: response.status })
   }
 
   /**
    * Make a single HTTP request (non-streaming)
    */
-  async request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  async request<T>(
+    path: string,
+    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+  ): Promise<T> {
     const url = this.getUrl(path)
+    // Get svelte load function's fetch or use default
+    const _fetch = options.fetch ?? fetch
+    delete options.fetch
 
     try {
-      // Add comparison id header if available
-      const headers = new Headers(options.headers || {})
-      if (this.comparisonId && !headers.has('X-Comparison-Id')) {
-        headers.set('X-Comparison-Id', this.comparisonId)
-      }
-
-      const response = await fetch(url, {
+      const response = await _fetch(url, {
         ...options,
-        headers
+        headers: options.headers ?? {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
       })
 
       if (!response.ok) {
         throw await this.parseErrorResponse(response, path, options.method)
+      }
+
+      if (response.status === 204) {
+        return undefined as T
       }
 
       return response.json()
@@ -177,22 +201,19 @@ export class FastAPIClient {
    */
   async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
+    const controller = new AbortController()
 
     console.debug(`Streaming from ${path}`)
 
     try {
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json'
-      }
-      // Add comparison id header if available
-      if (this.comparisonId) {
-        headers['X-Comparison-Id'] = this.comparisonId
-      }
-
       const response = await fetch(url, {
         method: 'POST',
-        headers,
-        body: JSON.stringify(body)
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+        credentials: 'include',
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -205,7 +226,24 @@ export class FastAPIClient {
       let buffer = ''
 
       while (true) {
-        const { done, value } = await reader.read()
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const timeout = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new StreamTimeoutError()), SSE_INACTIVITY_TIMEOUT_MS)
+        })
+        let result: ReadableStreamReadResult<Uint8Array>
+        try {
+          result = await Promise.race([reader.read(), timeout])
+        } catch (error) {
+          if (error instanceof StreamTimeoutError) {
+            void reader.cancel(error).catch(() => undefined)
+            controller.abort(error)
+          }
+          throw error
+        } finally {
+          clearTimeout(timer)
+        }
+
+        const { done, value } = result
 
         if (done) break
 
@@ -222,10 +260,7 @@ export class FastAPIClient {
               const data = JSON.parse(dataStr) as SSEEvent
 
               // Handle special event types
-              if (data.type === 'init') {
-                // Store comparison id from first event
-                this.setComparisonId(data.comparison.id)
-              } else if (data.type === 'error') {
+              if (data.type === 'error') {
                 // FIXME throw? probably not, errors are handle in chat
                 // const errorMsg = 'error' in data ? data.error : 'Unknown error'
                 // console.error(`SSE error: ${errorMsg}`)
