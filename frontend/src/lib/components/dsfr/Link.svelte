@@ -1,15 +1,16 @@
-<script lang="ts">
-  import { m } from '$lib/i18n/messages'
-  import type { HTMLAnchorAttributes } from 'svelte/elements'
-  import type { ButtonProps } from './Button.svelte'
-
-  type LinkProps = {
+<script module lang="ts">
+  export type LinkProps = {
     href: string
-    text: string
     button?: boolean
     hideExternalIcon?: boolean
   } & ButtonProps &
     HTMLAnchorAttributes
+</script>
+
+<script lang="ts">
+  import { m } from '$lib/i18n/messages'
+  import type { HTMLAnchorAttributes } from 'svelte/elements'
+  import type { ButtonProps } from './Button.svelte'
 
   let {
     href,
@@ -33,9 +34,9 @@
           rel: 'noopener external',
           target: '_blank',
           // FIXME a11y mailto
-          title: m['a11y.externalLink']({ text })
+          title: m['a11y.externalLink']({ text: text || '' })
         }
-      : { target: '_self' }
+      : {}
   )
 
   const btnClasses = $derived([
@@ -82,22 +83,11 @@
 </a>
 
 <style lang="postcss">
-  /* Override only light theme blue to purple */
-  :root[data-fr-theme='light'] .cg-link-btn {
+  .cg-link-btn {
     --background-action-high-blue-france: var(--blue-france-main-525);
     --background-action-high-blue-france-hover: var(--cg-blue-france-main-525-hover);
     --background-action-high-blue-france-active: var(--cg-blue-france-main-525-active);
     --border-action-high-blue-france: var(--blue-france-main-525);
     --text-action-high-blue-france: var(--blue-france-main-525);
-  }
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] .cg-link-btn {
-      --background-action-high-blue-france: var(--blue-france-main-525);
-      --background-action-high-blue-france-hover: var(--cg-blue-france-main-525-hover);
-      --background-action-high-blue-france-active: var(--cg-blue-france-main-525-active);
-      --border-action-high-blue-france: var(--blue-france-main-525);
-      --text-action-high-blue-france: var(--blue-france-main-525);
-    }
   }
 </style>

@@ -1,4 +1,7 @@
-<script lang="ts" generics="Value extends string, Option extends { value: Value, label: string }">
+<script
+  lang="ts"
+  generics="Value extends string, Option extends { value: Value, label: string, icon?: string }"
+>
   import type { ClassValue, HTMLFieldsetAttributes } from 'svelte/elements'
 
   let {
@@ -44,6 +47,10 @@
           bind:group={value}
         />
         <label class={['fr-label', labelClass]} for={`${id}-${option.value}`}>
+          {#if option.icon}
+            <!-- Decorative: the label already says which view this is. -->
+            <span aria-hidden="true" class="me-2">{option.icon}</span>
+          {/if}
           {option.label ?? option.value}
         </label>
       </div>
@@ -52,17 +59,8 @@
 </fieldset>
 
 <style lang="postcss">
-  /* Override only light theme blue to purple */
-  :root[data-fr-theme='light'] label {
+  label {
     --border-active-blue-france: var(--blue-france-main-525);
     --text-active-blue-france: var(--blue-france-main-525);
-  }
-
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] label {
-      --border-active-blue-france: var(--blue-france-main-525);
-      --text-active-blue-france: var(--blue-france-main-525);
-    }
   }
 </style>

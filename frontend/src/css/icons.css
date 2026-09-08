@@ -1,4 +1,12 @@
-@import '@gouvfr/dsfr/dist/utility/icons/icons.css';
+/* The full DSFR icon sheet inlines 1047 icons as data URIs — 1.8 MB, 57% of the
+   site-wide stylesheet, downloaded on every page. We use about twenty-five of
+   them. Two families cover almost all of it; the strays below are declared by
+   hand from the same DSFR sources, copied into static/icons.
+
+   Adding an `icon` prop with a name outside these two families needs one more
+   svg here. icons.spec.ts fails if you forget. */
+@import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
+@import '@gouvfr/dsfr/dist/utility/icons/icons-arrows/icons-arrows.min.css';
 
 .fr-icon-shuffle::before,
 .fr-icon-shuffle::after {
@@ -16,4 +24,38 @@
 .fr-icon-sort-desc::after {
   -webkit-mask-image: url('/icons/sort-desc.svg');
   mask-image: url('/icons/sort-desc.svg');
+}
+
+/* From DSFR's design family. */
+.fr-icon-edit-line::before,
+.fr-icon-edit-line::after {
+  -webkit-mask-image: url('/icons/edit-line.svg');
+  mask-image: url('/icons/edit-line.svg');
+}
+
+.fr-icon-pencil-line::before,
+.fr-icon-pencil-line::after {
+  -webkit-mask-image: url('/icons/pencil-line.svg');
+  mask-image: url('/icons/pencil-line.svg');
+}
+
+/* From DSFR's weather family. */
+.fr-icon-flashlight-line::before,
+.fr-icon-flashlight-line::after {
+  -webkit-mask-image: url('/icons/flashlight-line.svg');
+  mask-image: url('/icons/flashlight-line.svg');
+}
+
+/* From DSFR's business family. */
+.fr-icon-links-fill::before,
+.fr-icon-links-fill::after {
+  -webkit-mask-image: url('/icons/links-fill.svg');
+  mask-image: url('/icons/links-fill.svg');
+}
+
+/* From DSFR's finance family. */
+.fr-icon-trophy-line::before,
+.fr-icon-trophy-line::after {
+  -webkit-mask-image: url('/icons/trophy-line.svg');
+  mask-image: url('/icons/trophy-line.svg');
 }

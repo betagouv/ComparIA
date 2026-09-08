@@ -1,0 +1,85 @@
+suite: optional ingress
+templates:
+  - ingress.yaml
+values:
+  - ../ci/values-lint.yaml
+tests:
+  - it: is absent by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders when enabled with a host
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.rules[0].host
+          value: comparia.example.com
+
+  - it: fails when enabled without a host
+    set:
+      ingress.enabled: true
+    asserts:
+      - failedTemplate:
+          errorMessage: ingress.host is required when ingress.enabled is true
+
+  - it: renders the given className, annotations and tls
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+      ingress.className: nginx
+      ingress.annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      ingress.tls:
+        - hosts:
+            - comparia.example.com
+          secretName: comparia-tls
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt
+      - equal:
+          path: spec.tls[0].secretName
+          value: comparia-tls
+
+  - it: routes /api to the backend Service and everything else to the frontend Service
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths
+          value:
+            - path: /api
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-backend
+                  port:
+                    number: 80
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: RELEASE-NAME-comparia-frontend
+                  port:
+                    number: 80
+
+  - it: never renders a rewrite-target annotation
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - notExists:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/rewrite-target"]
+      - hasDocuments:
+          count: 1

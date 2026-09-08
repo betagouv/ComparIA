@@ -2,17 +2,25 @@ import logging
 from typing import Annotated, AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge
+from backend.arena.checks import (
+    PromptCheckResult,
+    count_warning_shown,
+    issue_warning_token,
+    run_prompt_check,
+)
 from backend.arena.models import AddFirstTextBody, AddTextBody
-from backend.arena.moderation import GuardrailVerdict, check_prompt
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
     create_comparison,
+    get_user_comparisons,
+    merge_anonymous_comparisons,
     read_comparison,
+    set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
     update_turn,
@@ -21,10 +29,8 @@ from backend.arena.services import (
 from backend.arena.session import (
     ComparisonMetadata,
     increment_blocked_prompts,
-    increment_custom_selections,
     increment_input_chars,
     is_block_cooldown,
-    is_custom_selection_ratelimited,
     is_ratelimited,
     retreive_comparison_metadata,
     store_comparison_metadata,
@@ -35,8 +41,16 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.arena.web_search import search_web
-from backend.llms.data import get_llms_data, pick_replacement_model
+from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
+from backend.auth.services import get_current_terms_acceptance_version
+from backend.config import MAX_TURNS_PER_COMPARISON
+from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from backend.vote_tags.services import (
+    UnknownVoteTagError,
+    VoteTagSignMismatchError,
+    check_vote_tags,
+)
 from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
@@ -45,6 +59,7 @@ from utils.database.models import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
+from utils.database.prompt_checks import save_prompt_check_result
 
 logger = logging.getLogger("languia")
 
@@ -57,19 +72,28 @@ router = APIRouter(
 # Dependencies
 
 
-def assert_not_rate_limited(request: Request) -> None:
-    """Dependency to check rate limiting based on IP address."""
-    ip = get_ip(request)
-
-    if is_ratelimited(ip):
+def assert_not_rate_limited(
+    anonymous_user_hash: RequiredAnomymous, request: Request
+) -> None:
+    """Rate-limit model usage per anonymous session, with the IP as a backstop
+    for clients that drop the session cookie."""
+    if is_ratelimited(anonymous_user_hash, get_ip(request)):
         logger.error(
-            f"Too much text submitted to pricey models for ip {ip}",
+            "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
         )
+
+
+def _is_pricey(comparison: ComparisonRead, llms_data: LLMsData) -> bool:
+    """Whether either side of this comparison is an expensive model."""
+    return any(
+        llm_id in llms_data.pricey_models
+        for llm_id in (comparison.llm_id_a, comparison.llm_id_b)
+    )
 
 
 def assert_not_block_cooldown(request: Request) -> None:
@@ -81,61 +105,64 @@ def assert_not_block_cooldown(request: Request) -> None:
         )
 
 
-async def run_guardrail(
-    text: str, field: str, request: Request
-) -> GuardrailVerdict | None:
+async def run_checks(
+    text: str, field: str, request: Request, warning_token: str | None = None
+) -> PromptCheckResult | None:
     """
-    Run the content-safety guardrail on a user prompt. Raises a 422 (shaped like
-    a Pydantic validation error so the frontend renders it under the input) when
-    the prompt is blocked, otherwise returns the verdict to persist on the turn.
+    Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
+    validation error so the frontend renders it under the input) when a category
+    set to `block` refuses the prompt, otherwise returns the verdict, to warn the
+    user about and to persist on the turn.
     """
-    verdict = await check_prompt(text, request)
-    if verdict and verdict.should_block:
+    result = await run_prompt_check(text, request, warning_token=warning_token)
+    if result and result.decision == "error":
+        # The check fails open, so a prompt that times out the moderation API
+        # still reaches the models. Left at that, an attacker who can induce
+        # timeouts gets an unchecked arena for free, so a failure spends the
+        # same per-IP budget a block does. Refusing the prompt outright instead
+        # would take the whole arena down every time Mistral hiccups, which is
+        # the worse trade: one connection slowed is better than all of them
+        # stopped.
         increment_blocked_prompts(get_ip(request))
+    if result and result.block_message:
+        increment_blocked_prompts(get_ip(request))
+        result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=[
                 {
                     "loc": ["body", field],
-                    "msg": verdict.block_message,
+                    "msg": result.block_message,
                     "type": "value_error",
                 }
             ],
         )
-    return verdict
+    return result
 
 
-def get_comparison_id(id: UUID = Header(..., alias="X-Comparison-Id")) -> UUID:
+def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
     """
-    Dependency to extract and validate comparison id from headers.
-
-    Args:
-        id: Comparison identifier from X-Comparison-Id header
-
-    Returns:
-        str: Validated comparison id
-
-    Raises:
-        HTTPException: If comparison id is missing or invalid
+    Stream a single 'warning' event and stop. Nothing is created and no model is
+    called: the browser asks the user to confirm, and sends the prompt again with
+    the one-time `warning_token` if they go ahead.
     """
-    if not id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing comparison id"
+    count_warning_shown()
+    token = issue_warning_token(text, result.model)
+    warnings = [{"kind": "prompt_check", "message": result.message or ""}]
+
+    async def event_stream() -> AsyncGenerator[str]:
+        yield format_sse_event(
+            {"type": "warning", "warnings": warnings, "warning_token": token}
         )
-    return id
+
+    return create_sse_response(event_stream())
 
 
-def get_comparison_metadata(
-    id: UUID = Depends(get_comparison_id),
-) -> ComparisonMetadata:
+def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
     try:
-        metadata = retreive_comparison_metadata(id)
+        metadata = retreive_comparison_metadata(comparison_id)
     except Exception as e:
-        # FIXME raise different errors depending on problem
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Comparison '{id}' couldn't be found or parsed: {str(e)}",
-        )
+        return None
 
     # For any arena view, raise error if chat responses are not yet finished
     if metadata.is_streaming:
@@ -147,7 +174,24 @@ def get_comparison_metadata(
     return metadata
 
 
-ComparisonMetadataAnno = Annotated[ComparisonMetadata, Depends(get_comparison_metadata)]
+async def get_comparison(
+    comparison_id: UUID, user: OptionalUser, anonymous_user_hash: RequiredAnomymous
+) -> ComparisonRead:
+    """
+    Query specified Comparison.
+
+    Raises:
+        HTTPException: If comparison doesn't exists, is already streamin or
+        user id or anonymous user hash doesn't correspond to the Comparison.
+    """
+    get_comparison_metadata(comparison_id)  # check if is_streaming
+
+    return await read_comparison(
+        comparison_id, user.id if user else None, anonymous_user_hash
+    )
+
+
+ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
@@ -162,7 +206,12 @@ async def get_challenge() -> dict:
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
-async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingResponse:
+async def add_first_text(
+    args: AddFirstTextBody,
+    user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
 
@@ -174,6 +223,8 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
 
     Args:
         args: Request body with prompt, mode, optional custom model selection, etc.
+        user: User if connected
+        anonymous_user_hash: anonymous user hash from cookie
         request: FastAPI request
 
     Returns:
@@ -182,28 +233,34 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
+    participation_terms_version = await get_current_terms_acceptance_version(
+        user_id=user.id if user else None,
+        anonymous_user_hash=anonymous_user_hash,
+    )
+    if not participation_terms_version:
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="Accept the terms in force before participating.",
+        )
+
+    # Prompts stay out of the logs. They go to a file and to Loki, the in-app
+    # notice tells people not to put personal data in them, and the operators
+    # who read the logs are not the audience the user wrote for. What is left is
+    # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called with: {args.model_dump_json()}",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, web_search={args.web_search})",
         extra={"request": request},
     )
 
-    if args.mode == "custom" and args.custom_models_selection:
-        ip = get_ip(request)
-        if is_custom_selection_ratelimited(ip):
-            logger.error(
-                f"Too many custom model selections for ip {ip}",
-                extra={"request": request},
-            )
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="rate_limit_custom_selection",
-            )
-        increment_custom_selections(ip)
-
-    guardrail = await run_guardrail(args.prompt_value, "prompt_value", request)
+    check = await run_checks(
+        args.prompt_value, "prompt_value", request, args.warning_token
+    )
+    if check and check.pending_warning:
+        return warning_response(check, args.prompt_value)
+    check = (await save_prompt_check_result(check)) if check else None
 
     # Select LLMs
-    llms_data = get_llms_data()
+    llms_data = await get_llms_data()
     llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
 
     logger.info(
@@ -220,6 +277,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
     comparison = await create_comparison(
         ComparisonCreate(
             ip=get_ip(request),
+            anonymous_user_hash=anonymous_user_hash if not user else None,
+            user_id=user.id if user else None,
+            participation_terms_version=participation_terms_version,
             visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,
@@ -239,7 +299,9 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
         yield format_sse_event(
             {
                 "type": "init",
-                "comparison": ComparisonPublic.model_validate(comparison),
+                "comparison": ComparisonPublic.model_validate(
+                    comparison, context={"llms_data": llms_data}
+                ),
             }
         )
 
@@ -248,36 +310,42 @@ async def add_first_text(args: AddFirstTextBody, request: Request) -> StreamingR
             comparison.id,
             args.prompt_value,
             web_search_results,
-            guardrail=guardrail.as_record() if guardrail else None,
+            prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(args.prompt_value))
+            if not comparison.error:
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.prompt_value),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
 
 @router.post(
-    "/add_text",
+    "/add_text/{comparison_id}",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
 async def add_text(
+    comparison_: ComparisonAnno,
     args: AddTextBody,
-    metadata: ComparisonMetadataAnno,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -289,8 +357,8 @@ async def add_text(
     3. Save the completed Turn if everything went well
 
     Args:
+        comparison: linked Comparison
         args: Request body with message content
-        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Returns:
@@ -300,11 +368,26 @@ async def add_text(
         HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' on comparison '{metadata.id}' called with: {args.model_dump_json()}",
+        f"'/add_text' on comparison '{comparison_.id}' ({len(args.message)} chars)",
         extra={"request": request},
     )
 
-    guardrail = await run_guardrail(args.message, "message", request)
+    # Each turn resends the whole transcript to both models, so the cost of a
+    # conversation grows with its square. `/retry` re-runs the last turn rather
+    # than adding one, so this is the only place the transcript can grow.
+    if len(comparison_.turns) >= MAX_TURNS_PER_COMPARISON:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=(
+                "Cette conversation a atteint sa limite de "
+                f"{MAX_TURNS_PER_COMPARISON} échanges. Veuillez en démarrer une nouvelle."
+            ),
+        )
+
+    check = await run_checks(args.message, "message", request, args.warning_token)
+    if check and check.pending_warning:
+        return warning_response(check, args.message)
+    check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
 
@@ -312,35 +395,41 @@ async def add_text(
     async def event_stream() -> AsyncGenerator[str]:
         # Add new turn and save it to db (to at least save the user prompt)
         comparison, turn = await add_comparison_turn(
-            metadata.id,
+            comparison_.id,
             args.message,
-            guardrail=guardrail.as_record() if guardrail else None,
+            prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            llms_data = get_llms_data()
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(args.message))
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.message),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream())
 
 
-@router.post("/retry", dependencies=[Depends(assert_not_rate_limited)])
+@router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
-    metadata: ComparisonMetadataAnno,
+    comparison: ComparisonAnno,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
     """
@@ -350,7 +439,7 @@ async def retry(
     Reroll a failing LLM if possible.
 
     Args:
-        metadata: Comparison metadata stored in redis
+        comparison: linked Comparison
         request: FastAPI request for logging
 
     Returns:
@@ -359,9 +448,8 @@ async def retry(
     Raises:
         HTTPException: If session not found or rate limiting triggered
     """
-    logger.info(f"'/retry' on comparison '{metadata.id}'", extra={"request": request})
+    logger.info(f"'/retry' on comparison '{comparison.id}'", extra={"request": request})
 
-    comparison = await read_comparison(metadata.id)
     turn = comparison.turns[-1]
 
     if turn.user_msg is None:
@@ -382,7 +470,7 @@ async def retry(
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-            if new_llm_id := pick_replacement_model(comparison, pos):
+            if new_llm_id := await pick_replacement_model(comparison, pos):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
@@ -391,7 +479,7 @@ async def retry(
     store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
-        f"retry with user message: {turn.user_msg.content}",
+        f"retry on turn '{turn.id}'",
         extra={"request": request},
     )
 
@@ -401,28 +489,31 @@ async def retry(
             {"type": "update", "turn": TurnPublic.model_validate(turn)}
         )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+        try:
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            llms_data = get_llms_data()
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(get_ip(request), len(turn.user_msg.content))
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(turn.user_msg.content),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
 
-@router.post("/vote")
+@router.post("/vote/{comparison_id}")
 async def vote(
+    comparison: ComparisonAnno,
     vote: TurnVoteChoice | TurnVoteAnnotate,
-    metadata: ComparisonMetadataAnno,
     request: Request,
 ) -> None:
     """
@@ -431,19 +522,19 @@ async def vote(
     Vote annotations can be updated multiple times and relate to one LLM pos only.
 
     Args:
+        comparison: linked Comparison
         vote: Request body with vote data (choice or annotations)
-        metadata: Comparison metadata stored in redis
         request: FastAPI request for logging
 
     Raises:
         HTTPException: If Comparison not found or forbidden vote attempts.
     """
+    # `vote.model_dump_json()` would carry the voter's free-text annotation.
     logger.info(
-        f"'/vote' on comparison '{metadata.id}' called with: {vote.model_dump_json()}",
+        f"'/vote' on comparison '{comparison.id}' for turn '{vote.turn_id}'",
         extra={"request": request},
     )
 
-    comparison = await read_comparison(metadata.id)
     turn = next((turn for turn in comparison.turns if turn.id == vote.turn_id), None)
 
     if not turn:
@@ -465,22 +556,41 @@ async def vote(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Already made a choice."
         )
-    if (isinstance(vote, TurnVoteAnnotate)) and turn.choice is None:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Have to make a choice before annotating.",
-        )
+    if isinstance(vote, TurnVoteAnnotate):
+        if turn.choice is None:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Have to make a choice before annotating.",
+            )
+        try:
+            await check_vote_tags(vote.keyword_annotations, turn.choice, vote.pos)
+        except UnknownVoteTagError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Unknown vote tag: {error}",
+            ) from error
+        except VoteTagSignMismatchError as error:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Vote tag does not match the choice: {error}",
+            ) from error
 
     await update_turn_vote(turn.id, vote)
 
 
-@router.get("/reveal")
-async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealData:
+@router.post("/reveal/{comparison_id}")
+async def reveal(
+    comparison: ComparisonAnno,
+    request: Request,
+) -> RevealData:
     """
     Get reveal data for a Comparison.
 
+    POST, not GET: it marks the comparison revealed, and a browser or a crawler
+    is free to replay a GET.
+
     Args:
-        metadata: Comparison metadata stored in redis
+        comparison: linked Comparison
         request: FastAPI request for logging
 
     Returns:
@@ -489,15 +599,54 @@ async def reveal(metadata: ComparisonMetadataAnno, request: Request) -> RevealDa
     Raises:
         HTTPException: If Comparison not found or no vote.
     """
-    logger.info(f"[REVEAL] comparison '{metadata.id}'", extra={"request": request})
-    comparison = await read_comparison(metadata.id)
-    last_turn = comparison.turns[-1]
+    logger.info(f"[REVEAL] comparison '{comparison.id}'", extra={"request": request})
 
+    if comparison.revealed:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Comparison has already been revealed.",
+        )
+
+    last_turn = comparison.turns[-1]
     if last_turn.choice is None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Have to make a choice before reveal.",
         )
 
+    await set_comparison_revealed(comparison.id)
+    llms_data = await get_llms_data()
+
     # Return computed reveal data with environmental impact
-    return get_reveal_data(comparison)
+    return get_reveal_data(comparison, llms_data)
+
+
+@router.get("/comparison/list")
+async def get_comparisons(
+    user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> list[ComparisonPublic]:
+    """
+    Get comparison list.
+
+    Args:
+        user: Authenticated user
+        request: FastAPI request for logging
+
+    Returns:
+        list: list of user's Comparison if logged in.
+    """
+    user_id = user.id if user else None
+    comparisons = await get_user_comparisons(user_id, anonymous_user_hash)
+
+    return comparisons
+
+
+@router.post("/comparison/merge")
+async def merge_comparisons(
+    user: RequiredUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> None:
+    await merge_anonymous_comparisons(user.id, anonymous_user_hash)

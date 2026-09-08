@@ -20,19 +20,18 @@
     clearTimeout(timer)
     removeToast(id)
   }
+
+  const variants = {
+    primary: { bg: 'bg-primary', icon: 'i-ri-checkbox-circle-line', border: 'border-primary' },
+    success: { bg: 'bg-green', icon: 'i-ri-checkbox-circle-line', border: 'border-green' },
+    error: { bg: 'bg-error', icon: 'error-fill', border: 'border-error' }
+  } as const
+  const variantProps = $derived(variants[variant])
 </script>
 
-<div
-  class="cl-toast {variant === 'error'
-    ? 'border-error'
-    : 'border-primary'} text-dark-grey bg-white flex border-2"
->
-  <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} p-2 flex flex-col justify-center">
-    <Icon
-      icon={variant === 'error' ? 'error-fill' : 'i-ri-checkbox-circle-line'}
-      size="xs"
-      class="text-white"
-    />
+<div class={['cl-toast text-dark-grey bg-white flex border-2', variantProps.border]}>
+  <div class={['p-2 flex flex-col justify-center', variantProps.bg]}>
+    <Icon icon={variantProps.icon} size="xs" class="text-white" />
   </div>
   <div class="px-2 py-1">{text}</div>
   <button onclick={onClose} class="p-2 ms-auto! self-start">

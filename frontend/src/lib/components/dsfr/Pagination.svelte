@@ -15,7 +15,7 @@
       .map((n) => {
         return page === 0 ? n + 1 : page === pageCount - 1 ? n - 1 : n
       })
-      .filter((n) => n < pageCount)
+      .filter((n) => n > -1 && n < pageCount)
   )
 </script>
 
@@ -90,17 +90,7 @@
 {/if}
 
 <style lang="postcss">
-  :root[data-fr-theme='light'] {
-    .fr-pagination__link[aria-current]:not([aria-current='false']) {
-      --background-active-blue-france: var(--blue-france-main-525);
-    }
-  }
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] {
-      .fr-pagination__link[aria-current]:not([aria-current='false']) {
-        --background-active-blue-france: var(--blue-france-main-525);
-      }
-    }
+  .fr-pagination__link[aria-current]:not([aria-current='false']) {
+    --background-active-blue-france: var(--blue-france-main-525);
   }
 </style>

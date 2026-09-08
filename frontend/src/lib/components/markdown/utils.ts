@@ -5,6 +5,7 @@ import { type Renderer, Marked } from 'marked'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
 import { markedHighlight } from 'marked-highlight'
 import * as Prism from 'prismjs'
+import sanitizeHtml from 'sanitize-html'
 import 'prismjs/components/prism-bash'
 import 'prismjs/components/prism-c'
 import 'prismjs/components/prism-cpp'
@@ -317,8 +318,170 @@ const is_external_url = (link: string | null, root = location.href): boolean => 
   }
 }
 
+// Model output is untrusted, so both sanitizers below work from the same
+// allow-list, built from what the renderer above actually emits. Anything that
+// can load a resource, submit data or restyle the page is left out: style (both
+// the element and the attribute), form, input, button-with-formaction, meta,
+// link, canvas, video, audio, iframe.
+const ALLOWED_TAGS = [
+  'a',
+  'abbr',
+  'b',
+  'blockquote',
+  'br',
+  'button',
+  'caption',
+  'code',
+  'col',
+  'colgroup',
+  'dd',
+  'del',
+  'details',
+  'div',
+  'dl',
+  'dt',
+  'em',
+  'figcaption',
+  'figure',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'hr',
+  'i',
+  'img',
+  'ins',
+  'kbd',
+  'li',
+  'mark',
+  'ol',
+  'p',
+  'pre',
+  'q',
+  's',
+  'samp',
+  'small',
+  'span',
+  'strong',
+  'sub',
+  'summary',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'tfoot',
+  'th',
+  'thead',
+  'tr',
+  'u',
+  'ul',
+  'var'
+]
+
+// Enough to draw the icons the renderer inlines, and nothing that animates or
+// loads (no svg:style, svg:use, svg:image, svg:foreignObject, svg:animate).
+const ALLOWED_SVG_TAGS = [
+  'svg',
+  'path',
+  'g',
+  'circle',
+  'ellipse',
+  'line',
+  'polygon',
+  'polyline',
+  'rect',
+  'text',
+  'tspan',
+  'title',
+  'desc'
+]
+
+// tag -> attributes, '*' meaning every tag (sanitize-html's own shape)
+const ALLOWED_ATTRIBUTES: Record<string, string[]> = {
+  '*': ['class', 'id', 'title', 'lang', 'dir', 'role', 'aria-hidden', 'aria-label'],
+  a: ['href', 'target', 'rel'],
+  img: ['src', 'alt', 'width', 'height', 'referrerpolicy', 'loading'],
+  ol: ['start'],
+  details: ['open'],
+  th: ['align', 'colspan', 'rowspan', 'scope'],
+  td: ['align', 'colspan', 'rowspan']
+}
+
+// SVG presentation attributes, allowed in the SVG namespace only. Both spellings
+// of viewBox are listed because sanitize-html lowercases attribute names.
+const ALLOWED_SVG_ATTRIBUTES = [
+  'viewBox',
+  'viewbox',
+  'version',
+  'xmlns',
+  'fill',
+  'stroke',
+  'stroke-width',
+  'stroke-linecap',
+  'stroke-linejoin',
+  'color',
+  'width',
+  'height',
+  'd',
+  'class',
+  'aria-hidden',
+  'aria-label'
+]
+
+// Amuchina keys its allow-list the other way round, attribute -> tags, and
+// prefixes anything outside the HTML namespace ('svg:path', 'svg:*').
+function amuchinaAttributes(): Record<string, string[]> {
+  const attributes: Record<string, string[]> = {}
+  for (const [tag, names] of Object.entries(ALLOWED_ATTRIBUTES)) {
+    for (const name of names) (attributes[name] ??= []).push(tag)
+  }
+  for (const name of ALLOWED_SVG_ATTRIBUTES) (attributes[name] ??= []).push('svg:*')
+  return attributes
+}
+
+const amuchina = new Amuchina({
+  // html/head/body are the wrappers DOMParser adds; dropping them would leave
+  // nothing to read the sanitized markup back from.
+  allowElements: [
+    'html',
+    'head',
+    'body',
+    ...ALLOWED_TAGS,
+    ...ALLOWED_SVG_TAGS.map((tag) => `svg:${tag}`)
+  ],
+  allowAttributes: amuchinaAttributes()
+})
+
+// Amuchina needs a DOM, so server rendering falls back to sanitize-html with the
+// same allow-list. Headings keep their generated id and code blocks their
+// highlighting classes.
+const SSR_OPTIONS: sanitizeHtml.IOptions = {
+  allowedTags: [...ALLOWED_TAGS, ...ALLOWED_SVG_TAGS],
+  allowedAttributes: {
+    ...ALLOWED_ATTRIBUTES,
+    svg: ALLOWED_SVG_ATTRIBUTES,
+    path: ALLOWED_SVG_ATTRIBUTES,
+    g: ALLOWED_SVG_ATTRIBUTES,
+    circle: ALLOWED_SVG_ATTRIBUTES,
+    ellipse: ALLOWED_SVG_ATTRIBUTES,
+    line: ALLOWED_SVG_ATTRIBUTES,
+    polygon: ALLOWED_SVG_ATTRIBUTES,
+    polyline: ALLOWED_SVG_ATTRIBUTES,
+    rect: ALLOWED_SVG_ATTRIBUTES,
+    text: ALLOWED_SVG_ATTRIBUTES,
+    tspan: ALLOWED_SVG_ATTRIBUTES
+  },
+  allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+  transformTags: {
+    img: sanitizeHtml.simpleTransform('img', { referrerpolicy: 'no-referrer' })
+  }
+}
+
 export function sanitize(source: string): string {
-  const amuchina = new Amuchina()
+  if (typeof DOMParser === 'undefined') return sanitizeHtml(source, SSR_OPTIONS)
+
   const node = new DOMParser().parseFromString(source, 'text/html')
   walk_nodes(node.body, 'A', (node) => {
     if (node instanceof HTMLElement && 'target' in node) {
@@ -327,6 +490,10 @@ export function sanitize(source: string): string {
         node.setAttribute('rel', 'noopener noreferrer')
       }
     }
+  })
+  // Keeps a model-supplied image from learning which page the reader is on.
+  walk_nodes(node.body, 'IMG', (node) => {
+    if (node instanceof HTMLElement) node.setAttribute('referrerpolicy', 'no-referrer')
   })
 
   return amuchina.sanitize(node).body.innerHTML

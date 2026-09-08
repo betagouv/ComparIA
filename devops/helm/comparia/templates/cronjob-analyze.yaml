@@ -1,0 +1,40 @@
+{{- if .Values.cronjobs.analyze.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-analyze
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: analyze
+spec:
+  schedule: {{ .Values.cronjobs.analyze.schedule | quote }}
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: analyze
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: analyze
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["./comparia-cli", "db", "lint", "--fix", "--with-llm-analyze"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                - name: COMPARIA_INSTANCE_NAME
+                  value: {{ .Values.config.instanceName | quote }}
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+{{- end }}

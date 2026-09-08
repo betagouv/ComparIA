@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Literal
+from typing import Annotated
 
 from pydantic import (
     BeforeValidator,
@@ -12,14 +12,18 @@ from sqlmodel import SQLModel
 
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
 from utils.database.models import (
+    LEGACY_PARTICIPATION_TERMS_VERSION,
     ArchivedReason,
     BotPos,
     ErrorDetails,
     LLMMessageFinal,
+    PublishDataset,
     UserMessageRead,
 )
 
-Datasets = Literal["normal", "raw"]
+# Same two datasets a destination subscribes to, kept in one place so the two
+# lists cannot drift apart.
+Datasets = PublishDataset
 
 
 class DatasetTurnMetadata(SQLModel):
@@ -42,6 +46,7 @@ class DatasetComparisonBaseMetadata(SQLModel):
     categories: list[str] | None
     languages: list[str] | None
     short_summary: str | None
+    participation_terms_version: str = LEGACY_PARTICIPATION_TERMS_VERSION
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):

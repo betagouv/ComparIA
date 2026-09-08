@@ -34,8 +34,8 @@
       "url": "/utils/models/schemas/schema-licenses.json"
     },
     {
-      "fileMatch": ["/utils/models/archs.json"],
-      "url": "/utils/models/schemas/schema-archs.json"
+      "fileMatch": ["/data/archs.json"],
+      "url": "/data/generated/schema-archs.json"
     },
     {
       "fileMatch": ["/utils/models/models.json"],

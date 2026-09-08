@@ -7,18 +7,23 @@ Functions:
 """
 
 import logging
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
+from uuid import UUID
 
-from backend.llms.data import get_llms_data
-from backend.llms.models import LLMData
+from litellm.litellm_core_utils.token_counter import token_counter
+
 from backend.llms.utils import Consumption, get_llm_consumption
-from utils.database.models import BotPos, ComparisonRead
+from utils.database.models.utils import BotPos
+
+if TYPE_CHECKING:
+    from backend.llms.data import LLMsData
+    from utils.database.models import ComparisonRead, TurnRead
 
 logger = logging.getLogger("languia")
 
 
 class RevealModelData(TypedDict):
-    llm: LLMData
+    llm_id: UUID
     conso: Consumption
 
 
@@ -29,7 +34,39 @@ class RevealData(TypedDict):
     b: RevealModelData
 
 
-def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
+def count_input_tokens(
+    comparison: "ComparisonRead", pos: BotPos, turns: list["TurnRead"], model: str
+) -> int:
+    """
+    Estimate input tokens sent to the model across the revealed conversation.
+    Each generation receives the current user message and the previous messages
+    for that model side, so previous turns are counted again when they are resent.
+    """
+    input_tokens = 0
+    history: list[str | None] = []
+
+    if system_msg := getattr(comparison, f"system_msg_{pos}"):
+        history.append(system_msg)
+
+    for turn in turns:
+        current_messages = [*history, turn.user_msg.content]
+        input_tokens += token_counter(
+            text=[message for message in current_messages if message],
+            model=model,
+        )
+
+        history.append(turn.user_msg.content)
+        if llm_msg := getattr(turn, f"llm_msg_{pos}"):
+            history.extend(
+                message
+                for message in [llm_msg.reasoning_content, llm_msg.content]
+                if message
+            )
+
+    return input_tokens
+
+
+def get_chosen_llm(comparison: "ComparisonRead") -> BotPos | None:
     """
     Compute the better LLM based on turn votes.
 
@@ -54,7 +91,7 @@ def get_chosen_llm(comparison: ComparisonRead) -> BotPos | None:
     return None
 
 
-def get_reveal_data(comparison: ComparisonRead) -> RevealData:
+def get_reveal_data(comparison: "ComparisonRead", llms: "LLMsData") -> RevealData:
     """
     Build reveal screen data with LLM comparison and environmental impact metrics.
 
@@ -88,17 +125,28 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # request_latency = conv.finish_tstamp - conv.start_tstamp
 
     chosen_llm = get_chosen_llm(comparison)
-    llms = get_llms_data().enabled
     # Calculate environmental impact using ecologits library
     # Uses llm params, active params (for MoE) and token count
     conso: dict[BotPos, Consumption] = {
         "a": get_llm_consumption(
-            llms[comparison.llm_id_a],
+            llms.all[comparison.llm_id_a],
             sum(turn.llm_msg_a.tokens for turn in comparison.turns),
+            count_input_tokens(
+                comparison,
+                "a",
+                comparison.turns,
+                llms.all[comparison.llm_id_a].human_id,
+            ),
         ),
         "b": get_llm_consumption(
-            llms[comparison.llm_id_b],
+            llms.all[comparison.llm_id_b],
             sum(turn.llm_msg_b.tokens for turn in comparison.turns),
+            count_input_tokens(
+                comparison,
+                "b",
+                comparison.turns,
+                llms.all[comparison.llm_id_b].human_id,
+            ),
         ),
     }
 
@@ -108,8 +156,8 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     # Encode summary as base64 for safe storage/transmission (share feature)
     jsonstring = json.dumps(
         {
-            "a": comparison.llm_id_a,  # Model A identifier
-            "b": comparison.llm_id_b,  # Model B identifier
+            "a": str(comparison.llm_id_a),  # Model A identifier
+            "b": str(comparison.llm_id_b),  # Model B identifier
             "ta": conso["a"]["tokens"],  # Model A token count
             "tb": conso["b"]["tokens"],  # Model B token count
             # Add user's choice to summary (for verification/tracking)
@@ -122,6 +170,6 @@ def get_reveal_data(comparison: ComparisonRead) -> RevealData:
     return {
         "b64": b64,
         "chosen_llm": chosen_llm,
-        "a": {"llm": llms[comparison.llm_id_a], "conso": conso["a"]},
-        "b": {"llm": llms[comparison.llm_id_b], "conso": conso["b"]},
+        "a": {"llm_id": comparison.llm_id_a, "conso": conso["a"]},
+        "b": {"llm_id": comparison.llm_id_b, "conso": conso["b"]},
     }

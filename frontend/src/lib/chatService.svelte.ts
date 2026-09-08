@@ -1,11 +1,22 @@
+import { goto } from '$app/navigation'
+import { resolve } from '$app/paths'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, ValidationError } from '$lib/fastapi-client'
+import { api, StreamTimeoutError, ValidationError } from '$lib/fastapi-client'
+import type {
+  Consumption as APIConsoData,
+  RevealData as APIRevealData,
+  ComparisonPublic,
+  LLMMessageCreate,
+  TurnPublic,
+  UserMessageRead,
+  LinkupSearchTextResult as WebSearchResults
+} from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
-import type { APIBotModel, BotModel } from '$lib/models'
-import { parseModel } from '$lib/models'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
+
+export type { APIRevealData, WebSearchResults }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -30,29 +41,22 @@ export type ModeInfos = {
 
 export type Bot = 'a' | 'b'
 
-export interface WebSearchResults {
-  type: 'text'
-  name: string
-  url: string
+// Comparison overrides
+export type UserMessage = UserMessageRead
+export interface AssistantMessage extends LLMMessageCreate {
   content: string
-  favicon: string
-}
-
-export interface UserMessage {
-  role: 'user'
-  content: string
-  user_content: string
-  web_search_results: WebSearchResults[] | null
-}
-export interface AssistantMessage {
-  role: 'assistant'
-  duration: number | null
-  generation_id: string
-  content: string
-  reasoning_content: string | ''
 }
 export type AnyMessage = UserMessage | AssistantMessage
+export interface APIComparisonTurn extends TurnPublic {
+  user_msg: UserMessage
+  llm_msg_a: AssistantMessage | null
+  llm_msg_b: AssistantMessage | null
+}
+export interface APIComparison extends ComparisonPublic {
+  turns: APIComparisonTurn[]
+}
 
+// FIXME get from backend constant
 export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
 export type TurnChoice = (typeof TURN_CHOICES)[number]
 
@@ -61,119 +65,43 @@ export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
 
 export interface ComparisonTurnSide {
   status: ComparisonTurnStatus
-  llm_msg?: AssistantMessage
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  llm_msg: AssistantMessage | null
+  keyword_annotations: string[]
   custom_annotation: string
 }
-
-interface BaseComparisonTurn {
-  id: number
-  user_msg: UserMessage
-  choice?: TurnChoice
-}
-export interface APIComparisonTurn extends BaseComparisonTurn {
-  llm_msg_a?: AssistantMessage
-  keyword_annotations_a: APIPositivePref[] | APINegativePref[]
-  custom_annotation_a: string
-  llm_msg_b?: AssistantMessage
-  keyword_annotations_b: APIPositivePref[] | APINegativePref[]
-  custom_annotation_b: string
-}
-export interface ComparisonTurn extends BaseComparisonTurn {
+export interface ComparisonTurn extends Pick<APIComparisonTurn, 'id' | 'user_msg' | 'choice'> {
   a: ComparisonTurnSide
   b: ComparisonTurnSide
-
   status: ComparisonTurnStatus
 }
-
-interface BaseComparison {
-  id: string
-  mode: Mode
-  custom_models_selection: string[]
-  error?: string // ErrorDetails | None
-  reveal?: APIRevealData
-}
-export interface APIComparison extends BaseComparison {
-  turns: APIComparisonTurn[]
-}
-export interface Comparison extends BaseComparison {
+export interface Comparison extends Omit<APIComparison, 'turns' | 'error'> {
   turns: ComparisonTurn[]
+  error?: string
+  reveal_data?: APIRevealData | null
 }
 
 // ANNOTATIONS
-
-export const APIPositivePrefs = ['useful', 'complete', 'creative', 'clear_formatting'] as const
-export const APINegativePrefs = ['incorrect', 'superficial', 'instructions_not_followed'] as const
-export const PREFS_EMOJIS: Record<APIReactionPref, string> = {
-  useful: '🙌',
-  complete: '💯',
-  creative: '🌀',
-  clear_formatting: '🎨',
-  incorrect: '❌',
-  superficial: '🚩',
-  instructions_not_followed: '🚫'
-}
-export type APIPositivePref = (typeof APIPositivePrefs)[number]
-export type APINegativePref = (typeof APINegativePrefs)[number]
-export type APIReactionPref = APIPositivePref | APINegativePref
 export interface VoteAnnotations {
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  keyword_annotations: string[]
   custom_annotation: string
 }
 export interface APIVoteChoice {
-  turn_id: number
+  turn_id: string
   choice: TurnChoice
 }
 
 export interface APIVoteAnnotate {
-  turn_id: number
+  turn_id: string
   pos: Bot
-  keyword_annotations: APIPositivePref[] | APINegativePref[]
+  keyword_annotations: string[]
   custom_annotation: string
 }
 
 export type AnyAPIVote = APIVoteChoice | APIVoteAnnotate
 
 // REVEAL
-// Equivalence types for scaled impact comparisons
-export type EquivalenceType =
-  | 'paris_nyc_flights'
-  | 'baguette_production'
-  | 'one_year_tree_absortion'
-  | 'package_delivery'
-  | 'mango_import'
-  | 'pool_filing'
-
-interface APIEquivalence {
-  type: EquivalenceType
-  value: number
-}
-
-interface APIConsoData {
-  tokens: number
-  co2_kg: number
-  scaled_co2_kg: number
-  scaled_co2_t: number
-  energy_mwh: number
-  energy_kwh: number
-  // All meaningful scaled equivalences (frontend can cycle through them)
-  equivalences: APIEquivalence[]
-}
-
-interface APIRevealModelData {
-  llm: APIBotModel
-  conso: APIConsoData
-}
-
-export interface APIRevealData {
-  b64: string
-  chosen_llm: Bot | null
-  a: APIRevealModelData
-  b: APIRevealModelData
-}
-
 export interface RevealModelData extends APIConsoData {
-  model: BotModel
+  id: string
   pos: Bot
 }
 
@@ -202,7 +130,7 @@ export const modeInfos: ModeInfos[] = (
 
 // COMPARISON LOGIC
 
-type ComparisonsCtx = Record<string, Comparison>
+export type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
@@ -227,18 +155,39 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
   }
 }
 
-function parseAPIComparison(comparison: APIComparison): Comparison {
-  return {
+export function parseAPIComparison(
+  comparison: APIComparison,
+  recoverInterrupted = false
+): Comparison {
+  const parsed: Comparison = {
     ...comparison,
+    error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
+
+  // Data loaded by a fresh page is not attached to the old SSE request. Any
+  // incomplete turn therefore cannot make further progress and must not be
+  // presented as if it were still generating forever. This includes turns where
+  // only one side answered: parseAPITurn calls those 'complete', but the missing
+  // side would otherwise stay pending with no stream to fill it.
+  const interruptedTurn = recoverInterrupted
+    ? parsed.turns.findLast((turn) => turn.a.status === 'pending' || turn.b.status === 'pending')
+    : undefined
+  if (interruptedTurn) {
+    parsed.error ??= 'provider_error'
+    interruptedTurn.status = 'error'
+    if (interruptedTurn.a.status === 'pending') interruptedTurn.a.status = 'error'
+    if (interruptedTurn.b.status === 'pending') interruptedTurn.b.status = 'error'
+  }
+
+  return parsed
 }
 
 export function parseAPIRevealData(data: APIRevealData): RevealData {
   return {
     selected: data.chosen_llm,
     modelsData: (['a', 'b'] as const).map((pos) => ({
-      model: parseModel(data[pos].llm),
+      id: data[pos].llm_id,
       pos,
       ...data[pos].conso
     })),
@@ -246,61 +195,87 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export function initComparisonsContext(data: APIComparison[]) {
-  const comparisons = $state(
-    Object.fromEntries(data.map((c) => [c.id.toString(), parseAPIComparison(c)]))
-  )
+/**
+ * `recoverInterrupted` is only safe on a fresh page load: it rewrites any
+ * still-pending turn as interrupted. Passing it on an in-session refresh (e.g.
+ * after sign-in) would clobber a comparison that is actively streaming in this
+ * tab.
+ */
+export async function queryComparisons(_fetch: typeof fetch = fetch, recoverInterrupted = false) {
+  const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
+  return data.map((c) => parseAPIComparison(c, recoverInterrupted))
+}
+
+export function initComparisonsContext(data: ComparisonsCtx) {
+  const comparisons = $state(data)
   setComparisonsContext(comparisons)
 }
 
-const ERROR_MESSAGES = {
-  rate_limit_custom_selection: 'arenaHome.errors.rateLimitCustomSelection'
-} as const
+export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
+  const data = await queryComparisons()
+  comparisons.length = 0
+  comparisons.push(...data)
+}
 
 export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const comparisons = getComparisonsContext()
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
   let promptError = $state<string>()
+  let promptWarnings = $state<string[]>()
+  // Kept so "send anyway" resends the very same prompt: the backend serves the
+  // verdict it already has for that text instead of moderating it again.
+  let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
 
-  const comparison = $derived(comparisonId_ ? comparisons[comparisonId_] : null)
+  const comparison = $derived(
+    comparisonId_ ? comparisons.find((c) => c.id === comparisonId_) : null
+  )
   const errorMsg = $derived(comparison?.error)
   const turn = $derived(comparison?.turns[comparison.turns.length - 1])
 
   const status = $derived.by(() => {
     if (errorMsg || promptError) return 'error'
     if (!comparison || !turn) return 'pending'
-    if (comparison.reveal) return 'revealed'
+    if (comparison.reveal_data) return 'revealed'
     return turn.status
   })
 
   async function ask(url: string, body: any): Promise<boolean> {
     loading = true
     promptError = undefined
+    promptWarnings = undefined
     if (comparison) {
       comparison.error = undefined
     }
 
     let receivedEvent = false
+    let warned = false
     try {
       const altcha_token = await consumeAltchaToken()
 
       for await (const event of api.stream(url, { ...body, altcha_token })) {
         receivedEvent = true
-        if (event.type === 'init') {
+        if (event.type === 'warning') {
+          warned = true
+          warnedRequest = { url, body: { ...body, warning_token: event.warning_token } }
+          promptWarnings = event.warnings.map((warning) => warning.message)
+          break
+        } else if (event.type === 'init') {
           const id = event.comparison.id.toString()
-          comparisons[id] = parseAPIComparison(event.comparison)
+          comparisons.unshift(parseAPIComparison(event.comparison))
           comparisonId_ = id as Id
         } else {
           if (!comparison) throw new InternalError('No comparison to update')
 
           if (event.type === 'add') {
             comparison.turns.push(parseAPITurn(event.turn))
+            goto(resolve(`/${comparisonId_ as string}`))
           } else {
             if (!turn) throw new InternalError('No turn to update')
 
             if (event.type === 'update') {
               comparison.turns[comparison.turns.length - 1] = parseAPITurn(event.turn)
+              goto(resolve(`/${comparisonId_ as string}`))
             } else if (event.type === 'error') {
               if (event.pos) {
                 turn[event.pos].status = 'error'
@@ -328,9 +303,12 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = err.message in ERROR_MESSAGES ? m[ERROR_MESSAGES[err.message]]() : err.message
+        promptError = err.errors ? err.errors[0].msg : err.message
       } else if (err instanceof CaptchaError) {
         promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
+      } else if (err instanceof StreamTimeoutError && comparison) {
+        comparison.error = 'timeout'
+        if (turn) turn.status = 'error'
       } else {
         throw err
       }
@@ -338,7 +316,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       loading = false
     }
 
-    return !comparison?.error && !promptError
+    return !warned && !comparison?.error && !promptError
   }
 
   return {
@@ -363,6 +341,23 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     set promptError(v: string | undefined) {
       promptError = v
     },
+    get promptWarnings() {
+      return promptWarnings
+    },
+
+    /** User went back to edit: drop the warning, keep the prompt. */
+    dismissWarnings() {
+      promptWarnings = undefined
+      warnedRequest = undefined
+    },
+
+    /** User chose to send anyway: same prompt, cached verdict, no second check. */
+    async sendAnyway() {
+      if (!warnedRequest) return false
+      const { url, body } = warnedRequest
+      warnedRequest = undefined
+      return await ask(url, body)
+    },
 
     async askFirst(args: APIModeAndPromptData) {
       const cohorts = sessionStorage.getItem(COHORT_STORAGE_KEY)
@@ -385,19 +380,16 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async ask(text: string) {
       if (!comparison?.turns.every((turn) => !!turn.choice)) return
-      return await ask('/arena/add_text', { message: text })
+      return await ask(`/arena/add_text/${comparisonId_}`, { message: text })
     },
 
     async retry() {
-      return await ask('/arena/retry', {})
+      return await ask(`/arena/retry/${comparisonId_}`, {})
     },
 
     async vote(data: AnyAPIVote) {
-      await api.request<APIRevealData>('/arena/vote', {
+      await api.request<APIRevealData>(`/arena/vote/${comparisonId_}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(data)
       })
       const turn = comparison!.turns.find((t) => t.id === data.turn_id)!
@@ -411,11 +403,11 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal`, {
-        method: 'GET'
+      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`, {
+        method: 'POST'
       })
 
-      comparison.reveal = revealData
+      comparison.reveal_data = revealData
     }
   }
 }

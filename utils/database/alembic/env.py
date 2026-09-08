@@ -11,7 +11,28 @@ from backend.config import settings
 
 # Import all table models to populate SQLModel.metadata
 from utils.database.models import Comparison, Turn  # noqa: F401
+from utils.database.models.auth import (  # noqa: F401
+    AuthSession,
+    ConsentLog,
+    LegalDocument,
+    LoginCode,
+    User,
+)
+from utils.database.models.llms import (  # noqa: F401
+    LLMData,
+    LLMEndpoint,
+    LLMLab,
+    LLMLicense,
+)
 from utils.database.models.messages import LLMMessage, UserMessage  # noqa: F401
+from utils.database.models.prompt_check import (  # noqa: F401
+    PromptCheck,
+    PromptCheckResult,
+)
+from utils.database.models.suggestion import (  # noqa: F401
+    PromptSuggestion,
+    SuggestionCategory,
+)
 
 config = context.config
 

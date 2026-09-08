@@ -24,9 +24,6 @@
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
             "question": "Kuriuos modelius norėtumėte palyginti?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Modelių pasirinkimas yra ribotas, kad būtų užtikrinta vienoda prieiga visiems. Galite toliau naudoti atsitiktinį režimą arba bandyti vėliau."
-        },
         "modelSelection": "Modelių pasirinkimas",
         "prompt": {
             "label": "Parašykite savo pirmąją žinutę",
@@ -99,36 +96,6 @@
             "title": "Ekrano nustatymai"
         }
     },
-    "datasets": {
-        "access": {
-            "catch": "Modelio leidėjai, tyrėjai, įmonės, dabar jūsų eilė!",
-            "desc": "Platformos klausimai ir pageidavimai yra pateikiami daugiausia prancūzų, danų, švedų ir lietuvių kalbomis, atspindintys natūralų, realaus naudojimo kontekstą, o ne dirbtinius užklausimus. Šie duomenų rinkiniai yra viešai prieinami <a {linkProps}>data.gouv.fr</a> ir Hugging Face.",
-            "repos": {
-                "arena": {
-                    "desc": "Pokalbiai, atsakymai, reakcijos ir pasirinkimai viename duomenų rinkinyje",
-                    "title": "/comparia-fr-arena"
-                }
-            },
-            "share": "Parodyk mums, kaip panaudoji duomenis",
-            "title": "Prieiga prie compar:IA duomenų rinkinių"
-        },
-        "reuse": {
-            "bunka": {
-                "analyze": {
-                    "desc": "Vartotojų pokalbių analizė, apimanti užduočių (kūrimas, informacijos paieška ir kt.), temų (menas ir kultūra, švietimas ir kt.), sudėtingų emocijų (smalsumas, entuziazmas ir kt.), kalbos tono (formalus, profesionalus ir kt.) nustatymą",
-                    "title": "Prieiga prie analizės"
-                },
-                "conversations": {
-                    "desc": "Interaktyvus pokalbių vizualizavimas, kur kiekviena grupė atspindi pasikartojančią temą, kurią aptaria vartotojai (pavyzdžiui, švietimas, sveikata, aplinka ar net filosofija).",
-                    "title": "Ištyrinėkite duomenų vizualizaciją"
-                },
-                "desc": "Bunka.ai komanda atliko išsamų tyrimą apie Compar:IA platformos naudotojų ir AI modelių sąveiką, nagrinėdama populiariausias temas, pagrindines užduotis ir nustatydama, ar šie modeliai veikia pirmiausia kaip automatizavimo ar žmogaus gebėjimų didinimo įrankiai. Ši analizė pagrįsta dideliu 25 000 pokalbių imties dydžiu.",
-                "method": "Sužinokite daugiau apie metodiką"
-            },
-            "desc": "Pavyzdžiai, kaip pakartotinai naudojami compar:IA duomenų rinkiniai",
-            "title": "Kaip šie duomenys naudojami?"
-        }
-    },
     "errors": {
         "404": {
             "desc": "Jei įvedėte interneto adresą naršyklėje, patikrinkite, ar jis teisingas. Galbūt puslapis nebeprieinamas. <br />Tokiu atveju, norėdami tęsti apsilankymą, galite apsilankyti mūsų pagrindiniame puslapyje. <br />Kitaip susisiekite su mumis, kad galėtume nukreipti jus į reikiamą puslapį.",
@@ -144,68 +111,125 @@
         },
         "unknown": "Įvyko klaida"
     },
-    "faq": {
-        "datasets": {
-            "questions": {
-                "1": {
-                    "desc": "<p> Pasirinkimo duomenys naudojami modeliams tobulinti ateityje. </p> <p> Aklai lygindami dviejų modelių atsakymus, compar:IA naudotojai išreiškia savo pasirinkimus, nurodydami, kurie atsakymai yra labiausiai tinkami. Šie pasirinkimo duomenys gali būti naudojami modelių suderinimui tobulinti, t. y. juos mokyti generuoti atsakymus, kurie labiau atitinka naudotojų lūkesčius ir pasirinkimus. </p> <p> Tai yra pakartotinis procesas, kurio metu modelis palaipsniui mokosi generuoti geresnius atsakymus, remdamasis žmonių atsiliepimais apie atsakymų kokybę. Susipažindami su pasirinkimų duomenimis, modeliai koreguoja savo atsakymų stilių. </p>",
-                    "title": "Ar pasirinkimo duomenys turi tiesioginį poveikį modelio veikimui?"
-                },
-                "2": {
-                    "desc": "<p> Dialogai platformoje surinktų duomenų unikalumas yra tas, kad jie yra skirti mažiau išteklių turinčiomis kalbomis ir atitinka realias vartotojų užduotis. Šie duomenys atspindi žmonių pasirinkimus konkrečiame lingvistiniame ir kultūriniame kontekste. Šie duomenys leidžia mums pritaikyti modelius, kad jie būtų labiau aktualūs, tikslūs ir pritaikyti vartotojų poreikiams, tuo pačiu bandant pašalinti bet kokius šališkumus ar spragas. </p>",
-                    "title": "Kodėl balsavimas dialogai platformoje yra naudingas?"
-                },
-                "3": {
-                    "desc": "<p> dialogai pozicionuoja save kaip mažai išteklių reikalaujantį kalbos vertinimo ir suderinimo įrankį kalbos modeliams, orientuotą į atsakymų kokybę ir pasirinkimo duomenų rinkimą, taip išsiskirdamas nuo <a href='https://lmarena.ai/' target='_blank'> pokalbių arenos </a> sukurtos <a href='http://lmsys.org' target='_blank'> lmsys.org </a> ir etine atitiktimi nuo<a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a> . </p>",
-                    "title": "Kaip dialogai skiriasi nuo kitų panašių iniciatyvų?"
-                }
-            },
-            "title": "Duomenų rinkinys"
-        },
-        "ecology": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Dialogai naudoja <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> sukurtą metodiką, kad pateiktų energijos suvartojimo įvertinimą, kuris leidžia vartotojams palyginti skirtingų AI modelių poveikį aplinkai, atliekant tą patį užklausimą. Šis skaidrumas yra būtinas, siekiant skatinti ekologiškesnių AI modelių kūrimą ir diegimą. </p> <p> Ecologits taiko gyvavimo ciklo vertinimo (LCA) principus pagal ISO 14044, šiuo metu sutelkdama dėmesį į <strong>išvadų</strong> (t. y. modelių naudojimo atsakymams į užklausas) ir <strong>grafikos plokščių gamybos</strong> (išteklių gavybos, gamybos ir transportavimo) poveikį. </p> <p> Modelio energijos suvartojimas apskaičiuojamas atsižvelgiant į įvairius parametrus, pvz., naudojamo DI modelio dydį, serverių, kuriuose modeliai yra diegiami, vietą ir išvesties žetonų skaičių. CO2 ekvivalentu išreikšto globalinio atšilimo potencialo rodiklio apskaičiavimas gaunamas iš modelio energijos suvartojimo matavimo. </p> <p> Svarbu pažymėti, kad DI poveikio aplinkai vertinimo metodikos vis dar yra tobulinamos. </p>",
-                    "title": "Kaip apskaičiuojamas poveikis aplinkai?"
-                },
-                "2": {
-                    "desc": "<p>Duomenų centrų vieta turi labai didelę įtaką DI CO2 pėdsakui. Jei modelis yra mokomas ar naudojamas šalyje, kuri labai priklauso nuo iškastinio kuro, jo poveikis aplinkai bus didesnis nei tuo atveju, jei jis būtų laikomas šalyje, kurioje daugiausia naudojama atsinaujinanti energija. <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (from GenAI Impact) </a> sukurta DI poveikio aplinkai analizės metodika apima duomenis apie energijos rūšių derinį skirtingose šalyse, kuriose yra serveriai. Tai leidžia tiksliau ir subtiliau įvertinti faktinį įvairių generatyvinių DI modelių panaudos CO2 pėdsaką. </p>",
-                    "title": "Ar poveikio aplinkai rodikliai atsižvelgia į skirtingų šalių energijos struktūras?"
-                },
-                "3": {
-                    "desc": "<p>Daugelis aplinkos poveikio rodiklių daugiausia dėmesio skiria <strong>išvadų</strong> poveikiui, t. y. DI modelių naudojimui atsakant į užklausas. Šis požiūris gali sukurti iliuziją, kad naudojimas suvartoja mažiau energijos nei modelių mokymas. Tačiau <strong>realybė yra sudėtingesnė. </strong> Pateiksime automobilio analogiją: </p> <ul> <li> Automobilio surinkimas (mokymas) yra vienkartinis, daug išteklių reikalaujantis procesas. </li> <li> Kiekviena kelionė automobiliu (išvados) sunaudoja mažiau energijos, tačiau šios kelionės kartojasi kasdien, o jų skaičius gali būti milžiniškas. </li> </ul> <p> Panašiai <strong> naudojimo kaupiamasis poveikis, kai kasdien užklausas pateikia milijonai vartotojų, dažnai yra žymiai didesnis nei pradinio mokymo poveikis. <strong> Todėl labai svarbu, kad DI CO2 pėdsako vertinimo įrankiai atsižvelgtų į visą modelių gyvavimo ciklą, nuo mokymo iki naudojimo. </strong>   </p>",
-                    "title": "Ar aplinkos poveikio vertinimuose atsižvelgiama į modelių mokymui naudojamus išteklius?"
-                }
-            },
-            "title": "Poveikio aplinkai duomenys"
-        },
-        "i18n": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Taip, compar:AI internacionalizacija jau vyksta. Pradedame nuo plėtros į tris bandomąsias šalis: Lietuvą, Švediją ir Daniją. Pirmasis etapas leis mums išbandyti metodą ir pritaikyti sąsają prie skirtingų Europos kalbinių ir kultūrinių kontekstų. Galiausiai, remiantis šių bandomųjų šalių atsiliepimais, ratas gali išsiplėsti ir apimti daugiau Europos kalbų. Tikslas – palaipsniui sukurti tikrą Europos bendrąją erdvę, skirtą žmogaus atliekamam pokalbių AI vertinimui, su bendradarbiavimu pagrįstu valdymu, kuris bus apibrėžtas tarp skirtingų dalyvaujančių šalių.</p>",
-                    "title": "compar:IA iš pradžių daugiausia dėmesio skyrė prancūzų kalbai: ar yra planų įtraukti kitas Europos kalbas?"
-                },
-                "2": {
-                    "desc": "<p>Europos platformos, skirtos pokalbių su DI modeliais palyginimui, sukūrimas pateikia keletą konkrečių naudų. Ji leidžia rinkti pasirinkimų duomenis, atspindinčius tikruosius Europos vartotojų poreikius, taip pagerinant modelių atsakymų aktualumą šiai vartotojų grupei. Duomenų rinkinių paskelbimas užtikrina geresnį Europos kalbų ir kultūrų, kurios dažnai yra nepakankamai atstovaujamos pasauliniuose duomenų rinkiniuose ir vertinimuose, kuriuose dominuoja anglų kalba, atstovavimą. Tai taip pat užtikrina atitiktį Europos reglamentams (BDAR, DI aktas) ir integruoja vertinimo kriterijus, suderintus su Europos prioritetais, pvz., poveikio aplinkai mažinimu ir algoritmų skaidrumu. Galiausiai tai skatina konkurencingos ir autonomiškos Europos DI ekosistemos atsiradimą.</p>",
-                    "title": "Kokie yra būtent Europos DI pasirinkimo platformos privalumai?"
-                }
-            },
-            "title": "Tarptautiškumas"
-        },
-        "models": {
-            "questions": {
-                "1": {
-                    "desc": "<p>Modeliai atrenkami pagal jų populiarumą, įvairovę ir tinkamumą vartotojams. Ypatingą dėmesį skiriame tam, kad būtų prieinami vadinamieji <em>atviri modelių svoriai</em> ir įvairių dydžių modeliai.<p>",
-                    "title": "Kaip renkatės modelius, kurie pateikiami palyginimo lentelėje?"
-                },
-                "2": {
-                    "title": "Kaip jums pavyksta išlaikyti šią paslaugą nemokamą?"
-                }
-            },
-            "title": "Modeliai"
-        }
-    },
     "header": {
         "title": "palyginti:AI"
+    },
+    "models": {
+        "cards": {
+            "sovereignty": {
+                "title": "Atvirumo lygis"
+            }
+        },
+        "opennessSovereignty": {
+            "title": "Atvirumo lygis"
+        }
+    },
+    "ranking": {
+        "methodo": {
+            "personal": {
+                "choices": {
+                    "both_bad": "<strong>Nė vienas neteko</strong>: po 0 taškų kiekvienam modeliui — skaičiuojamas jūsų nepasitenkinimas, o ne tik santykinis pasirinkimas.",
+                    "both_good": "<strong>Abu geri</strong>: po 0,5 taško kiekvienam modeliui.",
+                    "idk": "<strong>Nežinau</strong>: neįtraukiama į skaičiavimą, neįskaitoma nė vienam modeliui."
+                },
+                "desc": {
+                    "1": "Bradley-Terry metodui reikia sujungto palyginimų tinklo: jūsų balsai daugiausia sudaro išsibarsčiusias, nesusijusias poras, todėl metodas netinka vienai paskyrai. Asmeninis įvertis yra <strong>sumažintas laimėjimų rodiklis</strong>:",
+                    "2": "<strong>points</strong> – jūsų taškų suma už modelį, <strong>battles</strong> – įvertintų palyginimų su juo skaičius, o <strong>m</strong> – jūsų vidutinis taškų skaičius už palyginimą visuose modeliuose. Sumažinimas retai lyginamą modelį priartina prie šio vidurkio: vienas laimėjimas rodo 0,667, o ne 100 %, o dvidešimt kartų lygintas modelis lenkia vieną kartą lygintą modelį esant panašiam santykiui."
+                },
+                "title": "Asmeninis reitingas: kaip apskaičiuojamas jūsų įvertis"
+            }
+        },
+        "personal": {
+            "cols": {
+                "battles": "Palyginimai",
+                "general_rank": "Bendras rangas",
+                "record": "Rezultatas (L-P-Ly)",
+                "score": "Mano įvertis"
+            },
+            "loading": "Įkeliamas jūsų reitingas…",
+            "noVotes": "Balsuokite palyginime, kad pradėtumėte savo reitingą.",
+            "signedOut": "Prisijunkite, kad pamatytumėte reitingą, sudarytą iš jūsų balsų.",
+            "title": "Mano reitingas",
+            "tooltips": {
+                "score": "Modelis, kurį palyginote vos kelis kartus, priartinamas prie jūsų vidurkio, o ne rodo kraštutinį įvertį."
+            },
+            "totalModels": "Įvertinti modeliai:",
+            "totalVotes": "Mano balsai:"
+        },
+        "views": {
+            "general": "Bendras",
+            "legend": "Reitingo rodinys",
+            "personal": "Mano reitingas"
+        }
+    },
+    "reveal": {
+        "impacts": {
+            "summary": {
+                "classification": {
+                    "dense": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>tankiąja</strong> architektūra: kiekvienam atsakymui jis naudoja visus savo parametrus. Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "matformer": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>Matformer</strong> architektūra: kiekvienam atsakymui jis pritaiko naudojamų parametrų dalį. Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "moe": "<strong>{model}</strong> yra <strong>{size}</strong> modelis su <strong>ekspertų mišinio</strong> architektūra: kiekvienam atsakymui jis aktyvuoja tik dalį parametrų (apie <strong>{activeParams} mlrd.</strong> iš <strong>{params} mlrd.</strong>). Jo energinė klasė yra <strong>{energyClass}</strong>.",
+                    "unknown": "<strong>{model}</strong> yra <strong>{size}</strong> modelis, kurio architektūra neskelbiama. Atsižvelgiant į jo dydį, energinė klasė yra <strong>{energyClass}</strong>.",
+                    "unknownProprietary": "<strong>{model}</strong> yra nuosavybinis <strong>{size}</strong> modelis, kurio architektūra neskelbiama. Atsižvelgiant į jo dydį, energinė klasė yra <strong>{energyClass}</strong>."
+                },
+                "comparison": {
+                    "comparable": "<strong>panašiai</strong> kaip <strong>{otherModel}</strong>",
+                    "multipleLess": "beveik <strong>{count} kartų mažiau</strong> nei <strong>{otherModel}</strong>",
+                    "multipleMore": "beveik <strong>{count} kartų daugiau</strong> nei <strong>{otherModel}</strong>",
+                    "percentageLess": "<strong>{percentage} % mažiau</strong> nei <strong>{otherModel}</strong>",
+                    "percentageMore": "<strong>{percentage} % daugiau</strong> nei <strong>{otherModel}</strong>",
+                    "unavailable": "nepalyginama su <strong>{otherModel}</strong>"
+                },
+                "consumption": "Šiame pokalbyje buvo sugeneruota <strong>{tokens} žetonų</strong>, o tam sunaudota apie <strong>{energy} mWh</strong>, t. y. {comparison}.",
+                "size": {
+                    "estimatedL": "numatomo didelio dydžio",
+                    "estimatedM": "numatomo vidutinio dydžio",
+                    "estimatedS": "numatomo mažo dydžio",
+                    "estimatedXl": "numatomo labai didelio dydžio",
+                    "estimatedXs": "numatomo labai mažo dydžio",
+                    "l": "didelis",
+                    "m": "vidutinio dydžio",
+                    "s": "mažas",
+                    "xl": "labai didelis",
+                    "xs": "labai mažas"
+                }
+            }
+        }
+    },
+    "statistics": {
+        "activity": {
+            "conversationsLabel": "Pokalbiai",
+            "dateLabel": "Data",
+            "promptsLabel": "Pateiktos užklausos",
+            "sectionTitle": "Aktyvumas",
+            "tableLabel": "Rodyti duomenis lentelėje",
+            "title": "Platformos aktyvumas"
+        },
+        "counterLink": "Peržiūrėti platformos statistiką",
+        "eyebrow": "Statistika",
+        "filters": {
+            "allTime": "Visas laikotarpis",
+            "label": "Laikotarpis",
+            "ninetyDays": "90 dienų",
+            "sevenDays": "7 dienos",
+            "thirtyDays": "30 dienų"
+        },
+        "intro": "Sužinokite, kaip platformoje pateikti pokalbiai ir pasirinkimai prisideda prie bendro duomenų rinkinio.",
+        "metrics": {
+            "conversations": {
+                "label": "Įvykę pokalbiai"
+            },
+            "models": {
+                "label": "Išbandyti modeliai"
+            },
+            "prompts": {
+                "label": "Pateiktos užklausos"
+            },
+            "votes": {
+                "label": "Pateikti balsai"
+            }
+        },
+        "overview": "Apžvalga",
+        "title": "Platformos statistika"
     }
 }

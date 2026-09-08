@@ -1,34 +1,39 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { Tooltip } from '$components/dsfr'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { id }: { id: string } = $props()
+  let { id, ...props }: { id: string } & SvelteHTMLElements['div'] = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale())
   const votesData = getVotesContext()
   const votes = $derived({
     count: NumberFormater.format(votesData.count),
-    objective: NumberFormater.format(votesData.objective),
+    objective: NumberFormater.format(votesData.objective / 1000),
     ratio: (100 * (votesData.count / votesData.objective)).toFixed() + '%'
   })
 </script>
 
 {#if votes}
-  <div class="gap-3 text-xs lg:gap-1 flex w-full items-center justify-center">
-    <div
-      class="linear-gauge rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
-      style:--gauge-ratio={votes?.ratio}
+  <div {...props} class={['gap-3 text-xs lg:gap-1 flex w-full items-center', props.class]}>
+    <a
+      href={resolve('/statistics')}
+      class="statistics-link rounded-sm lg:w-[160px] w-full max-w-[260px] grow"
+      aria-label={m['statistics.counterLink']()}
     >
-      <div class="linear-gauge-fill rounded-sm">
-        <span class="vote-count ms-2 font-bold align-middle whitespace-nowrap">
-          {m['header.votes.count']({ count: votes.count })}
-        </span>
+      <div class="linear-gauge rounded-sm" style:--gauge-ratio={votes?.ratio}>
+        <div class="linear-gauge-fill rounded-sm">
+          <span class="vote-count ms-2 font-bold align-middle whitespace-nowrap">
+            {m['header.votes.count']({ count: votes.count })}
+          </span>
+        </div>
       </div>
-    </div>
-    <span class="objective font-medium">
+    </a>
+    <div class="objective font-medium whitespace-pre">
       {m['header.votes.objective']({ count: votes.objective })}&nbsp;<Tooltip
         {id}
         size="xs"
@@ -36,7 +41,7 @@
       >
         {@html sanitize(m['header.votes.tooltip']())}
       </Tooltip>
-    </span>
+    </div>
   </div>
 {/if}
 
@@ -72,7 +77,18 @@
     overflow: hidden;
   }
 
+  .statistics-link {
+    background-image: none;
+  }
+
+  .statistics-link:focus-visible {
+    outline: 2px solid var(--border-action-high-blue-france);
+    outline-offset: 2px;
+  }
+
   .objective {
-    color: #7f7f7f;
+    /* Not a raw hex: at 12px the old #7f7f7f only reached 3.66:1 on the
+       sidebar background, and stayed put in dark mode. */
+    color: var(--text-mention-grey);
   }
 </style>

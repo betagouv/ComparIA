@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "comparia.fullname" . }}-backend
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  replicas: {{ .Values.replicaCount.backend }}
+  selector:
+    matchLabels:
+      {{- include "comparia.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "comparia.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: backend
+          image: {{ include "comparia.backendImage" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - uv
+            - run
+            - uvicorn
+            - backend.main:app
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "80"
+            - --timeout-graceful-shutdown
+            - "60"
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          envFrom:
+            - secretRef:
+                name: {{ include "comparia.secretName" . }}
+          env:
+            - name: COMPARIA_INSTANCE_NAME
+              value: {{ .Values.config.instanceName | quote }}
+            - name: AUTH_ACCESS_POLICY
+              value: {{ .Values.config.authAccessPolicy | quote }}
+            - name: LOG_FORMAT
+              value: {{ .Values.config.logFormat | quote }}
+            - name: LOGDIR
+              value: "/data"
+            - name: VOTES_OBJECTIVE
+              value: {{ .Values.config.votesObjective | quote }}
+            - name: CACHE_ENABLED
+              value: {{ .Values.config.cache.enabled | quote }}
+            - name: CACHE_PROBABILITY
+              value: {{ .Values.config.cache.probability | quote }}
+            - name: CACHE_TTL
+              value: {{ .Values.config.cache.ttl | quote }}
+            - name: CACHE_MAX_RESPONSES
+              value: {{ .Values.config.cache.maxResponses | quote }}
+            {{- if .Values.config.sentryDsn }}
+            - name: SENTRY_DSN
+              value: {{ .Values.config.sentryDsn | quote }}
+            - name: SENTRY_ENVIRONMENT
+              value: {{ .Values.config.sentryEnvironment | quote }}
+            {{- end }}
+            - name: ADMIN_EMAILS
+              value: {{ .Values.config.adminEmails | toJson | quote }}
+            - name: AUTH_DOMAIN_ALLOWLIST
+              value: {{ .Values.config.auth.domainAllowlist | toJson | quote }}
+            - name: AUTH_SESSION_LENGTH_DAYS
+              value: {{ .Values.config.auth.sessionLengthDays | quote }}
+            - name: DISPLAY_CURRENCY
+              value: {{ .Values.config.currency.display | quote }}
+            {{- if .Values.config.currency.rateFromEur }}
+            - name: DISPLAY_CURRENCY_RATE_FROM_EUR
+              value: {{ .Values.config.currency.rateFromEur | quote }}
+            {{- end }}
+            - name: EXCHANGE_RATE_API_URL
+              value: {{ .Values.config.currency.exchangeApiUrl | quote }}
+            - name: EXCHANGE_RATE_CACHE_SECONDS
+              value: {{ .Values.config.currency.exchangeCacheSeconds | quote }}
+            {{- if .Values.config.appUrl }}
+            - name: COMPARIA_APP_URL
+              value: {{ .Values.config.appUrl | quote }}
+            {{- end }}
+            {{- if .Values.config.emailFrom }}
+            - name: EMAIL_FROM
+              value: {{ .Values.config.emailFrom | quote }}
+            {{- end }}
+            - name: EMAIL_FROM_NAME
+              value: {{ .Values.config.emailFromName | quote }}
+            {{- if .Values.config.smtp.host }}
+            - name: SMTP_HOST
+              value: {{ .Values.config.smtp.host | quote }}
+            - name: SMTP_PORT
+              value: {{ .Values.config.smtp.port | quote }}
+            {{- end }}
+            {{- with .Values.backend.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources.backend | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          emptyDir: {}

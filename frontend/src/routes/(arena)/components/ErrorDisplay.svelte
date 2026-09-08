@@ -1,0 +1,62 @@
+<script lang="ts">
+  import { Button, Icon, Link } from '$components/dsfr'
+  import { m } from '$lib/i18n/messages'
+  import type { ClassValue } from 'svelte/elements'
+
+  let {
+    error,
+    class: classes,
+    onRetry
+  }: {
+    error: string
+    class?: ClassValue
+    onRetry: () => void
+  } = $props()
+
+  // The backend is moving from provider sentences to short stable codes, so both
+  // spellings are matched. Anything else falls back to the generic message.
+  const tooLong = $derived(error === 'Context too long.' || error === 'context_too_long')
+</script>
+
+<div class={['fr-container', classes]} role="alert">
+  <div class="cg-border gap-3 bg-white p-5 m-auto flex max-w-[38rem] items-start">
+    <Icon icon="warning-fill" class="mt-1 text-error shrink-0" aria-hidden="true" />
+    <div class="min-w-0 flex-1">
+      {#if tooLong}
+        <h2 class="fr-h6 mb-2!">{m['chatbot.errors.tooLong.title']()}</h2>
+        <p>
+          {m['chatbot.errors.tooLong.message']()}&nbsp;{m[`chatbot.errors.tooLong.retry`]()}
+        </p>
+      {:else}
+        <h2 class="fr-h6 mb-2!">{m['chatbot.errors.other.title']()}</h2>
+        <p>
+          {m['chatbot.errors.other.message']()}<br />
+          {m['chatbot.errors.other.retry']()}.
+          <span class="hidden">{error}</span>
+        </p>
+      {/if}
+
+      <div class="mt-4 flex">
+        {#if tooLong}
+          <Link
+            button
+            icon="refresh-line"
+            iconPos="right"
+            variant="secondary"
+            href="/"
+            text={m['words.restart']()}
+            class="w-full!"
+          />
+        {:else}
+          <Button
+            icon="refresh-line"
+            iconPos="right"
+            text={m['words.retry']()}
+            onclick={() => onRetry()}
+            variant="secondary"
+          />
+        {/if}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export-fr
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
 
 # Variables
 PYTHON := python3
@@ -7,6 +7,7 @@ NPM := yarn
 BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
+HELM_CHART := devops/helm/comparia
 
 COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_REDIS_HOST
@@ -65,6 +66,10 @@ db-schema-dump: ## Dump current database schema (requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	pg_dump "$$COMPARIA_DB_URI" --schema-only --no-owner --no-privileges
 
+db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db seed-admins
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
@@ -113,7 +118,13 @@ display-env-da: ## Display env vars loaded from KeePass for DA instance
 # Development with local code
 ###################################
 
-test: test-dataset ## Run all tests
+test: test-backend test-frontend ## Run all tests
+
+test-backend: ## Run the python test suite (no DB required)
+	$(UV) run --group dev --group data pytest tests -q
+
+test-frontend: ## Run the frontend unit tests
+	cd frontend && yarn vitest run
 
 test-dataset: ## Run dataset export tests (no DB required)
 	$(UV) run --group data python tests/dataset/test_comparison_to_turns.py
@@ -127,6 +138,8 @@ install-backend: ## Install Python backend dependencies with uv
 		echo "uv is not installed. Installing..."; \
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
+	# ^ upstream's own installer, fetched over TLS; verifying its signature or
+	# using a package manager (brew install uv, pipx install uv) is safer
 	$(UV) sync
 
 install-frontend: ## Install npm frontend dependencies
@@ -188,62 +201,32 @@ clean: ## Clean generated files
 ###################################
 i18n-clean-locales: ## Remove locales keys not present in fr
 	@echo "Cleaning frontend locales keys..."
-	cd frontend/locales && python maintenance.py
-
-i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
-	@echo "Generating frontend prompt suggestions..."
-	$(UV) run python -m utils.suggestions.build_suggestions
-
-i18n-build-news: ## generate news files
-	@echo "Generating news files..."
-	$(UV) run python -m utils.news.build_news
-
-###################################
-# Models utilities
-###################################
-models-build: ## Build/generate model files from JSON sources
-	@echo "Generating models..."
-	$(UV) run python -m utils.models.build_models
-
-models-maintenance: ## Run the models maintenance script
-	@echo "Models maintenance..."
-	$(UV) run python -m utils.models.maintenance
-
-models-doc: ## Build/generate llm doc and JSON schemas
-	@echo "Generating LLM specs documentation and JSON schemas..."
-	$(UV) run python -m utils.models.schemas.build_doc
+	./comparia-cli internal i18n
 
 ###################################
 # Dataset utilities
 ###################################
-dataset-export: ## Export FR datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
+dataset-export: ## Export the datasets to the destinations set in the admin panel (requires COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
-	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
-		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
-		exit 1; \
-	fi
-	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
-		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
-		exit 1; \
-	fi
-	$(UV) run python -m utils.dataset.run fr
+	$(UV) run python -m utils.dataset.run
 
-dataset-export-da: ## Export DA datasets to HuggingFace (requires HF_PUSH_DATASET_KEY, HF_PUSH_DATASET_PATH and COMPARIA_DB_URI)
+dataset-export-dry-run: ## Build the datasets locally and send them nowhere (requires COMPARIA_DB_URI)
 	@echo "Exporting datasets..."
 	@if [ -z "$$COMPARIA_DB_URI" ]; then \
 		echo "Error: COMPARIA_DB_URI is not defined"; \
 		exit 1; \
 	fi
-	@if [ -z "$$HF_PUSH_DATASET_KEY" ]; then \
-		echo "Error: HF_PUSH_DATASET_KEY is not defined"; \
-		exit 1; \
-	fi
-	@if [ -z "$$HF_PUSH_DATASET_PATH" ]; then \
-		echo "Error: HF_PUSH_DATASET_PATH is not defined"; \
-		exit 1; \
-	fi
-	$(UV) run python -m utils.dataset.run da
+	$(UV) run python -m utils.dataset.run --dry-run
+
+###################################
+# Helm chart (devops/helm/comparia)
+###################################
+helm-lint: ## Lint the self-hosting Helm chart
+	helm lint $(HELM_CHART) -f $(HELM_CHART)/ci/values-lint.yaml
+
+helm-test: ## Run the Helm chart's helm-unittest suite
+	helm unittest $(HELM_CHART)
