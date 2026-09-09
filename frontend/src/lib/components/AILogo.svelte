@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { api } from '$lib/fastapi-client'
   import type { HTMLImgAttributes } from 'svelte/elements'
 
   const {
@@ -25,7 +26,7 @@
 {#if customLogoId}
   <img
     {...props}
-    src="/api/models/labs/{customLogoId}/logo?v={customLogoVersion ?? 0}"
+    src={api.getUrl(`/models/labs/${customLogoId}/logo?v=${customLogoVersion ?? 0}`)}
     class={['object-contain', sizeClass, props.class]}
   />
 {:else if logo.includes('.')}
