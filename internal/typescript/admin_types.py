@@ -10,6 +10,7 @@ from utils.database.models.llms import (
     LLMEndpoint,
     LLMEndpointPublic,
     LLMLab,
+    LLMLabPublic,
     LLMLicense,
 )
 from utils.database.models.prompt_check import PromptCheckPatch, PromptCheckStatus

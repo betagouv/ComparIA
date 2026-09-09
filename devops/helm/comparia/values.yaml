@@ -94,12 +94,12 @@ config:
     domainAllowlist: []
     sessionLengthDays: 30
   currency:
-    ## -- ISO 4217 code models prices are converted to for display (stored in EUR internally).
+    ## -- ISO 4217 code models prices are converted to for display (stored in USD internally).
     display: EUR
-    ## -- Manual EUR -> display currency rate. Set this to enable currencies unavailable from the
-    ## rate API, run fully offline, or avoid the EUR fallback if the rate service is unreachable
+    ## -- Manual USD -> display currency rate. Set this to enable currencies unavailable from the
+    ## rate API, run fully offline, or avoid the USD fallback if the rate service is unreachable
     ## at startup. Left null, the rate is fetched from exchangeApiUrl instead.
-    rateFromEur: null
+    rateFromUsd: null
     exchangeApiUrl: https://api.frankfurter.dev/v2
     exchangeCacheSeconds: 86400
   ## -- "From" address/name on outgoing emails (login codes).
