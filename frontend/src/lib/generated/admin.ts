@@ -305,22 +305,26 @@ export interface LLMLab {
   /**
    * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
    */
-  logo: string;
+  logo: string | null;
   /**
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
   origin_country: string;
-  has_custom_logo?: boolean;
+  logo_data?: string | null;
+  logo_content_type?: string | null;
 }
-/**
- * Public LLM lab metadata, excluding uploaded logo bytes.
- */
 export interface LLMLabPublic {
   id?: string;
   created_at?: string;
   updated_at?: string;
   name: string;
-  logo: string;
+  /**
+   * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
+   */
+  logo: string | null;
+  /**
+   * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
+   */
   origin_country: string;
   has_custom_logo?: boolean;
 }

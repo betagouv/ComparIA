@@ -235,7 +235,7 @@ export interface LLMLabPublic {
   /**
    * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
    */
-  logo: string;
+  logo: string | null;
   /**
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
