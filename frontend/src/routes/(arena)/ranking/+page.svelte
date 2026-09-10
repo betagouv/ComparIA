@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
+  import type { ResolvedPathname } from '$app/types'
   import { Button, Icon, Link, Segmented, Tabs, Toggle, Tooltip } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext, openSignInModal } from '$lib/auth.svelte'
@@ -16,8 +17,8 @@
   import { styleControl } from '$lib/styleControl.svelte'
   import { sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
-  import { Energy, Methodology, PersonalTable, RankingTable } from './components'
   import type { RankingView } from './+page'
+  import { Energy, Methodology, PersonalTable, RankingTable } from './components'
 
   let { data } = $props()
 
@@ -54,13 +55,10 @@
   let view: RankingView = $derived(data.view)
 
   function onViewChange() {
-    goto(
-      view === 'personal' ? `${resolve('/ranking')}?view=personal` : resolve('/ranking'),
-      {
-        noScroll: true,
-        keepFocus: true
-      }
-    )
+    goto(view === 'personal' ? resolve('/ranking?view=personal') : resolve('/ranking'), {
+      noScroll: true,
+      keepFocus: true
+    })
   }
 
   // Local mirror the DSFR Toggle binds to, pushed to the shared singleton that
@@ -385,7 +383,7 @@
   titleId: string,
   title: string,
   body: string,
-  cta?: { href: string; text: string }
+  cta?: { href: ResolvedPathname; text: string }
 )}
   <section
     aria-labelledby={titleId}

@@ -1,13 +1,15 @@
+import { resolve } from '$app/paths'
 import { renderInlineMarkdown } from '$components/markdown/inline'
 import { api } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import {
   DEFAULT_INFORMATIONAL_PAGES,
-  informationalPageHref,
+  informationalPageLinkProps,
   isInformationalPageVisible,
   type InformationalPages,
   type InformationalPageSurface
 } from '$lib/informational-pages'
+import type { ExternalLinkProps, InternalLinkProps } from '$lib/routing'
 
 export type ConsentPresentation = {
   arena: {
@@ -67,16 +69,17 @@ type TermsResponse = {
   }
 }
 
-export type ConsentLink = { label: string; href: string }
+export type ConsentLink =
+  ({ label: string } & InternalLinkProps) | ({ label: string } & ExternalLinkProps)
 
 // Canonical paths, not the redirects they replaced: a visitor reading what
 // they are about to accept should not go through a hop. Every legal
 // destination in the app is named here so a page move has one place to land.
-export const TERMS_PATH = '/terms'
-export const PRIVACY_POLICY_PATH = '/privacy'
-export const ACCESSIBILITY_PATH = '/accessibility'
-export const ECODESIGN_PATH = '/eco-design'
-export const LEGAL_NOTICE_PATH = '/legal'
+export const TERMS_PATH = resolve('/terms')
+export const PRIVACY_POLICY_PATH = resolve('/privacy')
+export const ACCESSIBILITY_PATH = resolve('/accessibility')
+export const ECODESIGN_PATH = resolve('/eco-design')
+export const LEGAL_NOTICE_PATH = resolve('/legal')
 
 /** The two documents a visitor accepts, as listed beside the checkbox. */
 export function legalLinks(): ConsentLink[] {
@@ -99,17 +102,17 @@ export function legalPageLinks(
     {
       key: 'legal_notice' as const,
       label: m['footer.links.legal'](),
-      href: informationalPageHref('legal_notice', pages)
+      ...informationalPageLinkProps('legal_notice', pages)
     },
     {
       key: 'accessibility' as const,
       label: m['footer.links.accessibility'](),
-      href: informationalPageHref('accessibility', pages)
+      ...informationalPageLinkProps('accessibility', pages)
     },
     {
       key: 'ecodesign' as const,
       label: m['footer.links.rgesn'](),
-      href: informationalPageHref('ecodesign', pages)
+      ...informationalPageLinkProps('ecodesign', pages)
     }
   ]
   return [

@@ -2,6 +2,7 @@ import { formatCurrencyFromUsd } from '$lib/currency'
 import type {
   APILLMData,
   DatasetData,
+  Link,
   LLMList,
   PersonalRankingRow,
   PreferencesData
@@ -12,6 +13,7 @@ import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
+import { validExternalUrl } from './routing'
 import { styleControl } from './styleControl.svelte'
 import { RANK_CLASS_COUNT } from './theme'
 
@@ -263,6 +265,14 @@ export function isModelNew(releaseDate: string | Date, now = new Date()): boolea
 }
 
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
+  function checkLinks(links: Link[] = []) {
+    const checkedLinks = links.flatMap(({ url, text }) => {
+      const href = validExternalUrl(url)
+      return href ? [{ href, text }] : []
+    })
+    return checkedLinks.length ? checkedLinks : undefined
+  }
+
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
     model.license.kind = 'open-source'
@@ -326,7 +336,8 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       }
     },
     search: [model.human_id, model.name, model.lab.name].join(' '),
-    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null
+    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null,
+    links: checkLinks(model.links)
   }
 }
 

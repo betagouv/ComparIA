@@ -1,16 +1,18 @@
 <script lang="ts">
+  import type { ResolvedPathname } from '$app/types'
+  import { validUrl, type ExternalHref } from '$lib/routing'
   import { sanitize } from '$lib/utils/commons'
   import type { SvelteHTMLElements } from 'svelte/elements'
   import Link from './Link.svelte'
 
-  type CheckboxLink = { label: string; href: string }
+  type CheckboxLink = { label: string; href: ExternalHref | ResolvedPathname }
 
   let {
     id,
     checked = $bindable(),
     label,
     help,
-    links = [],
+    links,
     linksClass,
     onLinkClick,
     error,
@@ -28,28 +30,18 @@
     disabled?: boolean
   } & SvelteHTMLElements['label'] = $props()
 
-  function safeHref(href: string): string | null {
-    if (href.startsWith('/') && !href.startsWith('//')) return href
-    try {
-      const url = new URL(href)
-      return url.protocol === 'https:' ? url.toString() : null
-    } catch {
-      return null
-    }
-  }
-
   const safeLinks = $derived(
-    links.flatMap((link) => {
-      const href = safeHref(link.href)
+    links?.flatMap((link) => {
+      const href = validUrl(link.href)
       return href ? [{ ...link, href }] : []
     })
   )
+
   const describedBy = $derived(
     error
       ? `${id}-error-messages`
-      : [help ? `${id}-help` : '', safeLinks.length ? `${id}-links` : '']
-          .filter(Boolean)
-          .join(' ') || undefined
+      : [help ? `${id}-help` : '', safeLinks ? `${id}-links` : ''].filter(Boolean).join(' ') ||
+          undefined
   )
 </script>
 
@@ -68,7 +60,7 @@
       <p id="{id}-help" class="fr-message">{help}</p>
     {/if}
   </label>
-  {#if safeLinks.length > 0}
+  {#if safeLinks}
     <div id="{id}-links" class="ms-8 mb-3 gap-x-3 gap-y-1 flex flex-wrap">
       {#each safeLinks as link (link.href)}
         <Link

@@ -35,8 +35,7 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
-      goto(`?${params}` + page.url.hash)
+      goto(resolve(`${page.url.pathname}?${params}${page.url.hash}`))
     }
   })
 

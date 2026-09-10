@@ -1,9 +1,12 @@
+import type { ResolvedPathname } from '$app/types'
+import type { AnyLinkProps, ExternalHref } from '$lib/routing'
+import { getExternalLinkProps, validExternalUrl } from '$lib/routing'
 export type InformationalPageKey = 'legal_notice' | 'accessibility' | 'ecodesign'
 export type InformationalPageSurface = 'legal_menu' | 'settings'
 
 export type InformationalPage = {
   mode: 'internal' | 'external'
-  external_url: string | null
+  external_url: ExternalHref | null
   visible_in_legal_menu: boolean
   visible_in_settings: boolean
   content_by_locale: Record<string, string>
@@ -11,7 +14,7 @@ export type InformationalPage = {
 
 export type InformationalPages = Record<InformationalPageKey, InformationalPage>
 
-export const INFORMATIONAL_PAGE_PATHS: Record<InformationalPageKey, string> = {
+export const INFORMATIONAL_PAGE_PATHS: Record<InformationalPageKey, ResolvedPathname> = {
   legal_notice: '/legal',
   accessibility: '/accessibility',
   ecodesign: '/eco-design'
@@ -30,16 +33,6 @@ export const DEFAULT_INFORMATIONAL_PAGES: InformationalPages = {
   legal_notice: visibleInternalPage(),
   accessibility: visibleInternalPage(),
   ecodesign: visibleInternalPage()
-}
-
-function validExternalUrl(value: unknown): string | null {
-  if (typeof value !== 'string') return null
-  try {
-    const url = new URL(value)
-    return url.protocol === 'https:' ? url.toString() : null
-  } catch {
-    return null
-  }
 }
 
 export function normalizeInformationalPages(value: unknown): InformationalPages {
@@ -63,14 +56,14 @@ export function normalizeInformationalPages(value: unknown): InformationalPages 
   ) as InformationalPages
 }
 
-export function informationalPageHref(
+export function informationalPageLinkProps(
   key: InformationalPageKey,
   pages: InformationalPages
-): string {
+): AnyLinkProps {
   const page = pages[key]
   return page.mode === 'external' && page.external_url
-    ? page.external_url
-    : INFORMATIONAL_PAGE_PATHS[key]
+    ? getExternalLinkProps(page.external_url)
+    : { href: INFORMATIONAL_PAGE_PATHS[key] }
 }
 
 export function isInformationalPageVisible(

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
+  import { match, resolve } from '$app/paths'
   import { page } from '$app/state'
   import SignInForm from '$components/SignInForm.svelte'
   import { env } from '$env/dynamic/public'
@@ -7,19 +8,21 @@
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
 
-  // Only same-site paths: '//evil.example' is a protocol-relative URL, not a path.
-  function safeRedirect(target: string | null): string {
-    return target?.startsWith('/') && !target.startsWith('//') ? target : '/'
-  }
-
-  const redirectTo = $derived(safeRedirect(page.url.searchParams.get('redirect')))
-
   const loginTitle = env.PUBLIC_AUTH_LOGIN_TITLE || 'Bienvenue sur compar:IA'
   const loginDescription =
     env.PUBLIC_AUTH_LOGIN_DESCRIPTION ||
     "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe."
 
   const auth = getAuthContext()
+
+  async function onSuccess() {
+    const redirect = page.url.searchParams.get('redirect')
+    if (redirect && (await match(redirect))) {
+      goto(resolve(redirect as any))
+    } else {
+      goto(resolve('/'))
+    }
+  }
 </script>
 
 <svelte:head>
@@ -47,6 +50,6 @@
   </header>
 
   <main class="bg-light-grey md:flex md:items-center flex-auto basis-1/2">
-    <SignInForm onSuccess={() => goto(redirectTo)} class="md:max-w-[350px]" />
+    <SignInForm {onSuccess} class="md:max-w-[350px]" />
   </main>
 </div>

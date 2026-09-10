@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Dropdown from '$components/Dropdown.svelte'
   import { Icon } from '$components/dsfr'
@@ -7,11 +6,6 @@
   import { m } from '$lib/i18n/messages'
 
   const { id, expanded = true }: { id: string; expanded?: boolean } = $props()
-
-  // resolve() is typed for routes known at compile time, one literal per call. The
-  // legal paths live in consent.ts as plain strings, so the generic signature can
-  // never match.
-  const resolveHref = resolve as (href: string) => string
 
   const links = $derived(legalPageLinks(page.data.informationalPages, 'legal_menu'))
 </script>
@@ -39,16 +33,14 @@
     {/snippet}
 
     <ul class="fr-sidemenu__list">
-      {#each links as link (link.href)}
+      {#each links as { label, ...linkProps } (linkProps.href)}
         <li class="fr-sidemenu__item">
           <a
             class="fr-sidemenu__link py-2! text-sm! font-normal!"
-            href={link.href.startsWith('http') ? link.href : resolveHref(link.href)}
-            target={link.href.startsWith('http') ? '_blank' : undefined}
-            rel={link.href.startsWith('http') ? 'noopener external' : undefined}
-            aria-current={page.url.pathname === link.href ? 'page' : undefined}
+            {...linkProps}
+            aria-current={page.url.pathname === linkProps.href ? 'page' : undefined}
           >
-            {link.label}
+            {label}
           </a>
         </li>
       {/each}
