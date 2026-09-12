@@ -18,8 +18,9 @@ export async function load({ fetch, url }) {
   const period: StatisticsPeriod = ['7d', '30d', '90d', 'all'].includes(requestedPeriod ?? '')
     ? (requestedPeriod as StatisticsPeriod)
     : '30d'
-  const statistics = await api.request<StatisticsSummary>(`/statistics/summary?period=${period}`, {
-    fetch
+  const statistics = await api.request<StatisticsSummary>('/statistics/summary', {
+    fetch,
+    searchParams: { period }
   })
   return { statistics }
 }

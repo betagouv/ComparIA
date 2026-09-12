@@ -153,9 +153,9 @@ export function hasAcceptedDocument(
 }
 
 async function fetchSnapshot(locale: string, authenticated: boolean): Promise<ConsentSnapshot> {
-  const terms = await api.request<TermsResponse>(
-    `/settings/legal/terms?locale=${encodeURIComponent(locale)}`
-  )
+  const terms = await api.request<TermsResponse>('/settings/legal/terms', {
+    searchParams: { locale }
+  })
   const acceptance = await api.request<TermsAcceptance>(
     authenticated ? '/auth/consent' : '/auth/consent/anonymous'
   )

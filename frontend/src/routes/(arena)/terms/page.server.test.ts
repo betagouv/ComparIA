@@ -24,7 +24,10 @@ describe('terms page load', () => {
     request.mockResolvedValue(document)
 
     expect(await load({ fetch } as never)).toEqual({ terms: document })
-    expect(request).toHaveBeenCalledWith('/settings/legal/terms?locale=fr', { fetch })
+    expect(request).toHaveBeenCalledWith('/settings/legal/terms', {
+      fetch,
+      searchParams: { locale: 'fr' }
+    })
   })
 
   it('renders without a document when the backend is unavailable', async () => {

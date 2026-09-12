@@ -198,7 +198,9 @@
   async function loadStats(period: StatsPeriod) {
     statsLoading = true
     try {
-      stats = await api.request<PromptCheckStats>(`/admin/prompt-check/stats?period=${period}`)
+      stats = await api.request<PromptCheckStats>('/admin/prompt-check/stats', {
+        searchParams: { period }
+      })
     } finally {
       statsLoading = false
     }

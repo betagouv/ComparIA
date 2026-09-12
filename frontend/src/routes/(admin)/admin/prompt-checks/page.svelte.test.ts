@@ -336,7 +336,10 @@ describe('admin prompt check page', () => {
     select.dispatchEvent(new Event('change', { bubbles: true }))
     await Promise.resolve()
 
-    expect(api.request).toHaveBeenCalledWith('/admin/prompt-check/stats?period=30d')
+    expect(api.request).toHaveBeenCalledWith(
+      '/admin/prompt-check/stats',
+      expect.objectContaining({ searchParams: { period: '30d' } })
+    )
   })
 
   it('saves the switch as soon as it is toggled, and nothing else with it', async () => {

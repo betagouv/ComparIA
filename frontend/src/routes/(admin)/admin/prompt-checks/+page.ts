@@ -10,7 +10,10 @@ export const load: PageLoad = async ({ depends, fetch }) => {
     api.request<PromptCheckStatus>('/admin/prompt-check', { fetch }),
     // Les compteurs ne doivent pas emporter la page de configuration avec eux.
     api
-      .request<PromptCheckStats>('/admin/prompt-check/stats?period=all', { fetch })
+      .request<PromptCheckStats>('/admin/prompt-check/stats', {
+        searchParams: { period: 'all' },
+        fetch
+      })
       .catch(() => null)
   ])
 

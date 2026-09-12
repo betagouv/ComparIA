@@ -7,10 +7,10 @@ import type { PageServerLoad } from './$types'
 export const load: PageServerLoad = async ({ fetch }) => {
   try {
     return {
-      privacyPolicy: await api.request<PublicLegalDocument>(
-        `/settings/legal/privacy-policy?locale=${getLocale()}`,
-        { fetch }
-      )
+      privacyPolicy: await api.request<PublicLegalDocument>('/settings/legal/privacy-policy', {
+        fetch,
+        searchParams: { locale: getLocale() }
+      })
     }
   } catch (error) {
     // Nothing published yet, or the backend is down: the page falls back to the

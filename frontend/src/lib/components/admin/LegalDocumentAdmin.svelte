@@ -64,9 +64,9 @@
     try {
       documents = await api.request<AdminLegalDocument[]>(copy.endpoint)
       try {
-        activeDocument = await api.request<AdminLegalDocument>(
-          `${copy.endpoint}/current?locale=${encodeURIComponent(locale)}`
-        )
+        activeDocument = await api.request<AdminLegalDocument>(`${copy.endpoint}/current`, {
+          searchParams: { locale }
+        })
       } catch {
         activeDocument = null
       }
