@@ -71,12 +71,7 @@ export interface SSEWarningEvent {
 }
 
 export type SSEEvent =
-  | SSEInitEvent
-  | SSEUpdateEvent
-  | SSECompleteEvent
-  | SSEChunkEvent
-  | SSEErrorEvent
-  | SSEWarningEvent
+  SSEInitEvent | SSEUpdateEvent | SSECompleteEvent | SSEChunkEvent | SSEErrorEvent | SSEWarningEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
@@ -118,6 +113,8 @@ export class UnauthorizedError extends Error {
 /** Any error thrown by the client, carrying the HTTP status it came from. */
 export type ApiError = Error & { status?: number }
 
+type SearchParams = URLSearchParams | Record<string, string>
+
 /**
  * FastAPI client class
  */
@@ -131,8 +128,12 @@ export class FastAPIClient {
   /**
    * Get full URL for an endpoint
    */
-  getUrl(path: string): string {
-    return `${this.baseUrl}${path}`
+  getUrl(path: string, searchParams?: SearchParams): string {
+    const url = new URL(`${this.baseUrl}${path}`)
+    if (searchParams) {
+      url.search = new URLSearchParams(searchParams).toString()
+    }
+    return url.href
   }
 
   async parseErrorResponse(
@@ -165,12 +166,16 @@ export class FastAPIClient {
    */
   async request<T>(
     path: string,
-    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+    options: RequestInit & { fetch?: typeof fetch; searchParams?: SearchParams } = {
+      fetch
+    }
   ): Promise<T> {
-    const url = this.getUrl(path)
+    const url = this.getUrl(path, options.searchParams)
+
     // Get svelte load function's fetch or use default
     const _fetch = options.fetch ?? fetch
     delete options.fetch
+    delete options.searchParams
 
     try {
       const response = await _fetch(url, {
