@@ -11,6 +11,7 @@ import type {
   AssistantMessage,
   Bot
 } from '$lib/chatService.svelte'
+import { omit } from '$lib/utils/commons'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -174,20 +175,22 @@ export class FastAPIClient {
 
     // Get svelte load function's fetch or use default
     const _fetch = options.fetch ?? fetch
-    delete options.fetch
-    delete options.searchParams
+    const opts: RequestInit = omit(options as Record<PropertyKey, unknown>, [
+      'fetch',
+      'searchParams'
+    ])
 
     try {
       const response = await _fetch(url, {
-        ...options,
-        headers: options.headers ?? {
+        ...opts,
+        headers: opts.headers ?? {
           'Content-Type': 'application/json'
         },
         credentials: 'include'
       })
 
       if (!response.ok) {
-        throw await this.parseErrorResponse(response, path, options.method)
+        throw await this.parseErrorResponse(response, path, opts.method)
       }
 
       if (response.status === 204) {
