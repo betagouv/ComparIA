@@ -13,7 +13,7 @@
   const rankingRows = $derived(applyStyleControl(modelsData))
   const rankingCommons = $derived({
     ...commons,
-    rankClasses: rankClassSpans(rankingRows.map((m) => m.data))
+    rankClasses: rankClassSpans(rankingRows.map((llm) => llm.data))
   })
 </script>
 

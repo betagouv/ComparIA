@@ -58,7 +58,7 @@
 
   const totalVotesLabel = $derived(NumberFormater.format(totalVotes))
   let selectedModel = $state<string>()
-  const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
+  const selectedModelData = $derived(data.find((llm) => llm.id === selectedModel))
 
   // Escape hatch back to numbered ranks. Deliberately not persisted: classes
   // are the honest default and a sticky toggle would quietly undo that.
@@ -156,7 +156,7 @@
     const _search = search.toLowerCase()
 
     return rows
-      .filter((m) => (!_search ? true : m.search.includes(_search)))
+      .filter((llm) => (!_search ? true : llm.search.includes(_search)))
       .sort((ma, mb) => {
         const [a, b] = orderingMethod === 'ascending' ? [mb, ma] : [ma, mb]
 

@@ -151,7 +151,7 @@
   // so links made while the card pointed at it keep working, and so the click
   // handlers, which pass an id, do not have to change.
   const selectedModelData = $derived(
-    models.find((m) => m.human_id === selectedModel || m.id === selectedModel)
+    models.find((llm) => llm.human_id === selectedModel || llm.id === selectedModel)
   )
 </script>
 

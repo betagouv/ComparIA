@@ -450,13 +450,7 @@ export function getModelsWithDataContext() {
     ...data,
     models: (models.filter((llm) => !!llm.data) as BotModelWithData[])
       .sort((a, b) => a.data.rank - b.data.rank)
-      .map((m, i) => ({
-        ...m,
-        data: {
-          ...m.data,
-          rank: i + 1
-        }
-      }))
+      .map((llm, i) => ({ ...llm, data: { ...llm.data, rank: i + 1 } }))
   }
 }
 
@@ -471,9 +465,9 @@ export function getModelsWithDataContext() {
 export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[] {
   const enabled = styleControl.enabled
   const sorted = models
-    .map((m) => {
-      const active = enabled || !m.data.uncontrolled ? m.data : m.data.uncontrolled
-      return { ...m, data: { ...m.data, ...active, uncontrolled: m.data.uncontrolled } }
+    .map((llm) => {
+      const active = enabled || !llm.data.uncontrolled ? llm.data : llm.data.uncontrolled
+      return { ...llm, data: { ...llm.data, ...active, uncontrolled: llm.data.uncontrolled } }
     })
     // Sort on the active score, not on `rank`: models the plain fit dropped
     // keep their style-controlled rank, so the two numbering schemes interleave
@@ -487,9 +481,9 @@ export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[
   // the one case where a model's class legitimately moves.
   const classes = assignRankClasses(sorted.map(({ data }) => data))
 
-  return sorted.map((m, i) => ({
-    ...m,
-    data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
+  return sorted.map((llm, i) => ({
+    ...llm,
+    data: { ...llm.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
   }))
 }
 
