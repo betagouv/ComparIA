@@ -153,11 +153,7 @@ describe('buildConsumptionSummary', () => {
   })
 
   it.each([
-    [
-      'en',
-      'Gemma 4 31B is a medium-sized model',
-      'generating 100 tokens used about 100 mWh'
-    ],
+    ['en', 'Gemma 4 31B is a medium-sized model', 'generating 100 tokens used about 100 mWh'],
     ['da', 'Gemma 4 31B er en mellemstor model', 'genereringen af 100 tokens cirka 100 mWh'],
     ['sv', 'Gemma 4 31B är en mellanstor modell', 'genereringen av 100 token cirka 100 mWh'],
     ['lt', 'Gemma 4 31B yra vidutinio dydžio modelis', 'buvo sugeneruota 100 žetonų']

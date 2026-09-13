@@ -98,8 +98,7 @@
       onblur={() => onBlur?.(value)}
       {@attach updateAuto}
       {@attach updateRows}
-      onfocus={onFocus}
-    ></textarea>
+      onfocus={onFocus}></textarea>
     {#if submitBtn}
       <Button
         icon="arrow-up-line"
