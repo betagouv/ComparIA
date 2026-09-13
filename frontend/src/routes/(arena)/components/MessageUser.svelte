@@ -12,7 +12,7 @@
 
   let { id, message }: MessageUserProps = $props()
 
-  function validFavicon(src?: string) {
+  function validFavicon(src: string) {
     return validExternalUrl(src, ['http:', 'https:']) ||
       src?.toLowerCase().startsWith('data:image/')
       ? src

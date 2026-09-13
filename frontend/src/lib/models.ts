@@ -281,8 +281,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   const release_date = new Date(model.release_date)
 
   return {
-    ...model,
-    id: model.id!,
+    ...(model as Required<APILLMData>),
     release_date,
     new: isModelNew(release_date),
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
