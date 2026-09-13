@@ -58,7 +58,7 @@
     const csvData = [
       csvCols.map((col) => col.label).join(','),
       ...data
-        .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
+        .sort((a, b) => sortIfDefined(a.data, b.data, 'mean_win_prob'))
         .map((m) =>
           csvCols.map((col) => (col.key == 'id' ? m[col.key] : m.data[col.key])).join(',')
         )

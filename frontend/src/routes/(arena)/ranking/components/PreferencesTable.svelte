@@ -77,7 +77,7 @@
   )
 
   let orderingCol = $state<ColKind | undefined>(undefined)
-  let orderingMethod = $state(initialOrderMethod)
+  let orderingMethod = $derived(initialOrderMethod)
   let search = $state('')
   let asPercentage = $state(false)
 

@@ -96,8 +96,8 @@
       }))
   )
 
-  let orderingCol = $state(initialOrderCol)
-  let orderingMethod = $state(initialOrderMethod)
+  let orderingCol = $derived(initialOrderCol)
+  let orderingMethod = $derived(initialOrderMethod)
   let search = $state('')
 
   const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']

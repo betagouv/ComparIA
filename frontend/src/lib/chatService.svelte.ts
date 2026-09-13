@@ -240,7 +240,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     return turn.status
   })
 
-  async function ask(url: string, body: any): Promise<boolean> {
+  async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
     promptError = undefined
     promptWarnings = undefined

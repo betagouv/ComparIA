@@ -204,7 +204,7 @@ export class FastAPIClient {
   /**
    * Stream responses using Server-Sent Events (SSE)
    */
-  async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
+  async *stream(path: string, body: unknown): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
     const controller = new AbortController()
 

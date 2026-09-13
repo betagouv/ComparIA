@@ -18,6 +18,7 @@
   async function onSuccess() {
     const redirect = page.url.searchParams.get('redirect')
     if (redirect && (await match(redirect))) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       goto(resolve(redirect as any))
     } else {
       goto(resolve('/'))
