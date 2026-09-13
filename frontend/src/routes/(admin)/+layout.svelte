@@ -3,8 +3,9 @@
   import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
   import { initComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { LayoutProps } from './$types'
 
-  let { children } = $props()
+  let { children }: LayoutProps = $props()
 
   // NavBar's logout button needs a comparisons context; the admin area never
   // displays the history itself (NavBar skips it when isAdmin).

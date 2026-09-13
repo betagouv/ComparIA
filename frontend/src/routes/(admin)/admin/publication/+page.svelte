@@ -19,9 +19,9 @@
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import { untrack } from 'svelte'
-  import type { PageData } from './$types'
+  import type { PageProps } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  let { data }: PageProps = $props()
 
   const refetch = () => invalidate('admin:publishing')
 

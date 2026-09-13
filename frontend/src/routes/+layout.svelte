@@ -16,6 +16,7 @@
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import 'uno.css'
   import '../css/app.css'
+  import type { LayoutProps } from './$types'
 
   if (browser) {
     // FIXME import only needed parts?
@@ -23,7 +24,7 @@
     import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
   }
 
-  let { children, data } = $props()
+  let { children, data }: LayoutProps = $props()
   // svelte-ignore state_referenced_locally
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))

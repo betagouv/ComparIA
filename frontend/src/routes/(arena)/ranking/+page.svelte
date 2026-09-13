@@ -17,10 +17,11 @@
   import { styleControl } from '$lib/styleControl.svelte'
   import { sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
+  import type { PageProps } from './$types'
   import type { RankingView } from './+page'
   import { Energy, Methodology, PersonalTable, RankingTable } from './components'
 
-  let { data } = $props()
+  const { data }: PageProps = $props()
 
   const tabs = (
     [

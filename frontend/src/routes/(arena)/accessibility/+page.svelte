@@ -1,12 +1,13 @@
 <script lang="ts">
-  import SeoHead from '$components/SEOHead.svelte'
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import type { PageProps } from './$types'
 
+  const { data }: PageProps = $props()
   const auth = getAuthContext()
-  let { data } = $props()
 
   function hostOf(url: string) {
     try {

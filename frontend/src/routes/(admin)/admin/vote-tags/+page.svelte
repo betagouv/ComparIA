@@ -10,9 +10,9 @@
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import type { VoteTagSign } from '$lib/voteTags'
-  import type { PageData } from './$types'
+  import type { PageProps } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  const { data }: PageProps = $props()
 
   const auth = getAuthContext()
   const refetch = () => invalidate('admin:vote-tags')

@@ -7,8 +7,9 @@
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
   import { setVoteTagsContext } from '$lib/voteTags'
+  import type { LayoutProps } from './$types'
 
-  let { children, data } = $props()
+  let { children, data }: LayoutProps = $props()
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)

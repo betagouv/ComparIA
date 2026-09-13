@@ -4,7 +4,9 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  let { data } = $props()
+  import type { PageProps } from './$types'
+
+  const { data }: PageProps = $props()
 </script>
 
 <SeoHead title={m['seo.titles.rgesn']()} />
