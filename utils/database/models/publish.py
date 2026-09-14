@@ -8,6 +8,7 @@ from pydantic import TypeAdapter, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.database.encrypted import EncryptedJSONFields
 from utils.validation import NonEmptyStr
 
 from .utils import BaseDBModel, Datetime, OptionalDatetime
@@ -127,8 +128,9 @@ def config_to_store(
 class PublishDestinationBase(BaseDBModel):
     name: Annotated[NonEmptyStr, Field(max_length=100)]
     kind: Annotated[PublishKind, Field(sa_type=String)]
-    # Credentials live here in plain text, like LLMEndpoint.api_key, and never
-    # leave the backend: the admin API answers with the Public config models.
+    # Credentials live here and never leave the backend: the admin API answers
+    # with the Public config models. The table stores the secret fields
+    # encrypted, see PublishDestination.
     config: Annotated[dict, Field(sa_type=JSONB)]
     # Which datasets this destination receives. Naming them per destination is
     # what lets an instance put the open dataset on a public repository and the
@@ -140,6 +142,8 @@ class PublishDestinationBase(BaseDBModel):
 
 class PublishDestination(PublishDestinationBase, table=True):
     __tablename__ = "publish_destination"
+
+    config: Annotated[dict, Field(sa_type=EncryptedJSONFields(SECRET_FIELDS))]
 
     def parsed_config(self) -> HuggingFaceConfig | S3Config:
         return _CONFIG.validate_python(self.config)
