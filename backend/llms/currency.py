@@ -9,6 +9,7 @@ from typing import Literal
 
 import httpx
 from pydantic import BaseModel
+
 from backend.config import settings
 from utils.database.models.exchange_rate import ExchangeRate
 from utils.database.session import get_session
