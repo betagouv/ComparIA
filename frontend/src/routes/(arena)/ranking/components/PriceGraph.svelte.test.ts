@@ -57,8 +57,9 @@ describe('PriceGraph', () => {
     expect(frontier).toHaveLength(3)
     expect(container.querySelectorAll('svg circle')).toHaveLength(4)
 
+    // Three models plus the flat run to each edge of the chart.
     const line = container.querySelector('svg polyline.frontier')!
-    expect(line.getAttribute('points')!.split(' ')).toHaveLength(3)
+    expect(line.getAttribute('points')!.split(' ')).toHaveLength(5)
 
     const labels = [...container.querySelectorAll('svg text.label')].map((t) => t.textContent)
     expect(labels).toEqual(['cheap-weak', 'mid', 'pricey-best'])

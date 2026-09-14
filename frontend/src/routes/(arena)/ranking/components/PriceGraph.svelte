@@ -1,6 +1,7 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle } from '$components/dsfr'
+  import GraphDot from './GraphDot.svelte'
   import { convertFromUsd, formatCurrencyFromUsd } from '$lib/currency'
   import type { APILLMData } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
@@ -72,7 +73,7 @@
   let height = $state(700)
 
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
-  const dotRadius = 7
+  const dotRadius = 11
 
   const minMaxX = $derived.by(() => {
     const [min, max] = extent(filteredModels, (llm) => llm.x) as [number, number]
@@ -82,7 +83,9 @@
     const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
     return [min - 5, max + 35] as const
   })
-  const xScale = $derived(scaleLog(minMaxX, [padding.left, width - padding.right]))
+  // Price runs right to left, so the frontier reads as a descent from the
+  // best model to the cheapest and the top-left corner is the one to aim for.
+  const xScale = $derived(scaleLog(minMaxX, [width - padding.right, padding.left]))
   const yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
   // d3's log ticks fill every decade; keep the round ones so labels stay apart.
   const xTicks = $derived(
@@ -103,9 +106,18 @@
   })
   const price = (usd: number) => formatCurrencyFromUsd(usd, commons.currency, locale)
 
-  const frontierPath = $derived(
-    frontierModels.map((llm) => `${xScale(llm.x)},${yScale(llm.y)}`).join(' ')
-  )
+  // Flat runs to both edges: nothing cheaper beats the cheapest frontier
+  // model, nothing pricier beats the best one.
+  const frontierPath = $derived.by(() => {
+    if (frontierModels.length === 0) return ''
+    const first = frontierModels[0]
+    const last = frontierModels[frontierModels.length - 1]
+    return [
+      `${xScale(minMaxX[0])},${yScale(first.y)}`,
+      ...frontierModels.map((llm) => `${xScale(llm.x)},${yScale(llm.y)}`),
+      `${xScale(minMaxX[1])},${yScale(last.y)}`
+    ].join(' ')
+  })
   const showLabels = $derived(width >= 640)
 
   onMount(() => {
@@ -216,7 +228,7 @@
           <g class="axis y-axis">
             {#each yTicks as tick (tick)}
               <g transform="translate(0, {yScale(tick)})">
-                <line x1={padding.left} x2={xScale(minMaxX[1])} />
+                <line x1={padding.left} x2={width - padding.right} />
                 <text x={padding.left - 8} y="+4">{tick}</text>
               </g>
             {/each}
@@ -248,17 +260,18 @@
           {/if}
 
           <!-- frontier -->
-          {#if frontierModels.length > 1}
+          {#if frontierModels.length > 0}
             <polyline class="frontier" points={frontierPath} />
           {/if}
 
           <!-- data -->
           {#each filteredModels as llm (llm.id)}
             {@const onFrontier = frontierIds.has(llm.id)}
-            <circle
+            <GraphDot
               cx={xScale(llm.x)}
               cy={yScale(llm.y)}
               r={onFrontier ? dotRadius + 2 : dotRadius}
+              model={llm}
               class={[
                 llm.license.kind,
                 {
@@ -267,19 +280,21 @@
                   blurred: hoveredModel && hoveredModel !== llm.id
                 }
               ]}
-              aria-hidden="true"
               onpointerenter={() => onModelHover(llm)}
               onpointerleave={() => (hoveredModel = undefined)}
             />
           {/each}
 
-          <!-- frontier labels -->
+          <!-- frontier labels, flipped to the left of the dot when they
+               would run off the chart -->
           {#if showLabels && !hoveredModel}
             {#each frontierModels as llm (llm.id)}
+              {@const flip = xScale(llm.x) + dotRadius + 6 + llm.human_id.length * 7 > width}
               <text
                 class="label"
-                x={xScale(llm.x) + dotRadius + 6}
+                x={xScale(llm.x) + (flip ? -1 : 1) * (dotRadius + 6)}
                 y={yScale(llm.y) - dotRadius - 4}
+                text-anchor={flip ? 'end' : 'start'}
                 aria-hidden="true">{llm.human_id}</text
               >
             {/each}
@@ -412,24 +427,32 @@
       pointer-events: none;
     }
 
-    circle {
-      stroke-width: 1px;
-      stroke: var(--grey-200-850);
-      opacity: 0.6;
+    /* Dots live in GraphDot, hence the :global hooks. A ring in the licence
+       colour around the lab mark; the frontier's ring is thicker and green so
+       the line runs through matching dots. */
+    svg :global(circle) {
+      fill: var(--background-default-grey);
+      stroke-width: 2px;
+    }
+    svg :global(circle.frontier) {
+      stroke: var(--cg-green);
+      stroke-width: 3px;
+    }
 
-      &.frontier {
-        opacity: 1;
-        stroke: var(--cg-green);
-        stroke-width: 2.5px;
-      }
-
-      &.hovered {
-        opacity: 1;
-      }
-
-      &.blurred {
-        opacity: 0.3;
-      }
+    svg :global(circle),
+    svg :global(foreignObject) {
+      opacity: 0.55;
+      transition: opacity 0.15s;
+    }
+    svg :global(circle.frontier),
+    svg :global(circle.frontier + foreignObject),
+    svg :global(circle.hovered),
+    svg :global(circle.hovered + foreignObject) {
+      opacity: 1;
+    }
+    svg :global(circle.blurred),
+    svg :global(circle.blurred + foreignObject) {
+      opacity: 0.25;
     }
 
     .frontier-swatch {
@@ -441,17 +464,17 @@
     }
 
     /* Dots color, same ramp as the licence badges */
-    .open-source {
-      fill: var(--cg-green);
-      background-color: var(--cg-green);
+    :global(.open-source) {
+      stroke: var(--cg-green);
+      border-color: var(--cg-green);
     }
-    .open-weights {
-      fill: var(--yellow-tournesol-main-731);
-      background-color: var(--yellow-tournesol-main-731);
+    :global(.open-weights) {
+      stroke: var(--yellow-tournesol-main-731);
+      border-color: var(--yellow-tournesol-main-731);
     }
-    .proprietary {
-      fill: var(--cg-orange);
-      background-color: var(--cg-orange);
+    :global(.proprietary) {
+      stroke: var(--cg-orange);
+      border-color: var(--cg-orange);
     }
   }
 
@@ -467,9 +490,11 @@
   }
 
   .graph-legend {
+    /* Rings, like the dots on the chart. */
     .dot {
       width: 14px;
       height: 14px;
+      border-width: 3px;
     }
   }
 </style>
