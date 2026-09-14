@@ -1698,6 +1698,8 @@
                     "n_match": "Total votes",
                     "name": "Model",
                     "organisation": "Organization",
+                    "price_in": "Input price<br>(1M tokens)",
+                    "price_out": "Output price<br>(1M tokens)",
                     "rank": "Rank",
                     "rank_number": "Rank",
                     "release": "Release date",
@@ -1709,6 +1711,7 @@
                     "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
                     "consumption": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
                     "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
+                    "price": "Indicative price for use through an API, per million tokens, converted to the displayed currency. The input is the request sent, the output the answer generated.",
                     "rank": "Rank assigned based on Bradley-Terry satisfaction score",
                     "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
                     "trust_range": "Interval indicating the reliability of the rank: the narrower the interval, the more reliable the rank estimate. There is a 95% chance that the model's true rank is within this range."
