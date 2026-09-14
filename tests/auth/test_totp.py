@@ -495,7 +495,150 @@ def test_confirming_with_a_wrong_code_changes_nothing():
     assert updates_on(session.statements, "auth_session") == []
 
 
-if __name__ == "__main__":
-    import pytest as _pytest
+# Routes
 
-    sys.exit(_pytest.main([__file__, "-q"]))
+
+@contextlib.contextmanager
+def routed(**fakes):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    import backend.auth.router as auth_router
+
+    app = FastAPI()
+    app.include_router(auth_router.router)
+    with patched(auth_router, **fakes):
+        yield TestClient(app)
+
+
+def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
+    async def challenged(**_kwargs):
+        return auth_services.LoginResult("totp_challenge", "challenge-token")
+
+    class NoRedis:
+        def get(self, _key):
+            return None
+
+        def delete(self, _key):
+            pass
+
+    with routed(verify_login_code=challenged, get_redis_client=NoRedis) as client:
+        r = client.post(
+            "/auth/email/verify", json={"email": "admin@example.org", "code": "123456"}
+        )
+
+    assert r.status_code == 200
+    assert r.json() == {"email": "admin@example.org", "totp_required": True}
+    assert "auth_totp_challenge" in r.cookies
+    assert "auth_session" not in r.cookies
+    set_cookie = r.headers["set-cookie"]
+    assert "HttpOnly" in set_cookie
+    assert "Max-Age=600" in set_cookie
+
+
+def test_the_second_factor_needs_the_challenge_cookie():
+    with routed() as client:
+        r = client.post("/auth/totp/verify", json={"code": "123456"})
+    assert r.status_code == 401
+
+
+def test_the_second_factor_wants_six_digits():
+    with routed() as client:
+        r = client.post("/auth/totp/verify", json={"code": "12345"})
+        assert r.status_code == 422
+        r = client.post("/auth/totp/verify", json={"code": "abcdef"})
+        assert r.status_code == 422
+
+
+def test_a_wrong_second_factor_keeps_the_challenge():
+    async def wrong(**_kwargs):
+        raise auth_totp.InvalidTotpCodeError()
+
+    with routed(verify_totp_challenge=wrong) as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post("/auth/totp/verify", json={"code": "000000"})
+
+    assert r.status_code == 400
+    assert "auth_totp_challenge" not in r.headers.get("set-cookie", "")
+
+
+def test_an_expired_second_factor_sends_the_visitor_back_to_the_start():
+    async def expired(**_kwargs):
+        raise auth_totp.TotpChallengeExpiredError()
+
+    with routed(verify_totp_challenge=expired) as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post("/auth/totp/verify", json={"code": "000000"})
+
+    assert r.status_code == 410
+    assert 'auth_totp_challenge=""' in r.headers["set-cookie"]
+
+
+def test_a_right_second_factor_swaps_the_challenge_for_a_session():
+    seen = {}
+
+    async def right(**kwargs):
+        seen.update(kwargs)
+        return "session-token"
+
+    async def whoami(_token):
+        return User(email="admin@example.test")
+
+    with routed(verify_totp_challenge=right, get_user_from_token=whoami) as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post(
+            "/auth/totp/verify",
+            json={"code": " 123 456 "},
+            headers={"origin": "http://testserver"},
+        )
+
+    assert r.status_code == 200
+    assert r.json() == {"email": "admin@example.test"}
+    assert seen["token"] == "challenge-token"
+    assert seen["code"] == "123456"
+    cookies = r.headers.get_list("set-cookie")
+    assert any(c.startswith('auth_totp_challenge=""') for c in cookies)
+    assert any(c.startswith("auth_session=session-token") for c in cookies)
+
+
+def test_the_second_factor_refuses_a_cross_site_origin():
+    with routed() as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post(
+            "/auth/totp/verify",
+            json={"code": "123456"},
+            headers={"origin": "https://attacker.example"},
+        )
+    assert r.status_code == 403
+
+
+def test_me_says_whether_the_authenticator_is_enrolled():
+    user = User(email="admin@example.test", role="admin")
+
+    async def whoami(_token):
+        return user
+
+    async def enrolled_yes(_user_id):
+        return True
+
+    with routed(get_user_from_token=whoami, has_confirmed_totp=enrolled_yes) as client:
+        client.cookies.set("auth_session", "session-token")
+        r = client.get("/auth/me")
+
+    assert r.json() == {
+        "user": {"email": "admin@example.test", "role": "admin", "totp_enabled": True}
+    }
+
+
+def test_logout_drops_a_half_finished_sign_in_too():
+    with routed() as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post("/auth/logout")
+    assert r.status_code == 204
+    assert any(
+        c.startswith('auth_totp_challenge=""') for c in r.headers.get_list("set-cookie")
+    )
+
+
+if __name__ == "__main__":
+    sys.exit(pytest.main([__file__, "-q"]))
