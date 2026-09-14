@@ -406,6 +406,28 @@ async def _revoke_other_user_sessions(
     )
 
 
+async def revoke_user_access(session: "AsyncSession", user_id: uuid.UUID) -> None:
+    """Close every way into the account: live sessions, unused email codes
+    and unused invite links. For an account being deleted or reset, so that
+    a later revival does not bring an old token back to life. Does not commit."""
+    now = datetime.now()
+    await session.execute(
+        sa_update(AuthSession)
+        .where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
+        .values(revoked_at=now)
+    )
+    await session.execute(
+        sa_update(LoginCode)
+        .where(LoginCode.user_id == user_id, LoginCode.used_at.is_(None))
+        .values(used_at=now)
+    )
+    await session.execute(
+        sa_delete(InviteToken).where(
+            InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+        )
+    )
+
+
 async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:
     """Forget the authenticator and any sign-in waiting on it. Does not commit."""
     await session.execute(
