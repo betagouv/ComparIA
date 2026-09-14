@@ -145,11 +145,20 @@ def test_a_code_is_refused_once_its_step_has_been_used():
     )
 
 
-def test_a_code_must_be_six_digits():
+def test_a_code_must_be_six_ascii_digits():
     step = auth_totp.current_step()
     assert auth_totp.matching_step(SECRET, code_at(step)[:5]) is None
     assert auth_totp.matching_step(SECRET, " " + code_at(step)) is None
     assert auth_totp.matching_step(SECRET, "abcdef") is None
+    # Other scripts' digits match `\d` and would crash the comparison.
+    assert auth_totp.matching_step(SECRET, "١٢٣٤٥٦") is None
+
+
+def test_the_routes_refuse_non_ascii_digits_with_a_422():
+    with routed() as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post("/auth/totp/verify", json={"code": "١٢٣٤٥٦"})
+    assert r.status_code == 422
 
 
 def test_every_candidate_is_compared_before_answering():
