@@ -311,3 +311,22 @@ if __name__ == "__main__":
     for name, test in sorted(dict(globals()).items()):
         if name.startswith("test_"):
             test()
+
+
+def test_signing_in_claims_no_conversation_on_its_own():
+    """Attribution is the explicit merge, keyed on the anonymous session
+    cookie. The analytics visitor id is readable by any script on the page,
+    so a sign-in must not use it to hand conversations over."""
+    user = User(email="personne@example.test")
+    session = FakeSession(user)
+
+    async def run():
+        return await auth_services._create_session(
+            session, user, "192.0.2.10", "UA", anonymous_user_hash=None
+        )
+
+    asyncio.run(run())
+
+    assert not [
+        s for s in session.statements if s.is_update and s.table.name == "comparison"
+    ]
