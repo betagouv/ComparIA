@@ -188,7 +188,7 @@
   }
 </script>
 
-<div bind:this={formContainer} {...props} class={['my-10 mx-8', props.class]}>
+<div bind:this={formContainer} {...props} class={['py-10 px-8', props.class]}>
   <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
   <p class="text-xs! mb-6! text-grey">
     {m['auth.modal.email.subtitle']({ platformName })}
