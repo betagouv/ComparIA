@@ -179,7 +179,12 @@ async def has_confirmed_totp(user_id: uuid.UUID) -> bool:
 
 
 async def _get_user_totp(session, user_id: uuid.UUID) -> UserTotp | None:
-    result = await session.exec(select(UserTotp).where(UserTotp.user_id == user_id))
+    """The user's row, locked until the transaction ends: two requests
+    checking codes at once must not both pass on the same time step, and two
+    device changes must not interleave."""
+    result = await session.exec(
+        select(UserTotp).where(UserTotp.user_id == user_id).with_for_update()
+    )
     return result.first()
 
 
@@ -273,12 +278,18 @@ async def verify_totp_challenge(
     """
     now = datetime.now()
     async with get_session() as session:
+        # Locked, so concurrent attempts on one challenge queue up: the
+        # attempt counter cannot lose increments and a code cannot be
+        # consumed twice. The user's TOTP row is locked next, always in this
+        # order, so two challenges of one user cannot deadlock.
         result = await session.exec(
-            select(TotpChallenge).where(
+            select(TotpChallenge)
+            .where(
                 TotpChallenge.token_hash == _hash(token),
                 TotpChallenge.used_at.is_(None),
                 TotpChallenge.expires_at > now,
             )
+            .with_for_update()
         )
         challenge = result.first()
         if not challenge or challenge.attempts >= _TOTP_CHALLENGE_MAX_ATTEMPTS:
