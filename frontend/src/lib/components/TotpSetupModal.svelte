@@ -4,7 +4,7 @@
   import TotpCodeInput from '$components/TotpCodeInput.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
-  import { tick } from 'svelte'
+  import { onMount, tick } from 'svelte'
 
   const MODAL_ID = 'totp-setup-modal'
 
@@ -49,6 +49,15 @@
     error = undefined
     busy = false
   }
+
+  // The secret must not linger in the DOM once the modal is closed. DSFR
+  // announces closing with this event; Modal's own onClose fires on blur,
+  // which also happens when focus moves into the form.
+  onMount(() => {
+    const el = document.getElementById(MODAL_ID)
+    el?.addEventListener('dsfr.conceal', reset)
+    return () => el?.removeEventListener('dsfr.conceal', reset)
+  })
 
   export async function start() {
     reset()
@@ -119,12 +128,7 @@
   }
 </script>
 
-<Modal
-  id={MODAL_ID}
-  titleId="totp-setup-title"
-  sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6"
-  onClose={reset}
->
+<Modal id={MODAL_ID} titleId="totp-setup-title" sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6">
   <div bind:this={container}>
     <h2 id="totp-setup-title" class="fr-modal__title">{m['auth.settings.totp.modal.title']()}</h2>
 
