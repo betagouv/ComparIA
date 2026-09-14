@@ -16,6 +16,8 @@ from pydantic import computed_field, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
+from utils.database.encrypted import EncryptedStr
+
 from .utils import AutoDatetime, ModelId
 
 PromptCheckAction = Literal["off", "log", "warn", "block"]
@@ -113,8 +115,8 @@ class PromptCheck(SQLModel, table=True):
     model: str = Field(default=DEFAULT_MODEL)
     # Overrides MISTRAL_API_KEY when set, so an instance can be configured
     # without a redeploy. Never leaves the backend: PromptCheckPublic reports
-    # whether one is set, not what it is.
-    api_key: str | None = Field(default=None)
+    # whether one is set, not what it is. Encrypted at rest.
+    api_key: str | None = Field(default=None, sa_type=EncryptedStr)
     categories: Annotated[dict[str, dict], Field(sa_type=JSONB)] = {}
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
