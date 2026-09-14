@@ -25,7 +25,7 @@ from sqlmodel import select
 from backend.auth.services import (
     _create_session,
     _hash,
-    revoke_other_user_sessions,
+    _revoke_other_user_sessions,
 )
 from backend.config import settings
 from utils.database.models.auth import TotpChallenge, User, UserTotp
@@ -256,9 +256,11 @@ async def confirm_totp_setup(user: User, code: str, current_session_token: str) 
         totp.last_used_step = step
         totp.updated_at = now
         session.add(totp)
+        # Same transaction as the confirmation: an authenticator in force
+        # with the old sessions still alive would let them into the admin
+        # area without ever presenting a code.
+        await _revoke_other_user_sessions(session, user.id, current_session_token)
         await session.commit()
-
-    await revoke_other_user_sessions(user.id, current_session_token)
 
 
 # Sign-in challenge

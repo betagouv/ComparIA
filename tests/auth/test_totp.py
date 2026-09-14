@@ -454,6 +454,8 @@ def test_confirming_promotes_the_pending_secret_and_signs_other_sessions_out():
     [revocation] = updates_on(session.statements, "auth_session")
     assert revocation["token_hash_1"] == auth_services._hash("keep-me")
     assert revocation["revoked_at"] is not None
+    # One transaction: the revocation is issued before the single commit.
+    assert session.commits == 1
 
 
 def test_confirming_needs_a_fresh_pending_secret():
