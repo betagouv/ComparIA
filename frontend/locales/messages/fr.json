@@ -590,6 +590,14 @@
             "signLabel": "Type",
             "subtitle": "Ajoutez et gérez les étiquettes que les visiteurs attachent à leur vote.",
             "title": "Étiquettes de vote"
+        },
+        "users": {
+            "resetTotp": {
+                "title": "Réinitialiser la double authentification",
+                "intro": "Oublier l’application d’authentification de {email} ? Cette personne sera déconnectée partout et devra en configurer une nouvelle à sa prochaine visite de l’administration.",
+                "warning": "Ne le faites que pour quelqu’un qui vous l’a demandé, par un canal de confiance : son code reçu par email suffira ensuite à rouvrir l’administration.",
+                "confirm": "Réinitialiser la double authentification de {email}"
+            }
         }
     },
     "arenaHome": {
