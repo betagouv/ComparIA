@@ -656,7 +656,13 @@
                 "neverPersonal": "personal medical, financial or legal information",
                 "neverPhone": "phone numbers"
             },
-            "merge": "Merge existing conversations with your account"
+            "merge": "Merge existing conversations with your account",
+            "totp": {
+                "label": "Authenticator app code",
+                "help": "The 6 digits shown by your app (Google Authenticator, Aegis, FreeOTP…).",
+                "error": "Wrong code.",
+                "expired": "Sign-in expired, request a new email code."
+            }
         },
         "settings": {
             "account": {

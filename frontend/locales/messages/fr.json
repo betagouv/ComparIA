@@ -656,7 +656,13 @@
                 "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
                 "neverPhone": "des numéros de téléphone"
             },
-            "merge": "Fusionner les conversations existantes avec votre compte"
+            "merge": "Fusionner les conversations existantes avec votre compte",
+            "totp": {
+                "label": "Code de l’application d’authentification",
+                "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
+                "error": "Code incorrect.",
+                "expired": "Connexion expirée, demandez un nouveau code par email."
+            }
         },
         "settings": {
             "account": {
