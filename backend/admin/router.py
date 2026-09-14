@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from datetime import datetime
@@ -380,6 +381,9 @@ async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> N
         )
     if not reset:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # Who reset whom is worth a line in the log: the target's next sign-in
+    # needs only an email code until they enrol again.
+    logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
 
 
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
