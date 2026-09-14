@@ -10,7 +10,7 @@ from sqlalchemy import Date
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from utils.validation import NonEmptyStr
+from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
 from ..utils import BaseDBModel
 from .constants import LLMArchKind, LLMStatus
@@ -110,7 +110,7 @@ class LLMDataBase(BaseDBModel):
         NonEmptyStr, Field(index=True, unique=True, **FIELDS["human_id"])
     ]
     api_model_id: Annotated[
-        NonEmptyStr | None, Field(default=None, **FIELDS["api_model_id"])
+        str | None, StripAndEmptyAsNone, Field(default=None, **FIELDS["api_model_id"])
     ]  # used to computed litellm args alongside LLMEndpoint data
     endpoint_id: Annotated[
         UUID | None,
