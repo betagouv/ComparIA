@@ -378,18 +378,19 @@ async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:
         await session.commit()
 
 
-async def revoke_other_user_sessions(user_id: uuid.UUID, keep_token: str) -> None:
-    async with get_session() as session:
-        await session.execute(
-            sa_update(AuthSession)
-            .where(
-                AuthSession.user_id == user_id,
-                AuthSession.token_hash != _hash(keep_token),
-                AuthSession.revoked_at.is_(None),
-            )
-            .values(revoked_at=datetime.now())
+async def _revoke_other_user_sessions(
+    session: "AsyncSession", user_id: uuid.UUID, keep_token: str
+) -> None:
+    """Does not commit; caller owns the transaction."""
+    await session.execute(
+        sa_update(AuthSession)
+        .where(
+            AuthSession.user_id == user_id,
+            AuthSession.token_hash != _hash(keep_token),
+            AuthSession.revoked_at.is_(None),
         )
-        await session.commit()
+        .values(revoked_at=datetime.now())
+    )
 
 
 async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:
