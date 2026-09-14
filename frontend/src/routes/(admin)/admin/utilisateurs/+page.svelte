@@ -116,6 +116,7 @@
   // only reorder the current page.
   const cols = [
     { id: 'email', label: 'Email' },
+    { id: 'role', label: 'Role' },
     { id: 'source', label: 'Source' },
     { id: 'created_at', label: 'Added', kind: 'date' },
     { id: 'actions', label: 'Actions' }
@@ -157,6 +158,8 @@
     {#snippet cell(row, col)}
       {#if col.id === 'email'}
         <span class="fr-text--sm">{row.email}</span>
+      {:else if col.id === 'role'}
+        <Badge size="sm" text={row.role} variant={row.role === 'admin' ? 'blue-ecume' : ''} />
       {:else if col.id === 'source'}
         <Badge size="sm" text={row.source} variant={sourceBadgeVariant(row.source)} />
       {:else if col.id === 'created_at'}
