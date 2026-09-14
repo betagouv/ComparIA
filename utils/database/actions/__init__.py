@@ -14,5 +14,6 @@ from .migrate_user_messages import migrate_user_messages
 from .migrate_votes import migrate_votes
 from .purge_inactive import purge_inactive
 from .purge_retention import purge_retention
+from .reencrypt_secrets import reencrypt_secrets
 from .reset_totp import reset_totp
 from .seed import seed_admins
