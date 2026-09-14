@@ -33,11 +33,11 @@
 
   {@render formItem?.({ 'aria-describedby': '', id, required })}
 
-  {#if error}
-    <div class="fr-messages-group" id={messagesId} aria-live="polite">
+  <div class="fr-messages-group" id={messagesId} aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </fieldset>
 
 <style lang="postcss">

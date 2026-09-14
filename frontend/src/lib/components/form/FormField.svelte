@@ -32,11 +32,11 @@
     {@render formItem?.(props_)}
   {/if}
 
-  {#if error}
-    <div class="fr-messages-group" id={messagesId} aria-live="polite">
+  <div class="fr-messages-group" id={messagesId} aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
 
 <style lang="postcss">
