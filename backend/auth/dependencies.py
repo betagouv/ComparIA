@@ -3,8 +3,14 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from backend.auth.services import _hash, get_user_from_token
+from backend.auth.totp import has_confirmed_totp
 from backend.config import ANONYMOUS_SESSION_COOKIE
-from backend.errors import AnonymousRequiredError, AuthRequiredError, RoleRequiredError
+from backend.errors import (
+    AnonymousRequiredError,
+    AuthRequiredError,
+    RoleRequiredError,
+    TotpSetupRequiredError,
+)
 from utils.database.models.auth import User, UserRole
 
 
@@ -33,7 +39,13 @@ async def require_user(request: Request, role: UserRole | None = None) -> User:
 
 
 async def require_admin(request: Request) -> User:
-    return await require_user(request, "admin")
+    """Admin routes need the role and an enrolled authenticator. A session
+    only exists once the second factor passed, so a signed-in admin without
+    one has simply never enrolled: send them to do it."""
+    user = await require_user(request, "admin")
+    if not await has_confirmed_totp(user.id):
+        raise TotpSetupRequiredError()
+    return user
 
 
 def anonymous_session_token(request: Request) -> str | None:
