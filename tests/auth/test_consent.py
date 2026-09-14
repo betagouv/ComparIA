@@ -435,7 +435,7 @@ def test_an_accepted_invite_carries_the_acceptance_of_the_visitor():
 
     async def accept_invite(**kwargs):
         accepted.update(kwargs)
-        return "session-token"
+        return auth_services.LoginResult("session", "session-token")
 
     with routed(
         has_current_terms_acceptance=granted, accept_invite=accept_invite
