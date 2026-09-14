@@ -4,7 +4,7 @@
 
   export type FormFieldProps = {
     formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
-  } & Omit<BaseFormFieldProps<'input' | 'select' | 'checkbox', string | boolean | null>, 'value'>
+  } & BaseFormFieldProps<'input' | 'select' | 'checkbox'>
 </script>
 
 <script lang="ts">

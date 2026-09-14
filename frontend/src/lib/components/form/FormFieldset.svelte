@@ -4,7 +4,7 @@
 
   export type FormFieldsetProps = {
     formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
-  } & Omit<BaseFormFieldProps<'fieldset', any>, 'value'>
+  } & BaseFormFieldProps<'fieldset'>
 </script>
 
 <script lang="ts">

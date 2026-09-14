@@ -1,7 +1,7 @@
 <script module lang="ts">
   export type FormToggleProps = {
     checkKind?: 'truth' | 'active'
-  } & BaseFormFieldProps<'toggle', boolean>
+  } & BaseFormFieldProps<'toggle'>
 </script>
 
 <script lang="ts">
@@ -17,7 +17,7 @@
     hidden,
     errors,
     checkKind = 'truth'
-  }: FormToggleProps = $props()
+  }: FormToggleProps & { value: boolean } = $props()
 
   const messagesId = $derived(`${id}-messages`)
   const hintId = $derived(`${id}-hint`)
