@@ -2,6 +2,7 @@ import logging
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Literal
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
@@ -35,18 +36,24 @@ from backend.auth.services import (
 from backend.auth.totp import (
     InvalidTotpCodeError,
     TotpChallengeExpiredError,
+    TotpCodeRequiredError,
+    TotpSetupMissingError,
+    confirm_totp_setup,
     has_confirmed_totp,
+    start_totp_setup,
     verify_totp_challenge,
 )
 from backend.config import settings
+from backend.errors import RoleRequiredError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
-from utils.database.models.auth import LegalDocument
+from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
+    REDIS_AUTH_TOTP_FAIL,
     REDIS_AUTH_VERIFY_FAIL,
     get_redis_client,
 )
@@ -83,16 +90,37 @@ class EmailVerifyBody(BaseModel):
     code: str
 
 
+def _six_digits(value: str) -> str:
+    value = re.sub(r"\s+", "", value)
+    if not re.fullmatch(r"\d{6}", value):
+        raise ValueError("code must be six digits")
+    return value
+
+
 class TotpCodeBody(BaseModel):
     code: str
 
     @field_validator("code")
     @classmethod
     def six_digits(cls, value: str) -> str:
-        value = re.sub(r"\s+", "", value)
-        if not re.fullmatch(r"\d{6}", value):
-            raise ValueError("code must be six digits")
-        return value
+        return _six_digits(value)
+
+
+class TotpSetupBody(BaseModel):
+    """`code` is only needed to replace an authenticator already in force."""
+
+    code: str | None = None
+
+    @field_validator("code")
+    @classmethod
+    def six_digits(cls, value: str | None) -> str | None:
+        return _six_digits(value) if value else None
+
+
+class TotpSetupResponse(BaseModel):
+    secret: str
+    otpauth_uri: str
+    qr_svg: str
 
 
 class InviteStatus(BaseModel):
@@ -414,7 +442,6 @@ async def totp_verify(
             code=body.code,
             ip=get_ip(request),
             user_agent=request.headers.get("user-agent"),
-            visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             anonymous_user_hash=_anonymous_hash(request),
         )
     except TotpChallengeExpiredError:
@@ -436,6 +463,93 @@ async def totp_verify(
     _set_session_cookie(response, token)
     user = await get_user_from_token(token)
     return {"email": user.email if user else None}
+
+
+_TOTP_ENROL_MAX_FAILS = 10
+_TOTP_ENROL_FAIL_TTL = 600
+
+
+def _totp_enrol_guard(user_id: UUID) -> None:
+    """Wrong codes while enrolling are bounded per account. Fail-open like the
+    other Redis counters: a Redis outage must not lock admins out."""
+    try:
+        count = get_redis_client().get(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+        if count and int(count) >= _TOTP_ENROL_MAX_FAILS:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, try again later.",
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
+
+def _totp_enrol_failed(user_id: UUID) -> None:
+    try:
+        client = get_redis_client()
+        key = REDIS_AUTH_TOTP_FAIL.format(user=user_id)
+        if client.incr(key) == 1:
+            client.expire(key, _TOTP_ENROL_FAIL_TTL)
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
+
+def _require_admin_role(user: User) -> None:
+    # Not `require_admin`: that one also wants an enrolled authenticator,
+    # which is the very thing these routes exist to set up.
+    if user.role != "admin":
+        raise RoleRequiredError("admin")
+
+
+@router.post("/totp/setup")
+async def totp_setup(
+    body: TotpSetupBody, user: RequiredUser, response: Response
+) -> TotpSetupResponse:
+    _require_admin_role(user)
+    _totp_enrol_guard(user.id)
+    app_settings = await get_app_settings()
+    try:
+        setup = await start_totp_setup(user, body.code, app_settings.platform_name)
+    except TotpCodeRequiredError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="totp_code_required",
+        )
+    except InvalidTotpCodeError:
+        _totp_enrol_failed(user.id)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid authenticator code.",
+        )
+    # The secret travels once, here. Nothing on the way may keep a copy.
+    response.headers["Cache-Control"] = "no-store"
+    return TotpSetupResponse(
+        secret=setup.secret, otpauth_uri=setup.otpauth_uri, qr_svg=setup.qr_svg
+    )
+
+
+@router.post("/totp/confirm", status_code=status.HTTP_204_NO_CONTENT)
+async def totp_confirm(
+    body: TotpCodeBody, user: RequiredUser, request: Request
+) -> None:
+    _require_admin_role(user)
+    _totp_enrol_guard(user.id)
+    try:
+        await confirm_totp_setup(
+            user, body.code, request.cookies.get(SESSION_COOKIE) or ""
+        )
+    except TotpSetupMissingError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No authenticator waiting to be confirmed, start again.",
+        )
+    except InvalidTotpCodeError:
+        _totp_enrol_failed(user.id)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid authenticator code.",
+        )
 
 
 @router.get("/invite/{token}")
