@@ -818,5 +818,97 @@ def test_a_plain_user_is_refused_before_the_authenticator_is_looked_at():
     assert refused.value.detail == "admin_required"
 
 
+# Peer reset
+
+
+def test_an_admin_cannot_reset_their_own_authenticator():
+    import backend.admin.services as admin_services
+
+    me = uuid.uuid4()
+    with pytest.raises(admin_services.CannotResetOwnTotpError):
+        asyncio.run(admin_services.reset_user_totp(me, me))
+
+
+def test_resetting_a_peer_drops_the_authenticator_and_their_sessions():
+    import backend.admin.services as admin_services
+
+    peer = User(email="peer@example.org", role="admin")
+    session = FakeSession(peer, [peer.id])
+
+    with fake_session(session, admin_services):
+        assert asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
+
+    deleted = {s.table.name for s in session.statements if s.is_delete}
+    assert deleted == {"auth_totp", "auth_totp_challenge"}
+    [revocation] = updates_on(session.statements, "auth_session")
+    assert revocation["revoked_at"] is not None
+    assert session.commits == 1
+
+
+def test_resetting_an_unenrolled_or_missing_peer_is_not_found():
+    import backend.admin.services as admin_services
+
+    peer = User(email="peer@example.org", role="admin")
+    with fake_session(FakeSession(peer, []), admin_services):
+        assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
+    with fake_session(FakeSession(None), admin_services):
+        assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
+
+
+def test_demoting_or_deleting_an_admin_forgets_their_authenticator():
+    import backend.admin.services as admin_services
+    from utils.database.models.auth import UserUpsert
+
+    class Count:
+        def one(self):
+            return 1
+
+    admin = User(email="admin@example.org", role="admin")
+
+    session = FakeSession(admin)
+    session.exec = lambda _s: _count()
+
+    async def _count():
+        return Count()
+
+    async def refresh(_user):
+        pass
+
+    session.refresh = refresh
+    with fake_session(session, admin_services):
+        with patched(admin_services, _user_public=_public):
+            asyncio.run(
+                admin_services.update_user(
+                    admin.id, UserUpsert(email=admin.email, role="user")
+                )
+            )
+    assert {s.table.name for s in session.statements if s.is_delete} == {
+        "auth_totp",
+        "auth_totp_challenge",
+    }
+
+    session = FakeSession(admin)
+    session.exec = lambda _s: _count()
+    with fake_session(session, admin_services):
+        assert asyncio.run(admin_services.delete_user(admin.id, uuid.uuid4()))
+    assert {s.table.name for s in session.statements if s.is_delete} == {
+        "auth_totp",
+        "auth_totp_challenge",
+    }
+
+
+async def _public(_session, user):
+    from utils.database.models.auth import UserPublic
+
+    return UserPublic(
+        id=user.id,
+        email=user.email,
+        role=user.role,
+        created_at="",
+        last_seen_at="",
+        source="",
+    )
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))
