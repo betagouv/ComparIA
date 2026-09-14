@@ -1,13 +1,11 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import update as sa_update
 from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.auth.services import drop_user_totp
+from backend.auth.services import drop_user_totp, revoke_user_access
 from utils.database.models.auth import (
-    AuthSession,
     InviteToken,
     LoginCode,
     User,
@@ -208,6 +206,7 @@ async def cancel_user_invite(user_id: uuid.UUID) -> bool:
         if user:
             user.deleted_at = datetime.now()
             session.add(user)
+        await revoke_user_access(session, user_id)
         await drop_user_totp(session, user_id)
 
         await session.commit()
@@ -239,7 +238,8 @@ async def delete_user(user_id: uuid.UUID, current_user_id: uuid.UUID) -> bool:
                 raise CannotDeleteLastAdminError()
 
         # Soft-deleted accounts get revived by a later invite or manual add,
-        # and must not come back tied to an old authenticator.
+        # and must not come back with an old session or authenticator.
+        await revoke_user_access(session, user_id)
         await drop_user_totp(session, user_id)
         user.deleted_at = datetime.now()
         session.add(user)
@@ -262,10 +262,6 @@ async def reset_user_totp(user_id: uuid.UUID, current_user_id: uuid.UUID) -> boo
             return False
 
         await drop_user_totp(session, user_id)
-        await session.execute(
-            sa_update(AuthSession)
-            .where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
-            .values(revoked_at=datetime.now())
-        )
+        await revoke_user_access(session, user_id)
         await session.commit()
         return True

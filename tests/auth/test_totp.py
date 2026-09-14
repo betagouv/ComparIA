@@ -841,7 +841,7 @@ def test_resetting_a_peer_drops_the_authenticator_and_their_sessions():
         assert asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
 
     deleted = {s.table.name for s in session.statements if s.is_delete}
-    assert deleted == {"auth_totp", "auth_totp_challenge"}
+    assert deleted == {"auth_totp", "auth_totp_challenge", "auth_invite_token"}
     [revocation] = updates_on(session.statements, "auth_session")
     assert revocation["revoked_at"] is not None
     assert session.commits == 1
@@ -857,7 +857,7 @@ def test_resetting_an_unenrolled_or_missing_peer_is_not_found():
         assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
 
 
-def test_demoting_or_deleting_an_admin_forgets_their_authenticator():
+def test_demoting_an_admin_forgets_their_authenticator():
     import backend.admin.services as admin_services
     from utils.database.models.auth import UserUpsert
 
@@ -865,17 +865,15 @@ def test_demoting_or_deleting_an_admin_forgets_their_authenticator():
         def one(self):
             return 1
 
-    admin = User(email="admin@example.org", role="admin")
-
-    session = FakeSession(admin)
-    session.exec = lambda _s: _count()
-
     async def _count():
         return Count()
 
     async def refresh(_user):
         pass
 
+    admin = User(email="admin@example.org", role="admin")
+    session = FakeSession(admin)
+    session.exec = lambda _s: _count()
     session.refresh = refresh
     with fake_session(session, admin_services):
         with patched(admin_services, _user_public=_public):
@@ -889,14 +887,63 @@ def test_demoting_or_deleting_an_admin_forgets_their_authenticator():
         "auth_totp_challenge",
     }
 
+
+def test_deleting_an_admin_closes_every_way_back_in():
+    """A soft-deleted account can be revived by an invite or a manual add,
+    so nothing from before may still open it: no session, no email code,
+    no invite link, no authenticator."""
+    import backend.admin.services as admin_services
+
+    class Count:
+        def one(self):
+            return 1
+
+    async def _count():
+        return Count()
+
+    admin = User(email="admin@example.org", role="admin")
     session = FakeSession(admin)
     session.exec = lambda _s: _count()
     with fake_session(session, admin_services):
         assert asyncio.run(admin_services.delete_user(admin.id, uuid.uuid4()))
+
     assert {s.table.name for s in session.statements if s.is_delete} == {
         "auth_totp",
         "auth_totp_challenge",
+        "auth_invite_token",
     }
+    [sessions] = updates_on(session.statements, "auth_session")
+    assert sessions["revoked_at"] is not None
+    [codes] = updates_on(session.statements, "auth_login_code")
+    assert codes["used_at"] is not None
+    assert session.commits == 1
+
+
+def test_cancelling_an_invite_closes_every_way_back_in_too():
+    import backend.admin.services as admin_services
+    from utils.database.models.auth import InviteToken
+
+    admin = User(email="admin@example.org", role="admin")
+    invite = InviteToken(
+        user_id=admin.id,
+        invited_by=uuid.uuid4(),
+        token_hash="x",
+        expires_at=datetime.now() + timedelta(hours=1),
+    )
+    session = FakeSession(admin, [invite])
+
+    async def delete(_obj):
+        pass
+
+    session.delete = delete
+    with fake_session(session, admin_services):
+        assert asyncio.run(admin_services.cancel_user_invite(admin.id))
+
+    assert [
+        u["revoked_at"] is not None
+        for u in updates_on(session.statements, "auth_session")
+    ] == [True]
+    assert "auth_totp" in {s.table.name for s in session.statements if s.is_delete}
 
 
 async def _public(_session, user):
