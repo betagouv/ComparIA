@@ -1,14 +1,18 @@
 import uuid
 from datetime import datetime
 
+from sqlalchemy import update as sa_update
 from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from backend.auth.services import drop_user_totp
 from utils.database.models.auth import (
+    AuthSession,
     InviteToken,
     LoginCode,
     User,
     UserPublic,
+    UserTotp,
     UserUpsert,
 )
 from utils.database.models.utils import escape_like
@@ -29,6 +33,11 @@ class CannotDemoteLastAdminError(Exception):
 
 class EmailAlreadyExistsError(Exception):
     pass
+
+
+class CannotResetOwnTotpError(Exception):
+    """Change your own device from the account page, with a code from the
+    current one; the reset is for an admin who has lost theirs."""
 
 
 async def _user_source(session: AsyncSession, user_id: uuid.UUID) -> str:
@@ -52,7 +61,20 @@ async def _user_source(session: AsyncSession, user_id: uuid.UUID) -> str:
         return "added_manually"
 
 
-def _to_user_public(user: User, source: str) -> UserPublic:
+async def _enrolled_user_ids(
+    session: AsyncSession, user_ids: list[uuid.UUID]
+) -> set[uuid.UUID]:
+    if not user_ids:
+        return set()
+    result = await session.exec(
+        select(UserTotp.user_id).where(
+            col(UserTotp.user_id).in_(user_ids), UserTotp.confirmed_at.is_not(None)
+        )
+    )
+    return set(result.all())
+
+
+def _to_user_public(user: User, source: str, totp_enabled: bool) -> UserPublic:
     return UserPublic(
         id=user.id,
         email=user.email,
@@ -60,6 +82,15 @@ def _to_user_public(user: User, source: str) -> UserPublic:
         created_at=user.created_at.isoformat(),
         last_seen_at=user.last_seen_at.isoformat(),
         source=source,
+        totp_enabled=totp_enabled,
+    )
+
+
+async def _user_public(session: AsyncSession, user: User) -> UserPublic:
+    return _to_user_public(
+        user,
+        await _user_source(session, user.id),
+        bool(await _enrolled_user_ids(session, [user.id])),
     )
 
 
@@ -87,8 +118,11 @@ async def list_users(
         )
         users = result.all()
 
+        enrolled = await _enrolled_user_ids(session, [user.id for user in users])
         rows = [
-            _to_user_public(user, await _user_source(session, user.id))
+            _to_user_public(
+                user, await _user_source(session, user.id), user.id in enrolled
+            )
             for user in users
         ]
 
@@ -113,7 +147,7 @@ async def create_user(data: UserUpsert) -> UserPublic:
         session.add(user)
         await session.commit()
         await session.refresh(user)
-        return _to_user_public(user, await _user_source(session, user.id))
+        return await _user_public(session, user)
 
 
 async def get_user(user_id: uuid.UUID) -> UserPublic | None:
@@ -121,7 +155,7 @@ async def get_user(user_id: uuid.UUID) -> UserPublic | None:
         user = await session.get(User, user_id)
         if not user or user.deleted_at is not None:
             return None
-        return _to_user_public(user, await _user_source(session, user.id))
+        return await _user_public(session, user)
 
 
 async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None:
@@ -144,12 +178,15 @@ async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None
             )
             if other_admins.one() == 0:
                 raise CannotDemoteLastAdminError()
+            # A plain user has no way to change or drop an authenticator, so
+            # a demoted admin must not keep being challenged for one.
+            await drop_user_totp(session, user.id)
 
         user.sqlmodel_update(data.model_dump(exclude={"id"}))
         session.add(user)
         await session.commit()
         await session.refresh(user)
-        return _to_user_public(user, await _user_source(session, user.id))
+        return await _user_public(session, user)
 
 
 async def cancel_user_invite(user_id: uuid.UUID) -> bool:
@@ -171,6 +208,7 @@ async def cancel_user_invite(user_id: uuid.UUID) -> bool:
         if user:
             user.deleted_at = datetime.now()
             session.add(user)
+        await drop_user_totp(session, user_id)
 
         await session.commit()
         return True
@@ -200,7 +238,34 @@ async def delete_user(user_id: uuid.UUID, current_user_id: uuid.UUID) -> bool:
             if other_admins.one() == 0:
                 raise CannotDeleteLastAdminError()
 
+        # Soft-deleted accounts get revived by a later invite or manual add,
+        # and must not come back tied to an old authenticator.
+        await drop_user_totp(session, user_id)
         user.deleted_at = datetime.now()
         session.add(user)
+        await session.commit()
+        return True
+
+
+async def reset_user_totp(user_id: uuid.UUID, current_user_id: uuid.UUID) -> bool:
+    """Forget another admin's authenticator so they can enrol a new one at
+    their next sign-in. Their sessions go with it: whoever holds one could
+    otherwise enrol their own device first."""
+    if user_id == current_user_id:
+        raise CannotResetOwnTotpError()
+
+    async with get_session() as session:
+        user = await session.get(User, user_id)
+        if not user or user.deleted_at is not None:
+            return False
+        if not await _enrolled_user_ids(session, [user_id]):
+            return False
+
+        await drop_user_totp(session, user_id)
+        await session.execute(
+            sa_update(AuthSession)
+            .where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
+            .values(revoked_at=datetime.now())
+        )
         await session.commit()
         return True

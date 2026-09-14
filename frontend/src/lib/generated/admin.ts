@@ -450,6 +450,7 @@ export interface UserPublic {
   created_at: string;
   last_seen_at: string;
   source: string;
+  totp_enabled?: boolean;
 }
 export interface UserUpsert {
   id?: string;
