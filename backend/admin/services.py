@@ -38,25 +38,52 @@ class CannotResetOwnTotpError(Exception):
     current one; the reset is for an admin who has lost theirs."""
 
 
-async def _user_source(session: AsyncSession, user_id: uuid.UUID) -> str:
-    invites_result = await session.exec(
-        select(InviteToken).where(InviteToken.user_id == user_id)
-    )
-    invites = invites_result.all()
-    codes_result = await session.exec(
-        select(LoginCode).where(LoginCode.user_id == user_id)
-    )
-    codes = codes_result.all()
-    if any(invite.used_at for invite in invites):
+def _source_of(
+    has_used_invite: bool, has_used_code: bool, has_invite: bool, has_code: bool
+) -> str:
+    if has_used_invite:
         return "email_invitation"
-    elif any(code.used_at for code in codes):
+    if has_used_code:
         return "email_code"
-    elif invites:
+    if has_invite:
         return "pending_invite"
-    elif codes:
+    if has_code:
         return "unknown"
-    else:
-        return "added_manually"
+    return "added_manually"
+
+
+async def _user_sources(
+    session: AsyncSession, user_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, str]:
+    """How each account came to exist, from its invite and login code
+    history. Two grouped queries for the whole page, not two per user."""
+    if not user_ids:
+        return {}
+    invites = await session.exec(
+        select(InviteToken.user_id, func.bool_or(InviteToken.used_at.is_not(None)))
+        .where(col(InviteToken.user_id).in_(user_ids))
+        .group_by(InviteToken.user_id)
+    )
+    invited = dict(invites.all())
+    codes = await session.exec(
+        select(LoginCode.user_id, func.bool_or(LoginCode.used_at.is_not(None)))
+        .where(col(LoginCode.user_id).in_(user_ids))
+        .group_by(LoginCode.user_id)
+    )
+    coded = dict(codes.all())
+    return {
+        user_id: _source_of(
+            bool(invited.get(user_id)),
+            bool(coded.get(user_id)),
+            user_id in invited,
+            user_id in coded,
+        )
+        for user_id in user_ids
+    }
+
+
+async def _user_source(session: AsyncSession, user_id: uuid.UUID) -> str:
+    return (await _user_sources(session, [user_id]))[user_id]
 
 
 async def _enrolled_user_ids(
@@ -116,11 +143,11 @@ async def list_users(
         )
         users = result.all()
 
-        enrolled = await _enrolled_user_ids(session, [user.id for user in users])
+        user_ids = [user.id for user in users]
+        enrolled = await _enrolled_user_ids(session, user_ids)
+        sources = await _user_sources(session, user_ids)
         rows = [
-            _to_user_public(
-                user, await _user_source(session, user.id), user.id in enrolled
-            )
+            _to_user_public(user, sources[user.id], user.id in enrolled)
             for user in users
         ]
 
