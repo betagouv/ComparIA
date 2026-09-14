@@ -53,6 +53,13 @@ export type AnyFormItemProps =
   | FormFieldsetItemProps
   | FormFieldsetListProps
 
+export type FormItemSnippetProps = {
+  'aria-describedby': string
+  'aria-invalid'?: 'true'
+  id: string
+  required?: boolean
+}
+
 function parseSchema(
   schema: JSONSchema,
   id: string,

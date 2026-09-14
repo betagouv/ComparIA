@@ -1,9 +1,9 @@
 <script module lang="ts">
-  import type { BaseFormFieldProps } from '$lib/utils/form'
+  import type { BaseFormFieldProps, FormItemSnippetProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
   export type FormFieldProps = {
-    formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
+    formItem: Snippet<[FormItemSnippetProps]>
   } & BaseFormFieldProps<'input' | 'select' | 'checkbox'>
 </script>
 
@@ -11,8 +11,13 @@
   let { id, label, required, hidden, component, help, errors, formItem }: FormFieldProps = $props()
 
   const messagesId = $derived(`${id}-messages`)
-  const props_ = $derived({ 'aria-describedby': messagesId, id, required })
   const error = $derived(errors?.[id])
+  const props_ = $derived({
+    'aria-describedby': messagesId,
+    'aria-invalid': error ? ('true' as const) : undefined,
+    id,
+    required
+  })
 </script>
 
 <div class={[`fr-${component}-group`, { [`fr-${component}-group--error`]: !!error, hidden }]}>

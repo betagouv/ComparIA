@@ -34,6 +34,7 @@
     {disabled}
     class="fr-toggle__input"
     aria-describedby="{hintId} {messagesId}"
+    aria-invalid={error ? 'true' : undefined}
   />
 
   <label
