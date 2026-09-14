@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import queue
+import re
 import sys
 from logging.handlers import WatchedFileHandler
 
@@ -159,6 +160,22 @@ def configure_logger() -> logging.Logger:
     return logger
 
 
+class _RedactInviteToken(logging.Filter):
+    """An invite link is a credential: whoever opens it first is signed in.
+    The token is the last path segment of `/api/auth/invite/<token>`, and the
+    access log would otherwise keep a copy of every link ever opened."""
+
+    _pattern = re.compile(r"(/auth/invite/)(?!accept(?:[/?\s]|$))[^/?\s]+")
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.args:
+            record.args = tuple(
+                self._pattern.sub(r"\1<redacted>", arg) if isinstance(arg, str) else arg
+                for arg in record.args
+            )
+        return True
+
+
 def configure_uvicorn_logging() -> None:
     """
     Configure uvicorn/FastAPI loggers to use the same handlers as languia logger.
@@ -177,6 +194,7 @@ def configure_uvicorn_logging() -> None:
         uvicorn_logger = logging.getLogger(logger_name)
         uvicorn_logger.handlers.clear()
         uvicorn_logger.propagate = False
+        uvicorn_logger.addFilter(_RedactInviteToken())
 
         if settings.LANGUIA_DEBUG:
             uvicorn_logger.setLevel(logging.DEBUG)
