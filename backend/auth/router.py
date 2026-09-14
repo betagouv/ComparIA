@@ -92,7 +92,7 @@ class EmailVerifyBody(BaseModel):
 
 def _six_digits(value: str) -> str:
     value = re.sub(r"\s+", "", value)
-    if not re.fullmatch(r"\d{6}", value):
+    if not re.fullmatch(r"[0-9]{6}", value):
         raise ValueError("code must be six digits")
     return value
 
