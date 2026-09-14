@@ -1,14 +1,36 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
 import { PRIVACY_POLICY_PATH, TERMS_PATH, ACCESSIBILITY_PATH, ECODESIGN_PATH } from '$lib/consent'
+import { expectAccessible } from '$lib/testing/a11y'
 
 const request = vi.fn()
+const mocks = vi.hoisted(() => ({
+  auth: { user: { email: 'personne@example.org', role: 'user', totp_enabled: false } },
+  url: new URL('http://localhost/settings'),
+  goto: vi.fn(),
+  toast: vi.fn(),
+  disclose: vi.fn(),
+  conceal: vi.fn()
+}))
 
 vi.mock('$lib/auth.svelte', () => ({
-  getAuthContext: () => ({ user: { email: 'personne@example.org' } }),
+  getAuthContext: () => mocks.auth,
   logout: vi.fn()
 }))
+vi.mock('$app/navigation', () => ({ goto: mocks.goto }))
+// Only the query string is driven by the tests; the rest of `page` stays real.
+vi.mock('$app/state', async (importOriginal) => {
+  const original = await importOriginal<typeof import('$app/state')>()
+  return {
+    ...original,
+    page: new Proxy(original.page, {
+      get: (target, prop) => (prop === 'url' ? mocks.url : Reflect.get(target, prop))
+    })
+  }
+})
+vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
+vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: mocks.toast }))
 
 vi.mock('$lib/chatService.svelte', () => ({ getComparisonsContext: () => [] }))
 vi.mock('$lib/fastapi-client', () => ({
@@ -70,5 +92,149 @@ describe('Settings page', () => {
     await fireEvent.input(field, { target: { value: ' Personne@example.org ' } })
 
     await waitFor(() => expect(confirm().disabled).toBe(false))
+  })
+})
+
+describe('Settings page two-factor section', () => {
+  const setup = {
+    secret: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',
+    otpauth_uri: 'otpauth://totp/x',
+    qr_svg: 'data:image/svg+xml;charset=utf-8,%3Csvg%3E%3C/svg%3E'
+  }
+
+  beforeEach(() => {
+    request.mockReset()
+    mocks.goto.mockClear()
+    mocks.toast.mockClear()
+    mocks.disclose.mockClear()
+    mocks.conceal.mockClear()
+    mocks.auth.user = { email: 'admin@example.org', role: 'admin', totp_enabled: false }
+    mocks.url = new URL('http://localhost/settings')
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { disclose: mocks.disclose, conceal: mocks.conceal } })
+    })
+  })
+
+  it('is not shown to a plain user', () => {
+    mocks.auth.user = { email: 'personne@example.org', role: 'user', totp_enabled: false }
+    const { queryByRole } = render(Page)
+    expect(queryByRole('heading', { name: 'Double authentification' })).toBeNull()
+  })
+
+  it('walks a new admin through the QR code and the first code', async () => {
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
+    )
+    const { container, getByRole } = render(Page)
+
+    expect(getByRole('heading', { name: 'Double authentification' })).toBeTruthy()
+    expect(container.textContent).toContain('Non configurée')
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+
+    await waitFor(() => expect(mocks.disclose).toHaveBeenCalledOnce())
+    const modal = container.querySelector('#totp-setup-modal')!
+    const img = await waitFor(() => modal.querySelector<HTMLImageElement>('img')!)
+    expect(img.getAttribute('src')).toBe(setup.qr_svg)
+    expect(modal.textContent).toContain('ABCD EFGH IJKL MNOP QRST UVWX YZ23 4567')
+    expect(request).toHaveBeenCalledWith(
+      '/auth/totp/setup',
+      expect.objectContaining({ body: '{}' })
+    )
+    await expectAccessible(container)
+
+    const confirm = () =>
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Activer')!
+    expect(confirm().disabled).toBe(true)
+    await fireEvent.input(modal.querySelector('#totp-confirm-code')!, {
+      target: { value: '123456' }
+    })
+    await waitFor(() => expect(confirm().disabled).toBe(false))
+    await fireEvent.click(confirm())
+
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith(
+        '/auth/totp/confirm',
+        expect.objectContaining({ body: JSON.stringify({ code: '123456' }) })
+      )
+    )
+    await waitFor(() => expect(mocks.conceal).toHaveBeenCalledOnce())
+    // The mocked context is a plain object, so the badge flip itself is not
+    // observable here; the flag the page sets on it is.
+    expect(mocks.auth.user.totp_enabled).toBe(true)
+    expect(mocks.toast).toHaveBeenCalledOnce()
+    expect(mocks.goto).not.toHaveBeenCalled()
+  })
+
+  it('sends the admin back to the admin area when they were pushed here', async () => {
+    mocks.url = new URL('http://localhost/settings?totp=required')
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
+    )
+    const { container, getByRole } = render(Page)
+
+    expect(container.textContent).toContain('Configuration requise')
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+    await waitFor(() => expect(modal.querySelector('#totp-confirm-code')).not.toBeNull())
+    await fireEvent.input(modal.querySelector('#totp-confirm-code')!, {
+      target: { value: '123456' }
+    })
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Activer')!
+    )
+
+    await waitFor(() => expect(mocks.goto).toHaveBeenCalledWith('/admin'))
+  })
+
+  it('shows a wrong first code without closing', async () => {
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup'
+        ? Promise.resolve(setup)
+        : Promise.reject(Object.assign(new Error('Invalid'), { status: 400 }))
+    )
+    const { container, getByRole } = render(Page)
+
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+    await waitFor(() => expect(modal.querySelector('#totp-confirm-code')).not.toBeNull())
+    await fireEvent.input(modal.querySelector('#totp-confirm-code')!, {
+      target: { value: '000000' }
+    })
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Activer')!
+    )
+
+    await waitFor(() => expect(modal.textContent).toContain('Code incorrect.'))
+    expect(mocks.conceal).not.toHaveBeenCalled()
+    expect(mocks.auth.user.totp_enabled).toBe(false)
+  })
+
+  it('asks an enrolled admin for a code from the current device first', async () => {
+    mocks.auth.user = { email: 'admin@example.org', role: 'admin', totp_enabled: true }
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
+    )
+    const { container, getByRole } = render(Page)
+
+    expect(container.textContent).toContain('Activée')
+    await fireEvent.click(getByRole('button', { name: 'Changer d’appareil' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+    const current = await waitFor(() => modal.querySelector('#totp-current-code')!)
+    expect(request).not.toHaveBeenCalled()
+
+    await fireEvent.input(current, { target: { value: '654321' } })
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Continuer')!
+    )
+
+    await waitFor(() =>
+      expect(request).toHaveBeenCalledWith(
+        '/auth/totp/setup',
+        expect.objectContaining({ body: JSON.stringify({ code: '654321' }) })
+      )
+    )
+    await waitFor(() => expect(modal.querySelector('img')).not.toBeNull())
+    expect(modal.textContent).toContain('Vos autres sessions seront déconnectées.')
   })
 })
