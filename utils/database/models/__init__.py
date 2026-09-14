@@ -5,8 +5,10 @@ from .auth import (
     ConsentLog,
     LegalDocument,
     LoginCode,
+    TotpChallenge,
     User,
     UserPublic,
+    UserTotp,
 )
 from .comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
