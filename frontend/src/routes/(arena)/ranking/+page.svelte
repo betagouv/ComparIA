@@ -19,7 +19,7 @@
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import type { PageProps } from './$types'
   import type { RankingView } from './+page'
-  import { Energy, Methodology, PersonalTable, RankingTable } from './components'
+  import { Energy, Methodology, PersonalTable, Price, RankingTable } from './components'
 
   const { data }: PageProps = $props()
 
@@ -27,6 +27,7 @@
     [
       { id: 'ranking', icon: 'trophy-line' },
       { id: 'energy', icon: 'flashlight-line' },
+      { id: 'price', icon: 'money-euro-circle-line' },
       // { id: 'preferences', icon: 'thumb-up-line' },
       { id: 'methodo' }
     ] as const
@@ -103,7 +104,7 @@
     if (personalPending) invalidateAll()
   })
 
-  function onDownloadData(kind: 'ranking' | 'energy') {
+  function onDownloadData(kind: 'ranking' | 'energy' | 'price') {
     if (modelsData.length === 0) return
 
     // Export the view currently on screen (style-controlled or plain).
@@ -121,14 +122,22 @@
       { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
       { key: 'n_match' as const, label: 'Total votes' },
       { key: 'consumption' as const, label: 'Consumption mWh (1000 tokens)', energy: true },
+      { key: 'price_in' as const, label: 'Input price USD (1M tokens)', price: true },
+      { key: 'price_out' as const, label: 'Output price USD (1M tokens)', price: true },
       { key: 'size_class' as const, label: 'Size', energy: true },
       { key: 'params' as const, label: 'Parameters (B)', energy: true },
       { key: 'arch' as const, label: 'Architecture', energy: true },
       { key: 'release_date' as const, label: 'Release' },
-      { key: 'organisation' as const, label: 'Organisation', energy: true },
-      { key: 'distribution' as const, label: 'License', energy: true }
+      { key: 'organisation' as const, label: 'Organisation', energy: true, price: true },
+      { key: 'distribution' as const, label: 'License', energy: true, price: true }
     ]
-    const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
+    // The general export leaves prices to the price tab, which adds them to
+    // the columns both focus tabs share.
+    const cols = csvCols.filter((col) => {
+      if (kind === 'ranking') return col.key !== 'price_in' && col.key !== 'price_out'
+      if (kind === 'energy') return 'energy' in col
+      return 'price' in col || col.key === 'id' || col.key === 'elo'
+    })
     const data = [
       cols.map((col) => col.label).join(','),
       ...viewData
@@ -379,6 +388,8 @@
             )}
           {:else if id === 'energy'}
             <Energy onDownloadData={() => onDownloadData('energy')} />
+          {:else if id === 'price'}
+            <Price onDownloadData={() => onDownloadData('price')} />
             <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
           {:else if id === 'methodo'}
