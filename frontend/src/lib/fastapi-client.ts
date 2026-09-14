@@ -118,6 +118,15 @@ export class UnauthorizedError extends Error {
 /** Any error thrown by the client, carrying the HTTP status it came from. */
 export type ApiError = Error & { status?: number }
 
+// What `require_admin` answers a signed-in admin who has not enrolled an
+// authenticator yet. Not a reason to sign in again: a reason to enrol.
+export const TOTP_SETUP_REQUIRED = 'totp_setup_required'
+export const TOTP_SETUP_PATH = '/settings?totp=required'
+
+export function isTotpSetupRequired(error: unknown): boolean {
+  return error instanceof UnauthorizedError && error.message === TOTP_SETUP_REQUIRED
+}
+
 /**
  * FastAPI client class
  */

@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
-import { api, UnauthorizedError } from '$lib/fastapi-client'
+import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
 import { defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
@@ -121,6 +121,9 @@ defineCustomServerStrategy('custom-url', {
 })
 
 export const handleError: HandleServerError = async ({ error, event }) => {
+  if (isTotpSetupRequired(error)) {
+    redirect(302, TOTP_SETUP_PATH)
+  }
   if (error instanceof UnauthorizedError) {
     const path = event.url.pathname
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)

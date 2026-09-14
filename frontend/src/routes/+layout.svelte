@@ -6,7 +6,7 @@
   import Toaster from '$components/Toaster.svelte'
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
-  import { UnauthorizedError } from '$lib/fastapi-client'
+  import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
@@ -49,7 +49,9 @@
   function handleError(_event: PromiseRejectionEvent) {
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
-    if (_event.reason instanceof UnauthorizedError) {
+    if (isTotpSetupRequired(_event.reason)) {
+      goto(resolve(TOTP_SETUP_PATH))
+    } else if (_event.reason instanceof UnauthorizedError) {
       goto(resolve('/login'))
     }
   }
