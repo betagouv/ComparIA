@@ -25,6 +25,7 @@ from cryptography.fernet import Fernet  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import backend.auth.totp as auth_totp  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+import utils.secrets as secrets_store  # noqa: E402
 from utils.database.models.auth import TotpChallenge, User, UserTotp  # noqa: E402
 
 
@@ -202,24 +203,26 @@ def test_secrets_round_trip_through_the_key():
 def test_an_older_key_still_decrypts_and_is_flagged_for_reencryption():
     old_key = Fernet.generate_key().decode()
     new_key = Fernet.generate_key().decode()
-    with patched(auth_totp.settings, AUTH_TOTP_ENCRYPTION_KEY=old_key):
-        auth_totp._fernet.cache_clear()
+    with patched(secrets_store.settings, COMPARIA_ENCRYPTION_KEY=old_key):
+        secrets_store._fernet.cache_clear()
         old_token = auth_totp.encrypt_secret(SECRET)
-    with patched(auth_totp.settings, AUTH_TOTP_ENCRYPTION_KEY=f"{new_key},{old_key}"):
-        auth_totp._fernet.cache_clear()
+    with patched(
+        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}"
+    ):
+        secrets_store._fernet.cache_clear()
         assert auth_totp.decrypt_secret(old_token) == SECRET
-        assert auth_totp._needs_reencryption(old_token)
-        assert not auth_totp._needs_reencryption(auth_totp.encrypt_secret(SECRET))
-    auth_totp._fernet.cache_clear()
+        assert secrets_store.needs_reencryption(old_token)
+        assert not secrets_store.needs_reencryption(auth_totp.encrypt_secret(SECRET))
+    secrets_store._fernet.cache_clear()
 
 
 def test_a_secret_from_an_unknown_key_reads_as_missing_not_as_unenrolled():
     with patched(
-        auth_totp.settings, AUTH_TOTP_ENCRYPTION_KEY=Fernet.generate_key().decode()
+        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=Fernet.generate_key().decode()
     ):
-        auth_totp._fernet.cache_clear()
+        secrets_store._fernet.cache_clear()
         token = auth_totp.encrypt_secret(SECRET)
-    auth_totp._fernet.cache_clear()
+    secrets_store._fernet.cache_clear()
     assert auth_totp.decrypt_secret(token) is None
 
 
@@ -383,18 +386,20 @@ def test_a_secret_under_an_older_key_is_rewritten_at_sign_in():
     old_key = Fernet.generate_key().decode()
     new_key = Fernet.generate_key().decode()
     user = User(email="admin@example.test")
-    with patched(auth_totp.settings, AUTH_TOTP_ENCRYPTION_KEY=old_key):
-        auth_totp._fernet.cache_clear()
+    with patched(secrets_store.settings, COMPARIA_ENCRYPTION_KEY=old_key):
+        secrets_store._fernet.cache_clear()
         totp = enrolled(user)
     old_token = totp.secret_encrypted
 
-    with patched(auth_totp.settings, AUTH_TOTP_ENCRYPTION_KEY=f"{new_key},{old_key}"):
-        auth_totp._fernet.cache_clear()
+    with patched(
+        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}"
+    ):
+        secrets_store._fernet.cache_clear()
         session = FakeSession(user, [challenge_for(user)], [totp], [])
         run_challenge(session, code_at(auth_totp.current_step()))
         assert totp.secret_encrypted != old_token
-        assert not auth_totp._needs_reencryption(totp.secret_encrypted)
-    auth_totp._fernet.cache_clear()
+        assert not secrets_store.needs_reencryption(totp.secret_encrypted)
+    secrets_store._fernet.cache_clear()
 
 
 # Enrolment
