@@ -4,6 +4,7 @@
   import { page } from '$app/state'
   import { Badge, Button, Icon, Link, Table } from '$components/dsfr'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
+  import ConfirmResetTotpModal from '$components/ConfirmResetTotpModal.svelte'
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
@@ -106,6 +107,28 @@
     }
   }
 
+  let userToReset = $state<{ id: string; email: string } | null>(null)
+
+  function openResetTotpModal(row: { id: string; email: string }) {
+    userToReset = row
+    const el = document.getElementById('fr-modal-reset-totp')
+    if (el) {
+      // @ts-expect-error - DSFR is globally available
+      window.dsfr(el).modal.disclose()
+    }
+  }
+
+  async function confirmResetTotp() {
+    if (!userToReset) return
+    try {
+      await api.request(`/admin/users/${userToReset.id}/totp`, { method: 'DELETE' })
+      useToast(`2FA reset for ${userToReset.email}, they will enrol again`, 4000)
+      await refetch()
+    } catch (err) {
+      useToast((err as Error).message, 6000, 'error')
+    }
+  }
+
   async function cancelInvite(row: { id: string; email: string }) {
     try {
       await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
@@ -122,6 +145,7 @@
     { id: 'email', label: 'Email' },
     { id: 'role', label: 'Role' },
     { id: 'source', label: 'Source' },
+    { id: 'totp_enabled', label: '2FA', kind: 'boolean' },
     { id: 'created_at', label: 'Added', kind: 'date' },
     { id: 'actions', label: 'Actions' }
   ] satisfies TableCol[]
@@ -130,6 +154,7 @@
     users.map((u) => ({
       ...u,
       id: u.id!,
+      totp_enabled: u.totp_enabled ?? false,
       created_at: new Date(u.created_at),
       actions: undefined
     }))
@@ -166,6 +191,14 @@
         <Badge size="sm" text={row.role} variant={row.role === 'admin' ? 'blue-ecume' : ''} />
       {:else if col.id === 'source'}
         <Badge size="sm" text={row.source} variant={sourceBadgeVariant(row.source)} />
+      {:else if col.id === 'totp_enabled'}
+        {#if row.totp_enabled}
+          <Badge size="sm" text="Enabled" variant="green" noTooltip />
+        {:else if row.role === 'admin'}
+          <Badge size="sm" text="Not set up" variant="yellow" noTooltip />
+        {:else}
+          <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
+        {/if}
       {:else if col.id === 'created_at'}
         <span class="fr-text--sm text-[--text-mention-grey]">
           {toRelativeTime(row.created_at, locale)}
@@ -185,6 +218,18 @@
                 onclick={() => cancelInvite(row)}
               >
                 <Icon icon="i-ri-mail-close-line" />
+              </Button>
+            {/if}
+            {#if row.totp_enabled}
+              <Button
+                iconOnly
+                variant="tertiary-no-outline"
+                size="sm"
+                title="Reset 2FA"
+                aria-label={`Reset 2FA for ${row.email}`}
+                onclick={() => openResetTotpModal(row)}
+              >
+                <Icon icon="i-ri-shield-keyhole-line" />
               </Button>
             {/if}
             <Link
@@ -222,3 +267,4 @@
 
 <InviteUserModal onSuccess={refetch} />
 <ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />
+<ConfirmResetTotpModal email={userToReset?.email ?? null} onConfirm={confirmResetTotp} />
