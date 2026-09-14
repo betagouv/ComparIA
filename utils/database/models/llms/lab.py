@@ -3,7 +3,7 @@ from typing import Annotated
 from sqlalchemy import LargeBinary
 from sqlmodel import Field
 
-from utils.validation import NonEmptyStr
+from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
 from ..utils import BaseDBModel
 
@@ -20,7 +20,10 @@ FIELDS = {
 
 class LLMLabBase(BaseDBModel):
     name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
-    logo: Annotated[NonEmptyStr, Field(**FIELDS["logo"])]  # icon name, or file?
+    # FIXME remove logos in frontend/orgs/ai and use custom logo instead?
+    logo: Annotated[
+        str | None, StripAndEmptyAsNone, Field(**FIELDS["logo"])
+    ]  # icon name
     origin_country: Annotated[
         NonEmptyStr, Field(**FIELDS["origin_country"])
     ]  # FIXME use lib?
