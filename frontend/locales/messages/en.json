@@ -7,9 +7,10 @@
         "mainNav": "Main navigation",
         "mobileMenu": "Menu",
         "mobileNav": "Mobile navigation",
-        "modeSelection": "Choice of models to compare",
         "modelSheet": "Model details",
+        "modeSelection": "Choice of models to compare",
         "newWindow": "new window",
+        "priceGraphDesc": "Scatter plot: each model is placed by its preference score on the vertical axis and its output price per million tokens on the horizontal axis. A line joins the models on the Pareto frontier. The same data is available as a table.",
         "shareLinkLabel": "Share link for the result",
         "skipToContent": "Skip to main content",
         "suggestionCategories": "Question suggestion categories",
@@ -1678,6 +1679,49 @@
                 }
             },
             "title": "How are user preferences distributed?"
+        },
+        "price": {
+            "desc": "This graph sets the satisfaction score (Bradley-Terry score) of each model against its output price, the indicative price of one million tokens generated through the provider's API. Prices are the ones providers publish, converted to {currency}. Every ranked model is shown, proprietary ones included. The line joins the models no other model beats on both score and price: the Pareto frontier.",
+            "tabLabel": "Price focus",
+            "title": "Are the most popular models the most expensive?",
+            "views": {
+                "graph": {
+                    "desc": "Hover a model to see its Bradley-Terry (BT) score and its input and output prices",
+                    "legends": {
+                        "frontier": "Pareto frontier",
+                        "frontierOnly": "Show the frontier only",
+                        "frontierSub": "Models no other model beats on both score and price",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Open weights",
+                            "proprietary": "Proprietary"
+                        },
+                        "license": "Filter by licence"
+                    },
+                    "title": "Bradley-Terry (BT) Satisfaction Score VS Output Price per Million Tokens",
+                    "tooltip": {
+                        "elo": "BT score",
+                        "license": "Licence",
+                        "onFrontier": "On the Pareto frontier",
+                        "price_in": "Input price (1M tokens)",
+                        "price_out": "Output price (1M tokens)"
+                    },
+                    "xLabel": "Output price per million tokens ({currency}, log scale)",
+                    "yLabel": "Bradley-Terry Score (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>The higher a model sits</strong> on the graph, the higher its Bradley-Terry satisfaction score. <strong>The further left</strong>, the less it costs per generated token.",
+                        "2": "<strong>At the top left</strong> are the models that are both popular and cheap. The green line joins the ones no other model beats on both counts at once: for each of them, a better score means paying more.",
+                        "3": "The price axis is <strong>logarithmic</strong>: each gridline multiplies the price by ten. Prices are indicative, taken from the providers' public price lists, and ignore discounts, caching and batch offers."
+                    },
+                    "subTitle": "Examples of how to read the graph",
+                    "title": "How to find the right balance between perceived performance and price?"
+                },
+                "table": {
+                    "title": "Price table by model"
+                }
+            }
         },
         "ranking": {
             "desc": "This ranking is calculated from votes collected through <strong>blind comparisons</strong>, using the <strong>Bradley-Terry</strong> statistical model. It reflects <strong>subjective preferences</strong> and should be interpreted with caution: it measures neither factual accuracy nor overall model performance.",

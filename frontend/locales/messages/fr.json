@@ -7,9 +7,10 @@
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",
-        "modeSelection": "Choix des modèles à comparer",
         "modelSheet": "Fiche du modèle",
+        "modeSelection": "Choix des modèles à comparer",
         "newWindow": "nouvelle fenêtre",
+        "priceGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et son prix de sortie par million de jetons en abscisse. Une ligne relie les modèles de la frontière de Pareto. Les mêmes données sont disponibles sous forme de tableau.",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
         "suggestionCategories": "Catégories de suggestions de questions",
@@ -1678,6 +1679,49 @@
                 }
             },
             "title": "Comment se répartissent les préférences des utilisateurs ?"
+        },
+        "price": {
+            "desc": "Ce graphique met en regard le score de satisfaction (score Bradley-Terry) de chaque modèle et son prix de sortie, c'est-à-dire le prix indicatif d'un million de jetons générés via l'API du fournisseur. Les prix sont ceux affichés publiquement par les fournisseurs, convertis en {currency}. Tous les modèles classés y figurent, y compris les modèles propriétaires. La ligne relie les modèles qu'aucun autre ne bat à la fois sur le score et sur le prix : c'est la frontière de Pareto.",
+            "tabLabel": "Focus prix",
+            "title": "Les modèles les plus appréciés sont-ils les plus chers ?",
+            "views": {
+                "graph": {
+                    "desc": "Survolez un modèle pour connaître son score Bradley-Terry (BT) et ses prix d'entrée et de sortie",
+                    "legends": {
+                        "frontier": "Frontière de Pareto",
+                        "frontierOnly": "Afficher seulement la frontière",
+                        "frontierSub": "Modèles qu'aucun autre ne bat à la fois sur le score et sur le prix",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Poids ouverts",
+                            "proprietary": "Propriétaire"
+                        },
+                        "license": "Filtrer par licence"
+                    },
+                    "title": "Score de satisfaction Bradley-Terry (BT) VS prix de sortie par million de jetons",
+                    "tooltip": {
+                        "elo": "Score BT",
+                        "license": "Licence",
+                        "onFrontier": "Sur la frontière de Pareto",
+                        "price_in": "Prix d'entrée (1M jetons)",
+                        "price_out": "Prix de sortie (1M jetons)"
+                    },
+                    "xLabel": "Prix de sortie par million de jetons ({currency}, échelle logarithmique)",
+                    "yLabel": "Score Bradley-Terry (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>Plus un modèle est haut</strong> sur le graphique, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus il est à gauche</strong>, moins il coûte cher par jeton généré.",
+                        "2": "<strong>En haut à gauche</strong> se trouvent les modèles à la fois appréciés et bon marché. La ligne verte relie ceux qu'aucun autre modèle ne bat sur les deux critères à la fois : pour chacun d'eux, obtenir un meilleur score oblige à payer plus cher.",
+                        "3": "L'axe des prix est <strong>logarithmique</strong> : chaque graduation multiplie le prix par dix. Les prix sont indicatifs, relevés sur les grilles publiques des fournisseurs, et ne tiennent pas compte des remises, du cache ou des offres de traitement par lots."
+                    },
+                    "subTitle": "Exemples de lecture du graphique",
+                    "title": "Comment trouver le bon équilibre entre performance perçue et prix ?"
+                },
+                "table": {
+                    "title": "Tableau des prix par modèle"
+                }
+            }
         },
         "ranking": {
             "desc": "Ce classement est calculé à partir des votes recueillis lors de <strong>comparaisons à l’aveugle</strong>, selon le modèle statistique <strong>Bradley-Terry</strong>. Il reflète des <strong>préférences subjectives</strong> et doit être interprété avec prudence : il ne mesure ni la factualité des réponses ni la performance globale des modèles.",
