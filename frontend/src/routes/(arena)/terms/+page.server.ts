@@ -7,8 +7,9 @@ import type { PageServerLoad } from './$types'
 export const load: PageServerLoad = async ({ fetch }) => {
   try {
     return {
-      terms: await api.request<PublicLegalDocument>(`/settings/legal/terms?locale=${getLocale()}`, {
-        fetch
+      terms: await api.request<PublicLegalDocument>('/settings/legal/terms', {
+        fetch,
+        searchParams: { locale: getLocale() }
       })
     }
   } catch (error) {

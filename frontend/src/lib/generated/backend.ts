@@ -62,7 +62,7 @@ export interface LinkupSearchTextResult {
   name: string;
   url: string;
   content: string;
-  favicon?: string;
+  favicon: string;
   [k: string]: unknown;
 }
 export interface LLMMessageCreate {
@@ -121,11 +121,11 @@ export interface APILLMData {
   /**
    * Complete identifier used for API calls.
    */
-  api_model_id: string | null;
+  api_model_id?: string | null;
   /**
    * The LLM's endpoint information, create it first if not already available
    */
-  endpoint_id: string | null;
+  endpoint_id?: string | null;
   /**
    * Apply rate limits (usually for high API costs LLMs).
    */
@@ -170,15 +170,15 @@ export interface APILLMData {
   /**
    * Active parameters in billions (only for MoE LLMs).
    */
-  active_params: number | null;
+  active_params?: number | null;
   /**
    * Size of its context window in tokens.
    */
-  context_tokens: number | null;
+  context_tokens?: number | null;
   /**
    * Quantization scheme applied (q4, q8, or None for full precision).
    */
-  quantization: ("q4" | "q8") | null;
+  quantization?: ("q4" | "q8") | null;
   /**
    * What kind of media the LLM can have in input.
    */
@@ -194,7 +194,7 @@ export interface APILLMData {
   /**
    * System message to add in llm call if specified
    */
-  system_prompt: string | null;
+  system_prompt?: string | null;
   /**
    * List of links to display in LLM card.
    */

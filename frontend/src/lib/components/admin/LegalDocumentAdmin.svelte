@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
@@ -28,7 +27,7 @@
     kind === 'terms'
       ? {
           endpoint: '/admin/legal/terms',
-          publicPage: resolve(TERMS_PATH),
+          publicPage: TERMS_PATH,
           title: m['admin.legal.terms.title'](),
           contentLabel: m['admin.legal.terms.contentLabel'](),
           draftTitle: m['admin.legal.terms.draftTitle'](),
@@ -36,7 +35,7 @@
         }
       : {
           endpoint: '/admin/legal/privacy-policy',
-          publicPage: resolve(PRIVACY_POLICY_PATH),
+          publicPage: PRIVACY_POLICY_PATH,
           title: m['admin.legal.privacy.title'](),
           contentLabel: m['admin.legal.privacy.contentLabel'](),
           draftTitle: m['admin.legal.privacy.draftTitle'](),
@@ -65,9 +64,9 @@
     try {
       documents = await api.request<AdminLegalDocument[]>(copy.endpoint)
       try {
-        activeDocument = await api.request<AdminLegalDocument>(
-          `${copy.endpoint}/current?locale=${encodeURIComponent(locale)}`
-        )
+        activeDocument = await api.request<AdminLegalDocument>(`${copy.endpoint}/current`, {
+          searchParams: { locale }
+        })
       } catch {
         activeDocument = null
       }

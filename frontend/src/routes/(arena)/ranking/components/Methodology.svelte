@@ -29,13 +29,10 @@
 
   function formatModelData(data: BotModelWithData[], key: WinKey) {
     return data
-      .filter((m) => !!m.data[key])
+      .filter((llm) => !!llm.data[key])
       .slice(0, 10)
       .sort((a, b) => b.data[key]! - a.data[key]!)
-      .map((m) => ({
-        x: m.id,
-        y: m.data[key]!
-      }))
+      .map((llm) => ({ x: llm.id, y: llm.data[key]! }))
   }
 
   const modelsData = $derived({
@@ -58,9 +55,9 @@
     const csvData = [
       csvCols.map((col) => col.label).join(','),
       ...data
-        .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
-        .map((m) =>
-          csvCols.map((col) => (col.key == 'id' ? m[col.key] : m.data[col.key])).join(',')
+        .sort((a, b) => sortIfDefined(a.data, b.data, 'mean_win_prob'))
+        .map((llm) =>
+          csvCols.map((col) => (col.key == 'id' ? llm[col.key] : llm.data[col.key])).join(',')
         )
     ].join('\n')
 

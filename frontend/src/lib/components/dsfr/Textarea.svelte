@@ -36,8 +36,7 @@
     {id}
     aria-describedby={describedBy}
     aria-invalid={error ? 'true' : undefined}
-    class={['fr-input', props.class]}
-  ></textarea>
+    class={['fr-input', props.class]}></textarea>
   {#if error}
     <div class="fr-messages-group" id={`${id}-messages`} aria-live="polite">
       <p class="fr-message fr-message--error">{error}</p>

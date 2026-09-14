@@ -36,7 +36,9 @@
   let errors = $state<Record<string, string>>({})
 
   const logoSrc = $derived(
-    hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
+    hasCustomLogo
+      ? api.getUrl('/auth/config/logo', { v: logoVersion.toString() })
+      : '/orgs/comparia.png'
   )
   const auth = getAuthContext()
   const votes = getVotesContext()

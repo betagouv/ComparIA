@@ -3,9 +3,10 @@
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import type { PageProps } from './$types'
   import ConversationActivityChart from './ConversationActivityChart.svelte'
 
-  const { data } = $props()
+  const { data }: PageProps = $props()
   const numberFormatter = new Intl.NumberFormat(getLocale())
   const periods = [
     { value: '7d', label: m['statistics.filters.sevenDays']() },

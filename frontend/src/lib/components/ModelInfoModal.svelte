@@ -523,9 +523,9 @@
 
                       <div class="cg-border bg-white p-4">
                         <ul class="p-0 m-0 grid w-full grid-cols-2">
-                          {#each model.links as link (link.url)}
+                          {#each model.links as link (link.href)}
                             <li class="list-none">
-                              <Link href={link.url} text={link.text} class="inline" />
+                              <Link {...link} class="inline" />
                             </li>
                           {/each}
                         </ul>

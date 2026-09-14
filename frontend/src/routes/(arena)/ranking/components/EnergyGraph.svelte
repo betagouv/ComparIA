@@ -19,19 +19,19 @@
 
   const models = $derived(
     data
-      .filter((m) => m.license.kind !== 'proprietary')
+      .filter((llm) => llm.license.kind !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
-      .map((m) => {
+      .map((llm) => {
         return {
-          ...m,
-          x: m.consumption,
-          y: m.data.elo,
-          radius: dotSizes[m.size_class],
-          class: m.license.kind === 'proprietary' ? 'na' : m.arch,
+          ...llm,
+          x: llm.consumption,
+          y: llm.data.elo,
+          radius: dotSizes[llm.size_class],
+          class: llm.license.kind === 'proprietary' ? 'na' : llm.arch,
           consoSize:
-            m.consumption < 150
+            llm.consumption < 150
               ? ('S' as const)
-              : m.consumption < 5000
+              : llm.consumption < 5000
                 ? ('M' as const)
                 : ('L' as const)
         }
@@ -61,11 +61,11 @@
 
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
-    return models.filter((m) => {
-      const sizeMatch = sizes.length === 0 || sizes.includes(m.size_class)
-      const consoMatch = consos.length === 0 || consos.includes(m.consoSize)
-      const searchMatch = !_search || m.search.includes(_search)
-      const archivedMatch = m.status === 'enabled' || showArchived
+    return models.filter((llm) => {
+      const sizeMatch = sizes.length === 0 || sizes.includes(llm.size_class)
+      const consoMatch = consos.length === 0 || consos.includes(llm.consoSize)
+      const searchMatch = !_search || llm.search.includes(_search)
+      const archivedMatch = llm.status === 'enabled' || showArchived
 
       return sizeMatch && consoMatch && searchMatch && archivedMatch
     })
@@ -73,7 +73,7 @@
 
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
-  const hoveredModelData = $derived(filteredModels.find((m) => m.id === hoveredModel))
+  const hoveredModelData = $derived(filteredModels.find((llm) => llm.id === hoveredModel))
   const tooltipExtraData = $derived(
     hoveredModelData?.license.kind === 'proprietary'
       ? (['arch'] as const)
@@ -87,11 +87,11 @@
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
 
   const minMaxX = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (m) => m.x) as [number, number]
+    const [min, max] = extent(filteredModels, (llm) => llm.x) as [number, number]
     return [min - 5, max + 15] as const
   })
   const minMaxY = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (m) => m.y) as [number, number]
+    const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
     return [min - 5, max + 35] as const
   })
   const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
@@ -254,17 +254,20 @@
           {/if}
 
           <!-- data -->
-          {#each filteredModels as m (m.id)}
+          {#each filteredModels as llm (llm.id)}
             <circle
-              cx={xScale(m.x)}
-              cy={yScale(m.y)}
-              r={m.radius}
+              cx={xScale(llm.x)}
+              cy={yScale(llm.y)}
+              r={llm.radius}
               class={[
-                m.class,
-                { hovered: hoveredModel === m.id, blurred: hoveredModel && hoveredModel !== m.id }
+                llm.class,
+                {
+                  hovered: hoveredModel === llm.id,
+                  blurred: hoveredModel && hoveredModel !== llm.id
+                }
               ]}
               aria-hidden="true"
-              onpointerenter={() => onModelHover(m)}
+              onpointerenter={() => onModelHover(llm)}
               onpointerleave={() => (hoveredModel = undefined)}
             />
           {/each}

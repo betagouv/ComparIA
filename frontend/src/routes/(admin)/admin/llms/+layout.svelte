@@ -3,7 +3,6 @@
   import TabNav from '$components/dsfr/TabNav.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { m } from '$lib/i18n/messages'
-
   import type { LayoutProps } from './$types'
 
   let { children }: LayoutProps = $props()

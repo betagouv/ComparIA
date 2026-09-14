@@ -67,7 +67,7 @@ describe('brand theme', () => {
     expect(css).toContain('--brand-primary-soft:#D9DCDE')
     expect(css).toContain('--brand-primary-soft-hover:#C6CACE')
     expect(css).toContain('--brand-primary-soft-active:#B3B8BE')
-    expect(css).toContain("--brand-toggle-track:url(\"data:image/svg+xml")
+    expect(css).toContain('--brand-toggle-track:url("data:image/svg+xml')
     expect(css).toContain("stroke='%23112233'")
     expect(css).toContain("fill='%23445566'")
     // The DSFR overrides (--text-active-blue-france and friends) are static

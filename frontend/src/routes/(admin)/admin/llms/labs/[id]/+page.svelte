@@ -16,7 +16,7 @@
   const method = $derived(id === 'create' ? 'post' : 'put')
   let uploadingLogo = $state(false)
   let logoVersion = $state(0)
-  let hasCustomLogo = $state(data.formProps.data.has_custom_logo)
+  let hasCustomLogo = $derived(data.formProps.data.has_custom_logo)
   const form = $derived(
     useForm({
       url: '/admin/llms/lab',

@@ -191,7 +191,12 @@ describe('SignInForm consent', () => {
     render(SignInForm)
 
     await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2))
-    expect(paths()).toEqual(['/settings/legal/terms?locale=fr', '/auth/consent/anonymous'])
+    expect(mocks.request).toHaveBeenNthCalledWith(
+      1,
+      '/settings/legal/terms',
+      expect.objectContaining({ searchParams: { locale: 'fr' } })
+    )
+    expect(mocks.request).toHaveBeenNthCalledWith(2, '/auth/consent/anonymous')
   })
 
   it('does not repeat platform data-use copy next to the consent checkbox', async () => {

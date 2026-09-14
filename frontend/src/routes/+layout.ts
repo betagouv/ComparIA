@@ -2,8 +2,9 @@ import type { AuthConfig, AuthUser } from '$lib/auth.svelte'
 import { api } from '$lib/fastapi-client'
 import type { LLMList } from '$lib/generated/backend'
 import type { VotesData } from '$lib/global.svelte'
+import type { LayoutLoad } from './$types'
 
-export async function load({ fetch }) {
+export const load: LayoutLoad = async ({ fetch }) => {
   const votes = await api.request<VotesData>('/counter', { fetch })
   const data = await api.request<LLMList>('/models/', { fetch })
   const authConfig = await api.request<AuthConfig>('/auth/config', { fetch })

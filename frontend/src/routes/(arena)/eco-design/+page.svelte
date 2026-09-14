@@ -1,9 +1,12 @@
 <script lang="ts">
-  import SeoHead from '$components/SEOHead.svelte'
+  import { resolve } from '$app/paths'
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  let { data } = $props()
+  import type { PageProps } from './$types'
+
+  const { data }: PageProps = $props()
 </script>
 
 <SeoHead title={m['seo.titles.rgesn']()} />
@@ -98,7 +101,12 @@
         <div class="fr-tile__body">
           <div class="fr-tile__content">
             <h3 class="fr-tile__title">
-              <a hreflang="fr" data-fr-assess-file download href="/general/rgesn_2025_comparIA.ods">
+              <a
+                hreflang="fr"
+                data-fr-assess-file
+                download
+                href={resolve('/general/rgesn_2025_comparIA.ods')}
+              >
                 {m['general.rgesn.5.4.title']()}
               </a>
             </h3>

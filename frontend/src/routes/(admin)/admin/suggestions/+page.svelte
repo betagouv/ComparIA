@@ -157,7 +157,7 @@
     updateQuery({ page: currentPage + 1 })
   })
 
-  function updateQuery(updates: Record<string, any>) {
+  function updateQuery(updates: Record<string, unknown>) {
     for (const [key, value] of Object.entries(updates)) {
       if (value) params.set(key, value.toString())
       else params.delete(key)
@@ -670,8 +670,7 @@
         bind:value={prompt}
         required
         maxlength="4000"
-        aria-describedby="suggestion-text-messages"
-      ></textarea>
+        aria-describedby="suggestion-text-messages"></textarea>
       {#if formError}
         <div class="fr-messages-group" id="suggestion-text-messages" aria-live="polite">
           <p class="fr-message fr-message--error">{formError}</p>

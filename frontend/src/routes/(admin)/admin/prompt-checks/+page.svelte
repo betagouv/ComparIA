@@ -198,7 +198,9 @@
   async function loadStats(period: StatsPeriod) {
     statsLoading = true
     try {
-      stats = await api.request<PromptCheckStats>(`/admin/prompt-check/stats?period=${period}`)
+      stats = await api.request<PromptCheckStats>('/admin/prompt-check/stats', {
+        searchParams: { period }
+      })
     } finally {
       statsLoading = false
     }
@@ -588,8 +590,7 @@
               rows="4"
               bind:value={benchText}
               disabled={benchRunning}
-              aria-describedby="prompt-check-bench-messages"
-            ></textarea>
+              aria-describedby="prompt-check-bench-messages"></textarea>
             {#if benchError}
               <div class="fr-messages-group" id="prompt-check-bench-messages" aria-live="polite">
                 <p class="fr-message fr-message--error">{benchError}</p>

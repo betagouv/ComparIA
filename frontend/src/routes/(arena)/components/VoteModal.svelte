@@ -46,13 +46,14 @@
       </div>
     </div>
     <div class="gap-5 flex items-center">
+      <!-- FIXME keep link to main Compar:IA instance? -->
       <Link
         text={m['actions.discover']()}
         title={m['a11y.externalLink']({ text: m['actions.discover']() })}
         icon="external-link-line"
         iconPos="right"
         button
-        href="/product/comparator"
+        href="https://comparia.beta.gouv.fr/product/comparator"
         target="_blank"
       />
       <Link

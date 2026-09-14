@@ -1,34 +1,29 @@
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
+import type { FormCheckboxGroupProps, FormFieldsetListProps, FormInputProps } from '.'
 import Form from './Form.svelte'
-import type { AnyFormItemProps } from '$lib/utils/form'
 
 const navigation = vi.hoisted(() => ({ before: undefined as ((nav: any) => void) | undefined }))
 vi.mock('$app/navigation', () => ({
   beforeNavigate: (callback: (nav: any) => void) => (navigation.before = callback)
 }))
 
-const linkList: AnyFormItemProps = {
+const linkList: FormFieldsetListProps = {
   id: 'links',
   label: 'Links',
   component: 'fieldset-list',
-  value: [],
   subProps: {
     id: 'link',
     label: 'Link',
-    value: {},
     component: 'fieldset-item',
-    subProps: [
-      { id: 'text', label: 'Text', value: '', component: 'input', type: 'text', placeholder: '' }
-    ]
+    subProps: [{ id: 'text', label: 'Text', component: 'input', type: 'text', placeholder: '' }]
   }
 }
 
-const modalities: AnyFormItemProps = {
+const modalities: FormCheckboxGroupProps = {
   id: 'inputs',
   label: 'Modalities',
   component: 'checkbox-group',
-  value: [],
   options: [
     { value: 'text', label: 'text' },
     { value: 'image', label: 'image' }
@@ -74,15 +69,14 @@ describe('Form', () => {
   })
 
   it('does not make hidden generated fields browser-required', () => {
-    const hiddenId = {
+    const hiddenId: FormInputProps = {
       id: 'id',
       label: 'Id',
       component: 'input',
       type: 'text',
       hidden: true,
-      required: false,
-      value: ''
-    } as AnyFormItemProps
+      required: false
+    }
     const { container } = render(Form, {
       props: { id: 'lab', label: 'Lab', items: [hiddenId], form: {}, onSubmit: () => {} }
     })

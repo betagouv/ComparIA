@@ -11,10 +11,11 @@ import { getKeys, tryI18n } from '$lib/utils/commons'
 import type { JSONSchema7 as BaseJSONSchema } from 'json-schema'
 
 export type JSONSchema = BaseJSONSchema & {
-  id: PropertyKey
   properties?: Record<string, JSONSchema>
-  required: string[]
-  $defs: Record<string, JSONSchema>
+  required?: string[]
+  $defs?: Record<string, JSONSchema>
+  items?: JSONSchema | JSONSchema[]
+  // Extra custom keys that may be present in a field schema
   optional?: boolean
   disabled?: boolean
   hidden?: boolean
@@ -30,10 +31,9 @@ export type AnyFormItemComponent =
   | 'fieldset-item'
   | 'fieldset-list'
 
-export type BaseFormFieldProps<C extends AnyFormItemComponent, T> = {
+export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
   id: string
   label: string
-  value: T
   required?: boolean
   disabled?: boolean
   hidden?: boolean
@@ -53,6 +53,13 @@ export type AnyFormItemProps =
   | FormFieldsetItemProps
   | FormFieldsetListProps
 
+export type FormItemSnippetProps = {
+  'aria-describedby': string
+  'aria-invalid'?: 'true'
+  id: string
+  required?: boolean
+}
+
 function parseSchema(
   schema: JSONSchema,
   id: string,
@@ -67,9 +74,8 @@ function parseSchema(
     help,
     required: !optional && !hidden && !disabled,
     disabled,
-    hidden,
-    value: 'placeholder' as any
-  } // FIXME value to remove
+    hidden
+  }
 
   if (type === 'object') {
     if (!properties) throw new Error('no properties')
@@ -135,18 +141,18 @@ function parseSchema(
         ...parseSchema({ ...inner, $defs }, id, i18nBaseKey),
         ...baseProps,
         component: 'checkbox-group'
-      }
+      } as FormCheckboxGroupProps
     } else {
       return {
         ...baseProps,
         component: 'fieldset-list',
-        subProps: parseSchema({ ...inner, $defs }, id, i18nBaseKey)
+        subProps: parseSchema({ ...inner, $defs }, id, i18nBaseKey) as AnyFormItemProps
       }
     }
   }
   throw new Error('could not parse schema')
 }
 
-export function getFormFields(schema: BaseJSONSchema, i18nBaseKey: string) {
+export function getFormFields(schema: JSONSchema, i18nBaseKey: string) {
   return parseSchema(schema, '', i18nBaseKey) as AnyFormItemProps[]
 }

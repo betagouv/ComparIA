@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_INFORMATIONAL_PAGES,
-  informationalPageHref,
+  informationalPageLinkProps,
   isInformationalPageVisible,
   localizedInformationalContent,
   normalizeInformationalPages
@@ -25,7 +25,9 @@ describe('informational legal pages', () => {
       }
     })
 
-    expect(informationalPageHref('ecodesign', pages)).toBe('https://example.gouv.fr/eco-design')
+    expect(informationalPageLinkProps('ecodesign', pages).href).toBe(
+      'https://example.gouv.fr/eco-design'
+    )
     expect(isInformationalPageVisible(pages.ecodesign, 'settings')).toBe(false)
     expect(isInformationalPageVisible(pages.ecodesign, 'legal_menu')).toBe(true)
   })
@@ -42,7 +44,7 @@ describe('informational legal pages', () => {
       }
     })
 
-    expect(informationalPageHref('accessibility', pages)).toBe(ACCESSIBILITY_PATH)
+    expect(informationalPageLinkProps('accessibility', pages).href).toBe(ACCESSIBILITY_PATH)
     expect(localizedInformationalContent(pages.accessibility, 'en')).toBe('# Déclaration')
   })
 })

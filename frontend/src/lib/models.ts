@@ -2,6 +2,7 @@ import { formatCurrencyFromUsd } from '$lib/currency'
 import type {
   APILLMData,
   DatasetData,
+  Link,
   LLMList,
   PersonalRankingRow,
   PreferencesData
@@ -12,6 +13,7 @@ import { propsToAttrs } from '$lib/utils/commons'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
+import { validExternalUrl } from './routing'
 import { styleControl } from './styleControl.svelte'
 import { RANK_CLASS_COUNT } from './theme'
 
@@ -263,6 +265,14 @@ export function isModelNew(releaseDate: string | Date, now = new Date()): boolea
 }
 
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
+  function checkLinks(links: Link[] = []) {
+    const checkedLinks = links.flatMap(({ url, text }) => {
+      const href = validExternalUrl(url)
+      return href ? [{ href, text }] : []
+    })
+    return checkedLinks.length ? checkedLinks : undefined
+  }
+
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
     model.license.kind = 'open-source'
@@ -271,8 +281,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   const release_date = new Date(model.release_date)
 
   return {
-    ...model,
-    id: model.id!,
+    ...(model as Required<APILLMData>),
     release_date,
     new: isModelNew(release_date),
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
@@ -326,7 +335,8 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       }
     },
     search: [model.human_id, model.name, model.lab.name].join(' '),
-    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null
+    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null,
+    links: checkLinks(model.links)
   }
 }
 
@@ -440,13 +450,7 @@ export function getModelsWithDataContext() {
     ...data,
     models: (models.filter((llm) => !!llm.data) as BotModelWithData[])
       .sort((a, b) => a.data.rank - b.data.rank)
-      .map((m, i) => ({
-        ...m,
-        data: {
-          ...m.data,
-          rank: i + 1
-        }
-      }))
+      .map((llm, i) => ({ ...llm, data: { ...llm.data, rank: i + 1 } }))
   }
 }
 
@@ -461,9 +465,9 @@ export function getModelsWithDataContext() {
 export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[] {
   const enabled = styleControl.enabled
   const sorted = models
-    .map((m) => {
-      const active = enabled || !m.data.uncontrolled ? m.data : m.data.uncontrolled
-      return { ...m, data: { ...m.data, ...active, uncontrolled: m.data.uncontrolled } }
+    .map((llm) => {
+      const active = enabled || !llm.data.uncontrolled ? llm.data : llm.data.uncontrolled
+      return { ...llm, data: { ...llm.data, ...active, uncontrolled: llm.data.uncontrolled } }
     })
     // Sort on the active score, not on `rank`: models the plain fit dropped
     // keep their style-controlled rank, so the two numbering schemes interleave
@@ -477,9 +481,9 @@ export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[
   // the one case where a model's class legitimately moves.
   const classes = assignRankClasses(sorted.map(({ data }) => data))
 
-  return sorted.map((m, i) => ({
-    ...m,
-    data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
+  return sorted.map((llm, i) => ({
+    ...llm,
+    data: { ...llm.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
   }))
 }
 

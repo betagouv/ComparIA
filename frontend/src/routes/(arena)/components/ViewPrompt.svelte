@@ -1,6 +1,9 @@
 <script lang="ts">
-  import Pending from '$components/Pending.svelte'
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
+  import { page } from '$app/state'
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
+  import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { modeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -8,8 +11,6 @@
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
-  import { goto } from '$app/navigation'
-  import { page } from '$app/state'
   import { onMount, tick } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
@@ -73,7 +74,7 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     params.delete('vs')
     const qs = params.toString()
-    goto(qs ? `${page.url.pathname}?${qs}` : page.url.pathname, { replaceState: true })
+    goto(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, { replaceState: true })
   })
 
   function selectPartialText(start?: number, end?: number): void {

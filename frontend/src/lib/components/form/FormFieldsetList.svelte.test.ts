@@ -1,23 +1,21 @@
-import type { AnyFormItemProps } from '$lib/utils/form'
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
+import type { FormFieldsetItemProps, FormInputProps } from '.'
 import FormFieldsetList from './FormFieldsetList.svelte'
 
-const linkSubProps: AnyFormItemProps = {
+const linkSubProps: FormFieldsetItemProps = {
   id: 'link',
   label: 'Link',
-  value: {},
   component: 'fieldset-item',
   subProps: [
-    { id: 'text', label: 'Text', value: '', component: 'input', type: 'text', placeholder: '' },
-    { id: 'url', label: 'Url', value: '', component: 'input', type: 'url', placeholder: '' }
+    { id: 'text', label: 'Text', component: 'input', type: 'text', placeholder: '' },
+    { id: 'url', label: 'Url', component: 'input', type: 'url', placeholder: '' }
   ]
 }
 
-const textSubProps: AnyFormItemProps = {
+const textSubProps: FormInputProps = {
   id: 'tag',
   label: 'Tag',
-  value: '',
   component: 'input',
   type: 'text',
   placeholder: ''

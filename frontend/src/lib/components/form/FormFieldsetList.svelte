@@ -3,8 +3,7 @@
     subProps: AnyFormItemProps
     // The admin form only holds the keys the user touched, so the list may
     // render before its own key exists.
-    value?: any[]
-  } & Omit<BaseFormFieldProps<'fieldset-list', any[]>, 'value'>
+  } & BaseFormFieldProps<'fieldset-list'>
 </script>
 
 <script lang="ts">
@@ -13,7 +12,12 @@
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import { FormFieldset } from '.'
 
-  let { value = $bindable(), disabled, subProps, ...props }: FormFieldsetListProps = $props()
+  let {
+    value = $bindable(),
+    disabled,
+    subProps,
+    ...props
+  }: FormFieldsetListProps & { value?: any[] } = $props()
 
   const subIsFieldsetItem = $derived(subProps.component === 'fieldset-item')
   function onAdd() {

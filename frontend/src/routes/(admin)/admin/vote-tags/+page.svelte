@@ -1,8 +1,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { getAuthContext } from '$lib/auth.svelte'
   import { Badge, Button, Icon, Input, Modal, Select, Table } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminVoteTag } from '$lib/generated/admin'
   import { getLocales } from '$lib/global.svelte'
@@ -10,9 +10,9 @@
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import type { VoteTagSign } from '$lib/voteTags'
-  import type { PageData } from './$types'
+  import type { PageProps } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  const { data }: PageProps = $props()
 
   const auth = getAuthContext()
   const refetch = () => invalidate('admin:vote-tags')
@@ -277,7 +277,7 @@
         {cols}
         rows={tags}
         animateRows
-        rowAttributes={(row, index) => ({
+        rowAttributes={(_row, index) => ({
           draggable: true,
           class:
             dropTarget?.sign === sign && dropTarget.index === index

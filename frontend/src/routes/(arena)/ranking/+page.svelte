@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
+  import type { ResolvedPathname } from '$app/types'
   import { Button, Icon, Link, Segmented, Tabs, Toggle, Tooltip } from '$components/dsfr'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext, openSignInModal } from '$lib/auth.svelte'
@@ -16,10 +17,11 @@
   import { styleControl } from '$lib/styleControl.svelte'
   import { sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
-  import { Energy, Methodology, PersonalTable, RankingTable } from './components'
+  import type { PageProps } from './$types'
   import type { RankingView } from './+page'
+  import { Energy, Methodology, PersonalTable, RankingTable } from './components'
 
-  let { data } = $props()
+  const { data }: PageProps = $props()
 
   const tabs = (
     [
@@ -54,13 +56,10 @@
   let view: RankingView = $derived(data.view)
 
   function onViewChange() {
-    goto(
-      view === 'personal' ? `${resolve('/ranking')}?view=personal` : resolve('/ranking'),
-      {
-        noScroll: true,
-        keepFocus: true
-      }
-    )
+    goto(view === 'personal' ? resolve('/ranking?view=personal') : resolve('/ranking'), {
+      noScroll: true,
+      keepFocus: true
+    })
   }
 
   // Local mirror the DSFR Toggle binds to, pushed to the shared singleton that
@@ -76,7 +75,7 @@
   // is about to render rather than the ones the layout fetched at load time.
   const rankingCommons = $derived({
     ...commons,
-    rankClasses: rankClassSpans(rankingRows.map((m) => m.data))
+    rankClasses: rankClassSpans(rankingRows.map((llm) => llm.data))
   })
 
   // Personal rows arrive with an identifier and nothing else, so the model list
@@ -134,7 +133,7 @@
       cols.map((col) => col.label).join(','),
       ...viewData
         .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
-        .map((m) => {
+        .map((llm) => {
           return cols
             .map((col) => {
               if (
@@ -147,17 +146,18 @@
                 col.key === 'score_p2_5' ||
                 col.key === 'score_p97_5'
               )
-                return m.data[col.key]
-              if (col.key === 'params') return m.license.kind === 'proprietary' ? 'N/A' : m.params
+                return llm.data[col.key]
+              if (col.key === 'params')
+                return llm.license.kind === 'proprietary' ? 'N/A' : llm.params
               if (col.key === 'trust_range')
-                return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
+                return `+${llm.data.trust_range![0]}/-${llm.data.trust_range![1]}`
               if (col.key === 'consumption') {
-                return m.license.kind === 'proprietary' ? 'N/A' : m.consumption
+                return llm.license.kind === 'proprietary' ? 'N/A' : llm.consumption
               }
-              if (col.key === 'organisation') return m.lab.name
-              if (col.key === 'distribution') return m.license.kind
-              if (col.key === 'id') return m.human_id
-              return m[col.key]
+              if (col.key === 'organisation') return llm.lab.name
+              if (col.key === 'distribution') return llm.license.kind
+              if (col.key === 'id') return llm.human_id
+              return llm[col.key]
             })
             .join(',')
         })
@@ -229,17 +229,17 @@
   //     csvCols.map((col) => col.label).join(','),
   //     ...modelsData
   //       .sort((a, b) => sortIfDefined(a.prefs, b.prefs, 'positive_prefs_ratio'))
-  //       .map((m) => {
+  //       .map((llm) => {
   //         return csvCols
   //           .map((col) => {
   //             if (col.key === 'id') {
-  //               return m.human_id
+  //               return llm.human_id
   //             } else if (col.key === 'total_positive_prefs') {
-  //               return APIPositivePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APIPositivePrefs.reduce((acc, v) => acc + llm.prefs[v], 0)
   //             } else if (col.key === 'total_negative_prefs') {
-  //               return APINegativePrefs.reduce((acc, v) => acc + m.prefs[v], 0)
+  //               return APINegativePrefs.reduce((acc, v) => acc + llm.prefs[v], 0)
   //             } else {
-  //               return m.prefs[col.key]
+  //               return llm.prefs[col.key]
   //             }
   //           })
   //           .join(',')
@@ -385,7 +385,7 @@
   titleId: string,
   title: string,
   body: string,
-  cta?: { href: string; text: string }
+  cta?: { href: ResolvedPathname; text: string }
 )}
   <section
     aria-labelledby={titleId}

@@ -89,12 +89,12 @@ export function tryI18n(key: string, default_?: string): string | undefined {
 // Typescript object helpers
 
 type Key = PropertyKey
-type Entry = readonly [Key, any]
+type Entry = readonly [Key, unknown]
 type FromEntries<E extends readonly Entry[]> = {
-  [P in E[number] as P[0]]: Extract<E[number], readonly [P[0], any]>[1]
+  [P in E[number] as P[0]]: Extract<E[number], readonly [P[0], unknown]>[1]
 }
 
-export function getKeys<T extends Record<Key, any>, K extends (keyof T)[]>(obj: T): K {
+export function getKeys<T extends Record<Key, unknown>, K extends (keyof T)[]>(obj: T): K {
   return Object.keys(obj) as K
 }
 
@@ -108,7 +108,7 @@ export function fromEntries<const E extends readonly Entry[]>(entries: E): FromE
   return Object.fromEntries(entries as Iterable<readonly [Key, unknown]>) as FromEntries<E>
 }
 
-export function pick<T extends Record<Key, any>, K extends keyof T>(
+export function pick<T extends Record<Key, unknown>, K extends keyof T>(
   obj: T,
   keys: readonly K[]
 ): Pick<T, K> {
@@ -119,7 +119,7 @@ export function pick<T extends Record<Key, any>, K extends keyof T>(
   return out
 }
 
-export function omit<T extends Record<Key, any>, K extends keyof T>(
+export function omit<T extends Record<Key, unknown>, K extends keyof T>(
   obj: T,
   keys: readonly K[]
 ): Omit<T, K> {

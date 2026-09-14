@@ -36,7 +36,7 @@
   let el = $state<HTMLElement>()
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
-  const marked = create_marked({ header_links, line_breaks })
+  const marked = $derived(create_marked({ header_links, line_breaks }))
 
   function escapeTags(content: string, tagsToEscape: string[] | boolean): string {
     if (tagsToEscape === true) {

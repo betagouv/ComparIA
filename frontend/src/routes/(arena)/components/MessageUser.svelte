@@ -3,6 +3,7 @@
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import type { UserMessage } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { validExternalUrl } from '$lib/routing'
 
   export type MessageUserProps = {
     id: string
@@ -11,11 +12,11 @@
 
   let { id, message }: MessageUserProps = $props()
 
-  // Search results come from the provider, so a javascript: or data: URL must
-  // never reach an href or an img src.
-  function safeUrl(url: string | undefined, schemes: string[]): string | undefined {
-    if (!url) return undefined
-    return schemes.some((scheme) => url.toLowerCase().startsWith(scheme)) ? url : undefined
+  function validFavicon(src: string) {
+    return validExternalUrl(src, ['http:', 'https:']) ||
+      src?.toLowerCase().startsWith('data:image/')
+      ? src
+      : null
   }
 </script>
 
@@ -38,8 +39,9 @@
       <div {id} class="fr-collapse m-0! p-0!">
         <ul class="mt-2! text-sm m-0! p-0! xl:grid-cols-2 md:max-h-[150px] grid max-h-[100px]">
           {#each message.web_search_results as search, i (i)}
-            {@const favicon = safeUrl(search.favicon, ['http://', 'https://', 'data:image/'])}
-            {@const url = safeUrl(search.url, ['http://', 'https://'])}
+            <!-- Search results come from the provider, so a javascript: or data: URL must never reach an href or an img src.   -->
+            {@const favicon = validFavicon(search.favicon)}
+            {@const url = validExternalUrl(search.url, ['http:', 'https:'])}
             <li class="gap-3 flex items-center">
               {#if favicon}
                 <img aria-hidden="true" alt="" src={favicon} class="h-[14px] w-[14px]" />

@@ -15,6 +15,7 @@
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import { validExternalUrl } from '$lib/routing'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { History, LanguageSelector, LegalMenu, VoteGauge } from '.'
 
@@ -23,7 +24,10 @@
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
-  const homepageHref = $derived(auth.config.homepage_url || resolve('/'))
+  const homepageLinkProps = $derived.by(() => {
+    const externalUrl = validExternalUrl(auth.config.homepage_url)
+    return externalUrl ? { href: externalUrl, rel: 'external' as const } : { href: resolve('/') }
+  })
 
   const connectionBtnProps = $derived(
     auth.user
@@ -80,16 +84,13 @@
       alt=""
       class="h-[35px]"
     />
-    <!-- eslint-disable svelte/no-navigation-without-resolve -- the homepage URL can be an external address set by an admin -->
     <a
-      href={homepageHref}
-      rel={auth.config.homepage_url ? 'external' : undefined}
+      {...homepageLinkProps}
       title={m['header.homeTitle']()}
       class="font-bold text-lg text-[--text-title-grey]"
     >
       {auth.config?.platform_name || m['header.title']()}
     </a>
-    <!-- eslint-enable svelte/no-navigation-without-resolve -->
   </div>
 {/snippet}
 

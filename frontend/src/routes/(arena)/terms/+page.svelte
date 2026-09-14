@@ -2,8 +2,9 @@
   import LegalDocument from '$components/LegalDocument.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { PageProps } from './$types'
 
-  let { data } = $props()
+  const { data }: PageProps = $props()
 </script>
 
 <SeoHead title={m['seo.titles.modalites']()} />

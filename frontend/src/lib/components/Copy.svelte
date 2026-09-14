@@ -16,7 +16,7 @@
   function showFeedback(): void {
     copied = true
     if (timer) clearTimeout(timer)
-    timer = setTimeout(() => (copied = false), 2000)
+    timer = setTimeout(() => (copied = false), 2000) as unknown as number
   }
 
   async function onCopy(): Promise<void> {

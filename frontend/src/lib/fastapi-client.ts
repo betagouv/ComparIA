@@ -11,6 +11,7 @@ import type {
   AssistantMessage,
   Bot
 } from '$lib/chatService.svelte'
+import { omit } from '$lib/utils/commons'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
@@ -71,12 +72,7 @@ export interface SSEWarningEvent {
 }
 
 export type SSEEvent =
-  | SSEInitEvent
-  | SSEUpdateEvent
-  | SSECompleteEvent
-  | SSEChunkEvent
-  | SSEErrorEvent
-  | SSEWarningEvent
+  SSEInitEvent | SSEUpdateEvent | SSECompleteEvent | SSEChunkEvent | SSEErrorEvent | SSEWarningEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
@@ -118,6 +114,8 @@ export class UnauthorizedError extends Error {
 /** Any error thrown by the client, carrying the HTTP status it came from. */
 export type ApiError = Error & { status?: number }
 
+type SearchParams = URLSearchParams | Record<string, string>
+
 /**
  * FastAPI client class
  */
@@ -131,8 +129,12 @@ export class FastAPIClient {
   /**
    * Get full URL for an endpoint
    */
-  getUrl(path: string): string {
-    return `${this.baseUrl}${path}`
+  getUrl(path: string, searchParams?: SearchParams): string {
+    const url = new URL(`${this.baseUrl}${path}`)
+    if (searchParams) {
+      url.search = new URLSearchParams(searchParams).toString()
+    }
+    return url.href
   }
 
   async parseErrorResponse(
@@ -165,24 +167,30 @@ export class FastAPIClient {
    */
   async request<T>(
     path: string,
-    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+    options: RequestInit & { fetch?: typeof fetch; searchParams?: SearchParams } = {
+      fetch
+    }
   ): Promise<T> {
-    const url = this.getUrl(path)
+    const url = this.getUrl(path, options.searchParams)
+
     // Get svelte load function's fetch or use default
     const _fetch = options.fetch ?? fetch
-    delete options.fetch
+    const opts: RequestInit = omit(options as Record<PropertyKey, unknown>, [
+      'fetch',
+      'searchParams'
+    ])
 
     try {
       const response = await _fetch(url, {
-        ...options,
-        headers: options.headers ?? {
+        ...opts,
+        headers: opts.headers ?? {
           'Content-Type': 'application/json'
         },
         credentials: 'include'
       })
 
       if (!response.ok) {
-        throw await this.parseErrorResponse(response, path, options.method)
+        throw await this.parseErrorResponse(response, path, opts.method)
       }
 
       if (response.status === 204) {
@@ -199,7 +207,7 @@ export class FastAPIClient {
   /**
    * Stream responses using Server-Sent Events (SSE)
    */
-  async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
+  async *stream(path: string, body: unknown): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
     const controller = new AbortController()
 

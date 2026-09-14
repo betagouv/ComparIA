@@ -24,7 +24,10 @@ describe('privacy policy page load', () => {
     request.mockResolvedValue(document)
 
     expect(await load({ fetch } as never)).toEqual({ privacyPolicy: document })
-    expect(request).toHaveBeenCalledWith('/settings/legal/privacy-policy?locale=fr', { fetch })
+    expect(request).toHaveBeenCalledWith('/settings/legal/privacy-policy', {
+      fetch,
+      searchParams: { locale: 'fr' }
+    })
   })
 
   it('falls back to the shipped policy when nothing is published', async () => {
