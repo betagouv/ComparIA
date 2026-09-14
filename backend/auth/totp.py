@@ -142,7 +142,9 @@ def matching_step(
     step at or before the last accepted one is refused so a code seen once
     cannot be replayed inside its window.
     """
-    if not re.fullmatch(rf"\d{{{TOTP_DIGITS}}}", code):
+    # ASCII only: `\d` would also match other scripts' digits, which the
+    # constant-time comparison then refuses with a TypeError.
+    if not re.fullmatch(rf"[0-9]{{{TOTP_DIGITS}}}", code):
         return None
     totp = pyotp.TOTP(secret, digits=TOTP_DIGITS, interval=TOTP_STEP_SECONDS)
     step = current_step(now)
