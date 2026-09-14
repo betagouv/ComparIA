@@ -55,7 +55,14 @@ def real_database():
     # Only the auth tables: the whole metadata drags in the LLM catalogue.
     tables = [
         SQLModel.metadata.tables[name]
-        for name in ("auth_user", "auth_session", "auth_totp", "auth_totp_challenge")
+        for name in (
+            "auth_user",
+            "auth_session",
+            "auth_login_code",
+            "auth_invite_token",
+            "auth_totp",
+            "auth_totp_challenge",
+        )
     ]
 
     async def reset_schema():

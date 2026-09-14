@@ -6,5 +6,5 @@ import os
 os.environ.setdefault("ALTCHA_HMAC_KEY", "test-altcha-hmac-key")
 # Same for the authenticator secret key: any valid Fernet key will do.
 os.environ.setdefault(
-    "AUTH_TOTP_ENCRYPTION_KEY", "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="
+    "COMPARIA_ENCRYPTION_KEY", "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="
 )

@@ -33,7 +33,7 @@ Edit `.env` and fill in at minimum:
 | `REDIS_PASSWORD`     | A strong password for Redis                          |
 | `OPENROUTER_API_KEY` | API key from [openrouter.ai](https://openrouter.ai)  |
 | `ALTCHA_HMAC_KEY`    | A random secret key for spam protection              |
-| `AUTH_TOTP_ENCRYPTION_KEY` | A Fernet key encrypting the admins' authenticator secrets |
+| `COMPARIA_ENCRYPTION_KEY` | A Fernet key encrypting secrets stored in the database |
 
 Generate random values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD` and `ALTCHA_HMAC_KEY` with for example:
 
@@ -41,7 +41,7 @@ Generate random values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD` and `ALTCHA_HMA
 openssl rand -hex 32
 ```
 
-`AUTH_TOTP_ENCRYPTION_KEY` has to be a Fernet key, which is a different format:
+`COMPARIA_ENCRYPTION_KEY` has to be a Fernet key, which is a different format:
 
 ```bash
 python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
