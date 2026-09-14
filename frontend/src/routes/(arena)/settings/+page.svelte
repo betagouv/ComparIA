@@ -1,8 +1,12 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Button, Input, Link, Modal, Tabs } from '$components/dsfr'
+  import { Alert, Badge, Button, Input, Link, Modal, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
+  import TotpSetupModal from '$components/TotpSetupModal.svelte'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { legalPageLinks, resetConsent } from '$lib/consent'
@@ -26,6 +30,17 @@
   const eraseMatches = $derived(
     !!auth.user && eraseEmail.trim().toLowerCase() === auth.user.email.toLowerCase()
   )
+
+  // Admins land here from /admin when they have no authenticator yet.
+  const isAdmin = $derived(auth.user?.role === 'admin')
+  const totpRequired = $derived(page.url.searchParams.get('totp') === 'required')
+  let totpModal = $state<TotpSetupModal>()
+
+  function onTotpEnrolled() {
+    if (auth.user) auth.user.totp_enabled = true
+    useToast(m['auth.settings.totp.success'](), 4000)
+    if (totpRequired) goto(resolve('/admin'))
+  }
 
   function download(data: unknown) {
     const content = JSON.stringify(data, null, 2)
@@ -127,6 +142,40 @@
             </section>
           </div>
 
+          {#if auth.user && isAdmin}
+            <section class="fr-mt-8v" aria-labelledby="totp-title">
+              <h2 id="totp-title" class="fr-h4">{m['auth.settings.totp.title']()}</h2>
+              {#if totpRequired && !auth.user.totp_enabled}
+                <Alert
+                  variant="warning"
+                  title={m['auth.settings.totp.required.title']()}
+                  class="mb-4 max-w-[800px]"
+                >
+                  <p>{m['auth.settings.totp.required.desc']()}</p>
+                </Alert>
+              {/if}
+              <p class="fr-text--sm text-grey max-w-[800px]">
+                {m['auth.settings.totp.desc']()}
+              </p>
+              <p class="mb-4!">
+                <span class="mr-2">{m['auth.settings.totp.status']()}</span>
+                {#if auth.user.totp_enabled}
+                  <Badge variant="green" text={m['auth.settings.totp.statusOn']()} noTooltip />
+                {:else}
+                  <Badge variant="yellow" text={m['auth.settings.totp.statusOff']()} noTooltip />
+                {/if}
+              </p>
+              <Button
+                variant={auth.user.totp_enabled ? 'secondary' : 'primary'}
+                text={auth.user.totp_enabled
+                  ? m['auth.settings.totp.change']()
+                  : m['auth.settings.totp.setup']()}
+                icon="shield-line"
+                onclick={() => totpModal?.start()}
+              />
+            </section>
+          {/if}
+
           {#if auth.user}
             <section class="fr-mt-8v" aria-labelledby="export-title">
               <h2 id="export-title" class="fr-h4">{m['auth.settings.export.title']()}</h2>
@@ -180,6 +229,14 @@
     </Tabs>
   </div>
 </div>
+
+{#if auth.user && isAdmin}
+  <TotpSetupModal
+    bind:this={totpModal}
+    enabled={auth.user.totp_enabled}
+    onEnrolled={onTotpEnrolled}
+  />
+{/if}
 
 <Modal
   id="account-erasure-modal"

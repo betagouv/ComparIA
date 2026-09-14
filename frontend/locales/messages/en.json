@@ -703,7 +703,40 @@
             "tabAbout": "About",
             "tabAccount": "Account",
             "tabsLabel": "Settings sections",
-            "title": "Settings"
+            "title": "Settings",
+            "totp": {
+                "title": "Two-factor authentication",
+                "desc": "Admin access asks, on top of the email code, for a code from an authenticator app installed on your phone.",
+                "status": "Status:",
+                "statusOn": "Enabled",
+                "statusOff": "Not set up",
+                "setup": "Set up an app",
+                "change": "Change device",
+                "success": "Authenticator app enabled.",
+                "required": {
+                    "title": "Setup required",
+                    "desc": "Set up an authenticator app to access the admin area."
+                },
+                "modal": {
+                    "title": "Set up the authenticator app",
+                    "currentHelp": "To change device, first enter a code from the app currently in use.",
+                    "currentLabel": "Code from the current app",
+                    "continue": "Continue",
+                    "loading": "Preparing…",
+                    "scanHelp": "Scan this QR code with your app (Google Authenticator, Aegis, FreeOTP…), then enter the code it shows.",
+                    "qrAlt": "QR code to scan with your authenticator app",
+                    "manualKey": "Or type this key by hand:",
+                    "manualKeyLabel": "Secret key",
+                    "confirmLabel": "Code shown by the app",
+                    "confirm": "Enable",
+                    "confirming": "Checking…",
+                    "otherSessions": "Your other sessions will be signed out.",
+                    "invalid": "Wrong code.",
+                    "tooMany": "Too many attempts, try again in a few minutes.",
+                    "expired": "This QR code has expired, start again.",
+                    "failedTitle": "Setup could not start"
+                }
+            }
         },
         "success": "You are signed in!"
     },
