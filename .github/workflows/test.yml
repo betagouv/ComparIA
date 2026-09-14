@@ -27,6 +27,11 @@ jobs:
           python-version: '3.13'
           enable-cache: true
 
+      - name: Check formatting
+        run: |
+          uv run --locked --group dev black --check backend utils tests internal
+          uv run --locked --group dev isort --check-only backend utils tests internal
+
       - name: Run backend tests
         run: uv run --locked --group dev --group data pytest tests -q
 
@@ -47,6 +52,12 @@ jobs:
       - name: Install dependencies
         working-directory: frontend
         run: yarn install --frozen-lockfile
+
+      - name: Lint
+        working-directory: frontend
+        run: |
+          yarn lint
+          yarn format
 
       - name: Run frontend tests
         working-directory: frontend
