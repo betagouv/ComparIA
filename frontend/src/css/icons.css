@@ -59,3 +59,9 @@
   -webkit-mask-image: url('/icons/trophy-line.svg');
   mask-image: url('/icons/trophy-line.svg');
 }
+
+.fr-icon-money-euro-circle-line::before,
+.fr-icon-money-euro-circle-line::after {
+  -webkit-mask-image: url('/icons/money-euro-circle-line.svg');
+  mask-image: url('/icons/money-euro-circle-line.svg');
+}
