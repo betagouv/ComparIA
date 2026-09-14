@@ -16,7 +16,9 @@ from utils.database.models.auth import (  # noqa: F401
     ConsentLog,
     LegalDocument,
     LoginCode,
+    TotpChallenge,
     User,
+    UserTotp,
 )
 from utils.database.models.llms import (  # noqa: F401
     LLMData,
