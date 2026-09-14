@@ -640,5 +640,183 @@ def test_logout_drops_a_half_finished_sign_in_too():
     )
 
 
+# Enrolment routes and the admin gate
+
+
+class NoRedis:
+    def get(self, _key):
+        return None
+
+    def incr(self, _key):
+        return 1
+
+    def expire(self, _key, _ttl):
+        pass
+
+    def delete(self, _key):
+        pass
+
+
+@contextlib.contextmanager
+def signed_in(user, **fakes):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    import backend.auth.router as auth_router
+    from backend.auth.dependencies import require_user
+
+    app = FastAPI()
+    app.include_router(auth_router.router)
+    app.dependency_overrides[require_user] = lambda: user
+    with patched(auth_router, **{"get_redis_client": NoRedis, **fakes}):
+        yield TestClient(app)
+
+
+async def platform():
+    from types import SimpleNamespace
+
+    return SimpleNamespace(platform_name="compar:IA")
+
+
+def test_only_admins_can_enrol():
+    user = User(email="someone@example.org", role="user")
+    with signed_in(user, get_app_settings=platform) as client:
+        assert client.post("/auth/totp/setup", json={}).status_code == 403
+        assert (
+            client.post("/auth/totp/confirm", json={"code": "123456"}).status_code
+            == 403
+        )
+
+
+def test_setup_hands_the_secret_over_once_and_uncached():
+    admin = User(email="admin@example.org", role="admin")
+    seen = {}
+
+    async def start(user, code, platform_name):
+        seen.update(code=code, platform_name=platform_name)
+        return auth_totp.TotpSetup(
+            secret="ABCDEFGH",
+            otpauth_uri="otpauth://totp/x",
+            qr_svg="data:image/svg+xml,",
+        )
+
+    with signed_in(admin, get_app_settings=platform, start_totp_setup=start) as client:
+        r = client.post("/auth/totp/setup", json={})
+
+    assert r.status_code == 200
+    assert r.headers["cache-control"] == "no-store"
+    assert r.json()["secret"] == "ABCDEFGH"
+    assert seen == {"code": None, "platform_name": "compar:IA"}
+
+
+def test_changing_device_over_the_api_says_when_a_code_is_missing_or_wrong():
+    admin = User(email="admin@example.org", role="admin")
+
+    async def needs_code(*_args):
+        raise auth_totp.TotpCodeRequiredError()
+
+    async def wrong(*_args):
+        raise auth_totp.InvalidTotpCodeError()
+
+    with signed_in(admin, get_app_settings=platform, start_totp_setup=needs_code) as c:
+        r = c.post("/auth/totp/setup", json={})
+        assert r.status_code == 400
+        assert r.json()["detail"] == "totp_code_required"
+
+    with signed_in(admin, get_app_settings=platform, start_totp_setup=wrong) as c:
+        r = c.post("/auth/totp/setup", json={"code": "000000"})
+        assert r.status_code == 400
+
+
+def test_confirm_passes_the_current_session_along_so_it_survives():
+    admin = User(email="admin@example.org", role="admin")
+    seen = {}
+
+    async def confirm(user, code, keep_token):
+        seen.update(code=code, keep_token=keep_token)
+
+    with signed_in(admin, confirm_totp_setup=confirm) as client:
+        client.cookies.set("auth_session", "session-token")
+        r = client.post("/auth/totp/confirm", json={"code": "123456"})
+
+    assert r.status_code == 204
+    assert seen == {"code": "123456", "keep_token": "session-token"}
+
+
+def test_confirm_without_a_pending_secret_is_a_conflict():
+    admin = User(email="admin@example.org", role="admin")
+
+    async def nothing_pending(*_args):
+        raise auth_totp.TotpSetupMissingError()
+
+    with signed_in(admin, confirm_totp_setup=nothing_pending) as client:
+        r = client.post("/auth/totp/confirm", json={"code": "123456"})
+    assert r.status_code == 409
+
+
+def test_too_many_wrong_enrolment_codes_are_refused():
+    admin = User(email="admin@example.org", role="admin")
+
+    class Saturated(NoRedis):
+        def get(self, _key):
+            return "10"
+
+    with signed_in(admin, get_redis_client=Saturated) as client:
+        r = client.post("/auth/totp/confirm", json={"code": "123456"})
+    assert r.status_code == 429
+
+
+def test_admin_routes_want_an_enrolled_authenticator():
+    from fastapi import HTTPException
+    from starlette.requests import Request
+
+    import backend.auth.dependencies as dependencies
+
+    admin = User(email="admin@example.org", role="admin")
+    request = Request({"type": "http", "headers": [(b"cookie", b"auth_session=t")]})
+
+    async def whoami(_token):
+        return admin
+
+    async def not_enrolled(_user_id):
+        return False
+
+    async def enrolled_yes(_user_id):
+        return True
+
+    with patched(
+        dependencies, get_user_from_token=whoami, has_confirmed_totp=not_enrolled
+    ):
+        with pytest.raises(HTTPException) as refused:
+            asyncio.run(dependencies.require_admin(request))
+    assert refused.value.status_code == 403
+    assert refused.value.detail == "totp_setup_required"
+
+    with patched(
+        dependencies, get_user_from_token=whoami, has_confirmed_totp=enrolled_yes
+    ):
+        assert asyncio.run(dependencies.require_admin(request)) is admin
+
+
+def test_a_plain_user_is_refused_before_the_authenticator_is_looked_at():
+    from fastapi import HTTPException
+    from starlette.requests import Request
+
+    import backend.auth.dependencies as dependencies
+
+    request = Request({"type": "http", "headers": [(b"cookie", b"auth_session=t")]})
+
+    async def whoami(_token):
+        return User(email="someone@example.org", role="user")
+
+    async def never(_user_id):
+        raise AssertionError("looked up the authenticator of a non-admin")
+
+    with patched(dependencies, get_user_from_token=whoami, has_confirmed_totp=never):
+        with pytest.raises(HTTPException) as refused:
+            asyncio.run(dependencies.require_admin(request))
+    assert refused.value.detail == "admin_required"
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

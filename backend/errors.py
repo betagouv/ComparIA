@@ -72,6 +72,15 @@ AUTH_REQUIRED_RESPONSE = JSONResponse(
 )
 
 
+class TotpSetupRequiredError(HTTPException):
+    """An admin who has not enrolled an authenticator yet."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN, detail="totp_setup_required"
+        )
+
+
 class RoleRequiredError(HTTPException):
     def __init__(self, role: str = "admin") -> None:
         super().__init__(
