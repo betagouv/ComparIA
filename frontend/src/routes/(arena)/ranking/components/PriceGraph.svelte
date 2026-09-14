@@ -412,7 +412,7 @@
 
     .frontier {
       fill: none;
-      stroke: var(--cg-green);
+      stroke: var(--brand-primary);
       stroke-width: 2.5px;
       stroke-linejoin: round;
     }
@@ -435,7 +435,7 @@
       stroke-width: 2px;
     }
     svg :global(circle.frontier) {
-      stroke: var(--cg-green);
+      stroke: var(--brand-primary);
       stroke-width: 3px;
     }
 
@@ -456,11 +456,11 @@
     }
 
     .frontier-swatch {
-      background-color: var(--cg-green);
+      background-color: var(--brand-primary);
     }
 
     .frontier-text {
-      color: var(--cg-green);
+      color: var(--brand-primary);
     }
 
     /* Dots color, same ramp as the licence badges */

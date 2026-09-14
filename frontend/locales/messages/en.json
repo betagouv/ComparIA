@@ -1740,7 +1740,7 @@
                 "methodo": {
                     "list": {
                         "1": "<strong>The higher a model sits</strong> on the graph, the higher its Bradley-Terry satisfaction score. <strong>The further left</strong>, the less it costs per generated token.",
-                        "2": "<strong>At the top left</strong> are the models that are both popular and cheap. The green line joins the ones no other model beats on both counts at once: for each of them, a better score means paying more.",
+                        "2": "<strong>At the top left</strong> are the models that are both popular and cheap. The line joins the ones no other model beats on both counts at once: for each of them, a better score means paying more.",
                         "3": "The price axis is <strong>logarithmic</strong>: each gridline multiplies the price by ten. Prices are indicative, taken from the providers' public price lists, and ignore discounts, caching and batch offers."
                     },
                     "subTitle": "Examples of how to read the graph",
