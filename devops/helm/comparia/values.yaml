@@ -137,9 +137,9 @@ secrets:
   ordbogenApiKey: ""
   linkupApiKey: ""
   altchaHmacKey: ""
-  ## -- Fernet key encrypting the admins' authenticator (2FA) secrets. Generate with
+  ## -- Fernet key encrypting secrets stored in the database (admins' 2FA secrets). Generate with
   ## python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
-  authTotpEncryptionKey: ""
+  encryptionKey: ""
   ## -- Mistral moderation API key, for prompt checks (content safety, personal data). Left
   ## empty, both checks no-op.
   mistralApiKey: ""

@@ -97,7 +97,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 workload's `envFrom` at that Secret and renders no `Secret` of its own. Use
 this if you manage secrets externally (Vault, sealed-secrets, ...) — your
 Secret should provide whichever of the keys below your setup needs
-(`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`, `AUTH_TOTP_ENCRYPTION_KEY`,
+(`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`, `COMPARIA_ENCRYPTION_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
 `LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and
 `HF_PUSH_DATASET_PATH`/`HF_PUSH_DATASET_KEY` if you use dataset export). In
@@ -111,7 +111,7 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.dbUri`                | yes      | `COMPARIA_DB_URI`, e.g. `postgresql://user:pass@host:5432/db` |
 | `secrets.redisHost`            | yes      | `COMPARIA_REDIS_HOST`                     |
 | `secrets.altchaHmacKey`        | yes      | `ALTCHA_HMAC_KEY`, e.g. `openssl rand -hex 32` |
-| `secrets.authTotpEncryptionKey` | yes     | `AUTH_TOTP_ENCRYPTION_KEY`, a Fernet key (see `values.yaml`) |
+| `secrets.encryptionKey` | yes     | `COMPARIA_ENCRYPTION_KEY`, a Fernet key (see `values.yaml`) |
 | `secrets.openrouterApiKey`     | at least one of these four | `OPENROUTER_API_KEY` |
 | `secrets.albertKey`            | at least one of these four | `ALBERT_KEY` |
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |

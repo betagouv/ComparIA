@@ -5,5 +5,5 @@ secrets:
   dbUri: postgresql://comparia:changeme@postgres:5432/comparia
   redisHost: redis
   altchaHmacKey: 0000000000000000000000000000000000000000000000000000000000000000
-  authTotpEncryptionKey: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+  encryptionKey: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
   openrouterApiKey: dummy-openrouter-key

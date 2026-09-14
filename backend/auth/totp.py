@@ -1,12 +1,10 @@
 """Authenticator app (TOTP) second factor for admins.
 
-The secret an admin scans is stored Fernet-encrypted; the key comes from
-`AUTH_TOTP_ENCRYPTION_KEY`. Codes are RFC 6238 defaults (SHA-1, 6 digits,
-30 s), the only combination every authenticator app honours.
+The secret an admin scans is stored encrypted (see `utils.secrets`). Codes
+are RFC 6238 defaults (SHA-1, 6 digits, 30 s), the only combination every
+authenticator app honours.
 """
 
-import base64
-import hashlib
 import hmac
 import logging
 import re
@@ -14,12 +12,9 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from functools import lru_cache
 
 import pyotp
 import segno
-from cryptography.fernet import Fernet, InvalidToken, MultiFernet
-from sqlalchemy import update as sa_update
 from sqlmodel import select
 
 from backend.auth.services import (
@@ -27,9 +22,9 @@ from backend.auth.services import (
     _hash,
     _revoke_other_user_sessions,
 )
-from backend.config import settings
 from utils.database.models.auth import TotpChallenge, User, UserTotp
 from utils.database.session import get_session
+from utils.secrets import decrypt_secret, encrypt_secret, needs_reencryption
 
 logger = logging.getLogger("languia")
 
@@ -58,50 +53,6 @@ class TotpSetupMissingError(Exception):
 class TotpChallengeExpiredError(Exception):
     """The half-signed-in state is gone: expired, used, out of attempts, or
     the authenticator was reset meanwhile. The user starts over."""
-
-
-# Secrets at rest
-
-
-@lru_cache
-def _fernet() -> MultiFernet:
-    keys = [
-        k.strip() for k in settings.AUTH_TOTP_ENCRYPTION_KEY.split(",") if k.strip()
-    ]
-    try:
-        return MultiFernet([Fernet(k) for k in keys])
-    except (ValueError, TypeError) as e:
-        raise RuntimeError(
-            "AUTH_TOTP_ENCRYPTION_KEY is not a valid Fernet key. Generate one "
-            "with: python -c 'from cryptography.fernet import Fernet; "
-            "print(Fernet.generate_key().decode())'"
-        ) from e
-
-
-def encrypt_secret(secret: str) -> str:
-    return _fernet().encrypt(secret.encode()).decode()
-
-
-def decrypt_secret(token: str) -> str | None:
-    try:
-        return _fernet().decrypt(token.encode()).decode()
-    except InvalidToken:
-        logger.error("[AUTH] TOTP secret cannot be decrypted with the current keys")
-        return None
-
-
-def _needs_reencryption(token: str) -> bool:
-    """True when the stored token was made with an older key of the list."""
-    keys = [
-        k.strip() for k in settings.AUTH_TOTP_ENCRYPTION_KEY.split(",") if k.strip()
-    ]
-    if len(keys) < 2:
-        return False
-    try:
-        Fernet(keys[0]).decrypt(token.encode())
-        return False
-    except InvalidToken:
-        return True
 
 
 # Codes
@@ -331,7 +282,7 @@ async def verify_totp_challenge(
         session.add(challenge)
         totp.last_used_step = step
         totp.updated_at = now
-        if secret and _needs_reencryption(totp.secret_encrypted):
+        if secret and needs_reencryption(totp.secret_encrypted):
             totp.secret_encrypted = encrypt_secret(secret)
         session.add(totp)
 
