@@ -83,7 +83,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.auth.domainAllowlist` | `[]`             | `AUTH_DOMAIN_ALLOWLIST`. If non-empty, only emails from these domains can request a login code |
 | `config.auth.sessionLengthDays` | `30`           | `AUTH_SESSION_LENGTH_DAYS`                            |
 | `config.currency.display`  | `EUR`               | `DISPLAY_CURRENCY`, ISO 4217 code models prices are converted to for display |
-| `config.currency.rateFromEur` | `null`            | `DISPLAY_CURRENCY_RATE_FROM_EUR`, manual EUR conversion rate. Set to enable a currency unavailable from the rate API, run fully offline, or avoid the EUR fallback if the rate service is unreachable at startup |
+| `config.currency.rateFromUsd` | `null`            | `DISPLAY_CURRENCY_RATE_FROM_USD`, manual USD conversion rate. Set to enable a currency unavailable from the rate API, run fully offline, or avoid the USD fallback if the rate service is unreachable at startup |
 | `config.currency.exchangeApiUrl` | `https://api.frankfurter.dev/v2` | `EXCHANGE_RATE_API_URL`                |
 | `config.currency.exchangeCacheSeconds` | `86400`  | `EXCHANGE_RATE_CACHE_SECONDS`                         |
 | `config.emailFrom`         | `""`                | `EMAIL_FROM`. Left empty, falls back to the app's own default |

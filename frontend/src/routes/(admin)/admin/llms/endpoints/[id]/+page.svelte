@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation'
+  import { goto, invalidate, invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button } from '$components/dsfr'
@@ -27,12 +27,10 @@
       omitKeys: ['updated_at', 'created_at'],
       i18nKey: 'endpoint_upsert',
       method,
-      onSuccess: (updated) => {
-        Object.assign(data.formProps.data, updated)
+      onSuccess: async (updated) => {
+        await invalidate('admin:llms')
         if (method === 'post') {
-          // Update app data
-          data.endpoints.push(updated)
-          goto(resolve(`/admin/llms/endpoints/${updated.id}`))
+          await goto(resolve(`/admin/llms/endpoints/${updated.id}`))
         }
       }
     })

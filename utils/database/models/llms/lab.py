@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from sqlalchemy import LargeBinary
 from sqlmodel import Field
 
 from utils.validation import NonEmptyStr
@@ -32,10 +33,17 @@ class LLMLab(LLMLabBase, table=True):
 
     __tablename__ = "llm_lab"
 
+    logo_data: bytes | None = Field(default=None, sa_type=LargeBinary)
+    logo_content_type: str | None = Field(default=None)
+
+    @property
+    def has_custom_logo(self) -> bool:
+        return self.logo_data is not None
+
 
 class LLMLabUpsert(LLMLabBase):
     pass
 
 
 class LLMLabPublic(LLMLabBase):
-    pass
+    has_custom_logo: bool = False

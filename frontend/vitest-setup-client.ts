@@ -28,4 +28,11 @@ Object.defineProperty(globalThis, 'ResizeObserver', {
   }
 })
 
+// Mock dynamic env vars
+vi.mock('$env/dynamic/public', () => ({
+  env: {
+    PUBLIC_API_URL: ''
+  }
+}))
+
 // add more mocks here if you need them

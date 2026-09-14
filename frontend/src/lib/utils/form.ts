@@ -65,7 +65,7 @@ function parseSchema(
     id,
     label,
     help,
-    required: !optional,
+    required: !optional && !hidden && !disabled,
     disabled,
     hidden,
     value: 'placeholder' as any
@@ -109,6 +109,7 @@ function parseSchema(
     }
   } else if (type === 'string') {
     const types = {
+      date: 'date',
       'date-time': 'datetime-local',
       uri: 'url',
       default: 'text'

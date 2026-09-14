@@ -184,11 +184,11 @@ export interface APILLMData {
    */
   inputs: ("text" | "image" | "audio" | "video")[];
   /**
-   * Price per million input tokens in $.
+   * Price per million input tokens in USD.
    */
   price_in: number;
   /**
-   * Price per million output tokens in $.
+   * Price per million output tokens in USD.
    */
   price_out: number;
   /**
@@ -240,6 +240,7 @@ export interface LLMLabPublic {
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
   origin_country: string;
+  has_custom_logo?: boolean;
   [k: string]: unknown;
 }
 /**
@@ -322,7 +323,7 @@ export interface PreferencesData {
 }
 export interface CurrencyInfo {
   code: string;
-  rate_from_eur: number;
+  rate_from_usd: number;
   date: string | null;
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;

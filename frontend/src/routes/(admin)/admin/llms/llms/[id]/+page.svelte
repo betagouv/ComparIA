@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Form from '$components/form/Form.svelte'
@@ -17,12 +17,10 @@
       omitKeys: ['updated_at', 'created_at'],
       i18nKey: 'llm_upsert',
       method,
-      onSuccess: (updated) => {
-        Object.assign(data.formProps.data, updated)
+      onSuccess: async (updated) => {
+        await invalidate('admin:llms')
         if (method === 'post') {
-          // Update app data
-          data.llms.push(updated)
-          goto(resolve(`/admin/llms/llms/${updated.id}`))
+          await goto(resolve(`/admin/llms/llms/${updated.id}`))
         }
       }
     })

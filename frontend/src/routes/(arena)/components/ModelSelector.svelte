@@ -92,11 +92,21 @@
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
-      <AILogo logo={modelA.lab.logo} alt="" class="me-1 inline" />
+      <AILogo
+        logo={modelA.lab.logo}
+        customLogoId={modelA.lab.has_custom_logo ? modelA.lab.id : undefined}
+        alt=""
+        class="me-1 inline"
+      />
       {modelA.name}
       <strong class="mx-2">VS</strong>
       {#if modelB}
-        <AILogo logo={modelB.lab.logo} alt="" class="me-1 inline" />
+        <AILogo
+          logo={modelB.lab.logo}
+          customLogoId={modelB.lab.has_custom_logo ? modelB.lab.id : undefined}
+          alt=""
+          class="me-1 inline"
+        />
         {modelB.name}
       {:else}
         {m['words.random']()}
@@ -210,7 +220,12 @@
                     <label {...labelProps}>
                       {@render input(opt)}
                       <div class="text-dark-grey flex">
-                        <AILogo logo={opt.lab.logo} alt="" class="me-2" />
+                        <AILogo
+                          logo={opt.lab.logo}
+                          customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
+                          alt=""
+                          class="me-2"
+                        />
                         <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
                           >{opt.name}</strong
                         >

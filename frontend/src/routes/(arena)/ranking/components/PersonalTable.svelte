@@ -154,6 +154,7 @@
         {#if row.model}
           <AILogo
             logo={row.model.lab.logo}
+            customLogoId={row.model.lab.has_custom_logo ? row.model.lab.id : undefined}
             alt={row.model.lab.name}
             class="me-1 inline-block align-middle"
           />

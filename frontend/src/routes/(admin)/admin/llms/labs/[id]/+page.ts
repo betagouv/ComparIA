@@ -1,4 +1,4 @@
-import type { LLMLab } from '$lib/generated/admin'
+import type { LLMLabPublic } from '$lib/generated/admin'
 import { error } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
 
@@ -8,6 +8,6 @@ export const load: PageLoad = async ({ parent, params }) => {
   if (!data && params.id !== 'create') error(404)
 
   return {
-    formProps: { schema: schemas.labs, data: data ?? ({} as LLMLab) }
+    formProps: { schema: schemas.labs, data: data ?? ({} as LLMLabPublic) }
   }
 }
