@@ -78,10 +78,11 @@ class Settings(BaseSettings):
     # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
     # above only slows one attacker down; this one closes the login code itself.
     AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
-    # Fernet key(s) for the admins' authenticator secrets at rest. Comma-separated
-    # to rotate: the first encrypts, every one decrypts, and a secret re-encrypts
-    # with the first the next time its owner signs in.
-    AUTH_TOTP_ENCRYPTION_KEY: str = ""
+    # Fernet key(s) for secrets stored in the database, starting with the
+    # admins' authenticator secrets. Comma-separated to rotate: the first
+    # encrypts, every one decrypts, and a secret re-encrypts with the first the
+    # next time it is used.
+    COMPARIA_ENCRYPTION_KEY: str = ""
 
     # Anonymous
     ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
@@ -167,17 +168,17 @@ if not settings.ALTCHA_HMAC_KEY:
 
 # Unlike the captcha key, a random one here would lock every local admin out on
 # each restart, so debug gets a fixed key instead of a fresh one.
-if not settings.AUTH_TOTP_ENCRYPTION_KEY:
+if not settings.COMPARIA_ENCRYPTION_KEY:
     if not settings.LANGUIA_DEBUG:
         raise RuntimeError(
-            "AUTH_TOTP_ENCRYPTION_KEY is required. Generate one with: "
+            "COMPARIA_ENCRYPTION_KEY is required. Generate one with: "
             "python -c 'from cryptography.fernet import Fernet; "
             "print(Fernet.generate_key().decode())'"
         )
     import base64
     import hashlib
 
-    settings.AUTH_TOTP_ENCRYPTION_KEY = base64.urlsafe_b64encode(
+    settings.COMPARIA_ENCRYPTION_KEY = base64.urlsafe_b64encode(
         hashlib.sha256(b"comparia-dev-totp-key").digest()
     ).decode()
 
