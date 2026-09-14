@@ -2,6 +2,7 @@
   import { page } from '$app/state'
   import { Button, Input, Link, Modal, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
+  import SurveyAnswersSection from '$components/SurveyAnswersSection.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
@@ -149,6 +150,8 @@
                 {/if}
               </div>
             </section>
+
+            <SurveyAnswersSection />
           {/if}
         {:else}
           <section aria-labelledby="links-title">

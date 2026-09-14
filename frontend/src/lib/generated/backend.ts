@@ -329,6 +329,24 @@ export interface CurrencyInfo {
   [k: string]: unknown;
 }
 /**
+ * What the profile page and the personal-data export show.
+ */
+export interface MySurveyAnswer {
+  question_id: string;
+  question_key: string;
+  label: string;
+  input_type: "select" | "checkbox_group";
+  options: PublicSurveyOption[];
+  selected_keys: string[];
+}
+export interface PublicSurveyOption {
+  key: string;
+  label: string;
+}
+export interface MySurveyAnswersResponse {
+  answers: MySurveyAnswer[];
+}
+/**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
  * Rows carry no model metadata beyond the identity: the client joins them on
@@ -364,6 +382,18 @@ export interface PublicLegalDocument {
   published_at: string;
   effective_at: string;
 }
+export interface PublicSurveyQuestion {
+  id: string;
+  key: string;
+  required: boolean;
+  input_type: "select" | "checkbox_group";
+  label: string;
+  revision: number;
+  options: PublicSurveyOption[];
+}
+export interface PublicSurveyQuestionsResponse {
+  questions: PublicSurveyQuestion[];
+}
 export interface PublicVoteTag {
   key: string;
   sign: "positive" | "negative";
@@ -373,4 +403,18 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+}
+export interface SurveyAnswerSubmit {
+  answers: SurveyQuestionAnswer[];
+}
+export interface SurveyQuestionAnswer {
+  question_id: string;
+  option_keys: string[];
+}
+/**
+ * Closing the popup and declining it are the same thing: both count as one
+ * of the three showings and neither is a special case worth a column.
+ */
+export interface SurveyDismiss {
+  question_ids: string[];
 }
