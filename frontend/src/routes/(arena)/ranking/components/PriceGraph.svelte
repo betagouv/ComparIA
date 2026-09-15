@@ -7,6 +7,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
+  import { logTicks } from '$lib/logTicks'
   import { paretoFrontier } from '$lib/pareto'
   import { extent } from 'd3-array'
   import { scaleLinear, scaleLog } from 'd3-scale'
@@ -88,15 +89,7 @@
   // model to the cheapest and the top-right corner is the one to aim for.
   const xScale = $derived(scaleLog(minMaxX, [width - padding.right, padding.left]))
   const yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
-  // d3's log ticks fill every decade; keep the round ones so labels stay apart.
-  const xTicks = $derived(
-    xScale.ticks().filter((tick) => {
-      const mantissa = tick / 10 ** Math.floor(Math.log10(tick))
-      return (
-        Math.abs(mantissa - Math.round(mantissa)) < 1e-9 && [1, 2, 5].includes(Math.round(mantissa))
-      )
-    })
-  )
+  const xTicks = $derived(logTicks(xScale))
   const yTicks = $derived(yScale.ticks(9))
 
   const tickFormat = new Intl.NumberFormat(locale, {
