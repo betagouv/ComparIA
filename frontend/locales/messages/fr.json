@@ -24,6 +24,10 @@
             "do": "Copier le lien",
             "done": "Lien copié dans le presse-papiers"
         },
+        "copyKey": {
+            "do": "Copier la clé",
+            "done": "Clé copiée"
+        },
         "copyMessage": {
             "do": "Copier le message",
             "done": "Message copié"
