@@ -160,17 +160,24 @@ def configure_logger() -> logging.Logger:
     return logger
 
 
-class _RedactInviteToken(logging.Filter):
-    """An invite link is a credential: whoever opens it first is signed in.
-    The token is the last path segment of `/api/auth/invite/<token>`, and the
-    access log would otherwise keep a copy of every link ever opened."""
+# An invite link is a credential: whoever opens it first is signed in. The
+# token is the last path segment of `/api/auth/invite/<token>`; `/invite/accept`
+# is a sibling route and carries nothing worth hiding.
+_INVITE_TOKEN = re.compile(r"(/auth/invite/)(?!accept(?:[/?\s]|$))[^/?\s]+")
 
-    _pattern = re.compile(r"(/auth/invite/)(?!accept(?:[/?\s]|$))[^/?\s]+")
+
+def redact_invite_token(text: str) -> str:
+    return _INVITE_TOKEN.sub(r"\1<redacted>", text)
+
+
+class _RedactInviteToken(logging.Filter):
+    """The access log would otherwise keep a copy of every invite link ever
+    opened."""
 
     def filter(self, record: logging.LogRecord) -> bool:
         if record.args:
             record.args = tuple(
-                self._pattern.sub(r"\1<redacted>", arg) if isinstance(arg, str) else arg
+                redact_invite_token(arg) if isinstance(arg, str) else arg
                 for arg in record.args
             )
         return True

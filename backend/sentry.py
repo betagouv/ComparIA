@@ -5,6 +5,7 @@ from typing import Any
 import sentry_sdk
 
 from backend.config import settings
+from backend.logger import redact_invite_token
 
 logger = logging.getLogger("languia")
 
@@ -25,8 +26,16 @@ def _scrub(value: Any) -> Any:
 
 def _before_send(event: dict, hint: dict) -> dict:
     # Requests bodies/headers can contain prompts, cookies or auth tokens.
-    event.get("request", {}).pop("data", None)
-    event.get("request", {}).pop("headers", None)
+    request = event.get("request", {})
+    request.pop("data", None)
+    request.pop("headers", None)
+    # The invite token is a path segment, so it shows up in the request url of
+    # errors and transactions alike. Transaction names use the route template,
+    # except for paths no route matched.
+    if isinstance(request.get("url"), str):
+        request["url"] = redact_invite_token(request["url"])
+    if isinstance(event.get("transaction"), str):
+        event["transaction"] = redact_invite_token(event["transaction"])
     for breadcrumb in event.get("breadcrumbs", {}).get("values", []):
         if "data" in breadcrumb:
             breadcrumb["data"] = _scrub(breadcrumb["data"])
@@ -56,6 +65,7 @@ def init_sentry() -> None:
         project_root=os.getcwd(),
         send_default_pii=False,
         before_send=_before_send,
+        before_send_transaction=_before_send,
     )
     logger.debug(
         "Sentry loaded with traces_sample_rate="
