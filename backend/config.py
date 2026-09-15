@@ -164,21 +164,43 @@ if not settings.ALTCHA_HMAC_KEY:
 
     settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
 
+ENCRYPTION_KEY_HELP = (
+    "Generate one with: python -c 'from cryptography.fernet import Fernet; "
+    "print(Fernet.generate_key().decode())'"
+)
+
+
+def check_encryption_keys(value: str) -> None:
+    """Refuse a key Fernet would refuse, at boot rather than at the first
+    admin enrolment. Several keys may be listed, comma-separated."""
+    from cryptography.fernet import Fernet
+
+    keys = [k.strip() for k in value.split(",") if k.strip()]
+    if not keys:
+        raise RuntimeError(
+            f"COMPARIA_ENCRYPTION_KEY is required. {ENCRYPTION_KEY_HELP}"
+        )
+    for key in keys:
+        try:
+            Fernet(key)
+        except (ValueError, TypeError) as e:
+            raise RuntimeError(
+                "COMPARIA_ENCRYPTION_KEY is not a valid Fernet key: 32 url-safe "
+                f"base64-encoded bytes, not a hex string. {ENCRYPTION_KEY_HELP}"
+            ) from e
+
+
 # Unlike the captcha key, a random one here would lock every local admin out on
 # each restart, so debug gets a fixed key instead of a fresh one.
-if not settings.COMPARIA_ENCRYPTION_KEY:
-    if not settings.LANGUIA_DEBUG:
-        raise RuntimeError(
-            "COMPARIA_ENCRYPTION_KEY is required. Generate one with: "
-            "python -c 'from cryptography.fernet import Fernet; "
-            "print(Fernet.generate_key().decode())'"
-        )
+if not settings.COMPARIA_ENCRYPTION_KEY and settings.LANGUIA_DEBUG:
     import base64
     import hashlib
 
     settings.COMPARIA_ENCRYPTION_KEY = base64.urlsafe_b64encode(
         hashlib.sha256(b"comparia-dev-totp-key").digest()
     ).decode()
+
+check_encryption_keys(settings.COMPARIA_ENCRYPTION_KEY)
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)
