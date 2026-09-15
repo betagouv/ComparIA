@@ -84,7 +84,7 @@ def assert_not_rate_limited(
         )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            detail="rate_limited",
         )
 
 
@@ -101,7 +101,7 @@ def assert_not_block_cooldown(request: Request) -> None:
     if is_block_cooldown(get_ip(request)):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+            detail="block_cooldown",
         )
 
 
@@ -168,7 +168,7 @@ def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
     if metadata.is_streaming:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Veuillez attendre la fin de la réponse des modèles.",
+            detail="comparison_streaming",
         )
 
     return metadata
@@ -378,10 +378,7 @@ async def add_text(
     if len(comparison_.turns) >= MAX_TURNS_PER_COMPARISON:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=(
-                "Cette conversation a atteint sa limite de "
-                f"{MAX_TURNS_PER_COMPARISON} échanges. Veuillez en démarrer une nouvelle."
-            ),
+            detail="max_turns_reached",
         )
 
     check = await run_checks(args.message, "message", request, args.warning_token)
@@ -455,7 +452,7 @@ async def retry(
     if turn.user_msg is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+            detail="retry_unavailable",
         )
 
     # If comparison has not yet trully started
@@ -466,7 +463,7 @@ async def retry(
                 # Another timeout error occured even tho llms have been rerolled already
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                    detail="retry_unavailable",
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")

@@ -46,20 +46,12 @@ MODERATION_TIMEOUT: Final[float] = 2.5
 # warning and decide.
 SCORES_TTL: Final[int] = 900
 
-# French refusals (platform default locale).
-GENERIC_MESSAGE = (
-    "Votre message n'a pas pu être envoyé car il enfreint nos conditions "
-    "d'utilisation. Veuillez le reformuler."
-)
-SELF_HARM_MESSAGE = (
-    "Si vous traversez une période difficile ou avez des pensées suicidaires, "
-    "vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, "
-    "est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
-)
-PII_MESSAGE = (
-    "Votre message semble contenir des données personnelles. Les messages "
-    "envoyés peuvent être publiés dans le jeu de données ouvert."
-)
+# Keys, not sentences: the frontend picks the wording for the visitor's
+# language under `arene.apiErrors.prompt_check`. The self-harm one names a
+# helpline, which differs per country, so it cannot live here.
+GENERIC_MESSAGE = "generic"
+SELF_HARM_MESSAGE = "self_harm"
+PII_MESSAGE = "pii"
 
 _DECISIONS = {"off": "pass", "log": "logged", "warn": "warned", "block": "blocked"}
 
