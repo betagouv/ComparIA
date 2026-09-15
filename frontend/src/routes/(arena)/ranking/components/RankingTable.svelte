@@ -3,6 +3,7 @@
   import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { Archs } from '$lib/generated/constants'
+  import { convertFromUsd, currencyFormatter } from '$lib/currency'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
@@ -15,6 +16,8 @@
     | 'trust_range'
     | 'n_match'
     | 'consumption'
+    | 'price_in'
+    | 'price_out'
     | 'size'
     | 'arch'
     | 'release'
@@ -55,6 +58,7 @@
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
+  const priceFormat = $derived(currencyFormatter(commons.currency, getLocale()))
 
   const totalVotesLabel = $derived(NumberFormater.format(totalVotes))
   let selectedModel = $state<string>()
@@ -73,6 +77,9 @@
         { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
         { id: 'n_match' },
         { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
+        // Opt-in: the general ranking stays as it is, the price tab asks for them.
+        { id: 'price_in', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
+        { id: 'price_out', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
         { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
         { id: 'release' },
@@ -80,7 +87,7 @@
         { id: 'license' }
       ] as const
     )
-      .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
+      .filter((col) => (includedCols ? includedCols.includes(col.id) : !('optIn' in col)))
       .map((col) => ({
         ...col,
         // The rank column shows whichever the toggle asked for, so its header
@@ -174,6 +181,9 @@
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
             return b.consumption - a.consumption
           }
+          case 'price_in':
+          case 'price_out':
+            return b[orderingCol] - a[orderingCol]
           case 'trust_range': {
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
             const bCount = b.data.trust_range[0] + b.data.trust_range[1]
@@ -343,6 +353,8 @@
           </div>
         {/if}
       {/if}
+    {:else if col.id === 'price_in' || col.id === 'price_out'}
+      {priceFormat.format(convertFromUsd(model[col.id], commons.currency))}
     {:else if col.id === 'arch'}
       {m[`generated.archs.${model.arch}.name`]()}
     {:else if col.id === 'n_match'}
