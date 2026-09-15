@@ -65,3 +65,10 @@
   -webkit-mask-image: url('/icons/money-euro-circle-line.svg');
   mask-image: url('/icons/money-euro-circle-line.svg');
 }
+
+/* From DSFR's media family. */
+.fr-icon-stop-circle-line::before,
+.fr-icon-stop-circle-line::after {
+  -webkit-mask-image: url('/icons/stop-circle-line.svg');
+  mask-image: url('/icons/stop-circle-line.svg');
+}
