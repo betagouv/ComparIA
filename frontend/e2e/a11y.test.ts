@@ -273,17 +273,29 @@ test('stopping the generation hands focus to the vote', async ({ page }) => {
     await page.locator('#fr-modal-welcome .fr-modal__footer button').click()
   }
 
-  // Both answers have started: a stop now keeps text on each side.
+  // Both answers have started: a stop now keeps text on each side. The send
+  // button in the prompt bar is the stop button for as long as they run.
   await expect(page.locator('.message-bot')).toHaveCount(2)
-  const stop = page.locator('button[id^=stop-]')
+  const stop = page.getByRole('button', { name: 'Arrêter la génération' })
   await stop.focus()
   await page.keyboard.press('Enter')
 
-  // The button unmounts with the 'interrupted' event; focus must not be
-  // stranded on <body> but land on the first choice the viewer can see.
-  await page.locator('fieldset[id^=vote-select]').waitFor()
-  await expect(page.locator('button[data-choice="a_better"]:visible')).toBeFocused()
-  await expect(page.locator('[id^=interrupted-] p[role="status"]')).toBeVisible()
+  // The button turns back into Send on the 'interrupted' event and keeps
+  // focus, but what the stop revealed sits above it. With two answers under
+  // way that is the vote; a reasoning model that had not written a word yet
+  // leaves nothing to keep, and the turn shows the Retry card instead. The
+  // pair is drawn at random, so accept both, and check where focus went.
+  const vote = page.locator('button[data-choice="a_better"]:visible')
+  const retry = page.locator('[role="alert"] button:visible')
+  await expect(vote.or(retry).first()).toBeVisible()
+  if (await vote.count()) {
+    await expect(vote).toBeFocused()
+    await expect(page.locator('[id^=interrupted-] p[role="status"]')).toBeVisible()
+  } else {
+    await expect(retry).toBeFocused()
+  }
+  await expect(stop).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Envoyer' })).toBeVisible()
 })
 
 test('conversation and results screens are not clipped at 200% zoom', async ({ page }) => {
