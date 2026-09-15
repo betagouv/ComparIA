@@ -43,6 +43,9 @@
   }
 
   function reset() {
+    // Back to 'loading', or a reopened modal would show the failure branch
+    // while the next secret is being fetched.
+    phase = 'loading'
     setup = undefined
     currentCode = ''
     code = ''
