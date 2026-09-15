@@ -35,6 +35,7 @@
       <AILogo
         logo={lab.logo}
         customLogoId={lab.has_custom_logo ? lab.id : undefined}
+        customLogoVersion={lab.logo_version}
         size="sm"
         alt=""
         class="block"

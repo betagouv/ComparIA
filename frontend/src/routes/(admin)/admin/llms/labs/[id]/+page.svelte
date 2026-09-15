@@ -15,8 +15,8 @@
   const id = $derived(page.params.id)
   const method = $derived(id === 'create' ? 'post' : 'put')
   let uploadingLogo = $state(false)
-  let logoVersion = $state(0)
   let hasCustomLogo = $derived(data.formProps.data.has_custom_logo)
+  let logoVersion = $derived(data.formProps.data.logo_version)
   const form = $derived(
     useForm({
       url: '/admin/llms/lab',
@@ -47,7 +47,7 @@
       )
       Object.assign(data.formProps.data, updated)
       hasCustomLogo = true
-      logoVersion++
+      logoVersion = updated.logo_version
       useToast('Logo updated', 4000)
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')
