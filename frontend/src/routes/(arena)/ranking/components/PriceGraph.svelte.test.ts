@@ -1,4 +1,4 @@
-import { render } from '@testing-library/svelte'
+import { fireEvent, render } from '@testing-library/svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { expectAccessible } from '$lib/testing/a11y'
 import PriceGraph from './PriceGraph.svelte'
@@ -63,6 +63,18 @@ describe('PriceGraph', () => {
 
     const labels = [...container.querySelectorAll('svg text.label')].map((t) => t.textContent)
     expect(labels).toEqual(['cheap-weak', 'mid', 'pricey-best'])
+  })
+
+  it('keeps both axes when the search matches nothing', async () => {
+    const { container } = render(PriceGraph)
+
+    const search = container.querySelector<HTMLInputElement>('#price-graph-model-search-desktop')!
+    await fireEvent.input(search, { target: { value: 'no such model' } })
+
+    expect(container.querySelectorAll('svg circle')).toHaveLength(0)
+    expect(container.querySelectorAll('svg .x-axis text').length).toBeGreaterThanOrEqual(2)
+    expect(container.querySelectorAll('svg .y-axis text').length).toBeGreaterThanOrEqual(2)
+    expect(container.querySelector('svg')!.innerHTML).not.toContain('NaN')
   })
 
   it('names itself and mirrors the licence ramp in the legend', async () => {
