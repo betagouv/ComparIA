@@ -91,7 +91,7 @@
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
         method: 'POST',
-        body: JSON.stringify({ email, altcha_payload })
+        body: JSON.stringify({ email, altcha_payload, locale })
       })
       step = 'code'
     } catch (err) {
