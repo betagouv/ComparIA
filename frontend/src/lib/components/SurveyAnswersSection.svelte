@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Button, CheckboxGroup, Select } from '$components/dsfr'
-  import type { MySurveyAnswer, MySurveyAnswersResponse } from '$lib/generated/backend'
   import { api } from '$lib/fastapi-client'
-  import { getLocale } from '$lib/i18n/runtime'
-  import { m } from '$lib/i18n/messages'
+  import type { MySurveyAnswer, MySurveyAnswersResponse } from '$lib/generated/backend'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { onMount } from 'svelte'
 
   let loading = $state(true)
@@ -22,10 +22,9 @@
     loading = true
     loadError = ''
     try {
-      const locale = getLocale()
-      const response = await api.request<MySurveyAnswersResponse>(
-        `/survey/me?locale=${encodeURIComponent(locale)}`
-      )
+      const response = await api.request<MySurveyAnswersResponse>('/survey/me', {
+        searchParams: { locale: getLocale() }
+      })
       questions = response.answers
       selections = Object.fromEntries(
         response.answers.map((answer) => [answer.question_id, [...answer.selected_keys]])
