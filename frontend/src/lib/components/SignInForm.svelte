@@ -15,24 +15,27 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { onMount, tick } from 'svelte'
+  import { onMount, tick, untrack } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
     onSuccess,
     onLegalNavigate,
     titleId,
+    startAtTotp = false,
     ...props
   }: {
     onSuccess?: () => void
     onLegalNavigate?: (event: MouseEvent) => void
     /** Lets a wrapping modal point its aria-labelledby at this form's title. */
     titleId?: string
+    /** The email code was already checked elsewhere: only the authenticator is left. */
+    startAtTotp?: boolean
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
   const locale = getLocale()
-  let step = $state<'email' | 'code' | 'totp'>('email')
+  let step = $state<'email' | 'code' | 'totp'>(untrack(() => (startAtTotp ? 'totp' : 'email')))
   let email = $state('')
   let code = $state('')
   let totpCode = $state('')
