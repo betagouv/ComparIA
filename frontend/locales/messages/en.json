@@ -1206,7 +1206,7 @@
         "votes": {
             "count": "{count} votes",
             "legend": "Legend",
-            "objective": "Goal: {count}",
+            "objective": "Goal: {count}k",
             "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the arena dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
         }
     },

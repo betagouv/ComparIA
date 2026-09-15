@@ -337,7 +337,7 @@
         "votes": {
             "count": "{count} votes",
             "legend": "Leggenda",
-            "objective": "Obiettivo: {count}",
+            "objective": "Obiettivo: {count}k",
             "tooltip": "Discuti, vota e aiutaci a raggiungere questo obiettivo!<br /><strong>I tuoi voti sono importanti</strong> : alimentano il dataset compar:IA reso liberamente disponibile per perfezionare i futuri modelli per la lingua francese.<br />Questo patrimonio digitale contribuisce ad un maggiore <strong>rispetto della diversità linguistica e culturale dei futuri modelli linguistici.</strong>"
         }
     },
