@@ -96,6 +96,7 @@ async def _create_session(
     conversation either: that is the explicit merge, keyed on the anonymous
     session cookie. Does not commit; caller owns the transaction."""
     user.last_seen_at = datetime.now()
+    user.inactivity_warned_at = None
 
     token = secrets.token_urlsafe(32)
     auth_session = AuthSession(
