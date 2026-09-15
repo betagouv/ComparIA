@@ -10,6 +10,31 @@ ADMIN_EMAILS='["you@example.com"]'
 
 On an instance that is already running, `./comparia-cli db seed-admins` does the same thing without a restart.
 
+## Two-factor authentication
+
+Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits.
+
+The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). Generate one with:
+
+```bash
+python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
+```
+
+To rotate it, put the new key first and keep the old one after a comma: `COMPARIA_ENCRYPTION_KEY=new,old`. Each admin's secret is re-encrypted with the new key the next time they sign in, so the old key can go once everyone has.
+
+An admin changes device from `/settings`: a code from the current app, then the new QR code. Their other sessions are signed out when the new app is confirmed.
+
+An admin who lost their phone asks another admin, who opens `/admin/utilisateurs` and uses the reset action on their row. That signs them out everywhere and sends them back to the setup screen at their next visit. Do this over a channel you trust, since the email code alone then opens the admin area again. Nobody can reset their own row.
+
+If the only admin is locked out, there is no button left. Run the same reset from the machine that has the database:
+
+```bash
+./comparia-cli db reset-totp admin@example.org
+# or: make db-reset-totp EMAIL=admin@example.org
+```
+
+Then sign in with an email code and set the app up again from `/settings`.
+
 ## LLMs
 
 `/admin/llms` has four tabs, and the order matters, because a model points at the other three.
@@ -59,7 +84,7 @@ An optional domain allowlist restricts who can ask for a login code, which is ho
 
 ## Users
 
-`/admin/utilisateurs` is where you search accounts, change roles, invite people by email and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
+`/admin/utilisateurs` is where you search accounts, change roles, invite people by email, reset someone's two-factor authentication and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
 ## Publishing
 
