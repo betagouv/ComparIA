@@ -66,7 +66,12 @@
   {#snippet cell(lab, col)}
     {#if col.id === 'name'}
       <div class="gap-2 flex items-center">
-        <AILogo logo={lab.logo} customLogoId={lab.has_custom_logo ? lab.id : undefined} alt="" />
+        <AILogo
+          logo={lab.logo}
+          customLogoId={lab.has_custom_logo ? lab.id : undefined}
+          customLogoVersion={lab.logo_version}
+          alt=""
+        />
         <a href={resolve(`${baseRoute}/${lab.id}`)}>{lab[col.id]}</a>
       </div>
     {:else if col.id === 'created_at' || col.id === 'updated_at'}

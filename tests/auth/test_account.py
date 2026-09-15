@@ -157,6 +157,7 @@ def test_public_config_carries_the_deployment_url():
             secondary_color_dark="#CACAFB",
             homepage_url=None,
             logo=None,
+            logo_version=None,
             enabled_locales=["fr"],
             default_locale="fr",
         )

@@ -60,6 +60,8 @@ class AuthConfig(BaseModel):
     homepage_url: str | None
     platform_url: str
     has_custom_logo: bool
+    # Goes in the logo URL, so the browser can keep the file for a year.
+    logo_version: str | None
     enabled_locales: list[str]
     default_locale: str
 
@@ -166,6 +168,7 @@ async def get_config() -> AuthConfig:
         homepage_url=app_settings.homepage_url,
         platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
+        logo_version=app_settings.logo_version,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
     )
@@ -180,7 +183,8 @@ async def get_config_logo() -> Response:
         content=app_settings.logo,
         media_type=app_settings.logo_content_type or "image/png",
         headers={
-            "Cache-Control": "public, max-age=300",
+            # Same as the lab logos: the URL carries the version.
+            "Cache-Control": "public, max-age=31536000, immutable",
             # The logo can be an SVG, and an SVG can carry a <script>. Pages
             # only ever show it in an <img>, where scripts never run, but
             # opening this URL directly would render it as a document on our

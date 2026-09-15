@@ -285,6 +285,7 @@
                 customLogoId={hoveredModelData.lab.has_custom_logo
                   ? hoveredModelData.lab.id
                   : undefined}
+                customLogoVersion={hoveredModelData.lab.logo_version}
                 alt={hoveredModelData.lab.name}
                 class="me-1"
               />
