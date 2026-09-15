@@ -20,6 +20,7 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
 
     now = datetime.now()
     report = await purge_inactive_users(months, apply=apply, now=now)
+    # Ids rather than addresses: this output lands in the shared log store.
     mode = "applied" if apply else "dry run"
     verb_warn = "warned" if apply else "would warn"
     verb_erase = "erased" if apply else "would erase"
@@ -27,21 +28,20 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
     for user in report.to_warn:
         until = erasure_date(user, months, now)
         logger.info(
-            f"[purge] {verb_warn} {user.email} "
+            f"[purge] {verb_warn} {user.id} "
             f"(last seen {user.last_seen_at:%Y-%m-%d}, erasure on {until:%Y-%m-%d})"
         )
     for user in report.to_erase:
         logger.info(
-            f"[purge] {verb_erase} {user.email} "
+            f"[purge] {verb_erase} {user.id} "
             f"(last seen {user.last_seen_at:%Y-%m-%d}, "
             f"warned {user.inactivity_warned_at:%Y-%m-%d})"
         )
     for user in report.warn_failed:
-        logger.error(f"[purge] no warning sent to {user.email}, left as is")
+        logger.error(f"[purge] no warning sent to {user.id}, left as is")
     for user in report.admins:
         logger.info(
-            f"[purge] admin {user.email} kept "
-            f"(last seen {user.last_seen_at:%Y-%m-%d})"
+            f"[purge] admin {user.id} kept " f"(last seen {user.last_seen_at:%Y-%m-%d})"
         )
     logger.info(
         f"[purge] {mode}: {len(report.to_warn)} to warn, "
