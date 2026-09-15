@@ -12,6 +12,7 @@ from backend.arena.checks import (
     issue_warning_token,
     run_prompt_check,
 )
+from backend.arena.conversation import finalize_interrupted
 from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -32,6 +33,7 @@ from backend.arena.session import (
     increment_input_chars,
     is_block_cooldown,
     is_ratelimited,
+    is_stop_requested,
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
@@ -52,6 +54,7 @@ from backend.vote_tags.services import (
     check_vote_tags,
 )
 from utils.database.models import (
+    BOT_POS,
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
@@ -206,14 +209,40 @@ async def _stream_turn(
     Stream both model answers for a turn as formatted SSE events, then charge
     the prompt to the rate limit and save the answers. Shared by the three
     routes that run the models; each keeps its own preamble.
+
+    A stop request ends the stream early: the partial answers are saved with
+    their flag, the comparison is released, and the 'interrupted' event is
+    the last thing sent.
     """
-    async for chunk in stream_comparison_messages(comparison, turn, request):
-        yield format_sse_event(chunk)
+    llms_data = llms_data or await get_llms_data()
+
+    async for chunk in stream_comparison_messages(
+        comparison,
+        turn,
+        request,
+        stop_requested=lambda: is_stop_requested(comparison.id),
+    ):
+        if chunk["type"] != "interrupted":
+            yield format_sse_event(chunk)
+            continue
+
+        for pos in BOT_POS:
+            llm_msg = getattr(turn, f"llm_msg_{pos}")
+            if llm_msg is not None and llm_msg.interrupted:
+                llm = llms_data.enabled[getattr(comparison, f"llm_id_{pos}")]
+                setattr(turn, f"llm_msg_{pos}", finalize_interrupted(llm_msg, llm))
+        await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        # Released before the event goes out: the browser votes or retries as
+        # soon as it lands, and get_comparison refuses while is_streaming.
+        store_comparison_metadata(comparison.id, is_streaming=False)
+        yield format_sse_event(
+            {"type": "interrupted", "turn": TurnPublic.model_validate(turn)}
+        )
+        return
 
     if comparison.error:
         return
 
-    llms_data = llms_data or await get_llms_data()
     increment_input_chars(
         anonymous_user_hash,
         get_ip(request),

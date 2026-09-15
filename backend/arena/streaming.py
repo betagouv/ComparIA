@@ -5,10 +5,11 @@ Handles real-time streaming of model responses to the frontend using SSE protoco
 """
 
 import asyncio
+import inspect
 import json
 import logging
 import traceback
-from typing import Any, AsyncGenerator, Literal, TypedDict
+from typing import Any, AsyncGenerator, Awaitable, Callable, Literal, TypedDict
 
 import litellm
 import sentry_sdk
@@ -106,6 +107,13 @@ class SSEEventWarning(TypedDict):
     warning_token: str
 
 
+class SSEEventInterrupted(TypedDict):
+    """Last event of a stream the user stopped: the turn with its partial answers."""
+
+    type: Literal["interrupted"]
+    turn: TurnPublic
+
+
 AnySSEEventMsg = SSEEventMsgChunk | SSEEventMsgComplete | SSEEventMsgError
 AnySSEEvent = (
     AnySSEEventMsg
@@ -115,7 +123,12 @@ AnySSEEvent = (
     | SSEEventComplete
     | SSEEventError
     | SSEEventWarning
+    | SSEEventInterrupted
 )
+
+StopRequested = Callable[[], bool] | Callable[[], Awaitable[bool]]
+# How often at most the stop flag is read while chunks keep coming.
+STOP_POLL_INTERVAL = 0.5
 
 
 def format_sse_event(data: AnySSEEvent) -> str:
@@ -196,6 +209,7 @@ async def stream_comparison_messages(
     comparison: ComparisonRead,
     turn: TurnRead,
     request: Any | None = None,
+    stop_requested: StopRequested | None = None,
 ) -> AsyncGenerator[AnySSEEvent]:
     """
     Stream both LLMs responses in parallel using Server-Sent Events.
@@ -207,6 +221,9 @@ async def stream_comparison_messages(
         comparison: current Comparison
         turn: current Turn
         request: FastAPI Request object for logging
+        stop_requested: polled between chunks; when it answers True both
+            provider streams are closed, the sides still running are flagged
+            interrupted, and an 'interrupted' event ends the stream.
 
     Yields:
         AnySSEEvent
@@ -239,6 +256,9 @@ async def stream_comparison_messages(
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
 
+        loop = asyncio.get_running_loop()
+        last_poll = loop.time()
+
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
             for pos in BOT_POS:
@@ -248,10 +268,31 @@ async def stream_comparison_messages(
             if not tasks:
                 break
 
-            # Wait for next chunk from either model
+            # Wait for next chunk from either model. The timeout is what lets
+            # a stop land while a provider is silent.
             completed, _ = await asyncio.wait(
-                tasks.values(), return_when=asyncio.FIRST_COMPLETED
+                tasks.values(),
+                return_when=asyncio.FIRST_COMPLETED,
+                timeout=STOP_POLL_INTERVAL if stop_requested else None,
             )
+
+            if stop_requested and loop.time() - last_poll >= STOP_POLL_INTERVAL:
+                last_poll = loop.time()
+                if await _answers(stop_requested):
+                    await _shut_down(tasks, generators)
+                    for pos in BOT_POS:
+                        llm_msg = getattr(turn, f"llm_msg_{pos}")
+                        if not complete[pos] and llm_msg is not None:
+                            llm_msg.interrupted = True
+                    logger.info(
+                        f"[STREAMING] Stopped comparison '{comparison.id}' on request",
+                        extra={"request": request},
+                    )
+                    yield {
+                        "type": "interrupted",
+                        "turn": TurnPublic.model_validate(turn),
+                    }
+                    return
 
             # Process completed chunks
             for task in completed:
@@ -336,6 +377,13 @@ async def stream_comparison_messages(
         await _shut_down(tasks, generators)
 
 
+async def _answers(stop_requested: StopRequested) -> bool:
+    result = stop_requested()
+    if inspect.isawaitable(result):
+        return await result
+    return result
+
+
 async def _shut_down(
     tasks: dict[BotPos, "asyncio.Task[AnySSEEventMsg]"],
     generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]],
@@ -344,6 +392,7 @@ async def _shut_down(
     for task in tasks.values():
         task.cancel()
     await asyncio.gather(*tasks.values(), return_exceptions=True)
+    tasks.clear()
     for generator in generators.values():
         await generator.aclose()
 
