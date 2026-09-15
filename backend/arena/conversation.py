@@ -72,12 +72,7 @@ async def _stream_cached_response(
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
 
-        try:
-            await asyncio.sleep(0.2)
-        except asyncio.CancelledError:
-            # Sleep can be cancelled and raise StopAsyncGenerator error
-            # Simply silence error
-            pass
+        await asyncio.sleep(0.2)
 
     # Final yield with complete content and timing
     llm_msg.content = cached["content"].strip()
@@ -147,7 +142,7 @@ async def bot_response_async(
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
+    async for llm_msg in stream_iter:
         # Yield complete chat only if there's content to display in current message
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
