@@ -60,7 +60,7 @@ export interface APIComparison extends ComparisonPublic {
 export const TURN_CHOICES = ['a_better', 'both_good', 'idk', 'both_bad', 'b_better'] as const
 export type TurnChoice = (typeof TURN_CHOICES)[number]
 
-export type ComparisonTurnStatus = 'pending' | 'generating' | 'error' | 'complete'
+export type ComparisonTurnStatus = 'pending' | 'generating' | 'error' | 'complete' | 'interrupted'
 export type ComparisonStatus = ComparisonTurnStatus | 'revealed'
 
 export interface ComparisonTurnSide {
@@ -133,26 +133,47 @@ export const modeInfos: ModeInfos[] = (
 export type ComparisonsCtx = Comparison[]
 export const [getComparisonsContext, setComparisonsContext] = createContext<ComparisonsCtx>()
 
+function sideStatus(llm_msg: AssistantMessage | null): ComparisonTurnStatus {
+  if (!llm_msg) return 'pending'
+  return llm_msg.interrupted ? 'interrupted' : 'complete'
+}
+
 function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
-  const status = !turn.llm_msg_a && !turn.llm_msg_b ? 'pending' : 'complete'
+  const a = sideStatus(turn.llm_msg_a)
+  const b = sideStatus(turn.llm_msg_b)
+  let status: ComparisonTurnStatus = 'complete'
+  if (a === 'pending' && b === 'pending') status = 'pending'
+  else if (a === 'interrupted' || b === 'interrupted') status = 'interrupted'
   return {
     id: turn.id,
     status,
     choice: turn.choice,
     user_msg: turn.user_msg,
     a: {
-      status: !turn.llm_msg_a ? 'pending' : 'complete',
+      status: a,
       llm_msg: turn.llm_msg_a,
       custom_annotation: '',
       keyword_annotations: []
     },
     b: {
-      status: !turn.llm_msg_b ? 'pending' : 'complete',
+      status: b,
       llm_msg: turn.llm_msg_b,
       custom_annotation: '',
       keyword_annotations: []
     }
   }
+}
+
+/**
+ * A turn with a side still 'pending' once its stream is gone cannot make
+ * progress: show it as failed, with Retry. True when that was the case.
+ */
+function failPendingSides(turn: ComparisonTurn): boolean {
+  if (turn.a.status !== 'pending' && turn.b.status !== 'pending') return false
+  turn.status = 'error'
+  if (turn.a.status === 'pending') turn.a.status = 'error'
+  if (turn.b.status === 'pending') turn.b.status = 'error'
+  return true
 }
 
 export function parseAPIComparison(
@@ -173,11 +194,8 @@ export function parseAPIComparison(
   const interruptedTurn = recoverInterrupted
     ? parsed.turns.findLast((turn) => turn.a.status === 'pending' || turn.b.status === 'pending')
     : undefined
-  if (interruptedTurn) {
+  if (interruptedTurn && failPendingSides(interruptedTurn)) {
     parsed.error ??= 'provider_error'
-    interruptedTurn.status = 'error'
-    if (interruptedTurn.a.status === 'pending') interruptedTurn.a.status = 'error'
-    if (interruptedTurn.b.status === 'pending') interruptedTurn.b.status = 'error'
   }
 
   return parsed
@@ -221,6 +239,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const comparisons = getComparisonsContext()
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
+  // From the click on Stop until the stream ends, one way or another.
+  let stopping = $state(false)
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the
@@ -274,7 +294,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
             if (!turn) throw new InternalError('No turn to update')
 
             if (event.type === 'update') {
-              comparison.turns[comparison.turns.length - 1] = parseAPITurn(event.turn)
+              // Retry regenerates both sides: whatever the turn still holds,
+              // a lone answer or two stopped ones, is on its way out.
+              comparison.turns[comparison.turns.length - 1] = parseAPITurn({
+                ...event.turn,
+                llm_msg_a: null,
+                llm_msg_b: null
+              })
               goto(resolve(`/${comparisonId_ as string}`))
             } else if (event.type === 'error') {
               if (event.pos) {
@@ -282,6 +308,15 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
               }
               turn.status = 'error'
               comparison.error = event.error
+            } else if (event.type === 'interrupted') {
+              // The backend saved what it had and sent the turn back: replace
+              // ours. A side stopped before its first word was not saved, and
+              // that turn goes the same way as one cut by a reload.
+              const interrupted = parseAPITurn(event.turn)
+              if (failPendingSides(interrupted)) {
+                comparison.error = 'interrupted'
+              }
+              comparison.turns[comparison.turns.length - 1] = interrupted
             } else if (event.type === 'chunk') {
               turn.status = 'generating'
               turn[event.pos].status = 'generating'
@@ -314,9 +349,22 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } finally {
       loading = false
+      stopping = false
     }
 
     return !warned && !comparison?.error && !promptError
+  }
+
+  async function stop() {
+    if (!comparisonId_ || stopping) return
+    stopping = true
+    try {
+      await api.request(`/arena/stop/${comparisonId_}`, { method: 'POST' })
+    } catch (err) {
+      // The stream is still running; let the user press again.
+      stopping = false
+      throw err
+    }
   }
 
   return {
@@ -331,6 +379,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     get loading() {
       return loading
+    },
+    get stopping() {
+      return stopping
     },
     get error() {
       return errorMsg
@@ -386,6 +437,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     async retry() {
       return await ask(`/arena/retry/${comparisonId_}`, {})
     },
+
+    stop,
 
     async vote(data: AnyAPIVote) {
       await api.request<APIRevealData>(`/arena/vote/${comparisonId_}`, {
