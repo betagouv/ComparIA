@@ -20,6 +20,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+from fastapi import HTTPException  # noqa: E402
+from starlette.requests import Request  # noqa: E402
+
 import backend.arena.conversation as conversation  # noqa: E402
 import backend.arena.router as router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
@@ -322,6 +325,60 @@ def test_the_route_saves_the_cut_answers_and_sends_them_back():
     assert sent["llm_msg_b"] is None
 
 
+# The route
+
+
+def call_stop(comparison_id, read_comparison, requested: list):
+    request = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": f"/arena/stop/{comparison_id}",
+            "path_params": {},
+            "query_string": b"",
+            "headers": [],
+            "client": ("10.0.0.1", 1234),
+        }
+    )
+    def request_comparison_stop(id):
+        requested.append(id)
+        return True
+
+    with patched(
+        router,
+        read_comparison=read_comparison,
+        request_comparison_stop=request_comparison_stop,
+    ):
+        return asyncio.run(router.stop(comparison_id, None, "b" * 64, request))
+
+
+def test_the_owner_can_stop_and_gets_204_even_when_nothing_streams():
+    comparison_id = uuid4()
+    requested: list = []
+
+    async def read_comparison(id, user_id, anonymous_user_hash):
+        assert (id, user_id, anonymous_user_hash) == (comparison_id, None, "b" * 64)
+        return SimpleNamespace(id=id)
+
+    assert call_stop(comparison_id, read_comparison, requested) is None
+    assert requested == [comparison_id]
+
+
+def test_someone_else_cannot_stop_a_comparison():
+    requested: list = []
+
+    async def read_comparison(id, user_id, anonymous_user_hash):
+        raise HTTPException(status_code=404, detail="Comparison not found")
+
+    try:
+        call_stop(uuid4(), read_comparison, requested)
+    except HTTPException as error:
+        assert error.status_code == 404
+    else:
+        raise AssertionError("a stranger stopped the comparison")
+    assert requested == []
+
+
 if __name__ == "__main__":
     test_a_stop_is_recorded_while_streaming_and_kept_with_the_same_ttl()
     test_a_stop_after_the_answers_landed_changes_nothing()
@@ -332,4 +389,6 @@ if __name__ == "__main__":
     test_a_cut_answer_with_text_is_completed_and_flagged()
     test_a_cut_answer_without_text_is_dropped()
     test_the_route_saves_the_cut_answers_and_sends_them_back()
+    test_the_owner_can_stop_and_gets_204_even_when_nothing_streams()
+    test_someone_else_cannot_stop_a_comparison()
     print("Stop cases passed.")

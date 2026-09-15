@@ -34,6 +34,7 @@ from backend.arena.session import (
     is_block_cooldown,
     is_ratelimited,
     is_stop_requested,
+    request_comparison_stop,
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
@@ -537,6 +538,29 @@ async def retry(
             store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
+
+
+@router.post("/stop/{comparison_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def stop(
+    comparison_id: UUID,
+    user: OptionalUser,
+    anonymous_user_hash: RequiredAnomymous,
+    request: Request,
+) -> None:
+    """
+    Stop the answers being generated for a Comparison.
+
+    The streaming loop picks the request up and ends its stream with an
+    'interrupted' event. 204 whether or not a stream was running: a stale
+    click has nothing to undo.
+
+    Not ComparisonAnno: that dependency refuses while is_streaming, which is
+    the one moment this route is for.
+    """
+    logger.info(f"'/stop' on comparison '{comparison_id}'", extra={"request": request})
+
+    await read_comparison(comparison_id, user.id if user else None, anonymous_user_hash)
+    request_comparison_stop(comparison_id)
 
 
 @router.post("/vote/{comparison_id}")
