@@ -38,7 +38,7 @@
   let frontierOnly = $state(false)
   let showArchived = $state(true)
   const kindFilter = {
-    id: 'license-kind',
+    id: 'price-license-kind',
     legend: m['ranking.price.views.graph.legends.license'](),
     options: LICENSE_KINDS.map((value) => ({
       value,
@@ -172,7 +172,7 @@
     </CheckboxGroup>
 
     <Toggle
-      id="frontier-only-{kind}"
+      id="price-frontier-only-{kind}"
       bind:value={frontierOnly}
       label={m['ranking.price.views.graph.legends.frontierOnly']()}
       hideCheckLabel
@@ -182,7 +182,7 @@
     />
 
     <Toggle
-      id="archived-{kind}"
+      id="price-archived-{kind}"
       bind:value={showArchived}
       label={m['models.list.filters.archived.label']()}
       checkedLabel={m['models.list.filters.archived.checkedLabel']()}
