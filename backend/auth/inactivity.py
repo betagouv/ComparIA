@@ -88,6 +88,7 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
         user.email,
         last_seen_at=user.last_seen_at,
         erasure_at=erasure_date(user, months, now),
+        lang=app_settings.default_locale,
         platform_name=app_settings.platform_name,
         primary_color=app_settings.primary_color_light,
         secondary_color=app_settings.secondary_color_light,

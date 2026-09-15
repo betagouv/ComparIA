@@ -96,6 +96,7 @@ def purge_context(users, sent=True):
     async def get_app_settings():
         return SimpleNamespace(
             platform_name="Arène de test",
+            default_locale="fr",
             primary_color_light="#000091",
             secondary_color_light="#6A6AF4",
         )
@@ -230,24 +231,48 @@ def test_a_warning_that_could_not_be_sent_is_not_recorded():
     assert report.warn_failed == [to_warn]
 
 
-def test_warning_message_names_both_dates_in_both_languages():
-    message = _build_inactivity_message(
-        datetime(2025, 9, 1), datetime(2026, 10, 1), platform_name="Arène & Co"
-    )
-    parts = {
+def _parts(message):
+    return {
         part.get_content_type(): part.get_content()
         for part in message.walk()
         if not part.is_multipart()
     }
+
+
+def test_warning_message_is_written_in_the_instance_language():
+    message = _build_inactivity_message(
+        datetime(2025, 9, 1), datetime(2026, 10, 1), platform_name="Arène & Co"
+    )
+    parts = _parts(message)
 
     assert (
         message["Subject"]
         == "Votre compte Arène & Co sera supprimé le 1er octobre 2026"
     )
     assert "depuis le 1er septembre 2025" in parts["text/plain"]
-    assert "since 1 September 2025" in parts["text/plain"]
-    assert "deleted on 1 October 2026" in parts["text/plain"]
     assert "Arène &amp; Co" in parts["text/html"]
+    assert 'lang="fr"' in parts["text/html"]
+    assert "deleted on" not in parts["text/plain"]
+
+    danish = _parts(
+        _build_inactivity_message(
+            datetime(2025, 9, 1), datetime(2026, 10, 1), lang="da"
+        )
+    )
+    assert "siden den 1. september 2025" in danish["text/plain"]
+    assert "slettet den 1. oktober 2026" in danish["text/plain"]
+
+
+def test_warning_message_falls_back_to_english():
+    message = _build_inactivity_message(
+        datetime(2025, 9, 1), datetime(2026, 10, 1), lang="lt"
+    )
+    parts = _parts(message)
+
+    assert (
+        message["Subject"] == "Your Compar:IA account will be deleted on 1 October 2026"
+    )
+    assert "since 1 September 2025" in parts["text/plain"]
     assert 'lang="en"' in parts["text/html"]
 
 
