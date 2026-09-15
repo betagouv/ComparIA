@@ -1,10 +1,13 @@
 import { fireEvent, render } from '@testing-library/svelte'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
 import type { PageProps } from './$types'
 import type { UsersPage } from './+page'
 
-const goto = vi.fn()
+const { goto, pageState } = vi.hoisted(() => ({
+  goto: vi.fn(),
+  pageState: { url: new URL('http://localhost/admin/utilisateurs') }
+}))
 
 vi.mock('$app/navigation', () => ({
   goto: (...args: unknown[]) => goto(...args),
@@ -16,7 +19,7 @@ vi.mock('$app/paths', () => ({
 }))
 
 vi.mock('$app/state', () => ({
-  page: { url: new URL('http://localhost/admin/utilisateurs') }
+  page: pageState
 }))
 
 vi.mock('$lib/auth.svelte', () => ({
@@ -56,14 +59,19 @@ const users: UsersPage = {
   page_size: 25
 }
 
-function renderPage() {
+function renderPage(search = '') {
   return render(Page, {
-    data: { search: '', users } as unknown as PageProps['data'],
+    data: { search, users } as unknown as PageProps['data'],
     params: {} as PageProps['params']
   })
 }
 
 describe('admin users page', () => {
+  beforeEach(() => {
+    goto.mockClear()
+    pageState.url = new URL('http://localhost/admin/utilisateurs')
+  })
+
   it('shows each user role', () => {
     const { getAllByText } = renderPage()
 
@@ -74,6 +82,26 @@ describe('admin users page', () => {
   it('paginates from the server total and moves through the url', async () => {
     const { getByTitle } = renderPage()
 
+    await fireEvent.click(getByTitle('Page suivante'))
+
+    expect(goto).toHaveBeenCalledWith('/admin/utilisateurs?page=2')
+  })
+
+  it('navigates once per page change', async () => {
+    const { getByTitle } = renderPage()
+
+    await fireEvent.click(getByTitle('Page suivante'))
+
+    expect(goto).toHaveBeenCalledTimes(1)
+  })
+
+  it('builds the next url from the current one, not the one at mount', async () => {
+    pageState.url = new URL('http://localhost/admin/utilisateurs?search=foo')
+    const { getByTitle, rerender } = renderPage('foo')
+
+    // A browser Back that drops the search from the url.
+    pageState.url = new URL('http://localhost/admin/utilisateurs')
+    await rerender({ data: { search: '', users } as unknown as PageProps['data'] })
     await fireEvent.click(getByTitle('Page suivante'))
 
     expect(goto).toHaveBeenCalledWith('/admin/utilisateurs?page=2')

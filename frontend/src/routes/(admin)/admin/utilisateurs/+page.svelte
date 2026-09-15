@@ -12,7 +12,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import type { TableCol } from '$lib/utils/data'
   import { toRelativeTime } from '$lib/utils/data'
-  import { SvelteURLSearchParams } from 'svelte/reactivity'
+  import { untrack } from 'svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -21,7 +21,6 @@
   const auth = getAuthContext()
 
   const baseRoute = '/admin/utilisateurs'
-  const params = new SvelteURLSearchParams(page.url.searchParams)
 
   const users = $derived(data.users.items)
   const total = $derived(data.users.total)
@@ -32,11 +31,13 @@
   let search = $state(data.search)
   // svelte-ignore state_referenced_locally
   let currentPage = $state(data.users.page - 1)
-  let pageSize = $derived(data.users.page_size)
+  // svelte-ignore state_referenced_locally
+  let pageSize = $state(data.users.page_size)
 
   $effect(() => {
     search = data.search
     currentPage = data.users.page - 1
+    pageSize = data.users.page_size
   })
 
   $effect(() => {
@@ -56,7 +57,10 @@
     updateQuery({ page_size: pageSize, page: 1 })
   })
 
+  // Rebuild the params from the current url on every change: a browser Back
+  // is then picked up, and no effect writes to state it also reads.
   function updateQuery(updates: Record<string, string | number>) {
+    const params = untrack(() => new URLSearchParams(page.url.searchParams))
     for (const [key, value] of Object.entries(updates)) {
       if (value) params.set(key, value.toString())
       else params.delete(key)
