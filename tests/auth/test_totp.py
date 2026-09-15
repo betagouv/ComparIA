@@ -871,6 +871,54 @@ def test_resetting_an_unenrolled_or_missing_peer_is_not_found():
         assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
 
 
+@contextlib.contextmanager
+def admin_routed(admin, **fakes):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    import backend.admin.router as admin_router
+    from backend.auth.dependencies import require_admin
+
+    app = FastAPI()
+    app.include_router(admin_router.router)
+    app.dependency_overrides[require_admin] = lambda: admin
+    with patched(admin_router, **fakes):
+        yield TestClient(app)
+
+
+def test_the_reset_route_answers_once_the_service_has_done_its_work():
+    admin = User(email="admin@example.org", role="admin")
+    peer_id = uuid.uuid4()
+    seen = {}
+
+    async def reset(user_id, current_user_id):
+        seen.update(user_id=user_id, current_user_id=current_user_id)
+        return True
+
+    with admin_routed(admin, reset_user_totp=reset) as client:
+        r = client.delete(f"/admin/users/{peer_id}/totp")
+
+    assert r.status_code == 204
+    assert seen == {"user_id": peer_id, "current_user_id": admin.id}
+
+
+def test_the_reset_route_maps_the_service_answers():
+    import backend.admin.services as admin_services
+
+    admin = User(email="admin@example.org", role="admin")
+
+    async def own(*_args):
+        raise admin_services.CannotResetOwnTotpError()
+
+    async def missing(*_args):
+        return False
+
+    with admin_routed(admin, reset_user_totp=own) as client:
+        assert client.delete(f"/admin/users/{admin.id}/totp").status_code == 400
+    with admin_routed(admin, reset_user_totp=missing) as client:
+        assert client.delete(f"/admin/users/{uuid.uuid4()}/totp").status_code == 404
+
+
 def test_demoting_an_admin_forgets_their_authenticator():
     import backend.admin.services as admin_services
     from utils.database.models.auth import UserUpsert
