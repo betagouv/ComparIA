@@ -1,7 +1,7 @@
 """add_auth_totp
 
 Revision ID: a9c4e2f7b1d3
-Revises: b7e3c9a1d5f2
+Revises: 269a5fc3959c
 Create Date: 2026-09-14 00:00:00.000000
 
 """
@@ -14,7 +14,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = 'a9c4e2f7b1d3'
-down_revision: Union[str, Sequence[str], None] = 'b7e3c9a1d5f2'
+down_revision: Union[str, Sequence[str], None] = '269a5fc3959c'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -43,7 +43,7 @@ def upgrade() -> None:
         sa.Column('created_at', postgresql.TIMESTAMP(), nullable=False),
         sa.Column('expires_at', postgresql.TIMESTAMP(), nullable=False),
         sa.Column('used_at', postgresql.TIMESTAMP(), nullable=True),
-        sa.Column('attempts', sa.Integer(), nullable=False, server_default='0'),
+        sa.Column('attempts', sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(['user_id'], ['auth_user.id']),
         sa.PrimaryKeyConstraint('id'),
     )
