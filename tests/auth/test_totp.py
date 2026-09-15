@@ -934,6 +934,46 @@ def test_the_reset_route_maps_the_service_answers():
         assert client.delete(f"/admin/users/{uuid.uuid4()}/totp").status_code == 404
 
 
+def cli_reset_module():
+    # The package re-exports the function under the module's name, so the
+    # module itself has to be fetched by path.
+    import importlib
+
+    return importlib.import_module("utils.database.actions.reset_totp")
+
+
+def test_the_cli_reset_needs_no_second_admin():
+    cli_reset = cli_reset_module()
+
+    admin = User(email="only@example.org", role="admin")
+    session = FakeSession(None, [admin])
+
+    with fake_session(session, cli_reset):
+        asyncio.run(cli_reset.reset_totp(admin.email))
+
+    deleted = {s.table.name for s in session.statements if s.is_delete}
+    assert deleted == {"auth_totp", "auth_totp_challenge", "auth_invite_token"}
+    [revocation] = updates_on(session.statements, "auth_session")
+    assert revocation["revoked_at"] is not None
+    assert session.commits == 1
+
+
+def test_the_cli_reset_refuses_an_unknown_email():
+    cli_reset = cli_reset_module()
+
+    session = FakeSession(None, [])
+    with fake_session(session, cli_reset):
+        with pytest.raises(cli_reset.UserNotFoundError):
+            asyncio.run(cli_reset.reset_totp("nobody@example.org"))
+    assert session.commits == 0
+
+
+def test_the_cli_reset_is_wired_into_comparia_cli():
+    from utils.database.cli import cli_db
+
+    assert "reset-totp" in cli_db
+
+
 def test_demoting_an_admin_forgets_their_authenticator():
     import backend.admin.services as admin_services
     from utils.database.models.auth import UserUpsert

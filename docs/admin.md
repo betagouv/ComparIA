@@ -26,14 +26,11 @@ An admin changes device from `/settings`: a code from the current app, then the 
 
 An admin who lost their phone asks another admin, who opens `/admin/utilisateurs` and uses the reset action on their row. That signs them out everywhere and sends them back to the setup screen at their next visit. Do this over a channel you trust, since the email code alone then opens the admin area again. Nobody can reset their own row.
 
-If the only admin is locked out, there is no button left, only the database:
+If the only admin is locked out, there is no button left. Run the same reset from the machine that has the database:
 
-```sql
--- the locked-out admin's id
-SELECT id FROM auth_user WHERE email = 'admin@example.org';
-DELETE FROM auth_totp_challenge WHERE user_id = '<id>';
-DELETE FROM auth_totp WHERE user_id = '<id>';
-UPDATE auth_session SET revoked_at = now() WHERE user_id = '<id>' AND revoked_at IS NULL;
+```bash
+./comparia-cli db reset-totp admin@example.org
+# or: make db-reset-totp EMAIL=admin@example.org
 ```
 
 Then sign in with an email code and set the app up again from `/settings`.
