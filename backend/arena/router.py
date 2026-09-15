@@ -516,6 +516,12 @@ async def retry(
 
     await update_comparison_error(comparison, None)
 
+    # A retry regenerates both sides. The answers the turn still holds, a pair
+    # the user stopped, would otherwise end the transcript sent to the models,
+    # which some providers refuse ("requests ending with a model turn").
+    turn.llm_msg_a = None
+    turn.llm_msg_b = None
+
     store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
