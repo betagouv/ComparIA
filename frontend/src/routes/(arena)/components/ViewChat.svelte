@@ -33,10 +33,12 @@
 
   const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison?.mode)!)
 
+  // A stopped turn is answered too: partial answers can be voted on and
+  // the conversation carried on from them.
+  const answered = $derived(comparator.status === 'complete' || comparator.status === 'interrupted')
+
   const canContinue = $derived(
-    !comparator.loading &&
-      comparator.status == 'complete' &&
-      !!comparator.comparison?.turns.every((turn) => !!turn.choice)
+    !comparator.loading && answered && !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
 
   async function onPromptSubmit() {
@@ -86,6 +88,8 @@
         return m['chatbot.announce.generating']()
       case 'complete':
         return m['chatbot.announce.ready']()
+      case 'interrupted':
+        return m['chatbot.announce.interrupted']()
       default:
         return ''
     }
@@ -115,11 +119,12 @@
     {#each comparator.comparison?.turns ?? [] as turn, idx (turn.id)}
       <GroupedMessages
         {turn}
-        disabled={comparator.status !== 'complete' ||
-          idx !== (comparator.comparison?.turns.length ?? 0) - 1}
+        disabled={!answered || idx !== (comparator.comparison?.turns.length ?? 0) - 1}
         error={comparator.error}
+        stopping={comparator.stopping}
         onVote={comparator.vote}
         onRetry={comparator.retry}
+        onStop={comparator.stop}
         autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
