@@ -9,6 +9,7 @@ import logging
 from datetime import datetime
 from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
 
+import httpx
 import litellm
 
 from backend.config import (
@@ -28,6 +29,30 @@ if TYPE_CHECKING:
     from utils.database.models import LLMMessageCreate
 
 logger = logging.getLogger("languia")
+
+
+def _provider_response(wrapper: litellm.CustomStreamWrapper) -> httpx.Response | None:
+    """
+    The HTTP response behind a litellm stream, to close it ourselves.
+
+    Cancelling the task that reads the stream does not close the provider
+    connection: litellm's own handlers (OpenRouter among them) wrap
+    `response.aiter_lines()` and keep no reference to the response, and
+    `CustomStreamWrapper.aclose()` has nothing to close. The socket then stays
+    open and the provider keeps generating, and billing, until it fills the
+    buffers. Checked against litellm 1.88 with a socket count on a cancelled
+    OpenRouter stream. The OpenAI SDK path keeps the response on its stream
+    object; the litellm handlers only keep the line iterator, whose frame
+    still holds the response as `self`.
+    FIXME drop this once litellm closes the response on cancel.
+    """
+    inner = wrapper.completion_stream
+    candidate = getattr(inner, "response", None)
+    if isinstance(candidate, httpx.Response):
+        return candidate
+    frame = getattr(getattr(inner, "streaming_response", None), "ag_frame", None)
+    candidate = frame.f_locals.get("self") if frame is not None else None
+    return candidate if isinstance(candidate, httpx.Response) else None
 
 
 async def litellm_stream_iter(
@@ -143,6 +168,7 @@ async def litellm_stream_iter(
     # OpenRouter specific params could be added here
     # transforms = [""], route= ""
 
+    http_response = _provider_response(response)
     chunk = None
     try:
         # Process streaming chunks from the API
@@ -197,6 +223,8 @@ async def litellm_stream_iter(
         # reading this generator is cancelled: the connection is released in
         # every case, so a stopped answer stops costing tokens.
         await response.aclose()
+        if http_response is not None:
+            await http_response.aclose()
 
     # Store last update ts for duration computation
     msg.updated_at = datetime.now()
