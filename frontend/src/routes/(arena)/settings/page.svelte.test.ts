@@ -166,6 +166,36 @@ describe('Settings page two-factor section', () => {
     expect(mocks.goto).not.toHaveBeenCalled()
   })
 
+  it('shows the loading state again when reopened after a cancel', async () => {
+    let release = () => {}
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup'
+        ? new Promise((resolve) => {
+            release = () => resolve(setup)
+          })
+        : Promise.resolve(undefined)
+    )
+    const { container, getByRole } = render(Page)
+    const modal = container.querySelector('#totp-setup-modal')!
+    const open = () => fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+
+    await open()
+    release()
+    await waitFor(() => expect(modal.querySelector('img')).not.toBeNull())
+    // DSFR announces the cancel button with this event; the secret leaves the DOM.
+    await fireEvent(modal, new Event('dsfr.conceal'))
+    expect(modal.querySelector('img')).toBeNull()
+
+    await open()
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(2))
+    expect(modal.querySelector('.fr-alert')).toBeNull()
+    expect(modal.textContent).not.toContain('La configuration n’a pas pu démarrer')
+    expect(modal.textContent).toContain('Préparation…')
+
+    release()
+    await waitFor(() => expect(modal.querySelector('img')).not.toBeNull())
+  })
+
   it('sends the admin back to the admin area when they were pushed here', async () => {
     mocks.url = new URL('http://localhost/settings?totp=required')
     request.mockImplementation((path: string) =>
