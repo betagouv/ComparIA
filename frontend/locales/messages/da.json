@@ -664,7 +664,13 @@
                 "neverPersonal": "personlige medicinske, finansielle eller juridiske oplysninger",
                 "neverPhone": "telefonnumre"
             },
-            "merge": "Flet eksisterende samtaler sammen med din konto"
+            "merge": "Flet eksisterende samtaler sammen med din konto",
+            "totp": {
+                "label": "Kode fra godkendelsesappen",
+                "help": "De 6 cifre, som din app viser (Google Authenticator, Aegis, FreeOTP…).",
+                "error": "Forkert kode.",
+                "expired": "Login udløbet, bed om en ny kode pr. e-mail."
+            }
         },
         "settings": {
             "account": {
@@ -704,7 +710,40 @@
             "tabAbout": "Om",
             "tabAccount": "Konto",
             "tabsLabel": "Indstillingssektioner",
-            "title": "Indstillinger"
+            "title": "Indstillinger",
+            "totp": {
+                "title": "Totrinsbekræftelse",
+                "desc": "Adgang til administrationen kræver, ud over koden modtaget pr. e-mail, en kode fra en godkendelsesapp installeret på din telefon.",
+                "status": "Status:",
+                "statusOn": "Aktiveret",
+                "statusOff": "Ikke opsat",
+                "setup": "Opsæt en app",
+                "change": "Skift enhed",
+                "success": "Godkendelsesapp aktiveret.",
+                "required": {
+                    "title": "Opsætning påkrævet",
+                    "desc": "Opsæt en godkendelsesapp for at få adgang til administrationen."
+                },
+                "modal": {
+                    "title": "Opsæt godkendelsesappen",
+                    "currentHelp": "For at skifte enhed skal du først indtaste en kode fra den app, der er i brug.",
+                    "currentLabel": "Kode fra den nuværende app",
+                    "continue": "Fortsæt",
+                    "loading": "Forbereder…",
+                    "scanHelp": "Scan denne QR-kode med din app (Google Authenticator, Aegis, FreeOTP…), og indtast derefter den kode, den viser.",
+                    "qrAlt": "QR-kode til at scanne med din godkendelsesapp",
+                    "manualKey": "Eller indtast denne nøgle manuelt:",
+                    "manualKeyLabel": "Hemmelig nøgle",
+                    "confirmLabel": "Kode vist af appen",
+                    "confirm": "Aktivér",
+                    "confirming": "Kontrollerer…",
+                    "otherSessions": "Dine andre sessioner bliver logget ud.",
+                    "invalid": "Forkert kode.",
+                    "tooMany": "For mange forsøg, prøv igen om et par minutter.",
+                    "expired": "Denne QR-kode er udløbet, start forfra.",
+                    "failedTitle": "Opsætningen kunne ikke starte"
+                }
+            }
         },
         "success": "Du er nu logget ind!"
     },
