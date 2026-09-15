@@ -23,6 +23,10 @@
             "do": "Kopiér linket",
             "done": "Link kopieret til udklipsholder"
         },
+        "copyKey": {
+            "do": "Kopiér nøglen",
+            "done": "Nøgle kopieret"
+        },
         "copyMessage": {
             "do": "Kopiér beskeden",
             "done": "Besked kopieret"

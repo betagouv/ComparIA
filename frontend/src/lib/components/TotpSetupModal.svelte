@@ -174,11 +174,13 @@
           </div>
           <p class="mb-1!">{m['auth.settings.totp.modal.manualKey']()}</p>
           <div class="gap-2 mb-4 flex items-center">
-            <code
-              class="fr-text--md break-all"
-              aria-label={m['auth.settings.totp.modal.manualKeyLabel']()}>{groupedSecret}</code
-            >
-            <Copy value={setup.secret} />
+            <!-- ARIA gives role "code" no accessible name, so the label is read as text. -->
+            <span class="sr-only">{m['auth.settings.totp.modal.manualKeyLabel']()}</span>
+            <code class="fr-text--md break-all">{groupedSecret}</code>
+            <Copy
+              value={setup.secret}
+              labels={{ do: m['actions.copyKey.do'](), done: m['actions.copyKey.done']() }}
+            />
           </div>
           <TotpCodeInput
             id="totp-confirm-code"

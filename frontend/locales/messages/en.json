@@ -24,6 +24,10 @@
             "do": "Copy the link",
             "done": "Link copied to clipboard"
         },
+        "copyKey": {
+            "do": "Copy the key",
+            "done": "Key copied"
+        },
         "copyMessage": {
             "do": "Copy the message",
             "done": "Message copied"

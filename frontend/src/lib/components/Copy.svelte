@@ -4,7 +4,11 @@
   import { copyToClipboard } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
 
-  let { value }: { value: string } = $props()
+  let {
+    value,
+    // What the button announces before and after copying; a message by default.
+    labels = { do: m['actions.copyMessage.do'](), done: m['actions.copyMessage.done']() }
+  }: { value: string; labels?: { do: string; done: string } } = $props()
 
   let copied = $state(false)
   let timer: number
@@ -26,6 +30,6 @@
 
 <IconButton
   onclick={onCopy}
-  label={m[`actions.copyMessage.${copied ? 'done' : 'do'}`]()}
+  label={copied ? labels.done : labels.do}
   icon={copied ? 'i-ri-check-line' : 'i-ri-file-copy-line'}
 />
