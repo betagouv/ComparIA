@@ -171,9 +171,12 @@ async def add_comparison_turn(
         session.add(db_turn)
         await session.commit()
 
-    comparison = ComparisonRead.model_validate(
-        await _get_item(Comparison, comparison_id, session)
-    )
+        # Inside the block: a read on the session after it has closed opens a
+        # connection that is never returned to the pool, and the garbage
+        # collector drops it mid-transaction with a warning.
+        comparison = ComparisonRead.model_validate(
+            await _get_item(Comparison, comparison_id, session)
+        )
 
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
