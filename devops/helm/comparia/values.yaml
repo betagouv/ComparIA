@@ -180,6 +180,13 @@ cronjobs:
     schedule: "*/10 * * * *"
     ## -- Kills a run that hangs, on a destination that never answers for instance.
     activeDeadlineSeconds: 21600
+  ## -- Warns then erases accounts not signed in for `months`. Off by default: the
+  ## privacy policy has to state the retention period before it runs. Needs SMTP
+  ## configured, otherwise nobody is warned and nothing is erased.
+  purgeInactive:
+    enabled: false
+    schedule: "20 4 * * 1"
+    months: 12
 
 ingress:
   enabled: false

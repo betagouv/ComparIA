@@ -11,8 +11,8 @@ The chart deploys:
 - a `Secret` (chart-rendered from values, or a pre-existing one you point it
   at) carrying API keys and DB/Redis connection info
 - a pre-install/pre-upgrade Job that runs the app's Alembic migrations
-- three CronJobs (ranking computation, dataset publication, LLM-based
-  analysis), the last one optional
+- four CronJobs (ranking computation, dataset publication, LLM-based
+  analysis, inactive account purge), the last two optional
 - an optional Ingress
 
 It does not include a Postgres or Redis instance, an S3 log-archival sidecar,
@@ -58,7 +58,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `resources.backend`       | see `values.yaml` | Backend requests/limits    |
 | `resources.frontend`      | see `values.yaml` | Frontend requests/limits   |
 | `resources.migration`     | see `values.yaml` | Migration Job requests/limits |
-| `resources.cronjobs`      | see `values.yaml` | Applied to the analyze CronJob |
+| `resources.cronjobs`      | see `values.yaml` | Applied to the analyze and purge-inactive CronJobs |
 | `resources.publish`       | see `values.yaml` | Applied to the publish CronJob |
 | `backend.extraEnv`        | `[]`    | Extra env vars for the backend container, for anything not covered by `config.*`/`secrets.*` below, same shape as a container's `env:` list |
 | `frontend.extraEnv`       | `[]`    | Extra env vars for the frontend container, same shape |
@@ -138,7 +138,7 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the three is independently toggleable — there is no combined switch.
+Each of the four is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
@@ -149,6 +149,9 @@ Each of the three is independently toggleable — there is no combined switch.
 | `cronjobs.publish.enabled`           | `true`  | Dataset publication, see below. Harmless on an instance with no publish destination. |
 | `cronjobs.publish.schedule`          | `"*/10 * * * *"` | How often the job looks for a destination to publish. Not the publication frequency. |
 | `cronjobs.publish.activeDeadlineSeconds` | `21600` | A run still going after this is killed. |
+| `cronjobs.purgeInactive.enabled`     | `false` | Weekly warn-then-erase of accounts not signed in for `months`. Off by default: state the retention period in the privacy policy first. Needs SMTP. |
+| `cronjobs.purgeInactive.schedule`    | `"20 4 * * 1"` | |
+| `cronjobs.purgeInactive.months`      | `12`    | Months without a sign-in before an account is warned, then erased 30 days later. |
 
 #### Dataset publication
 
