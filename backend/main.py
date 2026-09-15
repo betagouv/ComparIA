@@ -1,3 +1,4 @@
+import secrets
 from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request
@@ -130,11 +131,16 @@ app.middleware("http")(security_headers_middleware)
 
 
 def _verify_metrics_token(request: Request) -> None:
-    # No-op when METRICS_TOKEN is unset, keeping /metrics open like before.
+    # Without a token the endpoint answers nobody outside debug, so a
+    # deployment that forgot to set one gets a failing scrape, not public
+    # metrics. Debug keeps it open for a local Prometheus.
     token = settings.METRICS_TOKEN
     if not token:
-        return
-    if request.headers.get("authorization") != f"Bearer {token}":
+        if settings.LANGUIA_DEBUG:
+            return
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    given = request.headers.get("authorization", "")
+    if not secrets.compare_digest(given.encode(), f"Bearer {token}".encode()):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
