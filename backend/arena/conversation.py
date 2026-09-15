@@ -81,6 +81,32 @@ async def _stream_cached_response(
     yield llm_msg
 
 
+def finalize_interrupted(
+    llm_msg: LLMMessageCreate, llm: LLMDataEnabled
+) -> LLMMessageCreate | None:
+    """
+    Make a partial answer storable after a stop, or return None when there is
+    nothing to keep. An answer needs text: LLMMessage refuses empty content,
+    so reasoning alone is not enough to keep the side.
+    """
+    if not llm_msg.content.strip():
+        return None
+
+    now = datetime.now()
+    llm_msg.created_at = llm_msg.created_at or now
+    llm_msg.responded_at = llm_msg.responded_at or now
+    llm_msg.updated_at = now
+    llm_msg.generation_id = llm_msg.generation_id or "interrupted"
+    # The provider reports usage in its last chunk, which never came, and a
+    # cached answer carries the count of the whole text: count what is kept.
+    llm_msg.tokens = token_counter(
+        text=[llm_msg.reasoning_content or "", llm_msg.content],
+        model=llm.human_id,
+    )
+    llm_msg.interrupted = True
+    return llm_msg
+
+
 async def bot_response_async(
     pos: BotPos,
     llm: LLMDataEnabled,

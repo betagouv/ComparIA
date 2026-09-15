@@ -17,7 +17,7 @@ from utils.database.models import (
     ComparisonRead,
     ErrorDetails,
     LLMMessage,
-    LLMMessageCreate,
+    LLMMessageBase,
     Turn,
     TurnCreate,
     TurnRead,
@@ -179,12 +179,17 @@ async def add_comparison_turn(
 
 
 async def update_turn(
-    id: uuid.UUID, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
+    id: uuid.UUID,
+    llm_msg_a: LLMMessageBase | None,
+    llm_msg_b: LLMMessageBase | None,
 ) -> None:
+    """Save the answers of a turn. A side left None (stopped before any text
+    arrived) stays empty, which is the shape the error and retry path expects."""
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        db_turn.llm_msg_a = LLMMessage.model_validate(llm_msg_a)
-        db_turn.llm_msg_b = LLMMessage.model_validate(llm_msg_b)
+        for pos, llm_msg in (("a", llm_msg_a), ("b", llm_msg_b)):
+            if llm_msg is not None:
+                setattr(db_turn, f"llm_msg_{pos}", LLMMessage.model_validate(llm_msg))
         session.add(db_turn)
         await session.commit()
 
