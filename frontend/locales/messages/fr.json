@@ -1741,7 +1741,7 @@
                     "list": {
                         "1": "<strong>Plus un modèle est haut</strong> sur le graphique, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus il est à droite</strong>, moins il coûte cher par jeton généré.",
                         "2": "<strong>En haut à droite</strong> se trouvent les modèles à la fois appréciés et bon marché. La ligne relie ceux qu'aucun autre modèle ne bat sur les deux critères à la fois : pour chacun d'eux, obtenir un meilleur score oblige à payer plus cher.",
-                        "3": "L'axe des prix est <strong>logarithmique</strong> : chaque graduation multiplie le prix par dix. Les prix sont indicatifs, relevés sur les grilles publiques des fournisseurs, et ne tiennent pas compte des remises, du cache ou des offres de traitement par lots."
+                        "3": "L'axe des prix est <strong>logarithmique</strong> : un même écart sur l'axe correspond au même rapport de prix, de 0,1 à 1 comme de 1 à 10. Les prix sont indicatifs, relevés sur les grilles publiques des fournisseurs, et ne tiennent pas compte des remises, du cache ou des offres de traitement par lots."
                     },
                     "subTitle": "Exemples de lecture du graphique",
                     "title": "Comment trouver le bon équilibre entre performance perçue et prix ?"
