@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Checkbox, Input } from '$components/dsfr'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { consumeAltchaToken } from '$lib/captcha.svelte'
   import {
     consentCheckboxLabel,
@@ -30,6 +31,7 @@
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
+  const platformName = getPlatformName()
   const locale = getLocale()
   let step = $state<'email' | 'code'>('email')
   let email = $state('')
@@ -148,7 +150,7 @@
 <div bind:this={formContainer} {...props} class={['my-10 mx-8', props.class]}>
   <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
   <p class="text-xs! mb-6! text-grey">
-    {m['auth.modal.email.subtitle']()}
+    {m['auth.modal.email.subtitle']({ platformName })}
   </p>
 
   <form onsubmit={onSubmit}>

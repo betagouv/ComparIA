@@ -104,7 +104,7 @@
                 "externalUrl": "Adresse til ekstern side",
                 "externalUrlError": "Indtast en gyldig HTTPS-adresse.",
                 "externalUrlHelp": "Adressen skal starte med https://.",
-                "internal": "Side hostet på denne platform",
+                "internal": "Side hostet på {platformName}",
                 "loading": "Indlæser informationssider...",
                 "locale": "Indholdets sprog",
                 "modeLabel": "Destination",
@@ -655,7 +655,7 @@
                 "emailLabel": "E-mail",
                 "submit": "Modtag loginkode",
                 "submitting": "Sender...",
-                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på platformen.",
+                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på {platformName}.",
                 "title": "Log ind eller opret konto"
             },
             "code": {
@@ -822,7 +822,7 @@
     "general": {
         "a11y": {
             "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> {domain} </strong> .",
-            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
+            "disclaimer": "<strong>{platformName}</strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
             "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
@@ -1219,7 +1219,7 @@
                 "title": "Afsløring"
             }
         },
-        "homeTitle": "Hjem - compar:IA",
+        "homeTitle": "Hjem - {platformName}",
         "legal": {
             "label": "Juridisk",
             "title": "Juridiske oplysninger"
@@ -1230,7 +1230,7 @@
             "count": "{count} stemmer",
             "legend": "Tegnforklaring",
             "objective": "Mål: {count}k",
-            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
+            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til {platformName}-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         }
     },
     "home": {
@@ -1258,10 +1258,10 @@
         "accepting": "Logger ind...",
         "backToLogin": "Log ind på en anden måde",
         "invalid": "Dette invitationslink er ikke længere gyldigt. Det er muligvis udløbet eller allerede brugt.",
-        "title": "Du er blevet inviteret til compar:IA"
+        "title": "Du er blevet inviteret til {platformName}"
     },
     "maintenance": {
-        "desc": "compar:IA er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
+        "desc": "{platformName} er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
         "title": "Siden er under vedligeholdelse"
     },
     "models": {
@@ -1322,7 +1322,7 @@
                 "title": "Placering på ranglisten",
                 "title_short": "Rangliste",
                 "to": "#{min} til {max}",
-                "tooltip": "Modellens placering på compar:IA-ranglisten, som er baseret på brugernes stemmer."
+                "tooltip": "Modellens placering på {platformName}-ranglisten, som er baseret på brugernes stemmer."
             },
             "release": {
                 "title": "Udgivelse"
@@ -1470,7 +1470,7 @@
             "rankFromTo": "Placering {min} til {max}",
             "rankSingle": "Placering {min}",
             "title": "Præstationsniveau sammenlignet med de andre modeller",
-            "tooltip": "Præstationsniveauet beregnes ud fra stemmerne i compar:IA med en Bradley-Terry-score. Det afspejler brugernes observerede præferencer, ikke en absolut sandhed om modellen."
+            "tooltip": "Præstationsniveauet beregnes ud fra stemmerne i {platformName} med en Bradley-Terry-score. Det afspejler brugernes observerede præferencer, ikke en absolut sandhed om modellen."
         },
         "release": "Udgivet {date}",
         "size": {
@@ -1564,7 +1564,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
+                            "1": "{platformName} bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
                             "2": "Ecologits anvender principperne for livscyklusanalyse (LCA) i overensstemmelse med ISO 14044-standarden ved i første omgang at fokusere på påvirkningen fra inferens (dvs. brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, produktion og transport).",
                             "3": "Modellens elektricitetsforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen og arkitekturen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, samt antallet af output-tokens. Beregningen af indikatoren for global opvarmningspotentiale udtrykt i CO2-ækvivalenter udledes af målingen af modellens elektricitetsforbrug.",
                             "4": "Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling."
@@ -1579,7 +1579,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
+                "1": "Siden 2024 har tusindvis af brugere brugt {platformName} til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
                 "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {notebookLinkProps}>metodologiske notesbog</a>."
             },
             "impacts": {
@@ -1754,7 +1754,7 @@
     },
     "reveal": {
         "feedback": {
-            "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
+            "description": "Del {platformName} med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
             "example": "Eksempel på delte resultater",
             "moreOnVotes": "Lær mere om stemmer",
             "shareResult": "Del dit resultat"
@@ -1890,6 +1890,7 @@
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
+            "invite": "Invitation",
             "login": "Log ind",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
@@ -1954,7 +1955,7 @@
             }
         },
         "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
-        "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
+        "importantDesc": "Din præference beriger {platformName}-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
         "title": "Hvilken AI-model foretrækker du?",
         "turn": {
             "choices": {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -11,6 +12,8 @@
   import type { ClassValue } from 'svelte/elements'
   import InfoCard from './InfoCard.svelte'
   import OpennessScore from './OpennessScore.svelte'
+
+  const platformName = getPlatformName()
 
   let {
     model,
@@ -405,7 +408,7 @@
                       <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
                         <Tooltip
                           id="{modalId}-perf-tooltip"
-                          text={m['models.performance.tooltip']()}
+                          text={m['models.performance.tooltip']({ platformName })}
                           size="xs"
                           class="top-3 right-4 absolute"
                         />

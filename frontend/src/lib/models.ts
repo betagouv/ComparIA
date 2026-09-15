@@ -62,6 +62,8 @@ export type Commons = {
   // apart — see `rankClassSpans`.
   rankClasses: Record<RankClass, Record<'min' | 'max', number>>
   currency: LLMList['currency']
+  // For the card copy that names the instance.
+  platformName: string
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -217,7 +219,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       icon: 'i-ri-trophy-line',
       iconClass: 'text-yellow',
       title: m[`models.cards.rank.title${size !== 'md' ? '_short' : ''}`](),
-      tooltip: m['models.cards.rank.tooltip'](),
+      tooltip: m['models.cards.rank.tooltip']({ platformName: commons.platformName }),
       content: model.data
         ? rankClassLabel(commons.rankClasses[model.data.rankClass])
         : m['words.NA'](),
@@ -409,7 +411,7 @@ export function rankClassSpans(models: ModelRevisedRank[]): Commons['rankClasses
   return spans
 }
 
-export function setModelsContext(data: LLMList) {
+export function setModelsContext(data: LLMList, platformName: string) {
   const rankedModels = data.models
     .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
     .sort((a, b) => a.data!.rank - b.data!.rank)
@@ -435,7 +437,8 @@ export function setModelsContext(data: LLMList) {
     commons: {
       modelsCount,
       currency: data.currency,
-      rankClasses
+      rankClasses,
+      platformName
     }
   })
 }

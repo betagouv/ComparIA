@@ -2,12 +2,14 @@
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
   const auth = getAuthContext()
+  const platformName = getPlatformName()
 
   function hostOf(url: string) {
     try {
@@ -32,7 +34,7 @@
     {:else}
       <!-- Single h1 for this branch: the disclaimer and title used to duplicate it (RGAA 9.1). -->
       <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
-      <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
+      <p>{@html sanitize(m['general.a11y.disclaimer']({ platformName }))}</p>
 
       <!-- <p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
   <ul>
