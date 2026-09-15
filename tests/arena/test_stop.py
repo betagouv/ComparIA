@@ -340,6 +340,7 @@ def call_stop(comparison_id, read_comparison, requested: list):
             "client": ("10.0.0.1", 1234),
         }
     )
+
     def request_comparison_stop(id):
         requested.append(id)
         return True
@@ -379,6 +380,39 @@ def test_someone_else_cannot_stop_a_comparison():
     assert requested == []
 
 
+def test_a_retry_drops_the_stopped_answers_from_the_transcript():
+    comp, turn = comparison()
+    turn.llm_msg_a = LLMMessageCreate(content="Il était une fois ", interrupted=True)
+    turn.llm_msg_b = LLMMessageCreate(content="Un jour ", interrupted=True)
+    comp.error = None
+    comp.revealed = False
+
+    async def update_comparison_error(comparison, error=None):
+        comparison.error = error
+
+    request = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": "/arena/retry",
+            "path_params": {},
+            "query_string": b"",
+            "headers": [],
+            "client": ("10.0.0.1", 1234),
+        }
+    )
+    with patched(
+        router,
+        update_comparison_error=update_comparison_error,
+        store_comparison_metadata=lambda id, is_streaming: None,
+    ):
+        # The body streams the models and is never consumed here.
+        asyncio.run(router.retry(comp, "b" * 64, request))
+
+    assert turn.llm_msg_a is None and turn.llm_msg_b is None
+    assert streaming._get_messages(comp, "a")[-1] is turn.user_msg
+
+
 if __name__ == "__main__":
     test_a_stop_is_recorded_while_streaming_and_kept_with_the_same_ttl()
     test_a_stop_after_the_answers_landed_changes_nothing()
@@ -391,4 +425,5 @@ if __name__ == "__main__":
     test_the_route_saves_the_cut_answers_and_sends_them_back()
     test_the_owner_can_stop_and_gets_204_even_when_nothing_streams()
     test_someone_else_cannot_stop_a_comparison()
+    test_a_retry_drops_the_stopped_answers_from_the_transcript()
     print("Stop cases passed.")
