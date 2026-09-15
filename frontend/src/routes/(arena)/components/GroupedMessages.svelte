@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import SideSwitcher from '$components/SideSwitcher.svelte'
   import type { AnyAPIVote, ComparisonTurn, TurnChoice } from '$lib/chatService.svelte'
@@ -12,18 +13,25 @@
     disabled,
     error,
     autoScroll,
+    stopping = false,
     onVote,
     onRetry,
+    onStop,
     children
   }: {
     turn: ComparisonTurn
     disabled: boolean
     error?: string
     autoScroll?: boolean
+    stopping?: boolean
     onVote: (data: AnyAPIVote) => Promise<void> | void
     onRetry: () => void
+    onStop: () => Promise<void> | void
     children: Snippet<[]> | undefined
   } = $props()
+
+  const running = $derived(turn.status === 'pending' || turn.status === 'generating')
+  const answered = $derived(turn.status === 'complete' || turn.status === 'interrupted')
 
   // Voting unmounts the fieldset the focused button lives in, which drops focus
   // to <body>: the next Tab restarts at the top of the document, back through
@@ -56,7 +64,7 @@
   </div>
   <div
     class="grouped-responses flex flex-col"
-    class:generating={turn.status === 'pending' || turn.status === 'generating'}
+    class:generating={running}
     {@attach autoScroll && scrollTo}
   >
     {#if turn.status === 'pending'}
@@ -89,7 +97,40 @@
       </SideSwitcher>
     {/if}
 
-    {#if turn.status === 'complete' && !turn.choice}
+    {#if running}
+      <!-- aria-disabled rather than disabled: the button keeps focus while the
+           stop is on its way, and the next Tab still starts from here. -->
+      <div class="mt-3 flex justify-center">
+        <Button
+          id="stop-{turn.id}"
+          text={m['chatbot.stop']()}
+          icon="stop-circle-line"
+          variant="secondary"
+          size="sm"
+          aria-disabled={stopping}
+          onclick={() => (stopping ? undefined : onStop())}
+        />
+      </div>
+    {:else if turn.status === 'interrupted'}
+      <div id="interrupted-{turn.id}" class="mt-3 gap-2 flex flex-col items-center">
+        <p role="status" class="fr-message fr-message--info mb-0! text-center">
+          {m['chatbot.interrupted.notice']()}
+        </p>
+        {#if !turn.choice}
+          <Button
+            id="retry-{turn.id}"
+            icon="refresh-line"
+            iconPos="right"
+            text={m['words.retry']()}
+            variant="secondary"
+            size="sm"
+            onclick={() => onRetry()}
+          />
+        {/if}
+      </div>
+    {/if}
+
+    {#if answered && !turn.choice}
       <VoteSelect id="vote-select-{turn.id}" onVote={onChoice} />
     {/if}
   </div>
