@@ -149,8 +149,10 @@
       })
       await signedIn()
     } catch (err) {
-      if ((err as ApiError).status === 410) {
-        // Too many wrong codes, or the ten minutes ran out: start over.
+      const status = (err as ApiError).status
+      if (status === 401 || status === 410) {
+        // Too many wrong codes, the ten minutes ran out, or the challenge
+        // cookie never reached us: start over.
         step = 'email'
         code = ''
         totpCode = ''

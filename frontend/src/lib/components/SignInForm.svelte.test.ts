@@ -308,8 +308,11 @@ describe('SignInForm authenticator step', () => {
     expect(paths()).not.toContain('/auth/me')
   })
 
-  it('starts over when the half-finished sign-in has expired', async () => {
-    servesSignIn(() => Promise.reject(Object.assign(new Error('Gone'), { status: 410 })))
+  it.each([
+    ['expired', 410],
+    ['lost its challenge cookie', 401]
+  ])('starts over when the half-finished sign-in has %s', async (_, status) => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Rejected'), { status })))
     const { container } = render(SignInForm)
 
     const totpInput = await reachTheAuthenticatorStep(container)
@@ -317,6 +320,7 @@ describe('SignInForm authenticator step', () => {
     await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
 
     await waitFor(() => expect(container.textContent).toContain('Connexion expirée'))
+    expect(container.textContent).not.toContain('Code incorrect.')
     expect(container.querySelector('#login-totp')).toBeNull()
     expect(container.querySelector('#login-code')).toBeNull()
     expect(container.querySelector<HTMLInputElement>('#login-email')!.disabled).toBe(false)
