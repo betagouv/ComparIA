@@ -4,6 +4,7 @@ Server-Sent Events (SSE) streaming support for arena comparisons.
 Handles real-time streaming of model responses to the frontend using SSE protocol.
 """
 
+import asyncio
 import json
 import logging
 import traceback
@@ -210,14 +211,19 @@ async def stream_comparison_messages(
     Yields:
         AnySSEEvent
     """
-    import asyncio
 
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
 
+    generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {}
+    # One live task per side. A task is only re-armed once it has completed:
+    # cancelling a pending anext() would throw into the generator and close
+    # the provider stream.
+    tasks: dict[BotPos, asyncio.Task[AnySSEEventMsg]] = {}
+
     try:
         # Create async generators for both models
-        generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {
+        generators = {
             pos: stream_llm_response(
                 pos,
                 llms_data[getattr(comparison, f"llm_id_{pos}")],
@@ -235,29 +241,30 @@ async def stream_comparison_messages(
 
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
-            # Collect pending tasks
-            tasks = [
-                asyncio.create_task(anext(generators[pos]))
-                for pos in BOT_POS
-                if not complete[pos]
-            ]
+            for pos in BOT_POS:
+                if not complete[pos] and pos not in tasks:
+                    tasks[pos] = asyncio.create_task(anext(generators[pos]))
 
             if not tasks:
                 break
 
             # Wait for next chunk from either model
-            completed, pending = await asyncio.wait(
-                tasks, return_when=asyncio.FIRST_COMPLETED
+            completed, _ = await asyncio.wait(
+                tasks.values(), return_when=asyncio.FIRST_COMPLETED
             )
-
-            # Cancel pending tasks to avoid concurrent anext() on the same generator
-            for task in pending:
-                task.cancel()
 
             # Process completed chunks
             for task in completed:
+                pos = next(p for p, t in tasks.items() if t is task)
+                del tasks[pos]
+
                 try:
                     event = task.result()
+                except StopAsyncIteration:
+                    # A generator that ends without its 'complete' event has
+                    # nothing more to say; count the side as done.
+                    complete[pos] = True
+                    continue
                 except ChatError as e:
                     # On first-turn timeout, swap the model if it wasn't user-selected
                     failing_llm_id = getattr(comparison, f"llm_id_{e.pos}")
@@ -294,9 +301,8 @@ async def stream_comparison_messages(
                         # No replacement available, fall through to raise
                     raise
 
-                for pos in BOT_POS:
-                    if event["type"] == "complete":
-                        complete[event["pos"]] = True
+                if event["type"] == "complete":
+                    complete[event["pos"]] = True
 
                 yield event
 
@@ -326,6 +332,20 @@ async def stream_comparison_messages(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
         yield {"type": "error", "error": "provider_error"}
+    finally:
+        await _shut_down(tasks, generators)
+
+
+async def _shut_down(
+    tasks: dict[BotPos, "asyncio.Task[AnySSEEventMsg]"],
+    generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]],
+) -> None:
+    """Cancel whatever is still reading a provider and close both streams."""
+    for task in tasks.values():
+        task.cancel()
+    await asyncio.gather(*tasks.values(), return_exceptions=True)
+    for generator in generators.values():
+        await generator.aclose()
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
