@@ -17,6 +17,8 @@
   const loginDescription = $derived(
     env.PUBLIC_AUTH_LOGIN_DESCRIPTION || m['auth.login.description']()
   )
+  // Set by the invite page once an admin's invite left only the authenticator to check.
+  const startAtTotp = page.url.searchParams.get('step') === 'totp'
 
   async function onSuccess() {
     const redirect = page.url.searchParams.get('redirect')
@@ -50,6 +52,6 @@
   </header>
 
   <main class="bg-light-grey md:flex md:items-center flex-auto basis-1/2">
-    <SignInForm {onSuccess} class="md:max-w-[350px]" />
+    <SignInForm {onSuccess} {startAtTotp} class="md:max-w-[350px]" />
   </main>
 </div>

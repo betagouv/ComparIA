@@ -91,8 +91,8 @@
       )
       if (totp_required) {
         // An invite sent to an admin who already has an authenticator: the
-        // sign-in form knows how to finish, this page does not.
-        goto(resolve('/login'))
+        // challenge cookie is set, the sign-in form finishes from there.
+        goto(resolve('/login?step=totp'))
         return
       }
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
