@@ -2,18 +2,21 @@
   import { goto } from '$app/navigation'
   import { match, resolve } from '$app/paths'
   import { page } from '$app/state'
+  import SeoHead from '$components/SEOHead.svelte'
   import SignInForm from '$components/SignInForm.svelte'
   import { env } from '$env/dynamic/public'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
 
-  const loginTitle = env.PUBLIC_AUTH_LOGIN_TITLE || 'Bienvenue sur compar:IA'
-  const loginDescription =
-    env.PUBLIC_AUTH_LOGIN_DESCRIPTION ||
-    "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe."
-
   const auth = getAuthContext()
+  const platformName = $derived(auth.config?.platform_name || m['header.title']())
+  const loginTitle = $derived(
+    env.PUBLIC_AUTH_LOGIN_TITLE || m['auth.login.title']({ platformName })
+  )
+  const loginDescription = $derived(
+    env.PUBLIC_AUTH_LOGIN_DESCRIPTION || m['auth.login.description']()
+  )
 
   async function onSuccess() {
     const redirect = page.url.searchParams.get('redirect')
@@ -26,9 +29,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>Connexion — compar:IA</title>
-</svelte:head>
+<SeoHead title={m['seo.titles.login']()} />
 
 <div class="md:flex-row flex min-h-screen flex-col">
   <header class="px-8 py-10 gap-20 md:justify-center flex basis-1/2 flex-col">
@@ -39,9 +40,7 @@
         alt=""
         class="h-[35px]"
       />
-      <h1 class="font-bold text-base! mb-0!">
-        {auth.config?.platform_name || m['header.title']()}
-      </h1>
+      <h1 class="font-bold text-base! mb-0!">{platformName}</h1>
     </div>
 
     <div>

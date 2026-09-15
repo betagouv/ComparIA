@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { applyStyleControl, getModelsWithDataContext, rankClassSpans } from '$lib/models'
@@ -10,6 +11,7 @@
 
   const { lastUpdateDate, commons, models: modelsData } = getModelsWithDataContext()
   const votesData = getVotesContext()
+  const platformName = getPlatformName()
   const rankingRows = $derived(applyStyleControl(modelsData))
   const rankingCommons = $derived({
     ...commons,
@@ -78,6 +80,7 @@
       <p class="text-grey text-[14px]!">
         {@html sanitize(
           m['ranking.energy.views.methodo.3.descs.1']({
+            platformName,
             ecoLinkProps: externalLinkProps('https://ecologits.ai/latest/'),
             genaiLinkProps: externalLinkProps('https://genai-impact.org/')
           })

@@ -67,6 +67,8 @@ class AuthConfig(BaseModel):
 class EmailRequestBody(BaseModel):
     email: EmailStr
     altcha_payload: str
+    # The language the visitor is reading the site in, for the email.
+    locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class EmailVerifyBody(BaseModel):
@@ -254,6 +256,7 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             platform_name=app_settings.platform_name,
             primary_color=app_settings.primary_color_light,
             secondary_color=app_settings.secondary_color_light,
+            locale=body.locale or app_settings.default_locale,
         )
     except Exception:
         raise HTTPException(

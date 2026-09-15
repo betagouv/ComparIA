@@ -129,13 +129,7 @@ class LLMsData(BaseModel):
                 logger.critical("No model to choose from")
                 # No models available at all
                 # FIXME use Error that can be toasted
-                # raise Exception(
-                #     duration=0,
-                #     message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-                # )
-                raise Exception(
-                    "Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-                )
+                raise Exception("No model available for this mode")
             else:
                 # Fall back to all models if couldn't respect exclusions
                 # FIXME hmm readding excluded models ?

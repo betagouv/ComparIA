@@ -1,16 +1,19 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { BotModel, Commons, RankClass } from '$lib/models'
-  import { ENERGY_CLASS_COLORS, getModelCards, MODALITIES } from '$lib/models'
+  import { ENERGY_CLASS_COLORS, getModalities, getModelCards } from '$lib/models'
   import { formatRegion } from '$lib/regions'
   import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
   import InfoCard from './InfoCard.svelte'
   import OpennessScore from './OpennessScore.svelte'
+
+  const platformName = getPlatformName()
 
   let {
     model,
@@ -26,6 +29,7 @@
     onClose?: () => void
   } = $props()
 
+  const modalities = getModalities()
   const badges = $derived.by(() => {
     if (!model) return []
     const { release, knowledge } = model.badges
@@ -216,7 +220,7 @@
                           </div>
                         {:else if card.id === 'modalities'}
                           <div class="grid grid-cols-2 gap-[1px] bg-[#E0E0E0]">
-                            {#each MODALITIES as mod (mod.id)}
+                            {#each modalities as mod (mod.id)}
                               {@const active = model.inputs.includes(mod.id)}
                               <div
                                 class="bg-white p-2 text-xs gap-1 flex flex-col items-center"
@@ -404,7 +408,7 @@
                       <div class="cg-border bg-white p-4 gap-5 relative flex flex-col">
                         <Tooltip
                           id="{modalId}-perf-tooltip"
-                          text={m['models.performance.tooltip']()}
+                          text={m['models.performance.tooltip']({ platformName })}
                           size="xs"
                           class="top-3 right-4 absolute"
                         />

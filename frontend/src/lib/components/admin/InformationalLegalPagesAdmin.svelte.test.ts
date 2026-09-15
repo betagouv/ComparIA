@@ -48,7 +48,7 @@ describe('informational legal pages administration', () => {
     )
     expect(
       within(getByRole('group', { name: 'Mentions légales' })).getByRole('textbox', {
-        name: /Contenu en Français/
+        name: /Contenu en FR - Français/
       })
     ).toHaveValue('# Mentions légales')
     expect(getByRole('textbox', { name: /Adresse de la page externe/ })).toHaveValue(

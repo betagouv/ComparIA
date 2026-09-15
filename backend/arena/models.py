@@ -52,9 +52,7 @@ class AddFirstTextBody(BaseModel):
     @classmethod
     def check_spam(cls, v: str) -> str:
         if is_spam(v):
-            raise ValueError(
-                "This prompt format is not allowed. Please use natural language."
-            )
+            raise ValueError("spam_detected")
         return v
 
     @field_validator("altcha_token")
@@ -62,7 +60,7 @@ class AddFirstTextBody(BaseModel):
     def check_altcha(cls, v: str) -> str:
         ok, error = verify_altcha_token(v)
         if not ok:
-            raise ValueError(f"Vérification anti-robot échouée : {error}")
+            raise ValueError("captcha_failed")
         return v
 
 
@@ -77,9 +75,7 @@ class AddTextBody(BaseModel):
     @classmethod
     def check_spam(cls, v: str) -> str:
         if is_spam(v):
-            raise ValueError(
-                "This prompt format is not allowed. Please use natural language."
-            )
+            raise ValueError("spam_detected")
         return v
 
     @field_validator("altcha_token")
@@ -87,5 +83,5 @@ class AddTextBody(BaseModel):
     def check_altcha(cls, v: str) -> str:
         ok, error = verify_altcha_token(v)
         if not ok:
-            raise ValueError(f"Vérification anti-robot échouée : {error}")
+            raise ValueError("captcha_failed")
         return v

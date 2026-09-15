@@ -102,6 +102,8 @@ class UsersPage(BaseModel):
 
 class InviteBody(BaseModel):
     email: EmailStr
+    # The inviting admin's language: the best guess we have for the invitee's.
+    locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class AdminLegalDocument(BaseModel):
@@ -357,6 +359,7 @@ async def invite_user(
         platform_name=app_settings.platform_name,
         primary_color=app_settings.primary_color_light,
         secondary_color=app_settings.secondary_color_light,
+        locale=body.locale or app_settings.default_locale,
     )
 
 
@@ -497,10 +500,9 @@ async def patch_prompt_check(
     return _to_prompt_check_status(row)
 
 
-NO_API_KEY_MESSAGE = (
-    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas "
-    "s'exécuter."
-)
+# Keys the admin page translates, like the verdict messages from `checks`.
+NO_API_KEY_MESSAGE = "no_api_key"
+CALL_FAILED_MESSAGE = "call_failed"
 
 
 class PromptCheckTryBody(BaseModel):
@@ -523,6 +525,8 @@ class PromptCheckTryResult(BaseModel):
     triggered: dict[str, str]
     message: str | None
     latency_ms: int
+    # What the moderation call said when `decision` is "error".
+    error: str | None = None
 
 
 @router.post("/prompt-check/try", response_model=PromptCheckTryResult)
@@ -563,8 +567,9 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
                 decision="error",
                 scores={},
                 triggered={},
-                message=f"L'appel à Mistral a échoué : {e}",
+                message=CALL_FAILED_MESSAGE,
                 latency_ms=int((time.monotonic() - started) * 1000),
+                error=str(e),
             )
         latency_ms = int((time.monotonic() - started) * 1000)
         write_cached_scores(body.text, check.model, scores)

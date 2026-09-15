@@ -104,7 +104,7 @@
                 "externalUrl": "External page address",
                 "externalUrlError": "Enter a valid HTTPS address.",
                 "externalUrlHelp": "The address must start with https://.",
-                "internal": "Page hosted on this platform",
+                "internal": "Page hosted on {platformName}",
                 "loading": "Loading information pages…",
                 "locale": "Content language",
                 "modeLabel": "Destination",
@@ -215,6 +215,10 @@
                 },
                 "decisionLegend": "Result",
                 "empty": "Write a message before running the test.",
+                "errors": {
+                    "call_failed": "The call to Mistral failed: {error}",
+                    "no_api_key": "No Mistral API key is configured: the check cannot run."
+                },
                 "ignored": "Not watched",
                 "label": "Message to check",
                 "labelHint": "Write the message here as a person would send it.",
@@ -616,6 +620,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Too many blocked messages were sent from your connection. Please wait before trying again.",
+            "captcha_failed": "The anti-robot check failed, please try again.",
+            "captcha_unavailable": "The anti-robot check is unavailable, please try again.",
+            "comparison_streaming": "Please wait for the models to finish answering.",
+            "max_turns_reached": "This conversation has reached its length limit. Please start a new one.",
+            "prompt_check": {
+                "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
+                "pii": "Your message seems to contain personal data. Messages you send may be published in the open dataset.",
+                "self_harm": "If you are going through a hard time or having suicidal thoughts, you are not alone. Free, confidential help is available around the clock: find your local helpline at findahelpline.com."
+            },
+            "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
+            "retry_unavailable": "Retrying is not possible, please reload the page.",
+            "spam_detected": "This message format is not allowed. Please write in natural language."
+        },
         "promptWarning": {
             "edit": "Edit my message",
             "proceed": "Send anyway",
@@ -626,6 +645,10 @@
         "discussions": {
             "signIn": "Sign in",
             "title": "Discussions"
+        },
+        "login": {
+            "description": "Compare conversational AI models blind and help evaluate AI in Europe.",
+            "title": "Welcome to {platformName}"
         },
         "modal": {
             "code": {
@@ -641,7 +664,7 @@
                 "emailLabel": "Email",
                 "submit": "Receive login code",
                 "submitting": "Sending...",
-                "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on the arena",
+                "subtitle": "Access your conversation history and a higher usage quota by signing in. Creating an account is optional on {platformName}",
                 "title": "Sign in or create an account"
             },
             "info": {
@@ -799,7 +822,7 @@
     "general": {
         "a11y": {
             "desc": "This accessibility statement applies to the <strong>{domain}</strong> website.",
-            "disclaimer": "<strong>compar:IA</strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
+            "disclaimer": "<strong>{platformName}</strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
             "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "We try to respond within 2 business days.",
             "improveDesc": "If you cannot reach a piece of content or a service, you can contact the manager of {domain} to be pointed to an accessible alternative or to get the content in another form.",
@@ -1196,7 +1219,7 @@
                 "title": "Reveal"
             }
         },
-        "homeTitle": "Home - compar:IA",
+        "homeTitle": "Home - {platformName}",
         "legal": {
             "label": "Legal",
             "title": "Legal information"
@@ -1207,7 +1230,7 @@
             "count": "{count} votes",
             "legend": "Legend",
             "objective": "Goal: {count}k",
-            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the arena dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
+            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the {platformName} dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
         }
     },
     "home": {
@@ -1235,10 +1258,10 @@
         "accepting": "Signing in...",
         "backToLogin": "Sign in another way",
         "invalid": "This invite link is no longer valid. It may have expired or already been used.",
-        "title": "You've been invited to the arena"
+        "title": "You've been invited to {platformName}"
     },
     "maintenance": {
-        "desc": "compar:IA is currently under maintenance. We'll be back shortly.",
+        "desc": "{platformName} is currently under maintenance. We'll be back shortly.",
         "title": "Site under maintenance"
     },
     "models": {
@@ -1299,7 +1322,7 @@
                 "title": "Leaderboard rank",
                 "title_short": "Leaderboard",
                 "to": "#{min} to {max}",
-                "tooltip": "The model's position in the arena leaderboard, drawn from the votes cast by its users."
+                "tooltip": "The model's position in the {platformName} leaderboard, drawn from the votes cast by its users."
             },
             "release": {
                 "title": "Release"
@@ -1447,7 +1470,7 @@
             "rankFromTo": "Rank {min} to {max}",
             "rankSingle": "Rank {min}",
             "title": "Performance level compared with the other models",
-            "tooltip": "The performance level is worked out from the arena's votes with a Bradley-Terry score. It reflects the preference users showed, not an absolute truth about the model."
+            "tooltip": "The performance level is worked out from the {platformName} votes with a Bradley-Terry score. It reflects the preference users showed, not an absolute truth about the model."
         },
         "release": "Released on {date}",
         "size": {
@@ -1541,7 +1564,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "The arena uses the methodology developed by <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) to provide an estimate of the energy footprint associated with inferring conversational generative AI models. This estimate allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-friendly AI models.",
+                            "1": "{platformName} uses the methodology developed by <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) to provide an estimate of the energy footprint associated with inferring conversational generative AI models. This estimate allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-friendly AI models.",
                             "2": "Ecologits applies the principles of life cycle assessment (LCA) in accordance with ISO 14044, focusing for the moment on the impact of inference (i.e., the use of models to answer queries) and the <strong>manufacturing of graphics cards</strong> (resource extraction, manufacturing and transport).",
                             "3": "The model's power consumption is estimated by taking into account various parameters such as the size and architecture of the AI model used, the location of the servers where the models are deployed, and the number of output tokens. The calculation of the global warming potential indicator, expressed in CO2 equivalent, is derived from the measurement of the model's power consumption.",
                             "4": "It is important to note that methodologies for assessing the environmental impact of AI are still under development."
@@ -1556,7 +1579,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Since 2024, thousands of users have used the arena to compare the responses of different models, generating hundreds of thousands of votes. Simply counting the number of wins is not enough to establish a ranking. A fair system must be statistically robust, adjust after each matchup, and truly reflect the value of the performances achieved.",
+                "1": "Since 2024, thousands of users have used {platformName} to compare the responses of different models, generating hundreds of thousands of votes. Simply counting the number of wins is not enough to establish a ranking. A fair system must be statistically robust, adjust after each matchup, and truly reflect the value of the performances achieved.",
                 "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (<a {perenLinkProps}>PEReN</a>) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {notebookLinkProps}>methodological notebook</a>."
             },
             "impacts": {
@@ -1731,7 +1754,7 @@
     },
     "reveal": {
         "feedback": {
-            "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
+            "description": "Share {platformName} with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
             "example": "Example of shared results",
             "moreOnVotes": "Learn more about votes",
             "shareResult": "Share your result"
@@ -1867,6 +1890,8 @@
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
             "donnees-personnelles": "Privacy policy",
+            "invite": "Invitation",
+            "login": "Sign in",
             "mentions-legales": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",
@@ -1930,7 +1955,7 @@
             }
         },
         "continueReminder": "Vote for an answer or choose “Skip vote” before continuing.",
-        "importantDesc": "Your preference feeds the arena's datasets, whose goal is to fine-tune future AI models on less-resourced languages.",
+        "importantDesc": "Your preference feeds the {platformName} datasets, whose goal is to fine-tune future AI models on less-resourced languages.",
         "title": "Which AI model do you prefer ?",
         "turn": {
             "choices": {

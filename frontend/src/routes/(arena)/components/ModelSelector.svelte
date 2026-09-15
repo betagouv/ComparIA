@@ -3,7 +3,7 @@
   import { Badge, Button, Icon, Search } from '$components/dsfr'
   import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
-  import { modeInfos as modeChoices } from '$lib/chatService.svelte'
+  import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
@@ -35,6 +35,7 @@
       }))
   })
 
+  const modeChoices = getModeInfos()
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
   const { modelA, modelB } = $derived({
     modelA: models.find((model) => model.id === modelsSelection[0]),

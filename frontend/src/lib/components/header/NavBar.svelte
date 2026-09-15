@@ -12,6 +12,7 @@
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
@@ -22,6 +23,7 @@
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
+  const platformName = getPlatformName()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
   const homepageLinkProps = $derived.by(() => {
@@ -86,10 +88,10 @@
     />
     <a
       {...homepageLinkProps}
-      title={m['header.homeTitle']()}
+      title={m['header.homeTitle']({ platformName })}
       class="font-bold text-lg text-[--text-title-grey]"
     >
-      {auth.config?.platform_name || m['header.title']()}
+      {platformName}
     </a>
   </div>
 {/snippet}

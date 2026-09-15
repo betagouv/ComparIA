@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field, PlainSerializer, field_validator
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
+from backend.utils.locale import BASE_LOCALE, pick_locale
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
@@ -70,8 +71,11 @@ class LegalPresentation(BaseModel):
     sign_in: SignInLegalPresentation
 
 
-def fallback_legal_presentation() -> LegalPresentation:
-    return LegalPresentation(
+# What visitors read until an admin writes their own copy. The admin copy is
+# stored in one language, so an instance serving several should write it in
+# the one it defaults to.
+FALLBACK_PRESENTATIONS: dict[str, LegalPresentation] = {
+    "fr": LegalPresentation(
         arena=ArenaLegalPresentation(
             title="Avant de commencer",
             introduction=(
@@ -92,14 +96,63 @@ def fallback_legal_presentation() -> LegalPresentation:
                 "les conditions générales d’utilisation."
             ),
         ),
-    )
+    ),
+    "en": LegalPresentation(
+        arena=ArenaLegalPresentation(
+            title="Before you start",
+            introduction=(
+                "Your messages are sent to the AI models being compared. Do not "
+                "enter sensitive data or anything that identifies a person."
+            ),
+            checkbox_label=(
+                "I have read and accept the terms of use. I understand that taking "
+                "part means AI models process my messages, and that conversations "
+                "and votes are reused for evaluation, research and datasets."
+            ),
+            button_label="Let’s go",
+        ),
+        sign_in=SignInLegalPresentation(
+            checkbox_label=(
+                "I have read how my data is used and I accept the terms of use."
+            ),
+        ),
+    ),
+    "da": LegalPresentation(
+        arena=ArenaLegalPresentation(
+            title="Før du starter",
+            introduction=(
+                "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
+                "ikke følsomme oplysninger eller noget, der kan identificere en "
+                "person."
+            ),
+            checkbox_label=(
+                "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
+                "deltagelse indebærer, at AI-modeller behandler mine beskeder, og at "
+                "samtaler og stemmer genbruges til evaluering, forskning og datasæt."
+            ),
+            button_label="Kom i gang",
+        ),
+        sign_in=SignInLegalPresentation(
+            checkbox_label=(
+                "Jeg har læst, hvordan mine data bruges, og jeg accepterer "
+                "vilkårene for brug."
+            ),
+        ),
+    ),
+}
 
 
-async def get_legal_presentation() -> LegalPresentation:
+def fallback_legal_presentation(locale: str = BASE_LOCALE) -> LegalPresentation:
+    return FALLBACK_PRESENTATIONS[pick_locale(locale, FALLBACK_PRESENTATIONS)]
+
+
+async def get_legal_presentation(locale: str | None = None) -> LegalPresentation:
+    """The admin's copy when there is one, else the default in `locale`, or in
+    the instance's default language when the caller has none."""
     app_settings = await get_app_settings()
     if app_settings.legal_presentation:
         return LegalPresentation.model_validate(app_settings.legal_presentation)
-    return fallback_legal_presentation()
+    return fallback_legal_presentation(locale or app_settings.default_locale)
 
 
 class DuplicateLegalDocumentError(ValueError):

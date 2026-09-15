@@ -5,7 +5,7 @@
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { modeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
@@ -46,6 +46,7 @@
   let submitting = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
+  const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
   onMount(() => {

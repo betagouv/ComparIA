@@ -6,6 +6,7 @@
   import Toaster from '$components/Toaster.svelte'
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { UnauthorizedError } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -43,7 +44,7 @@
   // svelte-ignore state_referenced_locally
   setVotesContext(data.votes)
   // svelte-ignore state_referenced_locally
-  setModelsContext(data.data)
+  setModelsContext(data.data, getPlatformName())
   setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
