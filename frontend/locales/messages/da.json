@@ -764,6 +764,8 @@
                     "invalid": "Forkert kode.",
                     "tooMany": "For mange forsøg, prøv igen om et par minutter.",
                     "expired": "Denne QR-kode er udløbet, start forfra.",
+                    "sessionExpired": "Sessionen er udløbet, log ind igen.",
+                    "restart": "Start forfra.",
                     "failedTitle": "Opsætningen kunne ikke starte"
                 }
             }
