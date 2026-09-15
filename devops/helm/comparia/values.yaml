@@ -52,7 +52,7 @@ resources:
     limits:
       cpu: 500m
       memory: 512Mi
-  ## -- Applied to the analyze and exportDataset CronJobs.
+  ## -- Applied to the analyze CronJob.
   cronjobs:
     requests:
       cpu: 100m
@@ -68,7 +68,7 @@ resources:
 ## -- Non-secret application settings, passed to the backend/frontend as plain env vars.
 config:
   ## -- Names the deployment (Redis key namespace, default locale). Also used to seed the
-  ## initial HuggingFace dataset destination on first install; see cronjobs.exportDataset below.
+  ## initial HuggingFace dataset destination on first install.
   instanceName: fr
   ## -- "anonymous_first" (sign-in optional) or "sign_in_required".
   authAccessPolicy: anonymous_first
@@ -148,14 +148,6 @@ cronjobs:
   ranking:
     enabled: true
     schedule: "17 * * * *"
-  exportDataset:
-    enabled: false
-    schedule: "15 4 * * *"
-    ## -- '{organisation}/{repo_prefix}' on HuggingFace. Required when enabled. Only read once,
-    ## by the migration hook, to seed the destination row (see README.md).
-    hfRepo: ""
-    ## -- HuggingFace token with write access to hfRepo. Required when enabled.
-    hfToken: ""
   analyze:
     enabled: false
     schedule: "35 3 * * *"
