@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import SurveyModal from './SurveyModal.svelte'
+import SurveyModal from '../../../lib/components/SurveyModal.svelte'
 
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),

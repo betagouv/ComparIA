@@ -3,12 +3,12 @@
   import SideSwitcher from '$components/SideSwitcher.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { parseAPIRevealData, type APIRevealData } from '$lib/chatService.svelte'
+  import SurveyModal from '$lib/components/SurveyModal.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
-  import SurveyModal from './SurveyModal.svelte'
 
   const platformName = getPlatformName()
 
