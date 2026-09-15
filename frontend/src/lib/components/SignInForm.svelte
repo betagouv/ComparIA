@@ -84,9 +84,9 @@
   async function loadSurveyQuestions(locale: string) {
     surveyLoading = true
     try {
-      const data = await api.request<{ questions: SurveyQuestion[] }>(
-        `/survey/questions?trigger=signup&locale=${encodeURIComponent(locale)}`
-      )
+      const data = await api.request<{ questions: SurveyQuestion[] }>('/survey/questions', {
+        searchParams: { locale, trigger: 'signup' }
+      })
       surveyQuestions = data.questions
     } catch {
       // A survey outage must never block sign-in: this degrades exactly like
