@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
+from backend.admin.logos import normalize_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
@@ -31,7 +32,12 @@ from backend.arena.checks import (
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
-from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
+from backend.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    INSTANCE_LOGO_BOX,
+    LOGO_UPLOAD_MAX_SIZE,
+    settings,
+)
 from backend.settings.informational_legal import (
     InformationalLegalPages,
     get_informational_legal_pages,
@@ -150,10 +156,6 @@ async def put_admin_informational_legal_pages(
         updated_by=current_user.id,
     )
     return body
-
-
-_LOGO_MAX_SIZE = 2 * 1024 * 1024
-_LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
 
 
 def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
@@ -437,19 +439,12 @@ async def upload_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    if file.content_type not in _LOGO_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported content type: {file.content_type}",
-        )
-    content = await file.read()
-    if len(content) > _LOGO_MAX_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Logo file is too large (max 2 MB)",
-        )
+    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
+    logo, content_type = normalize_logo(
+        content, file.content_type or "", INSTANCE_LOGO_BOX
+    )
     row = await update_app_settings(
-        {"logo": content, "logo_content_type": file.content_type},
+        {"logo": logo, "logo_content_type": content_type},
         updated_by=current_user.id,
     )
     return _to_app_settings_public(row)

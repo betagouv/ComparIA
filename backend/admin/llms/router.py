@@ -2,9 +2,11 @@ import logging
 from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import SQLModel, select
 
+from backend.admin.logos import normalize_logo
+from backend.config import LAB_LOGO_BOX, LOGO_UPLOAD_MAX_SIZE
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
@@ -54,10 +56,6 @@ def _to_lab_public(lab: LLMLab) -> LLMLabPublic:
         **lab.model_dump(exclude={"logo_data", "logo_content_type"}),
         has_custom_logo=lab.has_custom_logo,
     )
-
-
-_LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
-_LOGO_MAX_SIZE = 2 * 1024 * 1024
 
 
 @router.get("/data")
@@ -139,23 +137,14 @@ async def upsert_lab(body: LLMLabUpsert):
 
 @router.put("/lab/{lab_id}/logo")
 async def upload_lab_logo(lab_id: UUID, file: UploadFile):
-    if file.content_type not in _LOGO_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported content type: {file.content_type}",
-        )
-    content = await file.read(_LOGO_MAX_SIZE + 1)
-    if len(content) > _LOGO_MAX_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Logo file is too large (max 2 MB)",
-        )
+    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
+    logo, content_type = normalize_logo(content, file.content_type or "", LAB_LOGO_BOX)
     async with get_session() as session:
         lab = await session.get(LLMLab, lab_id)
         if lab is None:
             raise HTTPException(status_code=404, detail="lab_not_found")
-        lab.logo_data = content
-        lab.logo_content_type = file.content_type
+        lab.logo_data = logo
+        lab.logo_content_type = content_type
         session.add(lab)
         await session.commit()
         await session.refresh(lab)

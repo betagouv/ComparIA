@@ -7,6 +7,7 @@ import pytest
 from fastapi import HTTPException, UploadFile
 
 from backend.admin.llms import router as admin_lab_router
+from backend.config import LOGO_UPLOAD_MAX_SIZE
 from backend.llms import router as public_lab_router
 from utils.database.models.llms import LLMLab
 
@@ -72,15 +73,14 @@ def test_upload_and_public_retrieval(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_rejects_unsupported_and_oversized_uploads() -> None:
     bad_type = UploadFile(filename="logo.gif", file=io.BytesIO(b"GIF"))
     bad_type.headers = {"content-type": "image/gif"}
-    with pytest.raises(HTTPException, match="Unsupported content type"):
+    with pytest.raises(HTTPException, match="logo_unsupported_type"):
         asyncio.run(admin_lab_router.upload_lab_logo(uuid4(), bad_type))
 
     too_large = UploadFile(
-        filename="logo.png",
-        file=io.BytesIO(b"x" * (admin_lab_router._LOGO_MAX_SIZE + 1)),
+        filename="logo.png", file=io.BytesIO(b"x" * (LOGO_UPLOAD_MAX_SIZE + 1))
     )
     too_large.headers = {"content-type": "image/png"}
-    with pytest.raises(HTTPException, match="too large"):
+    with pytest.raises(HTTPException, match="logo_too_large"):
         asyncio.run(admin_lab_router.upload_lab_logo(uuid4(), too_large))
 
 
