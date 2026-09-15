@@ -46,6 +46,9 @@
         }
     },
     "chatbot": {
+        "announce": {
+            "interrupted": "Generavimas sustabdytas"
+        },
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
         "conversation": "Pokalbis",
         "errors": {
@@ -60,12 +63,16 @@
                 "title": "Oi, pokalbis yra per ilgas vienam iš modelių."
             }
         },
+        "interrupted": {
+            "notice": "Generavimas sustabdytas. Galite balsuoti už šiuos dalinius atsakymus arba bandyti dar kartą."
+        },
         "loading": "Įkeliami atsakymai",
         "reasoning": {
             "finished": "Mąstymas baigtas",
             "inProgress": "Mąstoma…"
         },
         "revealButton": "Atskleisti modelius",
+        "stop": "Sustabdyti generavimą",
         "webSearch": {
             "label": "Susiję paieškos internete rezultatai."
         }
