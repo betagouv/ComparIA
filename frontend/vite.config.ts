@@ -1,4 +1,5 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
+import { paraglideLocaleSplit } from './src/vite/paraglideLocaleSplit.js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import UnoCSS from 'unocss/vite'
@@ -13,7 +14,8 @@ export default defineConfig({
       outdir: './src/lib/i18n',
       outputStructure: 'locale-modules',
       strategy: ['cookie', 'custom-url', 'baseLocale']
-    })
+    }),
+    paraglideLocaleSplit({ project: './comparia.inlang', outdir: './src/lib/i18n' })
   ],
 
   server: {
