@@ -215,6 +215,10 @@
                 },
                 "decisionLegend": "Result",
                 "empty": "Write a message before running the test.",
+                "errors": {
+                    "call_failed": "The call to Mistral failed: {error}",
+                    "no_api_key": "No Mistral API key is configured: the check cannot run."
+                },
                 "ignored": "Not watched",
                 "label": "Message to check",
                 "labelHint": "Write the message here as a person would send it.",
@@ -616,6 +620,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Too many blocked messages were sent from your connection. Please wait before trying again.",
+            "captcha_failed": "The anti-robot check failed, please try again.",
+            "captcha_unavailable": "The anti-robot check is unavailable, please try again.",
+            "comparison_streaming": "Please wait for the models to finish answering.",
+            "max_turns_reached": "This conversation has reached its length limit. Please start a new one.",
+            "prompt_check": {
+                "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
+                "pii": "Your message seems to contain personal data. Messages you send may be published in the open dataset.",
+                "self_harm": "If you are going through a hard time or having suicidal thoughts, you are not alone. Free, confidential help is available around the clock: find your local helpline at findahelpline.com."
+            },
+            "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
+            "retry_unavailable": "Retrying is not possible, please reload the page.",
+            "spam_detected": "This message format is not allowed. Please write in natural language."
+        },
         "promptWarning": {
             "edit": "Edit my message",
             "proceed": "Send anyway",

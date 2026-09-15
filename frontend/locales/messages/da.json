@@ -215,6 +215,10 @@
                 },
                 "decisionLegend": "Resultat",
                 "empty": "Skriv en besked, før du starter testen.",
+                "errors": {
+                    "call_failed": "Kaldet til Mistral mislykkedes: {error}",
+                    "no_api_key": "Der er ikke konfigureret nogen Mistral API-nøgle: kontrollen kan ikke køre."
+                },
                 "ignored": "Ikke overvåget",
                 "label": "Besked at tjekke",
                 "labelHint": "Skriv beskeden her, som en bruger ville sende den.",
@@ -616,6 +620,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Der er sendt for mange blokerede beskeder fra din forbindelse. Vent lidt, før du prøver igen.",
+            "captcha_failed": "Robotkontrollen mislykkedes. Prøv igen.",
+            "captcha_unavailable": "Robotkontrollen er ikke tilgængelig. Prøv igen.",
+            "comparison_streaming": "Vent, til modellerne er færdige med at svare.",
+            "max_turns_reached": "Denne samtale har nået sin grænse. Start en ny samtale.",
+            "prompt_check": {
+                "generic": "Din besked kunne ikke sendes, fordi den strider mod vores vilkår for brug. Omformuler den.",
+                "pii": "Din besked ser ud til at indeholde personoplysninger. Sendte beskeder kan blive offentliggjort i det åbne datasæt.",
+                "self_harm": "Hvis du har det svært eller har selvmordstanker, er du ikke alene. Livslinien kan kontaktes gratis og fortroligt på 70 201 201."
+            },
+            "rate_limited": "Du har sendt for mange forespørgsler til de dyreste modeller. Prøv igen om et par timer. Mindre modeller kan stadig bruges.",
+            "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",
+            "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog."
+        },
         "promptWarning": {
             "edit": "Rediger min besked",
             "proceed": "Send alligevel",

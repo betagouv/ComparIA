@@ -14,6 +14,8 @@ export type PromptCheckTry = {
   triggered: Record<string, PromptCheckAction>
   message: string | null
   latency_ms: number
+  /** What the moderation call said when `decision` is "error". */
+  error: string | null
 }
 
 /** Réponse de GET /admin/prompt-check/stats. */

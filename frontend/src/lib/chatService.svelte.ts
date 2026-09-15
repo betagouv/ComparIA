@@ -1,7 +1,8 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
+import { arenaErrorMessage, isArenaErrorKey, promptCheckMessage } from '$lib/apiErrors'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, StreamTimeoutError, ValidationError } from '$lib/fastapi-client'
+import { api, StreamTimeoutError, ValidationError, type ApiError } from '$lib/fastapi-client'
 import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
@@ -263,7 +264,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (event.type === 'warning') {
           warned = true
           warnedRequest = { url, body: { ...body, warning_token: event.warning_token } }
-          promptWarnings = event.warnings.map((warning) => warning.message)
+          promptWarnings = event.warnings.map((warning) => promptCheckMessage(warning.message))
           break
         } else if (event.type === 'init') {
           const id = event.comparison.id.toString()
@@ -308,12 +309,15 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = err.errors ? err.errors[0].msg : err.message
+        const detail = err.errors ? err.errors[0].msg : err.message
+        promptError = promptCheckMessage(arenaErrorMessage(detail))
       } else if (err instanceof CaptchaError) {
-        promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
+        promptError = arenaErrorMessage('captcha_unavailable')
       } else if (err instanceof StreamTimeoutError && comparison) {
         comparison.error = 'timeout'
         if (turn) turn.status = 'error'
+      } else if (isArenaErrorKey((err as ApiError).detail)) {
+        promptError = arenaErrorMessage((err as ApiError).detail as string)
       } else {
         throw err
       }

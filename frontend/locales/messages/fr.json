@@ -215,6 +215,10 @@
                 },
                 "decisionLegend": "Résultat",
                 "empty": "Écrivez un message avant de lancer le test.",
+                "errors": {
+                    "call_failed": "L'appel à Mistral a échoué : {error}",
+                    "no_api_key": "Aucune clé API Mistral n'est configurée : la vérification ne peut pas s'exécuter."
+                },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
                 "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
@@ -616,6 +620,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+            "captcha_failed": "Vérification anti-robot échouée, veuillez réessayer.",
+            "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
+            "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
+            "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "prompt_check": {
+                "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
+                "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+            },
+            "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
+            "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
+        },
         "promptWarning": {
             "edit": "Modifier mon message",
             "proceed": "Envoyer quand même",
