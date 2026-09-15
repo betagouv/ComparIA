@@ -78,6 +78,10 @@ class DatasetTurn(SQLModel):
 
     # Excluded, used to compute responses
     user_msg: Annotated[UserMessageRead, Field(exclude=True)]
+    # FIXME an answer the user stopped is exported like a complete one; the
+    # LLMMessage.interrupted flag should reach the dataset (per side, in the
+    # turn metadata) once the export schema is next revised. The output is
+    # pinned by tests/dataset/test_comparison_to_turns.py.
     llm_msg_a: Annotated[LLMMessageFinal | None, Field(exclude=True)]
     llm_msg_b: Annotated[LLMMessageFinal | None, Field(exclude=True)]
 
