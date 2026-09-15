@@ -1519,7 +1519,6 @@ dependencies = [
 
 [package.dev-dependencies]
 data = [
-    { name = "cryptography" },
     { name = "cyclopts" },
     { name = "duckdb" },
     { name = "google-cloud-aiplatform" },
@@ -1529,8 +1528,6 @@ data = [
     { name = "polars" },
     { name = "psycopg2-binary" },
     { name = "pyarrow" },
-    { name = "pyotp" },
-    { name = "segno" },
 ]
 dev = [
     { name = "autoflake" },
@@ -1586,7 +1583,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 data = [
-    { name = "cryptography", specifier = ">=45.0.0" },
     { name = "cyclopts", specifier = ">=4.22.5" },
     { name = "duckdb", specifier = ">=1.5.5" },
     { name = "google-cloud-aiplatform", specifier = ">=1.164.0" },
@@ -1596,8 +1592,6 @@ data = [
     { name = "polars", specifier = ">=1.43.2" },
     { name = "psycopg2-binary", specifier = ">=2.9.12" },
     { name = "pyarrow", specifier = ">=25.0.1" },
-    { name = "pyotp", specifier = ">=2.10.0" },
-    { name = "segno", specifier = ">=1.6.0" },
 ]
 dev = [
     { name = "autoflake", specifier = ">=2.3.3" },
