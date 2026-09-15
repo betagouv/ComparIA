@@ -83,8 +83,9 @@
     const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
     return [min - 5, max + 35] as const
   })
-  // Price runs right to left, so the frontier reads as a descent from the
-  // best model to the cheapest and the top-left corner is the one to aim for.
+  // Price runs right to left: the dearest models sit on the left, the
+  // cheapest on the right, so the frontier reads as a descent from the best
+  // model to the cheapest and the top-right corner is the one to aim for.
   const xScale = $derived(scaleLog(minMaxX, [width - padding.right, padding.left]))
   const yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
   // d3's log ticks fill every decade; keep the round ones so labels stay apart.
