@@ -65,7 +65,8 @@ class FakeSession:
     async def get(self, _model, _id):
         return self.user
 
-    async def exec(self, _statement):
+    async def exec(self, statement):
+        self.statements.append(statement)
         return FakeResult(self.results.pop(0) if self.results else [])
 
     async def execute(self, statement):
@@ -305,6 +306,25 @@ def test_erasure_is_not_replayed_on_an_already_erased_account():
 
     assert session.statements == []
     assert not session.committed
+
+
+def test_signing_in_claims_no_conversation_on_its_own():
+    """Attribution is the explicit merge, keyed on the anonymous session
+    cookie. The analytics visitor id is readable by any script on the page,
+    so a sign-in must not use it to hand conversations over."""
+    user = User(email="personne@example.test")
+    session = FakeSession(user)
+
+    async def run():
+        return await auth_services._create_session(
+            session, user, "192.0.2.10", "UA", anonymous_user_hash=None
+        )
+
+    asyncio.run(run())
+
+    assert not [
+        s for s in session.statements if s.is_update and s.table.name == "comparison"
+    ]
 
 
 if __name__ == "__main__":
