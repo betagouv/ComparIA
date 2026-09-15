@@ -11,6 +11,7 @@ export default defineConfig({
     paraglideVitePlugin({
       project: './comparia.inlang',
       outdir: './src/lib/i18n',
+      outputStructure: 'locale-modules',
       strategy: ['cookie', 'custom-url', 'baseLocale']
     })
   ],
