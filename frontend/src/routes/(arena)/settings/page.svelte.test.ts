@@ -137,6 +137,10 @@ describe('Settings page two-factor section', () => {
     const img = await waitFor(() => modal.querySelector<HTMLImageElement>('img')!)
     expect(img.getAttribute('src')).toBe(setup.qr_svg)
     expect(modal.textContent).toContain('ABCD EFGH IJKL MNOP QRST UVWX YZ23 4567')
+    // ARIA gives a <code> no accessible name, so the label sits in the text instead.
+    expect(modal.querySelector('code')).not.toHaveAttribute('aria-label')
+    expect(modal.textContent).toContain('Clé secrète')
+    expect(modal.querySelector('button[aria-label="Copier la clé"]')).not.toBeNull()
     expect(request).toHaveBeenCalledWith(
       '/auth/totp/setup',
       expect.objectContaining({ body: '{}' })
