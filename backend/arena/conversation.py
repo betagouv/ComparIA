@@ -89,6 +89,11 @@ def finalize_interrupted(
     nothing to keep. An answer needs text: LLMMessage refuses empty content,
     so reasoning alone is not enough to keep the side.
     """
+    # FIXME a reasoning model stopped while still thinking loses the side and
+    # the turn falls back to the error and Retry path, though the user saw
+    # reasoning stream in. Keeping it means letting llm_message.content be
+    # NULL (model change and migration), and deciding what a vote on a
+    # reasoning-only side would mean.
     if not llm_msg.content.strip():
         return None
 
