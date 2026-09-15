@@ -45,7 +45,7 @@
   let consos = $state<ConsoSizes[]>(['S', 'M'])
   let showArchived = $state(true)
   const sizeFilter = {
-    id: 'size',
+    id: 'energy-size',
     legend: m['models.list.filters.size.legend'](),
     options: SIZE_CLASSES.map((value) => ({
       value,
@@ -53,7 +53,7 @@
     }))
   }
   const consoFilter = {
-    id: 'conso',
+    id: 'energy-conso',
     legend: m['models.conso.filterLegend'](),
     options: CONSO_SIZES.map((value) => ({
       value,
@@ -126,11 +126,10 @@
 
 {#snippet legend(kind: string)}
   <div
-    id="graph-legend"
-    class="cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
+    class="graph-legend cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
   >
     <Search
-      id="energy-graph-model-search"
+      id="energy-graph-model-search-{kind}"
       bind:value={search}
       label={m['words.search']()}
       class="mb-5"
@@ -141,6 +140,7 @@
     </p>
     <CheckboxGroup
       {...consoFilter}
+      id="{consoFilter.id}-{kind}"
       bind:value={consos}
       legendClass="sr-only"
       labelClass="text-dark-grey! text-[12px]! font-medium!"
@@ -153,7 +153,14 @@
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
 
-    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-5!">
+    <CheckboxGroup
+      {...sizeFilter}
+      id="{sizeFilter.id}-{kind}"
+      bind:value={sizes}
+      legendClass="sr-only"
+      row
+      class="mb-5!"
+    >
       {#snippet labelSlot({ option })}
         <div class="flex items-center">
           <div
@@ -166,7 +173,7 @@
     </CheckboxGroup>
 
     <Toggle
-      id="archived-{kind}"
+      id="energy-archived-{kind}"
       bind:value={showArchived}
       label={m['models.list.filters.archived.label']()}
       checkedLabel={m['models.list.filters.archived.checkedLabel']()}
@@ -445,7 +452,7 @@
     }
   }
 
-  #graph-legend {
+  .graph-legend {
     .dot {
       width: var(--size, 16px);
       height: var(--size, 16px);
