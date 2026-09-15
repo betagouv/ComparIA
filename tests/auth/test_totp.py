@@ -194,6 +194,21 @@ def test_the_provisioning_uri_names_issuer_and_account():
 # Secrets at rest
 
 
+def test_a_key_fernet_would_refuse_is_refused_at_boot():
+    from backend.config import check_encryption_keys
+
+    valid = Fernet.generate_key().decode()
+    check_encryption_keys(valid)
+    check_encryption_keys(f" {valid} , {Fernet.generate_key().decode()}")
+
+    hex_key = os.urandom(32).hex()
+    for bad in ("", "  ,  ", hex_key, f"{valid},{hex_key}", "not-base64!"):
+        with pytest.raises(RuntimeError) as refused:
+            check_encryption_keys(bad)
+        assert "COMPARIA_ENCRYPTION_KEY" in str(refused.value)
+        assert "Fernet.generate_key()" in str(refused.value)
+
+
 def test_secrets_round_trip_through_the_key():
     token = auth_totp.encrypt_secret(SECRET)
     assert token != SECRET

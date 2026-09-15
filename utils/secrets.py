@@ -22,14 +22,9 @@ def _keys() -> list[str]:
 
 @lru_cache
 def _fernet() -> MultiFernet:
-    try:
-        return MultiFernet([Fernet(k) for k in _keys()])
-    except (ValueError, TypeError) as e:
-        raise RuntimeError(
-            "COMPARIA_ENCRYPTION_KEY is not a valid Fernet key. Generate one "
-            "with: python -c 'from cryptography.fernet import Fernet; "
-            "print(Fernet.generate_key().decode())'"
-        ) from e
+    # Every key was checked when backend.config loaded, so a bad one cannot
+    # reach here.
+    return MultiFernet([Fernet(k) for k in _keys()])
 
 
 def encrypt_secret(secret: str) -> str:
