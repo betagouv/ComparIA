@@ -295,6 +295,24 @@ describe('SignInForm authenticator step', () => {
     expect(mocks.authContext.user).toEqual(me.user)
   })
 
+  it('can open straight at the authenticator step', async () => {
+    servesSignIn(() => Promise.resolve({ email: 'admin@example.test' }))
+    const onSuccess = vi.fn()
+    const { container } = render(SignInForm, { props: { onSuccess, startAtTotp: true } })
+
+    const totpInput = container.querySelector<HTMLInputElement>('#login-totp')!
+    expect(totpInput).not.toBeNull()
+    expect(container.querySelector('#login-code')).toBeNull()
+    expect(container.querySelector<HTMLInputElement>('#login-email')!.disabled).toBe(true)
+
+    await fireEvent.input(totpInput, { target: { value: '654321' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce())
+    expect(paths()).not.toContain('/auth/email/request')
+    expect(paths()).not.toContain('/auth/email/verify')
+  })
+
   it('reports a wrong authenticator code and lets the visitor retry', async () => {
     servesSignIn(() => Promise.reject(Object.assign(new Error('Invalid'), { status: 400 })))
     const { container } = render(SignInForm)
