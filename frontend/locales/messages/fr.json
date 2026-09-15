@@ -7,8 +7,8 @@
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",
-        "modeSelection": "Choix des modèles à comparer",
         "modelSheet": "Fiche du modèle",
+        "modeSelection": "Choix des modèles à comparer",
         "newWindow": "nouvelle fenêtre",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
@@ -261,8 +261,8 @@
             },
             "saveApiKey": "Enregistrer la clé",
             "saveCategories": "Enregistrer les catégories",
-            "saveModel": "Enregistrer le modèle",
             "saved": "Vérification mise à jour",
+            "saveModel": "Enregistrer le modèle",
             "saving": "Enregistrement...",
             "settings": {
                 "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",
@@ -358,9 +358,9 @@
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",
+            "publishing": "Publication…",
             "publishNow": "Publier",
             "publishStarted": "Publication démarrée",
-            "publishing": "Publication…",
             "rawWarning": "Cette destination reçoit le jeu brut, qui contient les conversations mises de côté pour données personnelles. Vérifiez qu'elle est privée.",
             "regionLabel": "Région",
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
@@ -459,16 +459,15 @@
             "archive": "Archiver",
             "archiveCategory": "Archiver la catégorie",
             "archiveConfirm": "Archiver cette suggestion ? Elle ne sera plus proposée dans l’arène, mais pourra être restaurée.",
-            "archiveSuccess": "Suggestion archivée.",
             "archived": "Archivée",
-            "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
-            "categoryArchiveSuccess": "Catégorie archivée.",
-            "categoryCountSummary": "{available} disponibles sur {total} suggestions",
-            "collapseCategory": "Replier la catégorie",
+            "archiveSuccess": "Suggestion archivée.",
             "available": "Disponible",
             "cancel": "Annuler",
             "categories": "Catégories",
             "category": "Catégorie",
+            "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
+            "categoryArchiveSuccess": "Catégorie archivée.",
+            "categoryCountSummary": "{available} disponibles sur {total} suggestions",
             "categoryCreateSuccess": "Catégorie ajoutée.",
             "categoryDeleteConfirm": "Supprimer « {title} » ?",
             "categoryDeleteConflict": "Cette catégorie contient des suggestions et ne peut pas être supprimée.",
@@ -482,6 +481,8 @@
             "categoryEmpty": "Catégorie vide",
             "categoryIcon": "Icône",
             "categoryIconPreview": "Aperçu de l’icône sélectionnée",
+            "categoryRestoreConfirm": "Restaurer « {title} » ? Seules les suggestions dont le statut est « Disponible » seront de nouveau proposées dans l’arène.",
+            "categoryRestoreSuccess": "Catégorie restaurée.",
             "categorySuggestionCount": "1 suggestion — suppression impossible",
             "categorySuggestionsCount": "{count} suggestions — suppression impossible",
             "categoryTitle": "Nom de la catégorie",
@@ -489,9 +490,8 @@
             "categoryTooltip": "Information complémentaire",
             "categoryTooltipHint": "Facultatif. Cette information sera accessible depuis une infobulle.",
             "categoryValidation": "Saisissez un nom, une description et choisissez une icône.",
-            "categoryRestoreConfirm": "Restaurer « {title} » ? Seules les suggestions dont le statut est « Disponible » seront de nouveau proposées dans l’arène.",
-            "categoryRestoreSuccess": "Catégorie restaurée.",
             "charactersMaximum": "{count} caractères maximum",
+            "collapseCategory": "Replier la catégorie",
             "confirm": "Confirmer",
             "createSuccess": "Suggestion ajoutée.",
             "delete": "Supprimer",
@@ -532,10 +532,10 @@
             "restoreCategory": "Restaurer la catégorie",
             "restoreConfirm": "Restaurer cette suggestion ? Elle sera de nouveau proposée dans l’arène.",
             "restoreSuccess": "Suggestion restaurée.",
-            "status": "Statut",
+            "resultCount": "{count} suggestions trouvées",
             "search": "Rechercher une suggestion",
             "searchFilter": "Recherche",
-            "resultCount": "{count} suggestions trouvées",
+            "status": "Statut",
             "subtitle": "Ajoutez et gérez les suggestions proposées dans l’arène.",
             "tableCaption": "Suggestions de prompts",
             "title": "Suggestions de prompts",
@@ -545,8 +545,8 @@
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
             "archive": "Masquer",
-            "archiveSuccess": "Étiquette masquée",
             "archived": "Masquée",
+            "archiveSuccess": "Étiquette masquée",
             "cancel": "Annuler",
             "colActions": "Actions",
             "colKey": "Clé",
@@ -573,9 +573,9 @@
             "labelError": "Renseignez un emoji et au moins un libellé contenant une lettre ou un chiffre.",
             "labelFor": "Libellé ({locale})",
             "labelHelp": "Sert à construire la clé publiée dans le jeu de données.",
+            "moved": "{label} déplacée en position {position} sur {total}.",
             "moveDown": "Descendre",
             "moveUp": "Monter",
-            "moved": "{label} déplacée en position {position} sur {total}.",
             "negative": "Étiquettes négatives",
             "positive": "Étiquettes positives",
             "reserved": "Livrée",
@@ -646,9 +646,9 @@
             },
             "info": {
                 "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
-                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
                 "datasetsTitle": "Les jeux de données compar:IA",
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers.",
                 "neverAddress": "des adresses (postale, email)",
                 "neverName": "votre nom, prénom ou celui d'un tiers",
@@ -703,6 +703,7 @@
     "chatbot": {
         "announce": {
             "generating": "Les modèles rédigent leur réponse…",
+            "interrupted": "Génération arrêtée",
             "ready": "Les deux réponses sont prêtes."
         },
         "continuePrompt": "Continuer à discuter…",
@@ -719,12 +720,16 @@
                 "title": "Oups, la conversation est trop longue pour un des modèles."
             }
         },
+        "interrupted": {
+            "notice": "Génération arrêtée. Vous pouvez voter sur ces réponses partielles ou réessayer."
+        },
         "loading": "Chargement des réponses",
         "reasoning": {
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
         "revealButton": "Terminer et découvrir les modèles",
+        "stop": "Arrêter la génération",
         "webSearch": {
             "label": "Résultats de recherche Web associés."
         }
@@ -1144,11 +1149,11 @@
                 "label": "Params"
             },
             "price_in": {
-                "help": "Price per million input tokens in $.",
+                "help": "Price per million input tokens in USD.",
                 "label": "Price In"
             },
             "price_out": {
-                "help": "Price per million output tokens in $.",
+                "help": "Price per million output tokens in USD.",
                 "label": "Price Out"
             },
             "public_training_code": {
@@ -1412,12 +1417,6 @@
             "a": "Modèle A",
             "b": "Modèle B"
         },
-        "openWeight": {
-            "tooltips": {
-                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
-                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
-            }
-        },
         "opennessSovereignty": {
             "fields": {
                 "commercial_use": "Usage commercial",
@@ -1431,6 +1430,12 @@
                 "reuse": "Réutilisation des sorties"
             },
             "title": "Niveau d’ouverture"
+        },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
+                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
+            }
         },
         "performance": {
             "fields": {
@@ -1945,7 +1950,6 @@
         "yours": "Votre vote"
     },
     "words": {
-        "NA": "N/A",
         "activated": "Activé",
         "add": "Ajouter",
         "allowed": "autorisé",
@@ -1957,6 +1961,7 @@
         "deactivated": "Désactivé",
         "forbidden": "interdit",
         "loading": "Chargement",
+        "NA": "N/A",
         "new": "Nouveau",
         "no": "Non",
         "private": "privé",

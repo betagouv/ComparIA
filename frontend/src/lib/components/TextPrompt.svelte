@@ -11,6 +11,10 @@
     hideLabel?: boolean
     submitBtn?: boolean
     submitDisabled?: boolean
+    /** A turn is generating: the send button becomes a stop button. */
+    stoppable?: boolean
+    /** The stop request is on its way: the stop button is aria-disabled. */
+    stopping?: boolean
     size?: 'sm' | 'md'
     maxRows?: number
     lineHeightPx?: number
@@ -21,6 +25,7 @@
     class?: string
     onSubmit?: (value: string) => void
     onSubmitBlocked?: () => void
+    onStop?: () => void | Promise<void>
     onBlur?: (value: string) => void
     onFocus?: () => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
@@ -31,6 +36,8 @@
     value = $bindable(),
     submitBtn = false,
     submitDisabled = false,
+    stoppable = false,
+    stopping = false,
     size = 'sm',
     hideLabel = false,
     rows = 1,
@@ -43,6 +50,7 @@
     class: classNames = '',
     onSubmit = noop,
     onSubmitBlocked = noop,
+    onStop = noop,
     onBlur = noop,
     onFocus = noop,
     ...nativeTextAreaProps
@@ -66,11 +74,23 @@
     error = undefined
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+      // While a turn generates, Enter does nothing: the button is Stop now.
+      if (stoppable) return
       if (!submitDisabled) {
         onSubmit(value)
       } else {
         onSubmitBlocked()
       }
+    }
+  }
+
+  const onButtonClick = () => {
+    if (stoppable) {
+      if (!stopping) onStop()
+    } else if (submitDisabled) {
+      onSubmitBlocked()
+    } else {
+      onSubmit(value)
     }
   }
 
@@ -100,13 +120,16 @@
       {@attach updateRows}
       onfocus={onFocus}></textarea>
     {#if submitBtn}
+      <!-- One element for both: it turns into Stop while a turn generates
+           and back into Send after, so focus stays put across the switch. -->
       <Button
-        icon="arrow-up-line"
+        icon={stoppable ? 'stop-circle-line' : 'arrow-up-line'}
         iconOnly
         {size}
-        aria-disabled={submitDisabled}
-        text={m['words.send']()}
-        onclick={() => (submitDisabled ? onSubmitBlocked() : onSubmit(value))}
+        aria-disabled={stoppable ? stopping : submitDisabled}
+        text={stoppable ? m['chatbot.stop']() : m['words.send']()}
+        title={stoppable ? m['chatbot.stop']() : undefined}
+        onclick={onButtonClick}
         class="right-3 bottom-3 absolute"
       />
     {/if}

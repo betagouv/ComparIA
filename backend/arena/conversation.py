@@ -72,18 +72,44 @@ async def _stream_cached_response(
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
 
-        try:
-            await asyncio.sleep(0.2)
-        except asyncio.CancelledError:
-            # Sleep can be cancelled and raise StopAsyncGenerator error
-            # Simply silence error
-            pass
+        await asyncio.sleep(0.2)
 
     # Final yield with complete content and timing
     llm_msg.content = cached["content"].strip()
     llm_msg.updated_at = datetime.now()
 
     yield llm_msg
+
+
+def finalize_interrupted(
+    llm_msg: LLMMessageCreate, llm: LLMDataEnabled
+) -> LLMMessageCreate | None:
+    """
+    Make a partial answer storable after a stop, or return None when there is
+    nothing to keep. An answer needs text: LLMMessage refuses empty content,
+    so reasoning alone is not enough to keep the side.
+    """
+    # FIXME a reasoning model stopped while still thinking loses the side and
+    # the turn falls back to the error and Retry path, though the user saw
+    # reasoning stream in. Keeping it means letting llm_message.content be
+    # NULL (model change and migration), and deciding what a vote on a
+    # reasoning-only side would mean.
+    if not llm_msg.content.strip():
+        return None
+
+    now = datetime.now()
+    llm_msg.created_at = llm_msg.created_at or now
+    llm_msg.responded_at = llm_msg.responded_at or now
+    llm_msg.updated_at = now
+    llm_msg.generation_id = llm_msg.generation_id or "interrupted"
+    # The provider reports usage in its last chunk, which never came, and a
+    # cached answer carries the count of the whole text: count what is kept.
+    llm_msg.tokens = token_counter(
+        text=[llm_msg.reasoning_content or "", llm_msg.content],
+        model=llm.human_id,
+    )
+    llm_msg.interrupted = True
+    return llm_msg
 
 
 async def bot_response_async(
@@ -147,7 +173,7 @@ async def bot_response_async(
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
+    async for llm_msg in stream_iter:
         # Yield complete chat only if there's content to display in current message
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
