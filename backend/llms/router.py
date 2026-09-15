@@ -32,6 +32,8 @@ async def get_lab_logo(lab_id: UUID) -> Response:
             headers={
                 "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
                 "X-Content-Type-Options": "nosniff",
-                "Cache-Control": "public, max-age=3600",
+                # The URL carries the logo version, so a new upload is a new
+                # URL and the old bytes can stay in the browser for a year.
+                "Cache-Control": "public, max-age=31536000, immutable",
             },
         )

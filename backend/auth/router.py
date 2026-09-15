@@ -183,7 +183,8 @@ async def get_config_logo() -> Response:
         content=app_settings.logo,
         media_type=app_settings.logo_content_type or "image/png",
         headers={
-            "Cache-Control": "public, max-age=300",
+            # Same as the lab logos: the URL carries the version.
+            "Cache-Control": "public, max-age=31536000, immutable",
             # The logo can be an SVG, and an SVG can carry a <script>. Pages
             # only ever show it in an <img>, where scripts never run, but
             # opening this URL directly would render it as a document on our
