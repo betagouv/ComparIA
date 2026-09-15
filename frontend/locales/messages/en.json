@@ -765,6 +765,8 @@
                     "invalid": "Wrong code.",
                     "tooMany": "Too many attempts, try again in a few minutes.",
                     "expired": "This QR code has expired, start again.",
+                    "sessionExpired": "Session expired, sign in again.",
+                    "restart": "Start again from the beginning.",
                     "failedTitle": "Setup could not start"
                 }
             }
