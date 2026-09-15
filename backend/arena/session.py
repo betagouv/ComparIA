@@ -31,22 +31,66 @@ logger = logging.getLogger("languia")
 class ComparisonMetadata(BaseModel):
     id: uuid.UUID
     is_streaming: bool
+    # Set by /arena/stop, read by the streaming loop. It goes through Redis
+    # rather than an in-process event because the stop request may land on
+    # another backend pod than the one holding the stream.
+    stop_requested: bool = False
+
+
+COMPARISON_METADATA_TTL = 86400  # 24 hours
 
 
 def store_comparison_metadata(id: uuid.UUID, is_streaming: bool) -> None:
-    expire_time = 86400  # 24 hours
-
+    # The whole JSON is rewritten, so starting a stream also clears a
+    # stop_requested left over from the previous turn.
     try:
         client = get_redis_client()
         client.setex(
             REDIS_COMPARISON_KEY.format(id=id),
-            expire_time,
+            COMPARISON_METADATA_TTL,
             ComparisonMetadata(id=id, is_streaming=is_streaming).model_dump_json(),
         )
         logger.info(f"[SESSION] Stored comparison '{id}' metadata.")
     except Exception as e:
         logger.error(f"[SESSION] Error storing comparison '{id}' metadata: {e}")
         raise
+
+
+def request_comparison_stop(id: uuid.UUID) -> bool:
+    """
+    Ask the stream of a comparison to end. Returns False when nothing is
+    streaming, so a stale click after the answers landed changes nothing.
+    """
+    try:
+        metadata = retreive_comparison_metadata(id)
+    except ValueError:
+        return False
+    if not metadata.is_streaming:
+        return False
+
+    metadata.stop_requested = True
+    client = get_redis_client()
+    client.setex(
+        REDIS_COMPARISON_KEY.format(id=id),
+        COMPARISON_METADATA_TTL,
+        metadata.model_dump_json(),
+    )
+    logger.info(f"[SESSION] Stop requested for comparison '{id}'.")
+    return True
+
+
+def is_stop_requested(id: uuid.UUID) -> bool:
+    """Polled by the streaming loop. A Redis error reads as 'keep going'."""
+    try:
+        client = get_redis_client()
+        data = client.get(REDIS_COMPARISON_KEY.format(id=id))
+        assert not isinstance(data, Awaitable)
+        if not data:
+            return False
+        return ComparisonMetadata.model_validate_json(data).stop_requested
+    except Exception as e:
+        logger.error(f"[SESSION] Error reading stop flag for '{id}': {e}")
+        return False
 
 
 def retreive_comparison_metadata(id: uuid.UUID) -> ComparisonMetadata:
