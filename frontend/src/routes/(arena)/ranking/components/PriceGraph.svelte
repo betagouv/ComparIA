@@ -76,12 +76,15 @@
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
   const dotRadius = 11
 
+  // A search that matches nothing keeps the axes of the whole set rather
+  // than feeding NaN to the scales and leaving a blank chart.
+  const domainModels = $derived(filteredModels.length > 0 ? filteredModels : models)
   const minMaxX = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (llm) => llm.x) as [number, number]
+    const [min = 1, max = 10] = extent(domainModels, (llm) => llm.x)
     return [min * 0.7, max * 1.5] as const
   })
   const minMaxY = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
+    const [min = 1000, max = 1200] = extent(domainModels, (llm) => llm.y)
     return [min - 5, max + 35] as const
   })
   // Price runs right to left: the dearest models sit on the left, the
