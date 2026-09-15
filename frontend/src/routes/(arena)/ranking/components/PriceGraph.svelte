@@ -2,7 +2,7 @@
   import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle } from '$components/dsfr'
   import GraphDot from './GraphDot.svelte'
-  import { convertFromUsd, formatCurrencyFromUsd } from '$lib/currency'
+  import { convertFromUsd } from '$lib/currency'
   import type { APILLMData } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -95,13 +95,18 @@
   const xTicks = $derived(logTicks(xScale))
   const yTicks = $derived(yScale.ticks(9))
 
-  const tickFormat = new Intl.NumberFormat(locale, {
+  // Same symbol on the axis and in the tooltip; only the precision differs.
+  const currencyFormat = {
     style: 'currency',
     currency: commons.currency.code,
-    currencyDisplay: 'narrowSymbol',
+    currencyDisplay: 'narrowSymbol'
+  } as const
+  const tickFormat = new Intl.NumberFormat(locale, {
+    ...currencyFormat,
     maximumSignificantDigits: 2
   })
-  const price = (usd: number) => formatCurrencyFromUsd(usd, commons.currency, locale)
+  const priceFormat = new Intl.NumberFormat(locale, currencyFormat)
+  const price = (usd: number) => priceFormat.format(convertFromUsd(usd, commons.currency))
 
   // Flat runs to both edges: nothing cheaper beats the cheapest frontier
   // model, nothing pricier beats the best one.
