@@ -60,6 +60,8 @@ class AuthConfig(BaseModel):
     homepage_url: str | None
     platform_url: str
     has_custom_logo: bool
+    # Goes in the logo URL, so the browser can keep the file for a year.
+    logo_version: str | None
     enabled_locales: list[str]
     default_locale: str
 
@@ -166,6 +168,7 @@ async def get_config() -> AuthConfig:
         homepage_url=app_settings.homepage_url,
         platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
+        logo_version=app_settings.logo_version,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
     )

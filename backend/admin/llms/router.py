@@ -55,6 +55,7 @@ def _to_lab_public(lab: LLMLab) -> LLMLabPublic:
     return LLMLabPublic(
         **lab.model_dump(exclude={"logo_data", "logo_content_type"}),
         has_custom_logo=lab.has_custom_logo,
+        logo_version=lab.logo_version,
     )
 
 

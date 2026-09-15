@@ -386,6 +386,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
         has_custom_logo=row.logo is not None,
+        logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
         default_locale=row.default_locale,
         updated_at=row.updated_at.isoformat(),
