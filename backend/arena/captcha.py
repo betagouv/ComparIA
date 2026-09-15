@@ -68,7 +68,10 @@ def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
             logger.warning("Altcha replay detected")
             return False, "Challenge already used"
     except Exception as e:
-        # If Redis is down, allow the request (fail open) but log it
+        # Fail closed. Redis is the only thing standing between one solved
+        # challenge and unlimited replays of it, so with Redis down the whole
+        # captcha is worth nothing.
         logger.error(f"Altcha replay check failed (Redis error): {e}")
+        return False, "Replay check unavailable"
 
     return True, None

@@ -13,6 +13,8 @@
   interface SelectorProps {
     id: string
     kind?: Kind
+    /** Names the whole set of choices, which screen readers otherwise announce one by one. */
+    label?: string
     choices: Option[]
     value: Value
     disabled?: boolean
@@ -33,6 +35,7 @@
   let {
     id,
     kind = 'checkbox' as Kind,
+    label,
     value = $bindable(),
     choices,
     disabled = false,
@@ -91,7 +94,12 @@
   {/if}
 {/snippet}
 
-<div {id} class={['cl-selector', containerClass]}>
+<div
+  {id}
+  role={kind === 'radio' ? 'radiogroup' : 'group'}
+  aria-label={label}
+  class={['cl-selector', containerClass]}
+>
   {#each choices as choice (choice.value)}
     {#if option}
       {@render option(

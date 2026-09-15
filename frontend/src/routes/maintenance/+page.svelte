@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import Footer from '$components/Footer.svelte'
-  import { Header } from '$components/header'
+  import { resolve } from '$app/paths'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import ovoidPictoSrc from '@gouvfr/dsfr/dist/artwork/background/ovoid.svg'
@@ -15,7 +14,7 @@
       try {
         const { enabled } = await api.request<{ enabled: boolean }>('/maintenance/status')
         if (!enabled) {
-          goto('/')
+          goto(resolve('/'))
         }
       } catch (error) {
         console.error(`Maintenance status check failed: ${(error as Error).message}`)
@@ -26,9 +25,7 @@
   })
 </script>
 
-<Header />
-
-<main>
+<main class="flex min-h-screen items-center justify-center">
   <div class="fr-container">
     <div
       class="fr-my-7w fr-mt-md-12w fr-mb-md-10w fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-grid-row--center"
@@ -58,5 +55,3 @@
     </div>
   </div>
 </main>
-
-<Footer />

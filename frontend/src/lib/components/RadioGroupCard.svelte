@@ -7,6 +7,8 @@
 
   type RadioGroupCardProps = {
     id: string
+    /** Names the whole set of cards, which screen readers otherwise announce one by one. */
+    label?: string
     options: Option[]
     value?: Value
     disabled?: boolean
@@ -15,6 +17,7 @@
   } & SvelteHTMLElements['div']
   let {
     id,
+    label,
     value = $bindable(),
     options,
     disabled = false,
@@ -32,7 +35,13 @@
   }
 </script>
 
-<div {...props} {id} class={['gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-4 grid', props.class]}>
+<div
+  {...props}
+  {id}
+  role="radiogroup"
+  aria-label={label}
+  class={['gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-4 grid', props.class]}
+>
   {#each options as option (option.value)}
     <input
       id="{id}-{option.value}"

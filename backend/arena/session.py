@@ -12,16 +12,15 @@ from typing import Awaitable
 from pydantic import BaseModel, ValidationError
 
 from backend.config import (
+    RATELIMIT_ALL_MODELS_INPUT,
+    RATELIMIT_ALL_MODELS_INPUT_PER_IP,
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
-    RATELIMIT_CUSTOM_SELECTION_PER_DAY,
-    RATELIMIT_CUSTOM_SELECTION_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
+    RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
 )
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
-    REDIS_CUSTOM_DAILY_KEY,
-    REDIS_CUSTOM_HOURLY_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
@@ -92,85 +91,60 @@ def delete_session(id: uuid.UUID) -> bool:
         return False
 
 
-def increment_input_chars(ip: str, input_chars: int) -> None:
-    """
-    Track input character count per IP address for rate limiting.
+def _budget_key(pool: str, identity: str) -> str:
+    """One Redis counter per (pool, identity). The pool goes in the key because
+    the four budgets share the one key template."""
+    return REDIS_USER_CHAR_COUNT.format(key=f"{pool}:{identity}")
 
-    Increments a counter in Redis for the given IP and sets expiry to 2 hours.
-    This prevents users from overloading expensive model APIs.
+
+def increment_input_chars(key: str, ip: str, input_chars: int, pricey: bool) -> None:
+    """
+    Track input character count for rate limiting.
+
+    Every message counts against the whole-pool budgets; only messages sent to
+    an expensive model also count against the pricey ones. Each budget is
+    counted twice, once per anonymous session and once per IP.
 
     Args:
-        ip: User's IP address
-        input_chars: Number of input characters to add to counter
+        key: anonymous session hash
+        ip: caller IP
+        input_chars: Number of input characters to add to the counters
+        pricey: whether an expensive model answered this message
+    """
+    client = get_redis_client()
+    pools = ["all", "all_ip"] + (["pricey", "pricey_ip"] if pricey else [])
+    for pool in pools:
+        redis_key = _budget_key(pool, ip if pool.endswith("_ip") else key)
+        client.incrby(redis_key, input_chars)
+        # Set counter to expire in 2 hours (3600 * 2 seconds)
+        client.expire(redis_key, 3600 * 2)
+
+
+def is_ratelimited(key: str, ip: str) -> bool:
+    """
+    Check whether this session or its IP has spent any of its four budgets.
+
+    Args:
+        key: anonymous session hash
+        ip: caller IP
 
     Returns:
-        bool: False if Redis not configured, True otherwise
+        bool: True if any budget is exhausted
     """
     client = get_redis_client()
-    # Increment counter under key "ip:{ip}"
-    client.incrby(REDIS_USER_CHAR_COUNT.format(ip=ip), input_chars)
-    # Set counter to expire in 2 hours (3600 * 2 seconds)
-    client.expire(REDIS_USER_CHAR_COUNT.format(ip=ip), 3600 * 2)
-
-
-def increment_custom_selections(ip: str) -> None:
-    """
-    Track custom model selection count per IP address for rate limiting.
-
-    Increments two Redis counters: hourly (1h expiry) and daily (24h expiry).
-
-    Args:
-        ip: User's IP address
-    """
-    client = get_redis_client()
-    client.incr(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip))
-    client.expire(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip), 3600)
-    client.incr(REDIS_CUSTOM_DAILY_KEY.format(ip=ip))
-    client.expire(REDIS_CUSTOM_DAILY_KEY.format(ip=ip), 86400)
-
-
-def is_custom_selection_ratelimited(ip: str) -> bool:
-    """
-    Check if an IP address has exceeded rate limit for custom model selections.
-
-    Checks both hourly and daily limits.
-
-    Args:
-        ip: User's IP address
-
-    Returns:
-        bool: True if either hourly or daily limit is exceeded
-    """
-    client = get_redis_client()
-    hourly = client.get(REDIS_CUSTOM_HOURLY_KEY.format(ip=ip))
-    assert not isinstance(hourly, Awaitable)
-    if hourly and int(hourly) >= RATELIMIT_CUSTOM_SELECTION_PER_HOUR:
-        return True
-    daily = client.get(REDIS_CUSTOM_DAILY_KEY.format(ip=ip))
-    assert not isinstance(daily, Awaitable)
-    if daily and int(daily) >= RATELIMIT_CUSTOM_SELECTION_PER_DAY:
-        return True
+    budgets = (
+        # Rate limit is 2x the configured limit for pricey models
+        ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
+        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
+        ("all", key, RATELIMIT_ALL_MODELS_INPUT),
+        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+    )
+    for pool, identity, limit in budgets:
+        counter = client.get(_budget_key(pool, identity))
+        assert not isinstance(counter, Awaitable)
+        if counter and int(counter) > limit:
+            return True
     return False
-
-
-def is_ratelimited(ip: str) -> bool:
-    """
-    Check if an IP address has exceeded rate limit for expensive models.
-
-    Args:
-        ip: User's IP address
-
-    Returns:
-        bool: True if IP has exceeded limit (2x RATELIMIT_PRICEY_MODELS_INPUT), False otherwise
-    """
-    client = get_redis_client()
-    counter = client.get(REDIS_USER_CHAR_COUNT.format(ip=ip))
-    assert not isinstance(counter, Awaitable)
-    # Rate limit is 2x the configured limit for pricey models
-    if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
-        return True
-    else:
-        return False
 
 
 def increment_blocked_prompts(ip: str) -> None:

@@ -1,29 +1,41 @@
-<script
-  lang="ts"
-  generics="
-    Col extends { id: string, label: string, orderable?: boolean, tooltip?: string, colHeaderClass?: ClassValue }, 
-    Row extends { id: string }
-  "
->
+<script lang="ts" generics="Col extends TableCol, Row extends { id: string }">
   import { Button, Pagination, Search, Select, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
+  import type { OrderingMethod, TableCol } from '$lib/utils/data'
+  import { browser } from '$app/environment'
   import { onMount, type Snippet } from 'svelte'
-  import type { ClassValue, HTMLTableAttributes } from 'svelte/elements'
+  import { flip } from 'svelte/animate'
+  import type { HTMLAttributes, HTMLTableAttributes } from 'svelte/elements'
+
+  /** Column labels may carry markup; an accessible name has to be plain text. */
+  const stripTags = (label: string) =>
+    label
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
 
   type TableProps = {
     caption: string
     cols: Col[]
     rows: Row[]
-    pagination?: boolean
+    itemCount?: number
+    maxRowsPerPage?: number
+    currentPage?: number
     orderingCol?: Col['id']
-    orderingMethod?: 'ascending' | 'descending'
+    orderingMethod?: OrderingMethod
     search?: string
     searchLabel?: string
     hideCaption?: boolean
     cell: Snippet<[Row, Col]>
     headerLeft?: Snippet
     headerRight?: Snippet
+    // Attributes to put on a row's <tr>, for tables where the row itself is
+    // interactive (drag and drop, for one).
+    rowAttributes?: (row: Row, index: number) => HTMLAttributes<HTMLTableRowElement>
+    // Slide rows to their new place instead of swapping them outright. Only
+    // worth it where the order is the point, as in a reorderable list.
+    animateRows?: boolean
   } & HTMLTableAttributes
 
   let {
@@ -31,7 +43,9 @@
     caption,
     cols,
     rows,
-    pagination = false,
+    itemCount,
+    maxRowsPerPage = $bindable(0),
+    currentPage = $bindable(0),
     orderingCol = $bindable(),
     orderingMethod = $bindable(),
     search = $bindable(),
@@ -40,9 +54,14 @@
     cell,
     headerLeft,
     headerRight,
+    rowAttributes,
+    animateRows = false,
     class: classes,
     ...props
   }: TableProps = $props()
+
+  const reduceMotion = browser && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const flipDuration = $derived(animateRows && !reduceMotion ? 200 : 0)
 
   function onOrderingColClick(col: Col) {
     if (orderingCol === col.id) {
@@ -54,14 +73,13 @@
       orderingMethod = 'descending'
     }
     // Also return to page 1
-    page = 0
+    currentPage = 0
   }
 
-  let page = $state(0)
-  let maxRows = $state(10)
-
   const displayedRows = $derived(
-    pagination ? rows.slice(page * maxRows, page * maxRows + maxRows) : rows
+    !itemCount && maxRowsPerPage
+      ? rows.slice(currentPage * maxRowsPerPage, currentPage * maxRowsPerPage + maxRowsPerPage)
+      : rows
   )
   const maxRowsOptions = [10, 25, 50].map((value) => ({
     value,
@@ -104,10 +122,19 @@
   onMount(() => {
     updateGradientDisplay()
     onscroll()
+
+    // The window is not what scrolls: the app puts the page inside a
+    // `max-h-screen overflow-y-auto` main element. Listening to the window
+    // alone left the offset frozen at whatever it was when the last window
+    // scroll happened, which parks the header in the middle of the table on
+    // top of a row. Capture phase catches the scroll from whichever ancestor
+    // actually moves.
+    document.addEventListener('scroll', onscroll, true)
+    return () => document.removeEventListener('scroll', onscroll, true)
   })
 </script>
 
-<svelte:window onresize={() => updateGradientDisplay()} {onscroll} />
+<svelte:window onresize={() => updateGradientDisplay()} />
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
   <div class="fr-table__header mb-4 gap-5 md:flex-row md:flex-wrap flex flex-col">
@@ -120,10 +147,10 @@
 
       {#if search !== undefined}
         <Search
-          id="table-search"
+          id="{id}-table-search"
           bind:value={search}
           label={searchLabel}
-          class="md:w-auto ms-auto w-full"
+          class="md:w-auto mb-0! ms-auto w-full"
         />
       {/if}
 
@@ -153,8 +180,10 @@
 
   <div class="fr-table__wrapper relative">
     <div
-      id="table-gradient"
-      class={['inset-0 md:start-[95%] absolute start-[80%] z-3', { hidden: !scrollable.right }]}
+      class={[
+        'table-gradient inset-0 md:start-[95%] absolute start-[80%] z-3',
+        { hidden: !scrollable.right }
+      ]}
     ></div>
 
     <div
@@ -169,7 +198,17 @@
           <thead bind:this={stickyElem} class="relative z-2">
             <tr>
               {#each cols as col (col.id)}
-                <th class={col.colHeaderClass}>
+                <!-- aria-sort belongs on the header cell: on the button it is
+                     ignored, and the sort state is never announced. -->
+                <th
+                  scope="col"
+                  aria-sort={col.orderable
+                    ? col.id === orderingCol
+                      ? orderingMethod
+                      : 'none'
+                    : undefined}
+                  class={col.colHeaderClass}
+                >
                   <div class="text-xs font-medium text-dark-grey! flex items-center">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
@@ -177,14 +216,13 @@
                     {/if}
                     {#if col.orderable}
                       <Button
-                        text={m['components.table.triage']()}
+                        text={m['components.table.triageCol']({ col: stripTags(col.label) })}
                         icon={col.id === orderingCol && orderingMethod === 'ascending'
                           ? 'sort-asc'
                           : 'sort-desc'}
                         size="xs"
                         variant="tertiary-no-outline"
                         iconOnly
-                        aria-sort={col.id === orderingCol ? orderingMethod : undefined}
                         class={['ms-1!', { 'text-dark-grey!': orderingCol !== col.id }]}
                         onclick={() => onOrderingColClick(col)}
                       />
@@ -197,7 +235,12 @@
 
           <tbody>
             {#each displayedRows as row, i (row.id)}
-              <tr id={row.id} data-row-key={i}>
+              <tr
+                id="{id}-{row.id}"
+                data-row-key={i}
+                {...rowAttributes?.(row, i)}
+                animate:flip={{ duration: flipDuration }}
+              >
                 {#each cols as col (`${col.id}-${row.id}`)}
                   <td>{@render cell(row, col)}</td>
                 {/each}
@@ -209,12 +252,12 @@
     </div>
   </div>
 
-  {#if pagination}
+  {#if maxRowsPerPage && rows.length}
     <div class="fr-table__footer">
       <div class="fr-table__footer--start">
         <Select
-          bind:selected={maxRows}
-          id="max-row-select"
+          bind:selected={maxRowsPerPage}
+          id="{id}-max-row-select"
           options={maxRowsOptions}
           label={m['components.table.linePerPage']()}
           hideLabel
@@ -222,7 +265,11 @@
       </div>
 
       <div class="fr-table__footer--middle">
-        <Pagination itemCount={rows.length} bind:page maxItemPerPage={maxRows} />
+        <Pagination
+          itemCount={itemCount ?? rows.length}
+          bind:page={currentPage}
+          maxItemPerPage={maxRowsPerPage}
+        />
       </div>
     </div>
   {/if}
@@ -249,7 +296,7 @@
     --border-plain-grey: none;
   }
 
-  #table-gradient {
+  .table-gradient {
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0%,

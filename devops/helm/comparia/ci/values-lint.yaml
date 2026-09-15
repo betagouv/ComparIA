@@ -1,0 +1,8 @@
+## Dummy values satisfying every `required` check, used by `make helm-lint`
+## and as the base values for the helm-unittest suite. Not meant to be used
+## for a real install.
+secrets:
+  dbUri: postgresql://comparia:changeme@postgres:5432/comparia
+  redisHost: redis
+  altchaHmacKey: 0000000000000000000000000000000000000000000000000000000000000000
+  openrouterApiKey: dummy-openrouter-key
