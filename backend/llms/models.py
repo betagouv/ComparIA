@@ -65,7 +65,6 @@ def get_class(scale: dict[ClassT, int | float], v: int | float) -> ClassT:
             return k
     raise Exception("Error: Could not compute scale value")
 
-
 class LitellmEndpoint(BaseModel):
     """
     Litellm API endpoint configuration for LLM access.

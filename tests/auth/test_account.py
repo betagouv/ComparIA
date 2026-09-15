@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
+os.environ.setdefault("OIDC_ENCRYPTION_KEY", "aa" * 32)
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -150,6 +151,13 @@ def test_public_config_carries_the_deployment_url():
         return SimpleNamespace(
             auth_access_policy="anonymous_first",
             auth_domain_allowlist=[],
+            auth_methods=["email_code"],
+            oidc_issuer=None,
+            oidc_client_id=None,
+            oidc_client_secret_encrypted=None,
+            oidc_scopes=["openid", "email"],
+            oidc_button_label=None,
+            oidc_button_logo=None,
             platform_name="Arène de test",
             primary_color_light="#000091",
             primary_color_dark="#8585F6",

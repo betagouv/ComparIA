@@ -297,6 +297,36 @@ async def accept_invite(
     return session_token
 
 
+async def oidc_login(
+    email: str,
+    ip: str,
+    user_agent: str | None,
+    visitor_id: str | None,
+    anonymous_user_hash: str | None = None,
+) -> str:
+    """Resolve or create the `User` for an OIDC-authenticated email and mint a
+    session, exactly like `verify_login_code` and `accept_invite` do for their
+    flows. An email that already has an account — whether created by email
+    code, invite, or admin seeding — is reused rather than duplicated, so
+    an admin pre-seeded via `ADMIN_EMAILS` lands on their existing admin
+    account on first OIDC login with no manual step.
+    """
+    async with get_session() as session:
+        result = await session.exec(select(User).where(User.email == email))
+        user = result.first()
+        if not user:
+            user = User(email=email)
+            session.add(user)
+            await session.flush()
+
+        token = await _create_session(
+            session, user, ip, user_agent, visitor_id, anonymous_user_hash
+        )
+        await session.commit()
+
+    return token
+
+
 async def get_user_from_token(token: str) -> User | None:
     async with get_session() as session:
         result = await session.exec(

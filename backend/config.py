@@ -44,6 +44,12 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
+    # Display currency. Model prices are stored in euros and converted for the UI.
+    DISPLAY_CURRENCY: str = "EUR"
+    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
+    EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
+
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
@@ -61,6 +67,10 @@ class Settings(BaseSettings):
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
+    # Required when OIDC is configured. No auto-generated fallback: a missing key
+    # must fail at usage time, not silently produce an unreadable stored secret.
+    # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+    OIDC_ENCRYPTION_KEY: str | None = None
     AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = (
         "anonymous_first"
     )
