@@ -1,6 +1,6 @@
 import type { CurrencyInfo } from '$lib/generated/backend'
 
-function currencyFormatter(currency: CurrencyInfo, locale: string): Intl.NumberFormat {
+export function currencyFormatter(currency: CurrencyInfo, locale: string): Intl.NumberFormat {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency.code,
