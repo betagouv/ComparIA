@@ -332,7 +332,7 @@
         "votes": {
             "count": "{count} stemmer",
             "legend": "Forklaring",
-            "objective": "Mål: {count}",
+            "objective": "Mål: {count}k",
             "tooltip": "Diskuter, stem og hjelp oss med å nå dette målet!<br /><strong>Dine stemmer teller</strong>: de legges til compar:IA-datasettet. Datasettet er fritt tilgjengelig for å forbedre fremtidige modellers prestasjoner på underrepresenterte språk.<br />Denne digitale ressursen bidrar til større <strong>respekt for språklig og kulturelt mangfold i fremtidige språkmodeller.</strong>"
         }
     },

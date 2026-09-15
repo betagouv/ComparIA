@@ -1206,7 +1206,7 @@
         "votes": {
             "count": "{count} stemmer",
             "legend": "Tegnforklaring",
-            "objective": "Mål: {count}",
+            "objective": "Mål: {count}k",
             "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         }
     },
