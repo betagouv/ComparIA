@@ -86,6 +86,8 @@ from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
 
+logger = logging.getLogger("languia")
+
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
 )
