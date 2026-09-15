@@ -3,6 +3,7 @@ templates:
   - cronjob-ranking.yaml
   - cronjob-export-dataset.yaml
   - cronjob-analyze.yaml
+  - cronjob-purge-inactive.yaml
 values:
   - ../ci/values-lint.yaml
 tests:
@@ -61,6 +62,7 @@ tests:
     template: cronjob-analyze.yaml
     set:
       cronjobs.analyze.enabled: true
+      cronjobs.purgeInactive.enabled: true
     asserts:
       - hasDocuments:
           count: 1
@@ -70,7 +72,27 @@ tests:
           path: spec.jobTemplate.spec.template.spec.containers[0].command
           value: ["./comparia-cli", "db", "lint", "--fix", "--with-llm-analyze"]
 
-  - it: toggles each cronjob independently of the other two
+  - it: omits the purge-inactive CronJob by default
+    template: cronjob-purge-inactive.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the purge-inactive CronJob with the configured retention
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+      cronjobs.purgeInactive.months: 6
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: CronJob
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value: ["./comparia-cli", "db", "purge-inactive", "--months", "6", "--apply"]
+
+  - it: toggles each cronjob independently of the others
     template: cronjob-ranking.yaml
     set:
       cronjobs.ranking.enabled: true
@@ -78,6 +100,7 @@ tests:
       cronjobs.exportDataset.hfRepo: my-org/my-comparia-dataset
       cronjobs.exportDataset.hfToken: hf_dummy
       cronjobs.analyze.enabled: true
+      cronjobs.purgeInactive.enabled: true
     asserts:
       - hasDocuments:
           count: 1

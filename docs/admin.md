@@ -61,6 +61,14 @@ An optional domain allowlist restricts who can ask for a login code, which is ho
 
 `/admin/utilisateurs` is where you search accounts, change roles, invite people by email and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
+### Inactive accounts
+
+`comparia-cli db purge-inactive --months N` (or `make db-purge-inactive MONTHS=N`) removes accounts nobody has signed into for N months. The default is 12. It is a dry run until you pass `--apply` (`APPLY=1` with make): it lists who would get the warning, who would be erased, and which admins would have matched.
+
+An account is first warned by email, once, 30 days before the deadline or as soon as it is found past it. It is erased at the later of the deadline and 30 days after the warning, unless the person signs in again meanwhile, which resets the clock. Erasure goes through the same path as a deletion from the admin panel: sessions, login codes and invite links go, the email address is blanked, and the conversations stay in the research datasets with no link back to the person. Admins are never erased, only listed.
+
+The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: without it no warning goes out and nothing is erased.
+
 ## Publishing
 
 `/admin/publication` sets where the open datasets go, and how often.

@@ -82,6 +82,7 @@ async def _create_session(
     reattach their anonymous comparisons. Logging in is not an acceptance in
     itself. Does not commit; caller owns the transaction."""
     user.last_seen_at = datetime.now()
+    user.inactivity_warned_at = None
 
     token = secrets.token_urlsafe(32)
     auth_session = AuthSession(

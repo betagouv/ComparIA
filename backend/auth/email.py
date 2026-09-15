@@ -2,6 +2,7 @@ import asyncio
 import logging
 import re
 import smtplib
+from datetime import datetime
 from email.message import EmailMessage
 from html import escape
 
@@ -73,6 +74,103 @@ _INVITE_CONTENT = """\
 <p style="margin: 0; color: #666666; font-size: 14px;">Vous n’attendiez pas cette invitation&nbsp;? Vous pouvez ignorer ce message.</p>
 """
 
+_INACTIVITY_CONTENT = """\
+<div lang="{lang}">
+<h1 style="margin: 0 0 20px; font-size: 28px; line-height: 1.25;">{title}</h1>
+<p style="margin: 0 0 20px;">{greeting}</p>
+<p style="margin: 0 0 12px;">{unused_since}</p>
+<p style="margin: 0 0 12px;"><strong>{deleted_on}</strong></p>
+<p style="margin: 0;">{sign_in} <a href="{link}" style="color: {primary_color}; text-decoration: underline;">{link_text}</a></p>
+</div>
+"""
+
+# One entry per locale the warning can be written in. An instance whose
+# default locale is missing here gets the English one.
+_INACTIVITY_TEXTS = {
+    "fr": {
+        "months": (
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre",
+        ),
+        "date": lambda d, m, y: f"{'1er' if d == 1 else d} {m} {y}",
+        "subject": "Votre compte {platform_name} sera supprimé le {erasure}",
+        "preheader": "Connectez-vous avant le {erasure} pour conserver votre compte {platform_name}.",
+        "title": "Votre compte sera supprimé le {erasure}",
+        "greeting": "Bonjour,",
+        "unused_since": "Votre compte sur {platform_name} n’a pas été utilisé depuis le {last_seen}.",
+        "deleted_on": "Il sera supprimé le {erasure}.",
+        "sign_in": "Connectez-vous avant cette date pour le conserver\u00a0:",
+    },
+    "en": {
+        "months": (
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+        ),
+        "date": lambda d, m, y: f"{d} {m} {y}",
+        "subject": "Your {platform_name} account will be deleted on {erasure}",
+        "preheader": "Sign in before {erasure} to keep your {platform_name} account.",
+        "title": "Your account will be deleted on {erasure}",
+        "greeting": "Hello,",
+        "unused_since": "Your account on {platform_name} has not been used since {last_seen}.",
+        "deleted_on": "It will be deleted on {erasure}.",
+        "sign_in": "Sign in before then to keep it:",
+    },
+    "da": {
+        "months": (
+            "januar",
+            "februar",
+            "marts",
+            "april",
+            "maj",
+            "juni",
+            "juli",
+            "august",
+            "september",
+            "oktober",
+            "november",
+            "december",
+        ),
+        "date": lambda d, m, y: f"{d}. {m} {y}",
+        "subject": "Din {platform_name}-konto bliver slettet den {erasure}",
+        "preheader": "Log ind før den {erasure} for at beholde din {platform_name}-konto.",
+        "title": "Din konto bliver slettet den {erasure}",
+        "greeting": "Hej,",
+        "unused_since": "Din konto på {platform_name} har ikke været brugt siden den {last_seen}.",
+        "deleted_on": "Den bliver slettet den {erasure}.",
+        "sign_in": "Log ind inden da for at beholde den:",
+    },
+}
+
+
+def _inactivity_texts(lang: str) -> tuple[str, dict]:
+    if lang not in _INACTIVITY_TEXTS:
+        lang = "en"
+    return lang, _INACTIVITY_TEXTS[lang]
+
+
+def _format_date(value: datetime, texts: dict) -> str:
+    return texts["date"](value.day, texts["months"][value.month - 1], value.year)
+
 
 async def send_login_code(
     to_email: str,
@@ -119,6 +217,36 @@ async def send_invite_link(
         secondary_color=secondary_color,
     )
     await asyncio.to_thread(_send_message, to_email, message)
+
+
+async def send_inactivity_warning(
+    to_email: str,
+    last_seen_at: datetime,
+    erasure_at: datetime,
+    lang: str = "fr",
+    platform_name: str = _DEFAULT_PLATFORM_NAME,
+    primary_color: str = _DEFAULT_PRIMARY_COLOR,
+    secondary_color: str = _DEFAULT_SECONDARY_COLOR,
+) -> bool:
+    """Returns whether the warning went out, so the caller only records it then."""
+    if not settings.SMTP_HOST:
+        if settings.LANGUIA_DEBUG:
+            logger.info(
+                f"[AUTH] Inactivity warning for {to_email}: erasure on {erasure_at:%Y-%m-%d}"
+            )
+            return True
+        logger.error(f"[AUTH] SMTP is not configured, no warning sent to {to_email}")
+        return False
+    message = _build_inactivity_message(
+        last_seen_at,
+        erasure_at,
+        lang=lang,
+        platform_name=platform_name,
+        primary_color=primary_color,
+        secondary_color=secondary_color,
+    )
+    await asyncio.to_thread(_send_message, to_email, message)
+    return True
 
 
 def _build_login_message(
@@ -190,6 +318,56 @@ def _build_invite_message(
         "Vous n’attendiez pas cette invitation ? Ignorez ce message."
     )
     return _build_message(f"Vous êtes invité·e sur {platform_name}", text, html)
+
+
+def _build_inactivity_message(
+    last_seen_at: datetime,
+    erasure_at: datetime,
+    lang: str = "fr",
+    platform_name: str = _DEFAULT_PLATFORM_NAME,
+    primary_color: str = _DEFAULT_PRIMARY_COLOR,
+    secondary_color: str = _DEFAULT_SECONDARY_COLOR,
+) -> EmailMessage:
+    primary_color, secondary_color, canvas_color = _email_colors(
+        primary_color, secondary_color
+    )
+    platform_name = _safe_platform_name(platform_name)
+    safe_platform_name = escape(platform_name)
+    link = settings.COMPARIA_APP_URL
+    lang, texts = _inactivity_texts(lang)
+    dates = {
+        "last_seen": _format_date(last_seen_at, texts),
+        "erasure": _format_date(erasure_at, texts),
+    }
+
+    def phrase(key: str, name: str) -> str:
+        return texts[key].format(platform_name=name, **dates)
+
+    html = _EMAIL_SHELL.format(
+        title=phrase("subject", safe_platform_name),
+        preheader=phrase("preheader", safe_platform_name),
+        platform_name=safe_platform_name,
+        primary_color=primary_color,
+        secondary_color=secondary_color,
+        canvas_color=canvas_color,
+        content=_INACTIVITY_CONTENT.format(
+            lang=lang,
+            title=phrase("title", safe_platform_name),
+            greeting=texts["greeting"],
+            unused_since=phrase("unused_since", safe_platform_name),
+            deleted_on=phrase("deleted_on", safe_platform_name),
+            sign_in=phrase("sign_in", safe_platform_name),
+            primary_color=primary_color,
+            link=escape(link, quote=True),
+            link_text=escape(link),
+        ),
+    )
+    text = (
+        f"{phrase('unused_since', platform_name)} "
+        f"{phrase('deleted_on', platform_name)} "
+        f"{phrase('sign_in', platform_name)} {link}"
+    )
+    return _build_message(phrase("subject", platform_name), text, html)
 
 
 def _email_colors(primary_color: str, secondary_color: str) -> tuple[str, str, str]:
