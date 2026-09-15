@@ -627,6 +627,10 @@
             "signIn": "Sign in",
             "title": "Discussions"
         },
+        "login": {
+            "description": "Compare conversational AI models blind and help evaluate AI in Europe.",
+            "title": "Welcome to {platformName}"
+        },
         "modal": {
             "code": {
                 "changeEmail": "Change email address",
@@ -1867,6 +1871,7 @@
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
             "donnees-personnelles": "Privacy policy",
+            "login": "Sign in",
             "mentions-legales": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",

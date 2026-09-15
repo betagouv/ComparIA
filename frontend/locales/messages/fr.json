@@ -627,6 +627,10 @@
             "signIn": "Se connecter",
             "title": "Discussions"
         },
+        "login": {
+            "description": "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe.",
+            "title": "Bienvenue sur {platformName}"
+        },
         "modal": {
             "code": {
                 "changeEmail": "Modifier l’adresse email",
@@ -1867,6 +1871,7 @@
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
+            "login": "Connexion",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",

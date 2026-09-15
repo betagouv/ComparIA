@@ -627,6 +627,10 @@
             "signIn": "Log ind",
             "title": "Diskussioner"
         },
+        "login": {
+            "description": "Sammenlign samtale-AI-modeller blindt, og bidrag til evalueringen af AI i Europa.",
+            "title": "Velkommen til {platformName}"
+        },
         "modal": {
             "email": {
                 "emailLabel": "E-mail",
@@ -1867,6 +1871,7 @@
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
+            "login": "Log ind",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
