@@ -742,6 +742,8 @@
                     "invalid": "Code incorrect.",
                     "tooMany": "Trop de tentatives, réessayez dans quelques minutes.",
                     "expired": "Ce QR code a expiré, recommencez.",
+                    "sessionExpired": "Session expirée, reconnectez-vous.",
+                    "restart": "Recommencez depuis le début.",
                     "failedTitle": "La configuration n’a pas pu démarrer"
                 }
             }
