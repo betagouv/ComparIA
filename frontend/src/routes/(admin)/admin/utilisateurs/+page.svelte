@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { invalidate } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
+  import { page } from '$app/state'
   import { Badge, Button, Icon, Link, Table } from '$components/dsfr'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
   import InviteUserModal from '$components/InviteUserModal.svelte'
@@ -9,8 +10,9 @@
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { getLocale } from '$lib/i18n/runtime'
-  import type { OrderingMethod, TableCol } from '$lib/utils/data'
-  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
+  import type { TableCol } from '$lib/utils/data'
+  import { toRelativeTime } from '$lib/utils/data'
+  import { untrack } from 'svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -18,8 +20,54 @@
   const locale = getLocale()
   const auth = getAuthContext()
 
+  const baseRoute = '/admin/utilisateurs'
+
   const users = $derived(data.users.items)
   const total = $derived(data.users.total)
+
+  // Initialized from the SSR-loaded data, resynchronized below whenever
+  // SvelteKit refreshes the page data.
+  // svelte-ignore state_referenced_locally
+  let search = $state(data.search)
+  // svelte-ignore state_referenced_locally
+  let currentPage = $state(data.users.page - 1)
+  // svelte-ignore state_referenced_locally
+  let pageSize = $state(data.users.page_size)
+
+  $effect(() => {
+    search = data.search
+    currentPage = data.users.page - 1
+    pageSize = data.users.page_size
+  })
+
+  $effect(() => {
+    if (search === data.search) return
+
+    const timeout = setTimeout(() => updateQuery({ search, page: '1' }), 300)
+    return () => clearTimeout(timeout)
+  })
+
+  $effect(() => {
+    if (currentPage === data.users.page - 1) return
+    updateQuery({ page: String(currentPage + 1) })
+  })
+
+  $effect(() => {
+    if (pageSize === data.users.page_size) return
+    updateQuery({ page_size: pageSize, page: 1 })
+  })
+
+  // Rebuild the params from the current url on every change: a browser Back
+  // is then picked up, and no effect writes to state it also reads.
+  function updateQuery(updates: Record<string, string | number>) {
+    const params = untrack(() => new URLSearchParams(page.url.searchParams))
+    for (const [key, value] of Object.entries(updates)) {
+      if (value) params.set(key, value.toString())
+      else params.delete(key)
+    }
+
+    goto(resolve(`${baseRoute}?${params.toString()}`))
+  }
 
   function sourceBadgeVariant(source: string) {
     switch (source) {
@@ -68,41 +116,36 @@
     }
   }
 
+  // Not orderable: the server paginates newest first, so sorting here would
+  // only reorder the current page.
   const cols = [
-    { id: 'email', label: 'Email', orderable: true },
-    { id: 'source', label: 'Source', orderable: true },
-    { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
+    { id: 'email', label: 'Email' },
+    { id: 'role', label: 'Role' },
+    { id: 'source', label: 'Source' },
+    { id: 'created_at', label: 'Added', kind: 'date' },
     { id: 'actions', label: 'Actions' }
   ] satisfies TableCol[]
-  type ColKey = (typeof cols)[number]['id']
 
-  let orderingCol = $state<ColKey>('created_at')
-  let orderingMethod = $state<OrderingMethod>('descending')
-  let search = $state('')
-
-  const tableRows = $derived(
+  const rows = $derived(
     users.map((u) => ({
       ...u,
       id: u.id!,
       created_at: new Date(u.created_at),
-      search: toSearchString([u.email, u.source]),
       actions: undefined
     }))
-  )
-  const sortedRows = $derived(
-    sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search })
   )
 </script>
 
 <PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
   <Table
     bind:search
-    bind:orderingMethod
-    bind:orderingCol
+    bind:currentPage
+    bind:maxRowsPerPage={pageSize}
+    itemCount={total}
     caption="Users"
     hideCaption
     {cols}
-    rows={sortedRows}
+    {rows}
   >
     {#snippet headerRight()}
       <div class="gap-2 flex">
@@ -119,6 +162,8 @@
     {#snippet cell(row, col)}
       {#if col.id === 'email'}
         <span class="fr-text--sm">{row.email}</span>
+      {:else if col.id === 'role'}
+        <Badge size="sm" text={row.role} variant={row.role === 'admin' ? 'blue-ecume' : ''} />
       {:else if col.id === 'source'}
         <Badge size="sm" text={row.source} variant={sourceBadgeVariant(row.source)} />
       {:else if col.id === 'created_at'}
