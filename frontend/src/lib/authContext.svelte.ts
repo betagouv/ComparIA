@@ -13,6 +13,7 @@ export interface AuthConfig {
   platform_name: string
   platform_url: string
   has_custom_logo: boolean
+  logo_version: string | null
   primary_color_light: string
   primary_color_dark: string
   secondary_color_light: string

@@ -18,7 +18,6 @@
   let votesObjective = $state('')
   let platformName = $state('')
   let hasCustomLogo = $state(false)
-  let logoVersion = $state(0)
   let primaryColorLight = $state('')
   let primaryColorDark = $state('')
   let secondaryColorLight = $state('')
@@ -35,12 +34,12 @@
   })
   let errors = $state<Record<string, string>>({})
 
+  const auth = getAuthContext()
   const logoSrc = $derived(
     hasCustomLogo
-      ? api.getUrl('/auth/config/logo', { v: logoVersion.toString() })
+      ? api.getUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
       : '/orgs/comparia.png'
   )
-  const auth = getAuthContext()
   const votes = getVotesContext()
 
   async function load() {
@@ -168,10 +167,14 @@
     try {
       const formData = new FormData()
       formData.append('file', file)
-      await api.request('/admin/settings/logo', { method: 'PUT', body: formData, headers: {} })
+      const updated = await api.request<AppSettingsPublic>('/admin/settings/logo', {
+        method: 'PUT',
+        body: formData,
+        headers: {}
+      })
       hasCustomLogo = true
       auth.config.has_custom_logo = true
-      logoVersion++
+      auth.config.logo_version = updated.logo_version ?? null
       useToast(m['admin.settings.customization.logo.updated'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
@@ -187,6 +190,7 @@
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
       hasCustomLogo = false
       auth.config.has_custom_logo = false
+      auth.config.logo_version = null
       useToast(m['admin.settings.customization.logo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
