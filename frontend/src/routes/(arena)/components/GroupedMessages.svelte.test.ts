@@ -71,6 +71,21 @@ describe('GroupedMessages after a stop', () => {
     await waitFor(() => expect(document.activeElement).toBe(retry))
   })
 
+  it('offers Stop again on a retry after a stop', async () => {
+    const { container, rerender } = render(GroupedMessages, { ...props, turn: turn('generating') })
+
+    const stop = () => container.querySelector<HTMLButtonElement>('button[id^=stop-]')!
+    stop().click()
+    await tick()
+    expect(stop().getAttribute('aria-disabled')).toBe('true')
+    stop().click()
+    expect(props.onStop).toHaveBeenCalledOnce()
+
+    await rerender({ ...props, error: 'interrupted', turn: turn('error') })
+    await rerender({ ...props, turn: turn('generating') })
+    expect(stop().getAttribute('aria-disabled')).toBe('false')
+  })
+
   it('leaves focus alone for a stopped turn that was not stopped from here', async () => {
     const { container } = render(GroupedMessages, { ...props, turn: turn('interrupted') })
     await tick()

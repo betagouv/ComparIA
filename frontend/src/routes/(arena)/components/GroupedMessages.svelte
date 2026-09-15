@@ -13,7 +13,6 @@
     disabled,
     error,
     autoScroll,
-    stopping = false,
     onVote,
     onRetry,
     onStop,
@@ -23,7 +22,6 @@
     disabled: boolean
     error?: string
     autoScroll?: boolean
-    stopping?: boolean
     onVote: (data: AnyAPIVote) => Promise<void> | void
     onRetry: () => void
     onStop: () => Promise<void> | void
@@ -35,23 +33,33 @@
 
   let responses = $state<HTMLElement>()
 
+  // From the click on Stop until the turn stops running, one way or another.
+  // Held here, next to the button: the store behind the conversation view is
+  // not the one streaming the first turn, so it cannot tell when to reset.
+  let stopping = $state(false)
+
+  async function onStopClick() {
+    if (stopping) return
+    stopping = true
+    try {
+      await onStop()
+    } catch (err) {
+      // The stream is still running; let the user press again.
+      stopping = false
+      throw err
+    }
+  }
+
   // Stopping unmounts the Stop button, which held focus, so the next Tab
   // would restart from the top of the document. Once the 'interrupted' event
   // has landed, hand focus to what the stop revealed: the vote, or Retry when
   // the stop came before a first word and the turn shows as failed. Only
   // after a stop from here: a stopped turn loaded from history keeps focus
   // where it is.
-  let stopRequested = false
-  async function onStopClick() {
-    if (stopping) return
-    stopRequested = true
-    await onStop()
-  }
-
   $effect(() => {
     // Read the status first: it is what the effect has to wake up on.
-    if (running || !stopRequested) return
-    stopRequested = false
+    if (running || !stopping) return
+    stopping = false
     tick().then(() => {
       // VoteSelect renders one grid per breakpoint and hides the other, and
       // focus() on a display:none button is a no-op. jsdom has no layout and

@@ -121,7 +121,6 @@
         {turn}
         disabled={!answered || idx !== (comparator.comparison?.turns.length ?? 0) - 1}
         error={comparator.error}
-        stopping={comparator.stopping}
         onVote={comparator.vote}
         onRetry={comparator.retry}
         onStop={comparator.stop}

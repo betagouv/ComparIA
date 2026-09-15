@@ -239,8 +239,6 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const comparisons = getComparisonsContext()
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
-  // From the click on Stop until the stream ends, one way or another.
-  let stopping = $state(false)
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the
@@ -349,22 +347,17 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } finally {
       loading = false
-      stopping = false
     }
 
     return !warned && !comparison?.error && !promptError
   }
 
+  // Stateless on purpose: the first turn streams through the arena page's
+  // own instance of this store, so nothing set here would be seen by the
+  // one behind the conversation view. The button tracks its own click.
   async function stop() {
-    if (!comparisonId_ || stopping) return
-    stopping = true
-    try {
-      await api.request(`/arena/stop/${comparisonId_}`, { method: 'POST' })
-    } catch (err) {
-      // The stream is still running; let the user press again.
-      stopping = false
-      throw err
-    }
+    if (!comparisonId_) return
+    await api.request(`/arena/stop/${comparisonId_}`, { method: 'POST' })
   }
 
   return {
@@ -379,9 +372,6 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     get loading() {
       return loading
-    },
-    get stopping() {
-      return stopping
     },
     get error() {
       return errorMsg
