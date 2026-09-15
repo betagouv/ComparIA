@@ -113,20 +113,25 @@ export interface RevealData {
 
 // DATA
 
-export const modeInfos: ModeInfos[] = (
-  [
-    { value: 'random', icon: 'i-ri-dice-line' },
-    { value: 'custom', icon: 'i-ri-search-line' },
-    { value: 'small-models', icon: 'i-ri-leaf-line' },
-    { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
-  ] as const
-).map((item) => ({
-  ...item,
-  title: m[`modes.${item.value}.title`](),
-  label: m[`modes.${item.value}.label`](),
-  alt_label: m[`modes.${item.value}.altLabel`](),
-  description: m[`modes.${item.value}.description`]()
-}))
+const MODES = [
+  { value: 'random', icon: 'i-ri-dice-line' },
+  { value: 'custom', icon: 'i-ri-search-line' },
+  { value: 'small-models', icon: 'i-ri-leaf-line' },
+  { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
+] as const
+
+// Resolved on each call rather than at module load: the module is evaluated
+// once per server, before any request sets a locale, so a constant would carry
+// the base locale to every visitor.
+export function getModeInfos(): ModeInfos[] {
+  return MODES.map((item) => ({
+    ...item,
+    title: m[`modes.${item.value}.title`](),
+    label: m[`modes.${item.value}.label`](),
+    alt_label: m[`modes.${item.value}.altLabel`](),
+    description: m[`modes.${item.value}.description`]()
+  }))
+}
 
 // COMPARISON LOGIC
 

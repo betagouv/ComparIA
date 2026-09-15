@@ -5,7 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { BotModel, Commons, RankClass } from '$lib/models'
-  import { ENERGY_CLASS_COLORS, getModelCards, MODALITIES } from '$lib/models'
+  import { ENERGY_CLASS_COLORS, getModalities, getModelCards } from '$lib/models'
   import { formatRegion } from '$lib/regions'
   import { sanitize } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
@@ -26,6 +26,7 @@
     onClose?: () => void
   } = $props()
 
+  const modalities = getModalities()
   const badges = $derived.by(() => {
     if (!model) return []
     const { release, knowledge } = model.badges
@@ -216,7 +217,7 @@
                           </div>
                         {:else if card.id === 'modalities'}
                           <div class="grid grid-cols-2 gap-[1px] bg-[#E0E0E0]">
-                            {#each MODALITIES as mod (mod.id)}
+                            {#each modalities as mod (mod.id)}
                               {@const active = model.inputs.includes(mod.id)}
                               <div
                                 class="bg-white p-2 text-xs gap-1 flex flex-col items-center"

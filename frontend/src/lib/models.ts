@@ -28,17 +28,21 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
   E: '--orange-terre-battue-main-645',
   F: '--red-marianne-main-472'
 }
-export const MODALITIES = (
-  [
-    { id: 'text', icon: 'i-ri-file-text-line' },
-    { id: 'image', icon: 'i-ri-image-upload-line' },
-    { id: 'audio', icon: 'i-ri-volume-up-line' },
-    { id: 'video', icon: 'i-ri-video-line' }
-  ] as const
-).map((item) => ({
-  ...item,
-  title: m[`models.cards.modalities.types.${item.id}`]()
-}))
+const MODALITIES = [
+  { id: 'text', icon: 'i-ri-file-text-line' },
+  { id: 'image', icon: 'i-ri-image-upload-line' },
+  { id: 'audio', icon: 'i-ri-volume-up-line' },
+  { id: 'video', icon: 'i-ri-video-line' }
+] as const
+
+// See getModeInfos in chatService: a module-level constant would be translated
+// once, in the base locale.
+export function getModalities() {
+  return MODALITIES.map((item) => ({
+    ...item,
+    title: m[`models.cards.modalities.types.${item.id}`]()
+  }))
+}
 export const SOVEREIGNTY_FIELDS = [
   'reuse',
   'commercial_use',

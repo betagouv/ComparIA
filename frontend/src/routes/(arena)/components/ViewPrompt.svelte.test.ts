@@ -7,7 +7,7 @@ vi.mock('$lib/models', () => ({
 }))
 
 vi.mock('$lib/chatService.svelte', () => ({
-  modeInfos: [
+  getModeInfos: () => [
     {
       value: 'random',
       icon: 'i-ri-dice-line',
