@@ -240,6 +240,43 @@ describe('Settings page two-factor section', () => {
     expect(mocks.auth.user.totp_enabled).toBe(false)
   })
 
+  it('tells the admin to sign in again when the session ended mid-setup', async () => {
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup'
+        ? Promise.resolve(setup)
+        : Promise.reject(Object.assign(new Error('auth_required'), { status: 401 }))
+    )
+    const { container, getByRole } = render(Page)
+
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+    await waitFor(() => expect(modal.querySelector('#totp-confirm-code')).not.toBeNull())
+    await fireEvent.input(modal.querySelector('#totp-confirm-code')!, {
+      target: { value: '123456' }
+    })
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Activer')!
+    )
+
+    await waitFor(() => expect(modal.textContent).toContain('Session expirée, reconnectez-vous.'))
+    expect(modal.textContent).not.toContain('Code incorrect.')
+  })
+
+  it('asks to start again when the backend wants a code the page did not know about', async () => {
+    request.mockRejectedValue(
+      Object.assign(new Error('Error 400 [POST](/auth/totp/setup): totp_code_required'), {
+        status: 400
+      })
+    )
+    const { container, getByRole } = render(Page)
+
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+
+    await waitFor(() => expect(modal.textContent).toContain('Recommencez depuis le début.'))
+    expect(modal.textContent).not.toContain('Code incorrect.')
+  })
+
   it('asks an enrolled admin for a code from the current device first', async () => {
     mocks.auth.user = { email: 'admin@example.org', role: 'admin', totp_enabled: true }
     request.mockImplementation((path: string) =>

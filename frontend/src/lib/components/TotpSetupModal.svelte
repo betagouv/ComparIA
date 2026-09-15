@@ -79,9 +79,14 @@
   }
 
   function describe(err: unknown): string {
-    const status = (err as ApiError).status
+    const { status, message } = err as ApiError
     if (status === 429) return m['auth.settings.totp.modal.tooMany']()
     if (status === 409) return m['auth.settings.totp.modal.expired']()
+    if (status === 401 || status === 403) return m['auth.settings.totp.modal.sessionExpired']()
+    // An authenticator got enrolled elsewhere since this page loaded: the
+    // backend now wants a code from it before handing out a new secret.
+    if (status === 400 && message.includes('totp_code_required'))
+      return m['auth.settings.totp.modal.restart']()
     return m['auth.settings.totp.modal.invalid']()
   }
 
