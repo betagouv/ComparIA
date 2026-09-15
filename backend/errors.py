@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
@@ -77,3 +79,12 @@ class RoleRequiredError(HTTPException):
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN, detail=f"{role}_required"
         )
+
+
+class LogoRejectedError(HTTPException):
+    """The upload is not a logo we can store: wrong type, too big, or not an image."""
+
+    def __init__(
+        self, reason: Literal["logo_unsupported_type", "logo_too_large", "logo_invalid"]
+    ) -> None:
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=reason)
