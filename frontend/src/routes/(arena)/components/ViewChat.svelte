@@ -5,7 +5,7 @@
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, modeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { onDestroy } from 'svelte'
+  import { onDestroy, tick } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
 
   let {
@@ -40,6 +40,47 @@
   const canContinue = $derived(
     !comparator.loading && answered && !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
+
+  // Off the turn's status, not this instance's loading flag: the first turn
+  // streams through the arena page's own instance of the store.
+  const running = $derived(comparator.status === 'pending' || comparator.status === 'generating')
+
+  // From the click on Stop until the turn stops running, one way or another.
+  let stopping = $state(false)
+
+  async function onStop() {
+    if (stopping) return
+    stopping = true
+    try {
+      await comparator.stop()
+    } catch (err) {
+      // The stream is still running; let the user press again.
+      stopping = false
+      throw err
+    }
+  }
+
+  // The button turns back into Send and keeps focus, but what the stop
+  // revealed sits above it: hand focus to the vote, or to Retry when the stop
+  // came before a first word and the turn shows as failed. Only after a stop
+  // from here: a stopped turn loaded from history keeps focus where it is.
+  $effect(() => {
+    // Read the status first: it is what the effect has to wake up on.
+    if (running || !stopping) return
+    stopping = false
+    const turnId = comparator.comparison?.turns.at(-1)?.id
+    tick().then(() => {
+      // VoteSelect renders one grid per breakpoint and hides the other, and
+      // focus() on a display:none button is a no-op. jsdom has no layout and
+      // no checkVisibility, so there every button counts as visible.
+      const choices = document.querySelectorAll<HTMLElement>(`#vote-select-${turnId} button`)
+      const next =
+        [...choices].find((el) => el.checkVisibility?.() ?? true) ??
+        document.querySelector<HTMLElement>(`#retry-${turnId}, #chat-area [role="alert"] button`) ??
+        document.getElementById('chatbot-prompt')
+      next?.focus({ preventScroll: true })
+    })
+  })
 
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
@@ -123,7 +164,6 @@
         error={comparator.error}
         onVote={comparator.vote}
         onRetry={comparator.retry}
-        onStop={comparator.stop}
         autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
@@ -159,6 +199,9 @@
         hideLabel
         submitBtn
         submitDisabled={!canContinue || prompt === ''}
+        stoppable={running}
+        {stopping}
+        {onStop}
         size="md"
         rows={3}
         maxRows={4}
