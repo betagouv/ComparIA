@@ -10,7 +10,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
 from .publish import PublishFrequency
-from .utils import AutoDatetime
+from .utils import AutoDatetime, logo_version
 
 PRIMARY_COLOR_LIGHT_DEFAULT = "#6464F3"
 PRIMARY_COLOR_DARK_DEFAULT = "#9898F8"
@@ -170,6 +170,10 @@ class AppSettings(SQLModel, table=True):
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
+    @property
+    def logo_version(self) -> str | None:
+        return logo_version(self.logo)
+
 
 class AppSettingsPublic(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"]
@@ -187,6 +191,7 @@ class AppSettingsPublic(SQLModel):
     publish_hour: int
     publish_timezone: str
     has_custom_logo: bool
+    logo_version: str | None = None
     enabled_locales: list[str]
     default_locale: str
     updated_at: str

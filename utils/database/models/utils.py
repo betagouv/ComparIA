@@ -1,4 +1,5 @@
 import uuid
+import zlib
 from datetime import datetime, timezone
 from typing import Annotated, Literal, get_args
 
@@ -35,6 +36,19 @@ def escape_like(value: str) -> str:
     searches both need it and share nothing else.
     """
     return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def logo_version(data: bytes | None) -> str | None:
+    """A short tag that changes whenever the stored logo does.
+
+    It goes in the logo URL so the browser can keep the bytes for a year and
+    still fetch a new upload. Derived from the content rather than counted, so
+    there is no counter to forget to bump. Not a security hash: crc32 is enough
+    to tell two uploads apart.
+    """
+    if data is None:
+        return None
+    return f"{zlib.crc32(data):08x}"
 
 
 ModelId = Annotated[
