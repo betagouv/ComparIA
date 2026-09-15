@@ -149,6 +149,7 @@ def routed(**overrides):
             platform_name="Compar:IA",
             primary_color_light="#6464F3",
             secondary_color_light="#FF9575",
+            default_locale="fr",
         )
 
     with patched(

@@ -104,3 +104,15 @@ def test_platform_name_cannot_inject_email_headers_or_html():
     assert "\n" not in str(message["Subject"])
     assert "<script>" not in html
     assert "&lt;script&gt;" in html
+
+
+def test_messages_follow_the_requested_locale_and_fall_back_to_french():
+    danish = _build_login_message("123456", locale="da")
+    english = _build_invite_message("https://comparia.example/invite/t", locale="en")
+    unknown = _build_login_message("123456", locale="lt")
+
+    assert danish["Subject"] == "Din loginkode — Compar:IA"
+    assert '<html lang="da">' in _parts(danish)["text/html"]
+    assert english["Subject"] == "You are invited to Compar:IA"
+    assert "24&nbsp;hours" in _parts(english)["text/html"]
+    assert unknown["Subject"] == "Votre code de connexion — Compar:IA"

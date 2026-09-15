@@ -102,6 +102,8 @@ class UsersPage(BaseModel):
 
 class InviteBody(BaseModel):
     email: EmailStr
+    # The inviting admin's language: the best guess we have for the invitee's.
+    locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class AdminLegalDocument(BaseModel):
@@ -357,6 +359,7 @@ async def invite_user(
         platform_name=app_settings.platform_name,
         primary_color=app_settings.primary_color_light,
         secondary_color=app_settings.secondary_color_light,
+        locale=body.locale or app_settings.default_locale,
     )
 
 
