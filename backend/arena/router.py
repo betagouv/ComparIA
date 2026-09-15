@@ -56,6 +56,7 @@ from utils.database.models import (
     ComparisonPublic,
     ComparisonRead,
     TurnPublic,
+    TurnRead,
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
@@ -193,6 +194,36 @@ async def get_comparison(
 
 ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
+
+async def _stream_turn(
+    comparison: ComparisonRead,
+    turn: TurnRead,
+    anonymous_user_hash: str,
+    request: Request,
+    llms_data: LLMsData | None = None,
+) -> AsyncGenerator[str]:
+    """
+    Stream both model answers for a turn as formatted SSE events, then charge
+    the prompt to the rate limit and save the answers. Shared by the three
+    routes that run the models; each keeps its own preamble.
+    """
+    async for chunk in stream_comparison_messages(comparison, turn, request):
+        yield format_sse_event(chunk)
+
+    if comparison.error:
+        return
+
+    llms_data = llms_data or await get_llms_data()
+    increment_input_chars(
+        anonymous_user_hash,
+        get_ip(request),
+        len(turn.user_msg.content),
+        pricey=_is_pricey(comparison, llms_data),
+    )
+
+    await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+
+
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
 
@@ -318,20 +349,10 @@ async def add_first_text(
             yield format_sse_event(
                 {"type": "add", "turn": TurnPublic.model_validate(turn)}
             )
-
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
-
-            if not comparison.error:
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.prompt_value),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            async for event in _stream_turn(
+                comparison, turn, anonymous_user_hash, request, llms_data
+            ):
+                yield event
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -405,21 +426,10 @@ async def add_text(
             yield format_sse_event(
                 {"type": "add", "turn": TurnPublic.model_validate(turn)}
             )
-
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
-
-            if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.message),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            async for event in _stream_turn(
+                comparison, turn, anonymous_user_hash, request
+            ):
+                yield event
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -490,20 +500,10 @@ async def retry(
         )
 
         try:
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
-
-            if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(turn.user_msg.content),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            async for event in _stream_turn(
+                comparison, turn, anonymous_user_hash, request
+            ):
+                yield event
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
