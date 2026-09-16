@@ -175,7 +175,7 @@ def test_oidc_login_redirects_to_the_provider_authorization_endpoint():
     assert params["response_type"] == ["code"]
     assert params["client_id"] == ["client-123"]
     assert params["redirect_uri"] == [
-        f"{auth_router.settings.COMPARIA_APP_URL}/auth/oidc/callback"
+        f"{auth_router.settings.COMPARIA_APP_URL}/api/auth/oidc/callback"
     ]
     assert params["scope"] == ["openid email"]
     assert len(params["state"][0]) >= 32

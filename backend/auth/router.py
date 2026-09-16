@@ -683,9 +683,13 @@ def _login_error(reason: str) -> RedirectResponse:
     page is a dead end for a user who arrived mid-flow. The login page renders
     the `error` param. No session cookie is set on this path, so no partial
     auth state survives the failure.
+
+    Absolute, not path-relative: the callback is a backend route, and in dev
+    the backend and the frontend are two different origins, so a bare `/login`
+    would land on the backend.
     """
     return RedirectResponse(
-        url=f"/login?{urlencode({'error': reason})}",
+        url=f"{settings.COMPARIA_APP_URL}/login?{urlencode({'error': reason})}",
         status_code=status.HTTP_302_FOUND,
     )
 
@@ -781,7 +785,9 @@ async def oidc_callback(
         anonymous_user_hash=_anonymous_hash(request),
     )
 
-    redirect = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    redirect = RedirectResponse(
+        url=f"{settings.COMPARIA_APP_URL}/", status_code=status.HTTP_302_FOUND
+    )
     _set_session_cookie(redirect, token)
     return redirect
 

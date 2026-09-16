@@ -76,8 +76,13 @@ def issue_state_and_nonce() -> tuple[str, str]:
 
 
 def oidc_callback_url() -> str:
-    """Public URL of the callback endpoint, as advertised to the provider."""
-    return f"{settings.COMPARIA_APP_URL}/auth/oidc/callback"
+    """Public URL of the callback endpoint, as advertised to the provider.
+
+    Every backend route is mounted under `/api` (see `backend/main.py`), so the
+    path the provider redirects to carries that prefix — the bare `/auth/...`
+    path is a frontend route and 404s.
+    """
+    return f"{settings.COMPARIA_APP_URL}/api/auth/oidc/callback"
 
 
 def build_authorization_url(

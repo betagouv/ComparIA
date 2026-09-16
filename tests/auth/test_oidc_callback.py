@@ -143,6 +143,8 @@ def _login_redirect(response):
     from urllib.parse import parse_qs, urlsplit
 
     parsed = urlsplit(response.headers["location"])
+    # Absolute: the frontend is a separate origin from this backend route.
+    assert parsed.geturl().startswith(auth_router.settings.COMPARIA_APP_URL)
     assert parsed.path == "/login"
     reason = parse_qs(parsed.query).get("error", [None])[0]
     assert reason, f"expected an error param, got {response.headers['location']!r}"
@@ -160,7 +162,7 @@ def test_callback_signs_in_and_sets_the_session_cookie_on_success():
         )
 
     assert response.status_code == 302
-    assert response.headers["location"] == "/"
+    assert response.headers["location"] == f"{auth_router.settings.COMPARIA_APP_URL}/"
     set_cookie = response.headers["set-cookie"]
     assert "auth_session=session-token" in set_cookie
     assert "httponly" in set_cookie.lower()
@@ -474,7 +476,7 @@ def test_callback_reuses_an_existing_account_instead_of_duplicating_it():
             )
 
     assert response.status_code == 302
-    assert response.headers["location"] == "/"
+    assert response.headers["location"] == f"{auth_router.settings.COMPARIA_APP_URL}/"
     assert "auth_session=" in response.headers["set-cookie"]
     assert not any(isinstance(obj, User) for obj in session.added)
 
