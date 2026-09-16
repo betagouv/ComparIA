@@ -1669,6 +1669,10 @@
             "signedOut": "Sign in to see the ranking built from your votes.",
             "title": "My ranking",
             "tooltips": {
+                "battles": "Number of comparisons in which you voted on this model. \"I don't know\" does not count.",
+                "general_rank": "The model's position in the general ranking, built from every user's votes.",
+                "rank": "The model's position in your ranking, from highest to lowest score. Equal scores are separated by the general rank.",
+                "record": "The model's wins, losses and ties in your votes. \"Both are good\" counts as a tie, \"both are bad\" as a loss for each.",
                 "score": "A model you have compared only a few times is pulled toward your own average rather than showing an extreme score."
             },
             "totalModels": "Models ranked:",

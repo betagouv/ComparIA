@@ -1669,6 +1669,10 @@
             "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
             "title": "Min rangering",
             "tooltips": {
+                "battles": "Antal sammenligninger, hvor du har stemt på denne model. \"Ved ikke\" tæller ikke med.",
+                "general_rank": "Modellens placering på den generelle rangliste, som bygger på alle brugeres stemmer.",
+                "rank": "Modellens placering på din rangliste, fra højeste til laveste score. Ved lige score afgør den generelle rang.",
+                "record": "Modellens sejre, nederlag og uafgjorte i dine stemmer. \"Begge er gode\" tæller som uafgjort, \"begge er dårlige\" som et nederlag for hver.",
                 "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
             },
             "totalModels": "Rangerede modeller:",

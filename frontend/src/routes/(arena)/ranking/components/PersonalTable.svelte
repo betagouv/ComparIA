@@ -42,18 +42,42 @@
   const cols = $derived(
     (
       [
-        { id: 'rank', label: m['ranking.table.data.cols.rank_number']() },
+        {
+          id: 'rank',
+          label: m['ranking.table.data.cols.rank_number'](),
+          tooltip: m['ranking.personal.tooltips.rank']()
+        },
         { id: 'name', label: m['ranking.table.data.cols.name']() },
         {
           id: 'score',
           label: m['ranking.personal.cols.score'](),
           tooltip: m['ranking.personal.tooltips.score']()
         },
-        { id: 'battles', label: m['ranking.personal.cols.battles']() },
-        { id: 'record', label: m['ranking.personal.cols.record']() },
-        { id: 'general_rank', label: m['ranking.personal.cols.general_rank']() },
-        { id: 'size', label: m['ranking.table.data.cols.size']() },
-        { id: 'arch', label: m['ranking.table.data.cols.arch']() }
+        {
+          id: 'battles',
+          label: m['ranking.personal.cols.battles'](),
+          tooltip: m['ranking.personal.tooltips.battles']()
+        },
+        {
+          id: 'record',
+          label: m['ranking.personal.cols.record'](),
+          tooltip: m['ranking.personal.tooltips.record']()
+        },
+        {
+          id: 'general_rank',
+          label: m['ranking.personal.cols.general_rank'](),
+          tooltip: m['ranking.personal.tooltips.general_rank']()
+        },
+        {
+          id: 'size',
+          label: m['ranking.table.data.cols.size'](),
+          tooltip: m['ranking.table.data.tooltips.size']()
+        },
+        {
+          id: 'arch',
+          label: m['ranking.table.data.cols.arch'](),
+          tooltip: m['ranking.table.data.tooltips.arch']()
+        }
       ] as const
     ).map((col) => ({ ...col, orderable: true }))
   )

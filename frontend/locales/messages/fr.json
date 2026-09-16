@@ -1669,6 +1669,10 @@
             "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
             "title": "Mon classement",
             "tooltips": {
+                "battles": "Nombre de comparaisons où vous avez voté sur ce modèle. « Je ne sais pas » ne compte pas.",
+                "general_rank": "Position du modèle dans le classement général, établi à partir des votes de tous les utilisateurs.",
+                "rank": "Position du modèle dans votre classement, du score le plus élevé au plus bas. À score égal, le rang général départage.",
+                "record": "Victoires, défaites et égalités du modèle dans vos votes. « Les deux sont bonnes » compte comme une égalité, « les deux sont mauvaises » comme une défaite pour chacun.",
                 "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
             },
             "totalModels": "Modèles classés :",
