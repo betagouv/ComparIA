@@ -74,6 +74,10 @@ spec:
               value: "http://{{ include "comparia.fullname" . }}-backend:{{ .Values.service.backend.port }}"
             - name: PUBLIC_DISABLED_LOCALES
               value: {{ .Values.frontend.disabledLocales | quote }}
+            - name: MATOMO_URL
+              value: {{ .Values.config.matomoUrl | quote }}
+            - name: MATOMO_ID
+              value: {{ .Values.config.matomoId | quote }}
             {{- with .Values.frontend.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
