@@ -2,13 +2,14 @@
   import { goto } from '$app/navigation'
   import { match, resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Alert, Link } from '$components/dsfr'
+  import { Alert, Link, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import SignInForm from '$components/SignInForm.svelte'
   import { env } from '$env/dynamic/public'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import type { ExternalHref } from '$lib/routing'
 
   const auth = getAuthContext()
   const platformName = $derived(auth.config?.platform_name || m['header.title']())
@@ -38,6 +39,9 @@
   const oidcLogoUrl = $derived(
     auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
   )
+  // The login URL lives on the backend origin, which `api.getUrl` returns as a
+  // plain string; `ExternalHref` is the Link component's type for absolute URLs.
+  const oidcLoginUrl = $derived(api.getUrl('/auth/oidc/login') as ExternalHref)
 
   // The OIDC callback redirects back here with ?error=<reason> on any failure
   // (ticket 05). Render a clear message so the redirect isn't a silent no-op.
@@ -57,6 +61,17 @@
   const errorText = $derived(
     errorCode && oidcErrorMessages[errorCode] ? oidcErrorMessages[errorCode]() : null
   )
+
+  // One tab per enabled auth method, so each method gets its own panel instead
+  // of a button stacked above the email form. With a single method there is
+  // nothing to switch between, so no tabs render at all.
+  const bothMethods = $derived(oidcEnabled && emailEnabled)
+  const tabs = $derived.by(() => {
+    const result: { id: string; label: string }[] = []
+    if (emailEnabled) result.push({ id: 'email', label: m['auth.login.tabEmail']() })
+    if (oidcEnabled) result.push({ id: 'sso', label: m['auth.login.tabSso']() })
+    return result
+  })
 </script>
 
 <SeoHead title={m['seo.titles.login']()} />
@@ -85,13 +100,9 @@
         <Alert title={errorText} variant="error" class="mb-6!" />
       {/if}
 
-      {#if oidcEnabled}
-        <Link
-          href={api.getUrl('/auth/oidc/login')}
-          button
-          variant="secondary"
-          class="block w-full! justify-center"
-        >
+      {#snippet ssoPanel()}
+        <p class="text-xs! text-grey mb-4!">{m['auth.oidc.panelSubtitle']()}</p>
+        <Link href={oidcLoginUrl} button variant="secondary" class="block w-full! justify-center">
           <span class="gap-2 inline-flex items-center justify-center">
             {#if oidcLogoUrl}
               <img src={oidcLogoUrl} alt="" class="h-5" />
@@ -99,14 +110,22 @@
             {oidcLabel}
           </span>
         </Link>
-      {/if}
+      {/snippet}
 
-      {#if oidcEnabled && emailEnabled}
-        <p class="text-xs! text-grey my-4! mb-0! text-center">{m['auth.oidc.or']()}</p>
-      {/if}
-
-      {#if emailEnabled}
+      {#if bothMethods}
+        <Tabs {tabs} label={m['auth.login.tabsLabel']()}>
+          {#snippet tab(tab)}
+            {#if tab.id === 'email'}
+              <SignInForm {onSuccess} hideHeader class="my-0! mx-0!" />
+            {:else}
+              {@render ssoPanel()}
+            {/if}
+          {/snippet}
+        </Tabs>
+      {:else if emailEnabled}
         <SignInForm {onSuccess} class="my-0! mx-0!" />
+      {:else if oidcEnabled}
+        {@render ssoPanel()}
       {/if}
     </div>
   </main>

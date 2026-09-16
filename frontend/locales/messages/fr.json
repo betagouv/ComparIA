@@ -689,6 +689,9 @@
         },
         "login": {
             "description": "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe.",
+            "tabEmail": "Se connecter par email",
+            "tabSso": "Se connecter via SSO",
+            "tabsLabel": "Méthodes de connexion",
             "title": "Bienvenue sur {platformName}"
         },
         "modal": {
@@ -733,7 +736,7 @@
                 "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
                 "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez."
             },
-            "or": "ou"
+            "panelSubtitle": "Vous serez redirigé vers le fournisseur d’identité configuré pour cette instance."
         },
         "settings": {
             "account": {
