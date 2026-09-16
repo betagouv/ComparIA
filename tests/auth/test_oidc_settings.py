@@ -77,6 +77,17 @@ def _settings_row(**overrides):
     return SimpleNamespace(**fields)
 
 
+def _configured_oidc_row(**overrides):
+    """A settings row whose OIDC provider config is complete enough to enable."""
+    fields = dict(
+        oidc_issuer="https://issuer.example.test",
+        oidc_client_id="client-id",
+        oidc_client_secret_encrypted=b"encrypted",
+    )
+    fields.update(overrides)
+    return _settings_row(**fields)
+
+
 @contextlib.contextmanager
 def admin_client(row=None):
     if row is None:
@@ -211,13 +222,14 @@ def test_patch_empty_auth_methods_is_rejected():
 
 
 def test_patch_oidc_enabled_auth_method_is_accepted():
+    """Enabling oidc is allowed once the provider is fully configured."""
     patches = []
 
     async def update_app_settings(patch, updated_by):
         patches.append(patch)
         return _settings_row(auth_methods=patch.get("auth_methods", ["email_code"]))
 
-    row = _settings_row()
+    row = _configured_oidc_row()
 
     async def get_app_settings():
         return row
@@ -238,6 +250,22 @@ def test_patch_oidc_enabled_auth_method_is_accepted():
 
     assert response.status_code == 200
     assert patches[0]["auth_methods"] == ["email_code", "oidc"]
+
+
+def test_patch_oidc_enabled_without_provider_config_is_rejected():
+    """An incomplete provider config would leave the login page unusable."""
+    with admin_client() as client:
+        response = client.patch(
+            "/admin/settings", json={"auth_methods": ["email_code", "oidc"]}
+        )
+    assert response.status_code == 400
+
+
+def test_patch_oidc_enabled_with_partial_provider_config_is_rejected():
+    row = _configured_oidc_row(oidc_client_secret_encrypted=None)
+    with admin_client(row) as client:
+        response = client.patch("/admin/settings", json={"auth_methods": ["oidc"]})
+    assert response.status_code == 400
 
 
 if __name__ == "__main__":
