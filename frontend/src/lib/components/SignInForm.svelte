@@ -28,6 +28,7 @@
     onLegalNavigate,
     titleId,
     startAtTotp = false,
+    hideHeader = false,
     ...props
   }: {
     onSuccess?: () => void
@@ -36,6 +37,8 @@
     titleId?: string
     /** The email code was already checked elsewhere: only the authenticator is left. */
     startAtTotp?: boolean
+    /** Hides the internal title and subtitle when the host page already shows them. */
+    hideHeader?: boolean
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
@@ -220,10 +223,12 @@
 </script>
 
 <div bind:this={formContainer} {...props} class={['py-10 px-8', props.class]}>
-  <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
-  <p class="text-xs! mb-6! text-grey">
-    {m['auth.modal.email.subtitle']({ platformName })}
-  </p>
+  {#if !hideHeader}
+    <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+    <p class="text-xs! mb-6! text-grey">
+      {m['auth.modal.email.subtitle']({ platformName })}
+    </p>
+  {/if}
 
   <form onsubmit={onSubmit}>
     {#if emailAlreadyChecked}
