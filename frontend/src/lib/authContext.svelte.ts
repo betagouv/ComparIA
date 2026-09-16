@@ -1,3 +1,4 @@
+import { m } from '$lib/i18n/messages'
 import { createContext } from 'svelte'
 
 export interface AuthUser {
@@ -46,4 +47,12 @@ export function setAuthContext(data: AuthCtx) {
   const auth = $state(data)
   baseSetAuthContext(auth)
   return auth
+}
+
+/**
+ * The instance's name for copy that mentions it. Read at component init like
+ * any context; the message fallback covers a page rendered without one.
+ */
+export function getPlatformName(): string {
+  return tryGetAuthContext()?.config?.platform_name || m['header.title']()
 }

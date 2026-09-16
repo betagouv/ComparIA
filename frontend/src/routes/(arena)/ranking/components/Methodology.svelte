@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
   import {
     getModelsWithDataContext,
@@ -10,6 +11,8 @@
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
+
+  const platformName = getPlatformName()
 
   const { lastUpdateDate, models: data } = getModelsWithDataContext()
 
@@ -67,7 +70,7 @@
 
 <div id="ranking-methodo">
   <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.methodo.title']()}</h2>
-  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.methodo.desc.1']()}</p>
+  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.methodo.desc.1']({ platformName })}</p>
   <p class="text-dark-grey text-[14px]!">
     {@html sanitize(
       m['ranking.methodo.desc.2']({

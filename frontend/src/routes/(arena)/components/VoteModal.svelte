@@ -2,7 +2,10 @@
   import { Link, Modal } from '$components/dsfr'
   import Badge from '$components/dsfr/Badge.svelte'
   import Icon from '$components/dsfr/Icon.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
+
+  const platformName = getPlatformName()
 
   const voteReasons = (
     [
@@ -28,7 +31,7 @@
     <div class="md:flex-row gap-4 md:gap-15 flex flex-col">
       <div class="md:max-w-[350px]">
         <h2 id="fr-modal-title-modal-vote" class="text-2xl! mb-7!">{m['home.vote.title']()}</h2>
-        <p class="text-sm! lh-relaxed!">{m['vote.importantDesc']()}</p>
+        <p class="text-sm! lh-relaxed!">{m['vote.importantDesc']({ platformName })}</p>
       </div>
       <div class="gap-5 mb-10 md:mb-0 flex flex-col">
         {#each voteReasons as reason, index (index)}

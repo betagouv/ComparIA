@@ -104,7 +104,7 @@
                 "externalUrl": "Adresse til ekstern side",
                 "externalUrlError": "Indtast en gyldig HTTPS-adresse.",
                 "externalUrlHelp": "Adressen skal starte med https://.",
-                "internal": "Side hostet på denne platform",
+                "internal": "Side hostet på {platformName}",
                 "loading": "Indlæser informationssider...",
                 "locale": "Indholdets sprog",
                 "modeLabel": "Destination",
@@ -215,6 +215,10 @@
                 },
                 "decisionLegend": "Resultat",
                 "empty": "Skriv en besked, før du starter testen.",
+                "errors": {
+                    "call_failed": "Kaldet til Mistral mislykkedes: {error}",
+                    "no_api_key": "Der er ikke konfigureret nogen Mistral API-nøgle: kontrollen kan ikke køre."
+                },
                 "ignored": "Ikke overvåget",
                 "label": "Besked at tjekke",
                 "labelHint": "Skriv beskeden her, som en bruger ville sende den.",
@@ -616,6 +620,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Der er sendt for mange blokerede beskeder fra din forbindelse. Vent lidt, før du prøver igen.",
+            "captcha_failed": "Robotkontrollen mislykkedes. Prøv igen.",
+            "captcha_unavailable": "Robotkontrollen er ikke tilgængelig. Prøv igen.",
+            "comparison_streaming": "Vent, til modellerne er færdige med at svare.",
+            "max_turns_reached": "Denne samtale har nået sin grænse. Start en ny samtale.",
+            "prompt_check": {
+                "generic": "Din besked kunne ikke sendes, fordi den strider mod vores vilkår for brug. Omformuler den.",
+                "pii": "Din besked ser ud til at indeholde personoplysninger. Sendte beskeder kan blive offentliggjort i det åbne datasæt.",
+                "self_harm": "Hvis du har det svært eller har selvmordstanker, er du ikke alene. Livslinien kan kontaktes gratis og fortroligt på 70 201 201."
+            },
+            "rate_limited": "Du har sendt for mange forespørgsler til de dyreste modeller. Prøv igen om et par timer. Mindre modeller kan stadig bruges.",
+            "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",
+            "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog."
+        },
         "promptWarning": {
             "edit": "Rediger min besked",
             "proceed": "Send alligevel",
@@ -627,12 +646,16 @@
             "signIn": "Log ind",
             "title": "Diskussioner"
         },
+        "login": {
+            "description": "Sammenlign samtale-AI-modeller blindt, og bidrag til evalueringen af AI i Europa.",
+            "title": "Velkommen til {platformName}"
+        },
         "modal": {
             "email": {
                 "emailLabel": "E-mail",
                 "submit": "Modtag loginkode",
                 "submitting": "Sender...",
-                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på platformen.",
+                "subtitle": "Få adgang til din samtalehistorik og en højere brugskvote ved at logge ind. Det er valgfrit at oprette en konto på {platformName}.",
                 "title": "Log ind eller opret konto"
             },
             "code": {
@@ -799,7 +822,7 @@
     "general": {
         "a11y": {
             "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> {domain} </strong> .",
-            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
+            "disclaimer": "<strong>{platformName}</strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 af 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
             "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af {domain} for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
@@ -1196,7 +1219,7 @@
                 "title": "Afsløring"
             }
         },
-        "homeTitle": "Hjem - compar:IA",
+        "homeTitle": "Hjem - {platformName}",
         "legal": {
             "label": "Juridisk",
             "title": "Juridiske oplysninger"
@@ -1207,7 +1230,7 @@
             "count": "{count} stemmer",
             "legend": "Tegnforklaring",
             "objective": "Mål: {count}k",
-            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
+            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til {platformName}-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         }
     },
     "home": {
@@ -1235,10 +1258,10 @@
         "accepting": "Logger ind...",
         "backToLogin": "Log ind på en anden måde",
         "invalid": "Dette invitationslink er ikke længere gyldigt. Det er muligvis udløbet eller allerede brugt.",
-        "title": "Du er blevet inviteret til compar:IA"
+        "title": "Du er blevet inviteret til {platformName}"
     },
     "maintenance": {
-        "desc": "compar:IA er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
+        "desc": "{platformName} er i øjeblikket under vedligeholdelse. Vi er snart tilbage.",
         "title": "Siden er under vedligeholdelse"
     },
     "models": {
@@ -1248,7 +1271,7 @@
         "cards": {
             "arch": {
                 "title": "Arkitektur",
-                "tooltip": "Arkitekturen beskriver, hvordan modellen er opbygget for at generere sine svar, f.eks. som en tæt model eller en blanding af eksperter (MoE).",
+                "tooltip": "Arkitekturen beskriver, hvordan modellen er opbygget for at generere sine svar, f.eks. som en dense model eller en blanding af eksperter (MoE).",
                 "withName": "Arkitektur: {name}"
             },
             "context": {
@@ -1299,7 +1322,7 @@
                 "title": "Placering på ranglisten",
                 "title_short": "Rangliste",
                 "to": "#{min} til {max}",
-                "tooltip": "Modellens placering på compar:IA-ranglisten, som er baseret på brugernes stemmer."
+                "tooltip": "Modellens placering på {platformName}-ranglisten, som er baseret på brugernes stemmer."
             },
             "release": {
                 "title": "Udgivelse"
@@ -1447,7 +1470,7 @@
             "rankFromTo": "Placering {min} til {max}",
             "rankSingle": "Placering {min}",
             "title": "Præstationsniveau sammenlignet med de andre modeller",
-            "tooltip": "Præstationsniveauet beregnes ud fra stemmerne i compar:IA med en Bradley-Terry-score. Det afspejler brugernes observerede præferencer, ikke en absolut sandhed om modellen."
+            "tooltip": "Præstationsniveauet beregnes ud fra stemmerne i {platformName} med en Bradley-Terry-score. Det afspejler brugernes observerede præferencer, ikke en absolut sandhed om modellen."
         },
         "release": "Udgivet {date}",
         "size": {
@@ -1527,7 +1550,7 @@
                         "list": {
                             "1": "<strong>Jo højere oppe i grafen en model er placeret</strong>, desto højere er dens Bradley-Terry-tilfredshedsscore. <strong>Jo længere til venstre i grafen en model er placeret</strong>, desto mindre energi forbruger den i forhold til de andre modeller.",
                             "2": "<strong>Øverst til venstre</strong> finder man de modeller, som er populære og forbruger relativt lidt energi sammenlignet med de andre modeller.",
-                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
+                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (dense arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
                         },
                         "subTitle": "Eksempler på læsning af grafen",
                         "title": "Hvordan finder man den rette balance mellem opfattet performance og energieffektivitet?"
@@ -1541,7 +1564,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
+                            "1": "{platformName} bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
                             "2": "Ecologits anvender principperne for livscyklusanalyse (LCA) i overensstemmelse med ISO 14044-standarden ved i første omgang at fokusere på påvirkningen fra inferens (dvs. brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, produktion og transport).",
                             "3": "Modellens elektricitetsforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen og arkitekturen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, samt antallet af output-tokens. Beregningen af indikatoren for global opvarmningspotentiale udtrykt i CO2-ækvivalenter udledes af målingen af modellens elektricitetsforbrug.",
                             "4": "Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling."
@@ -1556,7 +1579,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
+                "1": "Siden 2024 har tusindvis af brugere brugt {platformName} til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
                 "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {notebookLinkProps}>metodologiske notesbog</a>."
             },
             "impacts": {
@@ -1633,6 +1656,7 @@
             "title": "Hvordan vælger man metoden til rangordning af modeller?"
         },
         "no_data": "Rangeringen er i øjeblikket utilgængelig eller under beregning.",
+        "notEnoughVotes": "Ingen model har endnu fået nok stemmer til at blive placeret. En model vises, så snart usikkerheden på dens score kommer under ±30 point: stem videre!",
         "personal": {
             "cols": {
                 "battles": "Sammenligninger",
@@ -1645,6 +1669,10 @@
             "signedOut": "Log ind for at se rangeringen bygget på dine stemmer.",
             "title": "Min rangering",
             "tooltips": {
+                "battles": "Antal sammenligninger, hvor du har stemt på denne model. \"Ved ikke\" tæller ikke med.",
+                "general_rank": "Modellens placering på den generelle rangliste, som bygger på alle brugeres stemmer.",
+                "rank": "Modellens placering på din rangliste, fra højeste til laveste score. Ved lige score afgør den generelle rang.",
+                "record": "Modellens sejre, nederlag og uafgjorte i dine stemmer. \"Begge er gode\" tæller som uafgjort, \"begge er dårlige\" som et nederlag for hver.",
                 "score": "En model, du kun har sammenlignet få gange, trækkes mod dit eget gennemsnit i stedet for at vise en ekstrem score."
             },
             "totalModels": "Rangerede modeller:",
@@ -1731,7 +1759,7 @@
     },
     "reveal": {
         "feedback": {
-            "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
+            "description": "Del {platformName} med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
             "example": "Eksempel på delte resultater",
             "moreOnVotes": "Lær mere om stemmer",
             "shareResult": "Del dit resultat"
@@ -1794,7 +1822,7 @@
             },
             "summary": {
                 "classification": {
-                    "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>tæt</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>dense</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Matformer</strong>-arkitektur: den tilpasser den andel af parametrene, der bruges i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Mixture of Experts</strong>-arkitektur: den aktiverer kun en del af sine parametre i hvert svar (omkring <strong>{activeParams} mia.</strong> ud af <strong>{params} mia.</strong>). Dens energiklasse er <strong>{energyClass}</strong>.",
                     "moeProprietary": "<strong>{model}</strong> er en proprietær model af størrelsen <strong>{size}</strong> med en arkitektur baseret på en <strong>blanding af eksperter</strong>: den aktiverer kun en del af sine parametre for hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
@@ -1867,6 +1895,8 @@
             "accessibilite": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
+            "invite": "Invitation",
+            "login": "Log ind",
             "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
@@ -1930,7 +1960,7 @@
             }
         },
         "continueReminder": "Stem på et svar, eller vælg \"Spring afstemningen over\", før du fortsætter.",
-        "importantDesc": "Din præference beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
+        "importantDesc": "Din præference beriger {platformName}-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk.",
         "title": "Hvilken AI-model foretrækker du?",
         "turn": {
             "choices": {

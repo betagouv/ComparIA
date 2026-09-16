@@ -111,8 +111,11 @@ export class UnauthorizedError extends Error {
   }
 }
 
-/** Any error thrown by the client, carrying the HTTP status it came from. */
-export type ApiError = Error & { status?: number }
+/**
+ * Any error thrown by the client, carrying the HTTP status it came from and
+ * the backend's `detail` as sent, so callers can branch on a known key.
+ */
+export type ApiError = Error & { status?: number; detail?: unknown }
 
 type SearchParams = URLSearchParams | Record<string, string>
 
@@ -145,21 +148,23 @@ export class FastAPIClient {
     const message = `Error ${response.status} [${method}](${path}): `
     const content = await response.text()
     let error: Error
+    let detail: string | PydanticValidationError[] | undefined
     try {
-      const detail = JSON.parse(content).detail
+      const parsed = JSON.parse(content).detail as string | PydanticValidationError[]
+      detail = parsed
       if (response.status === 401 || response.status === 403) {
-        error = new UnauthorizedError(detail)
+        error = new UnauthorizedError(parsed as string)
       } else if (response.status === 422) {
-        error = new ValidationError(detail)
+        error = new ValidationError(parsed)
       } else if (response.status === 429) {
-        error = new ValidationError(detail)
+        error = new ValidationError(parsed)
       } else {
-        error = new InternalError(message + detail)
+        error = new InternalError(message + parsed)
       }
     } catch {
       error = new Error(message + content)
     }
-    return Object.assign(error, { status: response.status })
+    return Object.assign(error, { status: response.status, detail })
   }
 
   /**
