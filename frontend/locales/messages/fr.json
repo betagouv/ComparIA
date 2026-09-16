@@ -1656,6 +1656,7 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
+        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que l’incertitude sur son score descend sous ±30 points : continuez à voter !",
         "personal": {
             "cols": {
                 "battles": "Comparaisons",

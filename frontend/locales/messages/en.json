@@ -1656,6 +1656,7 @@
             "title": "How to choose the model classification method?"
         },
         "no_data": "The ranking is currently unavailable or being calculated.",
+        "notEnoughVotes": "No model has enough votes to be ranked yet. A model appears once the uncertainty on its score drops below ±30 points: keep voting!",
         "personal": {
             "cols": {
                 "battles": "Comparisons",

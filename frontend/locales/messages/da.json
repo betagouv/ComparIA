@@ -1656,6 +1656,7 @@
             "title": "Hvordan vælger man metoden til rangordning af modeller?"
         },
         "no_data": "Rangeringen er i øjeblikket utilgængelig eller under beregning.",
+        "notEnoughVotes": "Ingen model har endnu fået nok stemmer til at blive placeret. En model vises, så snart usikkerheden på dens score kommer under ±30 point: stem videre!",
         "personal": {
             "cols": {
                 "battles": "Sammenligninger",

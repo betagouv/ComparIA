@@ -286,7 +286,14 @@
               class="mb-10!"
             />
 
-            {#if view === 'general'}
+            {#if view === 'general' && rankingRows.length === 0}
+              {@render emptyCard(
+                'ranking-pending-title',
+                m['seo.titles.ranking'](),
+                m['ranking.notEnoughVotes'](),
+                { href: resolve('/'), text: m['header.chatbot.newDiscussion']() }
+              )}
+            {:else if view === 'general'}
               <p class="mb-8! text-dark-grey text-[14px]!">
                 {@html sanitize(m['ranking.ranking.desc']())}
               </p>
@@ -364,6 +371,12 @@
                 { href: resolve('/'), text: m['header.chatbot.newDiscussion']() }
               )}
             {/if}
+          {:else if id === 'energy' && rankingRows.length === 0}
+            {@render emptyCard(
+              'energy-pending-title',
+              m['ranking.energy.tabLabel'](),
+              m['ranking.notEnoughVotes']()
+            )}
           {:else if id === 'energy'}
             <Energy onDownloadData={() => onDownloadData('energy')} />
             <!-- {:else if id === 'preferences'}
