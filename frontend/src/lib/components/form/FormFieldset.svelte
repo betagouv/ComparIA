@@ -18,7 +18,10 @@
 <fieldset
   id="fieldset-{id}"
   aria-labelledby={`${legendId} ${messagesId}`}
-  class={['fr-fieldset cg-border! p-4!', { 'fr-fieldset--error': !!error, 'hidden!': hidden }]}
+  class={[
+    'fr-fieldset cg-border! p-4! mx-0!',
+    { 'fr-fieldset--error': !!error, 'hidden!': hidden }
+  ]}
 >
   <legend
     class="fr-fieldset__legend--regular fr-fieldset__legend pb-0! px-2! w-auto!"
