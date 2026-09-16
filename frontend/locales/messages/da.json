@@ -688,8 +688,8 @@
         },
         "login": {
             "description": "Sammenlign samtale-AI-modeller blindt, og bidrag til evalueringen af AI i Europa.",
-            "tabEmail": "Log ind med e-mail",
-            "tabSso": "Log ind via SSO",
+            "tabEmail": "E-mail",
+            "tabSso": "SSO",
             "tabsLabel": "Loginmetoder",
             "title": "Velkommen til {platformName}"
         },
@@ -733,7 +733,8 @@
                 "missing_code": "Login via identitetsudbyderen er ufuldstændig. Prøv igen.",
                 "no_email": "Identitetsudbyderen returnerede ingen e-mailadresse.",
                 "oidc_unavailable": "Login via identitetsudbyderen er ikke aktiveret på denne instans.",
-                "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen."
+                "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen.",
+                "terms_required": "Acceptér de generelle brugsvilkår, før du logger ind."
             },
             "panelSubtitle": "Du bliver sendt videre til den identitetsudbyder, der er konfigureret til denne instans."
         },

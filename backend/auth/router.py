@@ -424,10 +424,9 @@ async def oidc_login(request: Request) -> RedirectResponse:
     if not anonymous_user_hash or not await has_current_terms_acceptance(
         user_id=None, anonymous_user_hash=anonymous_user_hash
     ):
-        raise HTTPException(
-            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
-            detail="Accept the terms in force before signing in.",
-        )
+        # Reached from a browser link, so like every other failure mode here it
+        # resolves to a redirect the login page can render, not a JSON dead end.
+        return _login_error("terms_required")
 
     discovery = await discover_provider(app_settings.oidc_issuer)
     authorization_endpoint = discovery.get("authorization_endpoint")

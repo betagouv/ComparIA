@@ -195,7 +195,12 @@ def test_oidc_login_requires_terms_acceptance_before_any_redirect():
         with routed(terms_accepted=False) as (client, _fake_redis):
             response = client.get("/auth/oidc/login", follow_redirects=False)
 
-    assert response.status_code == 428
+    # Reached from a browser link: resolves to a redirect the login page
+    # renders, not a JSON error page.
+    assert response.status_code == 302
+    location = response.headers["location"]
+    assert "error=terms_required" in location
+    assert location.startswith(auth_router.settings.COMPARIA_APP_URL)
 
 
 def test_oidc_login_rejects_when_oidc_disabled_in_methods():
