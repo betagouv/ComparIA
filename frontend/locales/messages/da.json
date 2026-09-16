@@ -1271,7 +1271,7 @@
         "cards": {
             "arch": {
                 "title": "Arkitektur",
-                "tooltip": "Arkitekturen beskriver, hvordan modellen er opbygget for at generere sine svar, f.eks. som en tæt model eller en blanding af eksperter (MoE).",
+                "tooltip": "Arkitekturen beskriver, hvordan modellen er opbygget for at generere sine svar, f.eks. som en dense model eller en blanding af eksperter (MoE).",
                 "withName": "Arkitektur: {name}"
             },
             "context": {
@@ -1550,7 +1550,7 @@
                         "list": {
                             "1": "<strong>Jo højere oppe i grafen en model er placeret</strong>, desto højere er dens Bradley-Terry-tilfredshedsscore. <strong>Jo længere til venstre i grafen en model er placeret</strong>, desto mindre energi forbruger den i forhold til de andre modeller.",
                             "2": "<strong>Øverst til venstre</strong> finder man de modeller, som er populære og forbruger relativt lidt energi sammenlignet med de andre modeller.",
-                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
+                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (dense arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
                         },
                         "subTitle": "Eksempler på læsning af grafen",
                         "title": "Hvordan finder man den rette balance mellem opfattet performance og energieffektivitet?"
@@ -1817,7 +1817,7 @@
             },
             "summary": {
                 "classification": {
-                    "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>tæt</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
+                    "dense": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>dense</strong> arkitektur: den bruger alle sine parametre i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Matformer</strong>-arkitektur: den tilpasser den andel af parametrene, der bruges i hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> er en <strong>{size}</strong> model med en <strong>Mixture of Experts</strong>-arkitektur: den aktiverer kun en del af sine parametre i hvert svar (omkring <strong>{activeParams} mia.</strong> ud af <strong>{params} mia.</strong>). Dens energiklasse er <strong>{energyClass}</strong>.",
                     "moeProprietary": "<strong>{model}</strong> er en proprietær model af størrelsen <strong>{size}</strong> med en arkitektur baseret på en <strong>blanding af eksperter</strong>: den aktiverer kun en del af sine parametre for hvert svar. Dens energiklasse er <strong>{energyClass}</strong>.",
