@@ -1,7 +1,7 @@
 """add_oidc_config_to_app_settings
 
 Revision ID: a1b2c3d4e5f6
-Revises: f8c2b6a41d70
+Revises: 269a5fc3959c
 Create Date: 2026-08-12 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "a1b2c3d4e5f6"
-down_revision: str | None = "f8c2b6a41d70"
+down_revision: str | None = "269a5fc3959c"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
