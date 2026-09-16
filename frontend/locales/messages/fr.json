@@ -775,11 +775,7 @@
             "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres"
         },
-        "success": "Vous êtes connecté !",
-        "settings": {
-            "title": "Paramètres",
-            "logout": "Se déconnecter"
-        }
+        "success": "Vous êtes connecté !"
     },
     "chatbot": {
         "announce": {
@@ -2046,7 +2042,6 @@
         "title": "Statistiques de la plateforme"
     },
     "vote": {
-        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "choices": {
             "negative": {
                 "comment": "Précisez ce que vous n’avez pas aimé…",
