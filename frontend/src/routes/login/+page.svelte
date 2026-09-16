@@ -87,7 +87,7 @@
 
       {#if oidcEnabled}
         <Link
-          href="/auth/oidc/login"
+          href={api.getUrl('/auth/oidc/login')}
           button
           variant="secondary"
           class="block w-full! justify-center"
