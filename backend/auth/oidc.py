@@ -80,9 +80,11 @@ def oidc_callback_url() -> str:
 
     Every backend route is mounted under `/api` (see `backend/main.py`), so the
     path the provider redirects to carries that prefix — the bare `/auth/...`
-    path is a frontend route and 404s.
+    path is a frontend route and 404s. The origin is the backend's own
+    (`COMPARIA_API_URL`, falling back to the app origin), because in dev the
+    backend does not share a host with the frontend.
     """
-    return f"{settings.COMPARIA_APP_URL}/api/auth/oidc/callback"
+    return f"{settings.api_origin}/api/auth/oidc/callback"
 
 
 def build_authorization_url(
