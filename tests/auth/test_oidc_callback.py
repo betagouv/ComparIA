@@ -75,7 +75,9 @@ def _discovery():
 
 
 @contextlib.contextmanager
-def routed(row=None, stored_nonce="the-nonce", exchange=None, discover=None, oidc_login=None):
+def routed(
+    row=None, stored_nonce="the-nonce", exchange=None, discover=None, oidc_login=None
+):
     if row is None:
         row = _settings_row()
 
