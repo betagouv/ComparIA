@@ -109,19 +109,17 @@ tests:
             name: MATOMO_ID
             value: "1"
 
-  - it: leaves MATOMO_URL/MATOMO_ID empty by default
+  - it: omits MATOMO_URL/MATOMO_ID by default
     template: frontend-deployment.yaml
     asserts:
-      - contains:
+      - notContains:
           path: spec.template.spec.containers[0].env
           content:
             name: MATOMO_URL
-            value: ""
-      - contains:
+      - notContains:
           path: spec.template.spec.containers[0].env
           content:
             name: MATOMO_ID
-            value: ""
 
   - it: uses distinct chart and app image tags
     template: backend-deployment.yaml
