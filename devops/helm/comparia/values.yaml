@@ -83,6 +83,11 @@ config:
   sentryDsn: ""
   sentryEnvironment: prod
 
+  ## -- Matomo instance URL (e.g. https://stats.example.com). Left empty, no analytics are loaded.
+  matomoUrl: ""
+  ## -- Matomo site ID. Only used when matomoUrl is set.
+  matomoId: ""
+
   ## -- Public origin used to build absolute links in emails (e.g. login codes). Left empty, the
   ## app falls back to its own dev default (http://localhost:5173) -- set this for a real install.
   appUrl: ""
