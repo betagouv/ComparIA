@@ -11,6 +11,7 @@ import base64
 import json
 import logging
 import secrets
+from typing import cast
 from urllib.parse import urlencode
 
 import httpx
@@ -112,7 +113,8 @@ def consume_state(state: str) -> str | None:
     `backend/arena/captcha.py`.
     """
     client = get_redis_client()
-    nonce = client.getdel(REDIS_OIDC_STATE_PREFIX + state)
+    # The client is built with decode_responses=True, so this is a str.
+    nonce = cast("str | None", client.getdel(REDIS_OIDC_STATE_PREFIX + state))
     return nonce
 
 
