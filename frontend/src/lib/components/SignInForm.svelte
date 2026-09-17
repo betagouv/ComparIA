@@ -116,12 +116,12 @@
         method: 'POST',
         body: JSON.stringify({ email, code })
       })
+      code = ''
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       await invalidate('survey:signup')
-      const newUser = Date.now() - new Date(auth.user!.created_at).getTime() < 60 * 60 * 1000
       // Ask questions if any and user didn't yet answered it
-      if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || newUser)) {
+      if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
         step = 'questions'
       } else {
         onLoginCompleted()

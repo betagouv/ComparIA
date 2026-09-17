@@ -4,7 +4,7 @@ import { createContext } from 'svelte'
 export interface AuthUser {
   email: string
   role: string
-  created_at: string
+  new: boolean
   questionsAnswered: boolean
 }
 

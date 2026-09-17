@@ -420,10 +420,8 @@ async def get_me(request: Request) -> dict:
         "user": {
             "email": user.email,
             "role": user.role,
-            # Send date creation alongside if user has answered the signup question
-            # so that even if there's only optional questions, front can display the form
-            # to a new user
-            "created_at": user.created_at,
+            # Used to check if survey has to be asked on signup/login
+            "new": user.created_at > datetime.now() - timedelta(hours=1),
             "questionsAnswered": await signup_questions_answered(
                 user_id=user.id, anonymous_user_hash=None
             ),
