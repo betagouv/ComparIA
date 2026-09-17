@@ -4,6 +4,7 @@
  * Replaces Gradio client with native HTTP/SSE implementation.
  */
 import { browser, dev } from '$app/environment'
+import { invalidate } from '$app/navigation'
 import { env as publicEnv } from '$env/dynamic/public'
 import type {
   APIComparison,
@@ -111,6 +112,13 @@ export class UnauthorizedError extends Error {
   }
 }
 
+export class UnansweredQuestionsError extends Error {
+  constructor(key: string) {
+    super(key)
+    this.name = 'UnansweredQuestionsError'
+  }
+}
+
 /**
  * Any error thrown by the client, carrying the HTTP status it came from and
  * the backend's `detail` as sent, so callers can branch on a known key.
@@ -158,6 +166,10 @@ export class FastAPIClient {
         error = new ValidationError(parsed)
       } else if (response.status === 429) {
         error = new ValidationError(parsed)
+      } else if (response.status === 428 && parsed === 'require_answered_questions') {
+        // In case survey question has changed during session
+        invalidate('survey:signup')
+        error = new UnansweredQuestionsError(parsed)
       } else {
         error = new InternalError(message + parsed)
       }

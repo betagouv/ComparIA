@@ -7,7 +7,7 @@
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
-  import { UnauthorizedError } from '$lib/fastapi-client'
+  import { UnansweredQuestionsError, UnauthorizedError } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
@@ -61,6 +61,11 @@
   setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
+    if (_event.reason instanceof UnansweredQuestionsError) {
+      showSurveyModal.show = true
+      showSurveyModal.kind = 'signup'
+      return
+    }
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
     if (_event.reason instanceof UnauthorizedError) {
