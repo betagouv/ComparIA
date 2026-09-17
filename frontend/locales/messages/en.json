@@ -726,6 +726,7 @@
     "chatbot": {
         "announce": {
             "generating": "The models are writing their answers…",
+            "interrupted": "Generation stopped",
             "ready": "Both answers are ready."
         },
         "continuePrompt": "Continue the discussion…",
@@ -742,12 +743,16 @@
                 "title": "Oops, the conversation is too long for one of the models."
             }
         },
+        "interrupted": {
+            "notice": "Generation stopped. You can vote on these partial answers or try again."
+        },
         "loading": "Loading answers",
         "reasoning": {
             "finished": "Reasoning completed",
             "inProgress": "Reasoning in progress…"
         },
         "revealButton": "Finish and discover the models",
+        "stop": "Stop generating",
         "webSearch": {
             "label": "Associated Web search results."
         }

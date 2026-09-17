@@ -726,6 +726,7 @@
     "chatbot": {
         "announce": {
             "generating": "Modellerne skriver deres svar…",
+            "interrupted": "Genereringen er stoppet",
             "ready": "Begge svar er klar."
         },
         "continuePrompt": "Fortsæt chatten med AI-modellerne",
@@ -742,12 +743,16 @@
                 "title": "Ups, samtalen er for lang for en af modellerne."
             }
         },
+        "interrupted": {
+            "notice": "Genereringen er stoppet. Du kan stemme på disse delvise svar eller prøve igen."
+        },
         "loading": "Indlæser svar",
         "reasoning": {
             "finished": "Tænkning afsluttet",
             "inProgress": "Tænker…"
         },
         "revealButton": "Afslør modellerne",
+        "stop": "Stop genereringen",
         "webSearch": {
             "label": "Tilknyttede websøgeresultater."
         }

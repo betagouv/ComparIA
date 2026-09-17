@@ -17,7 +17,7 @@ from utils.database.models import (
     ComparisonRead,
     ErrorDetails,
     LLMMessage,
-    LLMMessageCreate,
+    LLMMessageBase,
     Turn,
     TurnCreate,
     TurnRead,
@@ -171,20 +171,38 @@ async def add_comparison_turn(
         session.add(db_turn)
         await session.commit()
 
-    comparison = ComparisonRead.model_validate(
-        await _get_item(Comparison, comparison_id, session)
-    )
+        # Inside the block: a read on the session after it has closed opens a
+        # connection that is never returned to the pool, and the garbage
+        # collector drops it mid-transaction with a warning.
+        comparison = ComparisonRead.model_validate(
+            await _get_item(Comparison, comparison_id, session)
+        )
 
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 
 
 async def update_turn(
-    id: uuid.UUID, llm_msg_a: LLMMessageCreate, llm_msg_b: LLMMessageCreate
+    id: uuid.UUID,
+    llm_msg_a: LLMMessageBase | None,
+    llm_msg_b: LLMMessageBase | None,
 ) -> None:
+    """Save the answers of a turn. A side left None (stopped before any text
+    arrived) stays empty, which is the shape the error and retry path expects."""
     async with get_session() as session:
         db_turn = await _get_item(Turn, id, session)
-        db_turn.llm_msg_a = LLMMessage.model_validate(llm_msg_a)
-        db_turn.llm_msg_b = LLMMessage.model_validate(llm_msg_b)
+        for pos, llm_msg in (("a", llm_msg_a), ("b", llm_msg_b)):
+            if llm_msg is not None:
+                setattr(db_turn, f"llm_msg_{pos}", LLMMessage.model_validate(llm_msg))
+        session.add(db_turn)
+        await session.commit()
+
+
+async def clear_turn_answers(id: uuid.UUID) -> None:
+    """Drop both answers of a turn before they are regenerated."""
+    async with get_session() as session:
+        db_turn = await _get_item(Turn, id, session)
+        db_turn.llm_msg_a = None
+        db_turn.llm_msg_b = None
         session.add(db_turn)
         await session.commit()
 

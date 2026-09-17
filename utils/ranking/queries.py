@@ -49,6 +49,10 @@ async def fetch_votes() -> list[dict]:
             .where(
                 col(Turn.choice).in_(["both_good", "both_bad", "a_better", "b_better"])
             )
+            # A vote on an answer the user cut short says nothing about the
+            # model. IS NOT TRUE keeps the rows the outer joins leave NULL.
+            .where(col(msg_a.interrupted).is_not(True))
+            .where(col(msg_b.interrupted).is_not(True))
         )
 
         return results.mappings().all()

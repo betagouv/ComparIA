@@ -258,6 +258,46 @@ test('voting hands focus to the controls it just revealed', async ({ page }) => 
   expect(await page.evaluate(() => !!document.activeElement?.closest('main'))).toBe(true)
 })
 
+test('stopping the generation hands focus to the vote', async ({ page }) => {
+  await page.goto('/')
+  // Long enough for a real provider to still be writing when Stop is pressed.
+  await page
+    .locator('#initial-prompt')
+    .fill("Raconte en 2000 mots l'histoire d'un phare et de son gardien, chapitre par chapitre.")
+  await page.locator('main button[type=submit].fr-btn--primary').click()
+
+  const consentModal = page.locator('#fr-modal-welcome')
+  await consentModal.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
+  if (await consentModal.isVisible().catch(() => false)) {
+    await page.locator('label[for="tos-modal"]').click()
+    await page.locator('#fr-modal-welcome .fr-modal__footer button').click()
+  }
+
+  // Both answers have started: a stop now keeps text on each side. The send
+  // button in the prompt bar is the stop button for as long as they run.
+  await expect(page.locator('.message-bot')).toHaveCount(2)
+  const stop = page.getByRole('button', { name: 'Arrêter la génération' })
+  await stop.focus()
+  await page.keyboard.press('Enter')
+
+  // The button turns back into Send on the 'interrupted' event and keeps
+  // focus, but what the stop revealed sits above it. With two answers under
+  // way that is the vote; a reasoning model that had not written a word yet
+  // leaves nothing to keep, and the turn shows the Retry card instead. The
+  // pair is drawn at random, so accept both, and check where focus went.
+  const vote = page.locator('button[data-choice="a_better"]:visible')
+  const retry = page.locator('[role="alert"] button:visible')
+  await expect(vote.or(retry).first()).toBeVisible()
+  if (await vote.count()) {
+    await expect(vote).toBeFocused()
+    await expect(page.locator('[id^=interrupted-] p[role="status"]')).toBeVisible()
+  } else {
+    await expect(retry).toBeFocused()
+  }
+  await expect(stop).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Envoyer' })).toBeVisible()
+})
+
 test('conversation and results screens are not clipped at 200% zoom', async ({ page }) => {
   // The prompt screen has no fixed-height containers; the risk is in the chat
   // transcript (.grouped-responses has a fixed height) and the reveal card
