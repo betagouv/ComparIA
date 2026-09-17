@@ -131,9 +131,8 @@
       await api.request('/arena/comparison/merge', { method: 'POST' })
     }
     await invalidate('survey:signup')
-    const newUser = Date.now() - new Date(auth.user!.created_at).getTime() < 60 * 60 * 1000
     // Ask questions if any and user didn't yet answered it
-    if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || newUser)) {
+    if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
       step = 'questions'
     } else {
       onLoginCompleted()
