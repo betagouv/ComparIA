@@ -4,7 +4,7 @@
   import { page } from '$app/state'
   import { Alert, Badge, Button, Icon, Input, Link, Modal, Tabs } from '$components/dsfr'
   import { SeoHead } from '$components/layout'
-  import SurveyAnswersSection from '$components/SurveyAnswersSection.svelte'
+  import SurveyFormSignup from '$components/SurveyFormSignup.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import TotpSetupModal from '$components/TotpSetupModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
@@ -13,10 +13,12 @@
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getSurveyContext } from '$lib/survey'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
+  const survey = getSurveyContext()
   const tabs = [
     { id: 'account', label: m['auth.settings.tabAccount']() },
     { id: 'about', label: m['auth.settings.tabAbout']() }
@@ -188,29 +190,37 @@
           {/if}
 
           {#if auth.user}
-            <section class="fr-mt-8v" aria-labelledby="export-title">
-              <h2 id="export-title" class="fr-h4">{m['auth.settings.export.title']()}</h2>
-              <p class="fr-text--sm text-grey max-w-[800px]">
-                {m['auth.settings.export.desc']()}
-              </p>
-              <Button
-                variant="secondary"
-                text={exporting
-                  ? m['auth.settings.export.pending']()
-                  : m['auth.settings.export.action']()}
-                disabled={exporting}
-                onclick={exportData}
-              />
-              <!-- Always rendered: a live region must exist in the DOM before the
-                   message lands in it, otherwise screen readers announce nothing. -->
-              <div aria-live="polite">
-                {#if exportError}
-                  <p class="fr-error-text" role="alert">{exportError}</p>
-                {/if}
-              </div>
-            </section>
+            <div class="mt-8 gap-6 lg:flex-row flex flex-col">
+              <section class="basis-1/2">
+                <SurveyFormSignup
+                  id="survey"
+                  title={m['survey.profile.title']()}
+                  questions={survey.signupQuestions}
+                  answers={survey.signupAnswers}
+                />
+              </section>
 
-            <SurveyAnswersSection />
+              <section class="basis-1/2" aria-labelledby="export-title">
+                <h2 id="export-title" class="fr-h4">{m['auth.settings.export.title']()}</h2>
+                <p class="fr-text--sm text-grey max-w-[800px]">
+                  {m['auth.settings.export.desc']()}
+                </p>
+                <Button
+                  variant="secondary"
+                  text={exporting
+                    ? m['auth.settings.export.pending']()
+                    : m['auth.settings.export.action']()}
+                  disabled={exporting}
+                  onclick={exportData}
+                />
+
+                <div aria-live="polite">
+                  {#if exportError}
+                    <p class="fr-error-text" role="alert">{exportError}</p>
+                  {/if}
+                </div>
+              </section>
+            </div>
           {/if}
         {:else}
           <section aria-labelledby="links-title">
