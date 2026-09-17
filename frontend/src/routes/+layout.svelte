@@ -31,9 +31,11 @@
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
 
+  // Show modal at page load if survey not fullfilled
+  const surveyNotAnswered = auth.user?.questionsAnswered === false
   let showSurveyModal = $state<SurveyCtx>({
-    show: false,
-    kind: null,
+    show: surveyNotAnswered,
+    kind: surveyNotAnswered ? 'signup' : null,
     get signupQuestions() {
       return data.survey.signupQuestions
     },
