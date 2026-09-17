@@ -6,12 +6,17 @@ from sqlmodel import select
 
 from backend.auth.email import send_inactivity_warning
 from backend.auth.services import erase_user_account
+from backend.config import settings
 from utils.database.models.auth import User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 
 # Days between the warning email and the earliest erasure.
 WARNING_DAYS = 30
+
+
+class WindowTooShortError(ValueError):
+    """The purge window would reach accounts whose session may still be in use."""
 
 
 @dataclass
@@ -43,6 +48,20 @@ def erasure_date(user: User, months: int, now: datetime) -> datetime:
     return max(deadline, notice_end)
 
 
+def check_window(months: int, now: datetime) -> None:
+    """last_seen_at moves at sign-in only, so an account used every day on a
+    live session can sit AUTH_SESSION_LENGTH_DAYS behind. The warning window
+    opens WARNING_DAYS before the deadline and must not reach that far."""
+    horizon = add_months(now, -months) + timedelta(days=WARNING_DAYS)
+    oldest_live = now - timedelta(days=settings.AUTH_SESSION_LENGTH_DAYS)
+    if horizon >= oldest_live:
+        raise WindowTooShortError(
+            f"{months} months minus {WARNING_DAYS} days of notice reaches accounts "
+            f"with a live session (AUTH_SESSION_LENGTH_DAYS="
+            f"{settings.AUTH_SESSION_LENGTH_DAYS}); ask for more months"
+        )
+
+
 def classify(user: User, months: int, now: datetime) -> str | None:
     """ "warn", "erase", "admin" or None when the account is not dormant."""
     if user.deleted_at is not None:
@@ -63,6 +82,7 @@ async def find_inactive_users(
     months: int, now: datetime | None = None
 ) -> InactivityReport:
     now = now or datetime.now()
+    check_window(months, now)
     horizon = add_months(now, -months) + timedelta(days=WARNING_DAYS)
     report = InactivityReport()
     async with get_session() as session:

@@ -1,7 +1,12 @@
 import logging
 from datetime import datetime
 
-from backend.auth.inactivity import WARNING_DAYS, erasure_date, purge_inactive_users
+from backend.auth.inactivity import (
+    WARNING_DAYS,
+    WindowTooShortError,
+    erasure_date,
+    purge_inactive_users,
+)
 from backend.config import settings
 
 logger = logging.getLogger("comparia.db")
@@ -19,7 +24,11 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
         return
 
     now = datetime.now()
-    report = await purge_inactive_users(months, apply=apply, now=now)
+    try:
+        report = await purge_inactive_users(months, apply=apply, now=now)
+    except WindowTooShortError as error:
+        logger.error(f"[purge] refused: {error}")
+        raise SystemExit(1)
     # Ids rather than addresses: this output lands in the shared log store.
     mode = "applied" if apply else "dry run"
     verb_warn = "warned" if apply else "would warn"
