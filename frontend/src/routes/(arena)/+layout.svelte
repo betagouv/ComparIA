@@ -76,6 +76,8 @@
 
 <SignInModal />
 
+<SurveyModalSignup />
+
 <style>
   /* No ring when script parks focus here after a navigation, but a real one
      when the user tabs to it: :focus-visible does not match programmatic
