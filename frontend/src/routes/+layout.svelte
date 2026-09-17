@@ -12,6 +12,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
+  import { setSurveyContext, type SurveyCtx } from '$lib/survey'
   import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -29,6 +30,18 @@
   // svelte-ignore state_referenced_locally
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
+
+  let showSurveyModal = $state<SurveyCtx>({
+    show: false,
+    kind: null,
+    get signupQuestions() {
+      return data.survey.signupQuestions
+    },
+    get signupAnswers() {
+      return data.survey.signupAnswers
+    }
+  })
+  setSurveyContext(showSurveyModal)
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 

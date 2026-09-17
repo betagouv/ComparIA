@@ -16,6 +16,15 @@ export const emptySurveyQuestions: PublicSurveyQuestionsResponse = { questions: 
 export const [getSurveyQuestionsContext, setSurveyQuestionsContext] =
   createContext<PublicSurveyQuestion[]>()
 
+export type SurveyCtx = {
+  show: boolean
+  kind: 'signup' | 'after_vote' | null
+  signupQuestions: PublicSurveyQuestion[]
+  voteQuestions?: PublicSurveyQuestion[]
+  signupAnswers: MySurveyAnswer[]
+}
+export const [getSurveyContext, setSurveyContext] = createContext<SurveyCtx>()
+
 export function questionsToFormItems(questions: PublicSurveyQuestion[]) {
   return questions.map((q) => {
     const field = {
