@@ -18,11 +18,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+import pytest  # noqa: E402
+
 import backend.auth.inactivity as inactivity  # noqa: E402
 import utils.database.models  # noqa: E402,F401
 from backend.auth.email import _build_inactivity_message  # noqa: E402
 from backend.auth.inactivity import (  # noqa: E402
     WARNING_DAYS,
+    WindowTooShortError,
     add_months,
     classify,
     erasure_date,
@@ -169,6 +172,21 @@ def test_admins_and_deleted_accounts_are_never_erased():
 
     assert classify(admin, MONTHS, NOW) == "admin"
     assert classify(deleted, MONTHS, NOW) is None
+
+
+def test_a_window_that_reaches_live_sessions_is_refused():
+    """last_seen_at only moves at sign-in: with 90-day sessions, an account
+    used every day can look 89 days idle, and a 3-month purge would warn it."""
+    active = user_seen(NOW - timedelta(days=1))
+
+    with purge_context([active]) as (_session, mailed, _erased):
+        with patched(inactivity.settings, AUTH_SESSION_LENGTH_DAYS=90):
+            with pytest.raises(WindowTooShortError):
+                asyncio.run(purge_inactive_users(3, apply=True, now=NOW))
+            report = asyncio.run(purge_inactive_users(5, apply=True, now=NOW))
+
+    assert mailed == []
+    assert report.to_warn == []
 
 
 def test_find_inactive_users_sorts_accounts_into_the_report():
