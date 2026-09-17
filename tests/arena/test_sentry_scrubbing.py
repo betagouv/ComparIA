@@ -86,7 +86,32 @@ def test_the_event_still_says_what_broke():
     assert "provider unreachable" in event_for_a_failed_completion()
 
 
+INVITE_URL = "http://host/api/auth/invite/Sup3rS3cretT0ken"
+
+
+def test_transactions_go_through_the_same_scrubber():
+    options = shipped_options()
+    assert options["before_send_transaction"] is options["before_send"]
+
+
+def test_the_invite_token_is_redacted_from_request_urls():
+    scrub = shipped_options()["before_send_transaction"]
+    event = scrub({"request": {"url": INVITE_URL}, "transaction": INVITE_URL}, {})
+    assert event["request"]["url"] == "http://host/api/auth/invite/<redacted>"
+    assert event["transaction"] == "http://host/api/auth/invite/<redacted>"
+
+
+def test_the_accept_route_is_left_alone():
+    scrub = shipped_options()["before_send"]
+    url = "http://host/api/auth/invite/accept"
+    event = scrub({"request": {"url": url}}, {})
+    assert event["request"]["url"] == url
+
+
 if __name__ == "__main__":
     test_a_provider_key_never_reaches_sentry()
     test_the_event_still_says_what_broke()
+    test_transactions_go_through_the_same_scrubber()
+    test_the_invite_token_is_redacted_from_request_urls()
+    test_the_accept_route_is_left_alone()
     print("ok")

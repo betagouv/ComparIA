@@ -7,9 +7,10 @@
         "mainNav": "Main navigation",
         "mobileMenu": "Menu",
         "mobileNav": "Mobile navigation",
-        "modeSelection": "Choice of models to compare",
         "modelSheet": "Model details",
+        "modeSelection": "Choice of models to compare",
         "newWindow": "new window",
+        "priceGraphDesc": "Scatter plot: each model is placed by its preference score on the vertical axis and its output price per million tokens on the horizontal axis. A line joins the models on the Pareto frontier. The same data is available as a table.",
         "shareLinkLabel": "Share link for the result",
         "skipToContent": "Skip to main content",
         "suggestionCategories": "Question suggestion categories",
@@ -1707,6 +1708,49 @@
             },
             "title": "How are user preferences distributed?"
         },
+        "price": {
+            "desc": "This graph sets the satisfaction score (Bradley-Terry score) of each model against its output price, the indicative price of one million tokens generated through the provider's API. Prices are the ones providers publish, converted to {currency}. Every ranked model is shown, proprietary ones included. The line joins the models no other model beats on both score and price: the Pareto frontier.",
+            "tabLabel": "Price focus",
+            "title": "Are the most popular models the most expensive?",
+            "views": {
+                "graph": {
+                    "desc": "Hover a model to see its Bradley-Terry (BT) score and its input and output prices",
+                    "legends": {
+                        "frontier": "Pareto frontier",
+                        "frontierOnly": "Show the frontier only",
+                        "frontierSub": "Models no other model beats on both score and price",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Open weights",
+                            "proprietary": "Proprietary"
+                        },
+                        "license": "Filter by licence"
+                    },
+                    "title": "Bradley-Terry (BT) Satisfaction Score VS Output Price per Million Tokens",
+                    "tooltip": {
+                        "elo": "BT score",
+                        "license": "Licence",
+                        "onFrontier": "On the Pareto frontier",
+                        "price_in": "Input price (1M tokens)",
+                        "price_out": "Output price (1M tokens)"
+                    },
+                    "xLabel": "Output price per million tokens ({currency}, log scale)",
+                    "yLabel": "Bradley-Terry Score (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>The higher a model sits</strong> on the graph, the higher its Bradley-Terry satisfaction score. <strong>The further right</strong>, the less it costs per generated token.",
+                        "2": "<strong>At the top right</strong> are the models that are both popular and cheap. The line joins the ones no other model beats on both counts at once: for each of them, a better score means paying more.",
+                        "3": "The price axis is <strong>logarithmic</strong>: the same distance along it means the same price ratio, from 0.1 to 1 as from 1 to 10. Prices are indicative, taken from the providers' public price lists, and ignore discounts, caching and batch offers."
+                    },
+                    "subTitle": "Examples of how to read the graph",
+                    "title": "How to find the right balance between perceived performance and price?"
+                },
+                "table": {
+                    "title": "Price table by model"
+                }
+            }
+        },
         "ranking": {
             "desc": "This ranking is calculated from votes collected through <strong>blind comparisons</strong>, using the <strong>Bradley-Terry</strong> statistical model. It reflects <strong>subjective preferences</strong> and should be interpreted with caution: it measures neither factual accuracy nor overall model performance.",
             "tabLabel": "Leaderboard"
@@ -1726,6 +1770,8 @@
                     "n_match": "Total votes",
                     "name": "Model",
                     "organisation": "Organization",
+                    "price_in": "Input price<br>(1M tokens)",
+                    "price_out": "Output price<br>(1M tokens)",
                     "rank": "Rank",
                     "rank_number": "Rank",
                     "release": "Release date",
@@ -1737,6 +1783,7 @@
                     "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
                     "consumption": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
                     "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
+                    "price": "Indicative price for use through an API, per million tokens, converted to the displayed currency. The input is the request sent, the output the answer generated.",
                     "rank": "Rank assigned based on Bradley-Terry satisfaction score",
                     "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
                     "trust_range": "Interval indicating the reliability of the rank: the narrower the interval, the more reliable the rank estimate. There is a 95% chance that the model's true rank is within this range."
