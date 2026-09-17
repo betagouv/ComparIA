@@ -158,25 +158,43 @@ async def exchange_code_for_claims(
             headers={"Authorization": f"Bearer {access_token}"},
         )
         userinfo_response.raise_for_status()
-        claims = userinfo_response.json()
+        content_type = userinfo_response.headers.get("content-type", "")
+        # A provider configured for a signed userinfo response (ProConnect's
+        # default: "Algorithme de signature user-info: RS256") returns a
+        # compact JWT (`application/jwt`) instead of a plain JSON object; a
+        # provider left unsigned returns JSON directly. Same trust model as
+        # the id_token nonce below either way: no JWKS verification, the
+        # response arrives over a direct TLS call to an endpoint the
+        # discovery document already pointed us at.
+        if "application/jwt" in content_type:
+            claims = _decode_jwt_payload(userinfo_response.text)
+        else:
+            claims = userinfo_response.json()
 
     claims["nonce"] = _id_token_nonce(id_token) if id_token else None
     return claims
 
 
+def _decode_jwt_payload(token: str) -> dict:
+    """Decode a compact JWT's payload without verifying its signature.
+
+    Signature verification is intentionally out of scope for this pass (see
+    `_id_token_nonce`): every JWT handled here arrives over a direct TLS call
+    to an endpoint the discovery document already pointed us at, not from the
+    browser.
+    """
+    _header, payload_b64, _signature = token.split(".")
+    padding = "=" * (-len(payload_b64) % 4)
+    return json.loads(base64.urlsafe_b64decode(payload_b64 + padding))
+
+
 def _id_token_nonce(id_token: str) -> str | None:
-    """Read the `nonce` claim from a JWT payload without verifying its
-    signature. The id_token is discarded immediately after, and JWKS
-    signature verification is intentionally out of scope for this pass: the
-    token arrives over TLS from the token endpoint the callback already
-    trusts, and the nonce's job here is replay defense of *our* authorization
-    round trip, not authentication of the provider to us.
+    """Read the `nonce` claim from the id_token's payload. The id_token is
+    discarded immediately after; the nonce's job here is replay defense of
+    *our* authorization round trip, not authentication of the provider to us.
     """
     try:
-        _header, payload_b64, _signature = id_token.split(".")
-        padding = "=" * (-len(payload_b64) % 4)
-        payload = json.loads(base64.urlsafe_b64decode(payload_b64 + padding))
-        return payload.get("nonce")
+        return _decode_jwt_payload(id_token).get("nonce")
     except Exception as e:
         logger.warning(f"[OIDC] could not read nonce from id_token: {e}")
         return None
