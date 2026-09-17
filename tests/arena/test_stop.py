@@ -391,8 +391,13 @@ def test_a_retry_drops_the_stopped_answers_from_the_transcript():
     comp.error = None
     comp.revealed = False
 
+    cleared: list = []
+
     async def update_comparison_error(comparison, error=None):
         comparison.error = error
+
+    async def clear_turn_answers(id):
+        cleared.append(id)
 
     request = Request(
         {
@@ -408,6 +413,7 @@ def test_a_retry_drops_the_stopped_answers_from_the_transcript():
     with patched(
         router,
         update_comparison_error=update_comparison_error,
+        clear_turn_answers=clear_turn_answers,
         store_comparison_metadata=lambda id, is_streaming: None,
     ):
         # The body streams the models and is never consumed here.
@@ -415,6 +421,9 @@ def test_a_retry_drops_the_stopped_answers_from_the_transcript():
 
     assert turn.llm_msg_a is None and turn.llm_msg_b is None
     assert streaming._get_messages(comp, "a")[-1] is turn.user_msg
+    # Cleared in the database as well: update_turn leaves a None side alone,
+    # so a retry stopped before its first word would keep the old answer.
+    assert cleared == [turn.id]
 
 
 if __name__ == "__main__":

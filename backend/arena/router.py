@@ -17,6 +17,7 @@ from backend.arena.models import AddFirstTextBody, AddTextBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
+    clear_turn_answers,
     create_comparison,
     get_user_comparisons,
     merge_anonymous_comparisons,
@@ -524,9 +525,13 @@ async def retry(
 
     # A retry regenerates both sides. The answers the turn still holds, a pair
     # the user stopped, would otherwise end the transcript sent to the models,
-    # which some providers refuse ("requests ending with a model turn").
+    # which some providers refuse ("requests ending with a model turn"). The
+    # database is cleared too: update_turn leaves a side alone when the new
+    # answer is None, so a retry stopped before its first word would otherwise
+    # keep the old answer next to the new one.
     turn.llm_msg_a = None
     turn.llm_msg_b = None
+    await clear_turn_answers(turn.id)
 
     store_comparison_metadata(comparison.id, is_streaming=True)
 

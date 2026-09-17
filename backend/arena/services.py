@@ -197,6 +197,16 @@ async def update_turn(
         await session.commit()
 
 
+async def clear_turn_answers(id: uuid.UUID) -> None:
+    """Drop both answers of a turn before they are regenerated."""
+    async with get_session() as session:
+        db_turn = await _get_item(Turn, id, session)
+        db_turn.llm_msg_a = None
+        db_turn.llm_msg_b = None
+        session.add(db_turn)
+        await session.commit()
+
+
 async def update_turn_vote(
     id: uuid.UUID, vote: TurnVoteChoice | TurnVoteAnnotate
 ) -> None:
