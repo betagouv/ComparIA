@@ -20,7 +20,10 @@ interface AltchaChallenge {
 const TOKEN_STALE_AFTER_MS = 8 * 60 * 1000
 
 export class CaptchaError extends Error {
-  constructor(message: string, public cause?: unknown) {
+  constructor(
+    message: string,
+    public cause?: unknown
+  ) {
     super(message)
     this.name = 'CaptchaError'
   }
