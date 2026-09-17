@@ -68,7 +68,18 @@ jobs:
 
       # Only the commits this event brings: the pull request's range, or the
       # pushed range on next. Older history is not rescanned on every run.
+      # After a force-push, or on the first push of a branch, `before` is not
+      # an ancestor of `sha` (or is all zeros), so the range falls back to the
+      # pushed commit alone: everything on next arrived through a scanned PR.
       - name: Scan the new commits for leaked secrets
         env:
-          RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.sha) }}
-        run: gitleaks git --redact --verbose --exit-code 1 --log-opts "$RANGE" .
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ "$EVENT" != "pull_request" ] && ! git merge-base --is-ancestor "$BASE" "$HEAD_SHA" 2>/dev/null; then
+            RANGE="-n 1 $HEAD_SHA"
+          else
+            RANGE="$BASE..$HEAD_SHA"
+          fi
+          gitleaks git --redact --verbose --exit-code 1 --log-opts "$RANGE" .
