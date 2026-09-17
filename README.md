@@ -124,6 +124,7 @@ compar:IA is a digital common. You can support it by running an instance, fundin
 - **Fund the project:** compar:IA is funded by ALT-EDIC, DINUM, and the French Ministry of Culture. New partners and funders help cover infrastructure, add languages, and keep the project independent. Contact [contact@comparia.beta.gouv.fr](mailto:contact@comparia.beta.gouv.fr).
 - **Contribute code or translations:** Bug fixes, features, translations, and documentation can be submitted through a [pull request](https://github.com/betagouv/ComparIA/pulls).
 - **Share ideas or report issues:** Start or join a thread in [GitHub Discussions](https://github.com/betagouv/ComparIA/discussions).
+- **Report a vulnerability:** Write to us first, not in a public issue. See [SECURITY.md](SECURITY.md).
 - **Research and partnerships:** For academic work, media enquiries, partnerships, or other forms of support, [get in touch](mailto:contact@comparia.beta.gouv.fr).
 
 ## Built by
