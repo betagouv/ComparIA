@@ -467,7 +467,6 @@ def test_oidc_login_creates_a_user_when_none_exists():
                 email="newcomer@example.test",
                 ip="127.0.0.1",
                 user_agent=None,
-                visitor_id=None,
                 anonymous_user_hash=None,
             )
         )
@@ -489,7 +488,6 @@ def test_oidc_login_reuses_an_existing_account_instead_of_duplicating_it():
                 email="agent@example.test",
                 ip="127.0.0.1",
                 user_agent=None,
-                visitor_id=None,
                 anonymous_user_hash=None,
             )
         )
@@ -508,7 +506,6 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
                 email="boss@example.test",
                 ip="127.0.0.1",
                 user_agent=None,
-                visitor_id=None,
                 anonymous_user_hash=None,
             )
         )
