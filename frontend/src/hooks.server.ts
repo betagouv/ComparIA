@@ -53,7 +53,7 @@ function originOf(url: string): string | null {
 const EXTRA_CSP_SOURCES: Record<string, (string | null)[]> = {
   'script-src': [originOf(MATOMO_URL)],
   'connect-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')],
-  'img-src': [originOf(MATOMO_URL)]
+  'img-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')]
 }
 
 function withRuntimeOrigins(policy: string): string {

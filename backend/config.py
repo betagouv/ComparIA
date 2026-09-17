@@ -61,6 +61,10 @@ class Settings(BaseSettings):
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
+    # Required when OIDC is configured. No auto-generated fallback: a missing key
+    # must fail at usage time, not silently produce an unreadable stored secret.
+    # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+    OIDC_ENCRYPTION_KEY: str | None = None
     AUTH_ACCESS_POLICY: Literal["anonymous_first", "sign_in_required"] = (
         "anonymous_first"
     )
@@ -82,6 +86,11 @@ class Settings(BaseSettings):
 
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
+    # Public origin the backend itself answers on, used for the OIDC redirect_uri
+    # the provider sends the browser back to. Deployed, the ingress puts the
+    # backend under /api of the app origin, so leaving this unset is right. In
+    # dev the two run on separate ports, so point it at the backend.
+    COMPARIA_API_URL: str | None = None
 
     # Number of reverse proxies in front of the app. X-Forwarded-For is only read
     # when this is > 0, and only the entry the outermost trusted proxy appended is
@@ -102,10 +111,15 @@ class Settings(BaseSettings):
     # When set, /metrics requires "Authorization: Bearer <token>".
     METRICS_TOKEN: str | None = None
 
-    @field_validator("COMPARIA_APP_URL")
+    @field_validator("COMPARIA_APP_URL", "COMPARIA_API_URL")
     @classmethod
-    def _strip_trailing_slash(cls, value: str) -> str:
-        return value.rstrip("/")
+    def _strip_trailing_slash(cls, value: str | None) -> str | None:
+        return value.rstrip("/") if value else value
+
+    @property
+    def api_origin(self) -> str:
+        """Origin the OIDC provider redirects the browser back to."""
+        return self.COMPARIA_API_URL or self.COMPARIA_APP_URL
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email

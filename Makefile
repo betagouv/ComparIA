@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis keycloak keycloak-down models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
 
 # Variables
 PYTHON := python3
@@ -77,6 +77,15 @@ redis: ## Launch Redis using docker compose
 
 redis-down: ## Stop Redis
 	docker compose -f devops/instances/redis/redis.compose.yml down
+
+keycloak: ## Launch a local Keycloak (OIDC test IdP) and configure the comparia client + test user
+	@$(MAKE) network
+	@echo "Starting Keycloak..."
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml up -d
+	bash devops/instances/keycloak/setup-keycloak.sh
+
+keycloak-down: ## Stop the local Keycloak
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml down
 
 
 ###################################
