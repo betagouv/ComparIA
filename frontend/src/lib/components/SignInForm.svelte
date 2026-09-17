@@ -123,15 +123,15 @@
         method: 'POST',
         body: JSON.stringify({ email, code })
       })
-      const data = await api.request<{ user: AuthUser | null }>('/auth/me')
-      auth.user = data.user
       if (mergeComparisons) {
         await api.request('/arena/comparison/merge', { method: 'POST' })
       }
+      const data = await api.request<{ user: AuthUser | null }>('/auth/me')
+      auth.user = data.user
       await invalidate('survey:signup')
       const newUser = Date.now() - new Date(auth.user!.created_at).getTime() < 60 * 60 * 1000
       // Ask questions if any and user didn't yet answered it
-      if ((survey.signupQuestions.length && !auth.user!.questionsAnswered) || newUser) {
+      if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || newUser)) {
         step = 'questions'
       } else {
         onLoginCompleted()
@@ -167,16 +167,17 @@
   function onLoginCompleted() {
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
+    step = 'email'
   }
 </script>
 
 <div bind:this={formContainer} {...props} class={['my-10 mx-8', props.class]}>
-  <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
-  <p class="text-xs! mb-6! text-grey">
-    {m['auth.modal.email.subtitle']({ platformName })}
-  </p>
-
   {#if step !== 'questions'}
+    <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+    <p class="text-xs! mb-6! text-grey">
+      {m['auth.modal.email.subtitle']({ platformName })}
+    </p>
+
     <form onsubmit={onSubmit}>
       <Input
         id="login-email"

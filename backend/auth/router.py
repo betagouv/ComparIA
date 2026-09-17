@@ -424,7 +424,7 @@ async def get_me(request: Request) -> dict:
             # so that even if there's only optional questions, front can display the form
             # to a new user
             "created_at": user.created_at,
-            "questionAnswered": await signup_questions_answered(
+            "questionsAnswered": await signup_questions_answered(
                 user_id=user.id, anonymous_user_hash=None
             ),
         }
