@@ -61,17 +61,21 @@ export function answersToForm(answers: MySurveyAnswer[], questions: PublicSurvey
 
 export function formToAnswers(
   form: Record<string, string | string[] | null>,
-  questions: PublicSurveyQuestion[]
+  questions: PublicSurveyQuestion[],
+  filterEmpty = false
 ) {
-  return questions
-    .map((field) => {
-      const option_keys = form[field.id] ?? []
-      return {
-        question_id: field.id,
-        option_keys: Array.isArray(option_keys) ? option_keys : option_keys ? [option_keys] : []
-      }
-    })
-    .filter((answer) => answer.option_keys.length > 0)
+  const answers = questions.map((field) => {
+    const option_keys = form[field.id] ?? []
+    return {
+      question_id: field.id,
+      option_keys: Array.isArray(option_keys) ? option_keys : option_keys ? [option_keys] : []
+    }
+  })
+
+  if (filterEmpty) {
+    return answers.filter((answer) => answer.option_keys.length > 0)
+  }
+  return answers
 }
 
 /**
