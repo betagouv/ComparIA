@@ -135,9 +135,7 @@ def test_an_older_anonymous_answer_loses_to_the_account_answer():
     an_hour_ago = utc_now() - timedelta(hours=1)
 
     # The anonymous side answered yesterday, the account an hour ago.
-    session = FakeSession(
-        [(question_id, yesterday)], [(question_id, an_hour_ago)], []
-    )
+    session = FakeSession([(question_id, yesterday)], [(question_id, an_hour_ago)], [])
     asyncio.run(carry_over_anonymous(session, "hash", user_id))
 
     assert not [
