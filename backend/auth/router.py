@@ -1,8 +1,11 @@
 import logging
+import re
 from datetime import datetime, timedelta, timezone
 from typing import Literal
+from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
@@ -14,6 +17,7 @@ from backend.auth.dependencies import (
 from backend.auth.email import send_login_code
 from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
+    LoginResult,
     _hash,
     accept_invite,
     erase_user_account,
@@ -29,15 +33,27 @@ from backend.auth.services import (
     revoke_current_session,
     verify_login_code,
 )
+from backend.auth.totp import (
+    InvalidTotpCodeError,
+    TotpChallengeExpiredError,
+    TotpCodeRequiredError,
+    TotpSetupMissingError,
+    confirm_totp_setup,
+    has_confirmed_totp,
+    start_totp_setup,
+    verify_totp_challenge,
+)
 from backend.config import settings
+from backend.errors import RoleRequiredError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
-from utils.database.models.auth import LegalDocument
+from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
+    REDIS_AUTH_TOTP_FAIL,
     REDIS_AUTH_VERIFY_FAIL,
     get_redis_client,
 )
@@ -74,6 +90,39 @@ class EmailRequestBody(BaseModel):
 class EmailVerifyBody(BaseModel):
     email: EmailStr
     code: str
+
+
+def _six_digits(value: str) -> str:
+    value = re.sub(r"\s+", "", value)
+    if not re.fullmatch(r"[0-9]{6}", value):
+        raise ValueError("code must be six digits")
+    return value
+
+
+class TotpCodeBody(BaseModel):
+    code: str
+
+    @field_validator("code")
+    @classmethod
+    def six_digits(cls, value: str) -> str:
+        return _six_digits(value)
+
+
+class TotpSetupBody(BaseModel):
+    """`code` is only needed to replace an authenticator already in force."""
+
+    code: str | None = None
+
+    @field_validator("code")
+    @classmethod
+    def six_digits(cls, value: str | None) -> str | None:
+        return _six_digits(value) if value else None
+
+
+class TotpSetupResponse(BaseModel):
+    secret: str
+    otpauth_uri: str
+    qr_svg: str
 
 
 class InviteStatus(BaseModel):
@@ -118,6 +167,39 @@ class ConsentBody(BaseModel):
 def _anonymous_hash(request: Request) -> str | None:
     token = anonymous_session_token(request)
     return _hash(token) if token else None
+
+
+SESSION_COOKIE = "auth_session"
+TOTP_CHALLENGE_COOKIE = "auth_totp_challenge"
+_TOTP_CHALLENGE_COOKIE_MAX_AGE = 600
+
+
+def _set_session_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        SESSION_COOKIE,
+        token,
+        httponly=True,
+        secure=settings.COMPARIA_COOKIE_SECURE,
+        samesite="lax",
+        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+    )
+
+
+def _set_login_cookie(response: Response, login: LoginResult) -> bool:
+    """Hand the browser what the first factor earned; True when a second
+    factor is still owed."""
+    if login.kind == "session":
+        _set_session_cookie(response, login.token)
+        return False
+    response.set_cookie(
+        TOTP_CHALLENGE_COOKIE,
+        login.token,
+        httponly=True,
+        secure=settings.COMPARIA_COOKIE_SECURE,
+        samesite="lax",
+        max_age=_TOTP_CHALLENGE_COOKIE_MAX_AGE,
+    )
+    return True
 
 
 def _reject_cross_site(request: Request) -> None:
@@ -309,14 +391,14 @@ async def email_verify(
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    token = await verify_login_code(
+    login = await verify_login_code(
         email=body.email,
         code=body.code,
         ip=ip,
         user_agent=user_agent,
         anonymous_user_hash=_anonymous_hash(request),
     )
-    if not token:
+    if not login:
         try:
             client = get_redis_client()
             for key in (fail_key, email_fail_key):
@@ -338,15 +420,139 @@ async def email_verify(
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    response.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=settings.COMPARIA_COOKIE_SECURE,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+    totp_required = _set_login_cookie(response, login)
+    return {"email": body.email, "totp_required": totp_required}
+
+
+@router.post("/totp/verify", response_model=None)
+async def totp_verify(
+    body: TotpCodeBody, request: Request, response: Response
+) -> dict | JSONResponse:
+    """Second factor of a sign-in that `/email/verify` or `/invite/accept`
+    left half done. Attempts are counted on the challenge itself, so there
+    is no Redis counter to keep here."""
+    _reject_cross_site(request)
+    challenge_token = request.cookies.get(TOTP_CHALLENGE_COOKIE)
+    if not challenge_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sign in with your email code first.",
+        )
+
+    try:
+        token = await verify_totp_challenge(
+            token=challenge_token,
+            code=body.code,
+            ip=get_ip(request),
+            user_agent=request.headers.get("user-agent"),
+            anonymous_user_hash=_anonymous_hash(request),
+        )
+    except TotpChallengeExpiredError:
+        # Headers set on `response` do not survive an HTTPException, and the
+        # dead cookie has to go so the next sign-in starts clean.
+        gone = JSONResponse(
+            {"detail": "Sign-in expired, request a new email code."},
+            status_code=status.HTTP_410_GONE,
+        )
+        gone.delete_cookie(TOTP_CHALLENGE_COOKIE)
+        return gone
+    except InvalidTotpCodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid authenticator code.",
+        )
+
+    response.delete_cookie(TOTP_CHALLENGE_COOKIE)
+    _set_session_cookie(response, token)
+    user = await get_user_from_token(token)
+    return {"email": user.email if user else None}
+
+
+_TOTP_ENROL_MAX_FAILS = 10
+_TOTP_ENROL_FAIL_TTL = 600
+
+
+def _totp_enrol_guard(user_id: UUID) -> None:
+    """Wrong codes while enrolling are bounded per account. Fail-open like the
+    other Redis counters: a Redis outage must not lock admins out."""
+    try:
+        count = get_redis_client().get(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+        if count and int(count) >= _TOTP_ENROL_MAX_FAILS:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, try again later.",
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
+
+def _totp_enrol_failed(user_id: UUID) -> None:
+    try:
+        client = get_redis_client()
+        key = REDIS_AUTH_TOTP_FAIL.format(user=user_id)
+        if client.incr(key) == 1:
+            client.expire(key, _TOTP_ENROL_FAIL_TTL)
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
+
+def _require_admin_role(user: User) -> None:
+    # Not `require_admin`: that one also wants an enrolled authenticator,
+    # which is the very thing these routes exist to set up.
+    if user.role != "admin":
+        raise RoleRequiredError("admin")
+
+
+@router.post("/totp/setup")
+async def totp_setup(
+    body: TotpSetupBody, user: RequiredUser, response: Response
+) -> TotpSetupResponse:
+    _require_admin_role(user)
+    _totp_enrol_guard(user.id)
+    app_settings = await get_app_settings()
+    try:
+        setup = await start_totp_setup(user, body.code, app_settings.platform_name)
+    except TotpCodeRequiredError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="totp_code_required",
+        )
+    except InvalidTotpCodeError:
+        _totp_enrol_failed(user.id)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid authenticator code.",
+        )
+    # The secret travels once, here. Nothing on the way may keep a copy.
+    response.headers["Cache-Control"] = "no-store"
+    return TotpSetupResponse(
+        secret=setup.secret, otpauth_uri=setup.otpauth_uri, qr_svg=setup.qr_svg
     )
-    return {"email": body.email}
+
+
+@router.post("/totp/confirm", status_code=status.HTTP_204_NO_CONTENT)
+async def totp_confirm(
+    body: TotpCodeBody, user: RequiredUser, request: Request
+) -> None:
+    _require_admin_role(user)
+    _totp_enrol_guard(user.id)
+    try:
+        await confirm_totp_setup(
+            user, body.code, request.cookies.get(SESSION_COOKIE) or ""
+        )
+    except TotpSetupMissingError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="No authenticator waiting to be confirmed, start again.",
+        )
+    except InvalidTotpCodeError:
+        _totp_enrol_failed(user.id)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid authenticator code.",
+        )
 
 
 @router.get("/invite/{token}")
@@ -376,35 +582,29 @@ async def invite_accept(
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
 
-    token = await accept_invite(
+    login = await accept_invite(
         token=body.token,
         ip=ip,
         user_agent=user_agent,
         anonymous_user_hash=anonymous_user_hash,
     )
-    if not token:
+    if not login:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired invite link.",
         )
 
-    response.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=settings.COMPARIA_COOKIE_SECURE,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
-    )
-    return {"success": True}
+    totp_required = _set_login_cookie(response, login)
+    return {"success": True, "totp_required": totp_required}
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(request: Request, response: Response) -> None:
-    token = request.cookies.get("auth_session")
+    token = request.cookies.get(SESSION_COOKIE)
     if token:
         await revoke_current_session(token)
-    response.delete_cookie("auth_session")
+    response.delete_cookie(SESSION_COOKIE)
+    response.delete_cookie(TOTP_CHALLENGE_COOKIE)
 
 
 @router.get("/me")
@@ -415,7 +615,13 @@ async def get_me(request: Request) -> dict:
     user = await get_user_from_token(token)
     if not user:
         return {"user": None}
-    return {"user": {"email": user.email, "role": user.role}}
+    return {
+        "user": {
+            "email": user.email,
+            "role": user.role,
+            "totp_enabled": await has_confirmed_totp(user.id),
+        }
+    }
 
 
 @router.get("/me/export")

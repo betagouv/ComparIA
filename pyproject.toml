@@ -32,6 +32,9 @@ dependencies = [
     "async-lru>=2.3.0",
     "python-multipart>=0.0.32",
     "polars>=1.43.2",
+    "pyotp>=2.10.0",
+    "cryptography>=45.0.0",
+    "segno>=1.6.0",
 ]
 
 [dependency-groups]

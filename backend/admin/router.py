@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from datetime import datetime
@@ -12,12 +13,14 @@ from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
     CannotDemoteLastAdminError,
+    CannotResetOwnTotpError,
     EmailAlreadyExistsError,
     cancel_user_invite,
     create_user,
     delete_user,
     get_user,
     list_users,
+    reset_user_totp,
     update_user,
 )
 from backend.admin.suggestions import router as admin_suggestions_router
@@ -82,6 +85,8 @@ from utils.database.prompt_checks import (
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.utils import FormJsonSchema
+
+logger = logging.getLogger("languia")
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -368,6 +373,22 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
     canceled = await cancel_user_invite(user_id)
     if not canceled:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@router.delete("/users/{user_id}/totp", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> None:
+    try:
+        reset = await reset_user_totp(user_id, current_user.id)
+    except CannotResetOwnTotpError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Change your own authenticator from your account page",
+        )
+    if not reset:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # Who reset whom is worth a line in the log: the target's next sign-in
+    # needs only an email code until they enrol again.
+    logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
 
 
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:

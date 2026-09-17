@@ -200,6 +200,8 @@ def test_erasure_anonymises_the_account_and_clears_its_credentials():
     assert deleted_tables(session.statements) == {
         "auth_login_code",
         "auth_invite_token",
+        "auth_totp",
+        "auth_totp_challenge",
     }
 
 
