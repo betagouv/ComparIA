@@ -7,11 +7,12 @@
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
-  import { UnauthorizedError } from '$lib/fastapi-client'
+  import { UnansweredQuestionsError, UnauthorizedError } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
+  import { setSurveyContext, type SurveyCtx } from '$lib/survey'
   import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -29,6 +30,20 @@
   // svelte-ignore state_referenced_locally
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
+
+  // Show modal at page load if survey not fullfilled
+  const surveyNotAnswered = auth.user?.questionsAnswered === false
+  let showSurveyModal = $state<SurveyCtx>({
+    show: surveyNotAnswered,
+    kind: surveyNotAnswered ? 'signup' : null,
+    get signupQuestions() {
+      return data.survey.signupQuestions
+    },
+    get signupAnswers() {
+      return data.survey.signupAnswers
+    }
+  })
+  setSurveyContext(showSurveyModal)
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 
@@ -48,6 +63,11 @@
   setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
+    if (_event.reason instanceof UnansweredQuestionsError) {
+      showSurveyModal.show = true
+      showSurveyModal.kind = 'signup'
+      return
+    }
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
     if (_event.reason instanceof UnauthorizedError) {

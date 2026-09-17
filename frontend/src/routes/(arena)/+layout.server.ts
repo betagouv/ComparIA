@@ -1,6 +1,8 @@
 import { api } from '$lib/fastapi-client'
+import type { PublicSurveyQuestionsResponse } from '$lib/generated/backend'
 import { loadInformationalPages } from '$lib/informational-pages.server'
 import type { PublicSuggestions } from '$lib/suggestions'
+import { emptySurveyQuestions } from '$lib/survey'
 import { emptyVoteTags, type PublicVoteTags } from '$lib/voteTags'
 import type { LayoutServerLoad } from './$types'
 
@@ -10,7 +12,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
   const locale = cookies.get('PARAGLIDE_LOCALE') ?? 'fr'
   const options = { fetch, searchParams: { locale } }
 
-  const [suggestions, voteTags, informationalPages] = await Promise.all([
+  const [suggestions, voteTags, informationalPages, surveyVote] = await Promise.all([
     api.request<PublicSuggestions>('/suggestions', options).catch((error: Error) => {
       // Suggestions are optional: the arena must remain usable if curated content
       // is temporarily unavailable.
@@ -23,8 +25,24 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
       console.error(`Unable to load vote tags: ${error.message}`)
       return emptyVoteTags
     }),
-    loadInformationalPages(fetch)
+    loadInformationalPages(fetch),
+    api
+      .request<PublicSurveyQuestionsResponse>(
+        `/survey/questions?locale=${locale}&trigger=after_vote`,
+        { fetch }
+      )
+      .catch((error: Error) => {
+        // The post-vote popup is a nice-to-have: the reveal page must stay
+        // usable if the survey service is temporarily unavailable.
+        console.error(`Unable to load survey questions: ${error.message}`)
+        return emptySurveyQuestions
+      })
   ])
 
-  return { suggestions, voteTags: voteTags.tags, informationalPages }
+  return {
+    suggestions,
+    voteTags: voteTags.tags,
+    informationalPages,
+    surveyVoteQuestions: surveyVote.questions
+  }
 }

@@ -31,6 +31,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
@@ -415,7 +416,17 @@ async def get_me(request: Request) -> dict:
     user = await get_user_from_token(token)
     if not user:
         return {"user": None}
-    return {"user": {"email": user.email, "role": user.role}}
+    return {
+        "user": {
+            "email": user.email,
+            "role": user.role,
+            # Used to check if survey has to be asked on signup/login
+            "new": user.created_at > datetime.now() - timedelta(hours=1),
+            "questionsAnswered": await signup_questions_answered(
+                user_id=user.id, anonymous_user_hash=None
+            ),
+        }
+    }
 
 
 @router.get("/me/export")

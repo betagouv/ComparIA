@@ -2,10 +2,12 @@
   import { afterNavigate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { NavBar } from '$components/header'
+  import SurveyModalSignup from '$components/SurveyModalSignup.svelte'
   import { getAuthContext, userAllowed } from '$lib/auth.svelte.js'
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getSurveyContext } from '$lib/survey'
   import { setVoteTagsContext } from '$lib/voteTags'
   import type { LayoutProps } from './$types'
 
@@ -14,6 +16,8 @@
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
   const auth = getAuthContext()
+  const survey = getSurveyContext()
+  survey.voteQuestions = data.surveyVoteQuestions
 
   let mainEl: HTMLElement | undefined = $state()
   let routeAnnouncement = $state('')
@@ -71,6 +75,8 @@
 <p role="status" class="sr-only">{routeAnnouncement}</p>
 
 <SignInModal />
+
+<SurveyModalSignup />
 
 <style>
   /* No ring when script parks focus here after a navigation, but a real one
