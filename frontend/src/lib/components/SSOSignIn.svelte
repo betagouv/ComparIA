@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Checkbox } from '$components/dsfr'
-  import { getAuthContext } from '$lib/auth.svelte'
   import {
     consentCheckboxLabel,
     legalLinks,
@@ -27,7 +26,6 @@
     onLegalNavigate?: (event: MouseEvent) => void
   } & SvelteHTMLElements['div'] = $props()
 
-  const auth = getAuthContext()
   const locale = getLocale()
   const loginUrl = api.getUrl('/auth/oidc/login') as ExternalHref
 
