@@ -88,6 +88,7 @@ profile = "black"
 extend_skip = ["utils/ranking_methods", "utils/database/alembic"]
 
 [tool.black]
+target-version = ["py313"]
 extend-exclude = "utils/ranking_methods|utils/database/alembic"
 
 [tool.setuptools.packages.find]

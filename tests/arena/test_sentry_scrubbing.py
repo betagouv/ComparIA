@@ -36,7 +36,9 @@ def shipped_options():
     def record(**kwargs):
         recorded.update(kwargs)
 
-    with patch.object(backend_sentry.settings, "SENTRY_DSN", "https://k@example.test/1"):
+    with patch.object(
+        backend_sentry.settings, "SENTRY_DSN", "https://k@example.test/1"
+    ):
         with patch.object(sentry_sdk, "init", record):
             backend_sentry.init_sentry()
     return recorded
