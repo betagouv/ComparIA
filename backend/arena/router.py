@@ -45,6 +45,7 @@ from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredU
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import MAX_TURNS_PER_COMPARISON
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.survey.dependencies import require_answered_questions
 from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -64,8 +65,7 @@ from utils.database.prompt_checks import save_prompt_check_result
 logger = logging.getLogger("languia")
 
 router = APIRouter(
-    prefix="/arena",
-    tags=["arena"],
+    prefix="/arena", tags=["arena"], dependencies=[Depends(require_answered_questions)]
 )
 
 

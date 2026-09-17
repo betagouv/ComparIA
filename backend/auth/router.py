@@ -249,25 +249,6 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
             detail="Accept the terms in force before requesting a login code.",
         )
 
-    # The signup questions gate the account, so they are checked here rather
-    # than only in the form. On an arena whose point is a verified professional
-    # audience, a gate that the browser enforces alone is no gate: the answers
-    # would come to mean 'professionals, plus everyone who posted straight to
-    # the API', which is not a column anyone can analyse.
-    #
-    # Asked of every address alike, and only ever about the session in front
-    # of us. Skipping the check for an address that already has an account
-    # would answer 'does this email have an account here' to anyone who asks,
-    # and it would buy nothing: the login form puts these questions to
-    # returning users as well, so nobody is held anywhere they cannot answer.
-    if not await signup_questions_answered(
-        user_id=None, anonymous_user_hash=anonymous_user_hash
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
-            detail="Answer the signup questions before requesting a login code.",
-        )
-
     code = await request_login_code(body.email)
     try:
         await send_login_code(
@@ -435,7 +416,19 @@ async def get_me(request: Request) -> dict:
     user = await get_user_from_token(token)
     if not user:
         return {"user": None}
-    return {"user": {"email": user.email, "role": user.role}}
+    return {
+        "user": {
+            "email": user.email,
+            "role": user.role,
+            # Send date creation alongside if user has answered the signup question
+            # so that even if there's only optional questions, front can display the form
+            # to a new user
+            "created_at": user.created_at,
+            "questionAnswered": await signup_questions_answered(
+                user_id=user.id, anonymous_user_hash=None
+            ),
+        }
+    }
 
 
 @router.get("/me/export")
