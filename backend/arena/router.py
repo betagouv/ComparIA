@@ -217,6 +217,14 @@ async def _stream_turn(
     """
     llms_data = llms_data or await get_llms_data()
 
+    def charge() -> None:
+        increment_input_chars(
+            anonymous_user_hash,
+            get_ip(request),
+            len(turn.user_msg.content),
+            pricey=_is_pricey(comparison, llms_data),
+        )
+
     async for chunk in stream_comparison_messages(
         comparison,
         turn,
@@ -233,6 +241,9 @@ async def _stream_turn(
                 llm = llms_data.enabled[getattr(comparison, f"llm_id_{pos}")]
                 setattr(turn, f"llm_msg_{pos}", finalize_interrupted(llm_msg, llm))
         await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+        # The prompt went to both providers whether or not the answers were
+        # read to the end, so a stop costs the same as a full turn.
+        charge()
         # Released before the event goes out: the browser votes or retries as
         # soon as it lands, and get_comparison refuses while is_streaming.
         store_comparison_metadata(comparison.id, is_streaming=False)
@@ -244,12 +255,7 @@ async def _stream_turn(
     if comparison.error:
         return
 
-    increment_input_chars(
-        anonymous_user_hash,
-        get_ip(request),
-        len(turn.user_msg.content),
-        pricey=_is_pricey(comparison, llms_data),
-    )
+    charge()
 
     await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
 
