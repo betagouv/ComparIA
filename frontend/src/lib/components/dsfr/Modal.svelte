@@ -6,6 +6,7 @@
   let {
     id,
     titleId,
+    locked = false,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
     headerClass,
@@ -14,6 +15,7 @@
   }: {
     id: string
     titleId: string
+    locked?: boolean
     sizeClass?: string
     contentClass?: ClassValue
     headerClass?: ClassValue
@@ -27,20 +29,28 @@
   const dsfrEvents = { 'ondsfr.conceal': () => onClose?.() }
 </script>
 
-<dialog aria-labelledby={titleId} {id} class="fr-modal" {...dsfrEvents}>
+<dialog
+  aria-labelledby={titleId}
+  {id}
+  class="fr-modal"
+  data-fr-concealing-backdrop={(!locked).toString()}
+  {...dsfrEvents}
+>
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div class={sizeClass}>
         <div class="fr-modal__body rounded-xl relative">
-          <div class={['fr-modal__header pb-0!', headerClass]}>
-            <Button
-              variant="tertiary-no-outline"
-              text={m['words.close']()}
-              title={m['closeModal']()}
-              aria-controls={id}
-              class="fr-btn--close z-100"
-            />
-          </div>
+          {#if !locked}
+            <div class={['fr-modal__header pb-0!', headerClass]}>
+              <Button
+                variant="tertiary-no-outline"
+                text={m['words.close']()}
+                title={m['closeModal']()}
+                aria-controls={id}
+                class="fr-btn--close z-100"
+              />
+            </div>
+          {/if}
 
           <div class={['fr-modal__content', contentClass]}>
             {@render children?.()}
