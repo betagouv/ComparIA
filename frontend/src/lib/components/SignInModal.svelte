@@ -1,10 +1,8 @@
 <script lang="ts">
   import { Modal } from '$components/dsfr'
-  import { getAuthContext } from '$lib/auth.svelte'
   import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
   import SignInForm from './SignInForm.svelte'
 
-  const auth = getAuthContext()
   const comparisons = getComparisonsContext()
 
   function closeModal() {
@@ -22,7 +20,7 @@
 </script>
 
 <!-- Only the signed-out navbar can open it, and the form reads the visitor's
-     consent on mount, so keeping it mounted after sign-in only costs requests. -->
+consent on mount, so keeping it mounted after sign-in only costs requests. -->
 <Modal
   id="fr-modal-signin"
   titleId="fr-modal-title-signin"
@@ -30,7 +28,7 @@
   contentClass="p-0! m-0!"
 >
   <!-- The published terms describe how data is used, so the modal does not
-         repeat it and risk saying something different. -->
+  repeat it and risk saying something different. -->
   <div class="-mt-12">
     <SignInForm
       {onSuccess}

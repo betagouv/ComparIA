@@ -142,9 +142,7 @@ class SurveyAnswer(SurveyAnswerBase, table=True):
             "uq_survey_answer_respondent_option",
             "question_id",
             "option_key",
-            text(
-                f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"
-            ),
+            text(f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"),
             text("COALESCE(anonymous_user_hash, '')"),
             unique=True,
         ),
