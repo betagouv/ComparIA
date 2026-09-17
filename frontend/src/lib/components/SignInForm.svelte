@@ -13,7 +13,7 @@
     submitConsent,
     type ConsentDocument
   } from '$lib/consent'
-  import { api, type ApiError } from '$lib/fastapi-client'
+  import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -102,14 +102,7 @@
       })
       step = 'code'
     } catch (err) {
-      // A 428 here means the backend has required signup questions this form
-      // does not show: the fetch failed, or an admin added one while the page
-      // sat open. Either way the two sides contradict each other, reloading
-      // fixes both, and the raw refusal is untranslated.
-      error =
-        (err as ApiError).status === 428
-          ? m['survey.signup.reloadNeeded']()
-          : (err as Error).message
+      error = (err as Error).message
     } finally {
       loading = false
     }
@@ -123,9 +116,6 @@
         method: 'POST',
         body: JSON.stringify({ email, code })
       })
-      if (mergeComparisons) {
-        await api.request('/arena/comparison/merge', { method: 'POST' })
-      }
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       await invalidate('survey:signup')
@@ -164,7 +154,10 @@
     else verifyCode()
   }
 
-  function onLoginCompleted() {
+  async function onLoginCompleted() {
+    if (mergeComparisons) {
+      await api.request('/arena/comparison/merge', { method: 'POST' })
+    }
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
     step = 'email'
@@ -201,16 +194,16 @@
           onclick={onChangeEmail}
           class="-mt-2! mb-4! text-black! underline"
         />
+      {/if}
 
-        {#if canMergeComparisons}
-          <Checkbox
-            id="login-merge"
-            class="text-xs! mt-1!"
-            bind:checked={mergeComparisons}
-            disabled={step === 'code'}
-            label={m['auth.modal.merge']()}
-          />
-        {/if}
+      {#if canMergeComparisons}
+        <Checkbox
+          id="login-merge"
+          class="text-xs! mt-1!"
+          bind:checked={mergeComparisons}
+          disabled={step === 'code'}
+          label={m['auth.modal.merge']()}
+        />
       {/if}
 
       {#if terms}
