@@ -51,7 +51,7 @@
   // Returns whether everything was recorded.
   async function recordShowing(): Promise<boolean> {
     const questions = survey.voteQuestions!
-    const updatedAnswers = formToAnswers(form, questions)
+    const updatedAnswers = formToAnswers(form, questions, true)
     // Left blank in a popup the visitor otherwise submitted: still shown, so
     // it still counts against the re-ask limit.
     const blankIds = questions
