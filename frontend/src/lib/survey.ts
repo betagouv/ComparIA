@@ -8,13 +8,7 @@ import { m } from '$lib/i18n/messages'
 import { fromEntries } from '$lib/utils/commons'
 import { createContext } from 'svelte'
 
-export type SurveyQuestion = PublicSurveyQuestion
-export type { PublicSurveyQuestionsResponse }
-
 export const emptySurveyQuestions: PublicSurveyQuestionsResponse = { questions: [] }
-
-export const [getSurveyQuestionsContext, setSurveyQuestionsContext] =
-  createContext<PublicSurveyQuestion[]>()
 
 export type SurveyCtx = {
   show: boolean
