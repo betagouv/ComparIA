@@ -1,24 +1,29 @@
 <script lang="ts">
   import { Button, Modal } from '$components/dsfr'
-  import SurveyQuestionField from '$lib/components/SurveyQuestionField.svelte'
+  import Form from '$components/form/Form.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import {
-    getSurveyQuestionsContext,
+    answersToForm,
+    formToAnswers,
+    getSurveyContext,
     hasShownSurveyThisSession,
-    markSurveyShownThisSession
+    markSurveyShownThisSession,
+    questionsToFormItems
   } from '$lib/survey'
 
   const modalId = 'fr-modal-survey'
-  const questions = getSurveyQuestionsContext()
-
+  const survey = getSurveyContext()
   // Decided once, when the popup mounts: whether there is anything to ask and
   // whether this visitor has already been offered the popup this session.
-  const show = questions.length > 0 && !hasShownSurveyThisSession()
+  const shouldOpen = !!survey.voteQuestions?.length && !hasShownSurveyThisSession()
+
+  const items = $derived(questionsToFormItems(survey.voteQuestions!))
+  const form = $derived(answersToForm([], survey.voteQuestions!))
 
   // Long enough for the visitor to read the reveal they just asked for before
   // a popup lands on it, short enough that they are still on the page.
-  const OPEN_DELAY_MS = 4000
+  const OPEN_DELAY_MS = 1000
 
   // The DSFR modal script discloses on a change of data-fr-opened, not on its
   // initial value, so the attribute has to start false and flip once DSFR has
@@ -28,15 +33,11 @@
     const timer = setTimeout(() => {
       // Marked here rather than on mount: a visitor who leaves during the
       // delay never saw the popup, so it should still be waiting for them.
-      if (show) markSurveyShownThisSession()
-      opened = show
+      if (shouldOpen) markSurveyShownThisSession()
+      opened = shouldOpen
     }, OPEN_DELAY_MS)
     return () => clearTimeout(timer)
   })
-
-  let answers = $state<Record<string, string[]>>(
-    Object.fromEntries(questions.map((question) => [question.id, []]))
-  )
 
   // Guards the popup from recording the same showing twice, e.g. Escape and a
   // click both firing onClose, or a double click on submit. A double-fire
@@ -49,20 +50,19 @@
   // /survey/answers, whatever was left blank counts as shown-and-declined.
   // Returns whether everything was recorded.
   async function recordShowing(): Promise<boolean> {
-    const answered = questions
-      .map((question) => ({ question_id: question.id, option_keys: answers[question.id] ?? [] }))
-      .filter((answer) => answer.option_keys.length > 0)
+    const questions = survey.voteQuestions!
+    const updatedAnswers = formToAnswers(form, questions)
     // Left blank in a popup the visitor otherwise submitted: still shown, so
     // it still counts against the re-ask limit.
     const blankIds = questions
-      .filter((question) => (answers[question.id] ?? []).length === 0)
-      .map((question) => question.id)
+      .filter((q) => !updatedAnswers.find((a) => a.question_id === q.id))
+      .map((q) => q.id)
 
     try {
-      if (answered.length > 0) {
+      if (updatedAnswers.length > 0) {
         await api.request('/survey/answers', {
           method: 'POST',
-          body: JSON.stringify({ answers: answered })
+          body: JSON.stringify({ answers: updatedAnswers })
         })
       }
       if (blankIds.length > 0) {
@@ -108,42 +108,41 @@
   }
 </script>
 
-{#if show}
+{#if shouldOpen}
   <!-- Opened programmatically, not by a visible trigger: this hidden button
        is what tells the DSFR modal script to disclose it once, on mount. -->
   <button class="hidden" data-fr-opened={opened} aria-controls={modalId}>Hidden</button>
 
   <Modal
     id={modalId}
-    titleId="{modalId}-title"
+    titleId="form-{modalId}-title"
     sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6"
     {onClose}
   >
-    <h2 id="{modalId}-title" class="fr-modal__title text-primary!">
-      {m['survey.afterVote.title']()}
-    </h2>
-    <p class="text-sm! text-grey mb-6!">{m['survey.afterVote.description']()}</p>
+    <Form
+      id="form-{modalId}"
+      label={m['survey.afterVote.title']()}
+      description={m['survey.afterVote.description']()}
+      {items}
+      {form}
+      {onSubmit}
+    >
+      {#snippet errorSnippet()}
+        {#if submitFailed}
+          <p class="fr-error-text" role="alert">{m['survey.afterVote.submitFailed']()}</p>
+        {/if}
+      {/snippet}
 
-    <div class="mb-8 flex flex-col">
-      {#each questions as question (question.id)}
-        <SurveyQuestionField
-          {question}
-          onchange={(option_keys) => (answers[question.id] = option_keys)}
-        />
-      {/each}
-    </div>
-
-    {#if submitFailed}
-      <p class="fr-error-text" role="alert">{m['survey.afterVote.submitFailed']()}</p>
-    {/if}
-
-    <div class="gap-3 flex flex-wrap items-center justify-end">
-      <Button
-        variant="tertiary-no-outline"
-        text={m['survey.afterVote.dismiss']()}
-        aria-controls={modalId}
-      />
-      <Button text={m['survey.afterVote.submit']()} onclick={onSubmit} />
-    </div>
+      {#snippet btnSnippet()}
+        <div class="gap-3 flex flex-wrap items-center justify-end">
+          <Button
+            variant="tertiary-no-outline"
+            text={m['survey.afterVote.dismiss']()}
+            aria-controls={modalId}
+          />
+          <Button type="submit" text={m['survey.afterVote.submit']()} />
+        </div>
+      {/snippet}
+    </Form>
   </Modal>
 {/if}

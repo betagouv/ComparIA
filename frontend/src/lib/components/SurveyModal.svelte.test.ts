@@ -1,6 +1,6 @@
+import SurveyModal from '$lib/components/SurveyModal.svelte'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import SurveyModal from '../../../lib/components/SurveyModal.svelte'
 
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
@@ -11,11 +11,17 @@ vi.mock('$lib/fastapi-client', () => ({
   api: { request: mocks.request }
 }))
 
-vi.mock('$lib/survey', () => ({
-  getSurveyQuestionsContext: () => mocks.questions,
-  hasShownSurveyThisSession: () => false,
-  markSurveyShownThisSession: vi.fn()
-}))
+vi.mock('$lib/survey', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getSurveyContext: () => ({
+      voteQuestions: mocks.questions
+    }),
+    hasShownSurveyThisSession: () => false,
+    markSurveyShownThisSession: vi.fn()
+  }
+})
 
 const question = (id: string) => ({
   id,
@@ -61,7 +67,7 @@ describe('SurveyModal recording', () => {
   it('submits selections and only dismisses blanks when closed without submitting', async () => {
     const { container } = await openModal()
 
-    const first = container.querySelector<HTMLSelectElement>('#survey-question-q1')!
+    const first = container.querySelector<HTMLSelectElement>('#q1')!
     await fireEvent.change(first, { target: { value: 'q1-b' } })
     conceal(container)
 
@@ -88,7 +94,7 @@ describe('SurveyModal recording', () => {
       path === '/survey/dismiss' ? Promise.resolve(undefined) : Promise.reject(new Error('offline'))
     )
 
-    const first = container.querySelector<HTMLSelectElement>('#survey-question-q1')!
+    const first = container.querySelector<HTMLSelectElement>('#q1')!
     await fireEvent.change(first, { target: { value: 'q1-b' } })
 
     const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find(
