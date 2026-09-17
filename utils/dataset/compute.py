@@ -72,6 +72,12 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
         raise
 
 
+# A profile (one respondent's full set of answers) is published only when at
+# least this many respondents share it. A rarer one, next to the text of every
+# conversation the person had, would single them out; it is exported as `{}`.
+SURVEY_MIN_RESPONDENTS_PER_PROFILE = 5
+
+
 def _respondent_key(
     user_id: UUID | None, anonymous_user_hash: str | None
 ) -> str | None:
@@ -173,6 +179,10 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
         )
         rows = (await session.exec(_survey_answers_query(publishable_versions))).all()
 
+    return suppress_rare_profiles(fold_survey_answers(rows))
+
+
+def fold_survey_answers(rows) -> dict[str, RespondentAnswers]:
     answers: dict[str, RespondentAnswers] = {}
     for question_key, input_type, user_id, anonymous_user_hash, option_key in rows:
         respondent = _respondent_key(user_id, anonymous_user_hash)
@@ -185,6 +195,37 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
         else:
             per_respondent[question_key] = option_key
     return answers
+
+
+def suppress_rare_profiles(
+    answers: dict[str, RespondentAnswers],
+    minimum: int = SURVEY_MIN_RESPONDENTS_PER_PROFILE,
+) -> dict[str, RespondentAnswers]:
+    """
+    Drop every respondent whose full set of answers is shared by fewer than
+    `minimum` respondents. The rows stay in the dataset; only their
+    `respondent` field is emptied.
+    """
+    profiles: dict[str, int] = {}
+    # Checkbox answers are listed in the order they were given, so the lists
+    # are sorted for the comparison: the same options make the same profile.
+    keyed = {
+        respondent: json.dumps(
+            {
+                key: sorted(value) if isinstance(value, list) else value
+                for key, value in profile.items()
+            },
+            sort_keys=True,
+        )
+        for respondent, profile in answers.items()
+    }
+    for profile in keyed.values():
+        profiles[profile] = profiles.get(profile, 0) + 1
+    return {
+        respondent: answers[respondent]
+        for respondent, profile in keyed.items()
+        if profiles[profile] >= minimum
+    }
 
 
 async def count_dataset_rows(datasets: list[Datasets]):
@@ -681,7 +722,9 @@ conversation, for example `{{"age": "25_34", "job": ["dev", "student"]}}`.
 
 - A `select` question maps its key to a single option key (a string).
 - A `checkbox_group` question maps its key to a list of option keys.
-- `{{}}` means the respondent was not asked, or answered nothing.
+- `{{}}` means the respondent was not asked, answered nothing, or gave a
+  set of answers shared by fewer than {SURVEY_MIN_RESPONDENTS_PER_PROFILE}
+  respondents: such a profile is withheld so it cannot single anyone out.
 - Only questions marked "published" in the survey admin are included here;
   unpublished or archived questions, and their answers, never leave the
   instance.
