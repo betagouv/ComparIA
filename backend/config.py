@@ -99,7 +99,8 @@ class Settings(BaseSettings):
     # this stays empty outside development.
     COMPARIA_CORS_ORIGINS: list[str] = []
 
-    # When set, /metrics requires "Authorization: Bearer <token>".
+    # /metrics requires "Authorization: Bearer <token>". Unset, the endpoint
+    # refuses every request outside debug.
     METRICS_TOKEN: str | None = None
 
     @field_validator("COMPARIA_APP_URL")
