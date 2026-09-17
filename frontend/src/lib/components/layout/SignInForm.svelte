@@ -140,7 +140,7 @@
     await invalidate('survey:signup')
     const newUser = Date.now() - new Date(auth.user!.created_at).getTime() < 60 * 60 * 1000
     // Ask questions if any and user didn't yet answered it
-    if ((survey.signupQuestions.length && !auth.user!.questionsAnswered) || newUser) {
+    if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || newUser)) {
       step = 'questions'
     } else {
       onLoginCompleted()
@@ -243,18 +243,19 @@
   function onLoginCompleted() {
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
+    step = startAtTotp ? 'totp' : 'email'
   }
 </script>
 
 <div bind:this={formContainer} {...props} class={['py-10 px-8', props.class]}>
-  {#if !hideHeader}
-    <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
-    <p class="text-xs! mb-6! text-grey">
-      {m['auth.modal.email.subtitle']({ platformName })}
-    </p>
-  {/if}
-
   {#if step !== 'questions'}
+    {#if !hideHeader}
+      <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+      <p class="text-xs! mb-6! text-grey">
+        {m['auth.modal.email.subtitle']({ platformName })}
+      </p>
+    {/if}
+
     <form onsubmit={onSubmit}>
       {#if emailAlreadyChecked}
         <p class="text-sm! text-grey mb-4!">{m['auth.modal.totp.emailChecked']()}</p>
