@@ -537,14 +537,16 @@ async def oidc_callback(
     if not email:
         return _login_error("no_email")
 
-    if not claims.get("email_verified"):
-        # `email` and `email_verified` are both member claims of the `email`
-        # scope (OIDC Core 5.4). OIDC here is generic, not locked to one
-        # trusted provider, and login resolves by email alone (spec: no
-        # (issuer, sub) table) — trusting an unverified claim would let
-        # anyone who can set an arbitrary email at the configured IdP take
-        # over an existing account, including a pre-seeded admin one. Fail
-        # closed when the provider doesn't assert verification.
+    if claims.get("email_verified") is False:
+        # `email_verified` is an optional member claim of the `email` scope
+        # (OIDC Core 5.4): some providers omit it entirely (ProConnect's
+        # documented userinfo claims never include it — see
+        # docs/OIDC_SSO.md), so treating "absent" as "unverified" would
+        # reject every login from those providers. Only an *explicit* false
+        # is a provider actively disclaiming verification of the address;
+        # trusting it anyway would let an attacker on such a provider claim
+        # an existing account's email (including a pre-seeded admin one),
+        # since login resolves by email alone (spec: no (issuer, sub) table).
         return _login_error("email_not_verified")
 
     if app_settings.auth_domain_allowlist:

@@ -262,12 +262,14 @@ def test_callback_rejects_an_unverified_email():
     assert not client._login_calls
 
 
-def test_callback_rejects_a_missing_email_verified_claim():
-    """Fail closed when the provider omits `email_verified` entirely, rather
-    than assume an absent claim means verified."""
+def test_callback_allows_a_missing_email_verified_claim():
+    """`email_verified` is optional in the OIDC spec, and some real providers
+    never send it — ProConnect's documented userinfo claims don't include it
+    (docs/OIDC_SSO.md). An absent claim must not lock out every login from
+    those providers; only an explicit `false` is rejected."""
 
     async def exchange_code_for_claims(**_kwargs):
-        return {"email": "boss@example.test", "nonce": "the-nonce"}
+        return {"email": "agent@example.test", "nonce": "the-nonce"}
 
     with routed(exchange=exchange_code_for_claims) as client:
         response = client.get(
@@ -275,9 +277,9 @@ def test_callback_rejects_a_missing_email_verified_claim():
             params={"code": "auth-code", "state": "good-state"},
             follow_redirects=False,
         )
-    reason = _login_redirect(response)
-    assert reason == "email_not_verified"
-    assert not client._login_calls
+    assert response.status_code == 302
+    assert response.headers["location"] == f"{auth_router.settings.COMPARIA_APP_URL}/"
+    assert client._login_calls
 
 
 def test_callback_denies_an_email_outside_the_domain_allowlist():
