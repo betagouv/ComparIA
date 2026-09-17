@@ -289,7 +289,6 @@ async def oidc_login(
     email: str,
     ip: str,
     user_agent: str | None,
-    visitor_id: str | None,
     anonymous_user_hash: str | None = None,
 ) -> str:
     """Resolve or create the `User` for an OIDC-authenticated email and mint a
@@ -308,7 +307,7 @@ async def oidc_login(
             await session.flush()
 
         token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
+            session, user, ip, user_agent, anonymous_user_hash
         )
         await session.commit()
 

@@ -556,12 +556,10 @@ async def oidc_callback(
 
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
-    visitor_id = get_matomo_tracker_from_cookies(request.cookies)
     token = await oidc_login_service(
         email=email,
         ip=ip,
         user_agent=user_agent,
-        visitor_id=visitor_id,
         anonymous_user_hash=_anonymous_hash(request),
     )
 
