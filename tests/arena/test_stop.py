@@ -277,6 +277,7 @@ def test_a_cut_answer_without_text_is_dropped():
 def test_the_route_saves_the_cut_answers_and_sends_them_back():
     saved: dict = {}
     released: list = []
+    charged: list = []
     comp, turn = comparison()
     turn.llm_msg_a = LLMMessageCreate(content="Il était une fois ", interrupted=True)
     turn.llm_msg_b = LLMMessageCreate(interrupted=True)  # stopped before a word
@@ -304,7 +305,8 @@ def test_the_route_saves_the_cut_answers_and_sends_them_back():
             store_comparison_metadata=lambda id, is_streaming: released.append(
                 is_streaming
             ),
-            increment_input_chars=lambda *a, **k: AssertionError("not charged"),
+            increment_input_chars=lambda *a, **k: charged.append(a[2]),
+            get_ip=lambda request: "10.0.0.1",
         ):
             return [
                 json.loads(line.removeprefix("data: "))
@@ -319,6 +321,8 @@ def test_the_route_saves_the_cut_answers_and_sends_them_back():
     assert saved["a"].interrupted is True and saved["a"].content.strip()
     assert saved["b"] is None
     assert released == [False]
+    # The prompt reached both providers, so the stop costs a full turn.
+    assert charged == [len(turn.user_msg.content)]
     sent = events[-1]["turn"]
     assert sent["llm_msg_a"]["interrupted"] is True
     assert sent["llm_msg_a"]["content"] == "Il était une fois "
