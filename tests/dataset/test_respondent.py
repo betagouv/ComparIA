@@ -53,6 +53,32 @@ def _one_turn_comparison():
     )
 
 
+def test_rare_profiles_are_withheld():
+    common = {"age": "25_34", "job": ["dev", "student"]}
+    same_options_other_order = {"age": "25_34", "job": ["student", "dev"]}
+    answers = {f"user:{i}": dict(common) for i in range(4)}
+    answers["user:4"] = same_options_other_order
+    answers["user:rare"] = {"age": "65_plus", "job": ["dev"]}
+
+    kept = compute.suppress_rare_profiles(answers, minimum=5)
+
+    assert set(kept) == {f"user:{i}" for i in range(5)}
+    assert kept["user:4"] == same_options_other_order
+
+
+def test_a_withheld_profile_exports_as_an_empty_object():
+    comp = _one_turn_comparison()
+    comp.user_id = uuid.uuid4()
+    comp.anonymous_user_hash = None
+    answers = compute.suppress_rare_profiles(
+        {f"user:{comp.user_id}": {"age": "65_plus"}}, minimum=2
+    )
+
+    turns = _turns_for(comp, answers)
+
+    assert json.loads(turns[0]["respondent"]) == {}
+
+
 def test_respondent_dict_only_has_published_questions_for_signed_in_user():
     user_id = uuid.uuid4()
     comp = _one_turn_comparison()
@@ -106,6 +132,8 @@ def test_respondent_dict_ignores_other_respondents_answers():
 
 
 if __name__ == "__main__":
+    test_rare_profiles_are_withheld()
+    test_a_withheld_profile_exports_as_an_empty_object()
     test_respondent_dict_only_has_published_questions_for_signed_in_user()
     test_respondent_dict_matches_anonymous_hash_when_no_user()
     test_respondent_dict_empty_when_respondent_never_answered()
