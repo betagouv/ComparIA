@@ -46,6 +46,7 @@
   // allowed by its types).
   const oidcErrorMessages: Record<string, () => string> = {
     domain_not_allowed: () => m['auth.oidc.error.domain_not_allowed'](),
+    email_not_verified: () => m['auth.oidc.error.email_not_verified'](),
     invalid_nonce: () => m['auth.oidc.error.invalid_nonce'](),
     invalid_state: () => m['auth.oidc.error.invalid_state'](),
     missing_code: () => m['auth.oidc.error.missing_code'](),

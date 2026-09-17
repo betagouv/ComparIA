@@ -100,7 +100,11 @@ def routed(
     if exchange is None:
 
         async def exchange_code_for_claims(**_kwargs):
-            return {"email": "agent@example.test", "nonce": "the-nonce"}
+            return {
+                "email": "agent@example.test",
+                "email_verified": True,
+                "nonce": "the-nonce",
+            }
 
     else:
         exchange_code_for_claims = exchange
@@ -221,7 +225,7 @@ def test_callback_rejects_a_nonce_mismatch():
 
 def test_callback_rejects_when_provider_returns_no_email():
     async def exchange_code_for_claims(**_kwargs):
-        return {"email": None, "nonce": "the-nonce"}
+        return {"email": None, "email_verified": True, "nonce": "the-nonce"}
 
     with routed(exchange=exchange_code_for_claims) as client:
         response = client.get(
@@ -231,6 +235,48 @@ def test_callback_rejects_when_provider_returns_no_email():
         )
     reason = _login_redirect(response)
     assert reason == "no_email"
+    assert not client._login_calls
+
+
+def test_callback_rejects_an_unverified_email():
+    """A provider that hands back `email_verified: false` is asserting it did
+    *not* check ownership of the address — trusting it would let an attacker
+    claim any email (including a pre-seeded admin's) and take over that
+    account by matching on email."""
+
+    async def exchange_code_for_claims(**_kwargs):
+        return {
+            "email": "boss@example.test",
+            "email_verified": False,
+            "nonce": "the-nonce",
+        }
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "email_not_verified"
+    assert not client._login_calls
+
+
+def test_callback_rejects_a_missing_email_verified_claim():
+    """Fail closed when the provider omits `email_verified` entirely, rather
+    than assume an absent claim means verified."""
+
+    async def exchange_code_for_claims(**_kwargs):
+        return {"email": "boss@example.test", "nonce": "the-nonce"}
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = client.get(
+            "/auth/oidc/callback",
+            params={"code": "auth-code", "state": "good-state"},
+            follow_redirects=False,
+        )
+    reason = _login_redirect(response)
+    assert reason == "email_not_verified"
     assert not client._login_calls
 
 
@@ -335,6 +381,11 @@ def test_callback_failure_leaves_no_session_cookie_on_any_path():
             {"code": "x", "state": "good-state"},
         ),
         (
+            "email_not_verified",
+            {"exchange": _unverified_email_exchange},
+            {"code": "x", "state": "good-state"},
+        ),
+        (
             "domain_not_allowed",
             {"row": _settings_row(auth_domain_allowlist=["x.test"])},
             {"code": "x", "state": "good-state"},
@@ -350,7 +401,15 @@ def test_callback_failure_leaves_no_session_cookie_on_any_path():
 
 
 async def _no_email_exchange(**_kwargs):
-    return {"email": None, "nonce": "the-nonce"}
+    return {"email": None, "email_verified": True, "nonce": "the-nonce"}
+
+
+async def _unverified_email_exchange(**_kwargs):
+    return {
+        "email": "agent@example.test",
+        "email_verified": False,
+        "nonce": "the-nonce",
+    }
 
 
 class _FakeResult:

@@ -728,6 +728,7 @@
             "buttonFallback": "Log ind med identitetsudbyderen",
             "error": {
                 "domain_not_allowed": "Din adresse tilhører ikke et domæne, der er godkendt til denne instans.",
+                "email_not_verified": "Identitetsudbyderen har ikke bekræftet din e-mailadresse.",
                 "invalid_nonce": "Login via identitetsudbyderen mislykkedes (ugyldigt token).",
                 "invalid_state": "Login via identitetsudbyderen er udløbet. Prøv igen.",
                 "missing_code": "Login via identitetsudbyderen er ufuldstændig. Prøv igen.",

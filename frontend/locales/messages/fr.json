@@ -729,6 +729,7 @@
             "buttonFallback": "Se connecter avec le fournisseur d’identité",
             "error": {
                 "domain_not_allowed": "Votre adresse n’appartient pas à un domaine autorisé pour cette instance.",
+                "email_not_verified": "Le fournisseur d’identité n’a pas confirmé votre adresse e-mail.",
                 "invalid_nonce": "La connexion via le fournisseur d’identité a échoué (jeton invalide).",
                 "invalid_state": "La connexion via le fournisseur d’identité a expiré. Réessayez.",
                 "missing_code": "La connexion via le fournisseur d’identité est incomplète. Réessayez.",
