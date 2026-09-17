@@ -96,7 +96,7 @@
   >
     <span class="gap-2 inline-flex items-center justify-center">
       {#if oidcLogoUrl}
-        <img src={oidcLogoUrl} alt="" class="h-5" />
+        <img src={oidcLogoUrl} alt="" class="h-8" />
       {/if}
       {oidcLabel}
     </span>
