@@ -31,7 +31,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
-from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
@@ -278,7 +278,6 @@ async def email_verify(
     _reject_cross_site(request)
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
-    visitor_id = get_matomo_tracker_from_cookies(request.cookies)
     email_hash = _hash(body.email)
     fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=email_hash)
     # Same counter, keyed on the email alone: "*" is not a possible host, so the
@@ -312,7 +311,6 @@ async def email_verify(
         code=body.code,
         ip=ip,
         user_agent=user_agent,
-        visitor_id=visitor_id,
         anonymous_user_hash=_anonymous_hash(request),
     )
     if not token:
@@ -374,13 +372,11 @@ async def invite_accept(
 
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
-    visitor_id = get_matomo_tracker_from_cookies(request.cookies)
 
     token = await accept_invite(
         token=body.token,
         ip=ip,
         user_agent=user_agent,
-        visitor_id=visitor_id,
         anonymous_user_hash=anonymous_user_hash,
     )
     if not token:

@@ -74,13 +74,13 @@ async def _create_session(
     user: User,
     ip: str,
     user_agent: str | None,
-    visitor_id: str | None,
     anonymous_user_hash: str | None = None,
 ) -> str:
     """Create the AuthSession for a user that just authenticated (login code or
-    invite link), carry over the acceptance they gave while anonymous, and
-    reattach their anonymous comparisons. Logging in is not an acceptance in
-    itself. Does not commit; caller owns the transaction."""
+    invite link) and carry over the acceptance they gave while anonymous.
+    Logging in is not an acceptance in itself, and it does not claim any
+    conversation either: that is the explicit merge, keyed on the anonymous
+    session cookie. Does not commit; caller owns the transaction."""
     user.last_seen_at = datetime.now()
 
     token = secrets.token_urlsafe(32)
@@ -96,16 +96,6 @@ async def _create_session(
     if anonymous_user_hash:
         await _associate_anonymous_acceptance(
             session, user, auth_session, anonymous_user_hash
-        )
-
-    if visitor_id:
-        await session.execute(
-            sa_update(Comparison)
-            .where(
-                Comparison.visitor_id == visitor_id,
-                Comparison.user_id.is_(None),
-            )
-            .values(user_id=user.id)
         )
 
     return token
@@ -160,7 +150,6 @@ async def verify_login_code(
     code: str,
     ip: str,
     user_agent: str | None,
-    visitor_id: str | None,
     anonymous_user_hash: str | None = None,
 ) -> str | None:
     async with get_session() as session:
@@ -184,7 +173,7 @@ async def verify_login_code(
         login_code.used_at = datetime.now()
 
         token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
+            session, user, ip, user_agent, anonymous_user_hash
         )
 
         await session.commit()
@@ -267,7 +256,6 @@ async def accept_invite(
     token: str,
     ip: str,
     user_agent: str | None,
-    visitor_id: str | None,
     anonymous_user_hash: str | None = None,
 ) -> str | None:
     async with get_session() as session:
@@ -289,7 +277,7 @@ async def accept_invite(
         invite.used_at = datetime.now()
 
         session_token = await _create_session(
-            session, user, ip, user_agent, visitor_id, anonymous_user_hash
+            session, user, ip, user_agent, anonymous_user_hash
         )
 
         await session.commit()

@@ -231,11 +231,11 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
   httpRequestCounter.inc(labels)
   httpRequestDuration.observe(labels, duration)
 
-  // Log request to Custom Logger
+  // The route id, not the path: /invite/[token] carries a sign-in credential
+  // in its last segment, and logs travel further than mailboxes.
   logger.info('HTTP request', {
     method: event.request.method,
-    path: event.url.pathname,
-    route: event.route?.id,
+    route: event.route?.id ?? event.url.pathname.replace(/(\/invite\/)[^/?]+/, '$1<redacted>'),
     status: response.status,
     duration_ms: Math.round(Date.now() - start),
     user_agent: event.request.headers.get('user-agent')
