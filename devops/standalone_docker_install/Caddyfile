@@ -18,8 +18,9 @@
     @static path /icons/* /orgs/* /favicon/* /flags/* /artworks/* /images/*
     header @static Cache-Control "public, max-age=86400"
 
-    reverse_proxy /counter* backend:80
-    reverse_proxy /models/* backend:80
-    reverse_proxy /arena/* backend:80
+    # Every backend route lives under /api (see backend/main.py), so one
+    # prefix covers them all and never collides with a same-named frontend
+    # page (/admin, /models, /settings are pages too).
+    reverse_proxy /api/* backend:80
     reverse_proxy frontend:3000
 }
