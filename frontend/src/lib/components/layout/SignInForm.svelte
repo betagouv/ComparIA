@@ -118,14 +118,7 @@
       })
       step = 'code'
     } catch (err) {
-      // A 428 here means the backend has required signup questions this form
-      // does not show: the fetch failed, or an admin added one while the page
-      // sat open. Either way the two sides contradict each other, reloading
-      // fixes both, and the raw refusal is untranslated.
-      error =
-        (err as ApiError).status === 428
-          ? m['survey.signup.reloadNeeded']()
-          : (err as Error).message
+      error = (err as Error).message
     } finally {
       loading = false
     }
