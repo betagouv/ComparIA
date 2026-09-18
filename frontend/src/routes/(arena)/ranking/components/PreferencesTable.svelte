@@ -99,6 +99,7 @@
       simple_name: model.name,
       logo: model.lab.logo,
       customLogoId: model.lab.has_custom_logo ? model.lab.id : undefined,
+      customLogoVersion: model.lab.logo_version,
       organisation: model.lab.name,
       ...model.prefs,
       ...model.prefs.counts,
@@ -165,6 +166,7 @@
       <AILogo
         logo={model.logo}
         customLogoId={model.customLogoId}
+        customLogoVersion={model.customLogoVersion}
         alt={model.organisation}
         class="me-1 inline-block align-middle"
       />

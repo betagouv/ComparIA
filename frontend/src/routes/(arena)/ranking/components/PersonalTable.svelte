@@ -179,6 +179,7 @@
           <AILogo
             logo={row.model.lab.logo}
             customLogoId={row.model.lab.has_custom_logo ? row.model.lab.id : undefined}
+            customLogoVersion={row.model.lab.logo_version}
             alt={row.model.lab.name}
             class="me-1 inline-block align-middle"
           />

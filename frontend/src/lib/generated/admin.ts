@@ -128,6 +128,7 @@ export interface AppSettingsPublic {
   publish_hour: number;
   publish_timezone: string;
   has_custom_logo: boolean;
+  logo_version?: string | null;
   enabled_locales: string[];
   default_locale: string;
   updated_at: string;
@@ -327,6 +328,7 @@ export interface LLMLabPublic {
    */
   origin_country: string;
   has_custom_logo?: boolean;
+  logo_version?: string | null;
 }
 /**
  * LLM licence metadata.

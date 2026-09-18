@@ -227,6 +227,17 @@ MAX_TURNS_PER_COMPARISON = 20
 MAX_VOTE_KEYWORD_ANNOTATIONS = 20
 MAX_VOTE_CUSTOM_ANNOTATION_LEN = 1_000
 
+# Admin-uploaded logos. The upload cap only bounds what one request may carry:
+# rasters are resized into the box below and stored as WebP, so what is served
+# to every visitor stays a few KB whatever the original was.
+LOGO_UPLOAD_MAX_SIZE = 2 * 1024 * 1024
+# An SVG is stored as uploaded, so it gets a cap of its own.
+LOGO_SVG_MAX_SIZE = 64 * 1024
+# The largest lab logo slot is 34 px; 160 covers 4x pixel density with margin.
+LAB_LOGO_BOX = (160, 160)
+# The instance logo sits in the header at about 35 px high, and is often wide.
+INSTANCE_LOGO_BOX = (320, 120)
+
 # Altcha PoW CAPTCHA settings
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
