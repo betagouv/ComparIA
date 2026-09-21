@@ -126,7 +126,14 @@ async def run_export(destination_id=None) -> None:
     command = [sys.executable, "-m", "utils.dataset.run", "--record"]
     if destination_id is not None:
         command.extend(["--destination-id", str(destination_id)])
-    process = await asyncio.create_subprocess_exec(*command, preexec_fn=_child_limits)
+    # BLAS libraries size their thread pool, and the scratch buffers that go
+    # with it, off the machine's core count rather than the memory limit
+    # above. Left alone they can claim more than the whole budget on their own
+    # before the export reads a single row.
+    env = os.environ | {"OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"}
+    process = await asyncio.create_subprocess_exec(
+        *command, preexec_fn=_child_limits, env=env
+    )
     logger.info(f"Publish run started, pid {process.pid}")
 
     try:
