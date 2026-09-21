@@ -111,7 +111,9 @@ class TotpChallenge(SQLModel, table=True):
     __tablename__ = "auth_totp_challenge"
 
     id: ModelId
-    user_id: UserId
+    # Read per user: the hourly cap sums a user's attempts, a reset drops
+    # their rows.
+    user_id: uuid.UUID = Field(foreign_key="auth_user.id", index=True)
     token_hash: str = Field(index=True)
     created_at: AutoDatetime
     expires_at: Datetime
