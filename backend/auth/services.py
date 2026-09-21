@@ -37,7 +37,8 @@ logger = logging.getLogger("languia")
 
 _LOGIN_CODE_TTL_MINUTES = 10
 _INVITE_TOKEN_TTL_HOURS = 24
-_TOTP_CHALLENGE_TTL_MINUTES = 10
+# Also how long the browser keeps the challenge cookie.
+TOTP_CHALLENGE_TTL_MINUTES = 10
 
 
 @dataclass
@@ -143,7 +144,7 @@ async def _open_session_or_challenge(
         TotpChallenge(
             user_id=user.id,
             token_hash=_hash(token),
-            expires_at=datetime.now() + timedelta(minutes=_TOTP_CHALLENGE_TTL_MINUTES),
+            expires_at=datetime.now() + timedelta(minutes=TOTP_CHALLENGE_TTL_MINUTES),
         )
     )
     return LoginResult(kind="totp_challenge", token=token)
