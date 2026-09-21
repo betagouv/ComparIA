@@ -80,6 +80,8 @@
 
   function describe(err: unknown): string {
     const { status, message } = err as ApiError
+    // Nothing reached the backend, or it could not answer: not a wrong code.
+    if (!status || status >= 500) return m['errors.unknown']()
     if (status === 429) return m['auth.settings.totp.modal.tooMany']()
     if (status === 409) return m['auth.settings.totp.modal.expired']()
     if (status === 401 || status === 403) return m['auth.settings.totp.modal.sessionExpired']()
