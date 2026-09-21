@@ -27,6 +27,7 @@ import backend.auth.totp as auth_totp  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 import utils.secrets as secrets_store  # noqa: E402
 from utils.database.models.auth import TotpChallenge, User, UserTotp  # noqa: E402
+from utils.secrets import SecretUnreadableError  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -100,6 +101,17 @@ def updates_on(statements, table_name):
         for s in statements
         if s.is_update and s.table.name == table_name
     ]
+
+
+@contextlib.contextmanager
+def under_a_key_we_no_longer_have():
+    """Whatever is encrypted inside cannot be read back outside."""
+    with patched(
+        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=Fernet.generate_key().decode()
+    ):
+        secrets_store._fernet.cache_clear()
+        yield
+    secrets_store._fernet.cache_clear()
 
 
 SECRET = pyotp.random_base32()
@@ -231,14 +243,17 @@ def test_an_older_key_still_decrypts_and_is_flagged_for_reencryption():
     secrets_store._fernet.cache_clear()
 
 
-def test_a_secret_from_an_unknown_key_reads_as_missing_not_as_unenrolled():
-    with patched(
-        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=Fernet.generate_key().decode()
-    ):
-        secrets_store._fernet.cache_clear()
+def test_a_secret_from_an_unknown_key_reads_as_unreadable_not_as_unenrolled():
+    with under_a_key_we_no_longer_have():
         token = auth_totp.encrypt_secret(SECRET)
-    secrets_store._fernet.cache_clear()
-    assert auth_totp.decrypt_secret(token) is None
+    with pytest.raises(SecretUnreadableError):
+        auth_totp.decrypt_secret(token)
+
+    # The row still says enrolled: the admin stays gated, nobody gets in on
+    # an email code alone because a key went missing.
+    user = User(email="admin@example.test", role="admin")
+    with fake_session(FakeSession(user, [uuid.uuid4()])):
+        assert asyncio.run(auth_totp.has_confirmed_totp(user.id))
 
 
 # First factor
@@ -397,6 +412,21 @@ def test_a_code_already_used_at_sign_in_is_refused_again():
         run_challenge(session, code_at(step))
 
 
+def test_a_secret_no_key_opens_is_neither_a_wrong_code_nor_a_dead_challenge():
+    user = User(email="admin@example.test")
+    with under_a_key_we_no_longer_have():
+        totp = enrolled(user)
+    challenge = challenge_for(user)
+    session = FakeSession(user, [challenge], [totp])
+
+    with pytest.raises(SecretUnreadableError):
+        run_challenge(session, code_at(auth_totp.current_step()))
+
+    assert challenge.attempts == 0
+    assert challenge.used_at is None
+    assert session.commits == 0
+
+
 def test_a_secret_under_an_older_key_is_rewritten_at_sign_in():
     old_key = Fernet.generate_key().decode()
     new_key = Fernet.generate_key().decode()
@@ -435,6 +465,46 @@ def test_first_enrolment_needs_no_code_and_leaves_nothing_live():
     assert auth_totp.decrypt_secret(totp.pending_secret_encrypted) == setup.secret
     assert "compar%20IA" in setup.otpauth_uri
     assert setup.qr_svg.startswith("data:image/svg+xml")
+
+
+def test_changing_device_with_an_unreadable_secret_is_not_a_wrong_code():
+    user = User(email="admin@example.test")
+    with under_a_key_we_no_longer_have():
+        totp = enrolled(user)
+    session = FakeSession(user, [totp])
+
+    with fake_session(session):
+        with pytest.raises(SecretUnreadableError):
+            asyncio.run(
+                auth_totp.start_totp_setup(
+                    user, code_at(auth_totp.current_step()), None
+                )
+            )
+    assert totp.pending_secret_encrypted is None
+    assert session.commits == 0
+
+
+def test_confirming_an_unreadable_pending_secret_is_not_a_missing_one():
+    user = User(email="admin@example.test")
+    with under_a_key_we_no_longer_have():
+        pending = auth_totp.encrypt_secret(SECRET)
+    totp = UserTotp(
+        user_id=user.id,
+        pending_secret_encrypted=pending,
+        pending_created_at=datetime.now(),
+    )
+    session = FakeSession(user, [totp])
+
+    with fake_session(session, auth_totp, auth_services):
+        with pytest.raises(SecretUnreadableError):
+            asyncio.run(
+                auth_totp.confirm_totp_setup(
+                    user, code_at(auth_totp.current_step()), "t"
+                )
+            )
+    assert totp.confirmed_at is None
+    assert totp.pending_secret_encrypted == pending
+    assert session.commits == 0
 
 
 def test_changing_device_needs_a_code_from_the_current_one():
@@ -603,6 +673,20 @@ def test_an_expired_second_factor_sends_the_visitor_back_to_the_start():
 
     assert r.status_code == 410
     assert 'auth_totp_challenge=""' in r.headers["set-cookie"]
+
+
+def test_a_second_factor_nobody_can_read_is_the_operator_s_problem_not_a_wrong_code():
+    async def unreadable(**_kwargs):
+        raise SecretUnreadableError()
+
+    with routed(verify_totp_challenge=unreadable) as client:
+        client.cookies.set("auth_totp_challenge", "challenge-token")
+        r = client.post("/auth/totp/verify", json={"code": "123456"})
+
+    assert r.status_code == 503
+    assert r.json()["detail"] == "totp_secret_unreadable"
+    # The challenge is kept: nothing the visitor does can fix this.
+    assert "auth_totp_challenge" not in r.headers.get("set-cookie", "")
 
 
 def test_a_right_second_factor_swaps_the_challenge_for_a_session():
@@ -795,6 +879,38 @@ def test_too_many_wrong_enrolment_codes_are_refused():
     with signed_in(admin, get_redis_client=Saturated) as client:
         r = client.post("/auth/totp/confirm", json={"code": "123456"})
     assert r.status_code == 429
+
+
+def test_enrolment_routes_answer_503_when_no_key_opens_the_secret():
+    admin = User(email="admin@example.org", role="admin")
+    counted = []
+
+    class Counting(NoRedis):
+        def incr(self, key):
+            counted.append(key)
+            return 1
+
+    async def unreadable(*_args):
+        raise SecretUnreadableError()
+
+    with signed_in(
+        admin,
+        get_app_settings=platform,
+        start_totp_setup=unreadable,
+        get_redis_client=Counting,
+    ) as client:
+        r = client.post("/auth/totp/setup", json={"code": "123456"})
+    assert r.status_code == 503
+    assert r.json()["detail"] == "totp_secret_unreadable"
+
+    with signed_in(
+        admin, confirm_totp_setup=unreadable, get_redis_client=Counting
+    ) as client:
+        r = client.post("/auth/totp/confirm", json={"code": "123456"})
+    assert r.status_code == 503
+    assert r.json()["detail"] == "totp_secret_unreadable"
+    # Not the admin's doing: it does not eat into their attempts.
+    assert counted == []
 
 
 def test_admin_routes_want_an_enrolled_authenticator():

@@ -16,6 +16,11 @@ from backend.config import settings
 logger = logging.getLogger("languia")
 
 
+class SecretUnreadableError(Exception):
+    """A stored secret that no configured key opens. The secret exists, so
+    the caller must not read this as a missing one, nor as a wrong input."""
+
+
 def _keys() -> list[str]:
     return [k.strip() for k in settings.COMPARIA_ENCRYPTION_KEY.split(",") if k.strip()]
 
@@ -31,16 +36,17 @@ def encrypt_secret(secret: str) -> str:
     return _fernet().encrypt(secret.encode()).decode()
 
 
-def decrypt_secret(token: str) -> str | None:
-    """None when no configured key opens the token, which is logged: it means
-    a key was dropped too early, not that there was no secret."""
+def decrypt_secret(token: str) -> str:
+    """Raises SecretUnreadableError when no configured key opens the token,
+    which is logged: it means a key was dropped too early, not that there
+    was no secret."""
     try:
         return _fernet().decrypt(token.encode()).decode()
     except InvalidToken:
         logger.error(
             "[SECRETS] a stored secret cannot be decrypted with the current keys"
         )
-        return None
+        raise SecretUnreadableError()
 
 
 def needs_reencryption(token: str) -> bool:
