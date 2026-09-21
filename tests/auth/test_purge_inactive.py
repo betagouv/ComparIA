@@ -21,9 +21,13 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
 
+import backend.auth.email as email  # noqa: E402
 import backend.auth.inactivity as inactivity  # noqa: E402
 import utils.database.models  # noqa: E402,F401
-from backend.auth.email import _build_inactivity_message  # noqa: E402
+from backend.auth.email import (  # noqa: E402
+    _build_inactivity_message,
+    send_inactivity_warning,
+)
 from backend.auth.inactivity import (  # noqa: E402
     WARNING_DAYS,
     WindowTooShortError,
@@ -273,6 +277,19 @@ def test_a_delivery_failure_skips_the_account_and_the_run_goes_on():
     assert erased == [to_erase.id]
     assert report.warn_failed == [unreachable]
     assert report.to_warn == [to_warn]
+
+
+@pytest.mark.parametrize("debug", [False, True])
+def test_without_smtp_the_warning_is_reported_as_not_sent(debug):
+    """A debug instance logs login codes instead of mailing them, but a
+    warning it never sent must not count as sent: the account would be
+    erased on the next run without anyone hearing about it."""
+    with patched(email.settings, SMTP_HOST=None, LANGUIA_DEBUG=debug):
+        sent = asyncio.run(
+            send_inactivity_warning("someone@example.test", NOW - NOTICE, NOW)
+        )
+
+    assert sent is False
 
 
 def _parts(message):

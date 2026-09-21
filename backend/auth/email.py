@@ -396,7 +396,15 @@ async def send_inactivity_warning(
 ) -> bool:
     """Returns whether the warning went out, so the caller only records it then."""
     if not settings.SMTP_HOST:
-        logger.error(f"[AUTH] SMTP is not configured, no warning sent to {to_email}")
+        # Unlike a login code, there is nothing to read in the logs instead:
+        # a warning that was not sent must not be recorded, or the account
+        # would be erased on the next run without anyone hearing about it.
+        if settings.LANGUIA_DEBUG:
+            logger.info(f"[AUTH] SMTP is not configured, no warning sent to {to_email}")
+        else:
+            logger.error(
+                f"[AUTH] SMTP is not configured, no warning sent to {to_email}"
+            )
         return False
     message = _build_inactivity_message(
         last_seen_at,
