@@ -1,16 +1,29 @@
-# Gitleaks config: default rules plus an allowlist for known false positives.
-# Only paths are allowlisted, so a real key in any other file still fails the scan.
+# Gitleaks config: default rules plus allowlists for known false positives.
+# Files gone from the tree are allowlisted by path; files still in the tree
+# are only allowlisted for the exact line that trips a rule, so a real key
+# in any other file or line still fails the scan.
 
 [extend]
 useDefault = true
 
 [[allowlists]]
-description = "Known false positives in the git history, none of them secrets"
+description = "Files gone from the tree, flagged in old commits, none of them secrets"
 paths = [
   # Upstream FastChat code kept in early commits, flags Python identifiers
   '''^fastchat/''',
-  # Model catalog, flags api_model_id values such as c4ai-aya-expanse-32b
-  '''^(utils/models|data/legacy)/(generated-)?models\.json$''',
   # Plotly export, flags category labels embedded in the figure data
   '''^utils/ranking_methods/figures/dendogram\.html$''',
+]
+
+[[allowlists]]
+description = "Model catalog, flags api_model_id values such as c4ai-aya-expanse-32b"
+# data/legacy/*models.json are still in the tree: only the api_model_id line
+# is allowed, every other line in these files is still scanned.
+condition = "AND"
+paths = [
+  '''^(utils/models|data/legacy)/(generated-)?models\.json$''',
+]
+regexTarget = "line"
+regexes = [
+  '''"api_model_id":''',
 ]
