@@ -75,6 +75,15 @@ _INVITE_CONTENT = """\
 <p style="margin: 0; color: #666666; font-size: 14px;">{ignore}</p>
 """
 
+_INACTIVITY_CONTENT = """\
+<h1 style="margin: 0 0 20px; font-size: 28px; line-height: 1.25;">{title}</h1>
+<p style="margin: 0 0 20px;">{greeting}</p>
+<p style="margin: 0 0 12px;">{unused_since}</p>
+<p style="margin: 0 0 12px;"><strong>{deleted_on}</strong></p>
+<p style="margin: 0 0 24px;">{sign_in} <a href="{link}" style="color: {primary_color}; text-decoration: underline;">{link_text}</a></p>
+<p style="margin: 0; color: #666666; font-size: 14px;">{ignore}</p>
+"""
+
 # Wording per locale. `{platform_name}` is filled in later, already escaped
 # for the HTML parts. The plain-text parts reuse the same sentences.
 _COPY: dict[str, dict[str, str]] = {
@@ -115,6 +124,25 @@ _COPY: dict[str, dict[str, str]] = {
         "invite_ignore": (
             "Vous n’attendiez pas cette invitation ? Vous pouvez ignorer ce " "message."
         ),
+        "inactivity_subject": (
+            "Votre compte {platform_name} sera supprimé le {erasure}"
+        ),
+        "inactivity_preheader": (
+            "Connectez-vous avant le {erasure} pour conserver votre compte "
+            "{platform_name}."
+        ),
+        "inactivity_title": "Votre compte sera supprimé le {erasure}",
+        "inactivity_unused_since": (
+            "Votre compte sur {platform_name} n’a pas été utilisé depuis le "
+            "{last_seen}."
+        ),
+        "inactivity_deleted_on": "Il sera supprimé le {erasure}.",
+        "inactivity_sign_in": "Connectez-vous avant cette date pour le conserver :",
+        "inactivity_ignore": (
+            "Vous ne souhaitez pas conserver ce compte ? Vous n’avez rien à "
+            "faire. Les conversations déjà partagées restent dans les jeux de "
+            "données de recherche, sans lien avec vous."
+        ),
     },
     "en": {
         "footer": "Automatic message sent by {platform_name}.",
@@ -149,6 +177,23 @@ _COPY: dict[str, dict[str, str]] = {
         "invite_ignore": (
             "Were you not expecting this invitation? You can ignore this message."
         ),
+        "inactivity_subject": (
+            "Your {platform_name} account will be deleted on {erasure}"
+        ),
+        "inactivity_preheader": (
+            "Sign in before {erasure} to keep your {platform_name} account."
+        ),
+        "inactivity_title": "Your account will be deleted on {erasure}",
+        "inactivity_unused_since": (
+            "Your account on {platform_name} has not been used since {last_seen}."
+        ),
+        "inactivity_deleted_on": "It will be deleted on {erasure}.",
+        "inactivity_sign_in": "Sign in before then to keep it:",
+        "inactivity_ignore": (
+            "Do not want to keep this account? There is nothing to do. The "
+            "conversations already shared stay in the research datasets, with "
+            "no link back to you."
+        ),
     },
     "da": {
         "footer": "Automatisk besked sendt af {platform_name}.",
@@ -181,6 +226,24 @@ _COPY: dict[str, dict[str, str]] = {
         "invite_ignore": (
             "Ventede du ikke denne invitation? Så kan du se bort fra denne besked."
         ),
+        "inactivity_subject": (
+            "Din {platform_name}-konto bliver slettet den {erasure}"
+        ),
+        "inactivity_preheader": (
+            "Log ind før den {erasure} for at beholde din {platform_name}-konto."
+        ),
+        "inactivity_title": "Din konto bliver slettet den {erasure}",
+        "inactivity_unused_since": (
+            "Din konto på {platform_name} har ikke været brugt siden den "
+            "{last_seen}."
+        ),
+        "inactivity_deleted_on": "Den bliver slettet den {erasure}.",
+        "inactivity_sign_in": "Log ind inden da for at beholde den:",
+        "inactivity_ignore": (
+            "Vil du ikke beholde kontoen? Så skal du ikke gøre noget. De "
+            "samtaler, du allerede har delt, bliver i forskningsdatasættene "
+            "uden forbindelse til dig."
+        ),
     },
 }
 
@@ -193,114 +256,82 @@ def _no_break(text: str) -> str:
     return _BREAKABLE_SPACE.sub(lambda m: f"{m.group(1) or ''}&nbsp;", text)
 
 
+class _Placeholders(dict):
+    """Leaves in place the placeholders a message fills in on its own."""
+
+    def __missing__(self, key: str) -> str:
+        return "{" + key + "}"
+
+
 def _copy(
-    locale: str, platform_name: str, html: bool = False
+    locale: str, platform_name: str, html: bool = False, **values: str
 ) -> tuple[str, dict[str, str]]:
-    """The wording for `locale`, with the platform name filled in."""
+    """The wording for `locale`, with the platform name and `values` filled in."""
     picked = pick_locale(locale, _COPY)
+    filled = _Placeholders(platform_name=platform_name, **values)
     copy = {}
     for key, value in _COPY[picked].items():
-        value = value.format(platform_name=platform_name)
+        value = value.format_map(filled)
         copy[key] = _no_break(value) if html else value
     return picked, copy
 
 
-_INACTIVITY_CONTENT = """\
-<div lang="{lang}">
-<h1 style="margin: 0 0 20px; font-size: 28px; line-height: 1.25;">{title}</h1>
-<p style="margin: 0 0 20px;">{greeting}</p>
-<p style="margin: 0 0 12px;">{unused_since}</p>
-<p style="margin: 0 0 12px;"><strong>{deleted_on}</strong></p>
-<p style="margin: 0;">{sign_in} <a href="{link}" style="color: {primary_color}; text-decoration: underline;">{link_text}</a></p>
-</div>
-"""
-
-# One entry per locale the warning can be written in. An instance whose
-# default locale is missing here gets the English one.
-_INACTIVITY_TEXTS = {
-    "fr": {
-        "months": (
-            "janvier",
-            "février",
-            "mars",
-            "avril",
-            "mai",
-            "juin",
-            "juillet",
-            "août",
-            "septembre",
-            "octobre",
-            "novembre",
-            "décembre",
-        ),
-        "date": lambda d, m, y: f"{'1er' if d == 1 else d} {m} {y}",
-        "subject": "Votre compte {platform_name} sera supprimé le {erasure}",
-        "preheader": "Connectez-vous avant le {erasure} pour conserver votre compte {platform_name}.",
-        "title": "Votre compte sera supprimé le {erasure}",
-        "greeting": "Bonjour,",
-        "unused_since": "Votre compte sur {platform_name} n’a pas été utilisé depuis le {last_seen}.",
-        "deleted_on": "Il sera supprimé le {erasure}.",
-        "sign_in": "Connectez-vous avant cette date pour le conserver\u00a0:",
-    },
-    "en": {
-        "months": (
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ),
-        "date": lambda d, m, y: f"{d} {m} {y}",
-        "subject": "Your {platform_name} account will be deleted on {erasure}",
-        "preheader": "Sign in before {erasure} to keep your {platform_name} account.",
-        "title": "Your account will be deleted on {erasure}",
-        "greeting": "Hello,",
-        "unused_since": "Your account on {platform_name} has not been used since {last_seen}.",
-        "deleted_on": "It will be deleted on {erasure}.",
-        "sign_in": "Sign in before then to keep it:",
-    },
-    "da": {
-        "months": (
-            "januar",
-            "februar",
-            "marts",
-            "april",
-            "maj",
-            "juni",
-            "juli",
-            "august",
-            "september",
-            "oktober",
-            "november",
-            "december",
-        ),
-        "date": lambda d, m, y: f"{d}. {m} {y}",
-        "subject": "Din {platform_name}-konto bliver slettet den {erasure}",
-        "preheader": "Log ind før den {erasure} for at beholde din {platform_name}-konto.",
-        "title": "Din konto bliver slettet den {erasure}",
-        "greeting": "Hej,",
-        "unused_since": "Din konto på {platform_name} har ikke været brugt siden den {last_seen}.",
-        "deleted_on": "Den bliver slettet den {erasure}.",
-        "sign_in": "Log ind inden da for at beholde den:",
-    },
+# Month names for the dates the inactivity warning quotes, one row per locale
+# in _COPY.
+_MONTHS = {
+    "fr": (
+        "janvier",
+        "février",
+        "mars",
+        "avril",
+        "mai",
+        "juin",
+        "juillet",
+        "août",
+        "septembre",
+        "octobre",
+        "novembre",
+        "décembre",
+    ),
+    "en": (
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ),
+    "da": (
+        "januar",
+        "februar",
+        "marts",
+        "april",
+        "maj",
+        "juni",
+        "juli",
+        "august",
+        "september",
+        "oktober",
+        "november",
+        "december",
+    ),
 }
 
 
-def _inactivity_texts(lang: str) -> tuple[str, dict]:
-    if lang not in _INACTIVITY_TEXTS:
-        lang = "en"
-    return lang, _INACTIVITY_TEXTS[lang]
-
-
-def _format_date(value: datetime, texts: dict) -> str:
-    return texts["date"](value.day, texts["months"][value.month - 1], value.year)
+def _format_date(value: datetime, lang: str) -> str:
+    month = _MONTHS[lang][value.month - 1]
+    if lang == "fr":
+        day = "1er" if value.day == 1 else str(value.day)
+        return f"{day} {month} {value.year}"
+    if lang == "da":
+        return f"{value.day}. {month} {value.year}"
+    return f"{value.day} {month} {value.year}"
 
 
 async def send_login_code(
@@ -358,10 +389,10 @@ async def send_inactivity_warning(
     to_email: str,
     last_seen_at: datetime,
     erasure_at: datetime,
-    lang: str = "fr",
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
+    locale: str = BASE_LOCALE,
 ) -> bool:
     """Returns whether the warning went out, so the caller only records it then."""
     if not settings.SMTP_HOST:
@@ -378,10 +409,10 @@ async def send_inactivity_warning(
     message = _build_inactivity_message(
         last_seen_at,
         erasure_at,
-        lang=lang,
         platform_name=platform_name,
         primary_color=primary_color,
         secondary_color=secondary_color,
+        locale=locale,
     )
     await asyncio.to_thread(_send_message, to_email, message)
     return True
@@ -480,10 +511,10 @@ def _build_invite_message(
 def _build_inactivity_message(
     last_seen_at: datetime,
     erasure_at: datetime,
-    lang: str = "fr",
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
+    locale: str = BASE_LOCALE,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -491,43 +522,42 @@ def _build_inactivity_message(
     platform_name = _safe_platform_name(platform_name)
     safe_platform_name = escape(platform_name)
     link = settings.COMPARIA_APP_URL
-    lang, texts = _inactivity_texts(lang)
-    _, html_copy = _copy(lang, safe_platform_name, html=True)
+    lang = pick_locale(locale, _COPY)
     dates = {
-        "last_seen": _format_date(last_seen_at, texts),
-        "erasure": _format_date(erasure_at, texts),
+        "last_seen": _format_date(last_seen_at, lang),
+        "erasure": _format_date(erasure_at, lang),
     }
-
-    def phrase(key: str, name: str) -> str:
-        return texts[key].format(platform_name=name, **dates)
-
+    _, text_copy = _copy(lang, platform_name, **dates)
+    _, html_copy = _copy(lang, safe_platform_name, html=True, **dates)
     html = _EMAIL_SHELL.format(
         lang=lang,
-        title=phrase("subject", safe_platform_name),
-        preheader=phrase("preheader", safe_platform_name),
+        title=html_copy["inactivity_subject"],
+        preheader=html_copy["inactivity_preheader"],
         platform_name=safe_platform_name,
         primary_color=primary_color,
         secondary_color=secondary_color,
         canvas_color=canvas_color,
         footer=html_copy["footer"],
         content=_INACTIVITY_CONTENT.format(
-            lang=lang,
-            title=phrase("title", safe_platform_name),
-            greeting=texts["greeting"],
-            unused_since=phrase("unused_since", safe_platform_name),
-            deleted_on=phrase("deleted_on", safe_platform_name),
-            sign_in=phrase("sign_in", safe_platform_name),
-            primary_color=primary_color,
             link=escape(link, quote=True),
             link_text=escape(link),
+            primary_color=primary_color,
+            title=html_copy["inactivity_title"],
+            greeting=html_copy["greeting"],
+            unused_since=html_copy["inactivity_unused_since"],
+            deleted_on=html_copy["inactivity_deleted_on"],
+            sign_in=html_copy["inactivity_sign_in"],
+            ignore=html_copy["inactivity_ignore"],
         ),
     )
     text = (
-        f"{phrase('unused_since', platform_name)} "
-        f"{phrase('deleted_on', platform_name)} "
-        f"{phrase('sign_in', platform_name)} {link}"
+        f"{text_copy['inactivity_subject']}\n\n"
+        f"{text_copy['inactivity_unused_since']}\n"
+        f"{text_copy['inactivity_deleted_on']}\n\n"
+        f"{text_copy['inactivity_sign_in']} {link}\n\n"
+        f"{text_copy['inactivity_ignore']}"
     )
-    return _build_message(phrase("subject", platform_name), text, html)
+    return _build_message(text_copy["inactivity_subject"], text, html)
 
 
 def _email_colors(primary_color: str, secondary_color: str) -> tuple[str, str, str]:
