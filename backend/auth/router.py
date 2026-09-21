@@ -193,6 +193,9 @@ def _set_login_cookie(response: Response, login: LoginResult) -> bool:
     if login.kind == "session":
         _set_session_cookie(response, login.token)
         return False
+    # A session still open for another account must not outlive the email
+    # step, or the visitor would be signed in as someone else in the meantime.
+    response.delete_cookie(SESSION_COOKIE)
     response.set_cookie(
         TOTP_CHALLENGE_COOKIE,
         login.token,
