@@ -10,6 +10,7 @@ import contextlib
 import os
 import smtplib
 import sys
+import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -21,9 +22,12 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
 
+import backend.admin.services as admin_services  # noqa: E402
 import backend.auth.email as email  # noqa: E402
 import backend.auth.inactivity as inactivity  # noqa: E402
+import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401
+from backend.admin.services import create_user  # noqa: E402
 from backend.auth.email import (  # noqa: E402
     _build_inactivity_message,
     send_inactivity_warning,
@@ -37,7 +41,13 @@ from backend.auth.inactivity import (  # noqa: E402
     find_inactive_users,
     purge_inactive_users,
 )
-from utils.database.models.auth import ConsentLog, User  # noqa: E402
+from backend.auth.services import create_invite  # noqa: E402
+from utils.database.models.auth import (  # noqa: E402
+    ConsentLog,
+    InviteToken,
+    User,
+    UserUpsert,
+)
 
 NOW = datetime(2026, 9, 15, 12, 0)
 MONTHS = 12
@@ -71,10 +81,12 @@ class FakeResult:
 class FakeSession:
     """Answers the purge's queries from memory, keyed on the selected model."""
 
-    def __init__(self, users, languages=None):
+    def __init__(self, users, languages=None, invited=()):
         self.users = {user.id: user for user in users}
         # user id -> language of their latest consent
         self.languages = languages or {}
+        # user ids holding an invite that can still be accepted
+        self.invited = set(invited)
         # user id -> the row as re-read later, when it differs from the list
         self.refreshed = {}
         self.commits = 0
@@ -86,6 +98,10 @@ class FakeSession:
         entity = statement.column_descriptions[0]["entity"]
         if entity is User:
             return FakeResult(list(self.users.values()))
+        if entity is InviteToken:
+            return FakeResult(
+                [user_id for user_id in self.users if user_id in self.invited]
+            )
         if entity is ConsentLog:
             user_id = statement.whereclause.clauses[0].right.value
             language = self.languages.get(user_id)
@@ -100,13 +116,13 @@ class FakeSession:
 
 
 @contextlib.contextmanager
-def purge_context(users, sent=True, failing=(), languages=None):
+def purge_context(users, sent=True, failing=(), languages=None, invited=()):
     """Run the purge against in-memory users, catching mails and erasures.
 
     `failing` lists the addresses whose delivery raises, as a dead SMTP
     server would.
     """
-    session = FakeSession(users, languages=languages)
+    session = FakeSession(users, languages=languages, invited=invited)
     mailed = []
     locales = []
     erased = []
@@ -230,6 +246,72 @@ def test_find_inactive_users_sorts_accounts_into_the_report():
     assert report.to_warn == [to_warn]
     assert report.to_erase == [to_erase]
     assert report.admins == [admin]
+
+
+def test_an_account_with_a_pending_invite_is_left_alone():
+    """A re-invited account keeps its old last_seen_at until the invite is
+    accepted, which may take a while; the invite's own expiry rules there."""
+    invited = user_seen(DEADLINE - timedelta(days=10))
+    to_warn = user_seen(DEADLINE - timedelta(days=5))
+
+    with purge_context([invited, to_warn], invited={invited.id}):
+        report = asyncio.run(find_inactive_users(MONTHS, NOW))
+
+    assert classify(invited, MONTHS, NOW, invited=True) is None
+    assert report.to_warn == [to_warn]
+
+
+class RevivalSession:
+    """Just enough session for the two paths that revive a deleted row."""
+
+    def __init__(self, user):
+        self.user = user
+        self.added = []
+
+    async def exec(self, statement):
+        entity = statement.column_descriptions[0]["entity"]
+        return FakeResult([self.user] if entity is User else [])
+
+    def add(self, value):
+        self.added.append(value)
+
+    async def delete(self, _value):
+        pass
+
+    async def flush(self):
+        pass
+
+    async def commit(self):
+        pass
+
+    async def refresh(self, _value):
+        pass
+
+
+@pytest.mark.parametrize("path", ["invite", "admin"])
+def test_reviving_a_deleted_account_restarts_its_inactivity_clock(path):
+    deleted = user_seen(
+        DEADLINE - timedelta(days=400), warned_at=NOW - NOTICE, deleted_at=NOW
+    )
+    deleted.created_at = deleted.last_seen_at
+    session = RevivalSession(deleted)
+
+    @contextlib.asynccontextmanager
+    async def get_session():
+        yield session
+
+    before = datetime.now()
+    if path == "invite":
+        with patched(auth_services, get_session=get_session):
+            asyncio.run(create_invite(deleted.email, invited_by=uuid.uuid4()))
+    else:
+        with patched(admin_services, get_session=get_session):
+            asyncio.run(create_user(UserUpsert(email=deleted.email, role="user")))
+
+    assert deleted.deleted_at is None
+    assert deleted.inactivity_warned_at is None
+    assert deleted.last_seen_at >= before
+    assert classify(deleted, MONTHS, NOW) is None
 
 
 def test_dry_run_touches_nothing():
