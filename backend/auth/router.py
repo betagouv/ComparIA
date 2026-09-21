@@ -471,8 +471,8 @@ async def totp_verify(
     return {"email": user.email if user else None}
 
 
-_TOTP_ENROL_MAX_FAILS = 10
-_TOTP_ENROL_FAIL_TTL = 600
+_TOTP_ENROL_MAX_FAILS = 5
+_TOTP_ENROL_FAIL_TTL = 3600
 
 
 def _totp_enrol_guard(user_id: UUID) -> None:
@@ -488,7 +488,9 @@ def _totp_enrol_guard(user_id: UUID) -> None:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+        logger.warning(
+            f"[AUTH] Redis enrolment guard unavailable, letting through: {e}"
+        )
 
 
 def _totp_enrol_failed(user_id: UUID) -> None:
@@ -498,7 +500,16 @@ def _totp_enrol_failed(user_id: UUID) -> None:
         if client.incr(key) == 1:
             client.expire(key, _TOTP_ENROL_FAIL_TTL)
     except Exception as e:
-        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not counted: {e}")
+
+
+def _totp_enrol_passed(user_id: UUID) -> None:
+    """A right code proves the device is at hand: the wrong ones before it
+    were typos, not guesses."""
+    try:
+        get_redis_client().delete(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+    except Exception as e:
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not reset: {e}")
 
 
 def _require_admin_role(user: User) -> None:
@@ -530,6 +541,8 @@ async def totp_setup(
         )
     except SecretUnreadableError:
         raise TotpSecretUnreadableError()
+    if body.code:
+        _totp_enrol_passed(user.id)
     # The secret travels once, here. Nothing on the way may keep a copy.
     response.headers["Cache-Control"] = "no-store"
     return TotpSetupResponse(
@@ -560,6 +573,7 @@ async def totp_confirm(
         )
     except SecretUnreadableError:
         raise TotpSecretUnreadableError()
+    _totp_enrol_passed(user.id)
 
 
 @router.get("/invite/{token}")
