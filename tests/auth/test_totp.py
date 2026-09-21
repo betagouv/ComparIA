@@ -756,6 +756,15 @@ def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
     assert any(c.startswith('auth_session=""') for c in cookies)
 
 
+def test_the_challenge_cookie_lives_as_long_as_the_challenge():
+    import backend.auth.router as auth_router
+
+    assert (
+        auth_router._TOTP_CHALLENGE_COOKIE_MAX_AGE
+        == auth_services.TOTP_CHALLENGE_TTL_MINUTES * 60
+    )
+
+
 def test_the_second_factor_needs_the_challenge_cookie():
     with routed() as client:
         r = client.post("/auth/totp/verify", json={"code": "123456"})
