@@ -15,6 +15,7 @@ from backend.config import (
 from backend.llms.currency import CurrencyInfo, get_currency_info
 from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
 from backend.utils.countries import get_ranking
+from utils.database.encrypted import UnreadableSecret
 from utils.database.models.llms import LLMData
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
@@ -35,18 +36,33 @@ class LLMsData(BaseModel):
     @classmethod
     def filter_disabled(cls, llms: Any) -> dict[str, Any]:
         """
-        Filter out disabled LLMs.
+        Filter out disabled LLMs: the ones without an endpoint, without a key,
+        and the ones whose key no configured encryption key opens. The last
+        case is an operator's mistake and is logged as such, once per
+        endpoint; the rest of the arena keeps running without those models.
         """
-        return {
-            llm.id: llm
-            for llm in llms
-            if (
-                llm.status == "enabled"
-                and llm.endpoint is not None
-                and llm.endpoint.api_key is not None
-            )
-            or llm.status == "archived"
-        }
+        kept: dict[str, Any] = {}
+        unreadable: set[Any] = set()
+        for llm in llms:
+            if llm.status == "archived":
+                kept[llm.id] = llm
+                continue
+            if llm.status != "enabled" or llm.endpoint is None:
+                continue
+            api_key = llm.endpoint.api_key
+            if api_key is None:
+                continue
+            if isinstance(api_key, UnreadableSecret):
+                if llm.endpoint.id not in unreadable:
+                    unreadable.add(llm.endpoint.id)
+                    logger.error(
+                        f"[SECRETS] llm_endpoint {llm.endpoint.id}.api_key "
+                        f"('{llm.endpoint.name}') cannot be decrypted with "
+                        "COMPARIA_ENCRYPTION_KEY: its models are disabled"
+                    )
+                continue
+            kept[llm.id] = llm
+        return kept
 
     @computed_field  # type: ignore[prop-decorator]
     @property
