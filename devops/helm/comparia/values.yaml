@@ -137,6 +137,9 @@ secrets:
   ordbogenApiKey: ""
   linkupApiKey: ""
   altchaHmacKey: ""
+  ## -- Bearer token Prometheus must send to scrape /metrics. Left empty, /metrics answers 401
+  ## to every request.
+  metricsToken: ""
   ## -- Mistral moderation API key, for prompt checks (content safety, personal data). Left
   ## empty, both checks no-op.
   mistralApiKey: ""
