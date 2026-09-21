@@ -985,15 +985,124 @@ def test_confirm_without_a_pending_secret_is_a_conflict():
 
 
 def test_too_many_wrong_enrolment_codes_are_refused():
+    import backend.auth.router as auth_router
+
     admin = User(email="admin@example.org", role="admin")
 
     class Saturated(NoRedis):
         def get(self, _key):
-            return "10"
+            return str(auth_router._TOTP_ENROL_MAX_FAILS)
 
     with signed_in(admin, get_redis_client=Saturated) as client:
         r = client.post("/auth/totp/confirm", json={"code": "123456"})
     assert r.status_code == 429
+
+
+def test_wrong_enrolment_codes_are_five_an_hour():
+    """A device change is a live code against a known secret: the same
+    budget as a sign-in, not the looser one it had."""
+    import backend.auth.router as auth_router
+
+    assert auth_router._TOTP_ENROL_MAX_FAILS == 5
+    assert auth_router._TOTP_ENROL_FAIL_TTL == 3600
+
+    admin = User(email="admin@example.org", role="admin")
+    expiries = {}
+
+    class Counting(NoRedis):
+        def expire(self, key, ttl):
+            expiries[key] = ttl
+
+    async def wrong(*_args):
+        raise auth_totp.InvalidTotpCodeError()
+
+    with signed_in(
+        admin,
+        get_app_settings=platform,
+        start_totp_setup=wrong,
+        get_redis_client=Counting,
+    ) as client:
+        assert (
+            client.post("/auth/totp/setup", json={"code": "000000"}).status_code == 400
+        )
+    assert list(expiries.values()) == [3600]
+
+
+def test_a_right_current_code_forgets_the_wrong_ones_before_it():
+    import backend.auth.router as auth_router
+
+    admin = User(email="admin@example.org", role="admin")
+    deleted = []
+
+    class Remembering(NoRedis):
+        def delete(self, key):
+            deleted.append(key)
+
+    async def start(*_args):
+        return auth_totp.TotpSetup(secret="S", otpauth_uri="otpauth://", qr_svg="")
+
+    with signed_in(
+        admin,
+        get_app_settings=platform,
+        start_totp_setup=start,
+        get_redis_client=Remembering,
+    ) as client:
+        assert (
+            client.post("/auth/totp/setup", json={"code": "123456"}).status_code == 200
+        )
+    assert deleted == [auth_router.REDIS_AUTH_TOTP_FAIL.format(user=admin.id)]
+
+    # A first enrolment checked no code, so there is nothing to forget.
+    deleted.clear()
+    with signed_in(
+        admin,
+        get_app_settings=platform,
+        start_totp_setup=start,
+        get_redis_client=Remembering,
+    ) as client:
+        assert client.post("/auth/totp/setup", json={}).status_code == 200
+    assert deleted == []
+
+
+def test_a_confirmed_enrolment_forgets_the_wrong_codes_before_it():
+    import backend.auth.router as auth_router
+
+    admin = User(email="admin@example.org", role="admin")
+    deleted = []
+
+    class Remembering(NoRedis):
+        def delete(self, key):
+            deleted.append(key)
+
+    async def confirm(*_args):
+        pass
+
+    with signed_in(
+        admin, confirm_totp_setup=confirm, get_redis_client=Remembering
+    ) as c:
+        assert c.post("/auth/totp/confirm", json={"code": "123456"}).status_code == 204
+    assert deleted == [auth_router.REDIS_AUTH_TOTP_FAIL.format(user=admin.id)]
+
+
+def test_a_redis_outage_lets_enrolment_through_and_says_so(caplog):
+    import logging
+
+    admin = User(email="admin@example.org", role="admin")
+
+    class Down:
+        def __getattr__(self, _name):
+            raise ConnectionError("redis is down")
+
+    async def confirm(*_args):
+        pass
+
+    with caplog.at_level(logging.WARNING, logger="languia"):
+        with signed_in(admin, confirm_totp_setup=confirm, get_redis_client=Down) as c:
+            assert (
+                c.post("/auth/totp/confirm", json={"code": "123456"}).status_code == 204
+            )
+    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert warnings and all("[AUTH]" in r.getMessage() for r in warnings)
 
 
 def test_enrolment_routes_answer_503_when_no_key_opens_the_secret():
