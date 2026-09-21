@@ -92,4 +92,4 @@ jobs:
           else
             RANGE="$BASE..$HEAD_SHA"
           fi
-          gitleaks git --redact --verbose --exit-code 1 --log-opts "$RANGE" .
+          gitleaks git --config .gitleaks.toml --redact --verbose --exit-code 1 --log-opts "$RANGE" .
