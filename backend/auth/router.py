@@ -17,6 +17,7 @@ from backend.auth.dependencies import (
 from backend.auth.email import send_login_code
 from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
+    TOTP_CHALLENGE_TTL_MINUTES,
     LoginResult,
     _hash,
     accept_invite,
@@ -31,6 +32,7 @@ from backend.auth.services import (
     request_login_code,
     revoke_all_user_sessions,
     revoke_current_session,
+    revoke_totp_challenge,
     verify_login_code,
 )
 from backend.auth.totp import (
@@ -44,12 +46,13 @@ from backend.auth.totp import (
     verify_totp_challenge,
 )
 from backend.config import settings
-from backend.errors import RoleRequiredError
+from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
+from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -171,7 +174,7 @@ def _anonymous_hash(request: Request) -> str | None:
 
 SESSION_COOKIE = "auth_session"
 TOTP_CHALLENGE_COOKIE = "auth_totp_challenge"
-_TOTP_CHALLENGE_COOKIE_MAX_AGE = 600
+_TOTP_CHALLENGE_COOKIE_MAX_AGE = TOTP_CHALLENGE_TTL_MINUTES * 60
 
 
 def _set_session_cookie(response: Response, token: str) -> None:
@@ -191,6 +194,9 @@ def _set_login_cookie(response: Response, login: LoginResult) -> bool:
     if login.kind == "session":
         _set_session_cookie(response, login.token)
         return False
+    # A session still open for another account must not outlive the email
+    # step, or the visitor would be signed in as someone else in the meantime.
+    response.delete_cookie(SESSION_COOKIE)
     response.set_cookie(
         TOTP_CHALLENGE_COOKIE,
         login.token,
@@ -461,6 +467,8 @@ async def totp_verify(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
 
     response.delete_cookie(TOTP_CHALLENGE_COOKIE)
     _set_session_cookie(response, token)
@@ -468,8 +476,8 @@ async def totp_verify(
     return {"email": user.email if user else None}
 
 
-_TOTP_ENROL_MAX_FAILS = 10
-_TOTP_ENROL_FAIL_TTL = 600
+_TOTP_ENROL_MAX_FAILS = 5
+_TOTP_ENROL_FAIL_TTL = 3600
 
 
 def _totp_enrol_guard(user_id: UUID) -> None:
@@ -485,7 +493,9 @@ def _totp_enrol_guard(user_id: UUID) -> None:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+        logger.warning(
+            f"[AUTH] Redis enrolment guard unavailable, letting through: {e}"
+        )
 
 
 def _totp_enrol_failed(user_id: UUID) -> None:
@@ -495,7 +505,16 @@ def _totp_enrol_failed(user_id: UUID) -> None:
         if client.incr(key) == 1:
             client.expire(key, _TOTP_ENROL_FAIL_TTL)
     except Exception as e:
-        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not counted: {e}")
+
+
+def _totp_enrol_passed(user_id: UUID) -> None:
+    """A right code proves the device is at hand: the wrong ones before it
+    were typos, not guesses."""
+    try:
+        get_redis_client().delete(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+    except Exception as e:
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not reset: {e}")
 
 
 def _require_admin_role(user: User) -> None:
@@ -525,6 +544,10 @@ async def totp_setup(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
+    if body.code:
+        _totp_enrol_passed(user.id)
     # The secret travels once, here. Nothing on the way may keep a copy.
     response.headers["Cache-Control"] = "no-store"
     return TotpSetupResponse(
@@ -553,6 +576,9 @@ async def totp_confirm(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
+    _totp_enrol_passed(user.id)
 
 
 @router.get("/invite/{token}")
@@ -603,6 +629,11 @@ async def logout(request: Request, response: Response) -> None:
     token = request.cookies.get(SESSION_COOKIE)
     if token:
         await revoke_current_session(token)
+    # The half-finished sign-in dies on the server too: clearing the cookie
+    # alone would leave a copy of it usable until it expires.
+    challenge_token = request.cookies.get(TOTP_CHALLENGE_COOKIE)
+    if challenge_token:
+        await revoke_totp_challenge(challenge_token)
     response.delete_cookie(SESSION_COOKIE)
     response.delete_cookie(TOTP_CHALLENGE_COOKIE)
 

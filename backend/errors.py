@@ -81,6 +81,17 @@ class TotpSetupRequiredError(HTTPException):
         )
 
 
+class TotpSecretUnreadableError(HTTPException):
+    """An enrolled secret that no configured encryption key opens. Not the
+    caller's doing: the operator dropped a key too early."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="totp_secret_unreadable",
+        )
+
+
 class RoleRequiredError(HTTPException):
     def __init__(self, role: str = "admin") -> None:
         super().__init__(

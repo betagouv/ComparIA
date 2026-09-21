@@ -236,3 +236,124 @@ def test_confirming_and_revoking_is_one_transaction():
             )
             == 1
         )
+
+
+async def spent_challenges(get_session, user_id, *attempt_counts, age=timedelta()):
+    """Earlier challenges of the account, each used up with that many wrong
+    codes, created `age` ago."""
+    async with get_session() as session:
+        for i, attempts in enumerate(attempt_counts):
+            session.add(
+                TotpChallenge(
+                    user_id=user_id,
+                    token_hash=auth_services._hash(f"spent-{age}-{i}"),
+                    created_at=datetime.now() - age,
+                    expires_at=datetime.now() - age + timedelta(minutes=10),
+                    used_at=datetime.now() - age,
+                    attempts=attempts,
+                )
+            )
+        await session.commit()
+
+
+def test_wrong_codes_are_capped_per_account_over_the_hour():
+    """A new email code buys a new challenge: the cap has to span them."""
+    secret = pyotp.random_base32()
+    cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(spent_challenges(get_session, user_id, cap - 1))
+        assert asyncio.run(attempt("000000")) == "invalid"
+        # That one made it `cap`: the right code is refused from now on.
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "expired"
+        assert asyncio.run(count(get_session, AuthSession)) == 0
+
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(spent_challenges(get_session, user_id, cap - 1))
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "session"
+        assert asyncio.run(count(get_session, AuthSession)) == 1
+
+
+def test_failures_older_than_an_hour_are_forgotten_and_pruned():
+    secret = pyotp.random_base32()
+    cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(
+            spent_challenges(get_session, user_id, cap, cap, age=timedelta(hours=2))
+        )
+        asyncio.run(spent_challenges(get_session, user_id, 1))
+        assert asyncio.run(count(get_session, TotpChallenge)) == 4
+
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "session"
+
+        # The two old rows went with the sign-in; the recent one is still
+        # counted, so it stays.
+        assert asyncio.run(count(get_session, TotpChallenge)) == 2
+        assert (
+            asyncio.run(
+                count(
+                    get_session,
+                    TotpChallenge,
+                    TotpChallenge.created_at < datetime.now() - timedelta(hours=1),
+                )
+            )
+            == 0
+        )
+
+
+def test_two_first_setups_at_once_leave_one_row_and_no_error():
+    """SELECT FOR UPDATE finds nothing to lock before the first row exists:
+    both setups insert, and the loser has to take the winner's row rather
+    than fail on unique(user_id)."""
+    with real_database() as get_session:
+
+        async def plain_admin():
+            async with get_session() as session:
+                user = User(email="admin@example.org", role="admin")
+                session.add(user)
+                await session.commit()
+                await session.refresh(user)
+                return user
+
+        user = asyncio.run(plain_admin())
+
+        # Hold both setups after their empty select, so neither inserts
+        # before the other has looked.
+        both_looked = asyncio.Event()
+        looked = []
+        original = auth_totp._get_user_totp
+
+        async def rendezvous(session, user_id):
+            totp = await original(session, user_id)
+            if totp is None:
+                looked.append(True)
+                if len(looked) == 2:
+                    both_looked.set()
+                await asyncio.wait_for(both_looked.wait(), timeout=5)
+            return totp
+
+        async def run():
+            auth_totp._get_user_totp = rendezvous
+            try:
+                return await asyncio.gather(
+                    auth_totp.start_totp_setup(user, None, None),
+                    auth_totp.start_totp_setup(user, None, None),
+                )
+            finally:
+                auth_totp._get_user_totp = original
+
+        setups = asyncio.run(run())
+
+        assert len(looked) == 2
+        assert asyncio.run(count(get_session, UserTotp)) == 1
+
+        async def pending():
+            async with get_session() as session:
+                row = (await session.exec(select(UserTotp))).one()
+                return auth_totp.decrypt_secret(row.pending_secret_encrypted)
+
+        # Last write wins; either secret is fine as long as the row holds one
+        # of the two handed out.
+        assert asyncio.run(pending()) in {s.secret for s in setups}

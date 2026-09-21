@@ -37,7 +37,8 @@ logger = logging.getLogger("languia")
 
 _LOGIN_CODE_TTL_MINUTES = 10
 _INVITE_TOKEN_TTL_HOURS = 24
-_TOTP_CHALLENGE_TTL_MINUTES = 10
+# Also how long the browser keeps the challenge cookie.
+TOTP_CHALLENGE_TTL_MINUTES = 10
 
 
 @dataclass
@@ -143,7 +144,7 @@ async def _open_session_or_challenge(
         TotpChallenge(
             user_id=user.id,
             token_hash=_hash(token),
-            expires_at=datetime.now() + timedelta(minutes=_TOTP_CHALLENGE_TTL_MINUTES),
+            expires_at=datetime.now() + timedelta(minutes=TOTP_CHALLENGE_TTL_MINUTES),
         )
     )
     return LoginResult(kind="totp_challenge", token=token)
@@ -363,6 +364,22 @@ async def revoke_current_session(token: str) -> None:
             auth_session.revoked_at = datetime.now()
             session.add(auth_session)
             await session.commit()
+
+
+async def revoke_totp_challenge(token: str) -> None:
+    """Spend a half-finished sign-in the visitor walked away from. Marked
+    used rather than deleted: its wrong codes still count towards the
+    account's hourly cap."""
+    async with get_session() as session:
+        await session.execute(
+            sa_update(TotpChallenge)
+            .where(
+                TotpChallenge.token_hash == _hash(token),
+                TotpChallenge.used_at.is_(None),
+            )
+            .values(used_at=datetime.now())
+        )
+        await session.commit()
 
 
 async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:

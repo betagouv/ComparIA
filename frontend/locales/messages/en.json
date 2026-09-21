@@ -594,14 +594,6 @@
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
             "title": "Vote tags"
-        },
-        "users": {
-            "resetTotp": {
-                "title": "Reset two-factor authentication",
-                "intro": "Forget the authenticator app of {email}? They will be signed out everywhere and asked to set up a new one the next time they open the admin area.",
-                "warning": "Only do this for someone who asked you to, over a channel you trust: their email code alone then opens the admin area again.",
-                "confirm": "Reset 2FA for {email}"
-            }
         }
     },
     "arenaHome": {
@@ -697,7 +689,8 @@
                 "label": "Authenticator app code",
                 "help": "The 6 digits shown by your app (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Wrong code.",
-                "expired": "Sign-in expired, request a new email code."
+                "expired": "Sign-in expired, request a new email code.",
+                "emailChecked": "Your email address has already been checked: only the code from your authenticator app is left."
             }
         },
         "settings": {

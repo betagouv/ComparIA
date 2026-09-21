@@ -15,6 +15,9 @@ from datetime import datetime, timedelta
 
 import pyotp
 import segno
+from sqlalchemy import delete as sa_delete
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from backend.auth.services import (
@@ -35,6 +38,10 @@ TOTP_DIGITS = 6
 _TOTP_VALID_WINDOW = 1
 _TOTP_SETUP_TTL_MINUTES = 15
 _TOTP_CHALLENGE_MAX_ATTEMPTS = 5
+# Per account, across challenges: a fresh challenge only costs an email code,
+# so the per-challenge count alone would leave thousands of guesses a month.
+_TOTP_MAX_FAILS_PER_USER_PER_HOUR = 15
+_TOTP_CHALLENGE_WINDOW = timedelta(hours=1)
 _DEFAULT_ISSUER = "ComparIA"
 
 
@@ -141,12 +148,33 @@ async def _get_user_totp(session, user_id: uuid.UUID) -> UserTotp | None:
     return result.first()
 
 
+async def _lock_or_create_user_totp(session, user_id: uuid.UUID) -> UserTotp:
+    """The user's locked row, inserted first when there is none yet.
+
+    SELECT FOR UPDATE locks nothing when no row exists, so two first setups
+    can both reach the insert. The loser's insert waits on the unique index
+    until the winner commits, then fails: it takes the winner's row instead.
+    """
+    totp = await _get_user_totp(session, user_id)
+    if totp is not None:
+        return totp
+    totp = UserTotp(user_id=user_id)
+    session.add(totp)
+    try:
+        await session.flush()
+    except IntegrityError:
+        await session.rollback()
+        totp = await _get_user_totp(session, user_id)
+        if totp is None:
+            raise
+    return totp
+
+
 def _check_live_code(totp: UserTotp, code: str) -> int:
+    """SecretUnreadableError passes through: it is not a wrong code."""
     if not totp.secret_encrypted:
         raise InvalidTotpCodeError()
     secret = decrypt_secret(totp.secret_encrypted)
-    if secret is None:
-        raise InvalidTotpCodeError()
     step = matching_step(secret, code, last_used_step=totp.last_used_step)
     if step is None:
         raise InvalidTotpCodeError()
@@ -161,10 +189,8 @@ async def start_totp_setup(
     now = datetime.now()
     secret = pyotp.random_base32()
     async with get_session() as session:
-        totp = await _get_user_totp(session, user.id)
-        if totp is None:
-            totp = UserTotp(user_id=user.id)
-        elif totp.confirmed_at is not None:
+        totp = await _lock_or_create_user_totp(session, user.id)
+        if totp.confirmed_at is not None:
             if not current_code:
                 raise TotpCodeRequiredError()
             totp.last_used_step = _check_live_code(totp, current_code)
@@ -196,8 +222,6 @@ async def confirm_totp_setup(user: User, code: str, current_session_token: str) 
             raise TotpSetupMissingError()
 
         secret = decrypt_secret(totp.pending_secret_encrypted)
-        if secret is None:
-            raise TotpSetupMissingError()
         step = matching_step(secret, code)
         if step is None:
             raise InvalidTotpCodeError()
@@ -229,7 +253,8 @@ async def verify_totp_challenge(
     """Turn a challenge into a session, or say why not.
 
     A wrong code costs an attempt even when the caller's transaction fails
-    later: the counter is committed before the error goes out.
+    later: the counter is committed before the error goes out. A secret no
+    key opens raises SecretUnreadableError without costing one.
     """
     now = datetime.now()
     async with get_session() as session:
@@ -261,12 +286,27 @@ async def verify_totp_challenge(
         ):
             raise TotpChallengeExpiredError()
 
-        secret = decrypt_secret(totp.secret_encrypted)
-        step = (
-            matching_step(secret, code, last_used_step=totp.last_used_step)
-            if secret
-            else None
+        # Every wrong code of the account in the last hour, on this challenge
+        # or an earlier one. Rows out of the window go: nothing reads them
+        # any more, and the table stays bounded per user.
+        window_start = now - _TOTP_CHALLENGE_WINDOW
+        result = await session.exec(
+            select(func.sum(TotpChallenge.attempts)).where(
+                TotpChallenge.user_id == challenge.user_id,
+                TotpChallenge.created_at >= window_start,
+            )
         )
+        if (result.first() or 0) >= _TOTP_MAX_FAILS_PER_USER_PER_HOUR:
+            raise TotpChallengeExpiredError()
+        await session.execute(
+            sa_delete(TotpChallenge).where(
+                TotpChallenge.user_id == challenge.user_id,
+                TotpChallenge.created_at < window_start,
+            )
+        )
+
+        secret = decrypt_secret(totp.secret_encrypted)
+        step = matching_step(secret, code, last_used_step=totp.last_used_step)
         if step is None:
             challenge.attempts += 1
             attempts = challenge.attempts
@@ -281,7 +321,7 @@ async def verify_totp_challenge(
         session.add(challenge)
         totp.last_used_step = step
         totp.updated_at = now
-        if secret and needs_reencryption(totp.secret_encrypted):
+        if needs_reencryption(totp.secret_encrypted):
             totp.secret_encrypted = encrypt_secret(secret)
         session.add(totp)
 

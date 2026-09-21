@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { replaceState } from '$app/navigation'
+  import { resolve } from '$app/paths'
+  import { page } from '$app/state'
   import { Button, Checkbox, Input } from '$components/dsfr'
   import TotpCodeInput from '$components/TotpCodeInput.svelte'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
@@ -18,6 +21,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { onMount, tick, untrack } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
+  import { SvelteURLSearchParams } from 'svelte/reactivity'
 
   let {
     onSuccess,
@@ -54,6 +58,9 @@
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
   const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
+  // Opened straight at the authenticator step: there is no address to show
+  // or change, the invite already checked it.
+  const emailAlreadyChecked = $derived(startAtTotp && step === 'totp')
 
   async function readConsent(again = false) {
     consentLoading = true
@@ -156,16 +163,35 @@
       if (status === 401 || status === 410) {
         // Too many wrong codes, the ten minutes ran out, or the challenge
         // cookie never reached us: start over.
-        step = 'email'
-        code = ''
-        totpCode = ''
-        error = m['auth.modal.totp.expired']()
+        await restartAtEmail(m['auth.modal.totp.expired']())
+      } else if (!status || status >= 500) {
+        // Nothing reached the backend, or it could not answer: not a wrong code.
+        error = m['errors.unknown']()
       } else {
         error = m['auth.modal.totp.error']()
       }
     } finally {
       loading = false
     }
+  }
+
+  async function restartAtEmail(message: string) {
+    if (startAtTotp) {
+      // The page was opened on the authenticator step; a reload must not
+      // land there again now that the challenge behind it is gone.
+      const params = new SvelteURLSearchParams(page.url.searchParams)
+      params.delete('step')
+      const qs = params.toString()
+      replaceState(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, {})
+    }
+    step = 'email'
+    code = ''
+    totpCode = ''
+    error = message
+    // Enabled before the focus lands, or the field would still refuse it.
+    loading = false
+    await tick()
+    formContainer.querySelector<HTMLInputElement>('#login-email')?.focus()
   }
 
   function onResend() {
@@ -200,28 +226,32 @@
   </p>
 
   <form onsubmit={onSubmit}>
-    <Input
-      id="login-email"
-      bind:value={email}
-      type="email"
-      label={m['auth.modal.email.emailLabel']()}
-      error={step === 'email' ? error : undefined}
-      disabled={loading || step !== 'email'}
-      autocomplete="email"
-      required
-      class="mb-4!"
-    />
-
-    {#if step !== 'email'}
-      <Button
-        type="button"
-        size="xs"
-        variant="tertiary-no-outline"
-        text={m['auth.modal.code.changeEmail']()}
-        disabled={loading}
-        onclick={onChangeEmail}
-        class="-mt-2! mb-4! text-black! underline"
+    {#if emailAlreadyChecked}
+      <p class="text-sm! text-grey mb-4!">{m['auth.modal.totp.emailChecked']()}</p>
+    {:else}
+      <Input
+        id="login-email"
+        bind:value={email}
+        type="email"
+        label={m['auth.modal.email.emailLabel']()}
+        error={step === 'email' ? error : undefined}
+        disabled={loading || step !== 'email'}
+        autocomplete="email"
+        required
+        class="mb-4!"
       />
+
+      {#if step !== 'email'}
+        <Button
+          type="button"
+          size="xs"
+          variant="tertiary-no-outline"
+          text={m['auth.modal.code.changeEmail']()}
+          disabled={loading}
+          onclick={onChangeEmail}
+          class="-mt-2! mb-4! text-black! underline"
+        />
+      {/if}
     {/if}
 
     {#if canMergeComparisons}
