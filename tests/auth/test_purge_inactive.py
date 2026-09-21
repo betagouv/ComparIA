@@ -268,30 +268,40 @@ def test_warning_message_is_written_in_the_instance_language():
         == "Votre compte Arène & Co sera supprimé le 1er octobre 2026"
     )
     assert "depuis le 1er septembre 2025" in parts["text/plain"]
+    assert "pour le conserver :" in parts["text/plain"]
+    assert "pour le conserver&nbsp;:" in parts["text/html"]
     assert "Arène &amp; Co" in parts["text/html"]
-    assert 'lang="fr"' in parts["text/html"]
+    assert '<html lang="fr">' in parts["text/html"]
+    assert "Message automatique envoyé par Arène &amp; Co." in parts["text/html"]
     assert "deleted on" not in parts["text/plain"]
 
     danish = _parts(
         _build_inactivity_message(
-            datetime(2025, 9, 1), datetime(2026, 10, 1), lang="da"
+            datetime(2025, 9, 1), datetime(2026, 10, 1), locale="da"
         )
     )
     assert "siden den 1. september 2025" in danish["text/plain"]
     assert "slettet den 1. oktober 2026" in danish["text/plain"]
 
 
-def test_warning_message_falls_back_to_english():
-    message = _build_inactivity_message(
-        datetime(2025, 9, 1), datetime(2026, 10, 1), lang="lt"
+def test_warning_message_follows_the_locale_and_falls_back_to_french():
+    english = _build_inactivity_message(
+        datetime(2025, 9, 1), datetime(2026, 10, 1), locale="en-GB"
     )
-    parts = _parts(message)
+    unknown = _build_inactivity_message(
+        datetime(2025, 9, 1), datetime(2026, 10, 1), locale="lt"
+    )
+    parts = _parts(english)
 
     assert (
-        message["Subject"] == "Your Compar:IA account will be deleted on 1 October 2026"
+        english["Subject"] == "Your Compar:IA account will be deleted on 1 October 2026"
     )
     assert "since 1 September 2025" in parts["text/plain"]
-    assert 'lang="en"' in parts["text/html"]
+    assert "nothing to do" in parts["text/plain"]
+    assert '<html lang="en">' in parts["text/html"]
+    assert (
+        unknown["Subject"] == "Votre compte Compar:IA sera supprimé le 1er octobre 2026"
+    )
 
 
 if __name__ == "__main__":

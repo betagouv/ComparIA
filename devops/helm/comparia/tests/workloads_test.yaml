@@ -92,6 +92,35 @@ tests:
             name: PUBLIC_API_LOCAL_URL
             value: http://RELEASE-NAME-comparia-backend:80
 
+  - it: sets MATOMO_URL/MATOMO_ID on the frontend when configured
+    template: frontend-deployment.yaml
+    set:
+      config.matomoUrl: https://stats.example.com
+      config.matomoId: "1"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MATOMO_URL
+            value: https://stats.example.com
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MATOMO_ID
+            value: "1"
+
+  - it: omits MATOMO_URL/MATOMO_ID by default
+    template: frontend-deployment.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MATOMO_URL
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MATOMO_ID
+
   - it: uses distinct chart and app image tags
     template: backend-deployment.yaml
     set:

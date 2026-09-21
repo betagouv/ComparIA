@@ -7,9 +7,10 @@
         "mainNav": "Navigation principale",
         "mobileMenu": "Menu",
         "mobileNav": "Navigation mobile",
-        "modeSelection": "Choix des modèles à comparer",
         "modelSheet": "Fiche du modèle",
+        "modeSelection": "Choix des modèles à comparer",
         "newWindow": "nouvelle fenêtre",
+        "priceGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et son prix de sortie par million de jetons en abscisse. Une ligne relie les modèles de la frontière de Pareto. Les mêmes données sont disponibles sous forme de tableau.",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
         "suggestionCategories": "Catégories de suggestions de questions",
@@ -104,7 +105,7 @@
                 "externalUrl": "Adresse de la page externe",
                 "externalUrlError": "Saisissez une adresse HTTPS valide.",
                 "externalUrlHelp": "L’adresse doit commencer par https://.",
-                "internal": "Page hébergée sur Compar:IA",
+                "internal": "Page hébergée sur {platformName}",
                 "loading": "Chargement des pages d’information…",
                 "locale": "Langue du contenu",
                 "modeLabel": "Destination",
@@ -215,6 +216,10 @@
                 },
                 "decisionLegend": "Résultat",
                 "empty": "Écrivez un message avant de lancer le test.",
+                "errors": {
+                    "call_failed": "L'appel à Mistral a échoué : {error}",
+                    "no_api_key": "Aucune clé API Mistral n'est configurée : la vérification ne peut pas s'exécuter."
+                },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
                 "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
@@ -616,6 +621,21 @@
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+            "captcha_failed": "Vérification anti-robot échouée, veuillez réessayer.",
+            "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
+            "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
+            "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "prompt_check": {
+                "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
+                "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+            },
+            "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
+            "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
+        },
         "promptWarning": {
             "edit": "Modifier mon message",
             "proceed": "Envoyer quand même",
@@ -626,6 +646,10 @@
         "discussions": {
             "signIn": "Se connecter",
             "title": "Discussions"
+        },
+        "login": {
+            "description": "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe.",
+            "title": "Bienvenue sur {platformName}"
         },
         "modal": {
             "code": {
@@ -641,7 +665,7 @@
                 "emailLabel": "Email",
                 "submit": "Recevoir le code de connexion",
                 "submitting": "Envoi en cours...",
-                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
+                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur {platformName}",
                 "title": "Se connecter ou s'inscrire"
             },
             "info": {
@@ -799,7 +823,7 @@
     "general": {
         "a11y": {
             "desc": "Cette déclaration d’accessibilité s’applique au site <strong>{domain}</strong>.",
-            "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
+            "disclaimer": "<strong>{platformName}</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
             "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de {domain} pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
@@ -1196,7 +1220,7 @@
                 "title": "Révélation"
             }
         },
-        "homeTitle": "Accueil - compar:IA",
+        "homeTitle": "Accueil - {platformName}",
         "legal": {
             "label": "Légal",
             "title": "Informations légales"
@@ -1207,7 +1231,7 @@
             "count": "{count} votes",
             "legend": "Légende",
             "objective": "Obj : {count}k",
-            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données {platformName} mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
         }
     },
     "home": {
@@ -1235,10 +1259,10 @@
         "accepting": "Connexion en cours...",
         "backToLogin": "Se connecter autrement",
         "invalid": "Ce lien d'invitation n'est plus valide. Il a peut-être expiré ou déjà été utilisé.",
-        "title": "Vous avez été invité·e sur compar:IA"
+        "title": "Vous avez été invité·e sur {platformName}"
     },
     "maintenance": {
-        "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
+        "desc": "{platformName} est actuellement en maintenance. Nous serons de retour très prochainement.",
         "title": "Site en maintenance"
     },
     "models": {
@@ -1299,7 +1323,7 @@
                 "title": "Rang classement",
                 "title_short": "Classement",
                 "to": "#{min} à {max}",
-                "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs."
+                "tooltip": "Position du modèle dans le classement {platformName}, établi à partir des votes des utilisatrices et utilisateurs."
             },
             "release": {
                 "title": "Sortie"
@@ -1447,7 +1471,7 @@
             "rankFromTo": "Rang {min} à {max}",
             "rankSingle": "Rang {min}",
             "title": "Niveau de performance par rapport aux autres modèles",
-            "tooltip": "Le niveau de performance est calculé à partir des votes compar:IA avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
+            "tooltip": "Le niveau de performance est calculé à partir des votes {platformName} avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
         },
         "release": "Sortie {date}",
         "size": {
@@ -1541,7 +1565,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
+                            "1": "{platformName} utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
                             "2": "Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de l'inférence (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).",
                             "3": "La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille et l’architecture du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.",
                             "4": "Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement."
@@ -1556,7 +1580,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
+                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé {platformName} pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
                 "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {notebookLinkProps}>carnet méthodologique</a>."
             },
             "impacts": {
@@ -1633,6 +1657,7 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
+        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que l’incertitude sur son score descend sous ±30 points : continuez à voter !",
         "personal": {
             "cols": {
                 "battles": "Comparaisons",
@@ -1645,6 +1670,10 @@
             "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
             "title": "Mon classement",
             "tooltips": {
+                "battles": "Nombre de comparaisons où vous avez voté sur ce modèle. « Je ne sais pas » ne compte pas.",
+                "general_rank": "Position du modèle dans le classement général, établi à partir des votes de tous les utilisateurs.",
+                "rank": "Position du modèle dans votre classement, du score le plus élevé au plus bas. À score égal, le rang général départage.",
+                "record": "Victoires, défaites et égalités du modèle dans vos votes. « Les deux sont bonnes » compte comme une égalité, « les deux sont mauvaises » comme une défaite pour chacun.",
                 "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
             },
             "totalModels": "Modèles classés :",
@@ -1679,6 +1708,49 @@
             },
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
+        "price": {
+            "desc": "Ce graphique met en regard le score de satisfaction (score Bradley-Terry) de chaque modèle et son prix de sortie, c'est-à-dire le prix indicatif d'un million de jetons générés via l'API du fournisseur. Les prix sont ceux affichés publiquement par les fournisseurs, convertis en {currency}. Tous les modèles classés y figurent, y compris les modèles propriétaires. La ligne relie les modèles qu'aucun autre ne bat à la fois sur le score et sur le prix : c'est la frontière de Pareto.",
+            "tabLabel": "Focus prix",
+            "title": "Les modèles les plus appréciés sont-ils les plus chers ?",
+            "views": {
+                "graph": {
+                    "desc": "Survolez un modèle pour connaître son score Bradley-Terry (BT) et ses prix d'entrée et de sortie",
+                    "legends": {
+                        "frontier": "Frontière de Pareto",
+                        "frontierOnly": "Afficher seulement la frontière",
+                        "frontierSub": "Modèles qu'aucun autre ne bat à la fois sur le score et sur le prix",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Poids ouverts",
+                            "proprietary": "Propriétaire"
+                        },
+                        "license": "Filtrer par licence"
+                    },
+                    "title": "Score de satisfaction Bradley-Terry (BT) VS prix de sortie par million de jetons",
+                    "tooltip": {
+                        "elo": "Score BT",
+                        "license": "Licence",
+                        "onFrontier": "Sur la frontière de Pareto",
+                        "price_in": "Prix d'entrée (1M jetons)",
+                        "price_out": "Prix de sortie (1M jetons)"
+                    },
+                    "xLabel": "Prix de sortie par million de jetons ({currency}, échelle logarithmique)",
+                    "yLabel": "Score Bradley-Terry (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>Plus un modèle est haut</strong> sur le graphique, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus il est à droite</strong>, moins il coûte cher par jeton généré.",
+                        "2": "<strong>En haut à droite</strong> se trouvent les modèles à la fois appréciés et bon marché. La ligne relie ceux qu'aucun autre modèle ne bat sur les deux critères à la fois : pour chacun d'eux, obtenir un meilleur score oblige à payer plus cher.",
+                        "3": "L'axe des prix est <strong>logarithmique</strong> : un même écart sur l'axe correspond au même rapport de prix, de 0,1 à 1 comme de 1 à 10. Les prix sont indicatifs, relevés sur les grilles publiques des fournisseurs, et ne tiennent pas compte des remises, du cache ou des offres de traitement par lots."
+                    },
+                    "subTitle": "Exemples de lecture du graphique",
+                    "title": "Comment trouver le bon équilibre entre performance perçue et prix ?"
+                },
+                "table": {
+                    "title": "Tableau des prix par modèle"
+                }
+            }
+        },
         "ranking": {
             "desc": "Ce classement est calculé à partir des votes recueillis lors de <strong>comparaisons à l’aveugle</strong>, selon le modèle statistique <strong>Bradley-Terry</strong>. Il reflète des <strong>préférences subjectives</strong> et doit être interprété avec prudence : il ne mesure ni la factualité des réponses ni la performance globale des modèles.",
             "tabLabel": "Classement"
@@ -1698,6 +1770,8 @@
                     "n_match": "Total votes",
                     "name": "Modèle",
                     "organisation": "Organisation",
+                    "price_in": "Prix d’entrée<br>(1M tokens)",
+                    "price_out": "Prix de sortie<br>(1M tokens)",
                     "rank": "Classe",
                     "rank_number": "Rang",
                     "release": "Date sortie",
@@ -1709,6 +1783,7 @@
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
+                    "price": "Prix indicatif d’utilisation via API pour un million de jetons, converti dans la devise affichée. L’entrée correspond à la requête envoyée, la sortie à la réponse générée.",
                     "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du rang de classement : plus l'intervalle est étroit, plus l'estimation du rang est fiable. Il y a 95% de chances que le vrai rang du modèle soit dans cette plage."
@@ -1731,7 +1806,7 @@
     },
     "reveal": {
         "feedback": {
-            "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
+            "description": "Faites découvrir {platformName} en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
             "example": "Exemple de partage de résultat",
             "moreOnVotes": "En savoir plus sur les votes",
             "shareResult": "Partager votre résultat"
@@ -1867,6 +1942,8 @@
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
+            "invite": "Invitation",
+            "login": "Connexion",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
@@ -1930,7 +2007,7 @@
             }
         },
         "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
-        "importantDesc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
+        "importantDesc": "Votre préférence enrichit les jeux de données {platformName} dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
         "title": "Quel modèle d’IA préférez-vous ?",
         "turn": {
             "choices": {

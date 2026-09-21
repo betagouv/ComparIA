@@ -1,7 +1,6 @@
 suite: optional maintenance cronjobs
 templates:
   - cronjob-ranking.yaml
-  - cronjob-export-dataset.yaml
   - cronjob-analyze.yaml
   - cronjob-purge-inactive.yaml
 values:
@@ -23,35 +22,6 @@ tests:
       - hasDocuments:
           count: 0
 
-  - it: omits the export-dataset CronJob by default
-    template: cronjob-export-dataset.yaml
-    asserts:
-      - hasDocuments:
-          count: 0
-
-  - it: renders the export-dataset CronJob when enabled with a target repo
-    template: cronjob-export-dataset.yaml
-    set:
-      cronjobs.exportDataset.enabled: true
-      cronjobs.exportDataset.hfRepo: my-org/my-comparia-dataset
-      cronjobs.exportDataset.hfToken: hf_dummy
-    asserts:
-      - hasDocuments:
-          count: 1
-      - isKind:
-          of: CronJob
-      - equal:
-          path: spec.jobTemplate.spec.template.spec.containers[0].command
-          value: ["uv", "run", "python", "-m", "utils.dataset.run", "--record"]
-
-  - it: fails to render when export-dataset is enabled without a target repo
-    template: cronjob-export-dataset.yaml
-    set:
-      cronjobs.exportDataset.enabled: true
-    asserts:
-      - failedTemplate:
-          errorMessage: cronjobs.exportDataset.hfRepo is required when cronjobs.exportDataset.enabled is true
-
   - it: omits the analyze CronJob by default
     template: cronjob-analyze.yaml
     asserts:
@@ -62,7 +32,6 @@ tests:
     template: cronjob-analyze.yaml
     set:
       cronjobs.analyze.enabled: true
-      cronjobs.purgeInactive.enabled: true
     asserts:
       - hasDocuments:
           count: 1
@@ -96,9 +65,6 @@ tests:
     template: cronjob-ranking.yaml
     set:
       cronjobs.ranking.enabled: true
-      cronjobs.exportDataset.enabled: true
-      cronjobs.exportDataset.hfRepo: my-org/my-comparia-dataset
-      cronjobs.exportDataset.hfToken: hf_dummy
       cronjobs.analyze.enabled: true
       cronjobs.purgeInactive.enabled: true
     asserts:

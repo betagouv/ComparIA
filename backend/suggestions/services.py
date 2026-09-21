@@ -199,9 +199,7 @@ async def list_admin_suggestions(
         )
         suggestion_counts = dict(suggestion_counts_result.all())
         available_suggestion_counts_result = await session.exec(
-            select(
-                PromptSuggestion.category_id, func.count(col(PromptSuggestion.id))
-            )
+            select(PromptSuggestion.category_id, func.count(col(PromptSuggestion.id)))
             .where(col(PromptSuggestion.archived_at).is_(None))
             .group_by(col(PromptSuggestion.category_id))
         )

@@ -2,15 +2,22 @@
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
+  import { tryGetAuthContext } from '$lib/authContext.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AdminLegalDocument, PublishLegalDocumentBody } from '$lib/generated/admin'
+  import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   let { kind }: { kind: AdminLegalDocument['kind'] } = $props()
 
-  const localeOptions = [{ value: 'fr', label: 'Français' }]
+  // The locales the instance serves, so a document can be published in each.
+  const auth = tryGetAuthContext()
+  const localeOptions = getLocales(auth?.config.enabled_locales).map((item) => ({
+    value: item.code,
+    label: item.long
+  }))
   let loading = $state(true)
   let publishing = $state(false)
   let editorOpen = $state(false)
@@ -18,7 +25,7 @@
   let documents = $state<AdminLegalDocument[]>([])
   let activeDocument = $state<AdminLegalDocument | null>(null)
   let version = $state('')
-  let locale = $state('fr')
+  let locale = $state(auth?.config.default_locale ?? 'fr')
   let content = $state('')
   let effectiveAt = $state('')
   let confirmed = $state(false)

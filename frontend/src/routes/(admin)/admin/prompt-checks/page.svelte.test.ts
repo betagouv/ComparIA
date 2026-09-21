@@ -60,8 +60,9 @@ const tried = (overrides: Partial<PromptCheckTry> = {}): PromptCheckTry => ({
     financial: 0.0
   },
   triggered: { pii: 'warn' },
-  message: 'Votre message semble contenir des données personnelles.',
+  message: 'pii',
   latency_ms: 210,
+  error: null,
   ...overrides
 })
 
@@ -289,7 +290,7 @@ describe('admin prompt check page', () => {
     expect(getByText('Prévenu')).toBeInTheDocument()
     expect(getByText('Réponse en 210 ms')).toBeInTheDocument()
     expect(container.querySelector('#prompt-check-bench-message')?.textContent?.trim()).toBe(
-      'Votre message semble contenir des données personnelles.'
+      'Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.'
     )
 
     const fired = container.querySelector('#prompt-check-bench-row-pii')!

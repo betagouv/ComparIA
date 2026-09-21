@@ -1,11 +1,14 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { Tooltip } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
   import type { SvelteHTMLElements } from 'svelte/elements'
+
+  const platformName = getPlatformName()
 
   let { id, ...props }: { id: string } & SvelteHTMLElements['div'] = $props()
 
@@ -39,7 +42,7 @@
         size="xs"
         label={m['header.votes.legend']()}
       >
-        {@html sanitize(m['header.votes.tooltip']())}
+        {@html sanitize(m['header.votes.tooltip']({ platformName }))}
       </Tooltip>
     </div>
   </div>
