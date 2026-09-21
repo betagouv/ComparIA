@@ -244,7 +244,8 @@ def test_an_older_key_still_decrypts_and_is_flagged_for_reencryption():
         secrets_store._fernet.cache_clear()
         old_token = auth_totp.encrypt_secret(SECRET)
     with patched(
-        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}"
+        secrets_store.settings,
+        COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}",  # gitleaks:allow
     ):
         secrets_store._fernet.cache_clear()
         assert auth_totp.decrypt_secret(old_token) == SECRET
@@ -504,7 +505,8 @@ def test_a_secret_under_an_older_key_is_rewritten_at_sign_in():
     old_token = totp.secret_encrypted
 
     with patched(
-        secrets_store.settings, COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}"
+        secrets_store.settings,
+        COMPARIA_ENCRYPTION_KEY=f"{new_key},{old_key}",  # gitleaks:allow
     ):
         secrets_store._fernet.cache_clear()
         session = FakeSession(user, [challenge_for(user)], [totp], [])
