@@ -8,7 +8,8 @@ from pydantic import TypeAdapter, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from utils.database.encrypted import EncryptedJSONFields
+from utils.database.encrypted import EncryptedJSONFields, UnreadableSecret
+from utils.secrets import SecretUnreadableError
 from utils.validation import NonEmptyStr
 
 from .utils import BaseDBModel, Datetime, OptionalDatetime
@@ -146,6 +147,19 @@ class PublishDestination(PublishDestinationBase, table=True):
     config: Annotated[dict, Field(sa_type=EncryptedJSONFields(SECRET_FIELDS))]
 
     def parsed_config(self) -> HuggingFaceConfig | S3Config:
+        """Raises SecretUnreadableError, naming the row, for credentials the
+        configured encryption keys do not open: the destination is still
+        there, it cannot be used until its key is back."""
+        unreadable = [
+            field
+            for field in SECRET_FIELDS.get(self.config.get("kind"), ())
+            if isinstance(self.config.get(field), UnreadableSecret)
+        ]
+        if unreadable:
+            raise SecretUnreadableError(
+                f"publish_destination {self.id}.config.{', '.join(unreadable)} "
+                "cannot be decrypted with COMPARIA_ENCRYPTION_KEY"
+            )
         return _CONFIG.validate_python(self.config)
 
 
