@@ -68,11 +68,16 @@ class EncryptedJSONFields(TypeDecorator):
         self, secret_fields: dict[str, tuple[str, ...]], discriminator: str = "kind"
     ) -> None:
         super().__init__()
-        self.secret_fields = secret_fields
+        self._secret_fields = dict(secret_fields)
+        # Constructor arguments make the statement cache key, which has to be
+        # hashable: a dict is not, a sorted tuple of tuples is.
+        self.secret_fields = tuple(
+            sorted((kind, tuple(fields)) for kind, fields in secret_fields.items())
+        )
         self.discriminator = discriminator
 
     def _fields(self, value: dict) -> tuple[str, ...]:
-        return self.secret_fields.get(value.get(self.discriminator), ())
+        return self._secret_fields.get(value.get(self.discriminator), ())
 
     def _map(self, value: Any, transform: Any) -> Any:
         if not isinstance(value, dict):

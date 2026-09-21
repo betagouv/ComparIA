@@ -14,13 +14,19 @@ os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 import pytest  # noqa: E402
 from cryptography.fernet import Fernet  # noqa: E402
+from sqlalchemy.dialects import postgresql  # noqa: E402
+from sqlmodel import select  # noqa: E402
 
+import utils.database.models  # noqa: E402,F401 registers every table
 from utils.database.encrypted import (  # noqa: E402
     EncryptedJSONFields,
     EncryptedStr,
     looks_encrypted,
 )
-from utils.database.models.publish import SECRET_FIELDS  # noqa: E402
+from utils.database.models.publish import (  # noqa: E402
+    SECRET_FIELDS,
+    PublishDestination,
+)
 from utils.secrets import decrypt_secret  # noqa: E402
 
 
@@ -77,6 +83,20 @@ def test_looks_encrypted_tells_tokens_from_plain_values():
     assert not looks_encrypted("gAAAAA-short")
     assert not looks_encrypted("gAAAAA" + "!" * 100)
     assert not looks_encrypted("gAAAAA" + "A" * 93)
+
+
+def test_a_json_lookup_on_the_encrypted_column_compiles_and_caches():
+    """The type's arguments are part of SQLAlchemy's statement cache key,
+    which has to be hashable."""
+    statement = select(PublishDestination).where(
+        PublishDestination.config["kind"].astext == "s3"
+    )
+    assert "config ->>" in str(statement.compile(dialect=postgresql.dialect()))
+    # The CacheKey wrapper is unhashable by design; the executor hashes .key.
+    assert hash(statement._generate_cache_key().key)
+
+    same = EncryptedJSONFields(dict(reversed(list(SECRET_FIELDS.items()))))
+    assert same.secret_fields == EncryptedJSONFields(SECRET_FIELDS).secret_fields
 
 
 if __name__ == "__main__":
