@@ -8,6 +8,7 @@ Run with pytest, or directly:
 
 import asyncio
 import contextlib
+import importlib
 import logging
 import os
 import sys
@@ -43,6 +44,9 @@ from utils.database.models.publish import (  # noqa: E402
     PublishDestination,
 )
 from utils.secrets import SecretUnreadableError, decrypt_secret  # noqa: E402
+
+# The package exports the command under the module's name.
+rotation = importlib.import_module("utils.database.actions.reencrypt_secrets")
 
 
 def token_from_a_lost_key(plain: str = "x") -> str:
@@ -220,7 +224,7 @@ def test_a_destination_names_itself_when_its_credentials_cannot_be_read():
     assert AdminPublishDestination.from_row(row).config.bucket == "b"
 
 
-# The startup check
+# The startup check and the rotation command share one audit
 
 
 class FakeResult:
@@ -308,6 +312,84 @@ def test_the_startup_check_names_every_unreadable_row_and_changes_nothing(caplog
     assert lost not in "".join(messages)
     assert session.added == [] and session.commits == 0
     assert all(s._for_update_arg is None for s in session.statements)
+
+
+def test_rotation_refuses_to_rewrite_anything_while_one_secret_is_unreadable(
+    caplog,
+):
+    session = FakeSession(
+        llm_endpoint=[endpoint("sk-fine")],
+        prompt_check=[PromptCheck(id=1, api_key="sk-fine")],
+        publish_destination=[
+            destination(
+                {
+                    "kind": "s3",
+                    "endpoint": "e",
+                    "bucket": "b",
+                    "access_key": "AK",
+                    "secret_key": UnreadableSecret(token_from_a_lost_key()),
+                }
+            )
+        ],
+        auth_totp=[totp(EncryptedStr().process_bind_param("ok", None))],
+    )
+
+    with fake_session(session, rotation), caplog.at_level(logging.ERROR):
+        with pytest.raises(
+            rotation.UnreadableSecretsError, match="nothing was changed"
+        ):
+            asyncio.run(rotation.reencrypt_secrets())
+
+    assert session.added == []
+    assert session.commits == 0
+    assert any("config.secret_key" in r.getMessage() for r in caplog.records)
+
+
+def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
+    old_key = Fernet.generate_key().decode()
+    from utils.secrets import _fernet, settings
+
+    current = settings.COMPARIA_ENCRYPTION_KEY
+    settings.COMPARIA_ENCRYPTION_KEY = old_key
+    _fernet.cache_clear()
+    old_totp_token = EncryptedStr().process_bind_param("JBSWY3DP", None)
+    settings.COMPARIA_ENCRYPTION_KEY = f"{current},{old_key}"
+    _fernet.cache_clear()
+    try:
+        session = FakeSession(
+            llm_endpoint=[endpoint("sk-a"), endpoint(None), endpoint("sk-b")],
+            prompt_check=[PromptCheck(id=1, api_key="sk-m")],
+            publish_destination=[
+                destination({"kind": "huggingface", "repo_path": "o/r", "token": "t"})
+            ],
+            auth_totp=[
+                totp(old_totp_token),
+                totp(EncryptedStr().process_bind_param("fresh", None)),
+            ],
+        )
+
+        with fake_session(session, rotation), caplog.at_level(logging.INFO):
+            asyncio.run(rotation.reencrypt_secrets())
+
+        assert session.commits == 1
+        assert len(session.statements) == 4
+        assert all(s._for_update_arg is not None for s in session.statements)
+        assert len(session.added) == 5
+        rewritten = session.added[-1]
+        assert rewritten.secret_encrypted != old_totp_token
+        assert decrypt_secret(rewritten.secret_encrypted) == "JBSWY3DP"
+        infos = [
+            r.getMessage() for r in caplog.records if "rows rewritten" in r.getMessage()
+        ]
+        assert infos == [
+            "[secrets] llm_endpoint: 2 rows rewritten",
+            "[secrets] prompt_check: 1 rows rewritten",
+            "[secrets] publish_destination: 1 rows rewritten",
+            "[secrets] auth_totp: 1 rows rewritten",
+        ]
+    finally:
+        settings.COMPARIA_ENCRYPTION_KEY = current
+        _fernet.cache_clear()
 
 
 if __name__ == "__main__":
