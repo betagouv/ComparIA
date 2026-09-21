@@ -21,13 +21,14 @@ import utils.database.models  # noqa: E402,F401 registers every table
 from utils.database.encrypted import (  # noqa: E402
     EncryptedJSONFields,
     EncryptedStr,
+    UnreadableSecret,
     looks_encrypted,
 )
 from utils.database.models.publish import (  # noqa: E402
     SECRET_FIELDS,
     PublishDestination,
 )
-from utils.secrets import decrypt_secret  # noqa: E402
+from utils.secrets import SecretUnreadableError, decrypt_secret  # noqa: E402
 
 
 def token_from_a_lost_key(plain: str = "x") -> str:
@@ -97,6 +98,45 @@ def test_a_json_lookup_on_the_encrypted_column_compiles_and_caches():
 
     same = EncryptedJSONFields(dict(reversed(list(SECRET_FIELDS.items()))))
     assert same.secret_fields == EncryptedJSONFields(SECRET_FIELDS).secret_fields
+
+
+# A secret no configured key opens
+
+
+def test_an_unreadable_string_reads_as_a_marker_not_as_nothing():
+    token = token_from_a_lost_key()
+    value = EncryptedStr().process_result_value(token, None)
+
+    assert isinstance(value, UnreadableSecret)
+    assert value, "a key is set, it just cannot be read"
+    with pytest.raises(SecretUnreadableError):
+        str(value)
+    with pytest.raises(SecretUnreadableError):
+        f"Bearer {value}"
+
+
+def test_an_unreadable_marker_writes_its_token_back_unchanged():
+    token = token_from_a_lost_key()
+    column = EncryptedStr()
+    assert (
+        column.process_bind_param(column.process_result_value(token, None), None)
+        == token
+    )
+
+
+def test_an_unreadable_config_field_keeps_the_rest_readable_and_round_trips():
+    column = EncryptedJSONFields(SECRET_FIELDS)
+    stored = {
+        "kind": "huggingface",
+        "repo_path": "org/repo",
+        "token": token_from_a_lost_key(),
+    }
+
+    loaded = column.process_result_value(stored, None)
+    assert loaded["repo_path"] == "org/repo"
+    assert isinstance(loaded["token"], UnreadableSecret)
+
+    assert column.process_bind_param(loaded, None) == stored
 
 
 if __name__ == "__main__":

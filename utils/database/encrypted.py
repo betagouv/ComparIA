@@ -3,6 +3,11 @@
 The Python side sees the plain value; the row holds a Fernet token made with
 `COMPARIA_ENCRYPTION_KEY` (see `utils.secrets`). Rotating the key means
 adding the new one in front and running `comparia-cli db reencrypt-secrets`.
+
+A token no configured key opens reads as an `UnreadableSecret`, not as None:
+the secret is there, the operator dropped its key too early. SQLAlchemy
+decodes a whole result set at once, so raising here would fail every row of
+the query for one bad one; the marker lets each reader deal with its own row.
 """
 
 import base64
@@ -12,7 +17,7 @@ from typing import Any
 from sqlalchemy import String, TypeDecorator
 from sqlalchemy.dialects.postgresql import JSONB
 
-from utils.secrets import decrypt_secret, encrypt_secret
+from utils.secrets import SecretUnreadableError, decrypt_secret, encrypt_secret
 
 # Every Fernet token starts with the version byte 0x80 and a timestamp whose
 # first bytes stay zero until 2106, base64-encoded: what a migration checks
@@ -37,21 +42,56 @@ def looks_encrypted(value: Any) -> bool:
     return True
 
 
+class UnreadableSecret:
+    """A stored secret that no configured key opens.
+
+    Truthy, so "is a secret set" stays true. Not a str, so it cannot be sent
+    to a provider by mistake: turning it into text raises
+    SecretUnreadableError. Written back, it puts the token it came from into
+    the row unchanged, so a save cannot destroy what a key rotation could
+    still recover.
+    """
+
+    __slots__ = ("token",)
+
+    def __init__(self, token: str) -> None:
+        self.token = token
+
+    def __repr__(self) -> str:
+        return "UnreadableSecret()"
+
+    def __str__(self) -> str:
+        raise SecretUnreadableError()
+
+
+def _read(token: str) -> str | UnreadableSecret:
+    try:
+        return decrypt_secret(token)
+    except SecretUnreadableError:
+        return UnreadableSecret(token)
+
+
+def _write(value: str | UnreadableSecret) -> str:
+    if isinstance(value, UnreadableSecret):
+        return value.token
+    return encrypt_secret(value)
+
+
 class EncryptedStr(TypeDecorator):
     """A string column stored encrypted. An empty string is kept as is."""
 
     impl = String
     cache_ok = True
 
-    def process_bind_param(self, value: str | None, dialect: Any) -> str | None:
+    def process_bind_param(self, value: Any, dialect: Any) -> str | None:
         if not value:
             return value
-        return encrypt_secret(value)
+        return _write(value)
 
-    def process_result_value(self, value: str | None, dialect: Any) -> str | None:
+    def process_result_value(self, value: str | None, dialect: Any) -> Any:
         if not value:
             return value
-        return decrypt_secret(value)
+        return _read(value)
 
 
 class EncryptedJSONFields(TypeDecorator):
@@ -89,7 +129,7 @@ class EncryptedJSONFields(TypeDecorator):
         return out
 
     def process_bind_param(self, value: Any, dialect: Any) -> Any:
-        return self._map(value, encrypt_secret)
+        return self._map(value, _write)
 
     def process_result_value(self, value: Any, dialect: Any) -> Any:
-        return self._map(value, decrypt_secret)
+        return self._map(value, _read)
