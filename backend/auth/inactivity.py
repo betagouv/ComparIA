@@ -9,7 +9,7 @@ from sqlmodel import select
 from backend.auth.email import send_inactivity_warning
 from backend.auth.services import erase_user_account
 from backend.config import settings
-from utils.database.models.auth import ConsentLog, InviteToken, User
+from utils.database.models.auth import AuthSession, ConsentLog, InviteToken, User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 
@@ -27,6 +27,9 @@ class WindowTooShortError(ValueError):
 class InactivityReport:
     to_warn: list[User] = field(default_factory=list)
     to_erase: list[User] = field(default_factory=list)
+    # Rows left by a login code that was never verified: there was never an
+    # account to warn about, so they go once they are past the deadline.
+    never_signed_in: list[User] = field(default_factory=list)
     admins: list[User] = field(default_factory=list)
     # Only filled by an applied run: warnings that could not be sent, and
     # accounts that changed between selection and erasure, left alone.
@@ -69,10 +72,14 @@ def check_window(months: int, now: datetime) -> None:
 
 
 def classify(
-    user: User, months: int, now: datetime, invited: bool = False
+    user: User,
+    months: int,
+    now: datetime,
+    invited: bool = False,
+    signed_in: bool = True,
 ) -> str | None:
-    """ "warn", "erase", "admin" or None when the account is not dormant, or
-    is waiting on an invite that can still be accepted."""
+    """ "warn", "erase", "never_signed_in", "admin" or None when the account
+    is not dormant, or is waiting on an invite that can still be accepted."""
     if user.deleted_at is not None or invited:
         return None
     deadline = add_months(now, -months)
@@ -80,6 +87,8 @@ def classify(
         return None
     if user.role == "admin":
         return "admin"
+    if not signed_in:
+        return "never_signed_in" if user.last_seen_at <= deadline else None
     if user.inactivity_warned_at is None:
         return "warn"
     if erasure_date(user, months, now) <= now:
@@ -101,22 +110,39 @@ async def find_inactive_users(
             .order_by(User.last_seen_at)
         )
         users = result.all()
+        ids = [user.id for user in users]
         invited: set = set()
-        if users:
+        signed_in: set = set()
+        if ids:
             result = await session.exec(
                 select(InviteToken.user_id).where(
-                    InviteToken.user_id.in_([user.id for user in users]),
+                    InviteToken.user_id.in_(ids),
                     InviteToken.used_at.is_(None),
                     InviteToken.expires_at > now,
                 )
             )
             invited = set(result.all())
+            result = await session.exec(
+                select(AuthSession.user_id)
+                .where(AuthSession.user_id.in_(ids))
+                .distinct()
+            )
+            signed_in = set(result.all())
         for user in users:
-            match classify(user, months, now, invited=user.id in invited):
+            kind = classify(
+                user,
+                months,
+                now,
+                invited=user.id in invited,
+                signed_in=user.id in signed_in,
+            )
+            match kind:
                 case "warn":
                     report.to_warn.append(user)
                 case "erase":
                     report.to_erase.append(user)
+                case "never_signed_in":
+                    report.never_signed_in.append(user)
                 case "admin":
                     report.admins.append(user)
     return report
@@ -163,7 +189,9 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
     return True
 
 
-async def _erase_unchanged(users: list[User], skipped: list[User]) -> list[User]:
+async def _erase_unchanged(
+    users: list[User], skipped: list[User], warned: bool = True
+) -> list[User]:
     """Erase the accounts that still look as they did when selected.
 
     Sending the warnings takes a while, and a sign-in meanwhile moves
@@ -176,7 +204,7 @@ async def _erase_unchanged(users: list[User], skipped: list[User]) -> list[User]
             if (
                 row is None
                 or row.deleted_at is not None
-                or row.inactivity_warned_at is None
+                or (warned and row.inactivity_warned_at is None)
                 or row.last_seen_at != user.last_seen_at
             ):
                 skipped.append(user)
@@ -201,4 +229,7 @@ async def purge_inactive_users(
             report.warn_failed.append(user)
     report.to_warn = warned
     report.to_erase = await _erase_unchanged(report.to_erase, report.skipped)
+    report.never_signed_in = await _erase_unchanged(
+        report.never_signed_in, report.skipped, warned=False
+    )
     return report

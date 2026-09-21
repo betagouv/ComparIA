@@ -18,6 +18,8 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
     Dry run by default: lists who would get the warning, who would be erased
     and which admins would have matched. Admins are never erased. With --apply,
     sends the warnings and erases the accounts whose notice period is over.
+    Rows that asked for a login code but never signed in are erased without a
+    warning: there was never an account to keep.
     """
     if not settings.COMPARIA_DB_URI:
         logger.warning("[purge] COMPARIA_DB_URI is not set, nothing to do")
@@ -46,6 +48,11 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
             f"(last seen {user.last_seen_at:%Y-%m-%d}, "
             f"warned {user.inactivity_warned_at:%Y-%m-%d})"
         )
+    for user in report.never_signed_in:
+        logger.info(
+            f"[purge] {verb_erase} {user.id} "
+            f"(never signed in, code requested {user.last_seen_at:%Y-%m-%d})"
+        )
     for user in report.warn_failed:
         logger.error(f"[purge] no warning sent to {user.id}, left as is")
     for user in report.skipped:
@@ -56,6 +63,7 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
         )
     logger.info(
         f"[purge] {mode}: {len(report.to_warn)} to warn, "
-        f"{len(report.to_erase)} to erase, {len(report.admins)} admins kept "
+        f"{len(report.to_erase)} to erase, {len(report.never_signed_in)} never "
+        f"signed in, {len(report.admins)} admins kept "
         f"({months} months, {WARNING_DAYS} days notice)"
     )
