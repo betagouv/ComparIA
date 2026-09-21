@@ -72,7 +72,7 @@ db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_D
 
 db-purge-inactive: ## Warn then erase accounts unused for MONTHS (default 12); dry run unless APPLY=1 (requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
-	./comparia-cli db purge-inactive --months $(or $(MONTHS),12) $(if $(APPLY),--apply)
+	./comparia-cli db purge-inactive --months $(or $(MONTHS),12) $(if $(filter 1 true yes,$(APPLY)),--apply)
 
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
