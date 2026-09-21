@@ -16,12 +16,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+import pytest  # noqa: E402
+
 from utils.database.actions.llm_analyze import (  # noqa: E402
     AnalysisNotConfigured,
     get_analysis_model,
 )
+from utils.database.encrypted import UnreadableSecret  # noqa: E402
 from utils.database.models.app_settings import AppSettings  # noqa: E402
 from utils.database.models.llms import LLMEndpoint  # noqa: E402
+from utils.secrets import SecretUnreadableError  # noqa: E402
 
 # The package exports a function of the same name, which shadows the module.
 llm_analyze = sys.modules["utils.database.actions.llm_analyze"]
@@ -86,3 +90,10 @@ def test_analysis_refuses_to_run_half_configured(monkeypatch):
     assert "gone" in refuses(monkeypatch, configured(), None)
     # An endpoint with no key answers 401 on every comparison in the queue.
     assert "no API key" in refuses(monkeypatch, configured(), openrouter(api_key=None))
+
+
+def test_analysis_names_the_endpoint_whose_key_no_key_opens(monkeypatch):
+    # The key is there, encrypted with a key that was dropped: not a missing
+    # key, and never sent as one.
+    with pytest.raises(SecretUnreadableError, match=f"llm_endpoint {ENDPOINT_ID}"):
+        resolve(monkeypatch, configured(), openrouter(UnreadableSecret("gAAAAA")))
