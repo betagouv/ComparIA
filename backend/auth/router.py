@@ -44,12 +44,13 @@ from backend.auth.totp import (
     verify_totp_challenge,
 )
 from backend.config import settings
-from backend.errors import RoleRequiredError
+from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
+from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -461,6 +462,8 @@ async def totp_verify(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
 
     response.delete_cookie(TOTP_CHALLENGE_COOKIE)
     _set_session_cookie(response, token)
@@ -525,6 +528,8 @@ async def totp_setup(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
     # The secret travels once, here. Nothing on the way may keep a copy.
     response.headers["Cache-Control"] = "no-store"
     return TotpSetupResponse(
@@ -553,6 +558,8 @@ async def totp_confirm(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
+    except SecretUnreadableError:
+        raise TotpSecretUnreadableError()
 
 
 @router.get("/invite/{token}")
