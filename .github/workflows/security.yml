@@ -15,9 +15,11 @@ on:
   schedule:
     - cron: '17 4 * * 1'
 
+# A newer pull request run supersedes the older one. Pushes are never
+# cancelled: the gitleaks range of a cancelled push would never be scanned.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   codeql:
