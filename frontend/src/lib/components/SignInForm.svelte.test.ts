@@ -8,8 +8,16 @@ import SignInModal from './SignInModal.svelte'
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
   conceal: vi.fn(),
+  replaceState: vi.fn(),
+  pageState: { url: new URL('http://localhost/login') },
   authContext: { user: null, config: { access_policy: 'anonymous_first' } }
 }))
+
+vi.mock('$app/navigation', () => ({ replaceState: mocks.replaceState }))
+
+vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
+
+vi.mock('$app/state', () => ({ page: mocks.pageState }))
 
 vi.mock('$lib/auth.svelte', () => ({
   getAuthContext: () => mocks.authContext
@@ -260,8 +268,10 @@ describe('SignInForm authenticator step', () => {
 
   beforeEach(() => {
     resetConsent()
+    mocks.replaceState.mockClear()
     mocks.authContext.config.access_policy = 'anonymous_first'
     mocks.authContext.user = null
+    mocks.pageState.url = new URL('http://localhost/login')
     Object.defineProperty(window, 'dsfr', {
       configurable: true,
       value: () => ({ modal: { conceal: mocks.conceal } })
@@ -303,7 +313,11 @@ describe('SignInForm authenticator step', () => {
     const totpInput = container.querySelector<HTMLInputElement>('#login-totp')!
     expect(totpInput).not.toBeNull()
     expect(container.querySelector('#login-code')).toBeNull()
-    expect(container.querySelector<HTMLInputElement>('#login-email')!.disabled).toBe(true)
+    // No address to show or change: the invite already checked it.
+    expect(container.querySelector('#login-email')).toBeNull()
+    expect(container.textContent).not.toContain('Modifier l’adresse email')
+    expect(container.textContent).toContain('Votre adresse email a déjà été vérifiée')
+    await expectAccessible(container)
 
     await fireEvent.input(totpInput, { target: { value: '654321' } })
     await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
@@ -311,6 +325,26 @@ describe('SignInForm authenticator step', () => {
     await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce())
     expect(paths()).not.toContain('/auth/email/request')
     expect(paths()).not.toContain('/auth/email/verify')
+  })
+
+  it('leaves the dead authenticator step behind when opened straight at it', async () => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Gone'), { status: 410 })))
+    mocks.pageState.url = new URL('http://localhost/login?step=totp&redirect=%2Fadmin')
+    const { container } = render(SignInForm, { props: { startAtTotp: true } })
+
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-totp')!, {
+      target: { value: '000000' }
+    })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Connexion expirée'))
+    expect(container.textContent).not.toContain('Votre adresse email a déjà été vérifiée')
+    const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
+    expect(emailInput.disabled).toBe(false)
+    expect(document.activeElement).toBe(emailInput)
+    // A reload must not land on the step again: only `step` goes, the rest stays.
+    expect(mocks.replaceState).toHaveBeenCalledOnce()
+    expect(mocks.replaceState.mock.calls[0][0]).toBe('/login?redirect=%2Fadmin')
   })
 
   it('reports a wrong authenticator code and lets the visitor retry', async () => {
@@ -341,6 +375,10 @@ describe('SignInForm authenticator step', () => {
     expect(container.textContent).not.toContain('Code incorrect.')
     expect(container.querySelector('#login-totp')).toBeNull()
     expect(container.querySelector('#login-code')).toBeNull()
-    expect(container.querySelector<HTMLInputElement>('#login-email')!.disabled).toBe(false)
+    const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
+    expect(emailInput.disabled).toBe(false)
+    expect(document.activeElement).toBe(emailInput)
+    // The page was not opened on the authenticator step: nothing to strip.
+    expect(mocks.replaceState).not.toHaveBeenCalled()
   })
 })
