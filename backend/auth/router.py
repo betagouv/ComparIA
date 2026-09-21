@@ -31,6 +31,7 @@ from backend.auth.services import (
     request_login_code,
     revoke_all_user_sessions,
     revoke_current_session,
+    revoke_totp_challenge,
     verify_login_code,
 )
 from backend.auth.totp import (
@@ -624,6 +625,11 @@ async def logout(request: Request, response: Response) -> None:
     token = request.cookies.get(SESSION_COOKIE)
     if token:
         await revoke_current_session(token)
+    # The half-finished sign-in dies on the server too: clearing the cookie
+    # alone would leave a copy of it usable until it expires.
+    challenge_token = request.cookies.get(TOTP_CHALLENGE_COOKIE)
+    if challenge_token:
+        await revoke_totp_challenge(challenge_token)
     response.delete_cookie(SESSION_COOKIE)
     response.delete_cookie(TOTP_CHALLENGE_COOKIE)
 
