@@ -593,14 +593,6 @@
             "signLabel": "Type",
             "subtitle": "Tilføj og administrer etiketterne, besøgende tilføjer til deres stemme.",
             "title": "Stemmeetiketter"
-        },
-        "users": {
-            "resetTotp": {
-                "title": "Nulstil totrinsbekræftelse",
-                "intro": "Glem godkendelsesappen for {email}? Personen bliver logget ud overalt og bedt om at opsætte en ny, næste gang administrationen åbnes.",
-                "warning": "Gør det kun for en, der har bedt dig om det, via en kanal du stoler på: derefter er e-mailkoden alene nok til at åbne administrationen igen.",
-                "confirm": "Nulstil totrinsbekræftelse for {email}"
-            }
         }
     },
     "arenaHome": {
