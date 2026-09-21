@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
+os.environ.setdefault("ALTCHA_HMAC_KEY", "test-altcha-hmac-key")
 
 from fastapi import Depends, FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -53,6 +54,10 @@ def test_the_right_bearer_gets_through():
     assert get_metrics("s3cret", authorization="Bearer s3cret").status_code == 200
 
 
+def test_the_scheme_is_case_insensitive():
+    assert get_metrics("s3cret", authorization="bearer s3cret").status_code == 200
+
+
 def test_a_wrong_or_missing_bearer_is_refused():
     assert get_metrics("s3cret").status_code == 401
     assert get_metrics("s3cret", authorization="Bearer nope").status_code == 401
@@ -63,5 +68,6 @@ if __name__ == "__main__":
     test_no_token_configured_refuses_everyone()
     test_no_token_configured_stays_open_in_debug()
     test_the_right_bearer_gets_through()
+    test_the_scheme_is_case_insensitive()
     test_a_wrong_or_missing_bearer_is_refused()
     print("ok")
