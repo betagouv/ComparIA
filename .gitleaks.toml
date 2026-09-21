@@ -27,3 +27,18 @@ regexTarget = "line"
 regexes = [
   '''"api_model_id":''',
 ]
+
+[[allowlists]]
+description = "Test fixtures, flags the throwaway encryption keys the tests set"
+# The tests set COMPARIA_ENCRYPTION_KEY (AUTH_TOTP_ENCRYPTION_KEY in older
+# commits) to a key generated for the run or to a literal that never leaves
+# the suite. Only that line is allowed under tests/, every other line there
+# is still scanned.
+condition = "AND"
+paths = [
+  '''^tests/''',
+]
+regexTarget = "line"
+regexes = [
+  '''(COMPARIA|AUTH_TOTP)_ENCRYPTION_KEY''',
+]
