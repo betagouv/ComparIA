@@ -43,6 +43,7 @@ from backend.auth.inactivity import (  # noqa: E402
 )
 from backend.auth.services import create_invite  # noqa: E402
 from utils.database.models.auth import (  # noqa: E402
+    AuthSession,
     ConsentLog,
     InviteToken,
     User,
@@ -81,12 +82,14 @@ class FakeResult:
 class FakeSession:
     """Answers the purge's queries from memory, keyed on the selected model."""
 
-    def __init__(self, users, languages=None, invited=()):
+    def __init__(self, users, languages=None, invited=(), never_signed_in=()):
         self.users = {user.id: user for user in users}
         # user id -> language of their latest consent
         self.languages = languages or {}
         # user ids holding an invite that can still be accepted
         self.invited = set(invited)
+        # user ids without any session row; everyone else has signed in
+        self.never_signed_in = set(never_signed_in)
         # user id -> the row as re-read later, when it differs from the list
         self.refreshed = {}
         self.commits = 0
@@ -98,6 +101,14 @@ class FakeSession:
         entity = statement.column_descriptions[0]["entity"]
         if entity is User:
             return FakeResult(list(self.users.values()))
+        if entity is AuthSession:
+            return FakeResult(
+                [
+                    user_id
+                    for user_id in self.users
+                    if user_id not in self.never_signed_in
+                ]
+            )
         if entity is InviteToken:
             return FakeResult(
                 [user_id for user_id in self.users if user_id in self.invited]
@@ -116,13 +127,17 @@ class FakeSession:
 
 
 @contextlib.contextmanager
-def purge_context(users, sent=True, failing=(), languages=None, invited=()):
+def purge_context(
+    users, sent=True, failing=(), languages=None, invited=(), never_signed_in=()
+):
     """Run the purge against in-memory users, catching mails and erasures.
 
     `failing` lists the addresses whose delivery raises, as a dead SMTP
     server would.
     """
-    session = FakeSession(users, languages=languages, invited=invited)
+    session = FakeSession(
+        users, languages=languages, invited=invited, never_signed_in=never_signed_in
+    )
     mailed = []
     locales = []
     erased = []
@@ -246,6 +261,31 @@ def test_find_inactive_users_sorts_accounts_into_the_report():
     assert report.to_warn == [to_warn]
     assert report.to_erase == [to_erase]
     assert report.admins == [admin]
+
+
+def test_a_row_that_never_signed_in_is_erased_without_a_warning():
+    """Asking for a login code creates the row; if the code was never used
+    there was no account to warn about, and nothing to read the email."""
+    past_deadline = user_seen(DEADLINE - timedelta(days=1))
+    in_the_window = user_seen(DEADLINE + timedelta(days=1))
+    to_warn = user_seen(DEADLINE + timedelta(days=2))
+    never = {past_deadline.id, in_the_window.id}
+
+    assert classify(past_deadline, MONTHS, NOW, signed_in=False) == "never_signed_in"
+    assert classify(in_the_window, MONTHS, NOW, signed_in=False) is None
+
+    with purge_context(
+        [past_deadline, in_the_window, to_warn], never_signed_in=never
+    ) as (_session, mailed, erased, _locales):
+        dry = asyncio.run(purge_inactive_users(MONTHS, apply=False, now=NOW))
+        assert erased == []
+        report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
+
+    assert dry.never_signed_in == [past_deadline]
+    assert dry.to_warn == [to_warn]
+    assert [email for email, _ in mailed] == [to_warn.email]
+    assert erased == [past_deadline.id]
+    assert report.never_signed_in == [past_deadline]
 
 
 def test_an_account_with_a_pending_invite_is_left_alone():
