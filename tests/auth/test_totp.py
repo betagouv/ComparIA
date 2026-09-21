@@ -105,6 +105,14 @@ def updates_on(statements, table_name):
     ]
 
 
+def deletes_on(statements, table_name):
+    return [
+        s.compile().params
+        for s in statements
+        if s.is_delete and s.table.name == table_name
+    ]
+
+
 @contextlib.contextmanager
 def under_a_key_we_no_longer_have():
     """Whatever is encrypted inside cannot be read back outside."""
@@ -467,6 +475,23 @@ def test_the_account_cap_is_read_over_the_last_hour_of_challenges():
     window_start = params["created_at_1"]
     assert before - timedelta(hours=1, seconds=5) <= window_start
     assert window_start <= datetime.now() - timedelta(hours=1)
+
+
+def test_checking_a_code_prunes_the_challenges_older_than_the_cap_window():
+    """Deleting inside the window would forget failures the cap still counts."""
+    user = User(email="admin@example.test")
+    session = FakeSession(user, [challenge_for(user)], [enrolled(user)], [0])
+    before = datetime.now()
+
+    with pytest.raises(auth_totp.InvalidTotpCodeError):
+        run_challenge(session, "000000")
+
+    [pruned] = deletes_on(session.statements, "auth_totp_challenge")
+    assert pruned["user_id_1"] == user.id
+    assert pruned["created_at_1"] <= datetime.now() - timedelta(hours=1)
+    assert pruned["created_at_1"] >= before - timedelta(hours=1, seconds=5)
+    # Same transaction as the attempt, so it is committed with it.
+    assert session.commits == 1
 
 
 def test_a_secret_under_an_older_key_is_rewritten_at_sign_in():

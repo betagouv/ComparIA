@@ -273,3 +273,31 @@ def test_wrong_codes_are_capped_per_account_over_the_hour():
         asyncio.run(spent_challenges(get_session, user_id, cap - 1))
         assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "session"
         assert asyncio.run(count(get_session, AuthSession)) == 1
+
+
+def test_failures_older_than_an_hour_are_forgotten_and_pruned():
+    secret = pyotp.random_base32()
+    cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(
+            spent_challenges(get_session, user_id, cap, cap, age=timedelta(hours=2))
+        )
+        asyncio.run(spent_challenges(get_session, user_id, 1))
+        assert asyncio.run(count(get_session, TotpChallenge)) == 4
+
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "session"
+
+        # The two old rows went with the sign-in; the recent one is still
+        # counted, so it stays.
+        assert asyncio.run(count(get_session, TotpChallenge)) == 2
+        assert (
+            asyncio.run(
+                count(
+                    get_session,
+                    TotpChallenge,
+                    TotpChallenge.created_at < datetime.now() - timedelta(hours=1),
+                )
+            )
+            == 0
+        )
