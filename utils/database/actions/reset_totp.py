@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import func
 from sqlmodel import select
 
 from backend.auth.services import drop_user_totp, revoke_user_access
@@ -18,8 +19,13 @@ async def reset_totp(email: str) -> None:
     case the admin panel cannot cover: the only admin has lost their phone.
     Their next sign-in takes an email code alone, then asks them to enrol."""
     async with get_session() as session:
+        # The address was typed by hand: match it the way the login route
+        # would, whatever case the account was stored in.
         result = await session.exec(
-            select(User).where(User.email == email, User.deleted_at.is_(None))
+            select(User).where(
+                func.lower(User.email) == email.strip().lower(),
+                User.deleted_at.is_(None),
+            )
         )
         user = result.first()
         if user is None:
