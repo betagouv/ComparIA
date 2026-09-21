@@ -8,7 +8,7 @@
   import InviteUserModal from '$components/InviteUserModal.svelte'
   import PageLayout from '$components/PageLayout.svelte'
   import { getAuthContext } from '$lib/auth.svelte'
-  import { api } from '$lib/fastapi-client'
+  import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { TableCol } from '$lib/utils/data'
@@ -125,7 +125,14 @@
       useToast(`2FA reset for ${userToReset.email}, they will enrol again`, 4000)
       await refetch()
     } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
+      if ((err as ApiError).status === 404) {
+        // Already reset by a peer, never enrolled, or the account is gone:
+        // the list is what is stale, not the request.
+        useToast(`${userToReset.email} has no 2FA to reset`, 6000, 'error')
+        await refetch()
+      } else {
+        useToast((err as Error).message, 6000, 'error')
+      }
     }
   }
 
