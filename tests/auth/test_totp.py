@@ -747,9 +747,13 @@ def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
     assert r.json() == {"email": "admin@example.org", "totp_required": True}
     assert "auth_totp_challenge" in r.cookies
     assert "auth_session" not in r.cookies
-    set_cookie = r.headers["set-cookie"]
-    assert "HttpOnly" in set_cookie
-    assert "Max-Age=600" in set_cookie
+    cookies = r.headers.get_list("set-cookie")
+    [challenge] = [c for c in cookies if c.startswith("auth_totp_challenge=")]
+    assert "HttpOnly" in challenge
+    assert "Max-Age=600" in challenge
+    # A session still open for another account does not survive the email
+    # step: the visitor is nobody until the second factor passes.
+    assert any(c.startswith('auth_session=""') for c in cookies)
 
 
 def test_the_second_factor_needs_the_challenge_cookie():
