@@ -236,3 +236,40 @@ def test_confirming_and_revoking_is_one_transaction():
             )
             == 1
         )
+
+
+async def spent_challenges(get_session, user_id, *attempt_counts, age=timedelta()):
+    """Earlier challenges of the account, each used up with that many wrong
+    codes, created `age` ago."""
+    async with get_session() as session:
+        for i, attempts in enumerate(attempt_counts):
+            session.add(
+                TotpChallenge(
+                    user_id=user_id,
+                    token_hash=auth_services._hash(f"spent-{age}-{i}"),
+                    created_at=datetime.now() - age,
+                    expires_at=datetime.now() - age + timedelta(minutes=10),
+                    used_at=datetime.now() - age,
+                    attempts=attempts,
+                )
+            )
+        await session.commit()
+
+
+def test_wrong_codes_are_capped_per_account_over_the_hour():
+    """A new email code buys a new challenge: the cap has to span them."""
+    secret = pyotp.random_base32()
+    cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(spent_challenges(get_session, user_id, cap - 1))
+        assert asyncio.run(attempt("000000")) == "invalid"
+        # That one made it `cap`: the right code is refused from now on.
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "expired"
+        assert asyncio.run(count(get_session, AuthSession)) == 0
+
+    with real_database() as get_session:
+        user_id = asyncio.run(enrolled_admin(get_session, secret))
+        asyncio.run(spent_challenges(get_session, user_id, cap - 1))
+        assert asyncio.run(attempt(pyotp.TOTP(secret).now())) == "session"
+        assert asyncio.run(count(get_session, AuthSession)) == 1
