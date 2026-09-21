@@ -697,7 +697,8 @@
                 "label": "Code de l’application d’authentification",
                 "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Code incorrect.",
-                "expired": "Connexion expirée, demandez un nouveau code par email."
+                "expired": "Connexion expirée, demandez un nouveau code par email.",
+                "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification."
             }
         },
         "settings": {

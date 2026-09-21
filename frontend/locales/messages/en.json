@@ -697,7 +697,8 @@
                 "label": "Authenticator app code",
                 "help": "The 6 digits shown by your app (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Wrong code.",
-                "expired": "Sign-in expired, request a new email code."
+                "expired": "Sign-in expired, request a new email code.",
+                "emailChecked": "Your email address has already been checked: only the code from your authenticator app is left."
             }
         },
         "settings": {
