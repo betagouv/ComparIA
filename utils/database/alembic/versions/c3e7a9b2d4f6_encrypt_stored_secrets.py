@@ -12,15 +12,15 @@ re-run on a half-migrated database.
 
 """
 
+import base64
+import binascii
 import json
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
 
-from utils.database.encrypted import looks_encrypted
-from utils.database.models.publish import SECRET_FIELDS
-from utils.secrets import decrypt_secret, encrypt_secret
+from utils.secrets import SecretUnreadableError, decrypt_secret, encrypt_secret
 
 # revision identifiers, used by Alembic.
 revision: str = "c3e7a9b2d4f6"
@@ -29,6 +29,30 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 _STRING_COLUMNS = (("llm_endpoint", "api_key"), ("prompt_check", "api_key"))
+
+# Frozen copies of what the models and utils.database.encrypted said when this
+# migration was written: a destination kind or a heuristic that changes later
+# must not change what this revision does.
+_SECRET_FIELDS = {
+    "huggingface": ("token",),
+    "s3": ("access_key", "secret_key"),
+}
+_FERNET_PREFIX = "gAAAAA"
+_FERNET_MIN_LENGTH = 100
+
+
+def _looks_encrypted(value) -> bool:
+    if (
+        not isinstance(value, str)
+        or len(value) < _FERNET_MIN_LENGTH
+        or not value.startswith(_FERNET_PREFIX)
+    ):
+        return False
+    try:
+        base64.b64decode(value, altchars=b"-_", validate=True)
+    except (binascii.Error, ValueError):
+        return False
+    return True
 
 
 def _rewrite_strings(transform, skip) -> None:
@@ -55,7 +79,7 @@ def _rewrite_configs(transform, skip) -> None:
         if isinstance(config, str):
             config = json.loads(config)
         changed = dict(config)
-        for field in SECRET_FIELDS.get(changed.get("kind"), ()):
+        for field in _SECRET_FIELDS.get(changed.get("kind"), ()):
             value = changed.get(field)
             if value and not skip(value):
                 changed[field] = transform(value)
@@ -70,20 +94,20 @@ def _rewrite_configs(transform, skip) -> None:
 
 
 def _decrypt(value: str) -> str:
-    plain = decrypt_secret(value)
-    if plain is None:
+    try:
+        return decrypt_secret(value)
+    except SecretUnreadableError:
         raise RuntimeError(
             "a stored secret cannot be decrypted with COMPARIA_ENCRYPTION_KEY; "
             "put the key it was written with back in the list before downgrading"
         )
-    return plain
 
 
 def upgrade() -> None:
-    _rewrite_strings(encrypt_secret, looks_encrypted)
-    _rewrite_configs(encrypt_secret, looks_encrypted)
+    _rewrite_strings(encrypt_secret, _looks_encrypted)
+    _rewrite_configs(encrypt_secret, _looks_encrypted)
 
 
 def downgrade() -> None:
-    _rewrite_strings(_decrypt, lambda value: not looks_encrypted(value))
-    _rewrite_configs(_decrypt, lambda value: not looks_encrypted(value))
+    _rewrite_strings(_decrypt, lambda value: not _looks_encrypted(value))
+    _rewrite_configs(_decrypt, lambda value: not _looks_encrypted(value))
