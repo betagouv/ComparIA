@@ -61,13 +61,15 @@ class FakeSession:
         self.user = user
         self.results = list(results)
         self.statements = []
+        self.exec_statements = []
         self.added = []
         self.commits = 0
 
     async def get(self, _model, _id):
         return self.user
 
-    async def exec(self, _statement):
+    async def exec(self, statement):
+        self.exec_statements.append(statement)
         return FakeResult(self.results.pop(0) if self.results else [])
 
     async def execute(self, statement):
@@ -425,6 +427,46 @@ def test_a_secret_no_key_opens_is_neither_a_wrong_code_nor_a_dead_challenge():
     assert challenge.attempts == 0
     assert challenge.used_at is None
     assert session.commits == 0
+
+
+def test_wrong_codes_are_capped_per_account_across_challenges():
+    """Each new email code buys a fresh challenge with fresh attempts, so the
+    hour's failures are summed over every challenge of the account."""
+    user = User(email="admin@example.test")
+    cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
+    challenge = challenge_for(user)
+    session = FakeSession(user, [challenge], [enrolled(user)], [cap])
+
+    with pytest.raises(auth_totp.TotpChallengeExpiredError):
+        run_challenge(session, code_at(auth_totp.current_step()))
+
+    assert challenge.attempts == 0
+    assert challenge.used_at is None
+    assert session.commits == 0
+
+    challenge = challenge_for(user)
+    session = FakeSession(user, [challenge], [enrolled(user)], [cap - 1])
+    run_challenge(session, code_at(auth_totp.current_step()))
+    assert challenge.used_at is not None
+    assert session.commits == 1
+
+
+def test_the_account_cap_is_read_over_the_last_hour_of_challenges():
+    user = User(email="admin@example.test")
+    session = FakeSession(user, [challenge_for(user)], [enrolled(user)], [0])
+    before = datetime.now()
+    run_challenge(session, code_at(auth_totp.current_step()))
+
+    [summed] = [
+        s
+        for s in session.exec_statements
+        if "sum(auth_totp_challenge.attempts)" in str(s)
+    ]
+    params = summed.compile().params
+    assert params["user_id_1"] == user.id
+    window_start = params["created_at_1"]
+    assert before - timedelta(hours=1, seconds=5) <= window_start
+    assert window_start <= datetime.now() - timedelta(hours=1)
 
 
 def test_a_secret_under_an_older_key_is_rewritten_at_sign_in():

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 
 import pyotp
 import segno
+from sqlalchemy import func
 from sqlmodel import select
 
 from backend.auth.services import (
@@ -35,6 +36,10 @@ TOTP_DIGITS = 6
 _TOTP_VALID_WINDOW = 1
 _TOTP_SETUP_TTL_MINUTES = 15
 _TOTP_CHALLENGE_MAX_ATTEMPTS = 5
+# Per account, across challenges: a fresh challenge only costs an email code,
+# so the per-challenge count alone would leave thousands of guesses a month.
+_TOTP_MAX_FAILS_PER_USER_PER_HOUR = 15
+_TOTP_CHALLENGE_WINDOW = timedelta(hours=1)
 _DEFAULT_ISSUER = "ComparIA"
 
 
@@ -257,6 +262,18 @@ async def verify_totp_challenge(
             or totp.confirmed_at is None
             or not totp.secret_encrypted
         ):
+            raise TotpChallengeExpiredError()
+
+        # Every wrong code of the account in the last hour, on this challenge
+        # or an earlier one.
+        window_start = now - _TOTP_CHALLENGE_WINDOW
+        result = await session.exec(
+            select(func.sum(TotpChallenge.attempts)).where(
+                TotpChallenge.user_id == challenge.user_id,
+                TotpChallenge.created_at >= window_start,
+            )
+        )
+        if (result.first() or 0) >= _TOTP_MAX_FAILS_PER_USER_PER_HOUR:
             raise TotpChallengeExpiredError()
 
         secret = decrypt_secret(totp.secret_encrypted)
