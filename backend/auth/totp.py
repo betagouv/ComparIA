@@ -17,6 +17,7 @@ import pyotp
 import segno
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from backend.auth.services import (
@@ -147,6 +148,28 @@ async def _get_user_totp(session, user_id: uuid.UUID) -> UserTotp | None:
     return result.first()
 
 
+async def _lock_or_create_user_totp(session, user_id: uuid.UUID) -> UserTotp:
+    """The user's locked row, inserted first when there is none yet.
+
+    SELECT FOR UPDATE locks nothing when no row exists, so two first setups
+    can both reach the insert. The loser's insert waits on the unique index
+    until the winner commits, then fails: it takes the winner's row instead.
+    """
+    totp = await _get_user_totp(session, user_id)
+    if totp is not None:
+        return totp
+    totp = UserTotp(user_id=user_id)
+    session.add(totp)
+    try:
+        await session.flush()
+    except IntegrityError:
+        await session.rollback()
+        totp = await _get_user_totp(session, user_id)
+        if totp is None:
+            raise
+    return totp
+
+
 def _check_live_code(totp: UserTotp, code: str) -> int:
     """SecretUnreadableError passes through: it is not a wrong code."""
     if not totp.secret_encrypted:
@@ -166,10 +189,8 @@ async def start_totp_setup(
     now = datetime.now()
     secret = pyotp.random_base32()
     async with get_session() as session:
-        totp = await _get_user_totp(session, user.id)
-        if totp is None:
-            totp = UserTotp(user_id=user.id)
-        elif totp.confirmed_at is not None:
+        totp = await _lock_or_create_user_totp(session, user.id)
+        if totp.confirmed_at is not None:
             if not current_code:
                 raise TotpCodeRequiredError()
             totp.last_used_step = _check_live_code(totp, current_code)

@@ -525,13 +525,61 @@ def test_first_enrolment_needs_no_code_and_leaves_nothing_live():
         setup = asyncio.run(auth_totp.start_totp_setup(user, None, "compar:IA"))
 
     assert session.commits == 1
-    [totp] = session.added
+    totp = session.added[0]
+    assert all(added is totp for added in session.added)
     assert totp.user_id == user.id
     assert totp.secret_encrypted is None
     assert totp.confirmed_at is None
     assert auth_totp.decrypt_secret(totp.pending_secret_encrypted) == setup.secret
     assert "compar%20IA" in setup.otpauth_uri
     assert setup.qr_svg.startswith("data:image/svg+xml")
+
+
+def test_a_first_enrolment_that_loses_the_insert_race_takes_the_other_row():
+    """SELECT FOR UPDATE locks nothing when there is no row: two first
+    setups both insert, the loser's insert fails on unique(user_id)."""
+    from sqlalchemy.exc import IntegrityError
+
+    user = User(email="admin@example.test")
+    winner = UserTotp(user_id=user.id)
+    session = FakeSession(user, [], [winner])
+    rolled_back = []
+
+    async def flush():
+        if not rolled_back:
+            raise IntegrityError("INSERT", {}, Exception("duplicate key"))
+
+    async def rollback():
+        rolled_back.append(True)
+
+    session.flush = flush
+    session.rollback = rollback
+    with fake_session(session):
+        setup = asyncio.run(auth_totp.start_totp_setup(user, None, None))
+
+    assert rolled_back == [True]
+    assert auth_totp.decrypt_secret(winner.pending_secret_encrypted) == setup.secret
+    assert session.commits == 1
+
+
+def test_a_first_enrolment_that_loses_the_race_to_nothing_gives_up():
+    from sqlalchemy.exc import IntegrityError
+
+    user = User(email="admin@example.test")
+    session = FakeSession(user, [], [])
+
+    async def flush():
+        raise IntegrityError("INSERT", {}, Exception("duplicate key"))
+
+    async def rollback():
+        pass
+
+    session.flush = flush
+    session.rollback = rollback
+    with fake_session(session):
+        with pytest.raises(IntegrityError):
+            asyncio.run(auth_totp.start_totp_setup(user, None, None))
+    assert session.commits == 0
 
 
 def test_changing_device_with_an_unreadable_secret_is_not_a_wrong_code():

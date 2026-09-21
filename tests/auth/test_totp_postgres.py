@@ -301,3 +301,59 @@ def test_failures_older_than_an_hour_are_forgotten_and_pruned():
             )
             == 0
         )
+
+
+def test_two_first_setups_at_once_leave_one_row_and_no_error():
+    """SELECT FOR UPDATE finds nothing to lock before the first row exists:
+    both setups insert, and the loser has to take the winner's row rather
+    than fail on unique(user_id)."""
+    with real_database() as get_session:
+
+        async def plain_admin():
+            async with get_session() as session:
+                user = User(email="admin@example.org", role="admin")
+                session.add(user)
+                await session.commit()
+                await session.refresh(user)
+                return user
+
+        user = asyncio.run(plain_admin())
+
+        # Hold both setups after their empty select, so neither inserts
+        # before the other has looked.
+        both_looked = asyncio.Event()
+        looked = []
+        original = auth_totp._get_user_totp
+
+        async def rendezvous(session, user_id):
+            totp = await original(session, user_id)
+            if totp is None:
+                looked.append(True)
+                if len(looked) == 2:
+                    both_looked.set()
+                await asyncio.wait_for(both_looked.wait(), timeout=5)
+            return totp
+
+        async def run():
+            auth_totp._get_user_totp = rendezvous
+            try:
+                return await asyncio.gather(
+                    auth_totp.start_totp_setup(user, None, None),
+                    auth_totp.start_totp_setup(user, None, None),
+                )
+            finally:
+                auth_totp._get_user_totp = original
+
+        setups = asyncio.run(run())
+
+        assert len(looked) == 2
+        assert asyncio.run(count(get_session, UserTotp)) == 1
+
+        async def pending():
+            async with get_session() as session:
+                row = (await session.exec(select(UserTotp))).one()
+                return auth_totp.decrypt_secret(row.pending_secret_encrypted)
+
+        # Last write wins; either secret is fine as long as the row holds one
+        # of the two handed out.
+        assert asyncio.run(pending()) in {s.secret for s in setups}
