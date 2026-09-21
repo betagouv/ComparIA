@@ -12,9 +12,9 @@ On an instance that is already running, `./comparia-cli db seed-admins` does the
 
 ## Two-factor authentication
 
-Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits.
+Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits. An admin who has just been invited or promoted should pair their app straight away: until they do, anyone holding their session can pair a device in their name.
 
-The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). Generate one with:
+The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). The migration job needs the same variable, since `backend.config` checks it at import before Alembic runs. Generate one with:
 
 ```bash
 python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
