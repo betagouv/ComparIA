@@ -9,7 +9,7 @@ from sqlmodel import select
 from backend.auth.email import send_inactivity_warning
 from backend.auth.services import erase_user_account
 from backend.config import settings
-from utils.database.models.auth import User
+from utils.database.models.auth import ConsentLog, User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 
@@ -106,8 +106,21 @@ async def find_inactive_users(
     return report
 
 
+async def _consent_language(session, user: User) -> str | None:
+    """The language the person last accepted the terms in, if recorded."""
+    result = await session.exec(
+        select(ConsentLog.language)
+        .where(ConsentLog.user_id == user.id, ConsentLog.language.is_not(None))
+        .order_by(ConsentLog.consented_at.desc())
+        .limit(1)
+    )
+    return result.first()
+
+
 async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
     app_settings = await get_app_settings()
+    async with get_session() as session:
+        locale = await _consent_language(session, user) or app_settings.default_locale
     try:
         sent = await send_inactivity_warning(
             user.email,
@@ -116,7 +129,7 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
             platform_name=app_settings.platform_name,
             primary_color=app_settings.primary_color_light,
             secondary_color=app_settings.secondary_color_light,
-            locale=app_settings.default_locale,
+            locale=locale,
         )
     except (smtplib.SMTPException, OSError) as error:
         # The address stays out of the logs; the id is enough to follow up.

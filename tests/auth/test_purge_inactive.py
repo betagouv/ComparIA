@@ -37,7 +37,7 @@ from backend.auth.inactivity import (  # noqa: E402
     find_inactive_users,
     purge_inactive_users,
 )
-from utils.database.models.auth import User  # noqa: E402
+from utils.database.models.auth import ConsentLog, User  # noqa: E402
 
 NOW = datetime(2026, 9, 15, 12, 0)
 MONTHS = 12
@@ -64,17 +64,31 @@ class FakeResult:
     def all(self):
         return self.rows
 
+    def first(self):
+        return self.rows[0] if self.rows else None
+
 
 class FakeSession:
-    def __init__(self, users):
+    """Answers the purge's queries from memory, keyed on the selected model."""
+
+    def __init__(self, users, languages=None):
         self.users = {user.id: user for user in users}
+        # user id -> language of their latest consent
+        self.languages = languages or {}
         self.commits = 0
 
     async def get(self, _model, user_id):
         return self.users.get(user_id)
 
-    async def exec(self, _statement):
-        return FakeResult(list(self.users.values()))
+    async def exec(self, statement):
+        entity = statement.column_descriptions[0]["entity"]
+        if entity is User:
+            return FakeResult(list(self.users.values()))
+        if entity is ConsentLog:
+            user_id = statement.whereclause.clauses[0].right.value
+            language = self.languages.get(user_id)
+            return FakeResult([language] if language else [])
+        raise AssertionError(f"unexpected query on {entity.__name__}")
 
     def add(self, _value):
         pass
@@ -84,14 +98,15 @@ class FakeSession:
 
 
 @contextlib.contextmanager
-def purge_context(users, sent=True, failing=()):
+def purge_context(users, sent=True, failing=(), languages=None):
     """Run the purge against in-memory users, catching mails and erasures.
 
     `failing` lists the addresses whose delivery raises, as a dead SMTP
     server would.
     """
-    session = FakeSession(users)
+    session = FakeSession(users, languages=languages)
     mailed = []
+    locales = []
     erased = []
 
     @contextlib.asynccontextmanager
@@ -100,6 +115,7 @@ def purge_context(users, sent=True, failing=()):
 
     async def send_inactivity_warning(to_email, **kwargs):
         mailed.append((to_email, kwargs["erasure_at"]))
+        locales.append(kwargs["locale"])
         if to_email in failing:
             raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
         return sent
@@ -122,7 +138,7 @@ def purge_context(users, sent=True, failing=()):
         erase_user_account=erase_user_account,
         get_app_settings=get_app_settings,
     ):
-        yield session, mailed, erased
+        yield session, mailed, erased, locales
 
 
 def user_seen(last_seen_at, role="user", warned_at=None, deleted_at=None):
@@ -190,7 +206,7 @@ def test_a_window_that_reaches_live_sessions_is_refused():
     used every day can look 89 days idle, and a 3-month purge would warn it."""
     active = user_seen(NOW - timedelta(days=1))
 
-    with purge_context([active]) as (_session, mailed, _erased):
+    with purge_context([active]) as (_session, mailed, _erased, _locales):
         with patched(inactivity.settings, AUTH_SESSION_LENGTH_DAYS=90):
             with pytest.raises(WindowTooShortError):
                 asyncio.run(purge_inactive_users(3, apply=True, now=NOW))
@@ -218,7 +234,7 @@ def test_dry_run_touches_nothing():
     to_warn = user_seen(DEADLINE + timedelta(days=10))
     to_erase = user_seen(DEADLINE - timedelta(days=10), warned_at=NOW - NOTICE)
 
-    with purge_context([to_warn, to_erase]) as (session, mailed, erased):
+    with purge_context([to_warn, to_erase]) as (session, mailed, erased, _locales):
         report = asyncio.run(purge_inactive_users(MONTHS, apply=False, now=NOW))
 
     assert report.to_warn == [to_warn]
@@ -234,7 +250,12 @@ def test_apply_warns_once_and_erases_through_erase_user_account():
     to_erase = user_seen(DEADLINE - timedelta(days=10), warned_at=NOW - NOTICE)
     admin = user_seen(DEADLINE - timedelta(days=10), role="admin")
 
-    with purge_context([to_warn, to_erase, admin]) as (session, mailed, erased):
+    with purge_context([to_warn, to_erase, admin]) as (
+        session,
+        mailed,
+        erased,
+        _locales,
+    ):
         first = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
         second = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
 
@@ -247,10 +268,25 @@ def test_apply_warns_once_and_erases_through_erase_user_account():
     assert first.admins == second.admins == [admin]
 
 
+def test_warning_is_written_in_the_consent_language_else_the_instance_one():
+    danish = user_seen(DEADLINE + timedelta(days=10))
+    unknown = user_seen(DEADLINE + timedelta(days=9))
+
+    with purge_context([danish, unknown], languages={danish.id: "da"}) as (
+        _session,
+        _mailed,
+        _erased,
+        locales,
+    ):
+        asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
+
+    assert locales == ["da", "fr"]
+
+
 def test_a_warning_that_could_not_be_sent_is_not_recorded():
     to_warn = user_seen(DEADLINE + timedelta(days=10))
 
-    with purge_context([to_warn], sent=False) as (session, mailed, erased):
+    with purge_context([to_warn], sent=False) as (session, mailed, erased, _locales):
         report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
 
     assert len(mailed) == 1
@@ -267,7 +303,7 @@ def test_a_delivery_failure_skips_the_account_and_the_run_goes_on():
 
     with purge_context(
         [unreachable, to_warn, to_erase], failing={unreachable.email}
-    ) as (session, mailed, erased):
+    ) as (session, mailed, erased, _locales):
         report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
 
     assert [email for email, _ in mailed] == [unreachable.email, to_warn.email]
