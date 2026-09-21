@@ -861,13 +861,38 @@ def test_me_says_whether_the_authenticator_is_enrolled():
 
 
 def test_logout_drops_a_half_finished_sign_in_too():
-    with routed() as client:
+    revoked = []
+
+    async def revoke(token):
+        revoked.append(token)
+
+    with routed(revoke_totp_challenge=revoke) as client:
         client.cookies.set("auth_totp_challenge", "challenge-token")
         r = client.post("/auth/logout")
     assert r.status_code == 204
     assert any(
         c.startswith('auth_totp_challenge=""') for c in r.headers.get_list("set-cookie")
     )
+    # Server side too: the cookie's value stays a valid token until it expires.
+    assert revoked == ["challenge-token"]
+
+    with routed(revoke_totp_challenge=revoke) as client:
+        client.post("/auth/logout")
+    assert revoked == ["challenge-token"]
+
+
+def test_revoking_a_challenge_spends_it_rather_than_forgetting_it():
+    """Its wrong codes must keep counting towards the account's hourly cap,
+    or signing out would reset the counter."""
+    session = FakeSession(None)
+    with fake_session(session, auth_services):
+        asyncio.run(auth_services.revoke_totp_challenge("challenge-token"))
+
+    [spent] = updates_on(session.statements, "auth_totp_challenge")
+    assert spent["token_hash_1"] == auth_services._hash("challenge-token")
+    assert spent["used_at"] is not None
+    assert deletes_on(session.statements, "auth_totp_challenge") == []
+    assert session.commits == 1
 
 
 # Enrolment routes and the admin gate

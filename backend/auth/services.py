@@ -365,6 +365,22 @@ async def revoke_current_session(token: str) -> None:
             await session.commit()
 
 
+async def revoke_totp_challenge(token: str) -> None:
+    """Spend a half-finished sign-in the visitor walked away from. Marked
+    used rather than deleted: its wrong codes still count towards the
+    account's hourly cap."""
+    async with get_session() as session:
+        await session.execute(
+            sa_update(TotpChallenge)
+            .where(
+                TotpChallenge.token_hash == _hash(token),
+                TotpChallenge.used_at.is_(None),
+            )
+            .values(used_at=datetime.now())
+        )
+        await session.commit()
+
+
 async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:
     async with get_session() as session:
         await session.execute(
