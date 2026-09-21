@@ -101,9 +101,9 @@ this if you manage secrets externally (Vault, sealed-secrets, ...) — your
 Secret should provide whichever of the keys below your setup needs
 (`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
-`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`). In
-this mode the chart cannot validate that a required key is present — that is
-your Secret's responsibility.
+`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
+`METRICS_TOKEN`). In this mode the chart cannot validate that a required key
+is present — that is your Secret's responsibility.
 
 Otherwise, the chart renders a `Secret` from these values:
 
@@ -120,6 +120,10 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.mistralApiKey`        | no       | `MISTRAL_API_KEY`, Mistral moderation API. Left empty, prompt checks (content safety, personal data) no-op |
 | `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
 | `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
+| `secrets.metricsToken`         | no       | `METRICS_TOKEN`, bearer token protecting `/metrics` |
+
+`/metrics` answers 401 until `secrets.metricsToken` is set, and the Prometheus
+scrape config must then send `Authorization: Bearer <token>`.
 
 ### Automatic database migrations
 
