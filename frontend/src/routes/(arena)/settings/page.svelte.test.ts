@@ -266,6 +266,29 @@ describe('Settings page two-factor section', () => {
     expect(modal.textContent).not.toContain('Code incorrect.')
   })
 
+  it('does not name a network failure a wrong code', async () => {
+    request.mockImplementation((path: string) =>
+      path === '/auth/totp/setup'
+        ? Promise.resolve(setup)
+        : Promise.reject(new TypeError('Failed to fetch'))
+    )
+    const { container, getByRole } = render(Page)
+
+    await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
+    const modal = container.querySelector('#totp-setup-modal')!
+    await waitFor(() => expect(modal.querySelector('#totp-confirm-code')).not.toBeNull())
+    await fireEvent.input(modal.querySelector('#totp-confirm-code')!, {
+      target: { value: '123456' }
+    })
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find((b) => b.textContent?.trim() === 'Activer')!
+    )
+
+    await waitFor(() => expect(modal.textContent).toContain('Une erreur est survenue'))
+    expect(modal.textContent).not.toContain('Code incorrect.')
+    expect(mocks.conceal).not.toHaveBeenCalled()
+  })
+
   it('asks to start again when the backend wants a code the page did not know about', async () => {
     request.mockRejectedValue(
       Object.assign(new Error('Error 400 [POST](/auth/totp/setup): totp_code_required'), {

@@ -164,6 +164,9 @@
         // Too many wrong codes, the ten minutes ran out, or the challenge
         // cookie never reached us: start over.
         await restartAtEmail(m['auth.modal.totp.expired']())
+      } else if (!status || status >= 500) {
+        // Nothing reached the backend, or it could not answer: not a wrong code.
+        error = m['errors.unknown']()
       } else {
         error = m['auth.modal.totp.error']()
       }

@@ -347,6 +347,19 @@ describe('SignInForm authenticator step', () => {
     expect(mocks.replaceState.mock.calls[0][0]).toBe('/login?redirect=%2Fadmin')
   })
 
+  it('does not name a network failure a wrong code', async () => {
+    servesSignIn(() => Promise.reject(new TypeError('Failed to fetch')))
+    const { container } = render(SignInForm)
+
+    const totpInput = await reachTheAuthenticatorStep(container)
+    await fireEvent.input(totpInput, { target: { value: '654321' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Une erreur est survenue'))
+    expect(container.textContent).not.toContain('Code incorrect.')
+    expect(container.querySelector('#login-totp')).not.toBeNull()
+  })
+
   it('reports a wrong authenticator code and lets the visitor retry', async () => {
     servesSignIn(() => Promise.reject(Object.assign(new Error('Invalid'), { status: 400 })))
     const { container } = render(SignInForm)
