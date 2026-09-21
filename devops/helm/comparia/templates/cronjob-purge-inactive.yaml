@@ -34,8 +34,7 @@ spec:
                 - secretRef:
                     name: {{ include "comparia.secretName" . }}
               env:
-                - name: COMPARIA_INSTANCE_NAME
-                  value: {{ .Values.config.instanceName | quote }}
+                {{- include "comparia.backendEnv" . | nindent 16 }}
               resources:
                 {{- toYaml .Values.resources.cronjobs | nindent 16 }}
 {{- end }}

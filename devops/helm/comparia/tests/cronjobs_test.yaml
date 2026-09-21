@@ -61,6 +61,34 @@ tests:
           path: spec.jobTemplate.spec.template.spec.containers[0].command
           value: ["./comparia-cli", "db", "purge-inactive", "--months", "6", "--apply"]
 
+  - it: gives the purge-inactive CronJob the backend env, SMTP and app URL included
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+      config.appUrl: https://comparia.example
+      config.smtp.host: smtp.example.com
+    asserts:
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_INSTANCE_NAME
+            value: fr
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: SMTP_HOST
+            value: smtp.example.com
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_APP_URL
+            value: https://comparia.example
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: AUTH_SESSION_LENGTH_DAYS
+            value: "30"
+
   - it: toggles each cronjob independently of the others
     template: cronjob-ranking.yaml
     set:
