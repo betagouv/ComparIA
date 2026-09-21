@@ -3,11 +3,17 @@ name: Security
 permissions:
   contents: read
 
+# Pull requests and pushes to the integration branches are scanned as they
+# happen. The weekly run picks up new CodeQL queries without waiting for a
+# push; gitleaks skips it, there are no new commits to scan.
 on:
   pull_request:
   push:
     branches:
+      - develop
       - next
+  schedule:
+    - cron: '17 4 * * 1'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,6 +51,7 @@ jobs:
           category: /language:${{ matrix.language }}
 
   gitleaks:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
 
     steps:
@@ -67,10 +74,11 @@ jobs:
           rm gitleaks gitleaks.tar.gz
 
       # Only the commits this event brings: the pull request's range, or the
-      # pushed range on next. Older history is not rescanned on every run.
-      # After a force-push, or on the first push of a branch, `before` is not
-      # an ancestor of `sha` (or is all zeros), so the range falls back to the
-      # pushed commit alone: everything on next arrived through a scanned PR.
+      # pushed range on develop or next. Older history is not rescanned on
+      # every run. After a force-push, or on the first push of a branch,
+      # `before` is not an ancestor of `sha` (or is all zeros), so the range
+      # falls back to the pushed commit alone: everything on these branches
+      # arrived through a scanned PR.
       - name: Scan the new commits for leaked secrets
         env:
           EVENT: ${{ github.event_name }}
