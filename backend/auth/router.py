@@ -17,6 +17,7 @@ from backend.auth.dependencies import (
 from backend.auth.email import send_login_code
 from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.services import (
+    TOTP_CHALLENGE_TTL_MINUTES,
     LoginResult,
     _hash,
     accept_invite,
@@ -173,7 +174,7 @@ def _anonymous_hash(request: Request) -> str | None:
 
 SESSION_COOKIE = "auth_session"
 TOTP_CHALLENGE_COOKIE = "auth_totp_challenge"
-_TOTP_CHALLENGE_COOKIE_MAX_AGE = 600
+_TOTP_CHALLENGE_COOKIE_MAX_AGE = TOTP_CHALLENGE_TTL_MINUTES * 60
 
 
 def _set_session_cookie(response: Response, token: str) -> None:
