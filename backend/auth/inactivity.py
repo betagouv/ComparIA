@@ -9,7 +9,7 @@ from sqlmodel import select
 from backend.auth.email import send_inactivity_warning
 from backend.auth.services import erase_user_account
 from backend.config import settings
-from utils.database.models.auth import ConsentLog, User
+from utils.database.models.auth import ConsentLog, InviteToken, User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 
@@ -68,9 +68,12 @@ def check_window(months: int, now: datetime) -> None:
         )
 
 
-def classify(user: User, months: int, now: datetime) -> str | None:
-    """ "warn", "erase", "admin" or None when the account is not dormant."""
-    if user.deleted_at is not None:
+def classify(
+    user: User, months: int, now: datetime, invited: bool = False
+) -> str | None:
+    """ "warn", "erase", "admin" or None when the account is not dormant, or
+    is waiting on an invite that can still be accepted."""
+    if user.deleted_at is not None or invited:
         return None
     deadline = add_months(now, -months)
     if user.last_seen_at > deadline + timedelta(days=WARNING_DAYS):
@@ -97,8 +100,19 @@ async def find_inactive_users(
             .where(User.deleted_at.is_(None), User.last_seen_at <= horizon)
             .order_by(User.last_seen_at)
         )
-        for user in result.all():
-            match classify(user, months, now):
+        users = result.all()
+        invited: set = set()
+        if users:
+            result = await session.exec(
+                select(InviteToken.user_id).where(
+                    InviteToken.user_id.in_([user.id for user in users]),
+                    InviteToken.used_at.is_(None),
+                    InviteToken.expires_at > now,
+                )
+            )
+            invited = set(result.all())
+        for user in users:
+            match classify(user, months, now, invited=user.id in invited):
                 case "warn":
                     report.to_warn.append(user)
                 case "erase":
