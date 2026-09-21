@@ -142,11 +142,10 @@ async def _get_user_totp(session, user_id: uuid.UUID) -> UserTotp | None:
 
 
 def _check_live_code(totp: UserTotp, code: str) -> int:
+    """SecretUnreadableError passes through: it is not a wrong code."""
     if not totp.secret_encrypted:
         raise InvalidTotpCodeError()
     secret = decrypt_secret(totp.secret_encrypted)
-    if secret is None:
-        raise InvalidTotpCodeError()
     step = matching_step(secret, code, last_used_step=totp.last_used_step)
     if step is None:
         raise InvalidTotpCodeError()
@@ -196,8 +195,6 @@ async def confirm_totp_setup(user: User, code: str, current_session_token: str) 
             raise TotpSetupMissingError()
 
         secret = decrypt_secret(totp.pending_secret_encrypted)
-        if secret is None:
-            raise TotpSetupMissingError()
         step = matching_step(secret, code)
         if step is None:
             raise InvalidTotpCodeError()
@@ -229,7 +226,8 @@ async def verify_totp_challenge(
     """Turn a challenge into a session, or say why not.
 
     A wrong code costs an attempt even when the caller's transaction fails
-    later: the counter is committed before the error goes out.
+    later: the counter is committed before the error goes out. A secret no
+    key opens raises SecretUnreadableError without costing one.
     """
     now = datetime.now()
     async with get_session() as session:
@@ -262,11 +260,7 @@ async def verify_totp_challenge(
             raise TotpChallengeExpiredError()
 
         secret = decrypt_secret(totp.secret_encrypted)
-        step = (
-            matching_step(secret, code, last_used_step=totp.last_used_step)
-            if secret
-            else None
-        )
+        step = matching_step(secret, code, last_used_step=totp.last_used_step)
         if step is None:
             challenge.attempts += 1
             attempts = challenge.attempts
@@ -281,7 +275,7 @@ async def verify_totp_challenge(
         session.add(challenge)
         totp.last_used_step = step
         totp.updated_at = now
-        if secret and needs_reencryption(totp.secret_encrypted):
+        if needs_reencryption(totp.secret_encrypted):
             totp.secret_encrypted = encrypt_secret(secret)
         session.add(totp)
 
