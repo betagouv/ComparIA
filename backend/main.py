@@ -52,6 +52,9 @@ logger.info("=" * 80)
 
 init_sentry()
 
+if not settings.METRICS_TOKEN and not settings.LANGUIA_DEBUG:
+    logger.warning("METRICS_TOKEN is unset: /metrics will refuse every request")
+
 
 # Deployments serve front and API from one origin through Caddy, so the extra
 # dev origins are only needed when running the front separately in debug mode.
@@ -139,8 +142,11 @@ def _verify_metrics_token(request: Request) -> None:
         if settings.LANGUIA_DEBUG:
             return
         raise HTTPException(status_code=401, detail="Unauthorized")
-    given = request.headers.get("authorization", "")
-    if not secrets.compare_digest(given.encode(), f"Bearer {token}".encode()):
+    # The scheme is case-insensitive (RFC 6750), the credential is not.
+    scheme, _, given = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not secrets.compare_digest(
+        given.encode(), token.encode()
+    ):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
