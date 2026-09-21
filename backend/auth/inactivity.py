@@ -28,8 +28,10 @@ class InactivityReport:
     to_warn: list[User] = field(default_factory=list)
     to_erase: list[User] = field(default_factory=list)
     admins: list[User] = field(default_factory=list)
-    # Only filled by an applied run: warnings that could not be sent.
+    # Only filled by an applied run: warnings that could not be sent, and
+    # accounts that changed between selection and erasure, left alone.
     warn_failed: list[User] = field(default_factory=list)
+    skipped: list[User] = field(default_factory=list)
 
 
 def add_months(moment: datetime, months: int) -> datetime:
@@ -147,6 +149,29 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
     return True
 
 
+async def _erase_unchanged(users: list[User], skipped: list[User]) -> list[User]:
+    """Erase the accounts that still look as they did when selected.
+
+    Sending the warnings takes a while, and a sign-in meanwhile moves
+    last_seen_at and clears the warning: that account is saved, not erased.
+    """
+    erased = []
+    async with get_session() as session:
+        for user in users:
+            row = await session.get(User, user.id)
+            if (
+                row is None
+                or row.deleted_at is not None
+                or row.inactivity_warned_at is None
+                or row.last_seen_at != user.last_seen_at
+            ):
+                skipped.append(user)
+                continue
+            await erase_user_account(user.id)
+            erased.append(user)
+    return erased
+
+
 async def purge_inactive_users(
     months: int, apply: bool = False, now: datetime | None = None
 ) -> InactivityReport:
@@ -161,6 +186,5 @@ async def purge_inactive_users(
         else:
             report.warn_failed.append(user)
     report.to_warn = warned
-    for user in report.to_erase:
-        await erase_user_account(user.id)
+    report.to_erase = await _erase_unchanged(report.to_erase, report.skipped)
     return report

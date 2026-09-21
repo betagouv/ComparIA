@@ -48,6 +48,8 @@ async def purge_inactive(months: int = 12, apply: bool = False) -> None:
         )
     for user in report.warn_failed:
         logger.error(f"[purge] no warning sent to {user.id}, left as is")
+    for user in report.skipped:
+        logger.info(f"[purge] {user.id} changed since it was selected, left as is")
     for user in report.admins:
         logger.info(
             f"[purge] admin {user.id} kept " f"(last seen {user.last_seen_at:%Y-%m-%d})"

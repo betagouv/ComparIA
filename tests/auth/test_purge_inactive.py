@@ -75,10 +75,12 @@ class FakeSession:
         self.users = {user.id: user for user in users}
         # user id -> language of their latest consent
         self.languages = languages or {}
+        # user id -> the row as re-read later, when it differs from the list
+        self.refreshed = {}
         self.commits = 0
 
     async def get(self, _model, user_id):
-        return self.users.get(user_id)
+        return self.refreshed.get(user_id, self.users.get(user_id))
 
     async def exec(self, statement):
         entity = statement.column_descriptions[0]["entity"]
@@ -281,6 +283,22 @@ def test_warning_is_written_in_the_consent_language_else_the_instance_one():
         asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
 
     assert locales == ["da", "fr"]
+
+
+def test_an_account_signed_into_during_the_run_is_not_erased():
+    to_erase = user_seen(DEADLINE - timedelta(days=10), warned_at=NOW - NOTICE)
+    revived = user_seen(DEADLINE - timedelta(days=20), warned_at=NOW - NOTICE)
+    signed_in = User(
+        id=revived.id, email=revived.email, last_seen_at=NOW, inactivity_warned_at=None
+    )
+
+    with purge_context([to_erase, revived]) as (session, _mailed, erased, _locales):
+        session.refreshed[revived.id] = signed_in
+        report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
+
+    assert erased == [to_erase.id]
+    assert report.to_erase == [to_erase]
+    assert report.skipped == [revived]
 
 
 def test_a_warning_that_could_not_be_sent_is_not_recorded():
