@@ -123,9 +123,7 @@ async def remove_suggestion_category(
         )
 
 
-@router.patch(
-    "/categories/{category_id}", response_model=AdminSuggestionCategory
-)
+@router.patch("/categories/{category_id}", response_model=AdminSuggestionCategory)
 async def patch_suggestion_category(
     category_id: uuid.UUID,
     body: SuggestionArchiveUpdate,

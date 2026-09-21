@@ -58,7 +58,9 @@ def test_docs_only_reference_real_make_targets():
     broken = []
 
     for path in tracked_markdown():
-        for command in re.findall(r"\bmake ([a-z0-9-]+)", code_blocks(path.read_text())):
+        for command in re.findall(
+            r"\bmake ([a-z0-9-]+)", code_blocks(path.read_text())
+        ):
             if command not in targets:
                 broken.append(f"{path.relative_to(ROOT)} says `make {command}`")
 

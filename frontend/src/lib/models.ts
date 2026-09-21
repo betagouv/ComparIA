@@ -28,17 +28,21 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
   E: '--orange-terre-battue-main-645',
   F: '--red-marianne-main-472'
 }
-export const MODALITIES = (
-  [
-    { id: 'text', icon: 'i-ri-file-text-line' },
-    { id: 'image', icon: 'i-ri-image-upload-line' },
-    { id: 'audio', icon: 'i-ri-volume-up-line' },
-    { id: 'video', icon: 'i-ri-video-line' }
-  ] as const
-).map((item) => ({
-  ...item,
-  title: m[`models.cards.modalities.types.${item.id}`]()
-}))
+const MODALITIES = [
+  { id: 'text', icon: 'i-ri-file-text-line' },
+  { id: 'image', icon: 'i-ri-image-upload-line' },
+  { id: 'audio', icon: 'i-ri-volume-up-line' },
+  { id: 'video', icon: 'i-ri-video-line' }
+] as const
+
+// See getModeInfos in chatService: a module-level constant would be translated
+// once, in the base locale.
+export function getModalities() {
+  return MODALITIES.map((item) => ({
+    ...item,
+    title: m[`models.cards.modalities.types.${item.id}`]()
+  }))
+}
 export const SOVEREIGNTY_FIELDS = [
   'reuse',
   'commercial_use',
@@ -58,6 +62,8 @@ export type Commons = {
   // apart — see `rankClassSpans`.
   rankClasses: Record<RankClass, Record<'min' | 'max', number>>
   currency: LLMList['currency']
+  // For the card copy that names the instance.
+  platformName: string
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -213,7 +219,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       icon: 'i-ri-trophy-line',
       iconClass: 'text-yellow',
       title: m[`models.cards.rank.title${size !== 'md' ? '_short' : ''}`](),
-      tooltip: m['models.cards.rank.tooltip'](),
+      tooltip: m['models.cards.rank.tooltip']({ platformName: commons.platformName }),
       content: model.data
         ? rankClassLabel(commons.rankClasses[model.data.rankClass])
         : m['words.NA'](),
@@ -405,7 +411,7 @@ export function rankClassSpans(models: ModelRevisedRank[]): Commons['rankClasses
   return spans
 }
 
-export function setModelsContext(data: LLMList) {
+export function setModelsContext(data: LLMList, platformName: string) {
   const rankedModels = data.models
     .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
     .sort((a, b) => a.data!.rank - b.data!.rank)
@@ -431,7 +437,8 @@ export function setModelsContext(data: LLMList) {
     commons: {
       modelsCount,
       currency: data.currency,
-      rankClasses
+      rankClasses,
+      platformName
     }
   })
 }

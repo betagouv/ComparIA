@@ -3,7 +3,9 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
+  import SeoHead from '$components/SEOHead.svelte'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import {
     consentCheckboxLabel,
     legalLinks,
@@ -19,6 +21,7 @@
   import { onMount } from 'svelte'
 
   const auth = getAuthContext()
+  const platformName = getPlatformName()
   const locale = getLocale()
   const token = $derived(page.params.token)
 
@@ -99,9 +102,7 @@
   }
 </script>
 
-<svelte:head>
-  <title>Invitation — compar:IA</title>
-</svelte:head>
+<SeoHead title={m['seo.titles.invite']()} />
 
 <div class="md:flex-row flex min-h-screen flex-col">
   <header class="px-8 py-10 gap-20 md:justify-center flex basis-1/2 flex-col">
@@ -113,12 +114,12 @@
         class="h-[35px]"
       />
       <h1 class="font-bold text-base! mb-0!">
-        {auth.config?.platform_name || m['header.title']()}
+        {platformName}
       </h1>
     </div>
 
     <div>
-      <h2 class="fr-h5 mb-4!">{m['invite.title']()}</h2>
+      <h2 class="fr-h5 mb-4!">{m['invite.title']({ platformName })}</h2>
     </div>
   </header>
 

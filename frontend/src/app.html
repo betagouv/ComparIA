@@ -55,6 +55,11 @@
       _paq.push(['enableLinkTracking'])
       /* No HeatmapSessionRecording: it captured mouse movement and DOM changes
          for the whole visit, and nobody watched the recordings. */
+      /* An invite link is a sign-in credential; keep the token off the
+         analytics host. */
+      if (/^\/invite\/[^/]+/.test(location.pathname)) {
+        _paq.push(['setCustomUrl', location.origin + '/invite/<redacted>'])
+      }
       _paq.push(['trackPageView'])
       ;(function () {
         var u = '%matomo_url%/'

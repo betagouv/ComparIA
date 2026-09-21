@@ -78,6 +78,8 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.cache.maxResponses`| `5`                 | Max cached responses per (model, prompt) pair         |
 | `config.sentryDsn`         | `""`                | Left empty, errors are not sent anywhere              |
 | `config.sentryEnvironment` | `prod`              |                                                        |
+| `config.matomoUrl`         | `""`                | `MATOMO_URL`. Left empty, the env vars are omitted and no analytics are loaded |
+| `config.matomoId`          | `""`                | `MATOMO_ID`. Only rendered when `config.matomoUrl` is set |
 | `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install |
 | `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/api/admin` |
 | `config.auth.domainAllowlist` | `[]`             | `AUTH_DOMAIN_ALLOWLIST`. If non-empty, only emails from these domains can request a login code |
@@ -100,9 +102,8 @@ Secret should provide whichever of the keys below your setup needs
 (`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
 `LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
-`METRICS_TOKEN`, and `HF_PUSH_DATASET_PATH`/`HF_PUSH_DATASET_KEY` if you use
-dataset export). In this mode the chart cannot validate that a required key is
-present — that is your Secret's responsibility.
+`METRICS_TOKEN`). In this mode the chart cannot validate that a required key
+is present — that is your Secret's responsibility.
 
 Otherwise, the chart renders a `Secret` from these values:
 
@@ -135,28 +136,21 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the three is independently toggleable — there is no combined switch.
+Each of the two is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
 | `cronjobs.ranking.enabled`           | `true`  | Recomputes the leaderboard. No external side effects. |
 | `cronjobs.ranking.schedule`          | `"17 * * * *"` | |
-| `cronjobs.exportDataset.enabled`     | `false` | Exports datasets to HuggingFace. Off by default so no instance pushes data anywhere until deliberately configured. |
-| `cronjobs.exportDataset.schedule`    | `"15 4 * * *"` | |
-| `cronjobs.exportDataset.hfRepo`      | `""`    | `{organisation}/{repo_prefix}` on HuggingFace. Required when enabled. |
-| `cronjobs.exportDataset.hfToken`     | `""`    | HuggingFace token with write access to `hfRepo`. Required when enabled. |
 | `cronjobs.analyze.enabled`           | `false` | LLM-based moderation/data-quality pass, consumes `OPENROUTER_API_KEY`. Off by default so enabling it — and paying for the LLM calls — is deliberate. |
 | `cronjobs.analyze.schedule`          | `"35 3 * * *"` | |
 
 #### Dataset export
 
-The export destination (HuggingFace repo path + token) is stored in the
-database and configured through the admin panel, not read by the export
-CronJob itself. `cronjobs.exportDataset.hfRepo`/`hfToken` are only consumed
-once: the pre-install/pre-upgrade migration hook seeds an initial destination
-row from them the first time it runs against a fresh database. After that,
-manage the destination from the admin panel; changing `hfRepo`/`hfToken` in
-values has no further effect.
+The dataset export is not a CronJob: it runs on the backend's internal
+scheduler (leader election via a Postgres advisory lock) and on demand from
+the admin panel. The export destination (HuggingFace repo path + token) is
+stored in the database and configured through the admin panel only.
 
 ### Ingress (`ingress.*`)
 

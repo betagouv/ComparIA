@@ -83,9 +83,8 @@ def test_a_conversation_at_the_cap_is_refused():
             send_follow_up(comparison_with(MAX_TURNS_PER_COMPARISON))
         except HTTPException as error:
             assert error.status_code == 403
-            # The frontend shows `detail`, so it has to say something a reader
-            # can act on.
-            assert str(MAX_TURNS_PER_COMPARISON) in error.detail
+            # The frontend translates `detail`, so it has to be the known key.
+            assert error.detail == "max_turns_reached"
         else:
             raise AssertionError("a comparison grew past the cap")
 

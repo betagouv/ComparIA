@@ -1,12 +1,15 @@
 <script lang="ts">
   import { Button, Link } from '$components/dsfr'
   import SideSwitcher from '$components/SideSwitcher.svelte'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { parseAPIRevealData, type APIRevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { UsageProfileId } from '$lib/usageProfiles'
   import { RevealCard } from '.'
+
+  const platformName = getPlatformName()
 
   let { data }: { data: APIRevealData } = $props()
 
@@ -94,7 +97,7 @@
                   </h2>
 
                   <p class="mb-0! text-sm!">
-                    {m['reveal.feedback.description']()}
+                    {m['reveal.feedback.description']({ platformName })}
                   </p>
                   <div class="gap-3 py-8 flex flex-wrap">
                     <label class="sr-only" for="share-link">{m['a11y.shareLinkLabel']()}</label>
