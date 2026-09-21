@@ -8,6 +8,7 @@ Run with pytest, or directly:
 import asyncio
 import contextlib
 import os
+import smtplib
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -79,8 +80,12 @@ class FakeSession:
 
 
 @contextlib.contextmanager
-def purge_context(users, sent=True):
-    """Run the purge against in-memory users, catching mails and erasures."""
+def purge_context(users, sent=True, failing=()):
+    """Run the purge against in-memory users, catching mails and erasures.
+
+    `failing` lists the addresses whose delivery raises, as a dead SMTP
+    server would.
+    """
     session = FakeSession(users)
     mailed = []
     erased = []
@@ -91,6 +96,8 @@ def purge_context(users, sent=True):
 
     async def send_inactivity_warning(to_email, **kwargs):
         mailed.append((to_email, kwargs["erasure_at"]))
+        if to_email in failing:
+            raise smtplib.SMTPServerDisconnected("Connection unexpectedly closed")
         return sent
 
     async def erase_user_account(user_id):
@@ -247,6 +254,25 @@ def test_a_warning_that_could_not_be_sent_is_not_recorded():
     assert session.commits == 0
     assert report.to_warn == []
     assert report.warn_failed == [to_warn]
+
+
+def test_a_delivery_failure_skips_the_account_and_the_run_goes_on():
+    unreachable = user_seen(DEADLINE + timedelta(days=10))
+    to_warn = user_seen(DEADLINE + timedelta(days=5))
+    to_erase = user_seen(DEADLINE - timedelta(days=10), warned_at=NOW - NOTICE)
+
+    with purge_context(
+        [unreachable, to_warn, to_erase], failing={unreachable.email}
+    ) as (session, mailed, erased):
+        report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
+
+    assert [email for email, _ in mailed] == [unreachable.email, to_warn.email]
+    assert unreachable.inactivity_warned_at is None
+    assert to_warn.inactivity_warned_at == NOW
+    assert session.commits == 1
+    assert erased == [to_erase.id]
+    assert report.warn_failed == [unreachable]
+    assert report.to_warn == [to_warn]
 
 
 def _parts(message):

@@ -1,4 +1,6 @@
 import calendar
+import logging
+import smtplib
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -10,6 +12,8 @@ from backend.config import settings
 from utils.database.models.auth import User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+
+logger = logging.getLogger("languia")
 
 # Days between the warning email and the earliest erasure.
 WARNING_DAYS = 30
@@ -104,15 +108,20 @@ async def find_inactive_users(
 
 async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
     app_settings = await get_app_settings()
-    sent = await send_inactivity_warning(
-        user.email,
-        last_seen_at=user.last_seen_at,
-        erasure_at=erasure_date(user, months, now),
-        platform_name=app_settings.platform_name,
-        primary_color=app_settings.primary_color_light,
-        secondary_color=app_settings.secondary_color_light,
-        locale=app_settings.default_locale,
-    )
+    try:
+        sent = await send_inactivity_warning(
+            user.email,
+            last_seen_at=user.last_seen_at,
+            erasure_at=erasure_date(user, months, now),
+            platform_name=app_settings.platform_name,
+            primary_color=app_settings.primary_color_light,
+            secondary_color=app_settings.secondary_color_light,
+            locale=app_settings.default_locale,
+        )
+    except (smtplib.SMTPException, OSError) as error:
+        # The address stays out of the logs; the id is enough to follow up.
+        logger.error(f"[purge] no warning sent to {user.id}: {type(error).__name__}")
+        return False
     if not sent:
         return False
     async with get_session() as session:
