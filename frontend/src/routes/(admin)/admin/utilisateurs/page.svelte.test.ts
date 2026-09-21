@@ -1,12 +1,14 @@
-import { fireEvent, render } from '@testing-library/svelte'
+import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
 import type { PageProps } from './$types'
 import type { UsersPage } from './+page'
 
-const { goto, pageState } = vi.hoisted(() => ({
+const { goto, pageState, request, toast } = vi.hoisted(() => ({
   goto: vi.fn(),
-  pageState: { url: new URL('http://localhost/admin/utilisateurs') }
+  pageState: { url: new URL('http://localhost/admin/utilisateurs') },
+  request: vi.fn(),
+  toast: vi.fn()
 }))
 
 vi.mock('$app/navigation', () => ({
@@ -27,11 +29,11 @@ vi.mock('$lib/auth.svelte', () => ({
 }))
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: vi.fn() }
+  api: { request }
 }))
 
 vi.mock('$lib/helpers/useToast.svelte', () => ({
-  useToast: vi.fn()
+  useToast: toast
 }))
 
 const now = new Date().toISOString()
@@ -43,7 +45,8 @@ const users: UsersPage = {
       role: 'admin',
       created_at: now,
       last_seen_at: now,
-      source: 'added_manually'
+      source: 'added_manually',
+      totp_enabled: true
     },
     {
       id: '2',
@@ -69,7 +72,13 @@ function renderPage(search = '') {
 describe('admin users page', () => {
   beforeEach(() => {
     goto.mockClear()
+    request.mockReset()
+    toast.mockClear()
     pageState.url = new URL('http://localhost/admin/utilisateurs')
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { disclose: vi.fn(), conceal: vi.fn() } })
+    })
   })
 
   it('shows each user role', () => {
@@ -93,6 +102,29 @@ describe('admin users page', () => {
     await fireEvent.click(getByTitle('Page suivante'))
 
     expect(goto).toHaveBeenCalledTimes(1)
+  })
+
+  it('says so when there is no 2FA left to reset', async () => {
+    request.mockRejectedValue(
+      Object.assign(new Error('Error 404 [DELETE](/admin/users/1/totp): Not Found'), {
+        status: 404
+      })
+    )
+    const { getByTitle, container } = renderPage()
+
+    await fireEvent.click(getByTitle('Reset 2FA'))
+    // The dialog is closed as far as jsdom knows, so roles do not reach into it.
+    const modal = container.querySelector('#fr-modal-reset-totp')!
+    await fireEvent.click(
+      [...modal.querySelectorAll('button')].find(
+        (b) => b.textContent?.trim() === 'Reset 2FA for admin@example.org'
+      )!
+    )
+
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith('admin@example.org has no 2FA to reset', 6000, 'error')
+    )
+    expect(request).toHaveBeenCalledWith('/admin/users/1/totp', { method: 'DELETE' })
   })
 
   it('builds the next url from the current one, not the one at mount', async () => {

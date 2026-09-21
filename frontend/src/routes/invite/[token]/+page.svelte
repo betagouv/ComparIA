@@ -85,10 +85,16 @@
         await submitConsent(terms, false)
         consentRequired = false
       }
-      await api.request('/auth/invite/accept', {
-        method: 'POST',
-        body: JSON.stringify({ token })
-      })
+      const { totp_required } = await api.request<{ success: boolean; totp_required: boolean }>(
+        '/auth/invite/accept',
+        { method: 'POST', body: JSON.stringify({ token }) }
+      )
+      if (totp_required) {
+        // An invite sent to an admin who already has an authenticator: the
+        // challenge cookie is set, the sign-in form finishes from there.
+        goto(resolve('/login?step=totp'))
+        return
+      }
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       useToast(m['auth.success'](), 4000)

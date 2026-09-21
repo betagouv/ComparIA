@@ -8,8 +8,16 @@ import SignInModal from './SignInModal.svelte'
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
   conceal: vi.fn(),
+  replaceState: vi.fn(),
+  pageState: { url: new URL('http://localhost/login') },
   authContext: { user: null, config: { access_policy: 'anonymous_first' } }
 }))
+
+vi.mock('$app/navigation', () => ({ replaceState: mocks.replaceState }))
+
+vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
+
+vi.mock('$app/state', () => ({ page: mocks.pageState }))
 
 vi.mock('$lib/auth.svelte', () => ({
   getAuthContext: () => mocks.authContext
@@ -223,5 +231,167 @@ describe('SignInForm consent', () => {
 
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
     expect(container.querySelector('#login-merge')).toBeNull()
+  })
+})
+
+describe('SignInForm authenticator step', () => {
+  const me = { user: { email: 'admin@example.test', role: 'admin', totp_enabled: true } }
+
+  function servesSignIn(totp: (code: string) => Promise<unknown>) {
+    servesTerms(true)
+    const base = mocks.request.getMockImplementation()!
+    mocks.request.mockImplementation((path: string, options?: RequestInit) => {
+      if (path === '/auth/email/verify')
+        return Promise.resolve({ email: 'admin@example.test', totp_required: true })
+      if (path === '/auth/totp/verify') return totp(JSON.parse(options!.body as string).code)
+      if (path === '/auth/me') return Promise.resolve(me)
+      return base(path, options)
+    })
+  }
+
+  async function reachTheAuthenticatorStep(container: HTMLElement) {
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    await waitFor(() => expect(submit.disabled).toBe(false))
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
+      target: { value: 'admin@example.test' }
+    })
+    await fireEvent.click(submit)
+    const codeInput = await waitFor(() => container.querySelector<HTMLInputElement>('#login-code')!)
+    await fireEvent.input(codeInput, { target: { value: '123456' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+    return waitFor(() => {
+      const input = container.querySelector<HTMLInputElement>('#login-totp')
+      expect(input).not.toBeNull()
+      return input!
+    })
+  }
+
+  beforeEach(() => {
+    resetConsent()
+    mocks.replaceState.mockClear()
+    mocks.authContext.config.access_policy = 'anonymous_first'
+    mocks.authContext.user = null
+    mocks.pageState.url = new URL('http://localhost/login')
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { conceal: mocks.conceal } })
+    })
+  })
+
+  it('asks for the authenticator code before fetching the account', async () => {
+    servesSignIn(() => Promise.resolve({ email: 'admin@example.test' }))
+    const onSuccess = vi.fn()
+    const { container } = render(SignInForm, { props: { onSuccess } })
+
+    const totpInput = await reachTheAuthenticatorStep(container)
+    expect(paths()).not.toContain('/auth/me')
+    expect(onSuccess).not.toHaveBeenCalled()
+    expect(container.querySelector('#login-code')).toBeNull()
+    expect(container.querySelector<HTMLInputElement>('#login-email')!.disabled).toBe(true)
+    await waitFor(() => expect(document.activeElement).toBe(totpInput))
+    await expectAccessible(container)
+
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    expect(submit.disabled).toBe(true)
+    await fireEvent.input(totpInput, { target: { value: '65 43 21' } })
+    expect(totpInput.value).toBe('654321')
+    expect(submit.disabled).toBe(false)
+    await fireEvent.click(submit)
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce())
+    const verify = mocks.request.mock.calls.find(([path]) => path === '/auth/totp/verify')!
+    expect(JSON.parse(verify[1]!.body as string)).toEqual({ code: '654321' })
+    expect(paths().indexOf('/auth/me')).toBeGreaterThan(paths().indexOf('/auth/totp/verify'))
+    expect(mocks.authContext.user).toEqual(me.user)
+  })
+
+  it('can open straight at the authenticator step', async () => {
+    servesSignIn(() => Promise.resolve({ email: 'admin@example.test' }))
+    const onSuccess = vi.fn()
+    const { container } = render(SignInForm, { props: { onSuccess, startAtTotp: true } })
+
+    const totpInput = container.querySelector<HTMLInputElement>('#login-totp')!
+    expect(totpInput).not.toBeNull()
+    expect(container.querySelector('#login-code')).toBeNull()
+    // No address to show or change: the invite already checked it.
+    expect(container.querySelector('#login-email')).toBeNull()
+    expect(container.textContent).not.toContain('Modifier l’adresse email')
+    expect(container.textContent).toContain('Votre adresse email a déjà été vérifiée')
+    await expectAccessible(container)
+
+    await fireEvent.input(totpInput, { target: { value: '654321' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce())
+    expect(paths()).not.toContain('/auth/email/request')
+    expect(paths()).not.toContain('/auth/email/verify')
+  })
+
+  it('leaves the dead authenticator step behind when opened straight at it', async () => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Gone'), { status: 410 })))
+    mocks.pageState.url = new URL('http://localhost/login?step=totp&redirect=%2Fadmin')
+    const { container } = render(SignInForm, { props: { startAtTotp: true } })
+
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-totp')!, {
+      target: { value: '000000' }
+    })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Connexion expirée'))
+    expect(container.textContent).not.toContain('Votre adresse email a déjà été vérifiée')
+    const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
+    expect(emailInput.disabled).toBe(false)
+    expect(document.activeElement).toBe(emailInput)
+    // A reload must not land on the step again: only `step` goes, the rest stays.
+    expect(mocks.replaceState).toHaveBeenCalledOnce()
+    expect(mocks.replaceState.mock.calls[0][0]).toBe('/login?redirect=%2Fadmin')
+  })
+
+  it('does not name a network failure a wrong code', async () => {
+    servesSignIn(() => Promise.reject(new TypeError('Failed to fetch')))
+    const { container } = render(SignInForm)
+
+    const totpInput = await reachTheAuthenticatorStep(container)
+    await fireEvent.input(totpInput, { target: { value: '654321' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Une erreur est survenue'))
+    expect(container.textContent).not.toContain('Code incorrect.')
+    expect(container.querySelector('#login-totp')).not.toBeNull()
+  })
+
+  it('reports a wrong authenticator code and lets the visitor retry', async () => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Invalid'), { status: 400 })))
+    const { container } = render(SignInForm)
+
+    const totpInput = await reachTheAuthenticatorStep(container)
+    await fireEvent.input(totpInput, { target: { value: '000000' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Code incorrect.'))
+    expect(container.querySelector('#login-totp')).not.toBeNull()
+    expect(paths()).not.toContain('/auth/me')
+  })
+
+  it.each([
+    ['expired', 410],
+    ['lost its challenge cookie', 401]
+  ])('starts over when the half-finished sign-in has %s', async (_, status) => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Rejected'), { status })))
+    const { container } = render(SignInForm)
+
+    const totpInput = await reachTheAuthenticatorStep(container)
+    await fireEvent.input(totpInput, { target: { value: '000000' } })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(container.textContent).toContain('Connexion expirée'))
+    expect(container.textContent).not.toContain('Code incorrect.')
+    expect(container.querySelector('#login-totp')).toBeNull()
+    expect(container.querySelector('#login-code')).toBeNull()
+    const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
+    expect(emailInput.disabled).toBe(false)
+    expect(document.activeElement).toBe(emailInput)
+    // The page was not opened on the authenticator step: nothing to strip.
+    expect(mocks.replaceState).not.toHaveBeenCalled()
   })
 })

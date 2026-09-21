@@ -24,6 +24,10 @@
             "do": "Copier le lien",
             "done": "Lien copié dans le presse-papiers"
         },
+        "copyKey": {
+            "do": "Copier la clé",
+            "done": "Clé copiée"
+        },
         "copyMessage": {
             "do": "Copier le message",
             "done": "Message copié"
@@ -680,7 +684,14 @@
                 "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
                 "neverPhone": "des numéros de téléphone"
             },
-            "merge": "Fusionner les conversations existantes avec votre compte"
+            "merge": "Fusionner les conversations existantes avec votre compte",
+            "totp": {
+                "label": "Code de l’application d’authentification",
+                "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
+                "error": "Code incorrect.",
+                "expired": "Connexion expirée, demandez un nouveau code par email.",
+                "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification."
+            }
         },
         "settings": {
             "account": {
@@ -720,7 +731,42 @@
             "tabAbout": "À propos",
             "tabAccount": "Compte",
             "tabsLabel": "Rubriques des paramètres",
-            "title": "Paramètres"
+            "title": "Paramètres",
+            "totp": {
+                "title": "Double authentification",
+                "desc": "L’accès à l’administration demande, en plus du code reçu par email, un code d’une application d’authentification installée sur votre téléphone.",
+                "status": "Statut :",
+                "statusOn": "Activée",
+                "statusOff": "Non configurée",
+                "setup": "Configurer une application",
+                "change": "Changer d’appareil",
+                "success": "Application d’authentification activée.",
+                "required": {
+                    "title": "Configuration requise",
+                    "desc": "Configurez une application d’authentification pour accéder à l’administration."
+                },
+                "modal": {
+                    "title": "Configurer l’application d’authentification",
+                    "currentHelp": "Pour changer d’appareil, saisissez d’abord un code de l’application en place.",
+                    "currentLabel": "Code de l’application actuelle",
+                    "continue": "Continuer",
+                    "loading": "Préparation…",
+                    "scanHelp": "Scannez ce QR code avec votre application (Google Authenticator, Aegis, FreeOTP…), puis saisissez le code qu’elle affiche.",
+                    "qrAlt": "QR code à scanner avec votre application d’authentification",
+                    "manualKey": "Ou saisissez cette clé à la main :",
+                    "manualKeyLabel": "Clé secrète",
+                    "confirmLabel": "Code affiché par l’application",
+                    "confirm": "Activer",
+                    "confirming": "Vérification…",
+                    "otherSessions": "Vos autres sessions seront déconnectées.",
+                    "invalid": "Code incorrect.",
+                    "tooMany": "Trop de tentatives, réessayez dans quelques minutes.",
+                    "expired": "Ce QR code a expiré, recommencez.",
+                    "sessionExpired": "Session expirée, reconnectez-vous.",
+                    "restart": "Recommencez depuis le début.",
+                    "failedTitle": "La configuration n’a pas pu démarrer"
+                }
+            }
         },
         "success": "Vous êtes connecté !"
     },

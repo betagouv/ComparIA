@@ -34,6 +34,7 @@ services:
       # HF_PUSH_DATASET_KEY:
       # HF_PUSH_DATASET_PATH: "danish-foundation-models/ai-arenaen"
       ALTCHA_HMAC_KEY: ${ALTCHA_HMAC_KEY:?ALTCHA_HMAC_KEY is required}
+      COMPARIA_ENCRYPTION_KEY: ${COMPARIA_ENCRYPTION_KEY:?COMPARIA_ENCRYPTION_KEY is required}
       SENTRY_SAMPLE_RATE: "1.0"
       SENTRY_ENV: "dev-da"
       SENTRY_FRONT_DSN: "https://454e45b18f4ad93227ac60659a7d373c@sentry.incubateur.net/164"

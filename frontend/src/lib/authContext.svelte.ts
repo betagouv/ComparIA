@@ -4,6 +4,7 @@ import { createContext } from 'svelte'
 export interface AuthUser {
   email: string
   role: string
+  totp_enabled: boolean
 }
 
 export interface AuthConfig {
