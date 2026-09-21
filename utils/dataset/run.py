@@ -88,7 +88,11 @@ async def main(
         )
     except Exception as exc:
         if run_id:
-            await finish_run(run_id, error=str(exc))
+            # str(exc) alone: some exceptions, MemoryError included, carry no
+            # message and stringify to '', which the panel then reads as 'no
+            # error' next to a run marked failed. repr() as a fallback keeps
+            # the exact 'no rows' message the panel matches on intact.
+            await finish_run(run_id, error=str(exc) or repr(exc))
         raise
     else:
         if run_id:
