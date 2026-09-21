@@ -48,9 +48,11 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_index('ix_auth_totp_challenge_token_hash', 'auth_totp_challenge', ['token_hash'], unique=False)
+    op.create_index('ix_auth_totp_challenge_user_id', 'auth_totp_challenge', ['user_id'], unique=False)
 
 
 def downgrade() -> None:
+    op.drop_index('ix_auth_totp_challenge_user_id', table_name='auth_totp_challenge')
     op.drop_index('ix_auth_totp_challenge_token_hash', table_name='auth_totp_challenge')
     op.drop_table('auth_totp_challenge')
     op.drop_table('auth_totp')
