@@ -20,6 +20,12 @@ class SecretUnreadableError(Exception):
     """A stored secret that no configured key opens. The secret exists, so
     the caller must not read this as a missing one, nor as a wrong input."""
 
+    def __init__(
+        self,
+        message: str = "a stored secret cannot be decrypted with the configured keys",
+    ) -> None:
+        super().__init__(message)
+
 
 def _keys() -> list[str]:
     return [k.strip() for k in settings.COMPARIA_ENCRYPTION_KEY.split(",") if k.strip()]
