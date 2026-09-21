@@ -1336,6 +1336,21 @@ def test_the_cli_reset_needs_no_second_admin():
     assert session.commits == 1
 
 
+def test_the_cli_reset_matches_the_address_whatever_its_case():
+    cli_reset = cli_reset_module()
+
+    admin = User(email="Only@Example.org", role="admin")
+    session = FakeSession(None, [admin])
+
+    with fake_session(session, cli_reset):
+        asyncio.run(cli_reset.reset_totp(" only@example.ORG "))
+
+    [lookup] = session.exec_statements
+    compiled = str(lookup.compile(compile_kwargs={"literal_binds": True}))
+    assert "lower(auth_user.email) = 'only@example.org'" in compiled
+    assert session.commits == 1
+
+
 def test_the_cli_reset_refuses_an_unknown_email():
     cli_reset = cli_reset_module()
 
