@@ -31,6 +31,17 @@ async def lifespan(app: FastAPI):
         await seed_admins()
 
     if settings.COMPARIA_DB_URI:
+        from utils.database.secrets import log_unreadable_secrets
+
+        # A key dropped too early shows up here, once per row, rather than
+        # as models quietly gone from the arena. Advisory: it never stops the
+        # start.
+        try:
+            await log_unreadable_secrets()
+        except Exception as e:
+            logger.error(f"[SECRETS] could not check the stored secrets: {e}")
+
+    if settings.COMPARIA_DB_URI:
         from backend import publishing
 
         publishing.start(app)

@@ -2,6 +2,7 @@ from typing import Annotated
 
 from sqlmodel import Field
 
+from utils.database.encrypted import EncryptedStr
 from utils.validation import NonEmptyStr
 
 from ..utils import BaseDBModel
@@ -41,6 +42,12 @@ class LLMEndpoint(LLMEndpointPrivate, table=True):
     """
 
     __tablename__ = "llm_endpoint"
+
+    # Same field as LLMEndpointPrivate, stored encrypted; the form schema and
+    # the public model are unchanged.
+    api_key: Annotated[str | None, Field(sa_type=EncryptedStr, **FIELDS["api_key"])] = (
+        None
+    )
 
 
 class LLMEndpointUpsert(LLMEndpointPrivate):

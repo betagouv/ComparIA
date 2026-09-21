@@ -19,6 +19,7 @@ from utils.database.models.publish import (
     S3Config,
 )
 from utils.database.session import get_session
+from utils.secrets import SecretUnreadableError
 
 from .models import Datasets
 
@@ -162,7 +163,12 @@ def publish(
     failures: list[str] = []
 
     for destination in destinations:
-        config = destination.parsed_config()
+        try:
+            config = destination.parsed_config()
+        except SecretUnreadableError as exc:
+            logger.error(f"Cannot publish to '{destination.name}': {exc}")
+            failures.append(f"{destination.name}: {exc}")
+            continue
         for dataset, build_dir in built.items():
             # A destination that asked for a dataset this run did not build
             # simply does not receive it.

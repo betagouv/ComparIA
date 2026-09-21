@@ -24,8 +24,10 @@ import httpx
 import sentry_sdk
 
 from backend.config import settings
+from utils.database.encrypted import UnreadableSecret
 from utils.database.models.prompt_check import PromptCheck, PromptCheckResult
 from utils.database.prompt_checks import get_prompt_check
+from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_SCORES_KEY,
@@ -57,7 +59,16 @@ _DECISIONS = {"off": "pass", "log": "logged", "warn": "warned", "block": "blocke
 
 
 async def moderate(text: str, model: str, api_key: str) -> dict[str, float]:
-    """Score one prompt with the Mistral moderation API."""
+    """Score one prompt with the Mistral moderation API.
+
+    A stored key no configured encryption key opens is a failed call, not a
+    missing key: the env key is not tried in its place, and the callers count
+    the failure like any other so the panel shows the check unhealthy.
+    """
+    if isinstance(api_key, UnreadableSecret):
+        raise SecretUnreadableError(
+            "prompt_check 1.api_key cannot be decrypted with COMPARIA_ENCRYPTION_KEY"
+        )
     async with httpx.AsyncClient(timeout=MODERATION_TIMEOUT) as client:
         response = await client.post(
             MISTRAL_MODERATION_URL,

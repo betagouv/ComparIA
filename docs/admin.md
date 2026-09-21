@@ -14,13 +14,15 @@ On an instance that is already running, `./comparia-cli db seed-admins` does the
 
 Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits. An admin who has just been invited or promoted should pair their app straight away: until they do, anyone holding their session can pair a device in their name.
 
-The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). The migration job needs the same variable, since `backend.config` checks it at import before Alembic runs. Generate one with:
+The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The same key protects the provider API keys of the endpoints, the moderation key and the publishing credentials. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). The migration job needs the same variable, since `backend.config` checks it at import before Alembic runs. Generate one with:
 
 ```bash
 python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 ```
 
-To rotate it, put the new key first and keep the old one after a comma: `COMPARIA_ENCRYPTION_KEY=new,old`. Each admin's secret is re-encrypted with the new key the next time they sign in, so the old key can go once everyone has.
+To rotate it, put the new key first and keep the old one after a comma: `COMPARIA_ENCRYPTION_KEY=new,old`, restart, then run `./comparia-cli db reencrypt-secrets`. Every stored secret, the admins' authenticator secrets included, is rewritten with the new key in one transaction, and the command reports how many rows it rewrote per table. It refuses to run, and changes nothing, if any stored secret cannot be decrypted with the keys given: keep the old key in the list until a run has reported success, then drop it. Signing in also re-encrypts an admin's own authenticator secret with the first key, as before.
+
+A secret whose key was dropped too early is not lost, but nothing can use it: at startup the backend logs an error naming each such row, an endpoint whose key cannot be read has its models disabled while the others keep running, the admin panel still shows the key as set, and a publishing destination in that state fails its run. Put the key back in the list and everything comes back.
 
 An admin changes device from `/settings`: a code from the current app, then the new QR code. Their other sessions are signed out when the new app is confirmed.
 
