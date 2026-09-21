@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 import pytest  # noqa: E402
+from cryptography.fernet import Fernet  # noqa: E402
 
 from utils.database.encrypted import (  # noqa: E402
     EncryptedJSONFields,
@@ -21,6 +22,10 @@ from utils.database.encrypted import (  # noqa: E402
 )
 from utils.database.models.publish import SECRET_FIELDS  # noqa: E402
 from utils.secrets import decrypt_secret  # noqa: E402
+
+
+def token_from_a_lost_key(plain: str = "x") -> str:
+    return Fernet(Fernet.generate_key()).encrypt(plain.encode()).decode()
 
 
 def test_a_string_column_stores_a_token_and_reads_the_value_back():
@@ -65,8 +70,13 @@ def test_an_unknown_kind_is_stored_as_is():
 
 def test_looks_encrypted_tells_tokens_from_plain_values():
     assert looks_encrypted(EncryptedStr().process_bind_param("x", None))
+    assert looks_encrypted(token_from_a_lost_key(""))
     assert not looks_encrypted("sk-plain")
     assert not looks_encrypted(None)
+    # The prefix alone is not enough: a token is base64 and never short.
+    assert not looks_encrypted("gAAAAA-short")
+    assert not looks_encrypted("gAAAAA" + "!" * 100)
+    assert not looks_encrypted("gAAAAA" + "A" * 93)
 
 
 if __name__ == "__main__":
