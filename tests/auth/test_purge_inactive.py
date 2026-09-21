@@ -423,6 +423,23 @@ def test_an_account_signed_into_during_the_run_is_not_erased():
     assert report.skipped == [revived]
 
 
+def test_a_sign_in_while_the_warning_is_sent_is_not_overwritten():
+    to_warn = user_seen(DEADLINE + timedelta(days=10))
+    signed_in = User(
+        id=to_warn.id, email=to_warn.email, last_seen_at=NOW, inactivity_warned_at=None
+    )
+
+    with purge_context([to_warn]) as (session, mailed, _erased, _locales):
+        session.refreshed[to_warn.id] = signed_in
+        report = asyncio.run(purge_inactive_users(MONTHS, apply=True, now=NOW))
+
+    assert len(mailed) == 1
+    assert signed_in.inactivity_warned_at is None
+    assert session.commits == 0
+    assert report.to_warn == [to_warn]
+    assert report.warn_failed == []
+
+
 def test_a_warning_that_could_not_be_sent_is_not_recorded():
     to_warn = user_seen(DEADLINE + timedelta(days=10))
 

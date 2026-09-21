@@ -183,6 +183,11 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
         row = await session.get(User, user.id)
         if row is None:
             return False
+        if row.last_seen_at != user.last_seen_at:
+            # Signed in while the mail was on its way: the sign-in cleared the
+            # warning and restarted the clock, and writing it back would let
+            # the next dormant stretch end in an erasure with no fresh notice.
+            return True
         row.inactivity_warned_at = now
         session.add(row)
         await session.commit()
