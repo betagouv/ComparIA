@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 
 import pyotp
 import segno
+from sqlalchemy import delete as sa_delete
 from sqlalchemy import func
 from sqlmodel import select
 
@@ -265,7 +266,8 @@ async def verify_totp_challenge(
             raise TotpChallengeExpiredError()
 
         # Every wrong code of the account in the last hour, on this challenge
-        # or an earlier one.
+        # or an earlier one. Rows out of the window go: nothing reads them
+        # any more, and the table stays bounded per user.
         window_start = now - _TOTP_CHALLENGE_WINDOW
         result = await session.exec(
             select(func.sum(TotpChallenge.attempts)).where(
@@ -275,6 +277,12 @@ async def verify_totp_challenge(
         )
         if (result.first() or 0) >= _TOTP_MAX_FAILS_PER_USER_PER_HOUR:
             raise TotpChallengeExpiredError()
+        await session.execute(
+            sa_delete(TotpChallenge).where(
+                TotpChallenge.user_id == challenge.user_id,
+                TotpChallenge.created_at < window_start,
+            )
+        )
 
         secret = decrypt_secret(totp.secret_encrypted)
         step = matching_step(secret, code, last_used_step=totp.last_used_step)
