@@ -96,6 +96,7 @@
       <AILogo
         logo={modelA.lab.logo}
         customLogoId={modelA.lab.has_custom_logo ? modelA.lab.id : undefined}
+        customLogoVersion={modelA.lab.logo_version}
         alt=""
         class="me-1 inline"
       />
@@ -105,6 +106,7 @@
         <AILogo
           logo={modelB.lab.logo}
           customLogoId={modelB.lab.has_custom_logo ? modelB.lab.id : undefined}
+          customLogoVersion={modelB.lab.logo_version}
           alt=""
           class="me-1 inline"
         />
@@ -224,6 +226,7 @@
                         <AILogo
                           logo={opt.lab.logo}
                           customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
+                          customLogoVersion={opt.lab.logo_version}
                           alt=""
                           class="me-2"
                         />

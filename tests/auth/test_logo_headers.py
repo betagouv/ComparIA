@@ -58,7 +58,13 @@ def test_the_site_wide_policy_does_not_loosen_the_logo_one():
     assert "sandbox" in get_logo().headers["content-security-policy"]
 
 
+def test_the_logo_may_be_kept_for_a_year():
+    # Safe only because the pages put the logo version in the URL.
+    assert get_logo().headers["cache-control"] == "public, max-age=31536000, immutable"
+
+
 if __name__ == "__main__":
     test_an_svg_logo_is_served_without_scripting()
     test_the_site_wide_policy_does_not_loosen_the_logo_one()
+    test_the_logo_may_be_kept_for_a_year()
     print("ok")

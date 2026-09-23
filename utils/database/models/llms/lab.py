@@ -5,7 +5,7 @@ from sqlmodel import Field
 
 from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
-from ..utils import BaseDBModel
+from ..utils import BaseDBModel, logo_version
 
 FIELDS = {
     "name": {},
@@ -43,6 +43,10 @@ class LLMLab(LLMLabBase, table=True):
     def has_custom_logo(self) -> bool:
         return self.logo_data is not None
 
+    @property
+    def logo_version(self) -> str | None:
+        return logo_version(self.logo_data)
+
 
 class LLMLabUpsert(LLMLabBase):
     pass
@@ -50,3 +54,4 @@ class LLMLabUpsert(LLMLabBase):
 
 class LLMLabPublic(LLMLabBase):
     has_custom_logo: bool = False
+    logo_version: str | None = None
