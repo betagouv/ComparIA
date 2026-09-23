@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button, Checkbox } from '$components/dsfr'
+  import { getAuthContext } from '$lib/auth.svelte'
   import {
     consentCheckboxLabel,
     legalLinks,
@@ -18,25 +19,30 @@
   let {
     oidcLabel,
     oidcLogoUrl,
+    redirect = null,
     onLegalNavigate,
     ...props
   }: {
     oidcLabel: string
     oidcLogoUrl: string | null
+    /** App-relative path the callback sends the user back to after sign-in. */
+    redirect?: string | null
     onLegalNavigate?: (event: MouseEvent) => void
   } & SvelteHTMLElements['div'] = $props()
 
+  const auth = getAuthContext()
   const locale = getLocale()
-  const loginUrl = api.getUrl('/auth/oidc/login') as ExternalHref
 
   let terms = $state<ConsentDocument>()
   let consentRequired = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
+  let mergeComparisons = $state(false)
   let loading = $state(false)
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
+  const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
 
   async function readConsent(again = false) {
     consentLoading = true
@@ -75,7 +81,10 @@
       if (consentRequired) {
         await submitConsent(terms, false)
       }
-      window.location.href = loginUrl
+      const searchParams: Record<string, string> = {}
+      if (redirect) searchParams.redirect = redirect
+      if (canMergeComparisons && mergeComparisons) searchParams.merge = '1'
+      window.location.href = api.getUrl('/auth/oidc/login', searchParams) as ExternalHref
     } catch {
       consentError = m['consent.loadFailed']()
       loading = false
@@ -100,10 +109,20 @@
     </span>
   </Button>
 
+  {#if canMergeComparisons}
+    <Checkbox
+      id="sso-merge"
+      class="text-xs! mt-4!"
+      bind:checked={mergeComparisons}
+      disabled={loading}
+      label={m['auth.modal.merge']()}
+    />
+  {/if}
+
   {#if terms}
     <Checkbox
       id="sso-consent"
-      class="text-xs! mt-4!"
+      class={['text-xs!', canMergeComparisons ? 'mt-1!' : 'mt-4!']}
       bind:checked={consented}
       disabled={loading || consentLoading || !consentRequired}
       label={consentLabel}

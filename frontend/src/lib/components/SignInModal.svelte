@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Modal, Tabs } from '$components/dsfr'
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
@@ -20,6 +21,9 @@
   const oidcLogoUrl = $derived(
     auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
   )
+  // Brings a visitor who signs in through the provider back to the page they
+  // opened the modal from.
+  const redirect = $derived(page.url.pathname + page.url.search)
   const bothMethods = $derived(oidcEnabled && emailEnabled)
   const tabs = $derived.by(() => {
     const result: { id: string; label: string }[] = []
@@ -76,6 +80,7 @@
                 <SSOSignIn
                   {oidcLabel}
                   {oidcLogoUrl}
+                  {redirect}
                   onLegalNavigate={closeModal}
                   class="my-0! mx-0!"
                 />
@@ -83,7 +88,13 @@
             {/snippet}
           </Tabs>
         {:else}
-          <SSOSignIn {oidcLabel} {oidcLogoUrl} onLegalNavigate={closeModal} class="my-0! mx-0!" />
+          <SSOSignIn
+            {oidcLabel}
+            {oidcLogoUrl}
+            {redirect}
+            onLegalNavigate={closeModal}
+            class="my-0! mx-0!"
+          />
         {/if}
       </div>
     {:else}

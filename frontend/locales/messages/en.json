@@ -407,6 +407,12 @@
                 "domainAllowlist": {
                     "help": "Comma-separated. Leave empty to allow all domains.",
                     "label": "Allowed email domains"
+                },
+                "authMethods": {
+                    "emailCode": "Email code",
+                    "error": "At least one method must be enabled",
+                    "label": "Authentication methods",
+                    "oidc": "Identity provider (OIDC)"
                 }
             },
             "customization": {
@@ -452,7 +458,42 @@
             "save": "Save",
             "saved": "Settings updated",
             "saving": "Saving...",
-            "subtitle": "Application configuration."
+            "subtitle": "Application configuration.",
+            "oidc": {
+                "buttonLabel": {
+                    "hint": "E.g. Sign in with ProConnect",
+                    "label": "Button label"
+                },
+                "buttonLogo": {
+                    "hint": "PNG, JPEG, SVG or WebP, 2 MB maximum.",
+                    "label": "Button logo",
+                    "reset": "Remove",
+                    "resetDone": "Logo removed",
+                    "updated": "Logo updated"
+                },
+                "clientId": {
+                    "label": "Client ID",
+                    "required": "Client ID is required"
+                },
+                "clientSecret": {
+                    "hint": "Leave empty to keep the current value",
+                    "label": "Client secret",
+                    "replace": "Replace",
+                    "required": "Client secret is required to enable OIDC",
+                    "set": "Secret saved"
+                },
+                "issuer": {
+                    "hint": "E.g. https://auth.example.gouv.fr",
+                    "label": "Issuer URL",
+                    "required": "Issuer URL is required"
+                },
+                "scopes": {
+                    "hint": "Space-separated. E.g. openid email",
+                    "label": "Scopes",
+                    "openidRequired": "Scopes must include openid"
+                },
+                "title": "OIDC configuration"
+            }
         },
         "suggestions": {
             "actions": "Actions",
@@ -649,6 +690,9 @@
         },
         "login": {
             "description": "Compare conversational AI models blind and help evaluate AI in Europe.",
+            "tabEmail": "Email",
+            "tabSso": "SSO",
+            "tabsLabel": "Sign-in methods",
             "title": "Welcome to {platformName}"
         },
         "modal": {
@@ -681,6 +725,23 @@
                 "neverPhone": "phone numbers"
             },
             "merge": "Merge existing conversations with your account"
+        },
+        "oidc": {
+            "buttonFallback": "Sign in with the identity provider",
+            "error": {
+                "account_unavailable": "The account linked to this address has been deactivated or deleted.",
+                "domain_not_allowed": "Your address does not belong to a domain allowed on this instance.",
+                "email_not_verified": "The identity provider did not confirm your email address.",
+                "invalid_nonce": "Sign-in through the identity provider failed (invalid token).",
+                "invalid_state": "Sign-in through the identity provider expired. Try again.",
+                "missing_code": "Sign-in through the identity provider is incomplete. Try again.",
+                "no_email": "The identity provider did not return an email address.",
+                "oidc_unavailable": "Sign-in through an identity provider is not enabled on this instance.",
+                "provider_error": "The identity provider rejected the sign-in request. Try again.",
+                "rate_limited": "Too many sign-in attempts from this network. Try again in an hour.",
+                "terms_required": "Accept the terms of use before signing in."
+            },
+            "panelSubtitle": "You will be redirected to the identity provider configured for this instance."
         },
         "settings": {
             "account": {

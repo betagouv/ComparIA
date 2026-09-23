@@ -49,6 +49,10 @@
 
   onMount(load)
 
+  function parseScopes() {
+    return oidcScopes.split(' ').filter(Boolean)
+  }
+
   function validate() {
     const nextErrors: Record<string, string> = {}
     if (!methodEmailCode && !methodOidc) {
@@ -64,6 +68,9 @@
       const needSecret = !oidcHasClientSecret || oidcReplaceSecret
       if (needSecret && !oidcClientSecret.trim()) {
         nextErrors.oidcSecret = m['admin.settings.oidc.clientSecret.required']()
+      }
+      if (!parseScopes().includes('openid')) {
+        nextErrors.oidcScopes = m['admin.settings.oidc.scopes.openidRequired']()
       }
     }
     errors = nextErrors
@@ -85,15 +92,19 @@
           .split(',')
           .map((d) => d.trim())
           .filter(Boolean),
-        auth_methods: authMethods,
-        oidc_issuer: methodOidc ? oidcIssuer.trim() || null : null,
-        oidc_client_id: methodOidc ? oidcClientId.trim() || null : null,
-        oidc_scopes: methodOidc ? oidcScopes.split(' ').filter(Boolean) : [],
-        oidc_button_label: methodOidc ? oidcButtonLabel.trim() || null : null
+        auth_methods: authMethods
       }
 
-      if (methodOidc && (!oidcHasClientSecret || oidcReplaceSecret) && oidcClientSecret.trim()) {
-        patch.oidc_client_secret = oidcClientSecret.trim()
+      // Unticking OIDC only removes it from the methods: the provider config
+      // stays stored so it can be re-enabled without typing it again.
+      if (methodOidc) {
+        patch.oidc_issuer = oidcIssuer.trim() || null
+        patch.oidc_client_id = oidcClientId.trim() || null
+        patch.oidc_scopes = parseScopes()
+        patch.oidc_button_label = oidcButtonLabel.trim() || null
+        if ((!oidcHasClientSecret || oidcReplaceSecret) && oidcClientSecret.trim()) {
+          patch.oidc_client_secret = oidcClientSecret.trim()
+        }
       }
 
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
@@ -147,6 +158,7 @@
     try {
       await api.request('/admin/settings/oidc-logo', { method: 'DELETE', headers: {} })
       oidcHasButtonLogo = false
+      oidcLogoVersion++
       useToast(m['admin.settings.oidc.buttonLogo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
@@ -272,6 +284,7 @@
             label={m['admin.settings.oidc.scopes.label']()}
             help={m['admin.settings.oidc.scopes.hint']()}
             bind:value={oidcScopes}
+            error={errors.oidcScopes}
             groupClass="mt-4!"
           />
 
@@ -288,7 +301,7 @@
             <div class="gap-4 flex items-center">
               {#if oidcHasButtonLogo}
                 <img
-                  src="{api.getUrl('/admin/settings/oidc-logo')}?v={oidcLogoVersion}"
+                  src={api.getUrl('/auth/config/oidc/logo', { v: oidcLogoVersion.toString() })}
                   alt=""
                   class="h-[32px] border border-[--border-default-grey]"
                 />

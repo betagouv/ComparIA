@@ -489,7 +489,8 @@
                 },
                 "scopes": {
                     "hint": "Séparés par des espaces. Ex. : openid email",
-                    "label": "Scopes"
+                    "label": "Scopes",
+                    "openidRequired": "Les scopes doivent inclure openid"
                 },
                 "title": "Configuration OIDC"
             }
@@ -728,6 +729,7 @@
         "oidc": {
             "buttonFallback": "Se connecter avec le fournisseur d’identité",
             "error": {
+                "account_unavailable": "Le compte associé à cette adresse a été désactivé ou supprimé.",
                 "domain_not_allowed": "Votre adresse n’appartient pas à un domaine autorisé pour cette instance.",
                 "email_not_verified": "Le fournisseur d’identité n’a pas confirmé votre adresse e-mail.",
                 "invalid_nonce": "La connexion via le fournisseur d’identité a échoué (jeton invalide).",
@@ -736,6 +738,7 @@
                 "no_email": "Le fournisseur d’identité n’a pas renvoyé d’adresse e-mail.",
                 "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
                 "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez.",
+                "rate_limited": "Trop de tentatives de connexion depuis ce réseau. Réessayez dans une heure.",
                 "terms_required": "Acceptez les conditions générales d’utilisation avant de vous connecter."
             },
             "panelSubtitle": "Vous serez redirigé vers le fournisseur d’identité configuré pour cette instance."

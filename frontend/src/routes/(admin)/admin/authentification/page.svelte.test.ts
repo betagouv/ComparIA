@@ -1,10 +1,15 @@
 import type { AppSettingsPublic } from '$lib/generated/admin'
-import { render, waitFor } from '@testing-library/svelte'
+import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: vi.fn(), getUrl: vi.fn((path: string) => path) }
+  api: {
+    request: vi.fn(),
+    getUrl: vi.fn((path: string, searchParams?: Record<string, string>) =>
+      searchParams ? `${path}?${new URLSearchParams(searchParams)}` : path
+    )
+  }
 }))
 
 vi.mock('$lib/helpers/useToast.svelte', () => ({
@@ -152,6 +157,37 @@ describe('admin authentification page — client-side validation', () => {
     expect(container.querySelector('#settings-oidc-secret-error')).toBeInTheDocument()
   })
 
+  it('requires openid among the scopes when OIDC is enabled', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+
+    const { container } = await renderPage({
+      ...base,
+      auth_methods: ['oidc'],
+      oidc_has_client_secret: true,
+      oidc_issuer: 'https://auth.example.fr',
+      oidc_client_id: 'my-client',
+      oidc_scopes: ['email', 'profile']
+    })
+
+    container
+      .querySelector<HTMLFormElement>('#settings-auth-form')!
+      .dispatchEvent(new Event('submit', { bubbles: true }))
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(api.request).not.toHaveBeenCalledWith(
+      '/admin/settings',
+      expect.objectContaining({ method: 'PATCH' })
+    )
+    await waitFor(() =>
+      expect(
+        container.querySelector('#input-settings-oidc-scopes-messages .fr-message--error')
+      ).toBeInTheDocument()
+    )
+    expect(container.querySelector('#settings-oidc-scopes')).toHaveAttribute('aria-invalid', 'true')
+  })
+
   it('does not require client secret when OIDC is enabled and one is already stored', async () => {
     const { api } = await import('$lib/fastapi-client')
     vi.mocked(api.request).mockReset()
@@ -253,5 +289,54 @@ describe('admin authentification page — save payload', () => {
     // calls[0] is the GET from onMount; calls[1] is the PATCH from save
     const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
     expect('oidc_client_secret' in body).toBe(false)
+  })
+
+  it('keeps the stored OIDC config when OIDC is unticked', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue({ ...base, auth_methods: ['email_code'] })
+
+    const { container } = await renderPage({
+      ...base,
+      auth_methods: ['email_code', 'oidc'],
+      oidc_has_client_secret: true,
+      oidc_issuer: 'https://auth.example.fr',
+      oidc_client_id: 'my-client',
+      oidc_button_label: 'ProConnect'
+    })
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#settings-method-oidc')!)
+    expect(container.querySelector('#settings-oidc-config')).not.toBeInTheDocument()
+
+    container
+      .querySelector<HTMLFormElement>('#settings-auth-form')!
+      .dispatchEvent(new Event('submit', { bubbles: true }))
+    await Promise.resolve()
+    await Promise.resolve()
+
+    // calls[0] is the GET from onMount; calls[1] is the PATCH from save
+    const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
+    expect(body.auth_methods).toEqual(['email_code'])
+    for (const key of [
+      'oidc_issuer',
+      'oidc_client_id',
+      'oidc_client_secret',
+      'oidc_scopes',
+      'oidc_button_label'
+    ]) {
+      expect(key in body).toBe(false)
+    }
+  })
+})
+
+describe('admin authentification page — OIDC button logo', () => {
+  it('previews the logo from the public endpoint', async () => {
+    const { container } = await renderPage({
+      ...base,
+      auth_methods: ['oidc'],
+      oidc_has_button_logo: true
+    })
+    const preview = container.querySelector<HTMLImageElement>('#settings-oidc-config img')
+    expect(preview?.getAttribute('src')).toBe('/auth/config/oidc/logo?v=0')
   })
 })
