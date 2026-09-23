@@ -27,7 +27,7 @@
 
   // Long enough for the visitor to read the reveal they just asked for before
   // a popup lands on it, short enough that they are still on the page.
-  const OPEN_DELAY_MS = 1000
+  const OPEN_DELAY_MS = 3000
 
   // The DSFR modal script discloses on a change of data-fr-opened, not on its
   // initial value, so the attribute has to start false and flip once DSFR has
