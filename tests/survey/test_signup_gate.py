@@ -1,8 +1,8 @@
 """
-Tests for the gate that holds back a login code until the signup questions
-are answered.
+Tests for the gate that holds back arena writes until the required signup
+questions are answered.
 
-It runs on /auth/email/request, so its failure modes are login failure modes:
+It runs as a guard on every arena write (backend/survey/dependencies.py), so
 an instance with nothing configured must never pay for it, and a caller whose
 shape is unexpected must get the gate's own refusal rather than a 500.
 
@@ -115,8 +115,8 @@ def test_a_question_asked_at_both_moments_still_gates_the_login():
 def test_a_caller_with_no_identity_is_refused_rather_than_raising():
     """
     A missing anonymous session cannot have answered anything. The route turns
-    False into its own 428; a ValueError here would surface as a 500 on the
-    login route instead.
+    False into its own 428; a ValueError here would surface as a 500 on every
+    arena write instead.
     """
 
     async def call():
