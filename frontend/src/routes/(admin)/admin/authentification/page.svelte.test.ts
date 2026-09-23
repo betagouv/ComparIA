@@ -154,7 +154,7 @@ describe('admin authentification page — client-side validation', () => {
       '/admin/settings',
       expect.objectContaining({ method: 'PATCH' })
     )
-    expect(container.querySelector('#settings-oidc-secret-error')).toBeInTheDocument()
+    expect(container.querySelector('#settings-oidc-secret')).toHaveAttribute('aria-invalid', 'true')
   })
 
   it('requires openid among the scopes when OIDC is enabled', async () => {

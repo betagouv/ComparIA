@@ -241,8 +241,8 @@
           />
 
           <div class="mt-4!" id="settings-oidc-secret-wrapper">
-            <p class="fr-label mb-1!">{m['admin.settings.oidc.clientSecret.label']()}</p>
             {#if oidcHasClientSecret && !oidcReplaceSecret}
+              <p class="fr-label mb-1!">{m['admin.settings.oidc.clientSecret.label']()}</p>
               <div class="gap-3 flex items-center">
                 <span
                   id="settings-oidc-secret-masked"
@@ -261,21 +261,19 @@
                 </button>
               </div>
             {:else}
-              <input
+              <!-- "Leave empty to keep the current value" only makes sense
+                   when there is a stored value to keep. -->
+              <Input
                 id="settings-oidc-secret"
                 type="password"
                 autocomplete="off"
-                class="fr-input"
-                aria-describedby={errors.oidcSecret ? 'settings-oidc-secret-error' : undefined}
-                aria-invalid={errors.oidcSecret ? 'true' : undefined}
+                label={m['admin.settings.oidc.clientSecret.label']()}
+                help={oidcHasClientSecret
+                  ? m['admin.settings.oidc.clientSecret.hint']()
+                  : undefined}
                 bind:value={oidcClientSecret}
+                error={errors.oidcSecret}
               />
-              {#if errors.oidcSecret}
-                <p class="fr-message fr-message--error" id="settings-oidc-secret-error">
-                  {errors.oidcSecret}
-                </p>
-              {/if}
-              <p class="fr-hint-text mt-1!">{m['admin.settings.oidc.clientSecret.hint']()}</p>
             {/if}
           </div>
 
@@ -310,6 +308,7 @@
                 <label class="fr-label">
                   <span class="fr-sr-only">{m['admin.settings.oidc.buttonLogo.label']()}</span>
                   <input
+                    class="fr-upload"
                     type="file"
                     accept="image/png,image/jpeg,image/svg+xml,image/webp"
                     disabled={uploadingOidcLogo}
