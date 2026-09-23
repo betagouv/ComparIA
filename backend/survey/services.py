@@ -448,11 +448,13 @@ async def signup_questions_answered(
     """
     Whether every required signup question has an answer from this respondent.
 
-    Optional ones are asked on the same form and never hold it up, which is
-    what lets a question be added later without locking anyone out.
+    Optional ones are asked on the same form and never hold anything up. A
+    required one holds up every write to the arena (see
+    `backend/survey/dependencies.py`), for new and existing accounts alike: a
+    question made required later is put to existing users in a popup they
+    can answer on the spot, so nobody is held anywhere they cannot answer.
 
-    Opens its own session, like `has_current_terms_acceptance`: both are
-    preconditions the auth routes check before doing any work, and both are
+    Opens its own session: it runs as a route guard before any work, and is
     free on the common path where nothing is configured.
     """
     signup_ids = [
@@ -466,7 +468,7 @@ async def signup_questions_answered(
         return True
 
     # A caller with no identity at all cannot have answered anything. Saying
-    # so beats raising: this runs on a login route, where an unexpected shape
+    # so beats raising: this runs as a route guard, where an unexpected shape
     # should turn into the gate's own 428, not a 500.
     if user_id is None and anonymous_user_hash is None:
         return False
@@ -549,6 +551,23 @@ async def carry_over_anonymous(
                     col(SurveyAnswer.question_id).in_(newer_on_the_session),
                 )
             )
+        # Where the account's answer is the newer one, the session's rows lose
+        # and go. Reassigning them anyway would give the account two answers
+        # to one question, or trip the unique index outright when both sides
+        # chose the same option, and fail the sign-in with it.
+        older_on_the_session = [
+            question_id
+            for question_id in just_answered
+            if question_id not in newer_on_the_session
+        ]
+        if older_on_the_session:
+            await session.execute(
+                sa_delete(SurveyAnswer).where(
+                    SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
+                    col(SurveyAnswer.user_id).is_(None),
+                    col(SurveyAnswer.question_id).in_(older_on_the_session),
+                )
+            )
 
     await session.execute(
         sa_update(SurveyAnswer)
@@ -604,23 +623,6 @@ async def carry_over_anonymous(
             await session.execute(
                 sa_delete(SurveyPromptLog).where(
                     col(SurveyPromptLog.id).in_(merged_ids)
-                )
-            )
-        # Where the account's answer is the newer one, the session's rows lose
-        # and go. Reassigning them anyway would give the account two answers
-        # to one question, or trip the unique index outright when both sides
-        # chose the same option, and fail the sign-in with it.
-        older_on_the_session = [
-            question_id
-            for question_id in just_answered
-            if question_id not in newer_on_the_session
-        ]
-        if older_on_the_session:
-            await session.execute(
-                sa_delete(SurveyAnswer).where(
-                    SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
-                    col(SurveyAnswer.user_id).is_(None),
-                    col(SurveyAnswer.question_id).in_(older_on_the_session),
                 )
             )
 
