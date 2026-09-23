@@ -175,6 +175,10 @@ class SurveyPromptLog(SurveyPromptLogBase, table=True):
 class PublicSurveyOption(SQLModel):
     key: str
     label: str
+    # Only ever true on the options of an answer already given (see
+    # `MySurveyAnswer`): an archived option still resolves to a label for the
+    # person who chose it, but is not offered to anyone else.
+    archived: bool = False
 
 
 class PublicSurveyQuestion(SQLModel):
@@ -222,6 +226,9 @@ class MySurveyAnswer(SQLModel):
     input_type: SurveyInputType
     options: list[PublicSurveyOption]
     selected_keys: list[str]
+    # An archived question stays in the export, but is no longer editable:
+    # the profile page leaves it out.
+    archived: bool = False
 
 
 class MySurveyAnswersResponse(SQLModel):

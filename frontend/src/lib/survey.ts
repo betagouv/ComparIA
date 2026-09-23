@@ -61,6 +61,44 @@ export function answersToForm(answers: MySurveyAnswer[], questions: PublicSurvey
   )
 }
 
+/**
+ * The questions the profile page lists: every signup question, then every
+ * other live question the person has answered, e.g. in the after-vote popup.
+ * An option archived since it was chosen is kept on the question that holds
+ * it, so the answer still shows, but is offered nowhere else.
+ */
+export function profileQuestions(
+  questions: PublicSurveyQuestion[],
+  answers: MySurveyAnswer[]
+): PublicSurveyQuestion[] {
+  const withHeldOptions = (question: PublicSurveyQuestion, answer?: MySurveyAnswer) => {
+    const held = (answer?.options ?? []).filter(
+      (option) =>
+        answer!.selected_keys.includes(option.key) &&
+        !question.options.some(({ key }) => key === option.key)
+    )
+    return held.length ? { ...question, options: [...question.options, ...held] } : question
+  }
+
+  const answerFor = (id: string) => answers.find((answer) => answer.question_id === id)
+  const answeredElsewhere = answers
+    .filter((answer) => !answer.archived && !questions.some((q) => q.id === answer.question_id))
+    .map((answer) => ({
+      id: answer.question_id,
+      key: answer.question_key,
+      // Only the signup form reads 'required'.
+      required: false,
+      input_type: answer.input_type,
+      label: answer.label,
+      revision: 0,
+      options: answer.options.filter((option) => !option.archived)
+    }))
+
+  return [...questions, ...answeredElsewhere].map((question) =>
+    withHeldOptions(question, answerFor(question.id))
+  )
+}
+
 export function formToAnswers(
   form: Record<string, string | string[] | null>,
   questions: PublicSurveyQuestion[],
