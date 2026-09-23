@@ -256,7 +256,7 @@ class AppSettingsPatch(SQLModel):
     votes_objective: int | None = None
     ranking_min_votes: int | None = Field(default=None, ge=0, le=_INT_MAX)
     ranking_max_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
-    survey_reask_after_days: int | None = None
+    survey_reask_after_days: int | None = Field(default=None, ge=0, le=365)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
