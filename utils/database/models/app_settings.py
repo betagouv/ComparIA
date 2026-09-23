@@ -203,7 +203,7 @@ class AppSettingsPatch(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
     auth_domain_allowlist: list[str] | None = None
     votes_objective: int | None = None
-    survey_reask_after_days: int | None = None
+    survey_reask_after_days: int | None = Field(default=None, ge=0, le=365)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
