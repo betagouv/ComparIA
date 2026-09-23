@@ -12,7 +12,7 @@ vi.mock('$lib/fastapi-client', () => ({
 }))
 
 vi.mock('$lib/survey', async (importOriginal) => {
-  const actual = await importOriginal()
+  const actual = await importOriginal<typeof import('$lib/survey')>()
   return {
     ...actual,
     getSurveyContext: () => ({
