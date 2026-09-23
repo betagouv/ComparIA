@@ -5,13 +5,19 @@
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
+  import type { Step } from '$lib/components/layout/SignInForm.svelte'
   import { api } from '$lib/fastapi-client'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getSurveyContext } from '$lib/survey'
   import SSOSignIn from './SSOSignIn.svelte'
 
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
+  const survey = getSurveyContext()
   const platformName = getPlatformName()
+
+  let step = $state<Step>('email')
 
   // Same derivation as the login page: one tab per enabled auth method, no
   // tabs at all when only one is available.
@@ -44,16 +50,31 @@
     closeModal()
     updateComparisonsContext(comparisons)
   }
+
+  // Closed on the questions: the sign-in itself already went through, so it
+  // is finished like any other, minus the answers. Required ones come back in
+  // their own popup, which the arena would ask for on the next write anyway.
+  function onClose() {
+    if (step !== 'questions') return
+    step = 'email'
+    updateComparisonsContext(comparisons)
+    useToast(m['auth.success'](), 4000)
+    if (auth.user && !auth.user.questionsAnswered) {
+      survey.show = true
+      survey.kind = 'signup'
+    }
+  }
 </script>
 
 <!-- Only the signed-out navbar can open it, and the form reads the visitor's
      consent on mount, so keeping it mounted after sign-in only costs requests. -->
-{#if !auth.user}
+{#if !auth.user || step === 'questions'}
   <Modal
     id="fr-modal-signin"
     titleId="fr-modal-title-signin"
     sizeClass="fr-col-12 fr-col-md-6 fr-col-lg-5"
     contentClass="p-0! m-0!"
+    {onClose}
   >
     <!-- The published terms describe how data is used, so the modal does not
          repeat it and risk saying something different. -->
