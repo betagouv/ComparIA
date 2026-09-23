@@ -1,6 +1,7 @@
 import type { FormCheckboxGroupProps, FormSelectProps } from '$components/form'
 import type {
   MySurveyAnswer,
+  MySurveyAnswersResponse,
   PublicSurveyQuestion,
   PublicSurveyQuestionsResponse
 } from '$lib/generated/backend'
@@ -9,6 +10,7 @@ import { fromEntries } from '$lib/utils/commons'
 import { createContext } from 'svelte'
 
 export const emptySurveyQuestions: PublicSurveyQuestionsResponse = { questions: [] }
+export const emptySurveyAnswers: MySurveyAnswersResponse = { answers: [] }
 
 export type SurveyCtx = {
   show: boolean
