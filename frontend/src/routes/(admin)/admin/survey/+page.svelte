@@ -181,6 +181,22 @@
   async function submit(event: SubmitEvent) {
     event.preventDefault()
 
+    // Only the default language is required: it mints the published key and
+    // is what every other language falls back to. The list flags the rest.
+    const filled = (labels: Record<string, string>, code: string) => !!labels[code]?.trim()
+    const startedOptions = formOptions.filter((option) =>
+      Object.values(option.labels).some((value) => value?.trim())
+    )
+    if (
+      !filled(formLabels, defaultLocale) ||
+      startedOptions.some((option) => !filled(option.labels, defaultLocale))
+    ) {
+      formError = m['survey.admin.defaultLabelError']({
+        locale: orderedLocales.find(({ code }) => code === defaultLocale)?.long ?? defaultLocale
+      })
+      return
+    }
+
     const labels = Object.fromEntries(
       orderedLocales
         .map(({ code }) => [code, (formLabels[code] ?? '').trim()])
@@ -378,6 +394,18 @@
     }
   }
 
+  // Enabled languages a visitor would see falling back to another one.
+  function missingLocales(question: AdminSurveyQuestion) {
+    const has = (labels: Record<string, string>, code: string) => !!labels[code]?.trim()
+    return orderedLocales
+      .filter(
+        ({ code }) =>
+          !has(question.labels, code) ||
+          question.options.some((option) => !option.archived && !has(option.labels, code))
+      )
+      .map(({ short }) => short)
+  }
+
   function displayLabel(question: AdminSurveyQuestion) {
     return question.labels[defaultLocale] ?? Object.values(question.labels)[0] ?? ''
   }
@@ -463,6 +491,15 @@
           />
           {#if row.published}
             <Badge size="sm" text={m['survey.admin.published']()} variant="purple" />
+          {/if}
+          {#if !row.archived && missingLocales(row).length}
+            <Badge
+              size="sm"
+              text={m['survey.admin.missingTranslation']({
+                locales: missingLocales(row).join(', ')
+              })}
+              variant="yellow"
+            />
           {/if}
         </span>
       {:else if col.id === 'order'}
