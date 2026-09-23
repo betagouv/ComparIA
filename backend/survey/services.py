@@ -168,6 +168,7 @@ def _to_public(
             PublicSurveyOption(
                 key=option.key,
                 label=_label(option.labels, locale, default_locale),
+                archived=option.archived,
             )
         )
     return PublicSurveyQuestion(
@@ -352,7 +353,21 @@ async def submit_answers(
             for option in (SurveyOption.model_validate(raw) for raw in question.options)
             if not option.archived
         }
-        unknown = set(answer.option_keys) - live_keys
+        # An option archived since it was chosen stops being offered, but the
+        # person who holds it can keep it: saving the profile page untouched
+        # sends it straight back, and that must not fail or drop the answer.
+        held_keys = set(
+            (
+                await session.exec(
+                    select(SurveyAnswer.option_key)
+                    .where(SurveyAnswer.question_id == answer.question_id)
+                    .where(
+                        _respondent_clause(SurveyAnswer, user_id, anonymous_user_hash)
+                    )
+                )
+            ).all()
+        )
+        unknown = set(answer.option_keys) - live_keys - held_keys
         if unknown:
             raise SurveyOptionUnknownError(", ".join(sorted(unknown)))
 
@@ -418,6 +433,7 @@ async def my_answers(
                 input_type=question.input_type,
                 options=public.options,
                 selected_keys=option_keys,
+                archived=question.archived_at is not None,
             )
         )
     return results

@@ -8,7 +8,7 @@
     SurveyQuestionAnswer
   } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { answersToForm, questionsToFormItems } from '$lib/survey'
+  import { answersToForm, formToAnswers, questionsToFormItems } from '$lib/survey'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
@@ -34,15 +34,9 @@
 
   async function onBeforeSubmit() {
     failed = false
-    const updatedAnswers: SurveyQuestionAnswer[] = items
-      .map((field) => {
-        const option_keys = form[field.id] ?? []
-        return {
-          question_id: field.id,
-          option_keys: Array.isArray(option_keys) ? option_keys : option_keys ? [option_keys] : []
-        }
-      })
-      .filter((answer) => answer.option_keys.length > 0)
+    // Blank questions are sent too: an empty list is how an answer is cleared,
+    // and on a question never answered it changes nothing.
+    const updatedAnswers = formToAnswers(form, questions)
 
     try {
       await api.request('/survey/answers', {
