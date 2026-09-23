@@ -1,5 +1,5 @@
 import type { MySurveyAnswer, PublicSurveyQuestion } from '$lib/generated/backend'
-import { profileQuestions } from '$lib/survey'
+import { profileQuestions, requiredErrors } from '$lib/survey'
 import { describe, expect, it } from 'vitest'
 
 const question = (id: string, required = false): PublicSurveyQuestion => ({
@@ -48,5 +48,16 @@ describe('profileQuestions', () => {
     const listed = profileQuestions([question('signup')], [answer('signup', ['signup-old'])])
 
     expect(listed[0].options.map((o) => o.key)).toEqual(['signup-a', 'signup-b', 'signup-old'])
+  })
+})
+
+describe('requiredErrors', () => {
+  it('flags required questions left blank, whatever their shape', () => {
+    const questions = [question('select', true), question('group', true), question('optional')]
+
+    expect(
+      Object.keys(requiredErrors({ select: null, group: [], optional: null }, questions))
+    ).toEqual(['select', 'group'])
+    expect(requiredErrors({ select: 'select-a', group: ['group-a'] }, questions)).toEqual({})
   })
 })
