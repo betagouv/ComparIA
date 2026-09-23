@@ -2,8 +2,10 @@
   import { goto } from '$app/navigation'
   import { match, resolve } from '$app/paths'
   import { page } from '$app/state'
+  import { Alert, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import SignInForm from '$components/SignInForm.svelte'
+  import SSOSignIn from '$components/SSOSignIn.svelte'
   import { env } from '$env/dynamic/public'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
@@ -27,6 +29,47 @@
       goto(resolve('/'))
     }
   }
+
+  // The server derives `oidc_enabled` from `methods` + a complete provider
+  // config, so the button only renders when OIDC would actually work. The
+  // email form is hidden when OIDC is the only enabled method.
+  const oidcEnabled = $derived(auth.config?.oidc_enabled ?? false)
+  const emailEnabled = $derived(auth.config?.methods?.includes('email_code') ?? true)
+  const oidcLabel = $derived(auth.config?.oidc_button_label || m['auth.oidc.buttonFallback']())
+  const oidcLogoUrl = $derived(
+    auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
+  )
+  // The OIDC callback redirects back here with ?error=<reason> on any failure
+  // (ticket 05). Render a clear message so the redirect isn't a silent no-op.
+  // An explicit code → message-function map keeps the lookup type-safe against
+  // the generated Paraglide `m` module (dynamic key indexing on `m` is not
+  // allowed by its types).
+  const oidcErrorMessages: Record<string, () => string> = {
+    domain_not_allowed: () => m['auth.oidc.error.domain_not_allowed'](),
+    email_not_verified: () => m['auth.oidc.error.email_not_verified'](),
+    invalid_nonce: () => m['auth.oidc.error.invalid_nonce'](),
+    invalid_state: () => m['auth.oidc.error.invalid_state'](),
+    missing_code: () => m['auth.oidc.error.missing_code'](),
+    no_email: () => m['auth.oidc.error.no_email'](),
+    oidc_unavailable: () => m['auth.oidc.error.oidc_unavailable'](),
+    provider_error: () => m['auth.oidc.error.provider_error'](),
+    terms_required: () => m['auth.oidc.error.terms_required']()
+  }
+  const errorCode = $derived(page.url.searchParams.get('error'))
+  const errorText = $derived(
+    errorCode && oidcErrorMessages[errorCode] ? oidcErrorMessages[errorCode]() : null
+  )
+
+  // One tab per enabled auth method, so each method gets its own panel instead
+  // of a button stacked above the email form. With a single method there is
+  // nothing to switch between, so no tabs render at all.
+  const bothMethods = $derived(oidcEnabled && emailEnabled)
+  const tabs = $derived.by(() => {
+    const result: { id: string; label: string }[] = []
+    if (emailEnabled) result.push({ id: 'email', label: m['auth.login.tabEmail']() })
+    if (oidcEnabled) result.push({ id: 'sso', label: m['auth.login.tabSso']() })
+    return result
+  })
 </script>
 
 <SeoHead title={m['seo.titles.login']()} />
@@ -50,6 +93,26 @@
   </header>
 
   <main class="bg-light-grey md:flex md:items-center flex-auto basis-1/2">
-    <SignInForm {onSuccess} class="md:max-w-[350px]" />
+    <div class="my-10 mx-8 md:max-w-[350px] w-full">
+      {#if errorText}
+        <Alert title={errorText} variant="error" class="mb-6!" />
+      {/if}
+
+      {#if bothMethods}
+        <Tabs {tabs} label={m['auth.login.tabsLabel']()}>
+          {#snippet tab(tab)}
+            {#if tab.id === 'email'}
+              <SignInForm {onSuccess} hideHeader class="my-0! mx-0!" />
+            {:else}
+              <SSOSignIn {oidcLabel} {oidcLogoUrl} class="my-0! mx-0!" />
+            {/if}
+          {/snippet}
+        </Tabs>
+      {:else if emailEnabled}
+        <SignInForm {onSuccess} class="my-0! mx-0!" />
+      {:else if oidcEnabled}
+        <SSOSignIn {oidcLabel} {oidcLogoUrl} class="my-0! mx-0!" />
+      {/if}
+    </div>
   </main>
 </div>

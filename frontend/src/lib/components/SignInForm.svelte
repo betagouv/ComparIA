@@ -22,12 +22,15 @@
     onSuccess,
     onLegalNavigate,
     titleId,
+    hideHeader = false,
     ...props
   }: {
     onSuccess?: () => void
     onLegalNavigate?: (event: MouseEvent) => void
     /** Lets a wrapping modal point its aria-labelledby at this form's title. */
     titleId?: string
+    /** Hides the internal title and subtitle when the host page already shows them. */
+    hideHeader?: boolean
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
@@ -148,10 +151,12 @@
 </script>
 
 <div bind:this={formContainer} {...props} class={['my-10 mx-8', props.class]}>
-  <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
-  <p class="text-xs! mb-6! text-grey">
-    {m['auth.modal.email.subtitle']({ platformName })}
-  </p>
+  {#if !hideHeader}
+    <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+    <p class="text-xs! mb-6! text-grey">
+      {m['auth.modal.email.subtitle']({ platformName })}
+    </p>
+  {/if}
 
   <form onsubmit={onSubmit}>
     <Input
