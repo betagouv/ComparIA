@@ -33,42 +33,44 @@
     const timer = setTimeout(() => {
       // Marked here rather than on mount: a visitor who leaves during the
       // delay never saw the popup, so it should still be waiting for them.
-      if (shouldOpen) markSurveyShownThisSession()
+      if (shouldOpen) {
+        markSurveyShownThisSession()
+        void recordShown()
+      }
       opened = shouldOpen
     }, OPEN_DELAY_MS)
     return () => clearTimeout(timer)
   })
 
-  // Guards the popup from recording the same showing twice, e.g. Escape and a
-  // click both firing onClose, or a double click on submit. A double-fire
-  // would burn one of the visitor's three chances to be asked again for
-  // nothing.
+  // Every question counts as shown the moment the popup lands, whatever the
+  // visitor does next: closing it, answering, or leaving the page with it
+  // open. Counting on close only would let the last of these ask forever.
+  async function recordShown() {
+    try {
+      await api.request('/survey/dismiss', {
+        method: 'POST',
+        body: JSON.stringify({ question_ids: survey.voteQuestions!.map((q) => q.id) })
+      })
+    } catch (error) {
+      console.error(`Unable to record survey showing: ${(error as Error).message}`)
+    }
+  }
+
+  // Guards the popup from saving the same answers twice, e.g. Escape and a
+  // click both firing onClose, or a double click on submit.
   let handled = $state(false)
   let submitFailed = $state(false)
 
-  // One recording pass for the whole popup: whatever was selected goes to
-  // /survey/answers, whatever was left blank counts as shown-and-declined.
-  // Returns whether everything was recorded.
-  async function recordShowing(): Promise<boolean> {
-    const questions = survey.voteQuestions!
-    const updatedAnswers = formToAnswers(form, questions, true)
-    // Left blank in a popup the visitor otherwise submitted: still shown, so
-    // it still counts against the re-ask limit.
-    const blankIds = questions
-      .filter((q) => !updatedAnswers.find((a) => a.question_id === q.id))
-      .map((q) => q.id)
+  // Whatever was selected goes to /survey/answers. The showing itself was
+  // recorded when the popup opened. Returns whether everything was saved.
+  async function saveAnswers(): Promise<boolean> {
+    const updatedAnswers = formToAnswers(form, survey.voteQuestions!, true)
 
     try {
       if (updatedAnswers.length > 0) {
         await api.request('/survey/answers', {
           method: 'POST',
           body: JSON.stringify({ answers: updatedAnswers })
-        })
-      }
-      if (blankIds.length > 0) {
-        await api.request('/survey/dismiss', {
-          method: 'POST',
-          body: JSON.stringify({ question_ids: blankIds })
         })
       }
       submitFailed = false
@@ -80,15 +82,14 @@
     }
   }
 
-  // Closing the popup without submitting is declining on purpose, but only
-  // for the questions left blank. Selections that exist are real answers and
-  // go through the same path as a submit; only blanks are recorded as
-  // dismissed. There is exactly one recording pass per popup, whichever of
-  // close or submit fires first.
+  // Closing the popup without submitting declines the questions left blank.
+  // Selections that exist are real answers and go through the same path as a
+  // submit. There is exactly one save per popup, whichever of close or submit
+  // fires first.
   function onClose() {
     if (handled) return
     handled = true
-    void recordShowing()
+    void saveAnswers()
   }
 
   // Deliberately not wired to aria-controls: DSFR closes the modal on its own
@@ -99,7 +100,7 @@
   async function onSubmit() {
     if (handled) return
     handled = true
-    if (await recordShowing()) {
+    if (await saveAnswers()) {
       opened = false
     } else {
       // Let the visitor retry: the next submit or close records again.
