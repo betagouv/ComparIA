@@ -95,24 +95,12 @@
 <div {...props} class={['my-10 mx-8', props.class]}>
   <p class="text-xs! mb-6! text-grey">{m['auth.oidc.panelSubtitle']()}</p>
 
-  <Button
-    variant="secondary"
-    onclick={onSignIn}
-    disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
-    class="block w-full! justify-center"
-  >
-    <span class="gap-2 inline-flex items-center justify-center">
-      {#if oidcLogoUrl}
-        <img src={oidcLogoUrl} alt="" class="h-8" />
-      {/if}
-      {oidcLabel}
-    </span>
-  </Button>
-
+  <!-- Same order as the email form: the boxes the button depends on come
+       first, so a disabled button never waits on something below it. -->
   {#if canMergeComparisons}
     <Checkbox
       id="sso-merge"
-      class="text-xs! mt-4!"
+      class="text-xs! mt-1!"
       bind:checked={mergeComparisons}
       disabled={loading}
       label={m['auth.modal.merge']()}
@@ -122,7 +110,7 @@
   {#if terms}
     <Checkbox
       id="sso-consent"
-      class={['text-xs!', canMergeComparisons ? 'mt-1!' : 'mt-4!']}
+      class="text-xs! mt-1!"
       bind:checked={consented}
       disabled={loading || consentLoading || !consentRequired}
       label={consentLabel}
@@ -141,4 +129,19 @@
       onclick={() => readConsent(true)}
     />
   {/if}
+
+  <Button
+    variant="secondary"
+    onclick={onSignIn}
+    disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
+    class="mt-8 block w-full! justify-center"
+  >
+    <!-- A long label wraps beside its logo rather than centring under it. -->
+    <span class="gap-3 inline-flex items-center text-left">
+      {#if oidcLogoUrl}
+        <img src={oidcLogoUrl} alt="" class="h-8 shrink-0" />
+      {/if}
+      <span>{oidcLabel}</span>
+    </span>
+  </Button>
 </div>
