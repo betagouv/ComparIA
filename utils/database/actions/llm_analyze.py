@@ -240,20 +240,24 @@ class Config:
                     await asyncio.sleep(self.RETRY_DELAY)
                     continue
 
-                if isinstance(exc, LLMAnalysisFailed):
-                    # After n attempts and still no good response, set llm_analyzed as False (failed)
+                if isinstance(exc, (LLMAnalysisFailed, OpenAIError)):
+                    # After n attempts and still no good response -- whether a
+                    # malformed LLM response or the provider refusing the
+                    # request outright (e.g. content moderation) -- set
+                    # llm_analyzed as False (failed) and let the worker move
+                    # on, rather than letting the exception kill it.
                     await update_comparison(
                         comparison.id, ComparisonLLMAnalysisFailedUpdate()
                     )
                     self.failed_analysis.append(str(comparison.id))
 
                     logger.error(
-                        f"Failed to properly parse LLM response after {self.MAX_RETRIES} retries, setting 'llm_analyzed' to False for Comparison '{comparison.id}'.",
+                        f"Failed to properly analyze Comparison '{comparison.id}' after {self.MAX_RETRIES} retries, setting 'llm_analyzed' to False.",
                         exc_info=exc,
                     )
                     return
 
-                # Simply raise other errors to quit the program
+                # Simply raise other, unrecognized errors to quit the program
                 raise
 
 
