@@ -282,7 +282,8 @@
   {:else}
     <SurveyFormSignup
       id="signin-survey"
-      title={m['survey.afterVote.title']()}
+      title={m['survey.signup.title']()}
+      description={m['survey.signup.description']()}
       questions={survey.signupQuestions}
       answers={survey.signupAnswers}
       onSuccess={onLoginCompleted}
