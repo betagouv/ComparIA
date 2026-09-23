@@ -57,6 +57,7 @@
   let mergeComparisons = $state(false)
   let loading = $state(false)
   let error = $state<string>()
+  let firstSignIn = $state(false)
 
   let terms = $state<ConsentDocument>()
   let consentRequired = $state(false)
@@ -134,9 +135,10 @@
     }
     await invalidate('survey:signup')
     // Ask questions if any and user didn't yet answered it
-    if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
+    if (survey.signupQuestions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
       step = 'questions'
     } else {
+      firstSignIn = false
       onLoginCompleted()
     }
   }
@@ -145,10 +147,12 @@
     loading = true
     error = undefined
     try {
-      const { totp_required } = await api.request<{ email: string; totp_required: boolean }>(
-        '/auth/email/verify',
-        { method: 'POST', body: JSON.stringify({ email, code }) }
-      )
+      const { totp_required, first_sign_in } = await api.request<{
+        email: string
+        totp_required: boolean
+        first_sign_in: boolean
+      }>('/auth/email/verify', { method: 'POST', body: JSON.stringify({ email, code }) })
+      firstSignIn = first_sign_in
       if (totp_required) {
         // Admins with an authenticator: no session yet, one more step.
         step = 'totp'
