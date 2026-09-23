@@ -5,7 +5,6 @@ export interface AuthUser {
   email: string
   role: string
   totp_enabled: boolean
-  new: boolean
   questionsAnswered: boolean
 }
 
