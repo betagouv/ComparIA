@@ -2056,7 +2056,9 @@
             "triggersError": "Choisissez au moins un moment.",
             "triggersLabel": "Moments où elle est posée",
             "unpublishAction": "Dépublier",
-            "unpublishSuccess": "Question dépubliée"
+            "unpublishSuccess": "Question dépubliée",
+            "missingTranslation": "Traduction manquante : {locales}",
+            "defaultLabelError": "Renseignez au moins le libellé en {locale}, pour la question et pour chaque option."
         },
         "afterVote": {
             "description": "Vos réponses sont facultatives et nous aident à mieux comprendre qui utilise compar:IA.",

@@ -2056,7 +2056,9 @@
             "triggersError": "Pick at least one moment.",
             "triggersLabel": "When it is asked",
             "unpublishAction": "Unpublish",
-            "unpublishSuccess": "Question unpublished"
+            "unpublishSuccess": "Question unpublished",
+            "missingTranslation": "Missing translation: {locales}",
+            "defaultLabelError": "Fill in at least the {locale} label, for the question and for every option."
         },
         "afterVote": {
             "description": "Your answers are optional and help us better understand who uses compar:IA.",
