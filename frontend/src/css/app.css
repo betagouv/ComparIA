@@ -2,6 +2,12 @@
 /* icons.css picks which DSFR icons we ship; see the note in it. */
 @import './icons.css';
 
+/* DSFR italicises placeholders; the italic face is 44 KB and nothing else uses it. */
+.fr-input::placeholder,
+.fr-search-bar .fr-input::placeholder {
+  font-style: normal;
+}
+
 :root {
   /* Accessibility override (WCAG AA): replace DSFR violet #6a6af4 with #6464f3
      so primary text reaches 4.5:1 against a white surface. */
