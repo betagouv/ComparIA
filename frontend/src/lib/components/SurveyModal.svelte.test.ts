@@ -116,3 +116,28 @@ describe('SurveyModal recording', () => {
     expect(callsTo('/survey/dismiss')).toHaveLength(1)
   }, 10000)
 })
+
+describe('SurveyModal answers', () => {
+  beforeEach(() => {
+    mocks.questions = [{ ...question('q1'), required: true }, question('q2')]
+    mocks.request.mockResolvedValue(undefined)
+  })
+
+  it('sends what was answered even when a signup-required question is left blank', async () => {
+    const { container } = await openModal()
+
+    expect(container.querySelector('#q1')?.hasAttribute('required')).toBe(false)
+    await fireEvent.change(container.querySelector<HTMLSelectElement>('#q2')!, {
+      target: { value: 'q2-a' }
+    })
+    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find(
+      (button) => button.textContent?.trim() === 'Envoyer mes réponses'
+    )!
+    await fireEvent.click(submit)
+
+    await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
+    expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
+      answers: [{ question_id: 'q2', option_keys: ['q2-a'] }]
+    })
+  }, 10000)
+})
