@@ -93,6 +93,9 @@ class Config:
     WORKERS = 5
     MAX_RETRIES = 3
     RETRY_DELAY = 1
+    # Bounds how far the DB stream can run ahead of the workers: every queued
+    # Comparison holds its turns and messages in memory.
+    QUEUE_SIZE = 10
     failed_analysis: list[str] = []
 
     class TXT360Category(str, Enum):
@@ -240,20 +243,24 @@ class Config:
                     await asyncio.sleep(self.RETRY_DELAY)
                     continue
 
-                if isinstance(exc, LLMAnalysisFailed):
-                    # After n attempts and still no good response, set llm_analyzed as False (failed)
+                if isinstance(exc, (LLMAnalysisFailed, OpenAIError)):
+                    # After n attempts and still no good response -- whether a
+                    # malformed LLM response or the provider refusing the
+                    # request outright (e.g. content moderation) -- set
+                    # llm_analyzed as False (failed) and let the worker move
+                    # on, rather than letting the exception kill it.
                     await update_comparison(
                         comparison.id, ComparisonLLMAnalysisFailedUpdate()
                     )
                     self.failed_analysis.append(str(comparison.id))
 
                     logger.error(
-                        f"Failed to properly parse LLM response after {self.MAX_RETRIES} retries, setting 'llm_analyzed' to False for Comparison '{comparison.id}'.",
+                        f"Failed to properly analyze Comparison '{comparison.id}' after {self.MAX_RETRIES} retries, setting 'llm_analyzed' to False.",
                         exc_info=exc,
                     )
                     return
 
-                # Simply raise other errors to quit the program
+                # Simply raise other, unrecognized errors to quit the program
                 raise
 
 
@@ -281,20 +288,23 @@ async def analyze_comparisons():
     prompt, but if any other error occurs, tasks will be cancelled asap.
     """
     analyzer = Config(await get_analysis_model())
-    queue: asyncio.Queue[Comparison | None] = asyncio.Queue()
+    queue: asyncio.Queue[Comparison | None] = asyncio.Queue(maxsize=analyzer.QUEUE_SIZE)
     workers = [
         asyncio.create_task(worker(analyzer, queue, i)) for i in range(analyzer.WORKERS)
     ]
 
-    async for comp in get_db_comparisons_stream([TO_ANALYZE_CONDITION]):
-        await queue.put(comp)
+    async def produce():
+        async for comp in get_db_comparisons_stream([TO_ANALYZE_CONDITION]):
+            await queue.put(comp)
+        # Stop workers
+        for _ in workers:
+            await queue.put(None)
 
-    # Stop workers
-    for _ in workers:
-        await queue.put(None)
+    producer = asyncio.create_task(produce())
+    tasks = [producer, *workers]
 
     try:
-        await asyncio.gather(*workers)
+        await asyncio.gather(*tasks)
         logger.info("Finished analyzing comparisons")
 
         if failed := analyzer.failed_analysis:
@@ -305,9 +315,9 @@ async def analyze_comparisons():
         logger.error(
             f"An unexpected error occured, cancelling all workers…: {exc}", exc_info=exc
         )
-        for w in workers:
-            w.cancel()
-        await asyncio.gather(*workers, return_exceptions=True)
+        for t in tasks:
+            t.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
 
 
 async def has_comparisons_to_analyze() -> int:
