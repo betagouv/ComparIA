@@ -30,6 +30,16 @@ def test_accents_and_spaces_become_a_plain_slug():
     assert _key("Réponse  très   claire") == "reponse_tres_claire"
 
 
+def test_a_typographic_apostrophe_separates_words_like_a_straight_one():
+    # French copy uses ’, and the admin form's preview treats it as a
+    # separator: the stored key has to match what the admin was shown.
+    assert _key("Tranche d’âge") == _key("Tranche d'âge") == "tranche_d_age"
+    assert (
+        _key("Pour quels usages utilisez-vous l’IA ?")
+        == "pour_quels_usages_utilisez_vous_l_ia"
+    )
+
+
 def test_punctuation_collapses_and_never_hangs_off_the_ends():
     assert _key("  Femme / non-binaire  ") == "femme_non_binaire"
     assert _key("A/B testing") == "a_b_testing"
