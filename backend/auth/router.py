@@ -509,7 +509,11 @@ async def email_verify(
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     totp_required = _set_login_cookie(response, login)
-    return {"email": body.email, "totp_required": totp_required}
+    return {
+        "email": body.email,
+        "totp_required": totp_required,
+        "first_sign_in": login.first,
+    }
 
 
 @router.post("/totp/verify", response_model=None)
@@ -1011,8 +1015,8 @@ async def get_me(request: Request) -> dict:
             "email": user.email,
             "role": user.role,
             "totp_enabled": await has_confirmed_totp(user.id),
-            # Used to check if survey has to be asked on signup/login
-            "new": user.created_at > datetime.now() - timedelta(hours=1),
+            # Whether a required signup question is still unanswered, which
+            # holds every arena write until it is (see survey/dependencies.py).
             "questionsAnswered": await signup_questions_answered(
                 user_id=user.id, anonymous_user_hash=None
             ),
