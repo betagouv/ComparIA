@@ -127,6 +127,8 @@
   async function signedIn() {
     const data = await api.request<{ user: AuthUser | null }>('/auth/me')
     auth.user = data.user
+    // Before the questions, not after: the sign-in has already happened, and
+    // closing the form on the questions must not lose the merge asked for.
     if (mergeComparisons) {
       await api.request('/arena/comparison/merge', { method: 'POST' })
     }
@@ -233,9 +235,11 @@
   }
 
   function onLoginCompleted() {
+    // Reset first: a wrapping modal reads the step when it closes, and must
+    // not take this close for the questions being walked away from.
+    step = startAtTotp ? 'totp' : 'email'
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
-    step = startAtTotp ? 'totp' : 'email'
   }
 </script>
 
