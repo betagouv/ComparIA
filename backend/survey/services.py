@@ -575,6 +575,23 @@ async def carry_over_anonymous(
                     col(SurveyPromptLog.id).in_(merged_ids)
                 )
             )
+        # Where the account's answer is the newer one, the session's rows lose
+        # and go. Reassigning them anyway would give the account two answers
+        # to one question, or trip the unique index outright when both sides
+        # chose the same option, and fail the sign-in with it.
+        older_on_the_session = [
+            question_id
+            for question_id in just_answered
+            if question_id not in newer_on_the_session
+        ]
+        if older_on_the_session:
+            await session.execute(
+                sa_delete(SurveyAnswer).where(
+                    SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
+                    col(SurveyAnswer.user_id).is_(None),
+                    col(SurveyAnswer.question_id).in_(older_on_the_session),
+                )
+            )
 
 
 async def delete_for_user(session: AsyncSession, user_id: uuid.UUID) -> None:
