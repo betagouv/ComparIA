@@ -11,10 +11,12 @@ import base64
 import json
 import logging
 import secrets
+from dataclasses import asdict, dataclass
 from typing import cast
 from urllib.parse import urlencode
 
 import httpx
+from async_lru import alru_cache
 
 from backend.config import settings
 from utils.storage.redis import REDIS_OIDC_STATE_PREFIX, get_redis_client
@@ -25,7 +27,25 @@ logger = logging.getLogger("languia")
 # enough to cover a user reading their provider's consent screen.
 OIDC_STATE_TTL_SECONDS = 600
 
+# Discovery documents change rarely; caching them saves a round trip to the
+# provider on each leg of a sign-in. Short enough that a provider-side change,
+# or an issuer edited in the admin panel, is picked up without a restart.
+_DISCOVERY_TTL_SECONDS = 600
+
 _DISCOVERY_PATH = "/.well-known/openid-configuration"
+
+
+class OIDCProviderError(Exception):
+    """The provider answered, but not with something we can trust."""
+
+
+@dataclass
+class PendingLogin:
+    """What `oidc_login` remembers about a sign-in until its callback."""
+
+    nonce: str
+    redirect: str
+    merge: bool
 
 
 def discovery_url(issuer: str) -> str:
@@ -38,6 +58,21 @@ def discovery_url(issuer: str) -> str:
     return issuer.rstrip("/") + _DISCOVERY_PATH
 
 
+def _same_issuer(a: object, b: object) -> bool:
+    return isinstance(a, str) and isinstance(b, str) and a.rstrip("/") == b.rstrip("/")
+
+
+def validate_discovery(document: dict, issuer: str) -> dict:
+    """Refuse a discovery document published for another issuer (OIDC
+    Discovery 4.3): the endpoints it lists are not the configured provider's."""
+    if not _same_issuer(document.get("issuer"), issuer):
+        raise OIDCProviderError(
+            f"discovery issuer {document.get('issuer')!r} does not match {issuer!r}"
+        )
+    return document
+
+
+@alru_cache(maxsize=4, ttl=_DISCOVERY_TTL_SECONDS)
 async def discover_provider(issuer: str) -> dict:
     """Fetch the provider's discovery document.
 
@@ -47,11 +82,12 @@ async def discover_provider(issuer: str) -> dict:
     async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get(discovery_url(issuer))
         response.raise_for_status()
-        return response.json()
+        return validate_discovery(response.json(), issuer)
 
 
-def issue_state_and_nonce() -> tuple[str, str]:
-    """Generate a fresh `state`/`nonce` pair and store it in Redis.
+def issue_state(*, redirect: str, merge: bool) -> tuple[str, str]:
+    """Generate a fresh `state`/`nonce` pair and store it in Redis, along with
+    where to send the user afterwards.
 
     The callback reads and deletes the key: a state that's missing on lookup
     is either expired or already used, both of which reject the callback. This
@@ -59,10 +95,11 @@ def issue_state_and_nonce() -> tuple[str, str]:
     """
     state = secrets.token_urlsafe(32)
     nonce = secrets.token_urlsafe(32)
+    pending = PendingLogin(nonce=nonce, redirect=redirect, merge=merge)
     try:
         stored = get_redis_client().set(
             REDIS_OIDC_STATE_PREFIX + state,
-            nonce,
+            json.dumps(asdict(pending)),
             ex=OIDC_STATE_TTL_SECONDS,
             nx=True,
         )
@@ -89,10 +126,19 @@ def oidc_callback_url() -> str:
 
 
 def build_authorization_url(
-    *, authorization_endpoint: str, client_id: str, scopes: list[str]
-) -> str:
-    """Build the authorization endpoint URL with a fresh `state`/`nonce`."""
-    state, nonce = issue_state_and_nonce()
+    *,
+    authorization_endpoint: str,
+    client_id: str,
+    scopes: list[str],
+    redirect: str = "/",
+    merge: bool = False,
+) -> tuple[str, str]:
+    """Build the authorization endpoint URL with a fresh `state`/`nonce`.
+
+    Returns the URL and the state, which the router also hands to the browser
+    so the callback can check it comes back to the one that started.
+    """
+    state, nonce = issue_state(redirect=redirect, merge=merge)
     params = {
         "response_type": "code",
         "client_id": client_id,
@@ -101,27 +147,34 @@ def build_authorization_url(
         "state": state,
         "nonce": nonce,
     }
-    return f"{authorization_endpoint}?{urlencode(params)}"
+    return f"{authorization_endpoint}?{urlencode(params)}", state
 
 
-def consume_state(state: str) -> str | None:
-    """Read and atomically delete the nonce stored for this `state`.
+def consume_state(state: str) -> PendingLogin | None:
+    """Read and atomically delete what was stored for this `state`.
 
     Returns None when the state was never issued, already used, or expired —
-    every one of which rejects the callback. The single use is what makes the
-    state a CSRF defense, mirroring the Altcha anti-replay pattern in
+    every one of which rejects the callback. Single use is what makes the
+    state a replay defense, mirroring the Altcha anti-replay pattern in
     `backend/arena/captcha.py`.
     """
     client = get_redis_client()
     # The client is built with decode_responses=True, so this is a str.
-    nonce = cast("str | None", client.getdel(REDIS_OIDC_STATE_PREFIX + state))
-    return nonce
+    raw = cast("str | None", client.getdel(REDIS_OIDC_STATE_PREFIX + state))
+    if raw is None:
+        return None
+    try:
+        return PendingLogin(**json.loads(raw))
+    except (TypeError, ValueError):
+        logger.warning("[OIDC] unreadable pending login in Redis")
+        return None
 
 
 async def exchange_code_for_claims(
     *,
     token_endpoint: str,
     userinfo_endpoint: str,
+    issuer: str,
     client_id: str,
     client_secret: str,
     code: str,
@@ -152,6 +205,9 @@ async def exchange_code_for_claims(
         token_data = token_response.json()
         access_token = token_data["access_token"]
         id_token = token_data.get("id_token")
+        if not id_token:
+            raise OIDCProviderError("token response has no id_token")
+        id_claims = validate_id_token(id_token, issuer=issuer, client_id=client_id)
 
         userinfo_response = await client.get(
             userinfo_endpoint,
@@ -163,38 +219,54 @@ async def exchange_code_for_claims(
         # default: "Algorithme de signature user-info: RS256") returns a
         # compact JWT (`application/jwt`) instead of a plain JSON object; a
         # provider left unsigned returns JSON directly. Same trust model as
-        # the id_token nonce below either way: no JWKS verification, the
-        # response arrives over a direct TLS call to an endpoint the
-        # discovery document already pointed us at.
+        # the id_token either way: no JWKS verification, the response arrives
+        # over a direct TLS call to an endpoint the discovery document
+        # already pointed us at.
         if "application/jwt" in content_type:
             claims = _decode_jwt_payload(userinfo_response.text)
         else:
             claims = userinfo_response.json()
 
-    claims["nonce"] = _id_token_nonce(id_token) if id_token else None
+    return merge_userinfo_claims(claims, id_claims)
+
+
+def merge_userinfo_claims(userinfo: dict, id_claims: dict) -> dict:
+    """Attach the id_token nonce to the userinfo claims, once they are known
+    to be about the same person: OIDC Core 5.3.2 forbids using userinfo whose
+    `sub` differs from the id_token's."""
+    if not id_claims.get("sub") or userinfo.get("sub") != id_claims.get("sub"):
+        raise OIDCProviderError("userinfo sub does not match the id_token sub")
+    return {**userinfo, "nonce": id_claims.get("nonce")}
+
+
+def validate_id_token(id_token: str, *, issuer: str, client_id: str) -> dict:
+    """Check the id_token was issued by our provider, for us (OIDC Core 3.1.3.7).
+
+    The signature is not verified: the token comes straight from the token
+    endpoint over TLS, which the spec accepts in place of it. `iss` and `aud`
+    still have to be ours.
+    """
+    try:
+        claims = _decode_jwt_payload(id_token)
+    except Exception as e:
+        raise OIDCProviderError(f"unreadable id_token: {e}") from e
+    if not _same_issuer(claims.get("iss"), issuer):
+        raise OIDCProviderError(f"id_token iss {claims.get('iss')!r} is not ours")
+    audience = claims.get("aud")
+    audiences = audience if isinstance(audience, list) else [audience]
+    if client_id not in audiences:
+        raise OIDCProviderError("id_token was not issued for this client")
     return claims
 
 
 def _decode_jwt_payload(token: str) -> dict:
     """Decode a compact JWT's payload without verifying its signature.
 
-    Signature verification is intentionally out of scope for this pass (see
-    `_id_token_nonce`): every JWT handled here arrives over a direct TLS call
-    to an endpoint the discovery document already pointed us at, not from the
-    browser.
+    Signature verification is intentionally out of scope (see
+    `validate_id_token`): every JWT handled here arrives over a direct TLS
+    call to an endpoint the discovery document already pointed us at, not
+    from the browser.
     """
     _header, payload_b64, _signature = token.split(".")
     padding = "=" * (-len(payload_b64) % 4)
     return json.loads(base64.urlsafe_b64decode(payload_b64 + padding))
-
-
-def _id_token_nonce(id_token: str) -> str | None:
-    """Read the `nonce` claim from the id_token's payload. The id_token is
-    discarded immediately after; the nonce's job here is replay defense of
-    *our* authorization round trip, not authentication of the provider to us.
-    """
-    try:
-        return _decode_jwt_payload(id_token).get("nonce")
-    except Exception as e:
-        logger.warning(f"[OIDC] could not read nonce from id_token: {e}")
-        return None

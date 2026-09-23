@@ -8,6 +8,7 @@ Run with pytest, or directly:
 
 import asyncio
 import contextlib
+import json
 import os
 import sys
 from pathlib import Path
@@ -45,12 +46,20 @@ class FakeRedis:
 
     def __init__(self):
         self.store = {}
+        self.counters = {}
 
     def set(self, key, value, ex=None, nx=False):
         if nx and key in self.store:
             return None
         self.store[key] = value
         return True
+
+    def incr(self, key):
+        self.counters[key] = self.counters.get(key, 0) + 1
+        return self.counters[key]
+
+    def expire(self, key, seconds):
+        pass
 
 
 def _settings_row(**overrides):
@@ -96,6 +105,7 @@ def routed(row=None, terms_accepted=True):
         auth_router,
         get_app_settings=get_app_settings,
         has_current_terms_acceptance=has_current_terms_acceptance,
+        get_redis_client=lambda: fake_redis,
     ):
         with patched(
             oidc_module,
@@ -181,10 +191,17 @@ def test_oidc_login_redirects_to_the_provider_authorization_endpoint():
     assert len(params["state"][0]) >= 32
     assert len(params["nonce"][0]) >= 32
     # state and nonce are stored server-side, linked by the same key.
-    assert fake_redis.store
     state = params["state"][0]
-    assert fake_redis.store[_oidc_state_key(state)] == params["nonce"][0]
+    stored = json.loads(fake_redis.store[_oidc_state_key(state)])
+    assert stored == {"nonce": params["nonce"][0], "redirect": "/", "merge": False}
     assert discovered == ["https://idp.example.test"]
+    # The browser keeps the state too, so the callback can tell it apart from
+    # a state issued to someone else.
+    set_cookie = response.headers["set-cookie"]
+    assert f"oidc_state={state}" in set_cookie
+    assert "httponly" in set_cookie.lower()
+    assert "samesite=lax" in set_cookie.lower()
+    assert "path=/api/auth/oidc" in set_cookie.lower()
 
 
 def test_oidc_login_requires_terms_acceptance_before_any_redirect():
@@ -212,8 +229,7 @@ def test_oidc_login_rejects_when_oidc_disabled_in_methods():
         with routed(row=row) as (client, _fake_redis):
             response = client.get("/auth/oidc/login", follow_redirects=False)
 
-    assert response.status_code == 400
-    assert "not enabled" in response.json()["detail"].lower()
+    assert _error_param(response) == "oidc_unavailable"
 
 
 def test_oidc_login_rejects_when_provider_unconfigured():
@@ -227,7 +243,7 @@ def test_oidc_login_rejects_when_provider_unconfigured():
         with routed(row=row) as (client, _fake_redis):
             response = client.get("/auth/oidc/login", follow_redirects=False)
 
-    assert response.status_code == 400
+    assert _error_param(response) == "oidc_unavailable"
 
 
 def test_oidc_login_rejects_when_discovery_has_no_authorization_endpoint():
@@ -235,10 +251,80 @@ def test_oidc_login_rejects_when_discovery_has_no_authorization_endpoint():
         return {"issuer": "https://idp.example.test"}
 
     with patched(auth_router, discover_provider=discover_provider):
+        with routed() as (client, fake_redis):
+            response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert _error_param(response) == "provider_error"
+    assert not fake_redis.store
+
+
+def test_oidc_login_redirects_back_when_discovery_fails():
+    async def discover_provider(_issuer):
+        raise RuntimeError("network down")
+
+    with patched(auth_router, discover_provider=discover_provider):
         with routed() as (client, _fake_redis):
             response = client.get("/auth/oidc/login", follow_redirects=False)
 
-    assert response.status_code == 502
+    assert _error_param(response) == "provider_error"
+    assert "oidc_state" not in response.headers.get("set-cookie", "")
+
+
+def test_oidc_login_keeps_where_to_land_and_whether_to_merge():
+    with patched(auth_router, discover_provider=_discover):
+        with routed() as (client, fake_redis):
+            response = client.get(
+                "/auth/oidc/login",
+                params={"redirect": "/arena?x=1", "merge": "1"},
+                follow_redirects=False,
+            )
+
+    state = parse_qs(urlsplit(response.headers["location"]).query)["state"][0]
+    stored = json.loads(fake_redis.store[_oidc_state_key(state)])
+    assert stored["redirect"] == "/arena?x=1"
+    assert stored["merge"] is True
+
+
+def test_oidc_login_ignores_an_off_site_redirect():
+    for redirect in ("https://evil.test/", "//evil.test", "/\\evil.test", "arena"):
+        with patched(auth_router, discover_provider=_discover):
+            with routed() as (client, fake_redis):
+                response = client.get(
+                    "/auth/oidc/login",
+                    params={"redirect": redirect},
+                    follow_redirects=False,
+                )
+
+        state = parse_qs(urlsplit(response.headers["location"]).query)["state"][0]
+        stored = json.loads(fake_redis.store[_oidc_state_key(state)])
+        assert stored["redirect"] == "/", redirect
+
+
+def test_oidc_login_is_rate_limited_per_ip():
+    with patched(auth_router, discover_provider=_discover):
+        with patched(auth_router.settings, AUTH_OIDC_LOGIN_PER_IP_PER_HOUR=2):
+            with routed() as (client, _fake_redis):
+                responses = [
+                    client.get("/auth/oidc/login", follow_redirects=False)
+                    for _ in range(3)
+                ]
+
+    assert [urlsplit(r.headers["location"]).netloc for r in responses[:2]] == [
+        "idp.example.test",
+        "idp.example.test",
+    ]
+    assert _error_param(responses[2]) == "rate_limited"
+
+
+async def _discover(_issuer):
+    return _discovery()
+
+
+def _error_param(response):
+    assert response.status_code == 302, response.text
+    location = response.headers["location"]
+    assert location.startswith(f"{auth_router.settings.COMPARIA_APP_URL}/login?")
+    return parse_qs(urlsplit(location).query)["error"][0]
 
 
 def _oidc_state_key(state):
