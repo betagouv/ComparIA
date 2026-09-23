@@ -99,6 +99,22 @@ export function profileQuestions(
   )
 }
 
+/** One error per required question left blank, keyed like the form. */
+export function requiredErrors(
+  form: Record<string, string | string[] | null>,
+  questions: PublicSurveyQuestion[]
+): Record<string, string> {
+  return fromEntries(
+    questions
+      .filter((q) => q.required)
+      .filter((q) => {
+        const value = form[q.id]
+        return Array.isArray(value) ? !value.length : !value
+      })
+      .map((q) => [q.id, m['survey.question.required']()])
+  )
+}
+
 export function formToAnswers(
   form: Record<string, string | string[] | null>,
   questions: PublicSurveyQuestion[],
