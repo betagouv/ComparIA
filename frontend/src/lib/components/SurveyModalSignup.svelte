@@ -27,7 +27,8 @@
 >
   <SurveyFormSignup
     id="form-{modalId}"
-    title={m['survey.afterVote.title']()}
+    title={m['survey.required.title']()}
+    description={m['survey.required.description']()}
     questions={survey.signupQuestions}
     answers={survey.signupAnswers}
     class="mt-5"
