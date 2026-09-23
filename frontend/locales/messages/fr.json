@@ -2066,7 +2066,8 @@
             "title": "Quelques questions pour mieux vous connaître"
         },
         "question": {
-            "chooseOption": "Sélectionnez une option"
+            "chooseOption": "Sélectionnez une option",
+            "required": "Cette question demande une réponse."
         },
         "profile": {
             "title": "Vos réponses au questionnaire",

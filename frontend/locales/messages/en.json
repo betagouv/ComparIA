@@ -2066,7 +2066,8 @@
             "title": "A few questions to get to know you"
         },
         "question": {
-            "chooseOption": "Select an option"
+            "chooseOption": "Select an option",
+            "required": "This question needs an answer."
         },
         "profile": {
             "title": "Your survey answers",
