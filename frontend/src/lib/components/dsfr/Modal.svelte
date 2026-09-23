@@ -27,9 +27,28 @@
   // blurs the dialog, and reporting that as a close made consumers act on a
   // modal the visitor was still using.
   const dsfrEvents = { 'ondsfr.conceal': () => onClose?.() }
+
+  let dialog: HTMLDialogElement | undefined = $state()
+
+  // A locked modal has no close button and ignores the backdrop, but DSFR
+  // still conceals any open modal on Escape, from a capturing listener on the
+  // document. Catching the key on the window, which captures first, is the
+  // only way to keep it open until the consumer closes it.
+  $effect(() => {
+    if (!locked) return
+    const holdEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && dialog?.classList.contains('fr-modal--opened')) {
+        event.stopPropagation()
+        event.preventDefault()
+      }
+    }
+    window.addEventListener('keydown', holdEscape, { capture: true })
+    return () => window.removeEventListener('keydown', holdEscape, { capture: true })
+  })
 </script>
 
 <dialog
+  bind:this={dialog}
   aria-labelledby={titleId}
   {id}
   class="fr-modal"
