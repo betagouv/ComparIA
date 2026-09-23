@@ -127,7 +127,10 @@ def test_an_older_anonymous_answer_loses_to_the_account_answer():
     """
     The login form can be filled with answers older than the ones already on
     the account — a bookmarked form, a second tab. The newer answer wins per
-    question, so the account's row stays and nothing is deleted for it.
+    question, so the account's row stays and the session's row goes: moving
+    it across anyway would give the account two answers to one question, or
+    trip the uniqueness index and fail the sign-in when both chose the same
+    option.
     """
     user_id = uuid.uuid4()
     question_id = uuid.uuid4()
@@ -138,11 +141,19 @@ def test_an_older_anonymous_answer_loses_to_the_account_answer():
     session = FakeSession([(question_id, yesterday)], [(question_id, an_hour_ago)], [])
     asyncio.run(carry_over_anonymous(session, "hash", user_id))
 
-    assert not [
-        statement
+    deletes = [
+        str(statement.compile(compile_kwargs={"literal_binds": True}))
         for statement in session.statements
         if statement.__visit_name__ == "delete"
-    ], "the account's newer answer was replaced by an older one"
+    ]
+    assert len(deletes) == 1, deletes
+    assert "anonymous_user_hash = 'hash'" in deletes[0]
+    assert "user_id IS NULL" in deletes[0], "the account's newer answer was deleted"
+    assert str(question_id).replace("-", "") in deletes[0].replace("-", "")
+
+    # The losing rows are deleted before the reassignment runs.
+    kinds = [statement.__visit_name__ for statement in session.statements]
+    assert kinds.index("delete") < kinds.index("update")
 
 
 def test_prompt_counts_are_added_together_rather_than_duplicated():
