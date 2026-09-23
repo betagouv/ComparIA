@@ -119,6 +119,11 @@
       code = ''
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
+      // Before the questions, not after: the sign-in has already happened, and
+      // closing the form on the questions must not lose the merge asked for.
+      if (mergeComparisons) {
+        await api.request('/arena/comparison/merge', { method: 'POST' })
+      }
       await invalidate('survey:signup')
       // Ask questions if any and user didn't yet answered it
       if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
@@ -154,13 +159,12 @@
     else verifyCode()
   }
 
-  async function onLoginCompleted() {
-    if (mergeComparisons) {
-      await api.request('/arena/comparison/merge', { method: 'POST' })
-    }
+  function onLoginCompleted() {
+    // Reset first: a wrapping modal reads the step when it closes, and must
+    // not take this close for the questions being walked away from.
+    step = 'email'
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
-    step = 'email'
   }
 </script>
 
