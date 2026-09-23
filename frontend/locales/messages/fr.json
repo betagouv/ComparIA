@@ -2083,6 +2083,10 @@
         "signup": {
             "optional": " (facultatif)",
             "reloadNeeded": "Le questionnaire n’a pas pu être chargé. Rechargez la page puis réessayez."
+        },
+        "required": {
+            "title": "Une réponse est nécessaire pour continuer",
+            "description": "Pour continuer à discuter et à voter, répondez aux questions marquées d’un astérisque (*). Vous pourrez modifier vos réponses à tout moment dans vos paramètres."
         }
     },
     "vote": {

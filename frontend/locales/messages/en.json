@@ -2083,6 +2083,10 @@
         "signup": {
             "optional": " (optional)",
             "reloadNeeded": "The questions could not be loaded. Reload the page and try again."
+        },
+        "required": {
+            "title": "An answer is needed to continue",
+            "description": "To keep chatting and voting, answer the questions marked with an asterisk (*). You can change your answers any time in your settings."
         }
     },
     "vote": {
