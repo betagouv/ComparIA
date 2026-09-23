@@ -118,7 +118,9 @@ def test_exhausted_bad_llm_response_marks_failed_same_as_before(monkeypatch):
 
 
 def test_unexpected_error_still_propagates(monkeypatch):
-    config, comp, updates, exc, call_count = run_with(monkeypatch, [RuntimeError("bug")])
+    config, comp, updates, exc, call_count = run_with(
+        monkeypatch, [RuntimeError("bug")]
+    )
 
     assert isinstance(exc, RuntimeError)
     assert call_count == 1
@@ -146,3 +148,55 @@ def test_transient_provider_error_then_success_is_recorded_as_analyzed(monkeypat
     assert updated_id == comp.id
     assert data is success
     assert config.failed_analysis == []
+
+
+def run_pipeline(monkeypatch, total: int, analyze):
+    """Wire analyze_comparisons to a fake DB stream of `total` comparisons and
+    the given analyze_comparison; returns the list counting comparisons produced."""
+    produced = []
+
+    async def fake_stream(_filters):
+        for _ in range(total):
+            produced.append(1)
+            yield comparison()
+
+    async def fake_model():
+        return AnalysisModel(model="openrouter/x", api_base=None, api_key="k")
+
+    monkeypatch.setattr(llm_analyze, "get_db_comparisons_stream", fake_stream)
+    monkeypatch.setattr(llm_analyze, "get_analysis_model", fake_model)
+    monkeypatch.setattr(Config, "analyze_comparison", analyze)
+    return produced
+
+
+def test_backlog_is_not_loaded_in_memory_faster_than_workers_consume_it(monkeypatch):
+    total = 200
+    seen_while_blocked = []
+
+    async def scenario():
+        gate = asyncio.Event()
+
+        async def analyze(self, comp):
+            await gate.wait()
+
+        produced = run_pipeline(monkeypatch, total, analyze)
+        task = asyncio.create_task(llm_analyze.analyze_comparisons())
+        await asyncio.sleep(0.2)
+        seen_while_blocked.append(len(produced))
+        gate.set()
+        await asyncio.wait_for(task, timeout=5)
+        return len(produced)
+
+    assert asyncio.run(scenario()) == total
+    assert seen_while_blocked[0] <= Config.WORKERS + Config.QUEUE_SIZE + 1
+
+
+def test_a_crashing_worker_does_not_hang_the_run(monkeypatch):
+    async def scenario():
+        async def analyze(self, comp):
+            raise RuntimeError("bug")
+
+        run_pipeline(monkeypatch, 200, analyze)
+        await asyncio.wait_for(llm_analyze.analyze_comparisons(), timeout=5)
+
+    asyncio.run(scenario())
