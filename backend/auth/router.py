@@ -257,9 +257,22 @@ async def get_config_oidc_logo() -> Response:
     )
 
 
+def _require_email_code(app_settings) -> None:
+    """Unticking the method in the admin panel has to close the endpoints too,
+    not only hide the form: an SSO-only instance is one nobody can enter with
+    an emailed code."""
+    if "email_code" not in app_settings.auth_methods:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email sign-in is disabled on this instance.",
+        )
+
+
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
     _reject_cross_site(request)
+    app_settings = await get_app_settings()
+    _require_email_code(app_settings)
     ip = get_ip(request)
 
     ok, error = verify_altcha_token(body.altcha_payload)
@@ -292,7 +305,6 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    app_settings = await get_app_settings()
     if app_settings.auth_domain_allowlist:
         domain = body.email.split("@")[-1].lower()
         if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
@@ -342,6 +354,7 @@ async def email_verify(
     body: EmailVerifyBody, request: Request, response: Response
 ) -> dict:
     _reject_cross_site(request)
+    _require_email_code(await get_app_settings())
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     email_hash = _hash(body.email)

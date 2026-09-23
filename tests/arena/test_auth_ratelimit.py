@@ -60,6 +60,7 @@ async def _fake_send_login_code(email, code, **_colors):
 
 async def _fake_get_app_settings():
     return SimpleNamespace(
+        auth_methods=["email_code"],
         auth_domain_allowlist=None,
         platform_name="Compar:IA",
         primary_color_light="#6464F3",
