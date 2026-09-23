@@ -58,7 +58,9 @@
     <!-- The published terms describe how data is used, so the modal does not
          repeat it and risk saying something different. -->
     {#if bothMethods || !emailEnabled}
-      <div class="-mt-12">
+      <!-- Same inset as SignInForm's own wrapper, which the modal content
+           relies on since it has no padding of its own. -->
+      <div class="-mt-12 mx-8 mb-10 pt-10">
         <h2 id="fr-modal-title-signin" class="fr-h4 text-primary! mb-4!">
           {m['auth.modal.email.title']()}
         </h2>
