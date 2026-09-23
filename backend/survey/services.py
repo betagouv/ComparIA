@@ -78,12 +78,14 @@ def _key(label: str) -> str:
     `backend/vote_tags/services.py::_tag_key` in spirit: question keys and
     option keys both work the same way.
     """
-    normalized = (
-        unicodedata.normalize("NFKD", label)
-        .encode("ascii", "ignore")
-        .decode("ascii")
-        .lower()
-    )
+    # Only the accents are dropped; every other character outside [a-z0-9],
+    # typographic apostrophes included, separates words. The admin form
+    # previews the key with this same rule (`slug` in
+    # frontend/src/routes/(admin)/admin/survey/+page.svelte), so the two must
+    # change together.
+    normalized = re.sub(
+        r"[\u0300-\u036f]", "", unicodedata.normalize("NFKD", label)
+    ).lower()
     return re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")[:100]
 
 
