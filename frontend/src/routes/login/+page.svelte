@@ -97,12 +97,17 @@
 
   <main class="bg-light-grey md:flex md:items-center flex-auto basis-1/2">
     <div class="my-10 mx-8 md:max-w-[350px] md:w-full">
+      <!-- One heading for every method mix, like the modal, instead of the
+           email form's own which disappears once there are tabs. -->
+      <h2 class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+      <p class="text-xs! mb-6! text-grey">{m['auth.modal.email.subtitle']({ platformName })}</p>
+
       {#if errorText}
-        <Alert title={errorText} variant="error" class="mb-6!" />
+        <Alert title={errorText} variant="error" small role="alert" class="mb-6!" />
       {/if}
 
       {#if bothMethods}
-        <Tabs {tabs} label={m['auth.login.tabsLabel']()}>
+        <Tabs {tabs} label={m['auth.login.tabsLabel']()} initialId={errorText ? 'sso' : 'email'}>
           {#snippet tab(tab)}
             {#if tab.id === 'email'}
               <SignInForm {onSuccess} hideHeader class="my-0! mx-0!" />
@@ -112,7 +117,7 @@
           {/snippet}
         </Tabs>
       {:else if emailEnabled}
-        <SignInForm {onSuccess} class="my-0! mx-0!" />
+        <SignInForm {onSuccess} hideHeader class="my-0! mx-0!" />
       {:else if oidcEnabled}
         <SSOSignIn {oidcLabel} {oidcLogoUrl} {redirect} class="my-0! mx-0!" />
       {/if}
