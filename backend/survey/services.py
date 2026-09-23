@@ -3,6 +3,7 @@ import unicodedata
 import uuid
 from datetime import timedelta
 
+from sqlalchemy import String, cast
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
@@ -86,12 +87,17 @@ def _key(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")[:100]
 
 
-async def _label(labels: dict[str, str], locale: str) -> str:
+def _label(labels: dict[str, str], locale: str, default_locale: str) -> str:
     """Exact locale, then the instance default, then whatever is there."""
     if locale in labels:
         return labels[locale]
-    default_locale = (await get_app_settings()).default_locale
     return labels.get(default_locale) or next(iter(labels.values()))
+
+
+async def _default_locale() -> str:
+    """Read once per request and handed down: every label on a page falls back
+    to it, and each read of the settings is a round trip to Redis."""
+    return (await get_app_settings()).default_locale
 
 
 def _require_respondent(
@@ -109,10 +115,6 @@ def _respondent_clause(
     if user_id is not None:
         return col(model.user_id) == user_id
     return col(model.anonymous_user_hash) == anonymous_user_hash
-
-
-def _respondent_of(row) -> tuple[str, object]:
-    return ("user", row.user_id) if row.user_id else ("anon", row.anonymous_user_hash)
 
 
 def _check_answer_shape(input_type: SurveyInputType, option_keys: list[str]) -> None:
@@ -150,8 +152,12 @@ async def _live_for(trigger: SurveyTrigger) -> list[SurveyQuestion]:
     )
 
 
-async def _to_public(
-    question: SurveyQuestion, locale: str, *, include_archived: bool = False
+def _to_public(
+    question: SurveyQuestion,
+    locale: str,
+    default_locale: str,
+    *,
+    include_archived: bool = False,
 ) -> PublicSurveyQuestion:
     options = []
     for raw in question.options:
@@ -160,7 +166,8 @@ async def _to_public(
             continue
         options.append(
             PublicSurveyOption(
-                key=option.key, label=await _label(option.labels, locale)
+                key=option.key,
+                label=_label(option.labels, locale, default_locale),
             )
         )
     return PublicSurveyQuestion(
@@ -168,7 +175,7 @@ async def _to_public(
         key=question.key,
         required=question.required,
         input_type=question.input_type,
-        label=await _label(question.labels, locale),
+        label=_label(question.labels, locale, default_locale),
         revision=question.revision,
         options=options,
     )
@@ -185,7 +192,11 @@ async def list_questions(
     signup form uses this: there is no respondent yet to check answered/shown
     state against.
     """
-    return [await _to_public(question, locale) for question in await _live_for(trigger)]
+    default_locale = await _default_locale()
+    return [
+        _to_public(question, locale, default_locale)
+        for question in await _live_for(trigger)
+    ]
 
 
 async def questions_to_prompt(
@@ -248,7 +259,8 @@ async def questions_to_prompt(
         if len(eligible) >= MAX_QUESTIONS_PER_PROMPT:
             break
 
-    return [await _to_public(question, locale) for question in eligible]
+    default_locale = await _default_locale()
+    return [_to_public(question, locale, default_locale) for question in eligible]
 
 
 async def record_shown(
@@ -390,13 +402,14 @@ async def my_answers(
         selected.setdefault(row.question_id, []).append(row.option_key)
 
     questions_by_id = {question.id: question for question in await _all_questions()}
+    default_locale = await _default_locale()
 
     results = []
     for question_id, option_keys in selected.items():
         question = questions_by_id.get(question_id)
         if question is None:
             continue
-        public = await _to_public(question, locale, include_archived=True)
+        public = _to_public(question, locale, default_locale, include_archived=True)
         results.append(
             MySurveyAnswer(
                 question_id=question.id,
@@ -609,6 +622,15 @@ async def delete_for_user(session: AsyncSession, user_id: uuid.UUID) -> None:
 # --- admin -------------------------------------------------------------
 
 
+def _respondent_expr():
+    """One value per respondent across both ownership columns, for counting
+    distinct respondents in SQL. A user id and an anonymous hash never look
+    alike, so the two cannot collide."""
+    return func.coalesce(
+        cast(col(SurveyAnswer.user_id), String), col(SurveyAnswer.anonymous_user_hash)
+    )
+
+
 async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
     questions = list(
         (
@@ -617,26 +639,43 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
             )
         ).all()
     )
-    all_answers = list((await session.exec(select(SurveyAnswer))).all())
 
-    by_question: dict[uuid.UUID, list[SurveyAnswer]] = {}
-    for row in all_answers:
-        by_question.setdefault(row.question_id, []).append(row)
+    # Counted in the database: the answer table grows with every respondent,
+    # and this runs on every admin read and after every admin write.
+    answer_counts: dict[tuple[uuid.UUID, str], int] = {
+        (question_id, option_key): count
+        for question_id, option_key, count in (
+            await session.exec(
+                select(
+                    SurveyAnswer.question_id,
+                    SurveyAnswer.option_key,
+                    func.count(),
+                ).group_by(col(SurveyAnswer.question_id), col(SurveyAnswer.option_key))
+            )
+        ).all()
+    }
+    respondent_counts: dict[uuid.UUID, int] = dict(
+        (
+            await session.exec(
+                select(
+                    SurveyAnswer.question_id,
+                    func.count(func.distinct(_respondent_expr())),
+                ).group_by(col(SurveyAnswer.question_id))
+            )
+        ).all()
+    )
+    total_respondents = (
+        await session.exec(select(func.count(func.distinct(_respondent_expr()))))
+    ).one()
 
     admin_questions = []
     for question in questions:
-        rows = by_question.get(question.id, [])
-        respondent_count = len({_respondent_of(row) for row in rows})
-        answer_counts: dict[str, int] = {}
-        for row in rows:
-            answer_counts[row.option_key] = answer_counts.get(row.option_key, 0) + 1
-
         options = [
             AdminSurveyOption(
                 key=option.key,
                 labels=option.labels,
                 archived=option.archived,
-                answer_count=answer_counts.get(option.key, 0),
+                answer_count=answer_counts.get((question.id, option.key), 0),
             )
             for option in (SurveyOption.model_validate(raw) for raw in question.options)
         ]
@@ -654,11 +693,9 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
                 revision=question.revision,
                 display_order=question.display_order,
                 archived=question.archived_at is not None,
-                respondent_count=respondent_count,
+                respondent_count=respondent_counts.get(question.id, 0),
             )
         )
-
-    total_respondents = len({_respondent_of(row) for row in all_answers})
 
     return AdminSurveyResponse(
         questions=admin_questions,
