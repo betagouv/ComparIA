@@ -18,7 +18,11 @@
   // whether this visitor has already been offered the popup this session.
   const shouldOpen = !!survey.voteQuestions?.length && !hasShownSurveyThisSession()
 
-  const items = $derived(questionsToFormItems(survey.voteQuestions!))
+  // Nothing is required here, whatever the question says: 'required' only
+  // holds up the signup form, and this popup is optional by design.
+  const items = $derived(
+    questionsToFormItems(survey.voteQuestions!.map((q) => ({ ...q, required: false })))
+  )
   const form = $derived(answersToForm([], survey.voteQuestions!))
 
   // Long enough for the visitor to read the reveal they just asked for before
