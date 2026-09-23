@@ -112,10 +112,10 @@
     loading = true
     error = undefined
     try {
-      await api.request<{ email: string }>('/auth/email/verify', {
-        method: 'POST',
-        body: JSON.stringify({ email, code })
-      })
+      const { first_sign_in } = await api.request<{ email: string; first_sign_in: boolean }>(
+        '/auth/email/verify',
+        { method: 'POST', body: JSON.stringify({ email, code }) }
+      )
       code = ''
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
@@ -125,8 +125,9 @@
         await api.request('/arena/comparison/merge', { method: 'POST' })
       }
       await invalidate('survey:signup')
-      // Ask questions if any and user didn't yet answered it
-      if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
+      // Every question, optional ones included, on an account's first sign-in;
+      // after that only while a required one is still unanswered.
+      if (survey.signupQuestions.length && (first_sign_in || !auth.user!.questionsAnswered)) {
         step = 'questions'
       } else {
         onLoginCompleted()

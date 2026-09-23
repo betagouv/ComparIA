@@ -310,14 +310,14 @@ async def email_verify(
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    token = await verify_login_code(
+    signed_in = await verify_login_code(
         email=body.email,
         code=body.code,
         ip=ip,
         user_agent=user_agent,
         anonymous_user_hash=_anonymous_hash(request),
     )
-    if not token:
+    if not signed_in:
         try:
             client = get_redis_client()
             for key in (fail_key, email_fail_key):
@@ -341,13 +341,13 @@ async def email_verify(
 
     response.set_cookie(
         "auth_session",
-        token,
+        signed_in.token,
         httponly=True,
         secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )
-    return {"email": body.email}
+    return {"email": body.email, "first_sign_in": signed_in.first}
 
 
 @router.get("/invite/{token}")
@@ -420,8 +420,8 @@ async def get_me(request: Request) -> dict:
         "user": {
             "email": user.email,
             "role": user.role,
-            # Used to check if survey has to be asked on signup/login
-            "new": user.created_at > datetime.now() - timedelta(hours=1),
+            # Whether a required signup question is still unanswered, which
+            # holds every arena write until it is (see survey/dependencies.py).
             "questionsAnswered": await signup_questions_answered(
                 user_id=user.id, anonymous_user_hash=None
             ),
