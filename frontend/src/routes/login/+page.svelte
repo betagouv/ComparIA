@@ -96,7 +96,7 @@
   </header>
 
   <main class="bg-light-grey md:flex md:items-center flex-auto basis-1/2">
-    <div class="my-10 mx-8 md:max-w-[350px] w-full">
+    <div class="my-10 mx-8 md:max-w-[350px] md:w-full">
       {#if errorText}
         <Alert title={errorText} variant="error" class="mb-6!" />
       {/if}
