@@ -9,6 +9,8 @@ import asyncio
 import contextlib
 import os
 import sys
+import uuid
+from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -24,6 +26,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.auth.oidc import PendingLogin  # noqa: E402
 from utils.database.models.auth import User  # noqa: E402
 
 
@@ -74,20 +77,31 @@ def _discovery():
     }
 
 
+USER_ID = uuid.uuid4()
+
+
 @contextlib.contextmanager
 def routed(
-    row=None, stored_nonce="the-nonce", exchange=None, discover=None, oidc_login=None
+    row=None,
+    pending=None,
+    exchange=None,
+    discover=None,
+    oidc_login=None,
+    decrypt=None,
+    state_cookie="good-state",
 ):
     if row is None:
         row = _settings_row()
+    if pending is None:
+        pending = PendingLogin(nonce="the-nonce", redirect="/", merge=False)
 
     async def get_app_settings():
         return row
 
     def consume_state(state):
         # Tests reuse a single in-flight state; the router only calls this
-        # once per request, so returning the stored nonce is enough.
-        return stored_nonce if state == "good-state" else None
+        # once per request, so returning the pending login is enough.
+        return pending if state == "good-state" else None
 
     if discover is None:
 
@@ -101,7 +115,7 @@ def routed(
 
         async def exchange_code_for_claims(**_kwargs):
             return {
-                "email": "agent@example.test",
+                "email": "agent@example.com",
                 "email_verified": True,
                 "nonce": "the-nonce",
             }
@@ -117,13 +131,23 @@ def routed(
 
         async def oidc_login_service(**kwargs):
             login_calls.append(kwargs)
-            return "session-token"
+            return "session-token", USER_ID
 
     else:
         oidc_login_service = oidc_login
 
-    def decrypt_oidc_secret(_ciphertext):
-        return "super-secret"
+    merge_calls = []
+
+    async def merge_anonymous_comparisons(user_id, anonymous_user_hash):
+        merge_calls.append((user_id, anonymous_user_hash))
+
+    if decrypt is None:
+
+        def decrypt_oidc_secret(_ciphertext):
+            return "super-secret"
+
+    else:
+        decrypt_oidc_secret = decrypt
 
     with patched(
         auth_router,
@@ -133,13 +157,18 @@ def routed(
         exchange_code_for_claims=exchange_code_for_claims,
         oidc_login_service=oidc_login_service,
         decrypt_oidc_secret=decrypt_oidc_secret,
+        merge_anonymous_comparisons=merge_anonymous_comparisons,
     ):
         app = FastAPI()
         app.include_router(auth_router.router)
         client = TestClient(app)
         client.cookies.set("anonymous_session", "token")
-        # Expose the spy without changing the `routed() as client` convention.
+        if state_cookie:
+            # What `oidc_login` handed this browser when it started the flow.
+            client.cookies.set("oidc_state", state_cookie)
+        # Expose the spies without changing the `routed() as client` convention.
         client._login_calls = login_calls  # type: ignore[attr-defined]
+        client._merge_calls = merge_calls  # type: ignore[attr-defined]
         yield client
 
 
@@ -210,7 +239,7 @@ def test_callback_rejects_a_missing_code():
 
 def test_callback_rejects_a_nonce_mismatch():
     async def exchange_code_for_claims(**_kwargs):
-        return {"email": "agent@example.test", "nonce": "different-nonce"}
+        return {"email": "agent@example.com", "nonce": "different-nonce"}
 
     with routed(exchange=exchange_code_for_claims) as client:
         response = client.get(
@@ -246,7 +275,7 @@ def test_callback_rejects_an_unverified_email():
 
     async def exchange_code_for_claims(**_kwargs):
         return {
-            "email": "boss@example.test",
+            "email": "boss@example.com",
             "email_verified": False,
             "nonce": "the-nonce",
         }
@@ -264,12 +293,12 @@ def test_callback_rejects_an_unverified_email():
 
 def test_callback_allows_a_missing_email_verified_claim():
     """`email_verified` is optional in the OIDC spec, and some real providers
-    never send it — ProConnect's documented userinfo claims don't include it
-    (docs/OIDC_SSO.md). An absent claim must not lock out every login from
+    never send it — ProConnect's documented userinfo claims don't include it.
+    An absent claim must not lock out every login from
     those providers; only an explicit `false` is rejected."""
 
     async def exchange_code_for_claims(**_kwargs):
-        return {"email": "agent@example.test", "nonce": "the-nonce"}
+        return {"email": "agent@example.com", "nonce": "the-nonce"}
 
     with routed(exchange=exchange_code_for_claims) as client:
         response = client.get(
@@ -408,7 +437,7 @@ async def _no_email_exchange(**_kwargs):
 
 async def _unverified_email_exchange(**_kwargs):
     return {
-        "email": "agent@example.test",
+        "email": "agent@example.com",
         "email_verified": False,
         "nonce": "the-nonce",
     }
@@ -464,7 +493,7 @@ def test_oidc_login_creates_a_user_when_none_exists():
     with fake_session(session):
         token = asyncio.run(
             auth_services.oidc_login(
-                email="newcomer@example.test",
+                email="newcomer@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
                 anonymous_user_hash=None,
@@ -475,17 +504,17 @@ def test_oidc_login_creates_a_user_when_none_exists():
     assert session.committed
     assert any(isinstance(obj, User) for obj in session.added)
     created = next(obj for obj in session.added if isinstance(obj, User))
-    assert created.email == "newcomer@example.test"
+    assert created.email == "newcomer@example.com"
     assert created.role == "user"
 
 
 def test_oidc_login_reuses_an_existing_account_instead_of_duplicating_it():
-    existing = User(email="agent@example.test")
+    existing = User(email="agent@example.com")
     session = FakeSession(results=[[existing]])
     with fake_session(session):
         token = asyncio.run(
             auth_services.oidc_login(
-                email="agent@example.test",
+                email="agent@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
                 anonymous_user_hash=None,
@@ -498,12 +527,12 @@ def test_oidc_login_reuses_an_existing_account_instead_of_duplicating_it():
 
 
 def test_oidc_login_lands_on_a_pre_seeded_admin_account():
-    admin = User(email="boss@example.test", role="admin")
+    admin = User(email="boss@example.com", role="admin")
     session = FakeSession(results=[[admin]])
     with fake_session(session):
         token = asyncio.run(
             auth_services.oidc_login(
-                email="boss@example.test",
+                email="boss@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
                 anonymous_user_hash=None,
@@ -516,12 +545,12 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
 
 
 def test_callback_reuses_an_existing_account_instead_of_duplicating_it():
-    """Router-seam test (spec: 'an existing email-code account is reused
-    when the same email authenticates via OIDC'). Wires the real
+    """Router-seam test: an existing email-code account is reused when the
+    same email authenticates via OIDC. Wires the real
     `oidc_login` service to a FakeSession that already holds a User row for
     the callback's email, then asserts the callback succeeds and adds no
     new User to the session."""
-    existing = User(email="agent@example.test")
+    existing = User(email="agent@example.com")
     session = FakeSession(results=[[existing]])
 
     async def oidc_login(**kwargs):
@@ -539,6 +568,141 @@ def test_callback_reuses_an_existing_account_instead_of_duplicating_it():
     assert response.headers["location"] == f"{auth_router.settings.COMPARIA_APP_URL}/"
     assert "auth_session=" in response.headers["set-cookie"]
     assert not any(isinstance(obj, User) for obj in session.added)
+
+
+def _callback(client, **params):
+    params = {"code": "auth-code", "state": "good-state", **params}
+    return client.get("/auth/oidc/callback", params=params, follow_redirects=False)
+
+
+def test_callback_rejects_a_state_this_browser_never_asked_for():
+    """Login CSRF: an attacker starts a sign-in with their own provider
+    account, stops before the callback and has a victim open it. The state is
+    valid in Redis, but the victim's browser never received it."""
+    with routed(state_cookie=None) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "invalid_state"
+    assert not client._login_calls
+
+
+def test_callback_rejects_a_state_cookie_from_another_sign_in():
+    with routed(state_cookie="some-other-state") as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "invalid_state"
+    assert not client._login_calls
+
+
+def test_callback_spends_the_state_cookie_on_success_and_failure():
+    with routed() as client:
+        succeeded = _callback(client)
+    with routed() as client:
+        failed = _callback(client, state="never-issued")
+
+    for response in (succeeded, failed):
+        cookies = response.headers.get_list("set-cookie")
+        spent = [c for c in cookies if c.startswith("oidc_state=")]
+        assert spent, cookies
+        assert "max-age=0" in spent[0].lower()
+
+
+def test_callback_lands_on_the_page_the_sign_in_started_from():
+    pending = PendingLogin(nonce="the-nonce", redirect="/arena?x=1", merge=False)
+    with routed(pending=pending) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert (
+        response.headers["location"]
+        == f"{auth_router.settings.COMPARIA_APP_URL}/arena?x=1"
+    )
+
+
+def test_callback_never_redirects_off_site():
+    pending = PendingLogin(nonce="the-nonce", redirect="//evil.test", merge=False)
+    with routed(pending=pending) as client:
+        response = _callback(client)
+    assert response.headers["location"] == f"{auth_router.settings.COMPARIA_APP_URL}/"
+
+
+def test_callback_merges_anonymous_comparisons_when_asked():
+    pending = PendingLogin(nonce="the-nonce", redirect="/", merge=True)
+    with routed(pending=pending) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._merge_calls == [(USER_ID, auth_router._hash("token"))]
+
+
+def test_callback_does_not_merge_unless_asked():
+    with routed() as client:
+        _callback(client)
+    assert client._merge_calls == []
+
+
+def test_callback_normalises_the_email_like_the_email_flow():
+    async def exchange_code_for_claims(**_kwargs):
+        return {"email": "Agent@Example.COM", "nonce": "the-nonce"}
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        _callback(client)
+    assert client._login_calls[0]["email"] == "Agent@example.com"
+
+
+def test_callback_rejects_a_malformed_email_claim():
+    async def exchange_code_for_claims(**_kwargs):
+        return {"email": "not-an-address", "nonce": "the-nonce"}
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "no_email"
+    assert not client._login_calls
+
+
+def test_callback_reports_a_deactivated_account():
+    async def oidc_login(**_kwargs):
+        return None
+
+    with routed(oidc_login=oidc_login) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "account_unavailable"
+
+
+def test_callback_redirects_when_the_client_secret_cannot_be_decrypted():
+    def decrypt(_ciphertext):
+        raise RuntimeError("OIDC_ENCRYPTION_KEY is not set")
+
+    with routed(decrypt=decrypt) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "oidc_unavailable"
+    assert not client._login_calls
+
+
+def test_callback_passes_the_configured_issuer_to_the_code_exchange():
+    seen = []
+
+    async def exchange_code_for_claims(**kwargs):
+        seen.append(kwargs)
+        return {"email": "agent@example.com", "nonce": "the-nonce"}
+
+    with routed(exchange=exchange_code_for_claims) as client:
+        _callback(client)
+    assert seen[0]["issuer"] == "https://idp.example.test"
+    assert seen[0]["client_id"] == "client-123"
+
+
+def test_oidc_login_refuses_a_deactivated_account():
+    deleted = User(email="gone@example.com", deleted_at=datetime.now())
+    session = FakeSession(results=[[deleted]])
+    with fake_session(session):
+        signed_in = asyncio.run(
+            auth_services.oidc_login(
+                email="gone@example.com",
+                ip="127.0.0.1",
+                user_agent=None,
+                anonymous_user_hash=None,
+            )
+        )
+
+    assert signed_in is None
+    assert not session.committed
 
 
 if __name__ == "__main__":

@@ -441,9 +441,16 @@ async def patch_settings(
     patch = body.model_dump(exclude_unset=True)
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
-        patch["oidc_client_secret_encrypted"] = (
-            encrypt_oidc_secret(secret) if secret else None
-        )
+        try:
+            patch["oidc_client_secret_encrypted"] = (
+                encrypt_oidc_secret(secret) if secret else None
+            )
+        except RuntimeError as e:
+            # OIDC_ENCRYPTION_KEY missing or malformed: a server setup issue
+            # the admin can't fix from the panel, so say which one it is.
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)
+            ) from e
     if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
         current = await get_app_settings()
         effective_methods = patch.get("auth_methods", current.auth_methods)
@@ -454,12 +461,14 @@ async def patch_settings(
                 "oidc_client_secret_encrypted",
                 current.oidc_client_secret_encrypted,
             )
-            if not (issuer and client_id and secret_enc):
+            scopes = patch.get("oidc_scopes", current.oidc_scopes)
+            if not (issuer and client_id and secret_enc and "openid" in scopes):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=(
-                        "OIDC provider config (issuer, client_id, client_secret) "
-                        "must be complete before enabling the oidc auth method."
+                        "OIDC provider config (issuer, client_id, client_secret, "
+                        "scopes including openid) must be complete before "
+                        "enabling the oidc auth method."
                     ),
                 )
     row = await update_app_settings(patch, updated_by=current_user.id)

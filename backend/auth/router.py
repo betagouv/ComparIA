@@ -1,13 +1,23 @@
 import logging
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Literal
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    TypeAdapter,
+    ValidationError,
+    field_validator,
+)
 
 from backend.arena.captcha import verify_altcha_token
+from backend.arena.services import merge_anonymous_comparisons
 from backend.auth.dependencies import (
     RequiredAnomymous,
     RequiredUser,
@@ -17,6 +27,7 @@ from backend.auth.email import send_login_code
 from backend.auth.encryption import decrypt_oidc_secret
 from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.oidc import (
+    OIDC_STATE_TTL_SECONDS,
     build_authorization_url,
     consume_state,
     discover_provider,
@@ -51,11 +62,14 @@ from utils.database.settings import get_app_settings
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
+    REDIS_AUTH_OIDC_REQ,
     REDIS_AUTH_VERIFY_FAIL,
     get_redis_client,
 )
 
 logger = logging.getLogger("languia")
+
+_email_adapter = TypeAdapter(EmailStr)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -257,9 +271,22 @@ async def get_config_oidc_logo() -> Response:
     )
 
 
+def _require_email_code(app_settings) -> None:
+    """Unticking the method in the admin panel has to close the endpoints too,
+    not only hide the form: an SSO-only instance is one nobody can enter with
+    an emailed code."""
+    if "email_code" not in app_settings.auth_methods:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email sign-in is disabled on this instance.",
+        )
+
+
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
     _reject_cross_site(request)
+    app_settings = await get_app_settings()
+    _require_email_code(app_settings)
     ip = get_ip(request)
 
     ok, error = verify_altcha_token(body.altcha_payload)
@@ -292,7 +319,6 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    app_settings = await get_app_settings()
     if app_settings.auth_domain_allowlist:
         domain = body.email.split("@")[-1].lower()
         if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
@@ -342,6 +368,7 @@ async def email_verify(
     body: EmailVerifyBody, request: Request, response: Response
 ) -> dict:
     _reject_cross_site(request)
+    _require_email_code(await get_app_settings())
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     email_hash = _hash(body.email)
@@ -405,42 +432,96 @@ async def email_verify(
     return {"email": body.email}
 
 
+# The state the provider will echo back, also kept in the browser that asked
+# for it: a callback carrying someone else's state is a login CSRF attempt (an
+# attacker's half-finished sign-in replayed on a victim), not a sign-in.
+_OIDC_STATE_COOKIE = "oidc_state"
+_OIDC_STATE_COOKIE_PATH = "/api/auth/oidc"
+_MAX_REDIRECT_LENGTH = 2048
+
+
+def _safe_redirect(value: str | None) -> str:
+    """Keep only app-relative paths, so `redirect` can't send the user off-site."""
+    if (
+        value
+        and len(value) <= _MAX_REDIRECT_LENGTH
+        and value.startswith("/")
+        and not value.startswith("//")
+        and "\\" not in value
+        and value.isprintable()
+    ):
+        return value
+    return "/"
+
+
 @router.get("/oidc/login")
-async def oidc_login(request: Request) -> RedirectResponse:
+async def oidc_login(
+    request: Request, redirect: str | None = None, merge: bool = False
+) -> RedirectResponse:
     """Redirect the browser to the instance's configured OIDC provider.
 
     Mirrors the email flow's ordering: the cheap, local gates (OIDC enabled
-    and fully configured, terms accepted) run before any network call to the
-    provider, so an unaccepted-terms flood never reaches discovery.
+    and fully configured, rate limit, terms accepted) run before any network
+    call to the provider, so an unaccepted-terms flood never reaches
+    discovery. Reached from a browser link, so every failure resolves to a
+    redirect the login page can render, not a JSON dead end.
+
+    `redirect` is where to land after sign-in, `merge` whether to attach the
+    visitor's anonymous comparisons to the account, like the email form's
+    checkbox. Both ride along with the state until the callback.
     """
     app_settings = await get_app_settings()
     if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="OIDC is not enabled for this instance.",
-        )
+        return _login_error("oidc_unavailable")
+
+    try:
+        client = get_redis_client()
+        key = REDIS_AUTH_OIDC_REQ.format(ip=get_ip(request))
+        count = client.incr(key)
+        if count == 1:
+            client.expire(key, 3600)
+        if count > settings.AUTH_OIDC_LOGIN_PER_IP_PER_HOUR:
+            return _login_error("rate_limited")
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     anonymous_user_hash = _anonymous_hash(request)
     if not anonymous_user_hash or not await has_current_terms_acceptance(
         user_id=None, anonymous_user_hash=anonymous_user_hash
     ):
-        # Reached from a browser link, so like every other failure mode here it
-        # resolves to a redirect the login page can render, not a JSON dead end.
         return _login_error("terms_required")
 
-    discovery = await discover_provider(app_settings.oidc_issuer)
-    authorization_endpoint = discovery.get("authorization_endpoint")
-    if not authorization_endpoint:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="OIDC provider discovery document has no authorization_endpoint.",
+    try:
+        discovery = await discover_provider(app_settings.oidc_issuer)
+        authorization_endpoint = discovery.get("authorization_endpoint")
+        if not authorization_endpoint:
+            raise ValueError("discovery document has no authorization_endpoint")
+        authorization_url, state = build_authorization_url(
+            authorization_endpoint=authorization_endpoint,
+            client_id=app_settings.oidc_client_id,
+            scopes=app_settings.oidc_scopes,
+            redirect=_safe_redirect(redirect),
+            merge=merge,
         )
-    authorization_url = build_authorization_url(
-        authorization_endpoint=authorization_endpoint,
-        client_id=app_settings.oidc_client_id,
-        scopes=app_settings.oidc_scopes,
+    except Exception:
+        logger.exception("[OIDC] could not start the sign-in")
+        return _login_error("provider_error")
+
+    response = RedirectResponse(
+        url=authorization_url, status_code=status.HTTP_302_FOUND
     )
-    return RedirectResponse(url=authorization_url, status_code=status.HTTP_302_FOUND)
+    # Lax, not strict: the provider sends the browser back with a top-level
+    # cross-site GET, which lax cookies accompany.
+    response.set_cookie(
+        _OIDC_STATE_COOKIE,
+        state,
+        httponly=True,
+        secure=settings.COMPARIA_COOKIE_SECURE,
+        samesite="lax",
+        max_age=OIDC_STATE_TTL_SECONDS,
+        path=_OIDC_STATE_COOKIE_PATH,
+    )
+    return response
 
 
 def _login_error(reason: str) -> RedirectResponse:
@@ -462,6 +543,13 @@ def _login_error(reason: str) -> RedirectResponse:
     )
 
 
+def _same_browser(request: Request, state: str) -> bool:
+    cookie_state = request.cookies.get(_OIDC_STATE_COOKIE)
+    if not cookie_state:
+        return False
+    return secrets.compare_digest(cookie_state.encode(), state.encode())
+
+
 @router.get("/oidc/callback")
 async def oidc_callback(
     request: Request,
@@ -471,17 +559,32 @@ async def oidc_callback(
 ) -> RedirectResponse:
     """Complete the OIDC round trip and sign the user in.
 
-    Mirrors the email-code flow's ordering: the cheap local gate (state
-    validated against what `oidc_login` stored), then the network call to the
-    provider, then the domain-allowlist check, then the same session mint and
-    `auth_session` cookie as email login. The OIDC tokens are consumed inside
-    `exchange_code_for_claims` and never persisted.
-
     Every failure mode redirects back to `/login?error=...` instead of raising
     an `HTTPException`: the user arrives here mid-flow from the identity
-    provider, so a JSON error page is a dead end. A failure never reaches
-    `oidc_login`, so no `User` row is created and no session is minted — the
-    round trip leaves no partial state behind.
+    provider, so a JSON error page is a dead end. The state cookie is spent
+    whatever the outcome.
+    """
+    response = await _complete_oidc_sign_in(request, code, state, error)
+    response.delete_cookie(
+        _OIDC_STATE_COOKIE,
+        path=_OIDC_STATE_COOKIE_PATH,
+        secure=settings.COMPARIA_COOKIE_SECURE,
+        httponly=True,
+        samesite="lax",
+    )
+    return response
+
+
+async def _complete_oidc_sign_in(
+    request: Request, code: str | None, state: str | None, error: str | None
+) -> RedirectResponse:
+    """Mirrors the email-code flow's ordering: the cheap local gates (state
+    issued by `oidc_login` to this very browser), then the network calls to
+    the provider, then the domain-allowlist check, then the same session mint
+    and `auth_session` cookie as email login. The OIDC tokens are consumed
+    inside `exchange_code_for_claims` and never persisted. A failure never
+    reaches `oidc_login`, so no `User` row is created and no session is
+    minted — the round trip leaves no partial state behind.
     """
     app_settings = await get_app_settings()
     if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
@@ -490,7 +593,7 @@ async def oidc_callback(
     # Consume the issued state up front so a provider-error redirect,
     # a missing/invalid state, or a missing code all leave nothing behind
     # in Redis — the round trip leaves no partial state on any failure path.
-    stored_nonce = consume_state(state) if state else None
+    pending = consume_state(state) if state else None
 
     # The provider redirected back with an `error` param (OAuth2 standard) —
     # the user denied consent, or the provider rejected the request. There
@@ -498,7 +601,7 @@ async def oidc_callback(
     if error:
         return _login_error("provider_error")
 
-    if not stored_nonce:
+    if not state or not pending or not _same_browser(request, state):
         return _login_error("invalid_state")
     if not code:
         return _login_error("missing_code")
@@ -513,11 +616,19 @@ async def oidc_callback(
     if not token_endpoint or not userinfo_endpoint:
         return _login_error("provider_error")
 
-    client_secret = decrypt_oidc_secret(app_settings.oidc_client_secret_encrypted)
+    try:
+        client_secret = decrypt_oidc_secret(app_settings.oidc_client_secret_encrypted)
+    except Exception:
+        # A rotated or missing OIDC_ENCRYPTION_KEY: the stored secret has to be
+        # entered again in the admin panel.
+        logger.exception("[OIDC] could not decrypt the stored client secret")
+        return _login_error("oidc_unavailable")
+
     try:
         claims = await exchange_code_for_claims(
             token_endpoint=token_endpoint,
             userinfo_endpoint=userinfo_endpoint,
+            issuer=app_settings.oidc_issuer,
             client_id=app_settings.oidc_client_id,
             client_secret=client_secret,
             code=code,
@@ -525,28 +636,32 @@ async def oidc_callback(
         )
     except Exception:
         # The token endpoint rejects denied/expired/reused codes with a 4xx;
-        # the userinfo endpoint can fail mid-flight. Either way the round trip
-        # is unrecoverable from the browser's point of view.
+        # the userinfo endpoint can fail mid-flight; the id_token may not be
+        # ours. Either way the round trip is unrecoverable from the browser.
         logger.exception("[OIDC] code exchange or userinfo retrieval failed")
         return _login_error("provider_error")
 
-    if not claims.get("nonce") or claims["nonce"] != stored_nonce:
+    if not claims.get("nonce") or not secrets.compare_digest(
+        str(claims["nonce"]).encode(), pending.nonce.encode()
+    ):
         return _login_error("invalid_nonce")
 
-    email = claims.get("email")
-    if not email:
+    try:
+        # Same normalisation as the email flow's `EmailStr`, so both methods
+        # resolve an address to the same account.
+        email = _email_adapter.validate_python(claims.get("email"))
+    except ValidationError:
         return _login_error("no_email")
 
     if claims.get("email_verified") is False:
         # `email_verified` is an optional member claim of the `email` scope
         # (OIDC Core 5.4): some providers omit it entirely (ProConnect's
-        # documented userinfo claims never include it — see
-        # docs/OIDC_SSO.md), so treating "absent" as "unverified" would
-        # reject every login from those providers. Only an *explicit* false
-        # is a provider actively disclaiming verification of the address;
-        # trusting it anyway would let an attacker on such a provider claim
-        # an existing account's email (including a pre-seeded admin one),
-        # since login resolves by email alone (spec: no (issuer, sub) table).
+        # documented userinfo claims never include it), so treating "absent"
+        # as "unverified" would reject every login from those providers. Only
+        # an *explicit* false is a provider actively disclaiming verification
+        # of the address; trusting it anyway would let an attacker on such a
+        # provider claim an existing account's email (including a pre-seeded
+        # admin one), since login resolves by email alone.
         return _login_error("email_not_verified")
 
     if app_settings.auth_domain_allowlist:
@@ -554,17 +669,27 @@ async def oidc_callback(
         if domain not in [d.lower() for d in app_settings.auth_domain_allowlist]:
             return _login_error("domain_not_allowed")
 
-    ip = get_ip(request)
-    user_agent = request.headers.get("user-agent")
-    token = await oidc_login_service(
+    anonymous_user_hash = _anonymous_hash(request)
+    signed_in = await oidc_login_service(
         email=email,
-        ip=ip,
-        user_agent=user_agent,
-        anonymous_user_hash=_anonymous_hash(request),
+        ip=get_ip(request),
+        user_agent=request.headers.get("user-agent"),
+        anonymous_user_hash=anonymous_user_hash,
     )
+    if not signed_in:
+        return _login_error("account_unavailable")
+    token, user_id = signed_in
+
+    if pending.merge and anonymous_user_hash:
+        try:
+            await merge_anonymous_comparisons(user_id, anonymous_user_hash)
+        except Exception:
+            # The sign-in itself went through; the merge can be retried later.
+            logger.exception("[OIDC] could not merge anonymous comparisons")
 
     redirect = RedirectResponse(
-        url=f"{settings.COMPARIA_APP_URL}/", status_code=status.HTTP_302_FOUND
+        url=f"{settings.COMPARIA_APP_URL}{_safe_redirect(pending.redirect)}",
+        status_code=status.HTTP_302_FOUND,
     )
     _set_auth_session_cookie(redirect, token)
     return redirect

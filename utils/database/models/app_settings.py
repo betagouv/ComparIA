@@ -250,6 +250,22 @@ class AppSettingsPatch(SQLModel):
             raise ValueError(f"Unknown auth methods: {', '.join(unknown)}")
         return value
 
+    @field_validator("oidc_issuer")
+    @classmethod
+    def validate_oidc_issuer(cls, value: str | None) -> str | None:
+        if value and not value.startswith(("https://", "http://")):
+            raise ValueError("The OIDC issuer must be an http(s) URL")
+        return value
+
+    @field_validator("oidc_scopes")
+    @classmethod
+    def validate_oidc_scopes(cls, value: list[str] | None) -> list[str] | None:
+        # Without `openid` the provider runs plain OAuth2: no id_token, so no
+        # nonce to check and nothing that says who signed in.
+        if value is not None and "openid" not in value:
+            raise ValueError("OIDC scopes must include openid")
+        return value
+
     @field_validator("publish_timezone")
     @classmethod
     def known_timezone(cls, value: str | None) -> str | None:

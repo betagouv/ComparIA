@@ -76,6 +76,9 @@ class Settings(BaseSettings):
     # must never be locked out. The real anti-abuse limit is per-email below.
     AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR: int = 2000
     AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR: int = 5
+    # Same reasoning: each OIDC sign-in start stores a state and may reach the
+    # provider, but a whole class signing in at once must still go through.
+    AUTH_OIDC_LOGIN_PER_IP_PER_HOUR: int = 2000
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
     # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
     # above only slows one attacker down; this one closes the login code itself.

@@ -268,6 +268,39 @@ def test_patch_oidc_enabled_with_partial_provider_config_is_rejected():
     assert response.status_code == 400
 
 
+def test_patch_scopes_without_openid_are_rejected():
+    with admin_client() as client:
+        response = client.patch("/admin/settings", json={"oidc_scopes": ["email"]})
+    assert response.status_code == 422
+
+
+def test_patch_oidc_enabled_on_a_row_whose_scopes_lack_openid_is_rejected():
+    row = _configured_oidc_row(oidc_scopes=[])
+    with admin_client(row) as client:
+        response = client.patch("/admin/settings", json={"auth_methods": ["oidc"]})
+    assert response.status_code == 400
+
+
+def test_patch_issuer_must_be_an_http_url():
+    with admin_client() as client:
+        response = client.patch(
+            "/admin/settings", json={"oidc_issuer": "idp.example.test"}
+        )
+    assert response.status_code == 422
+
+
+def test_patch_client_secret_without_an_encryption_key_says_so():
+    """A missing OIDC_ENCRYPTION_KEY is a server setup issue: the admin gets
+    told which one rather than a bare 500."""
+    with patched(admin_router.settings, OIDC_ENCRYPTION_KEY=None):
+        with admin_client() as client:
+            response = client.patch(
+                "/admin/settings", json={"oidc_client_secret": "super-secret"}
+            )
+    assert response.status_code == 503
+    assert "OIDC_ENCRYPTION_KEY" in response.json()["detail"]
+
+
 if __name__ == "__main__":
     for name, fn in sorted(dict(globals()).items()):
         if name.startswith("test_"):
