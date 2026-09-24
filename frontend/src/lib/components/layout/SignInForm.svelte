@@ -299,16 +299,6 @@
         {/if}
       {/if}
 
-      {#if canMergeComparisons}
-        <Checkbox
-          id="login-merge"
-          class="text-xs! mt-1!"
-          bind:checked={mergeComparisons}
-          disabled={step !== 'email'}
-          label={m['auth.modal.merge']()}
-        />
-      {/if}
-
       {#if terms}
         <Checkbox
           id="login-consent"
@@ -329,6 +319,16 @@
           text={m['consent.retry']()}
           disabled={consentLoading}
           onclick={() => readConsent(true)}
+        />
+      {/if}
+
+      {#if canMergeComparisons}
+        <Checkbox
+          id="login-merge"
+          class="text-xs! mt-1!"
+          bind:checked={mergeComparisons}
+          disabled={step !== 'email'}
+          label={m['auth.modal.merge']()}
         />
       {/if}
 
