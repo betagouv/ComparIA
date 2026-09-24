@@ -1,17 +1,17 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle } from '$components/dsfr'
-  import GraphDot from './GraphDot.svelte'
   import { convertFromUsd } from '$lib/currency'
   import type { APILLMData } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { logTicks } from '$lib/logTicks'
+  import { applyStyleControl, getModelsWithDataContext } from '$lib/models'
   import { paretoFrontier } from '$lib/pareto'
   import { extent } from 'd3-array'
   import { scaleLinear, scaleLog } from 'd3-scale'
   import { onMount } from 'svelte'
+  import GraphDot from './GraphDot.svelte'
 
   type LicenseKind = APILLMData['license']['kind']
   type ModelGraphData = (typeof models)[number]
@@ -221,10 +221,9 @@
         <svg
           bind:this={svg}
           role="img"
-          aria-labelledby="price-graph-title"
+          aria-label={m['ranking.price.views.graph.title']()}
           aria-describedby="price-graph-desc"
         >
-          <title id="price-graph-title">{m['ranking.price.views.graph.title']()}</title>
           <desc id="price-graph-desc">{m['a11y.priceGraphDesc']()}</desc>
           <!-- y axis -->
           <g class="axis y-axis">
