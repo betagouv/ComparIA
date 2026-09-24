@@ -56,10 +56,10 @@ resources:
   cronjobs:
     requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 512Mi
     limits:
       cpu: 500m
-      memory: 512Mi
+      memory: 4Gi
   ## -- Applied to the ranking CronJob. Left unset (BestEffort): memory usage
   ## scales with vote volume and isn't sized yet, so it runs unconstrained
   ## rather than risk getting OOMKilled against a fixed limit.
