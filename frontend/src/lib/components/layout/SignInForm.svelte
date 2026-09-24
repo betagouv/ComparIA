@@ -66,7 +66,7 @@
   let firstSignIn = $state(false)
 
   let terms = $state<ConsentDocument>()
-  let consentRequired = $state(false)
+  let consentRecorded = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
@@ -85,8 +85,7 @@
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
       terms = snapshot.document
-      consentRequired = !snapshot.accepted
-      consented = snapshot.accepted
+      consentRecorded = snapshot.accepted
     } catch {
       terms = undefined
       consentError = m['consent.loadFailed']()
@@ -108,16 +107,16 @@
       consentError = m['consent.loadFailed']()
       return
     }
-    if (consentRequired && !consented) {
+    if (!consented) {
       consentError = m['consent.required']()
       return
     }
     loading = true
     error = undefined
     try {
-      if (consentRequired) {
+      if (!consentRecorded) {
         await submitConsent(terms, false)
-        consentRequired = false
+        consentRecorded = true
       }
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
@@ -304,7 +303,7 @@
           id="login-consent"
           class="text-xs! mt-1!"
           bind:checked={consented}
-          disabled={loading || step !== 'email' || !consentRequired}
+          disabled={loading || step !== 'email'}
           label={consentLabel}
           links={legalLinks()}
           linksClass="text-xs! leading-5!"
@@ -389,7 +388,7 @@
         <Button
           type="submit"
           text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-          disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
+          disabled={loading || consentLoading || !terms || !consented || !email}
           class="mt-8 block! w-full!"
         />
       {/if}
