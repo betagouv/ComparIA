@@ -1,0 +1,469 @@
+<script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
+  import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
+  import { ARCHS, SIZE_CLASSES, type Archs, type SizeClasses } from '$lib/generated/constants'
+  import { m } from '$lib/i18n/messages'
+  import type { ConsoSizes } from '$lib/models'
+  import { applyStyleControl, CONSO_SIZES, getModelsWithDataContext } from '$lib/models'
+  import { sortIfDefined } from '$lib/utils/data'
+  import { extent, ticks } from 'd3-array'
+  import { scaleLinear } from 'd3-scale'
+  import { onMount } from 'svelte'
+  import GraphDot from './GraphDot.svelte'
+
+  type ModelGraphData = (typeof models)[number]
+
+  const { models: baseModels } = getModelsWithDataContext()
+  const data = $derived(applyStyleControl(baseModels))
+
+  // Big enough for the lab mark to read at the smallest size.
+  const dotSizes = { XS: 8, S: 10, M: 12, L: 14, XL: 16 } as const
+
+  const models = $derived(
+    data
+      .filter((llm) => llm.license.kind !== 'proprietary')
+      .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .map((llm) => {
+        return {
+          ...llm,
+          x: llm.consumption,
+          y: llm.data.elo,
+          radius: dotSizes[llm.size_class],
+          class: llm.license.kind === 'proprietary' ? 'na' : llm.arch,
+          consoSize:
+            llm.consumption < 150
+              ? ('S' as const)
+              : llm.consumption < 5000
+                ? ('M' as const)
+                : ('L' as const)
+        }
+      })
+  )
+
+  let search = $state('')
+  let sizes = $state<SizeClasses[]>([])
+  let consos = $state<ConsoSizes[]>(['S', 'M'])
+  let showArchived = $state(true)
+  const sizeFilter = {
+    id: 'energy-size',
+    legend: m['models.list.filters.size.legend'](),
+    options: SIZE_CLASSES.map((value) => ({
+      value,
+      label: m[`models.size.count.${value}`]()
+    }))
+  }
+  const consoFilter = {
+    id: 'energy-conso',
+    legend: m['models.conso.filterLegend'](),
+    options: CONSO_SIZES.map((value) => ({
+      value,
+      label: m[`models.conso.count.${value}`]()
+    }))
+  }
+
+  const filteredModels = $derived.by(() => {
+    const _search = search.toLowerCase()
+    return models.filter((llm) => {
+      const sizeMatch = sizes.length === 0 || sizes.includes(llm.size_class)
+      const consoMatch = consos.length === 0 || consos.includes(llm.consoSize)
+      const searchMatch = !_search || llm.search.includes(_search)
+      const archivedMatch = llm.status === 'enabled' || showArchived
+
+      return sizeMatch && consoMatch && searchMatch && archivedMatch
+    })
+  })
+
+  let hoveredModel = $state<string>()
+  let tooltipPos = $state({ x: 0, y: 0 })
+  const hoveredModelData = $derived(filteredModels.find((llm) => llm.id === hoveredModel))
+  const tooltipExtraData = $derived(
+    hoveredModelData?.license.kind === 'proprietary'
+      ? (['arch'] as const)
+      : (['arch', 'params', 'active_params'] as const)
+  )
+
+  let svg = $state<SVGSVGElement>()
+  let width = $state(1100)
+  let height = $state(700)
+
+  const padding = { top: 5, right: 10, bottom: 35, left: 72 }
+
+  const minMaxX = $derived.by(() => {
+    const [min, max] = extent(filteredModels, (llm) => llm.x) as [number, number]
+    // Room for a whole dot on either side, whatever the range.
+    const room = Math.max(max - min, 100) * 0.04
+    return [min - room, max + room] as const
+  })
+  const minMaxY = $derived.by(() => {
+    const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
+    return [min - 5, max + 35] as const
+  })
+  const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
+  const yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
+  const xTicks = $derived(ticks(...minMaxX, 7))
+  const yTicks = $derived(ticks(...minMaxY, 9))
+
+  onMount(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!entry) return
+
+      const { width: nextWidth, height: nextHeight } = entry.contentRect
+      if (nextWidth === 0 || nextHeight === 0) return
+
+      width = nextWidth
+      height = nextHeight
+    })
+
+    resizeObserver.observe(svg!)
+    return () => resizeObserver.disconnect()
+  })
+
+  function onModelHover(model: ModelGraphData) {
+    hoveredModel = model.id
+    tooltipPos = { x: xScale(model.x), y: yScale(model.y) }
+  }
+</script>
+
+{#snippet legend(kind: string)}
+  <div
+    class="graph-legend cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
+  >
+    <Search
+      id="energy-graph-model-search-{kind}"
+      bind:value={search}
+      label={m['words.search']()}
+      class="mb-5"
+    />
+
+    <p class="mb-1! leading-normal! text-[13px]!" aria-hidden="true">
+      <strong>{consoFilter.legend}</strong>
+    </p>
+    <CheckboxGroup
+      {...consoFilter}
+      id="{consoFilter.id}-{kind}"
+      bind:value={consos}
+      legendClass="sr-only"
+      labelClass="text-dark-grey! text-[12px]! font-medium!"
+      row
+      class="mb-5!"
+    ></CheckboxGroup>
+
+    <p class="mb-1! leading-tight! text-[13px]!" aria-hidden="true">
+      <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
+      <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
+    </p>
+
+    <CheckboxGroup
+      {...sizeFilter}
+      id="{sizeFilter.id}-{kind}"
+      bind:value={sizes}
+      legendClass="sr-only"
+      row
+      class="mb-5!"
+    >
+      {#snippet labelSlot({ option })}
+        <div class="flex items-center">
+          <div
+            class={['dot border-dark-grey me-2 rounded-full border']}
+            style="--size: {dotSizes[option.value] * 2}px"
+          ></div>
+          <span class="text-dark-grey font-medium text-[12px]">{option.label}</span>
+        </div>
+      {/snippet}
+    </CheckboxGroup>
+
+    <Toggle
+      id="energy-archived-{kind}"
+      bind:value={showArchived}
+      label={m['models.list.filters.archived.label']()}
+      checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+      uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+      inline={false}
+      groupClass="mb-2"
+      class="mb-2! leading-tight! font-medium text-[13px]! text-[--text-default-grey]"
+      checkLabelClass="text-[12px]"
+    />
+
+    <hr class="pb-2!" />
+    <p class="mb-1! leading-normal! text-[13px]!">
+      <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
+    </p>
+    <ul class="mt-0! p-0! md:mb-10! gap-x-3 font-medium md:block flex list-none! flex-wrap">
+      {#each ARCHS.filter((arch) => arch !== 'na') as arch (arch)}
+        <li class="p-0! md:not-last:mb-2 flex items-center">
+          <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
+          {m[`generated.archs.${arch}.name`]()}
+          <Tooltip
+            id="arch-type-{arch}-{kind}"
+            text={m[`generated.archs.${arch}.desc`]()}
+            size="xs"
+            class="ms-1"
+          />
+        </li>
+      {/each}
+    </ul>
+  </div>
+{/snippet}
+
+<div id="energy-graph">
+  <div class="gap-2 flex items-center">
+    <div
+      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible text-center whitespace-nowrap"
+    >
+      <Icon icon="thumb-up-line" class="text-primary" />
+      <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
+    </div>
+
+    <div class="relative flex-grow">
+      <div class="flex">
+        <!-- A scatter plot exposes nothing on its own. It is named and
+             described here, and the same figures sit in #energy-table below,
+             which is the equivalent a screen reader can actually read. -->
+        <svg
+          bind:this={svg}
+          role="img"
+          aria-labelledby="energy-graph-title"
+          aria-describedby="energy-graph-desc"
+        >
+          <title id="energy-graph-title">{m['ranking.energy.views.graph.title']()}</title>
+          <desc id="energy-graph-desc">{m['a11y.energyGraphDesc']()}</desc>
+          <!-- y axis -->
+          <g class="axis y-axis">
+            {#each yTicks as tick (tick)}
+              <g transform="translate(0, {yScale(tick)})">
+                <line x1={padding.left} x2={xScale(minMaxX[1])} />
+                <text x={padding.left - 8} y="+4">{tick}</text>
+              </g>
+            {/each}
+          </g>
+
+          <!-- x axis -->
+          <g class="axis x-axis">
+            {#each xTicks as tick (tick)}
+              <g transform="translate({xScale(tick)},0)">
+                <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
+                <text y={height - padding.bottom + 20}>{tick}</text>
+              </g>
+            {/each}
+          </g>
+
+          <!-- target lines -->
+          {#if hoveredModelData}
+            <!-- y axis -->
+            <g class="target-line" transform="translate(0, {yScale(hoveredModelData.y)})">
+              <line x1={padding.left} x2={xScale(hoveredModelData.x)} />
+              <rect y="-15" x={padding.left - 72} width="78" height="30" rx="4" ry="4" />
+              <text x={padding.left - 32} y="+4">{hoveredModelData.y} BT</text>
+            </g>
+
+            <!-- x axis -->
+            <g class="target-line" transform="translate({xScale(hoveredModelData.x)},0)">
+              <line y1={yScale(minMaxY[0])} y2={yScale(hoveredModelData.y)} />
+              <rect y={height - padding.bottom} x="-35" width="70" height="30" rx="4" ry="4" />
+              <text y={height - padding.bottom + 20}>{hoveredModelData.x} WH</text>
+            </g>
+          {/if}
+
+          <!-- data -->
+          {#each filteredModels as llm (llm.id)}
+            <GraphDot
+              cx={xScale(llm.x)}
+              cy={yScale(llm.y)}
+              r={llm.radius}
+              model={llm}
+              class={[
+                llm.class,
+                {
+                  hovered: hoveredModel === llm.id,
+                  blurred: hoveredModel && hoveredModel !== llm.id
+                }
+              ]}
+              onpointerenter={() => onModelHover(llm)}
+              onpointerleave={() => (hoveredModel = undefined)}
+            />
+          {/each}
+        </svg>
+
+        {#if hoveredModelData}
+          <div
+            id="graph-tooltip"
+            class="cg-border rounded-sm! bg-white p-3 drop-shadow-md absolute z-1 min-w-[175px]"
+            style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
+          >
+            <div class="flex">
+              <AILogo
+                logo={hoveredModelData.lab.logo}
+                customLogoId={hoveredModelData.lab.has_custom_logo
+                  ? hoveredModelData.lab.id
+                  : undefined}
+                customLogoVersion={hoveredModelData.lab.logo_version}
+                alt={hoveredModelData.lab.name}
+                class="me-1"
+              />
+              <strong class="leading-normal text-[14px]">{hoveredModelData.human_id}</strong>
+            </div>
+
+            <div class="mt-1 text-[12px]">
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption', icon: 'i-ri-flashlight-line' }] as const as item (item.key)}
+                <div class="gap-1 leading-relaxed flex">
+                  <Icon icon={item.icon} size="xxs" class="text-primary" />
+                  <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
+                    {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
+                  </p>
+                  <strong class="ms-auto"
+                    >{item.key === 'elo'
+                      ? hoveredModelData.data[item.key]
+                      : hoveredModelData[item.key]}</strong
+                  >
+                </div>
+              {/each}
+
+              <div class="mt-4">
+                {#each tooltipExtraData as key (key)}
+                  {#if hoveredModelData[key]}
+                    <div class="gap-1 leading-relaxed flex">
+                      <p class="mb-0! leading-relaxed! text-grey text-[12px]!">
+                        {m[`ranking.energy.views.graph.tooltip.${key}`]()}
+                      </p>
+                      <strong class="ms-auto">
+                        {#if key === 'arch'}
+                          {m[
+                            `generated.archs.${hoveredModelData.license.kind === 'proprietary' ? 'na' : (hoveredModelData.arch as Archs)}.name`
+                          ]()}
+                        {:else}
+                          {hoveredModelData[key]}
+                        {/if}
+                      </strong>
+                    </div>
+                  {/if}
+                {/each}
+              </div>
+            </div>
+          </div>
+        {/if}
+
+        <div class="md:block hidden h-[675px] w-[230px]">
+          {@render legend('desktop')}
+        </div>
+      </div>
+
+      <div class="text-center">
+        <Icon icon="i-ri-flashlight-line" class="text-primary" />
+        <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 md:hidden">
+    {@render legend('mobile')}
+  </div>
+</div>
+
+<style lang="postcss">
+  #energy-graph {
+    svg {
+      width: 100%;
+      height: 700px;
+    }
+
+    text {
+      fill: var(--grey-0-1000);
+    }
+
+    .axis {
+      line {
+        stroke: var(--grey-950-100);
+      }
+
+      text {
+        font-size: 14px;
+      }
+    }
+
+    .x-axis text {
+      text-anchor: middle;
+    }
+
+    .y-axis text {
+      text-anchor: end;
+    }
+
+    .target-line {
+      line {
+        stroke: var(--grey-425-625);
+        stroke-dasharray: 5;
+        stroke-width: 2px;
+      }
+
+      rect {
+        fill: var(--grey-0-1000);
+      }
+
+      text {
+        text-anchor: middle;
+        font-size: 14px;
+        fill: var(--grey-1000-50);
+        font-weight: 700;
+      }
+    }
+
+    /* Dots live in GraphDot, hence the :global hooks. A ring in the
+       architecture colour around the lab mark. */
+    svg :global(circle) {
+      fill: var(--background-default-grey);
+      stroke-width: 2px;
+    }
+
+    svg :global(circle),
+    svg :global(foreignObject) {
+      transition: opacity 0.15s;
+    }
+    svg :global(circle.blurred),
+    svg :global(circle.blurred + foreignObject) {
+      opacity: 0.4;
+    }
+
+    /* Dots color */
+    :global(.na) {
+      stroke: #cecece;
+      border-color: #cecece;
+    }
+    :global(.moe) {
+      stroke: var(--green-archipel-main-557);
+      border-color: var(--green-archipel-main-557);
+    }
+    :global(.dense) {
+      stroke: var(--cg-orange);
+      border-color: var(--cg-orange);
+    }
+    :global(.matformer) {
+      stroke: var(--blue-france-main-525);
+      border-color: var(--blue-france-main-525);
+    }
+  }
+
+  #graph-tooltip {
+    top: var(--y);
+    left: var(--x);
+
+    transform: translate(-50%, calc(-100% - 1.5rem));
+
+    @media (min-width: 36em) {
+      transform: translate(1.5rem, calc(-1.5rem));
+    }
+  }
+
+  .graph-legend {
+    .dot {
+      width: var(--size, 16px);
+      height: var(--size, 16px);
+    }
+
+    /* Rings, like the dots on the chart. */
+    .dot.moe,
+    .dot.dense,
+    .dot.matformer {
+      border-width: 3px;
+    }
+  }
+</style>

@@ -1,7 +1,6 @@
 from .archive_blacklisted_grok import archive_blacklisted_grok
 from .archive_corrupted import archive_corrupted
 from .archive_spam import archive_spam
-from .archive_unknown_llms import archive_unknown_llms, delete_unknown_llms_comparisons
 from .backfill_pii_spam import backfill_pii_spam
 from .llm_analyze import llm_analyze
 from .migrate_comparisons import migrate_comparisons
@@ -12,4 +11,4 @@ from .migrate_system_messages import migrate_system_messages
 from .migrate_turns import migrate_turns
 from .migrate_user_messages import migrate_user_messages
 from .migrate_votes import migrate_votes
-from .rename_llm import rename_llm
+from .seed import seed_admins

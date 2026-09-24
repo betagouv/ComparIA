@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from pydantic import BeforeValidator
 
 
@@ -7,3 +9,5 @@ def strip_and_empty_as_none(v: str | None) -> str | None:
 
 
 StripAndEmptyAsNone = BeforeValidator(strip_and_empty_as_none)
+
+NonEmptyStr = Annotated[str, StripAndEmptyAsNone]

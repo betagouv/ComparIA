@@ -28,7 +28,7 @@ Copy the example env file and fill in the required values:
 cp .env.example .env
 ```
 
-Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. For the DA instance, change `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and point `COMPARIA_DB_URI` to the DA database.
+Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. Set it before your first `make db-migrate`: migrations copy it onto the OpenRouter endpoint row, and from then on the key belongs to that endpoint and is edited at `/admin/llms/endpoints`. For the DA instance, change `COMPARIA_INSTANCE_NAME=da` and point `COMPARIA_DB_URI` to the DA database.
 
 Start Postgres and Redis, then run:
 
@@ -39,7 +39,7 @@ source .env
 make dev      # backend on :8008, frontend on :5173
 ```
 
-For the DA instance, copy `.env.example` and set `DEFAULT_COUNTRY_PORTAL=da`, `DEFAULT_LOCALE=da`, and `COMPARIA_DB_URI` to the DA database before sourcing.
+For the DA instance, copy `.env.example` and set `COMPARIA_INSTANCE_NAME=da` and `COMPARIA_DB_URI` to the DA database before sourcing.
 
 ---
 
@@ -57,7 +57,7 @@ make down-da    # Stop DA instance
 make logs-da    # Follow DA instance logs
 ```
 
-These commands load secrets from a KeePass database (`~/comparia_dev.kdbx` by default). You can use the team's shared database or create your own — one entry per variable, in groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**. See `devops/instances/fr/.env.fr.example` and `devops/instances/da/.env.da.example` for the full variable list.
+These commands load secrets from a KeePass database (`~/comparia_dev.kdbx` by default). You can use the team's shared database or create your own, with one entry per variable, in groups `instances/fr` or `instances/da`, with **username = variable name** and **password = value**. See `devops/instances/fr/.env.fr.example` and `devops/instances/da/.env.da.example` for the full variable list.
 
 Override the database path with:
 
@@ -110,22 +110,39 @@ make db-migrate-status   # show current migration revision
 
 ## Models
 
-These commands generate [`utils/models/generated-models.json`](utils/models/generated-models.json) and update translations in [`frontend/locales/messages/fr.json`](frontend/locales/messages/fr.json).
+Models live in the database, not in a file. Add them at `/admin/llms` (see [the admin panel guide](docs/admin.md#llms)), or import a JSON file:
 
 ```bash
-make models-build          # Generate model files from JSON sources
-make models-maintenance    # Run model health checks
+./comparia-cli llms import path/to/llms-data.json
+./comparia-cli llms export      # writes the current catalogue to data/llms-data.json
 ```
+
+---
+
+## The CLI
+
+`./comparia-cli` is the way in to everything that is not an HTTP request. Every command takes `--help`.
+
+```bash
+./comparia-cli generate rankings     # recompute the leaderboard
+./comparia-cli generate datasets     # build and publish the datasets
+./comparia-cli db --help             # migrations, archiving, admin seeding
+./comparia-cli maintenance on        # put the instance behind a maintenance page
+./comparia-cli llms --help           # import and export the model catalogue
+./comparia-cli internal all          # regenerate frontend types and i18n schemas
+```
+
+It needs `COMPARIA_DB_URI`, so `source .env` first.
 
 ---
 
 ## Datasets
 
-**Prerequisites:** `COMPARIA_DB_URI`, `HF_PUSH_DATASET_KEY`, and `HF_PUSH_DATASET_PATH` environment variables configured.
+**Prerequisites:** `COMPARIA_DB_URI` configured, and at least one enabled destination in the admin panel. Add `--dry-run` to build the datasets locally and send them nowhere.
 
 ```bash
-make dataset-export        # Export FR datasets to HuggingFace
-make dataset-export-da     # Export DA datasets to HuggingFace
+make dataset-export           # Send the datasets to the configured destinations
+make dataset-export-dry-run   # Build them locally and send them nowhere
 ```
 
 ---
@@ -150,7 +167,12 @@ cd frontend && yarn run check
 
 The frontend uses [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) for i18n. Currently supported locales: **fr** (default), **da**, **en**, **lt**, **sv**.
 
-Translation files live in `frontend/locales/messages/`. To add a new language, create a new JSON file following the structure of `fr.json` and register the locale in the paraglide config.
+Translation files live in `frontend/locales/messages/`. There are more files there than there are supported locales, because a language only counts once it appears in two lists, which have to agree:
+
+- `locales` in `frontend/comparia.inlang/settings.json`
+- `SUPPORTED_LOCALES` in `utils/database/models/app_settings.py`
+
+To add one: copy `fr.json`, translate it, add the code to both lists, then enable it for your instance at `/admin/locales`.
 
 ---
 
@@ -163,4 +185,8 @@ Translation files live in `frontend/locales/messages/`. To add a new language, c
 - `devops/instances/postgres/`: Shared Postgres compose and schema init.
 - `devops/instances/redis/`: Shared Redis compose.
 - `devops/keepassxc/`: KeePass env loader script.
-- `utils/`: Model generation, database schemas, dataset export.
+- `utils/`: Database models and migrations, the model catalogue, dataset export, ranking.
+- `internal/`: Code generation for frontend types and i18n schemas.
+- `docs/`: [Self-hosting](docs/self-hosting.md) and [the admin panel](docs/admin.md).
+
+Almost all runtime configuration lives in the admin panel rather than in code or `.env`: models, languages, branding, legal pages, dataset destinations.

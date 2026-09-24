@@ -1,27 +1,42 @@
 <script lang="ts">
+  import { api } from '$lib/fastapi-client'
   import type { HTMLImgAttributes } from 'svelte/elements'
 
   const {
-    iconPath,
+    logo,
+    customLogoId,
+    customLogoVersion,
     size = 'md',
     ...props
-  }: { iconPath: string; alt: string; size?: 'sm' | 'md' | 'lg' } & HTMLImgAttributes = $props()
+  }: {
+    logo: string | null
+    customLogoId?: string
+    customLogoVersion?: string | null
+    alt: string
+    size?: 'sm' | 'md' | 'lg'
+  } & HTMLImgAttributes = $props()
   const sizeClass = $derived(
     { sm: 'w-[14px] h-[14px]', md: 'w-[20px] h-[20px]', lg: 'w-[34px] h-[34px]' }[size]
   )
   const inverted = $derived(
-    ['openai.svg', 'xai.svg', 'liquid.svg', 'moonshot-ai.webp'].includes(iconPath)
+    logo && ['openai.svg', 'xai.svg', 'liquid.svg', 'moonshot-ai.webp'].includes(logo)
       ? 'dark:invert'
       : ''
   )
 </script>
 
-{#if iconPath.includes('.')}
+{#if customLogoId}
   <img
     {...props}
-    src="/orgs/ai/{iconPath}"
+    src={api.getUrl(`/models/labs/${customLogoId}/logo`, { v: customLogoVersion ?? '' })}
+    class={['object-contain', sizeClass, props.class]}
+  />
+{:else if logo?.includes('.')}
+  <img
+    {...props}
+    src="/orgs/ai/{logo}"
     class={['object-contain', sizeClass, inverted, props.class]}
   />
 {:else}
-  <span class={[`i-ai-${iconPath}`, sizeClass, props.class]}></span>
+  <span class={[`i-ai-${logo}`, sizeClass, props.class]}></span>
 {/if}
