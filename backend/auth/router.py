@@ -31,6 +31,7 @@ from backend.auth.services import (
 )
 from backend.config import settings
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument
 from utils.database.models.utils import as_naive_utc
@@ -313,14 +314,14 @@ async def email_verify(
     except Exception as e:
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
-    token = await verify_login_code(
+    signed_in = await verify_login_code(
         email=body.email,
         code=body.code,
         ip=ip,
         user_agent=user_agent,
         anonymous_user_hash=_anonymous_hash(request),
     )
-    if not token:
+    if not signed_in:
         try:
             client = get_redis_client()
             for key in (fail_key, email_fail_key):
@@ -344,13 +345,13 @@ async def email_verify(
 
     response.set_cookie(
         "auth_session",
-        token,
+        signed_in.token,
         httponly=True,
         secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
     )
-    return {"email": body.email}
+    return {"email": body.email, "first_sign_in": signed_in.first}
 
 
 @router.get("/invite/{token}")
@@ -419,7 +420,17 @@ async def get_me(request: Request) -> dict:
     user = await get_user_from_token(token)
     if not user:
         return {"user": None}
-    return {"user": {"email": user.email, "role": user.role}}
+    return {
+        "user": {
+            "email": user.email,
+            "role": user.role,
+            # Whether a required signup question is still unanswered, which
+            # holds every arena write until it is (see survey/dependencies.py).
+            "questionsAnswered": await signup_questions_answered(
+                user_id=user.id, anonymous_user_hash=None
+            ),
+        }
+    }
 
 
 @router.get("/me/export")

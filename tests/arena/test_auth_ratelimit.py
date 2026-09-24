@@ -25,6 +25,7 @@ from fastapi.testclient import TestClient
 
 import backend.auth.router as auth_router
 import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.auth.services import SignIn
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
@@ -226,7 +227,7 @@ def test_successful_verify_clears_fail_counter():
 
     async def wrong_then_right(**kwargs):
         calls["n"] += 1
-        return None if calls["n"] == 1 else "sometoken"
+        return None if calls["n"] == 1 else SignIn(token="sometoken", first=False)
 
     with fake_router(verify_login_code=wrong_then_right) as (client, fake):
         r = client.post(
@@ -372,7 +373,7 @@ def test_verify_refuses_a_cross_site_origin():
     cookie in a visitor's browser."""
 
     async def always_right(**kwargs):
-        return "sometoken"
+        return SignIn(token="sometoken", first=False)
 
     with fake_router(verify_login_code=always_right) as (client, _fake):
         r = client.post(
@@ -391,6 +392,25 @@ def test_verify_refuses_a_cross_site_origin():
         assert r.status_code == 200
 
 
+def test_verify_says_whether_this_is_the_first_sign_in():
+    """The sign-in form asks its optional questions of a new account only once:
+    the answer comes from the verify call, not from how recent the account is."""
+
+    for first in (True, False):
+
+        async def signed_in(first=first, **kwargs):
+            return SignIn(token="sometoken", first=first)
+
+        with fake_router(verify_login_code=signed_in) as (client, _fake):
+            r = client.post(
+                "/auth/email/verify",
+                json={"email": "student1@school.fr", "code": "000000"},
+                headers={"origin": "http://testserver"},
+            )
+            assert r.status_code == 200
+            assert r.json()["first_sign_in"] is first
+
+
 def run():
     test_per_email_request_cap_is_isolated_per_email()
     test_per_ip_request_cap_uses_configured_ceiling()
@@ -403,6 +423,7 @@ def run():
     test_forwarded_for_is_ignored_without_trusted_proxies()
     test_per_email_verify_cap_trips_whatever_the_ip()
     test_verify_refuses_a_cross_site_origin()
+    test_verify_says_whether_this_is_the_first_sign_in()
     print("All auth rate limit cases passed.")
 
 

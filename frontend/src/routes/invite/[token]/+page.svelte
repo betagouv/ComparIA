@@ -31,7 +31,7 @@
   let error = $state<string>()
 
   let terms = $state<ConsentDocument>()
-  let consentRequired = $state(false)
+  let consentRecorded = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
 
@@ -43,8 +43,7 @@
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
       terms = snapshot.document
-      consentRequired = !snapshot.accepted
-      consented = snapshot.accepted
+      consentRecorded = snapshot.accepted
     } catch {
       terms = undefined
       consentError = m['consent.loadFailed']()
@@ -72,7 +71,7 @@
       consentError = m['consent.loadFailed']()
       return
     }
-    if (consentRequired && !consented) {
+    if (!consented) {
       consentError = m['consent.required']()
       return
     }
@@ -81,9 +80,9 @@
     try {
       // Recorded while still anonymous, so accept_invite carries it onto the
       // new account with the time it was given.
-      if (consentRequired) {
+      if (!consentRecorded) {
         await submitConsent(terms, false)
-        consentRequired = false
+        consentRecorded = true
       }
       await api.request('/auth/invite/accept', {
         method: 'POST',
@@ -136,7 +135,8 @@
             id="invite-consent"
             class="text-xs!"
             bind:checked={consented}
-            disabled={submitting || !consentRequired}
+            required
+            disabled={submitting}
             label={consentLabel}
             links={legalLinks()}
             error={consentError}
@@ -153,7 +153,7 @@
         {/if}
         <Button
           text={submitting ? m['invite.accepting']() : m['invite.accept']()}
-          disabled={submitting || consentLoading || !terms || (consentRequired && !consented)}
+          disabled={submitting || consentLoading || !terms || !consented}
           onclick={accept}
           class="mt-4 block! w-full!"
         />

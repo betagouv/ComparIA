@@ -26,8 +26,14 @@ from sqlmodel import col, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
+from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
-from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
+from utils.database.models import (
+    LEGACY_PARTICIPATION_TERMS_VERSION,
+    Comparison,
+    SurveyAnswer,
+    SurveyQuestion,
+)
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
@@ -38,6 +44,7 @@ from .models import (
     DatasetComparisonBaseMetadata,
     DatasetComparisonExtraMetadata,
     Datasets,
+    RespondentAnswers,
 )
 from .publish import LOCAL_NAMES
 from .runs import PUBLISHABLE
@@ -63,6 +70,162 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
     except Exception as e:
         logger.error(f"Error loading LLMs data: {e}")
         raise
+
+
+# A profile (one respondent's full set of answers) is published only when at
+# least this many respondents share it. A rarer one, next to the text of every
+# conversation the person had, would single them out; it is exported as `{}`.
+SURVEY_MIN_RESPONDENTS_PER_PROFILE = 5
+
+
+def _respondent_key(
+    user_id: UUID | None, anonymous_user_hash: str | None
+) -> str | None:
+    """
+    Mirrors how 'comparison' itself records a respondent: exactly one of
+    user_id/anonymous_user_hash is set (never both, never neither once a
+    comparison has a visitor attached). None means neither is set, which the
+    caller treats as "no survey answers to attach".
+    """
+    if user_id is not None:
+        return f"user:{user_id}"
+    if anonymous_user_hash:
+        return f"anon:{anonymous_user_hash}"
+    return None
+
+
+def publishable_survey_terms_versions(active_version: str | None) -> set[str]:
+    """
+    The SurveyAnswer.terms_version values whose answers may be published in
+    the public dataset. This is THE place to edit when the terms are bumped:
+    add a version here only if its consent text covers research publication
+    of survey answers to the same extent as the current one.
+
+    - active published "terms" document version: IN. It is what
+      backend.auth.services.get_current_terms_acceptance_version() stamps on
+      every answer (see backend/survey/router.py), so it is the only version
+      whose text we know the respondent actually accepted.
+    - LEGACY_PARTICIPATION_TERMS_VERSION ("legacy-pre-versioning"): OUT.
+      get_current_terms_acceptance_version() returns that marker when NO terms
+      document is published at all, i.e. the respondent accepted nothing —
+      and backend/auth/services.py:erase_user_account explicitly notes survey
+      answers were never offered for publication under the research terms.
+    - NULL: OUT. Old rows predate version recording, so no proof of consent
+      exists; when unsure, do not publish.
+    - Any other (retired or unknown) version: OUT, for the same reason.
+
+    If nothing is currently published, nothing is publishable.
+    """
+    return {active_version} if active_version else set()
+
+
+def _survey_answers_query(publishable_versions: set[str]):
+    """
+    Published, non-archived questions joined to answers whose consent version
+    is publishable (see `publishable_survey_terms_versions`). The consent gate
+    lives here, in the WHERE clause: NULL (not matched by IN) and
+    legacy/retired versions never leave the database.
+    """
+    return (
+        select(
+            SurveyQuestion.key,
+            SurveyQuestion.input_type,
+            SurveyAnswer.user_id,
+            SurveyAnswer.anonymous_user_hash,
+            SurveyAnswer.option_key,
+        )
+        .join(
+            SurveyAnswer,
+            col(SurveyAnswer.question_id) == col(SurveyQuestion.id),
+        )
+        .where(
+            col(SurveyQuestion.published) == True,
+            col(SurveyQuestion.archived_at).is_(None),
+            col(SurveyAnswer.terms_version).in_(publishable_versions),
+        )
+        .order_by(col(SurveyAnswer.answered_at))
+    )
+
+
+@alru_cache
+async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
+    """
+    Every current answer to a published, non-archived survey question,
+    grouped by respondent (see `_respondent_key`). Loaded once (cached) for
+    the whole export rather than queried per turn or per comparison: the
+    export streams millions of turns, but the answer table itself is small
+    (one row per option per question per respondent), so one join beats a
+    query per row.
+
+    Unpublished and archived questions are filtered out here, at the source:
+    their answers never enter the returned mapping and so never reach the
+    dataset, regardless of what a Comparison's row later looks up.
+
+    Answers are also filtered on consent: only those recorded under a terms
+    version listed in `publishable_survey_terms_versions` (see that function
+    for which versions qualify and why) enter the dataset.
+
+    Answers are stored replace-in-place (see
+    utils/database/models/survey.py), so whatever is in the table now IS the
+    respondent's current answer; there is no history to reconcile. Rows are
+    folded in 'answered_at' order so that if a single-choice question is ever
+    somehow represented by more than one row for the same respondent, the
+    most recently answered one wins deterministically.
+    """
+    async with get_session() as session:
+        active_terms = await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE)
+        publishable_versions = publishable_survey_terms_versions(
+            active_terms.version if active_terms else None
+        )
+        rows = (await session.exec(_survey_answers_query(publishable_versions))).all()
+
+    return suppress_rare_profiles(fold_survey_answers(rows))
+
+
+def fold_survey_answers(rows) -> dict[str, RespondentAnswers]:
+    answers: dict[str, RespondentAnswers] = {}
+    for question_key, input_type, user_id, anonymous_user_hash, option_key in rows:
+        respondent = _respondent_key(user_id, anonymous_user_hash)
+        if respondent is None:
+            continue
+        per_respondent = answers.setdefault(respondent, {})
+        if input_type == "checkbox_group":
+            per_respondent.setdefault(question_key, [])  # type: ignore[assignment]
+            per_respondent[question_key].append(option_key)  # type: ignore[union-attr]
+        else:
+            per_respondent[question_key] = option_key
+    return answers
+
+
+def suppress_rare_profiles(
+    answers: dict[str, RespondentAnswers],
+    minimum: int = SURVEY_MIN_RESPONDENTS_PER_PROFILE,
+) -> dict[str, RespondentAnswers]:
+    """
+    Drop every respondent whose full set of answers is shared by fewer than
+    `minimum` respondents. The rows stay in the dataset; only their
+    `respondent` field is emptied.
+    """
+    profiles: dict[str, int] = {}
+    # Checkbox answers are listed in the order they were given, so the lists
+    # are sorted for the comparison: the same options make the same profile.
+    keyed = {
+        respondent: json.dumps(
+            {
+                key: sorted(value) if isinstance(value, list) else value
+                for key, value in profile.items()
+            },
+            sort_keys=True,
+        )
+        for respondent, profile in answers.items()
+    }
+    for profile in keyed.values():
+        profiles[profile] = profiles.get(profile, 0) + 1
+    return {
+        respondent: answers[respondent]
+        for respondent, profile in keyed.items()
+        if profiles[profile] >= minimum
+    }
 
 
 async def count_dataset_rows(datasets: list[Datasets]):
@@ -141,6 +304,16 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     llms = await get_llms_data()
     llm_a = llms.get(comp.llm_id_a)  # .get() tolerates empty/unknown llm_id
     llm_b = llms.get(comp.llm_id_b)
+
+    # Published-questions-only socio-demographic answers for whoever had this
+    # conversation. Same dict for every turn of this comparison: the
+    # respondent doesn't change turn to turn, so this is computed once here
+    # rather than once per turn. JSON-encoded (see `_reference_rows`) because
+    # the key set is admin-editable and can't be pinned as a fixed struct.
+    respondent_answers = await get_survey_respondent_answers()
+    respondent_id = _respondent_key(comp.user_id, comp.anonymous_user_hash)
+    respondent = respondent_answers.get(respondent_id, {}) if respondent_id else {}
+    respondent_json = json.dumps(respondent, ensure_ascii=False, sort_keys=True)
 
     # A side's full conversation opens with its system prompt (when present),
     # then alternates user / assistant for every turn.
@@ -240,6 +413,7 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             "excluded": excluded,
             "metadata": {**turn_meta, **comp_meta},
             "extra_metadata": extra_meta,
+            "respondent": respondent_json,
         }
         for idx, (row, turn_meta) in enumerate(zip(partial_rows, turns_metadata))
     ]
@@ -306,6 +480,13 @@ def _reference_rows() -> list[dict]:
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
             },
+            # JSON-encoded string, not a struct: the question key set is
+            # admin-editable (new questions can be published at any time), so
+            # a struct/map column would either change shape release to
+            # release or force every answer to the same value type. A string
+            # column is the one shape that stays fixed regardless of what
+            # questions exist. See `get_survey_respondent_answers`.
+            "respondent": json.dumps({"x": "x", "y": ["x", "y"]}, sort_keys=True),
         }
     ]
 
@@ -435,6 +616,14 @@ def _write_normal_from_raw_parquet(
                 metadata_index,
                 "metadata",
                 pa.chunked_array(chunks, type=pa.struct(fields)),
+            )
+        # Same idea as 'participation_terms_version' above: a raw parquet
+        # cached from before 'respondent' existed has no such column at all.
+        # Backfill '{}' (answered nothing) rather than producing a normal
+        # dataset with a column missing entirely.
+        if table.schema.get_field_index("respondent") == -1:
+            table = table.append_column(
+                "respondent", pa.array(["{}"] * len(table), type=pa.string())
             )
 
         if len(table) == 0:

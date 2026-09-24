@@ -4,6 +4,7 @@ import { createContext } from 'svelte'
 export interface AuthUser {
   email: string
   role: string
+  questionsAnswered: boolean
 }
 
 export interface AuthConfig {

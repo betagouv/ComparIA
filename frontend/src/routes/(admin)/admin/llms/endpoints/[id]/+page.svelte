@@ -95,5 +95,12 @@
     </FormInput>
   {/snippet}
 
-  <Form {id} label="Endpoint" subLabel={id} {...form} fieldSnippets={{ api_key: apiKey }} />
+  <Form
+    {id}
+    label="Endpoint"
+    subLabel={id}
+    {...form}
+    fieldSnippets={{ api_key: apiKey }}
+    class="mt-6! p-6 cg-border max-w-[700px]"
+  />
 </div>

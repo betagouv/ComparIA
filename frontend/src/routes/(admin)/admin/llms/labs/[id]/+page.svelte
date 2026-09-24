@@ -77,7 +77,7 @@
 </script>
 
 <div>
-  <Form {id} label="Lab" subLabel={id} {...form} />
+  <Form {id} label="Lab" subLabel={id} {...form} class="mt-6! p-6 cg-border max-w-[700px]" />
   {#if id !== 'create' && data.formProps.data.id}
     <section class="mt-6! p-6 cg-border max-w-[700px]">
       <h2 class="text-xl!">Custom logo</h2>

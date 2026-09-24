@@ -1,5 +1,7 @@
 import { resetConsent } from '$lib/consent'
+import type { MySurveyAnswer, PublicSurveyQuestion } from '$lib/generated/backend'
 import { expectAccessible } from '$lib/testing/a11y'
+import { getTestLocale } from '$lib/testing/reactive-locale.svelte'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SignInForm from './SignInForm.svelte'
@@ -8,7 +10,9 @@ import SignInModal from './SignInModal.svelte'
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
   conceal: vi.fn(),
-  authContext: { user: null, config: { access_policy: 'anonymous_first' } }
+  authContext: { user: null, config: { access_policy: 'anonymous_first' } },
+  questions: [] as PublicSurveyQuestion[],
+  answers: [] as MySurveyAnswer[]
 }))
 
 vi.mock('$lib/auth.svelte', () => ({
@@ -30,8 +34,19 @@ vi.mock('$lib/fastapi-client', () => ({
 
 vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/i18n/runtime')>()),
-  getLocale: () => 'fr'
+  getLocale: () => getTestLocale()
 }))
+
+vi.mock('$lib/survey', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('$lib/survey')>()
+  return {
+    ...actual,
+    getSurveyContext: () => ({
+      signupQuestions: mocks.questions,
+      signupAnswers: mocks.answers
+    })
+  }
+})
 
 const terms = {
   version: '2026-07-20',
@@ -108,15 +123,16 @@ describe('SignInForm consent', () => {
     expect(consentPost).toBeLessThan(paths().indexOf('/auth/email/request'))
   })
 
-  it('does not ask again when the session already accepted the version in force', async () => {
+  it('ask again when the session already accepted the version in force', async () => {
     servesTerms(true)
     const { container } = render(SignInForm)
-    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
-    await waitFor(() => expect(submit.disabled).toBe(false))
-
     await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
       target: { value: 'personne@example.test' }
     })
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    await waitFor(() => expect(submit.disabled).toBe(true))
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     await fireEvent.click(submit)
 
     await waitFor(() => expect(paths()).toContain('/auth/email/request'))
@@ -133,9 +149,10 @@ describe('SignInForm consent', () => {
     const { container, getByRole } = render(SignInForm)
     const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
     const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
-    await waitFor(() => expect(submit.disabled).toBe(false))
+    await waitFor(() => expect(submit.disabled).toBe(true))
 
     await fireEvent.input(emailInput, { target: { value: 'personne@example.test' } })
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     await fireEvent.click(submit)
 
     const codeInput = await waitFor(() => {
@@ -180,6 +197,9 @@ describe('SignInForm consent', () => {
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
     expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true)
 
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
+      target: { value: 'personne@example.test' }
+    })
     await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
       false
@@ -190,7 +210,7 @@ describe('SignInForm consent', () => {
     render(SignInForm)
     render(SignInForm)
 
-    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(paths().length).toBe(2))
     expect(mocks.request).toHaveBeenNthCalledWith(
       1,
       '/settings/legal/terms',
@@ -223,5 +243,92 @@ describe('SignInForm consent', () => {
 
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
     expect(container.querySelector('#login-merge')).toBeNull()
+  })
+
+  it('labels the blank entry of a required select question for everyone', async () => {
+    servesTerms()
+    mocks.questions = [
+      {
+        id: 'q1',
+        key: 'age',
+        required: true,
+        input_type: 'select',
+        label: 'Tranche d’âge',
+        revision: 1,
+        options: [{ key: '18_25', label: '18–25 ans' }]
+      }
+    ]
+
+    const { container } = render(SignInForm, { step: 'questions' })
+
+    const select = await waitFor(() => {
+      const element = container.querySelector<HTMLSelectElement>('#q1')!
+      expect(element).not.toBeNull()
+      return element
+    })
+    expect(select.getAttribute('required')).toBe('')
+    const blankOption = select.querySelector<HTMLOptionElement>('option[value=""]')!
+    expect(blankOption.textContent).toBe('Sélectionnez une option')
+  })
+})
+
+vi.mock('$app/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$app/navigation')>()),
+  invalidate: () => Promise.resolve()
+}))
+
+describe('SignInForm after the code', () => {
+  const question: PublicSurveyQuestion = {
+    id: 'q1',
+    key: 'uses',
+    required: false,
+    input_type: 'checkbox_group',
+    label: 'Usages',
+    revision: 1,
+    options: [{ key: 'work', label: 'Travail' }]
+  }
+
+  function signsIn(firstSignIn: boolean, questionsAnswered: boolean) {
+    mocks.request.mockImplementation((path: string) => {
+      if (path.startsWith('/settings/legal/terms')) return Promise.resolve(terms)
+      if (path === '/auth/consent/anonymous') return Promise.resolve({ terms: null })
+      if (path === '/auth/email/verify')
+        return Promise.resolve({ email: 'a@example.com', first_sign_in: firstSignIn })
+      if (path === '/auth/me')
+        return Promise.resolve({
+          user: { email: 'a@example.com', role: 'user', questionsAnswered }
+        })
+      return Promise.reject(new Error(`Unexpected request: ${path}`))
+    })
+  }
+
+  async function verify(firstSignIn: boolean, questionsAnswered: boolean) {
+    resetConsent()
+    mocks.questions = [question]
+    signsIn(firstSignIn, questionsAnswered)
+    const onSuccess = vi.fn()
+    const { container } = render(SignInForm, { step: 'code', onSuccess })
+    const code = await waitFor(() => container.querySelector<HTMLInputElement>('#login-code')!)
+    await fireEvent.input(code, { target: { value: '123456' } })
+    await fireEvent.submit(container.querySelector('form')!)
+    return { container, onSuccess }
+  }
+
+  it('puts the optional questions to a new account', async () => {
+    const { container, onSuccess } = await verify(true, true)
+    await waitFor(() => expect(container.querySelector('#signin-survey')).not.toBeNull())
+    expect(onSuccess).not.toHaveBeenCalled()
+  })
+
+  it('lets a returning account through when nothing required is missing', async () => {
+    const { container, onSuccess } = await verify(false, true)
+    await waitFor(() => expect(onSuccess).toHaveBeenCalled())
+    expect(container.querySelector('#signin-survey')).toBeNull()
+  })
+
+  it('stops a returning account on a required question it has not answered', async () => {
+    const { container, onSuccess } = await verify(false, false)
+    await waitFor(() => expect(container.querySelector('#signin-survey')).not.toBeNull())
+    expect(onSuccess).not.toHaveBeenCalled()
   })
 })

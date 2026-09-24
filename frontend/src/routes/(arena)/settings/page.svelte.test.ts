@@ -1,7 +1,7 @@
+import { ACCESSIBILITY_PATH, ECODESIGN_PATH, PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
-import { PRIVACY_POLICY_PATH, TERMS_PATH, ACCESSIBILITY_PATH, ECODESIGN_PATH } from '$lib/consent'
 
 const request = vi.fn()
 
@@ -14,7 +14,16 @@ vi.mock('$lib/chatService.svelte', () => ({ getComparisonsContext: () => [] }))
 vi.mock('$lib/fastapi-client', () => ({
   api: { request: (...args: unknown[]) => request(...args) }
 }))
-
+vi.mock('$lib/survey', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('$lib/survey')>()
+  return {
+    ...actual,
+    getSurveyContext: () => ({
+      signupQuestions: [],
+      signupAnswers: []
+    })
+  }
+})
 describe('Settings page', () => {
   it('splits the account actions from the legal information', async () => {
     const { container, getByRole, getByLabelText } = render(Page)
