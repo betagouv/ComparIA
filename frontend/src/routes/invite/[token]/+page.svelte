@@ -133,6 +133,7 @@
             id="invite-consent"
             class="text-xs!"
             bind:checked={consented}
+            required
             disabled={submitting}
             label={consentLabel}
             links={legalLinks()}
