@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     DATASET_RUN_TIMEOUT: int = 6 * 3600
     # Below the backend pod's own memory limit, so a run that overshoots gets a
     # clean MemoryError instead of the kernel OOM-killing the whole pod.
-    DATASET_MEMORY_LIMIT_GB: int = 1
+    DATASET_MEMORY_LIMIT_GB: int = 3
     # Generous: the export's single read walks the whole comparison table, and
     # this is here to end a query that has stopped moving, not a slow one.
     DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000

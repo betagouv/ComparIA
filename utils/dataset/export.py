@@ -14,7 +14,7 @@ logger = logging.getLogger("comparia.dataset")
 # which is what made the old "accumulate everything then to_parquet" path swap
 # on large exports. This is also the parquet row-group size, so don't make it
 # tiny.
-BATCH_ROWS = 10_000
+BATCH_ROWS = 2_000
 SAMPLE_SIZE = 1000
 SAMPLE_SEED = 42
 
