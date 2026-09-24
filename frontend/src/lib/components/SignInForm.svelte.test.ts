@@ -123,15 +123,16 @@ describe('SignInForm consent', () => {
     expect(consentPost).toBeLessThan(paths().indexOf('/auth/email/request'))
   })
 
-  it('does not ask again when the session already accepted the version in force', async () => {
+  it('ask again when the session already accepted the version in force', async () => {
     servesTerms(true)
     const { container } = render(SignInForm)
-    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
-    await waitFor(() => expect(submit.disabled).toBe(false))
-
     await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
       target: { value: 'personne@example.test' }
     })
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    await waitFor(() => expect(submit.disabled).toBe(true))
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     await fireEvent.click(submit)
 
     await waitFor(() => expect(paths()).toContain('/auth/email/request'))
@@ -148,9 +149,10 @@ describe('SignInForm consent', () => {
     const { container, getByRole } = render(SignInForm)
     const emailInput = container.querySelector<HTMLInputElement>('#login-email')!
     const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
-    await waitFor(() => expect(submit.disabled).toBe(false))
+    await waitFor(() => expect(submit.disabled).toBe(true))
 
     await fireEvent.input(emailInput, { target: { value: 'personne@example.test' } })
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     await fireEvent.click(submit)
 
     const codeInput = await waitFor(() => {
@@ -195,6 +197,9 @@ describe('SignInForm consent', () => {
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
     expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true)
 
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
+      target: { value: 'personne@example.test' }
+    })
     await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     expect(container.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(
       false

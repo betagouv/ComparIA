@@ -1,8 +1,7 @@
-import { resetConsent } from '$lib/consent'
+import { PRIVACY_POLICY_PATH, resetConsent, TERMS_PATH } from '$lib/consent'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import InvitePage from './+page.svelte'
-import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
 
 const mocks = vi.hoisted(() => ({ request: vi.fn(), goto: vi.fn() }))
 
@@ -98,10 +97,13 @@ describe('invite consent', () => {
     expect(consentPost).toBeLessThan(paths().indexOf('/auth/invite/accept'))
   })
 
-  it('does not ask again when the visitor already accepted the version in force', async () => {
+  it('ask again when the visitor already accepted the version in force', async () => {
     servesTerms({ accepted: true })
     const { container } = render(InvitePage)
-    await waitFor(() => expect(acceptButton(container).disabled).toBe(false))
+    await waitFor(() => expect(acceptButton(container).disabled).toBe(true))
+
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#invite-consent')!)
+    expect(acceptButton(container).disabled).toBe(false)
 
     await fireEvent.click(acceptButton(container))
 
@@ -111,7 +113,7 @@ describe('invite consent', () => {
         ([path, options]) => path === '/auth/consent/anonymous' && options?.method === 'POST'
       )
     ).toHaveLength(0)
-    expect(container.querySelector<HTMLInputElement>('#invite-consent')?.disabled).toBe(true)
+    expect(container.querySelector<HTMLInputElement>('#invite-consent')?.disabled).toBe(false)
   })
 
   it('offers a working retry when the terms cannot be loaded', async () => {
