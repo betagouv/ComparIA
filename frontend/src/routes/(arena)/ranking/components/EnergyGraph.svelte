@@ -300,7 +300,7 @@
                 alt={hoveredModelData.lab.name}
                 class="me-1"
               />
-              <strong class="leading-normal text-[14px]">{hoveredModelData.id}</strong>
+              <strong class="leading-normal text-[14px]">{hoveredModelData.human_id}</strong>
             </div>
 
             <div class="mt-1 text-[12px]">
