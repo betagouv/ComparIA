@@ -61,6 +61,14 @@ An optional domain allowlist restricts who can ask for a login code, which is ho
 
 `/admin/utilisateurs` is where you search accounts, change roles, invite people by email and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
+### Inactive accounts
+
+`comparia-cli db purge-inactive --months N` (or `make db-purge-inactive MONTHS=N`) removes accounts nobody has signed into for N months. The default is 12. It is a dry run until you pass `--apply` (`APPLY=1` with make): it lists who would get the warning, who would be erased, which rows asked for a login code but never signed in, and which admins would have matched. Run it that way from the CLI first to preview what the CronJob below will do.
+
+An account is first warned by email, once, 30 days before the deadline or as soon as it is found past it, in the language the person accepted the terms in. It is erased at the later of the deadline and 30 days after the warning, unless the person signs in again meanwhile, which resets the clock. Erasure is what the person gets when they delete their own account from the settings page, which goes further than a deletion from the admin panel: sessions are revoked, login codes and invite links go, the email address is replaced by a placeholder, the consent proof is kept without its address, and the conversations stay in the research datasets with no link back to the person. Rows that asked for a login code but never signed in are erased without a warning once past the deadline, as there was never an account to keep. Accounts holding an invite that can still be accepted are left alone. Admins are never erased, only listed. "Signed in" is what counts, not visits: a session lasts `AUTH_SESSION_LENGTH_DAYS` (30 by default), so the command refuses a number of months whose window, 30 days of notice included, would reach an account still on a live session.
+
+The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: the CronJob reads the same `config.smtp.*` and `config.appUrl` values as the backend, and without them no warning goes out and nothing is erased.
+
 ## Publishing
 
 `/admin/publication` sets where the open datasets go, and how often.

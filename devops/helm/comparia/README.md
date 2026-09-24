@@ -11,8 +11,8 @@ The chart deploys:
 - a `Secret` (chart-rendered from values, or a pre-existing one you point it
   at) carrying API keys and DB/Redis connection info
 - a pre-install/pre-upgrade Job that runs the app's Alembic migrations
-- three optional CronJobs (ranking computation, dataset export, LLM-based
-  analysis)
+- three optional CronJobs (ranking computation, LLM-based analysis, inactive
+  account purge)
 - an optional Ingress
 
 It does not include a Postgres or Redis instance, an S3 log-archival sidecar,
@@ -136,7 +136,7 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the two is independently toggleable — there is no combined switch.
+Each of the three is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
@@ -144,6 +144,9 @@ Each of the two is independently toggleable — there is no combined switch.
 | `cronjobs.ranking.schedule`          | `"17 * * * *"` | |
 | `cronjobs.analyze.enabled`           | `false` | LLM-based moderation/data-quality pass, consumes `OPENROUTER_API_KEY`. Off by default so enabling it — and paying for the LLM calls — is deliberate. |
 | `cronjobs.analyze.schedule`          | `"35 3 * * *"` | |
+| `cronjobs.purgeInactive.enabled`     | `false` | Weekly warn-then-erase of accounts not signed in for `months`. Off by default: state the retention period in the privacy policy first. Needs SMTP. |
+| `cronjobs.purgeInactive.schedule`    | `"20 4 * * 1"` | |
+| `cronjobs.purgeInactive.months`      | `12`    | Months without a sign-in before an account is warned, then erased 30 days later. |
 
 #### Dataset export
 

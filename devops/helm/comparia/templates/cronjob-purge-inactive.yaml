@@ -1,0 +1,40 @@
+{{- if .Values.cronjobs.purgeInactive.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-purge-inactive
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: purge-inactive
+spec:
+  schedule: {{ .Values.cronjobs.purgeInactive.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: purge-inactive
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: purge-inactive
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["./comparia-cli", "db", "purge-inactive", "--months", {{ .Values.cronjobs.purgeInactive.months | int | quote }}, "--apply"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                {{- include "comparia.backendEnv" . | nindent 16 }}
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+{{- end }}

@@ -82,6 +82,7 @@ async def _create_session(
     conversation either: that is the explicit merge, keyed on the anonymous
     session cookie. Does not commit; caller owns the transaction."""
     user.last_seen_at = datetime.now()
+    user.inactivity_warned_at = None
 
     token = secrets.token_urlsafe(32)
     auth_session = AuthSession(
@@ -195,7 +196,11 @@ async def create_invite(email: str, invited_by: uuid.UUID) -> str:
             # Clear their old auth history too, otherwise a previously
             # accepted invite or used login code makes list_users report
             # them as already joined instead of pending on the new invite.
+            # The inactivity clock restarts too, or the purge would count
+            # the months before the deletion against the new invite.
             user.deleted_at = None
+            user.last_seen_at = datetime.now()
+            user.inactivity_warned_at = None
             session.add(user)
 
             old_invites = await session.exec(
