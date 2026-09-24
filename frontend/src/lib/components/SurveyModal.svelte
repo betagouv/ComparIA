@@ -3,6 +3,7 @@
   import Form from '$components/form/Form.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import { getCohortContext } from '$lib/stores/cohortStore.svelte'
   import {
     answersToForm,
     formToAnswers,
@@ -14,9 +15,12 @@
 
   const modalId = 'fr-modal-survey'
   const survey = getSurveyContext()
+  const cohorts = getCohortContext()
   // Decided once, when the popup mounts: whether there is anything to ask and
   // whether this visitor has already been offered the popup this session.
-  const shouldOpen = !!survey.voteQuestions?.length && !hasShownSurveyThisSession()
+  // FIXME hardcoded: do not show survey for 'pix' cohorts
+  const shouldOpen =
+    cohorts !== 'pix' && !!survey.voteQuestions?.length && !hasShownSurveyThisSession()
 
   // Nothing is required here, whatever the question says: 'required' only
   // holds up the signup form, and this popup is optional by design.
