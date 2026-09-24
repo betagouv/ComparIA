@@ -289,6 +289,7 @@
           id="login-consent"
           class="text-xs! mt-1!"
           bind:checked={consented}
+          required
           disabled={loading || step !== 'email'}
           label={consentLabel}
           links={legalLinks()}
