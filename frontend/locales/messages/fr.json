@@ -2056,17 +2056,20 @@
             "triggersError": "Choisissez au moins un moment.",
             "triggersLabel": "Moments où elle est posée",
             "unpublishAction": "Dépublier",
-            "unpublishSuccess": "Question dépubliée"
+            "unpublishSuccess": "Question dépubliée",
+            "missingTranslation": "Traduction manquante : {locales}",
+            "defaultLabelError": "Renseignez au moins le libellé en {locale}, pour la question et pour chaque option."
         },
         "afterVote": {
-            "description": "Vos réponses sont facultatives, anonymes et nous aident à mieux comprendre qui utilise compar:IA.",
+            "description": "Vos réponses sont facultatives et nous aident à mieux comprendre qui utilise compar:IA.",
             "dismiss": "Plus tard",
             "submit": "Envoyer mes réponses",
             "submitFailed": "L’envoi a échoué. Vos réponses n’ont pas été enregistrées, vous pouvez réessayer.",
             "title": "Quelques questions pour mieux vous connaître"
         },
         "question": {
-            "chooseOption": "Sélectionnez une option"
+            "chooseOption": "Sélectionnez une option",
+            "required": "Cette question demande une réponse."
         },
         "profile": {
             "title": "Vos réponses au questionnaire",
@@ -2081,7 +2084,13 @@
         },
         "signup": {
             "optional": " (facultatif)",
-            "reloadNeeded": "Le questionnaire n’a pas pu être chargé. Rechargez la page puis réessayez."
+            "reloadNeeded": "Le questionnaire n’a pas pu être chargé. Rechargez la page puis réessayez.",
+            "title": "Dernière étape : quelques questions sur vous",
+            "description": "Les questions marquées d’un astérisque (*) sont obligatoires. Vos réponses nous aident à savoir qui participe à compar:IA, et vous pourrez les modifier à tout moment dans vos paramètres."
+        },
+        "required": {
+            "title": "Une réponse est nécessaire pour continuer",
+            "description": "Pour continuer à discuter et à voter, répondez aux questions marquées d’un astérisque (*). Vous pourrez modifier vos réponses à tout moment dans vos paramètres."
         }
     },
     "vote": {
@@ -2137,6 +2146,7 @@
         "random": "Aléatoire",
         "regenerate": "Regénérer",
         "remove": "Supprimer",
+        "required": "Obligatoire",
         "reset": "Réinitialiser",
         "restart": "Recommencer",
         "retry": "Recommencer",

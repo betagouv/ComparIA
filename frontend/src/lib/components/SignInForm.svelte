@@ -46,7 +46,7 @@
   let error = $state<string>()
 
   let terms = $state<ConsentDocument>()
-  let consentRequired = $state(false)
+  let consentRecorded = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
@@ -61,8 +61,7 @@
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
       terms = snapshot.document
-      consentRequired = !snapshot.accepted
-      consented = snapshot.accepted
+      consentRecorded = snapshot.accepted
     } catch {
       terms = undefined
       consentError = m['consent.loadFailed']()
@@ -84,16 +83,16 @@
       consentError = m['consent.loadFailed']()
       return
     }
-    if (consentRequired && !consented) {
+    if (!consented) {
       consentError = m['consent.required']()
       return
     }
     loading = true
     error = undefined
     try {
-      if (consentRequired) {
+      if (!consentRecorded) {
         await submitConsent(terms, false)
-        consentRequired = false
+        consentRecorded = true
       }
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
@@ -112,16 +111,22 @@
     loading = true
     error = undefined
     try {
-      await api.request<{ email: string }>('/auth/email/verify', {
-        method: 'POST',
-        body: JSON.stringify({ email, code })
-      })
+      const { first_sign_in } = await api.request<{ email: string; first_sign_in: boolean }>(
+        '/auth/email/verify',
+        { method: 'POST', body: JSON.stringify({ email, code }) }
+      )
       code = ''
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
+      // Before the questions, not after: the sign-in has already happened, and
+      // closing the form on the questions must not lose the merge asked for.
+      if (mergeComparisons) {
+        await api.request('/arena/comparison/merge', { method: 'POST' })
+      }
       await invalidate('survey:signup')
-      // Ask questions if any and user didn't yet answered it
-      if (survey.signupQuestions.length && (!auth.user!.questionsAnswered || auth.user!.new)) {
+      // Every question, optional ones included, on an account's first sign-in;
+      // after that only while a required one is still unanswered.
+      if (survey.signupQuestions.length && (first_sign_in || !auth.user!.questionsAnswered)) {
         step = 'questions'
       } else {
         onLoginCompleted()
@@ -154,13 +159,12 @@
     else verifyCode()
   }
 
-  async function onLoginCompleted() {
-    if (mergeComparisons) {
-      await api.request('/arena/comparison/merge', { method: 'POST' })
-    }
+  function onLoginCompleted() {
+    // Reset first: a wrapping modal reads the step when it closes, and must
+    // not take this close for the questions being walked away from.
+    step = 'email'
     onSuccess?.()
     useToast(m['auth.success'](), 4000)
-    step = 'email'
   }
 </script>
 
@@ -196,22 +200,13 @@
         />
       {/if}
 
-      {#if canMergeComparisons}
-        <Checkbox
-          id="login-merge"
-          class="text-xs! mt-1!"
-          bind:checked={mergeComparisons}
-          disabled={step === 'code'}
-          label={m['auth.modal.merge']()}
-        />
-      {/if}
-
       {#if terms}
         <Checkbox
           id="login-consent"
           class="text-xs! mt-1!"
           bind:checked={consented}
-          disabled={loading || step === 'code' || !consentRequired}
+          required
+          disabled={loading || step === 'code'}
           label={consentLabel}
           links={legalLinks()}
           linksClass="text-xs! leading-5!"
@@ -226,6 +221,16 @@
           text={m['consent.retry']()}
           disabled={consentLoading}
           onclick={() => readConsent(true)}
+        />
+      {/if}
+
+      {#if canMergeComparisons}
+        <Checkbox
+          id="login-merge"
+          class="text-xs! mt-1!"
+          bind:checked={mergeComparisons}
+          disabled={step === 'code'}
+          label={m['auth.modal.merge']()}
         />
       {/if}
 
@@ -270,7 +275,7 @@
         <Button
           type="submit"
           text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-          disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
+          disabled={loading || consentLoading || !terms || !consented || !email}
           class="mt-8 block! w-full!"
         />
       {/if}
@@ -278,7 +283,8 @@
   {:else}
     <SurveyFormSignup
       id="signin-survey"
-      title={m['survey.afterVote.title']()}
+      title={m['survey.signup.title']()}
+      description={m['survey.signup.description']()}
       questions={survey.signupQuestions}
       answers={survey.signupAnswers}
       onSuccess={onLoginCompleted}

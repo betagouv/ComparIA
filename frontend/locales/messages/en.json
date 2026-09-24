@@ -2056,17 +2056,20 @@
             "triggersError": "Pick at least one moment.",
             "triggersLabel": "When it is asked",
             "unpublishAction": "Unpublish",
-            "unpublishSuccess": "Question unpublished"
+            "unpublishSuccess": "Question unpublished",
+            "missingTranslation": "Missing translation: {locales}",
+            "defaultLabelError": "Fill in at least the {locale} label, for the question and for every option."
         },
         "afterVote": {
-            "description": "Your answers are optional, anonymous, and help us better understand who uses compar:IA.",
+            "description": "Your answers are optional and help us better understand who uses compar:IA.",
             "dismiss": "Later",
             "submit": "Send my answers",
             "submitFailed": "Sending failed. Your answers were not saved, you can try again.",
             "title": "A few questions to get to know you"
         },
         "question": {
-            "chooseOption": "Select an option"
+            "chooseOption": "Select an option",
+            "required": "This question needs an answer."
         },
         "profile": {
             "title": "Your survey answers",
@@ -2081,7 +2084,13 @@
         },
         "signup": {
             "optional": " (optional)",
-            "reloadNeeded": "The questions could not be loaded. Reload the page and try again."
+            "reloadNeeded": "The questions could not be loaded. Reload the page and try again.",
+            "title": "Last step: a few questions about you",
+            "description": "Questions marked with an asterisk (*) are required. Your answers help us know who takes part in compar:IA, and you can change them any time in your settings."
+        },
+        "required": {
+            "title": "An answer is needed to continue",
+            "description": "To keep chatting and voting, answer the questions marked with an asterisk (*). You can change your answers any time in your settings."
         }
     },
     "vote": {
@@ -2137,6 +2146,7 @@
         "random": "Random",
         "regenerate": "Regenerate",
         "remove": "Delete",
+        "required": "Required",
         "reset": "Reset",
         "restart": "Start again",
         "retry": "Start again",

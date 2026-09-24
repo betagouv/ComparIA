@@ -147,13 +147,22 @@ async def _associate_anonymous_acceptance(
     )
 
 
+@dataclass(frozen=True)
+class SignIn:
+    token: str
+    # No session ever opened before this one. The sign-in form puts its
+    # optional questions to a new account once, and after that only asks
+    # again while a required one is unanswered.
+    first: bool
+
+
 async def verify_login_code(
     email: str,
     code: str,
     ip: str,
     user_agent: str | None,
     anonymous_user_hash: str | None = None,
-) -> str | None:
+) -> SignIn | None:
     async with get_session() as session:
         result = await session.exec(select(User).where(User.email == email))
         user = result.first()
@@ -174,13 +183,21 @@ async def verify_login_code(
 
         login_code.used_at = datetime.now()
 
+        # Sessions are revoked, never deleted, so any row at all means the
+        # account has signed in before.
+        first = (
+            await session.exec(
+                select(AuthSession.id).where(AuthSession.user_id == user.id).limit(1)
+            )
+        ).first() is None
+
         token = await _create_session(
             session, user, ip, user_agent, anonymous_user_hash
         )
 
         await session.commit()
 
-    return token
+    return SignIn(token=token, first=first)
 
 
 async def create_invite(email: str, invited_by: uuid.UUID) -> str:

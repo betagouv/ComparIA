@@ -338,10 +338,12 @@ export interface MySurveyAnswer {
   input_type: "select" | "checkbox_group";
   options: PublicSurveyOption[];
   selected_keys: string[];
+  archived?: boolean;
 }
 export interface PublicSurveyOption {
   key: string;
   label: string;
+  archived?: boolean;
 }
 export interface MySurveyAnswersResponse {
   answers: MySurveyAnswer[];
