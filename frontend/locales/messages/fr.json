@@ -2146,6 +2146,7 @@
         "random": "Aléatoire",
         "regenerate": "Regénérer",
         "remove": "Supprimer",
+        "required": "Obligatoire",
         "reset": "Réinitialiser",
         "restart": "Recommencer",
         "retry": "Recommencer",
