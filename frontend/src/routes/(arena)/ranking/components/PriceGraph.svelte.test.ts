@@ -1,6 +1,6 @@
+import { expectAccessible } from '$lib/testing/a11y'
 import { fireEvent, render } from '@testing-library/svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { expectAccessible } from '$lib/testing/a11y'
 import PriceGraph from './PriceGraph.svelte'
 
 const model = (
@@ -82,8 +82,9 @@ describe('PriceGraph', () => {
 
     const svg = container.querySelector('svg')!
     expect(svg.getAttribute('role')).toBe('img')
-    const title = container.querySelector(`#${svg.getAttribute('aria-labelledby')}`)!
-    expect(title.tagName.toLowerCase()).toBe('title')
+    expect(svg.getAttribute('aria-label')).toContain('Bradley-Terry')
+    const title = container.querySelector(`#${svg.getAttribute('aria-describedby')}`)!
+    expect(title.tagName.toLowerCase()).toBe('desc')
 
     await expectAccessible(container)
   })
