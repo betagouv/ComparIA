@@ -162,7 +162,7 @@
   headerClass="sr-only!"
   class="py-0! px-0!"
 >
-  <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6">
+  <aside class="bg-light-grey py-3 md:py-4 px-4 md:px-6 top-0 md:sticky z-20">
     <form class="gap-3 lg:grid-cols-[280px_1fr] lg:items-start grid">
       <div>
         <Search
