@@ -28,7 +28,7 @@
     hideCheckLabel = false,
     checkedLabel = m['words.activated'](),
     uncheckedLabel = m['words.deactivated'](),
-    variant = 'secondary',
+    variant = 'primary',
     inline = true,
     groupClass,
     checkLabelClass,

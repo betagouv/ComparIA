@@ -58,8 +58,18 @@
 </div>
 
 <style lang="postcss">
-  input[type='checkbox'] {
+  .fr-toggle {
     --border-action-high-blue-france: var(--blue-france-main-525);
     --text-active-blue-france: var(--blue-france-main-525);
+
+    input[type='checkbox']:checked ~ .fr-toggle__label::after {
+      --data-uri-svg: var(--brand-toggle-check);
+    }
+    label::before {
+      --data-uri-svg: var(--brand-toggle-track);
+    }
+    input[type='checkbox']:checked ~ .fr-toggle__label::before {
+      --data-uri-svg: var(--brand-toggle-track-checked);
+    }
   }
 </style>

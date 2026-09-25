@@ -143,7 +143,7 @@
             "cols": {
                 "battles": "Palyginimai",
                 "general_rank": "Bendras rangas",
-                "record": "Rezultatas (L-P-Ly)",
+                "record": "Rezultatas (L-Ly-P)",
                 "score": "Mano įvertis"
             },
             "loading": "Įkeliamas jūsų reitingas…",

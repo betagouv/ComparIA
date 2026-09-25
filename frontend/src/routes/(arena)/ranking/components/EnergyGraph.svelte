@@ -222,10 +222,9 @@
         <svg
           bind:this={svg}
           role="img"
-          aria-labelledby="energy-graph-title"
+          aria-label={m['ranking.energy.views.graph.title']()}
           aria-describedby="energy-graph-desc"
         >
-          <title id="energy-graph-title">{m['ranking.energy.views.graph.title']()}</title>
           <desc id="energy-graph-desc">{m['a11y.energyGraphDesc']()}</desc>
           <!-- y axis -->
           <g class="axis y-axis">

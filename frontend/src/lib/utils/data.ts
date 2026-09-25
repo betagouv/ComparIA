@@ -31,8 +31,12 @@ export function toRelativeTime(date: Date, locale: string) {
   }
 }
 
-export function toShortDate(date: Date, locale: string) {
-  return date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
+export function toShortDate(
+  date: Date,
+  locale: string,
+  year: 'numeric' | '2-digit' | undefined = 'numeric'
+) {
+  return date.toLocaleString(locale, { year, month: 'numeric' })
 }
 
 export type TableCol<Id extends string = string> = {
@@ -40,6 +44,7 @@ export type TableCol<Id extends string = string> = {
   label: string
   kind?: 'date' | 'number' | 'boolean'
   orderable?: boolean
+  hidden?: boolean
   tooltip?: string
   colHeaderClass?: ClassValue
 }

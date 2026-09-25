@@ -609,8 +609,8 @@
         },
         "suggestions": {
             "fallback": "Explorer la catégorie : {category}",
-            "generateAnother": "Générer un autre message",
-            "title": "Suggestions de prompts"
+            "generateAnother": "Générer une autre requête",
+            "title": "Suggestions de requêtes"
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
         "webSearch": {
@@ -1662,7 +1662,7 @@
             "cols": {
                 "battles": "Comparaisons",
                 "general_rank": "Rang général",
-                "record": "Bilan (V-D-É)",
+                "record": "Bilan (V-É-D)",
                 "score": "Mon score"
             },
             "loading": "Chargement de votre classement…",

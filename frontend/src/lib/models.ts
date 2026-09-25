@@ -10,6 +10,7 @@ import type {
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
+import { toShortDate } from '$lib/utils/data'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
@@ -299,22 +300,14 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       license: { ...getLicenceBadge(licenseType), id: `llm-license-${model.id}` },
       release: {
         variant: 'brown' as const,
-        text: m['models.release']({
-          date: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
-        })
+        text: m['models.release']({ date: toShortDate(release_date, locale) })
       } as const,
-      release_short: {
-        variant: '' as const,
-        text: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
-      } as const,
+      release_short: { variant: '' as const, text: toShortDate(release_date, locale) } as const,
       knowledge: model.knowledge_cutoff
         ? ({
             variant: 'brown' as const,
             text: m['models.knowledge.badge']({
-              date: new Date(model.knowledge_cutoff).toLocaleString(locale, {
-                year: 'numeric',
-                month: 'numeric'
-              })
+              date: toShortDate(new Date(model.knowledge_cutoff), locale)
             }),
             tooltip: m['models.knowledge.tooltip']()
           } as const)

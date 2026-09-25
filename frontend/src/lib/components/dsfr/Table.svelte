@@ -1,9 +1,9 @@
 <script lang="ts" generics="Col extends TableCol, Row extends { id: string }">
+  import { browser } from '$app/environment'
   import { Button, Pagination, Search, Select, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
-  import { browser } from '$app/environment'
   import { onMount, type Snippet } from 'svelte'
   import { flip } from 'svelte/animate'
   import type { HTMLAttributes, HTMLTableAttributes } from 'svelte/elements'
@@ -207,7 +207,7 @@
                       ? orderingMethod
                       : 'none'
                     : undefined}
-                  class={col.colHeaderClass}
+                  class={[col.colHeaderClass, { 'hidden!': col.hidden }]}
                 >
                   <div class="text-xs font-medium text-dark-grey! flex items-center">
                     <span>{@html sanitize(col.label)}</span>
@@ -242,7 +242,7 @@
                 animate:flip={{ duration: flipDuration }}
               >
                 {#each cols as col (`${col.id}-${row.id}`)}
-                  <td>{@render cell(row, col)}</td>
+                  <td class={{ 'hidden!': col.hidden }}>{@render cell(row, col)}</td>
                 {/each}
               </tr>
             {/each}

@@ -27,11 +27,20 @@
   const xTicks = $derived(range(data.length))
   const yTicks = $derived(ticks(...minMaxY, 6))
 
-  onMount(resize)
+  onMount(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!entry) return
 
-  function resize() {
-    ;({ width, height } = svg!.getBoundingClientRect())
-  }
+      const { width: nextWidth, height: nextHeight } = entry.contentRect
+      if (nextWidth === 0 || nextHeight === 0) return
+
+      width = nextWidth
+      height = nextHeight
+    })
+
+    resizeObserver.observe(svg!)
+    return () => resizeObserver.disconnect()
+  })
 
   const barWidth = $derived(xScale(1) - xScale(0))
 </script>

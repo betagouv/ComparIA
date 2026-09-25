@@ -173,12 +173,12 @@
     </div>
   </div>
 {:else}
-  <div id="prompt-area" class="fr-container py-10 md:py-24">
+  <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
     <div class="fr-col-xl-8 m-auto">
-      <h2 class="fr-h3 mb-0! text-center">
+      <h2 class="fr-h4 mb-0! text-center">
         {m['arenaHome.title']()}
       </h2>
-      <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pb-20 md:pt-12 grid">
+      <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
         <div class="md:order-none md:col-span-full order-1">
           <TextPrompt
             id="initial-prompt"
@@ -227,9 +227,8 @@
           onclick={() => onPromptSubmit()}
         />
       </div>
-      <div class="pb-10">
-        <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
-      </div>
+
+      <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
     </div>
   </div>
 {/if}
