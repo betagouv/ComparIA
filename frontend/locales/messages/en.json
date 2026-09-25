@@ -1662,7 +1662,7 @@
             "cols": {
                 "battles": "Comparisons",
                 "general_rank": "General rank",
-                "record": "Record (W-L-T)",
+                "record": "Record (W-T-L)",
                 "score": "My score"
             },
             "loading": "Loading your ranking…",

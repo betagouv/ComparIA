@@ -1661,7 +1661,7 @@
             "cols": {
                 "battles": "Sammenligninger",
                 "general_rank": "Generel rang",
-                "record": "Resultat (S-N-U)",
+                "record": "Resultat (S-U-N)",
                 "score": "Min score"
             },
             "loading": "Indlæser din rangliste…",

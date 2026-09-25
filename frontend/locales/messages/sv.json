@@ -436,7 +436,7 @@
             "cols": {
                 "battles": "Jämförelser",
                 "general_rank": "Allmän rang",
-                "record": "Resultat (V-F-O)",
+                "record": "Resultat (V-O-F)",
                 "score": "Mina poäng"
             },
             "loading": "Laddar din rankning…",
