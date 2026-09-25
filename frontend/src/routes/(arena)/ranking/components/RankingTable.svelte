@@ -2,8 +2,8 @@
   import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import type { Archs } from '$lib/generated/constants'
   import { convertFromUsd, currencyFormatter } from '$lib/currency'
+  import type { Archs } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
@@ -244,6 +244,7 @@
             id="{id}-show-ranks"
             bind:value={showRanks}
             label={m['ranking.table.showRanks.label']()}
+            variant="secondary"
             hideCheckLabel
             class="mb-0! pr-13! text-[14px]! whitespace-nowrap"
           />
