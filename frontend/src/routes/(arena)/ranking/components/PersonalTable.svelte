@@ -70,7 +70,8 @@
         {
           id: 'score',
           label: m['ranking.personal.cols.score'](),
-          tooltip: m['ranking.personal.tooltips.score']()
+          tooltip: m['ranking.personal.tooltips.score'](),
+          hidden: true
         },
         {
           id: 'battles',
