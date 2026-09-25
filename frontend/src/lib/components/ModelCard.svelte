@@ -25,12 +25,7 @@
   })
 </script>
 
-<article
-  class={[
-    'fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! w-full bg-none!',
-    { 'border-primary!': model.new }
-  ]}
->
+<article class="fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! w-full bg-none!">
   <div class="fr-card__body">
     <div class="fr-card__content px-3! pt-3!">
       <h3
