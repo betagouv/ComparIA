@@ -1,12 +1,23 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Link, Table } from '$components/dsfr'
+  import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { isMaybeArch, type BotModel, type Commons, type PersonalRow } from '$lib/models'
 
-  type ColKind = 'rank' | 'name' | 'score' | 'battles' | 'record' | 'general_rank' | 'size' | 'arch'
+  type ColKind =
+    | 'rank'
+    | 'name'
+    | 'score'
+    | 'battles'
+    | 'record'
+    | 'general_rank'
+    | 'size'
+    | 'arch'
+    | 'release'
+    | 'organisation'
+    | 'license'
 
   let {
     id,
@@ -85,7 +96,10 @@
           id: 'arch',
           label: m['ranking.table.data.cols.arch'](),
           tooltip: m['ranking.table.data.tooltips.arch']()
-        }
+        },
+        { id: 'release', label: m['ranking.table.data.cols.release']() },
+        { id: 'organisation', label: m['ranking.table.data.cols.organisation']() },
+        { id: 'license', label: m['ranking.table.data.cols.license']() }
       ] as const
     ).map((col) => ({ ...col, orderable: true }))
   )
@@ -132,6 +146,12 @@
             return (b.model?.params ?? 0) - (a.model?.params ?? 0)
           case 'arch':
             return (a.model?.arch ?? '').localeCompare(b.model?.arch ?? '')
+          case 'release':
+            return Number(b.model?.release_date) - Number(a.model?.release_date)
+          case 'organisation':
+            return (a.model?.lab.name ?? '').localeCompare(b.model?.lab.name ?? '')
+          case 'license':
+            return (a.model?.license.kind ?? '').localeCompare(b.model?.license.kind ?? '')
           default:
             return a.rank - b.rank
         }
@@ -235,6 +255,18 @@
     {:else if col.id === 'arch'}
       {#if row.model}
         {m[`generated.archs.${archKey(row.model)}.name`]()}
+      {:else}
+        <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
+      {/if}
+    {:else}
+      {#if row.model}
+        {#if col.id === 'release'}
+          {`${row.model.release_date.getMonth() + 1}/${row.model.release_date.getFullYear().toString().slice(2)}`}
+        {:else if col.id === 'organisation'}
+          {row.model.lab.name}
+        {:else if col.id === 'license'}
+          <Badge {...row.model.badges.license} size="xs" noTooltip />
+        {/if}
       {:else}
         <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
       {/if}
