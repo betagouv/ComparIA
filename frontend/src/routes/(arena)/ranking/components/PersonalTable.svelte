@@ -5,6 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { isMaybeArch, type BotModel, type Commons, type PersonalRow } from '$lib/models'
+  import { toShortDate } from '$lib/utils/data'
 
   type ColKind =
     | 'rank'
@@ -34,6 +35,7 @@
     onDownloadData: () => void
   } = $props()
 
+  const locale = getLocale()
   const rows = $derived(
     rows_.map((row) => ({
       ...row,
@@ -47,11 +49,11 @@
   const archKey = (model: BotModel) =>
     model.license.kind === 'proprietary' || isMaybeArch(model.arch) ? 'na' : model.arch
 
-  const scoreFormatter = new Intl.NumberFormat(getLocale(), {
+  const scoreFormatter = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 3,
     maximumFractionDigits: 3
   })
-  const votesLabel = $derived(new Intl.NumberFormat(getLocale()).format(votesCount))
+  const votesLabel = $derived(new Intl.NumberFormat(locale).format(votesCount))
 
   let selectedModel = $state<string>()
   const selectedModelData = $derived(
@@ -148,7 +150,7 @@
           case 'arch':
             return (a.model?.arch ?? '').localeCompare(b.model?.arch ?? '')
           case 'release':
-            return Number(b.model?.release_date) - Number(a.model?.release_date)
+            return Number(b.model?.release_date ?? 0) - Number(a.model?.release_date ?? 0)
           case 'organisation':
             return (a.model?.lab.name ?? '').localeCompare(b.model?.lab.name ?? '')
           case 'license':
@@ -262,7 +264,7 @@
     {:else}
       {#if row.model}
         {#if col.id === 'release'}
-          {`${row.model.release_date.getMonth() + 1}/${row.model.release_date.getFullYear().toString().slice(2)}`}
+          {toShortDate(row.model.release_date, locale, '2-digit')}
         {:else if col.id === 'organisation'}
           {row.model.lab.name}
         {:else if col.id === 'license'}

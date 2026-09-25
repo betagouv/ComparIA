@@ -7,7 +7,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
-  import { sortIfDefined } from '$lib/utils/data'
+  import { sortIfDefined, toShortDate } from '$lib/utils/data'
 
   type ColKind =
     | 'rank'
@@ -57,8 +57,9 @@
     filterProprietary?: boolean
   } = $props()
 
-  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
-  const priceFormat = $derived(currencyFormatter(commons.currency, getLocale()))
+  const locale = getLocale()
+  const NumberFormater = new Intl.NumberFormat(locale, { maximumSignificantDigits: 3 })
+  const priceFormat = $derived(currencyFormatter(commons.currency, locale))
 
   const totalVotesLabel = $derived(NumberFormater.format(totalVotes))
   let selectedModel = $state<string>()
@@ -314,7 +315,7 @@
         {m['ranking.table.data.billions']({ count: model.params })}
       {/if}
     {:else if col.id === 'release'}
-      {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
+      {toShortDate(model.release_date, locale, '2-digit')}
     {:else if col.id === 'license'}
       {#if raw}
         {model.badges.license.text}
