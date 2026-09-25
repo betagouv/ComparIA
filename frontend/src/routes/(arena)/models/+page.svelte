@@ -177,6 +177,16 @@
       <div class="gap-3 md:flex-row flex flex-col flex-wrap">
         {#each filterDefs as f (f.id)}
           <Dropdown id="dropdown-{f.id}" label={f.legend} variant="light" class="p-3">
+            {#snippet buttonLabel(label)}
+              {label}
+              {#if filters[f.id].length}
+                <span
+                  class="ms-1 bg-primary text-white px-2 text-xs inline-block rounded-full py-[3px] align-top"
+                >
+                  {filters[f.id].length}
+                </span>
+              {/if}
+            {/snippet}
             <CheckboxGroup {...f} bind:value={filters[f.id]} legendClass="sr-only" class="mb-0!">
               {#snippet labelSlot({ option })}
                 <div class="flex w-full items-center justify-between">
