@@ -10,7 +10,7 @@
 
   let {
     id,
-    rows,
+    rows: rows_,
     commons,
     votesCount,
     onDownloadData
@@ -22,6 +22,14 @@
     votesCount: number
     onDownloadData: () => void
   } = $props()
+
+  const rows = $derived(
+    rows_.map((row) => ({
+      ...row,
+      winsSize: Math.round((row.wins / row.battles) * 100),
+      lossesSize: Math.round((row.losses / row.battles) * 100)
+    }))
+  )
 
   // Proprietary models publish no architecture, and neither do the ones we
   // only have a guess for.
@@ -201,7 +209,14 @@
     {:else if col.id === 'battles'}
       {row.battles}
     {:else if col.id === 'record'}
-      {row.wins}-{row.losses}-{row.ties}
+      {row.wins}-{row.ties}-{row.losses}
+      <div
+        aria-hidden="true"
+        class="h-2 flex w-full overflow-hidden rounded-full bg-[--grey-925-125]"
+      >
+        <div class="w-[--width] bg-[--green-emeraude-850-200]" style="width: {row.winsSize}%"></div>
+        <div class="bg-red ms-auto w-[--width]" style="width: {row.lossesSize}%"></div>
+      </div>
     {:else if col.id === 'general_rank'}
       <!-- Blank, not zero: the model can be missing from the general ranking
            and still be in the user's own. -->
