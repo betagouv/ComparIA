@@ -40,6 +40,7 @@ export type TableCol<Id extends string = string> = {
   label: string
   kind?: 'date' | 'number' | 'boolean'
   orderable?: boolean
+  hidden?: boolean
   tooltip?: string
   colHeaderClass?: ClassValue
 }
