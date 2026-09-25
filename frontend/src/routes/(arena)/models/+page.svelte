@@ -18,7 +18,8 @@
     })
   )
 
-  let filters = $state<Record<(typeof filterDefs)[number]['id'], string[]>>({
+  type FilterKind = (typeof filterDefs)[number]['id']
+  let filters = $state<Record<FilterKind, string[]>>({
     editors: [],
     sizes: [],
     licenses: [],
@@ -35,10 +36,10 @@
       id: 'editors' as const,
       legend: m['models.list.filters.editor.legend'](),
       options: [
-        { value: 'all', label: m['models.list.filters.editor.all'](), count: models.length },
+        { value: 'all', label: m['models.list.filters.editor.all'](), matchCount: undefined },
         ...[...new Set(models.map((llm) => llm.lab.name))].sort().map((org) => ({
           value: org,
-          count: models.filter((llm) => llm.lab.name === org).length
+          matchCount: (llm: BotModel) => llm.lab.name === org
         }))
       ],
       match: (llm: BotModel) => filterIncludes(filters.editors, llm.lab.name),
@@ -48,11 +49,11 @@
       id: 'sizes' as const,
       legend: m['models.list.filters.size.legend'](),
       options: [
-        { value: 'all', label: m['models.list.filters.size.all'](), count: models.length },
+        { value: 'all', label: m['models.list.filters.size.all'](), matchCount: undefined },
         ...SIZE_CLASSES.map((value) => ({
           value,
           label: m[`models.size.count.${value}`](),
-          count: models.filter((llm) => llm.size_class === value).length
+          matchCount: (llm: BotModel) => llm.size_class === value
         }))
       ],
       match: (llm: BotModel) => filterIncludes(filters.sizes, llm.size_class),
@@ -62,14 +63,14 @@
       id: 'licenses' as const,
       legend: m['models.list.filters.license.legend'](),
       options: [
-        { value: 'all', label: m['models.list.filters.license.all'](), count: models.length },
+        { value: 'all', label: m['models.list.filters.license.all'](), matchCount: undefined },
         ...[...new Set(models.map((llm) => llm.license.name))].map((license) => ({
           label:
             license === 'proprietary'
               ? m['models.licenses.type.proprietary']()
               : (license as string),
           value: license as string,
-          count: models.filter((llm) => llm.license.name === license).length
+          matchCount: (llm: BotModel) => llm.license.name === license
         }))
       ],
       match: (llm: BotModel) => filterIncludes(filters.licenses, llm.license.name),
@@ -79,21 +80,21 @@
       id: 'statuses' as const,
       legend: m['models.list.filters.statuses.legend'](),
       options: [
-        { value: 'all', label: m['models.list.filters.statuses.all'](), count: models.length },
+        { value: 'all', label: m['models.list.filters.statuses.all'](), matchCount: undefined },
         {
           value: 'enabled',
           label: m['words.available'](),
-          count: models.filter((llm) => llm.status === 'enabled').length
+          matchCount: (llm: BotModel) => llm.status === 'enabled'
         },
         {
           value: 'archived',
           label: m['words.archived'](),
-          count: models.filter((llm) => llm.status === 'archived').length
+          matchCount: (llm: BotModel) => llm.status === 'archived'
         },
         {
           value: 'new',
           label: m['words.new'](),
-          count: models.filter((llm) => llm.new).length
+          matchCount: (llm: BotModel) => llm.new
         }
       ],
       match: (llm: BotModel) =>
@@ -103,37 +104,44 @@
     }
   ]
 
-  const filteredModels = $derived.by(() => {
+  function countOption(models: BotModel[], match?: (llm: BotModel) => boolean) {
+    return match && models.length ? models.filter((llm) => match(llm)).length : models.length
+  }
+
+  function filterModels(excludedFilter?: FilterKind) {
     const _search = search.toLowerCase()
-    return models
-      .filter((llm) => {
-        const searchMatch = !_search || llm.search.includes(_search)
-        const filtersMatch = filterDefs.every((f) => f.match(llm))
-        return searchMatch && filtersMatch
-      })
-      .sort((a, b) => {
-        switch (sortingMethod) {
-          case 'date-desc':
-            if (a.release_date !== b.release_date) {
-              // @ts-expect-error date works
-              return new Date(b.release_date) - new Date(a.release_date)
-            } else if (a.release_date) {
-              return -1
-            } else if (b.release_date) {
-              return 1
-            }
-          // falls through
-          case 'params-asc':
-            if (a.params && b.params && a.params !== b.params) {
-              return a.params - b.params
-            }
-          // falls through
-          case 'org-asc':
-            return a.lab.name.localeCompare(b.lab.name)
-          default:
-            return a.name.localeCompare(b.name)
-        }
-      })
+    return models.filter((llm) => {
+      const searchMatch = !_search || llm.search.includes(_search)
+      const defs = excludedFilter ? filterDefs.filter((f) => f.id !== excludedFilter) : filterDefs
+      const filtersMatch = defs.every((f) => f.match(llm))
+      return searchMatch && filtersMatch
+    })
+  }
+
+  const filteredModels = $derived.by(() => {
+    return filterModels().sort((a, b) => {
+      switch (sortingMethod) {
+        case 'date-desc':
+          if (a.release_date !== b.release_date) {
+            // @ts-expect-error date works
+            return new Date(b.release_date) - new Date(a.release_date)
+          } else if (a.release_date) {
+            return -1
+          } else if (b.release_date) {
+            return 1
+          }
+        // falls through
+        case 'params-asc':
+          if (a.params && b.params && a.params !== b.params) {
+            return a.params - b.params
+          }
+        // falls through
+        case 'org-asc':
+          return a.lab.name.localeCompare(b.lab.name)
+        default:
+          return a.name.localeCompare(b.name)
+      }
+    })
   })
 
   const hasFilters = $derived(
@@ -176,6 +184,7 @@
 
       <div class="gap-3 md:flex-row flex flex-col flex-wrap">
         {#each filterDefs as f (f.id)}
+          {@const filteredModelsExcludingSelf = filterModels(f.id)}
           <Dropdown id="dropdown-{f.id}" label={f.legend} variant="light" class="p-3">
             {#snippet buttonLabel(label)}
               {label}
@@ -196,7 +205,7 @@
                     {'label' in option ? option.label : option.value}
                   </div>
                   <div class="text-sm text-[--grey-625-425]">
-                    {option.count}
+                    {countOption(filteredModelsExcludingSelf, option.matchCount)}
                   </div>
                 </div>
               {/snippet}
