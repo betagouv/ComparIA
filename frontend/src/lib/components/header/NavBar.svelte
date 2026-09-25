@@ -187,7 +187,7 @@
   </div>
 
   <div class="lg:flex min-h-0 hidden flex-auto flex-col">
-    <nav class="py-4" aria-label={m['a11y.mainNav']()}>
+    <nav class="py-4 pb-8" aria-label={m['a11y.mainNav']()}>
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
