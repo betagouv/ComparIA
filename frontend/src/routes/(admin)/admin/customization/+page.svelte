@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'

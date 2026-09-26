@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { SeoHead } from '$components/layout'
   import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
+  import { SeoHead } from '.'
 
   let {
     seoTitle,

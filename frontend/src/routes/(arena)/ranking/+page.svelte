@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import type { ResolvedPathname } from '$app/types'
   import { Button, Icon, Link, Segmented, Tabs, Toggle, Tooltip } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext, openSignInModal } from '$lib/auth.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'

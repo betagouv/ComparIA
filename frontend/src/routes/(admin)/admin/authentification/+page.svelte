@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Checkbox, Input, Select } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
