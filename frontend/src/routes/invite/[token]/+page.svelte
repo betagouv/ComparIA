@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import {

@@ -3,7 +3,7 @@
   import { match, resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Alert, Tabs } from '$components/dsfr'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import SignInForm from '$components/SignInForm.svelte'
   import SSOSignIn from '$components/SSOSignIn.svelte'
   import { env } from '$env/dynamic/public'
