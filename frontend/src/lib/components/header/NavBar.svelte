@@ -101,17 +101,6 @@
 {#snippet account()}
   {@const { icon: connectionIcon, text: connectionText, ...connectionProps } = connectionBtnProps}
   <div class="gap-1 pb-3 flex flex-col">
-    {#if auth.user}
-      <p
-        class={[
-          'text-sm mb-0! text-grey px-4 min-w-0 max-w-full [overflow-wrap:anywhere]',
-          { 'lg:hidden': !expanded }
-        ]}
-      >
-        {auth.user.email}
-      </p>
-    {/if}
-
     {@render renderLink({
       href: '/settings',
       label: m['seo.titles.settings'](),
@@ -127,8 +116,20 @@
         { 'lg:justify-center': !expanded }
       ]}
     >
-      <Icon icon={connectionIcon} block size={expanded ? 'sm' : 'md'} />
-      <span class={{ 'lg:sr-only': !expanded }}>{connectionText}</span>
+      {#if auth.user}
+        <p class={['text-sm mb-0! text-grey [overflow-wrap:anywhere]', { 'lg:hidden': !expanded }]}>
+          {auth.user.email}
+        </p>
+        <Icon
+          aria-label={connectionText}
+          icon={connectionIcon}
+          block
+          size={expanded ? 'sm' : 'md'}
+        />
+      {:else}
+        <Icon icon={connectionIcon} block size={expanded ? 'sm' : 'md'} />
+        <span class={{ 'lg:sr-only': !expanded }}>{connectionText}</span>
+      {/if}
     </button>
   </div>
 {/snippet}
