@@ -48,14 +48,7 @@ class Settings(BaseSettings):
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
-    # Dataset publishing. The schedule itself lives in the admin panel; these
-    # are the boundaries the run gets on the machine. Off here, a larger
-    # deployment can run this same image as a dedicated scheduler replica.
-    DATASET_SCHEDULER_ENABLED: bool = True
-    DATASET_RUN_TIMEOUT: int = 6 * 3600
-    # Below the backend pod's own memory limit, so a run that overshoots gets a
-    # clean MemoryError instead of the kernel OOM-killing the whole pod.
-    DATASET_MEMORY_LIMIT_GB: int = 3
+    # Dataset publishing. The schedule itself lives in the admin panel.
     # Generous: the export's single read walks the whole comparison table, and
     # this is here to end a query that has stopped moving, not a slow one.
     DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000

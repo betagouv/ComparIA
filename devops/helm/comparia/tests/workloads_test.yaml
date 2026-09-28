@@ -28,6 +28,13 @@ tests:
           path: spec.template.spec.containers[0].livenessProbe.tcpSocket.port
           value: http
 
+  - it: keeps the backend memory limit at 1Gi
+    template: backend-deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 1Gi
+
   - it: renders the frontend Deployment with the configured image and probes
     template: frontend-deployment.yaml
     asserts:
