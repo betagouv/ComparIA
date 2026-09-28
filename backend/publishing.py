@@ -19,14 +19,15 @@ import logging
 import os
 import resource
 import sys
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import UTC, datetime
 
 from sqlmodel import col, select
 
 from backend.config import settings
-from utils.database.models.publish import PublishDestination, PublishFrequency
+from utils.database.models.publish import PublishDestination
 from utils.database.session import get_engine, get_session
 from utils.dataset.runs import close_unfinished_run, last_run
+from utils.dataset.schedule import next_run_at
 
 logger = logging.getLogger("comparia.publishing")
 
@@ -36,70 +37,6 @@ ADVISORY_LOCK_KEY = 8_147_231
 # How often the loop looks at the schedule. Small enough that an hour changed
 # in the panel takes effect the same day, large enough to be free.
 TICK_SECONDS = 60
-
-
-def _at_hour(local: datetime, hour: int) -> datetime:
-    """
-    That day at that hour, in the same zone.
-
-    On the day the clocks go forward the hour may not exist, and asking for it
-    gives a moment that is really the hour before or after. The run then fires
-    at the wrong time once a year, or twice on the day they go back. Where the
-    hour is missing we take the next one that exists; where it happens twice we
-    take the first, which 'fold=0' already does.
-    """
-    zone = local.tzinfo
-    for offset in range(3):
-        due = local.replace(
-            hour=(hour + offset) % 24, minute=0, second=0, microsecond=0, fold=0
-        )
-        # An hour the clocks skipped comes back as a different one.
-        if due.astimezone(UTC).astimezone(zone).hour == due.hour:
-            return due
-    return local.replace(hour=hour, minute=0, second=0, microsecond=0, fold=0)
-
-
-def next_run_at(frequency: PublishFrequency, after: datetime) -> datetime | None:
-    """
-    The next moment the run is due, in UTC. Weekly means Monday, monthly means
-    the first of the month, both at the configured hour. A frequency, an hour
-    The execution time is fixed at 03:00 UTC so the admin only has one setting
-    to understand: publication frequency.
-
-    Nothing catches up. A run missed because the process was down waits for
-    the next occurrence rather than firing at boot, when an operator is
-    already busy with whatever brought the process down.
-    """
-    if frequency == "off":
-        return None
-
-    local = after.astimezone(UTC)
-
-    def due_on(day: date) -> datetime:
-        # The hour is worked out per day, because whether it exists depends on
-        # the day: 02:00 is missing on the morning the clocks go forward and
-        # back the morning after.
-        return _at_hour(datetime.combine(day, time(), tzinfo=UTC), hour)
-
-    hour = 3
-    day = local.date()
-
-    if frequency == "daily":
-        if due_on(day) <= local:
-            day += timedelta(days=1)
-    elif frequency == "weekly":
-        day += timedelta(days=(7 - day.weekday()) % 7)
-        if due_on(day) <= local:
-            day += timedelta(days=7)
-    elif frequency == "monthly":
-        day = day.replace(day=1)
-        if due_on(day) <= local:
-            # The 28th of any month plus four days is always the next month.
-            day = (day.replace(day=28) + timedelta(days=4)).replace(day=1)
-    else:
-        return None
-
-    return due_on(day).astimezone(UTC)
 
 
 def _child_limits() -> None:

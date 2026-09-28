@@ -136,6 +136,11 @@ class PublishDestinationBase(BaseDBModel):
     datasets: Annotated[list[str], Field(sa_type=JSONB)]
     enabled: bool = Field(default=True)
     publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
+    # When the admin panel asked for a run, until the publish job starts it.
+    publish_requested_at: OptionalDatetime = None
+    # When the last run for this destination started, whatever came of it. A
+    # failed run counts as the run of its occurrence: no retry before the next.
+    last_run_started_at: OptionalDatetime = None
 
 
 class PublishDestination(PublishDestinationBase, table=True):

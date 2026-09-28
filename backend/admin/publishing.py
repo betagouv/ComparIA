@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
 
-from backend.publishing import next_run_at, run_export
+from backend.publishing import run_export
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
@@ -18,6 +18,7 @@ from utils.database.models.publish import (
 )
 from utils.database.session import get_session
 from utils.dataset.runs import last_run, recent_runs
+from utils.dataset.schedule import next_run_at
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
 

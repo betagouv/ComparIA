@@ -52,7 +52,7 @@ def use_export_engine() -> None:
     against itself.
     """
     global _export_client
-    if _engine is not None:
+    if _engine is not None and not _export_client:
         raise RuntimeError("the engine is already open")
     _export_client = True
 
