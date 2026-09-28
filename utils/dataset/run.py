@@ -66,7 +66,7 @@ async def main(
         Rebuild the normal dataset from an existing raw parquet instead of the DB
     record: bool
         Record the run in the database, for the admin panel to read. What the
-        scheduler passes; off by hand so a local export does not overwrite the
+        publish job passes; off by hand so a local export does not overwrite the
         instance's last run.
     destination_id: UUID | None
         Send only to this destination. Used by per-destination schedules and
