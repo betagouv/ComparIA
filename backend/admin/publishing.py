@@ -1,11 +1,9 @@
-import asyncio
 import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
 
-from backend.publishing import run_export
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
@@ -16,11 +14,21 @@ from utils.database.models.publish import (
     PublishDestinationUpsert,
     config_to_store,
 )
+from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.dataset.runs import last_run, recent_runs
 from utils.dataset.schedule import next_run_at
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
+
+
+def _request_publication(row: PublishDestination) -> None:
+    """
+    Ask the publish job for a run of this destination. A request already
+    waiting keeps its date: what the panel shows is how long it has waited.
+    """
+    if row.publish_requested_at is None:
+        row.publish_requested_at = utc_now()
 
 
 def _missing_secret(exc: MissingSecretError) -> HTTPException:
@@ -74,13 +82,13 @@ async def add_destination(body: PublishDestinationUpsert) -> AdminPublishDestina
             enabled=body.enabled,
             publish_frequency=body.publish_frequency,
         )
+        if row.enabled and row.publish_frequency != "off":
+            _request_publication(row)
         session.add(row)
         await session.commit()
         await session.refresh(row)
         destination = AdminPublishDestination.from_row(row)
         destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
-        if row.enabled and row.publish_frequency != "off":
-            asyncio.create_task(run_export(row.id))
         return destination
 
 
@@ -105,17 +113,17 @@ async def update_destination(
         row.datasets = list(body.datasets)
         row.enabled = body.enabled
         row.publish_frequency = body.publish_frequency
-        session.add(row)
-        await session.commit()
-        await session.refresh(row)
-        destination = AdminPublishDestination.from_row(row)
-        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
         if (
             row.enabled
             and row.publish_frequency != "off"
             and row.publish_frequency != previous_frequency
         ):
-            asyncio.create_task(run_export(row.id))
+            _request_publication(row)
+        session.add(row)
+        await session.commit()
+        await session.refresh(row)
+        destination = AdminPublishDestination.from_row(row)
+        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
         return destination
 
 
@@ -132,13 +140,15 @@ async def publish_destination_now(destination_id: uuid.UUID) -> None:
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="The destination is disabled",
             )
-    run = await last_run()
-    if run is not None and run.finished_at is None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="A publication is already running",
-        )
-    asyncio.create_task(run_export(destination_id))
+        run = await last_run()
+        if run is not None and run.finished_at is None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="A publication is already running",
+            )
+        _request_publication(row)
+        session.add(row)
+        await session.commit()
 
 
 @router.delete("/destinations/{destination_id}", status_code=status.HTTP_204_NO_CONTENT)

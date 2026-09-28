@@ -26,6 +26,7 @@ export interface AdminPublishDestination {
   enabled: boolean;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   next_run_at?: string | null;
+  request_pending_seconds?: number | null;
 }
 export interface HuggingFaceConfigPublic {
   kind?: "huggingface";

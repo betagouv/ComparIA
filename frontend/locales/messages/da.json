@@ -359,6 +359,7 @@
             "nameLabel": "Navn",
             "nextRun": "Næste publikation: {date}",
             "nextRunNever": "Ingen publikation planlagt.",
+            "requestPending": "Publikation anmodet for {duration} siden, venter på publiceringsjobbet",
             "noDestinations": "Ingen destination: datasættet sendes ingen steder hen.",
             "prefixHelp": "Tilføjes foran hver fil, så en bucket kan deles mellem flere instanser.",
             "prefixLabel": "Præfiks",
