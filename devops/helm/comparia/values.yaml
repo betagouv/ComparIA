@@ -64,6 +64,16 @@ resources:
   ## scales with vote volume and isn't sized yet, so it runs unconstrained
   ## rather than risk getting OOMKilled against a fixed limit.
   ranking: {}
+  ## -- Applied to the publish job. A run walks the whole comparison table and builds
+  ## the parquet datasets from it, so it needs far more than the other workloads. The
+  ## limit is a starting value: tighten it from the memory the first production run used.
+  publish:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: "1"
+      memory: 8Gi
 
 ## -- Non-secret application settings, passed to the backend/frontend as plain env vars.
 config:
@@ -159,6 +169,14 @@ cronjobs:
   analyze:
     enabled: false
     schedule: "35 3 * * *"
+  ## -- Starts a dataset publish run for every publish destination that is due or has a
+  ## pending request from the admin panel, and exits at once when there is none. Harmless
+  ## on an instance with no destination, hence on by default.
+  publish:
+    enabled: true
+    schedule: "*/10 * * * *"
+    ## -- Kills a run that hangs, on a destination that never answers for instance.
+    activeDeadlineSeconds: 21600
 
 ingress:
   enabled: false

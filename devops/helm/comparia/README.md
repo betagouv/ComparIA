@@ -11,8 +11,8 @@ The chart deploys:
 - a `Secret` (chart-rendered from values, or a pre-existing one you point it
   at) carrying API keys and DB/Redis connection info
 - a pre-install/pre-upgrade Job that runs the app's Alembic migrations
-- three optional CronJobs (ranking computation, dataset export, LLM-based
-  analysis)
+- three CronJobs (ranking computation, dataset publication, LLM-based
+  analysis), the last one optional
 - an optional Ingress
 
 It does not include a Postgres or Redis instance, an S3 log-archival sidecar,
@@ -58,7 +58,8 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `resources.backend`       | see `values.yaml` | Backend requests/limits    |
 | `resources.frontend`      | see `values.yaml` | Frontend requests/limits   |
 | `resources.migration`     | see `values.yaml` | Migration Job requests/limits |
-| `resources.cronjobs`      | see `values.yaml` | Applied to all three CronJobs |
+| `resources.cronjobs`      | see `values.yaml` | Applied to the analyze CronJob |
+| `resources.publish`       | see `values.yaml` | Applied to the publish CronJob |
 | `backend.extraEnv`        | `[]`    | Extra env vars for the backend container, for anything not covered by `config.*`/`secrets.*` below, same shape as a container's `env:` list |
 | `frontend.extraEnv`       | `[]`    | Extra env vars for the frontend container, same shape |
 | `frontend.publicApiUrl`   | `""`    | Public URL the frontend is served at; empty means same-origin |
@@ -136,7 +137,7 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the two is independently toggleable — there is no combined switch.
+Each of the three is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
@@ -144,13 +145,34 @@ Each of the two is independently toggleable — there is no combined switch.
 | `cronjobs.ranking.schedule`          | `"17 * * * *"` | |
 | `cronjobs.analyze.enabled`           | `false` | LLM-based moderation/data-quality pass, consumes `OPENROUTER_API_KEY`. Off by default so enabling it — and paying for the LLM calls — is deliberate. |
 | `cronjobs.analyze.schedule`          | `"35 3 * * *"` | |
+| `cronjobs.publish.enabled`           | `true`  | Dataset publication, see below. Harmless on an instance with no publish destination. |
+| `cronjobs.publish.schedule`          | `"*/10 * * * *"` | How often the job looks for a destination to publish. Not the publication frequency. |
+| `cronjobs.publish.activeDeadlineSeconds` | `21600` | A run still going after this is killed. |
 
-#### Dataset export
+#### Dataset publication
 
-The dataset export is not a CronJob: it runs on the backend's internal
-scheduler (leader election via a Postgres advisory lock) and on demand from
-the admin panel. The export destination (HuggingFace repo path + token) is
-stored in the database and configured through the admin panel only.
+The publish job is the CronJob that carries out dataset publication, in its
+own pod so that its memory needs do not fall on the backend. Every tick it
+starts a publish run for each publish destination that is due on its
+frequency (chosen per destination in the admin panel: daily at 03:00 UTC,
+weekly on Monday, monthly on the first) or that has a pending publish request
+(created destination, frequency change or "publish now" in the admin panel),
+one after the other. With nothing due, or no destination at all, it exits
+straight away. A request therefore waits at most one tick.
+
+The job holds a Postgres advisory lock for the whole run, so two release
+colors, or a Job created by hand from the CronJob, never publish at the same
+time. A run left open by a pod that died (OOMKill, eviction, deadline) is
+closed as failed by the next tick. A failed run is not retried before the
+next occurrence; a publish request from the admin panel starts it again.
+
+Runs use `resources.publish`, requests 2Gi and limits 8Gi to start with:
+tighten them from the memory the first production run actually used.
+Destinations (HuggingFace repo path + token, or S3 bucket) are stored in the
+database and configured through the admin panel only.
+
+To start a run by hand, create a Job from the CronJob:
+`kubectl create job --from=cronjob/<release>-publish <release>-publish-manual`.
 
 ### Ingress (`ingress.*`)
 
