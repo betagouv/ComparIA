@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { convertFromUsd } from '$lib/currency'
   import type { APILLMData } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'

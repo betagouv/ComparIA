@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Search } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'

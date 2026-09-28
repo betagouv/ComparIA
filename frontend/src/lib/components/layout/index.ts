@@ -1,3 +1,4 @@
+export { default as AILogo } from './AILogo.svelte'
 export { default as History } from './History.svelte'
 export { default as LanguageSelector } from './LanguageSelector.svelte'
 export { default as LegalMenu } from './LegalMenu.svelte'

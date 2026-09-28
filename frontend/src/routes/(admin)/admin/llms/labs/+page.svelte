@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import AILogo from '$components/AILogo.svelte'
   import { Link, Table } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'

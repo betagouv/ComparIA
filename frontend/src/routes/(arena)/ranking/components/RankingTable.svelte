@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { convertFromUsd, currencyFormatter } from '$lib/currency'
   import type { Archs } from '$lib/generated/constants'
