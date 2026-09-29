@@ -2,8 +2,8 @@
 The publish run an instance sees in the admin panel: when it last ran, whether
 it worked, and how many comparisons it held back.
 
-The child process records its own run. The scheduler only closes a row the
-child left open, which is what a kill or a crash looks like from outside.
+The run records itself. The publish job only closes a row a run left open,
+which is what a kill or a crash looks like from outside.
 """
 
 import logging

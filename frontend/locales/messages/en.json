@@ -360,6 +360,7 @@
             "nameLabel": "Name",
             "nextRun": "Next publication: {date}",
             "nextRunNever": "Nothing is scheduled.",
+            "requestPending": "Publication requested {duration} ago, waiting for the publish job",
             "noDestinations": "No destination: the dataset goes nowhere.",
             "prefixHelp": "Put in front of every file, so one bucket can hold several instances.",
             "prefixLabel": "Prefix",

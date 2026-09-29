@@ -360,6 +360,7 @@
             "nameLabel": "Nom",
             "nextRun": "Prochaine publication : {date}",
             "nextRunNever": "Aucune publication programmée.",
+            "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",

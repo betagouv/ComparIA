@@ -146,6 +146,24 @@ docker compose --env-file .env pull
 docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env up -d --build
 ```
 
+## Dataset publishing
+
+The admin panel records a publication request when a destination is created, when its frequency changes and on "publish now". The backend does not carry it out: a separate publish job does, and Docker Compose does not run one yet. Until it does, no publication starts by itself on a Compose instance and a request stays pending.
+
+Run the job by hand, or from a host cron, to start every publication that is due or requested:
+
+```bash
+docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env run --rm backend uv run python -m utils.dataset.job
+```
+
+For example every ten minutes, as the Helm chart does:
+
+```
+*/10 * * * * cd /path/to/comparia && docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env run --rm backend uv run python -m utils.dataset.job
+```
+
+The command exits at once when nothing is due. `run --rm` starts a container of its own with the `backend` service's settings, `mem_limit` included: raise it in `docker-compose.yml` if a run on a large database is killed for memory.
+
 ## Useful commands
 
 ```bash
