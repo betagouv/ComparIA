@@ -284,7 +284,7 @@
 
       <Tabs {tabs} label={m['seo.titles.ranking']()} noBorders kind="nav" bind:currentTabId>
         {#snippet tab({ id })}
-          {#if id === 'ranking'}
+          {#if id === 'ranking' && currentTabId === id}
             <Segmented
               id="ranking-view"
               legend={m['ranking.views.legend']()}
@@ -381,19 +381,19 @@
                 { href: resolve('/'), text: m['header.chatbot.newDiscussion']() }
               )}
             {/if}
-          {:else if id === 'energy' && rankingRows.length === 0}
+          {:else if id === 'energy' && currentTabId === id && rankingRows.length === 0}
             {@render emptyCard(
               'energy-pending-title',
               m['ranking.energy.tabLabel'](),
               m['ranking.notEnoughVotes']()
             )}
-          {:else if id === 'energy'}
+          {:else if id === 'energy' && currentTabId === id}
             <Energy onDownloadData={() => onDownloadData('energy')} />
-          {:else if id === 'price'}
+          {:else if id === 'price' && currentTabId === id}
             <Price onDownloadData={() => onDownloadData('price')} />
             <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
-          {:else if id === 'methodo'}
+          {:else if id === 'methodo' && currentTabId === id}
             <Methodology />
           {/if}
         {/snippet}
