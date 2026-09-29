@@ -30,6 +30,51 @@ def _at_hour(local: datetime, hour: int) -> datetime:
     return local.replace(hour=hour, minute=0, second=0, microsecond=0, fold=0)
 
 
+def _due_on(day: date) -> datetime:
+    # The hour is worked out per day, because whether it exists depends on
+    # the day: 02:00 is missing on the morning the clocks go forward and
+    # back the morning after.
+    return _at_hour(datetime.combine(day, time(), tzinfo=UTC), 3)
+
+
+def _week_anchor(day: date, forward: bool) -> date:
+    """Monday on/after `day` if forward, Monday on/before `day` if not."""
+    if forward:
+        return day + timedelta(days=(7 - day.weekday()) % 7)
+    return day - timedelta(days=day.weekday())
+
+
+def _step(frequency: PublishFrequency, day: date, forward: bool) -> date:
+    """One period on from `day`, in the given direction."""
+    if frequency == "daily":
+        return day + timedelta(days=1 if forward else -1)
+    if frequency == "weekly":
+        return day + timedelta(days=7 if forward else -7)
+    if forward:
+        # The 28th of any month plus four days is always the next month.
+        return (day.replace(day=28) + timedelta(days=4)).replace(day=1)
+    return (day - timedelta(days=1)).replace(day=1)
+
+
+def _occurrence(
+    frequency: PublishFrequency, local: datetime, forward: bool
+) -> datetime | None:
+    """The occurrence on/after `local` if forward, on/before it if not."""
+    if frequency not in ("daily", "weekly", "monthly"):
+        return None
+
+    day = local.date()
+    if frequency == "weekly":
+        day = _week_anchor(day, forward)
+    elif frequency == "monthly":
+        day = day.replace(day=1)
+
+    if (_due_on(day) <= local) == forward:
+        day = _step(frequency, day, forward)
+
+    return _due_on(day).astimezone(UTC)
+
+
 def next_run_at(frequency: PublishFrequency, after: datetime) -> datetime | None:
     """
     The next moment the run is due, in UTC. Weekly means Monday, monthly means
@@ -39,36 +84,7 @@ def next_run_at(frequency: PublishFrequency, after: datetime) -> datetime | None
     Always a future moment. Whether an occurrence already went by unrun is
     what previous_run_at is for.
     """
-    if frequency == "off":
-        return None
-
-    local = after.astimezone(UTC)
-
-    def due_on(day: date) -> datetime:
-        # The hour is worked out per day, because whether it exists depends on
-        # the day: 02:00 is missing on the morning the clocks go forward and
-        # back the morning after.
-        return _at_hour(datetime.combine(day, time(), tzinfo=UTC), hour)
-
-    hour = 3
-    day = local.date()
-
-    if frequency == "daily":
-        if due_on(day) <= local:
-            day += timedelta(days=1)
-    elif frequency == "weekly":
-        day += timedelta(days=(7 - day.weekday()) % 7)
-        if due_on(day) <= local:
-            day += timedelta(days=7)
-    elif frequency == "monthly":
-        day = day.replace(day=1)
-        if due_on(day) <= local:
-            # The 28th of any month plus four days is always the next month.
-            day = (day.replace(day=28) + timedelta(days=4)).replace(day=1)
-    else:
-        return None
-
-    return due_on(day).astimezone(UTC)
+    return _occurrence(frequency, after.astimezone(UTC), forward=True)
 
 
 def previous_run_at(frequency: PublishFrequency, at: datetime) -> datetime | None:
@@ -77,27 +93,4 @@ def previous_run_at(frequency: PublishFrequency, at: datetime) -> datetime | Non
     counterpart of next_run_at: a destination whose last run started before
     this moment has an occurrence it has not run yet.
     """
-    if frequency == "off":
-        return None
-
-    local = at.astimezone(UTC)
-    day = local.date()
-
-    def due_on(day: date) -> datetime:
-        return _at_hour(datetime.combine(day, time(), tzinfo=UTC), 3)
-
-    if frequency == "daily":
-        if due_on(day) > local:
-            day -= timedelta(days=1)
-    elif frequency == "weekly":
-        day -= timedelta(days=day.weekday())
-        if due_on(day) > local:
-            day -= timedelta(days=7)
-    elif frequency == "monthly":
-        day = day.replace(day=1)
-        if due_on(day) > local:
-            day = (day - timedelta(days=1)).replace(day=1)
-    else:
-        return None
-
-    return due_on(day).astimezone(UTC)
+    return _occurrence(frequency, at.astimezone(UTC), forward=False)
