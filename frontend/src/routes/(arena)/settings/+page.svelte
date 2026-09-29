@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { Button, Input, Link, Modal, Tabs } from '$components/dsfr'
+  import { Button, Icon, Input, Link, Modal, Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
@@ -118,6 +118,16 @@
                 </div>
               {:else}
                 <p>{m['auth.settings.account.signInPrompt']()}</p>
+
+                <Button
+                  variant="secondary"
+                  aria-controls="fr-modal-signin"
+                  data-fr-opened="false"
+                  class="mb-4"
+                >
+                  <Icon icon="i-ri-login-box-line" block size="sm" class="me-1 -ms-1" />
+                  {m['auth.discussions.signIn']()}
+                </Button>
               {/if}
             </section>
 

@@ -1,16 +1,28 @@
 <script lang="ts">
   import AILogo from '$components/AILogo.svelte'
-  import { Link, Table } from '$components/dsfr'
+  import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { isMaybeArch, type BotModel, type Commons, type PersonalRow } from '$lib/models'
+  import { toShortDate } from '$lib/utils/data'
 
-  type ColKind = 'rank' | 'name' | 'score' | 'battles' | 'record' | 'general_rank' | 'size' | 'arch'
+  type ColKind =
+    | 'rank'
+    | 'name'
+    | 'score'
+    | 'battles'
+    | 'record'
+    | 'general_rank'
+    | 'size'
+    | 'arch'
+    | 'release'
+    | 'organisation'
+    | 'license'
 
   let {
     id,
-    rows,
+    rows: rows_,
     commons,
     votesCount,
     onDownloadData
@@ -23,16 +35,25 @@
     onDownloadData: () => void
   } = $props()
 
+  const locale = getLocale()
+  const rows = $derived(
+    rows_.map((row) => ({
+      ...row,
+      winsSize: Math.round((row.wins / row.battles) * 100),
+      lossesSize: Math.round((row.losses / row.battles) * 100)
+    }))
+  )
+
   // Proprietary models publish no architecture, and neither do the ones we
   // only have a guess for.
   const archKey = (model: BotModel) =>
     model.license.kind === 'proprietary' || isMaybeArch(model.arch) ? 'na' : model.arch
 
-  const scoreFormatter = new Intl.NumberFormat(getLocale(), {
+  const scoreFormatter = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 3,
     maximumFractionDigits: 3
   })
-  const votesLabel = $derived(new Intl.NumberFormat(getLocale()).format(votesCount))
+  const votesLabel = $derived(new Intl.NumberFormat(locale).format(votesCount))
 
   let selectedModel = $state<string>()
   const selectedModelData = $derived(
@@ -51,7 +72,8 @@
         {
           id: 'score',
           label: m['ranking.personal.cols.score'](),
-          tooltip: m['ranking.personal.tooltips.score']()
+          tooltip: m['ranking.personal.tooltips.score'](),
+          hidden: true
         },
         {
           id: 'battles',
@@ -77,7 +99,10 @@
           id: 'arch',
           label: m['ranking.table.data.cols.arch'](),
           tooltip: m['ranking.table.data.tooltips.arch']()
-        }
+        },
+        { id: 'release', label: m['ranking.table.data.cols.release']() },
+        { id: 'organisation', label: m['ranking.table.data.cols.organisation']() },
+        { id: 'license', label: m['ranking.table.data.cols.license']() }
       ] as const
     ).map((col) => ({ ...col, orderable: true }))
   )
@@ -124,6 +149,12 @@
             return (b.model?.params ?? 0) - (a.model?.params ?? 0)
           case 'arch':
             return (a.model?.arch ?? '').localeCompare(b.model?.arch ?? '')
+          case 'release':
+            return Number(b.model?.release_date ?? 0) - Number(a.model?.release_date ?? 0)
+          case 'organisation':
+            return (a.model?.lab.name ?? '').localeCompare(b.model?.lab.name ?? '')
+          case 'license':
+            return (a.model?.license.kind ?? '').localeCompare(b.model?.license.kind ?? '')
           default:
             return a.rank - b.rank
         }
@@ -201,7 +232,14 @@
     {:else if col.id === 'battles'}
       {row.battles}
     {:else if col.id === 'record'}
-      {row.wins}-{row.losses}-{row.ties}
+      {row.wins}-{row.ties}-{row.losses}
+      <div
+        aria-hidden="true"
+        class="h-2 flex w-full overflow-hidden rounded-full bg-[--grey-925-125]"
+      >
+        <div class="w-[--width] bg-[--green-emeraude-850-200]" style="width: {row.winsSize}%"></div>
+        <div class="bg-red ms-auto w-[--width]" style="width: {row.lossesSize}%"></div>
+      </div>
     {:else if col.id === 'general_rank'}
       <!-- Blank, not zero: the model can be missing from the general ranking
            and still be in the user's own. -->
@@ -220,6 +258,18 @@
     {:else if col.id === 'arch'}
       {#if row.model}
         {m[`generated.archs.${archKey(row.model)}.name`]()}
+      {:else}
+        <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
+      {/if}
+    {:else}
+      {#if row.model}
+        {#if col.id === 'release'}
+          {toShortDate(row.model.release_date, locale, '2-digit')}
+        {:else if col.id === 'organisation'}
+          {row.model.lab.name}
+        {:else if col.id === 'license'}
+          <Badge {...row.model.badges.license} size="xs" noTooltip />
+        {/if}
       {:else}
         <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
       {/if}

@@ -272,6 +272,7 @@
             id="style-control"
             bind:value={styleEnabled}
             label={m['ranking.styleControl.label']()}
+            variant="secondary"
             hideCheckLabel
             class="mb-0! pr-13! font-medium text-[14px]! whitespace-nowrap"
           />
