@@ -39,6 +39,7 @@ class UserPublic(UserBase):
     created_at: str
     last_seen_at: str
     source: str
+    totp_enabled: bool = False
 
 
 class LoginCode(SQLModel, table=True):
@@ -79,6 +80,45 @@ class InviteToken(SQLModel, table=True):
     created_at: AutoDatetime
     expires_at: Datetime
     used_at: OptionalDatetime = None
+
+
+class UserTotp(SQLModel, table=True):
+    """An admin's authenticator secret, Fernet-encrypted at rest.
+
+    `pending_*` is the secret shown as a QR code but not yet confirmed with a
+    code; confirming promotes it, so an abandoned device change never drops the
+    live secret. `last_used_step` is the last accepted 30 s window, kept to
+    refuse a code replayed within its window.
+    """
+
+    __tablename__ = "auth_totp"
+
+    id: ModelId
+    user_id: uuid.UUID = Field(foreign_key="auth_user.id", unique=True)
+    secret_encrypted: str | None = None
+    confirmed_at: OptionalDatetime = None
+    pending_secret_encrypted: str | None = None
+    pending_created_at: OptionalDatetime = None
+    last_used_step: int | None = None
+    created_at: AutoDatetime
+    updated_at: AutoDatetime
+
+
+class TotpChallenge(SQLModel, table=True):
+    """The half-signed-in state between a valid email code and a valid
+    authenticator code. No auth_session exists until it is consumed."""
+
+    __tablename__ = "auth_totp_challenge"
+
+    id: ModelId
+    # Read per user: the hourly cap sums a user's attempts, a reset drops
+    # their rows.
+    user_id: uuid.UUID = Field(foreign_key="auth_user.id", index=True)
+    token_hash: str = Field(index=True)
+    created_at: AutoDatetime
+    expires_at: Datetime
+    used_at: OptionalDatetime = None
+    attempts: int = 0
 
 
 class LegalDocument(SQLModel, table=True):

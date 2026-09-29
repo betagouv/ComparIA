@@ -70,6 +70,11 @@ db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_D
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db seed-admins
 
+db-reset-totp: ## Forget an admin's authenticator app and sign them out (usage: make db-reset-totp EMAIL=admin@example.org, requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	@if [ -z "$(EMAIL)" ]; then echo "Error: EMAIL is not set"; exit 1; fi
+	./comparia-cli db reset-totp "$(EMAIL)"
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
