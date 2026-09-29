@@ -12,6 +12,7 @@ from utils.database.models.publish import (
     MissingSecretError,
     PublishDestination,
     PublishDestinationUpsert,
+    PublishFrequency,
     config_to_store,
 )
 from utils.database.models.utils import utc_now
@@ -36,6 +37,20 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         detail=f"'{exc.field}' is required for this kind of destination",
     )
+
+
+def _frequency_activated(
+    row: PublishDestination, previous_frequency: PublishFrequency | None = None
+) -> bool:
+    """
+    Whether the destination's current state warrants a fresh publish request:
+    enabled, a frequency other than off, and — when a previous frequency is
+    given — a change from it. Creating a destination has no previous
+    frequency to compare against.
+    """
+    if not row.enabled or row.publish_frequency == "off":
+        return False
+    return previous_frequency is None or row.publish_frequency != previous_frequency
 
 
 def _to_admin_destination(row: PublishDestination) -> AdminPublishDestination:
@@ -82,7 +97,7 @@ async def add_destination(body: PublishDestinationUpsert) -> AdminPublishDestina
             enabled=body.enabled,
             publish_frequency=body.publish_frequency,
         )
-        if row.enabled and row.publish_frequency != "off":
+        if _frequency_activated(row):
             _request_publication(row)
         session.add(row)
         await session.commit()
@@ -111,11 +126,7 @@ async def update_destination(
         row.datasets = list(body.datasets)
         row.enabled = body.enabled
         row.publish_frequency = body.publish_frequency
-        if (
-            row.enabled
-            and row.publish_frequency != "off"
-            and row.publish_frequency != previous_frequency
-        ):
+        if _frequency_activated(row, previous_frequency):
             _request_publication(row)
         session.add(row)
         await session.commit()
