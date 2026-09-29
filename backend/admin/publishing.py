@@ -38,6 +38,12 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
     )
 
 
+def _to_admin_destination(row: PublishDestination) -> AdminPublishDestination:
+    destination = AdminPublishDestination.from_row(row)
+    destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
+    return destination
+
+
 @router.get("/status", response_model=AdminPublishStatus)
 async def get_status() -> AdminPublishStatus:
     runs = await recent_runs()
@@ -52,13 +58,7 @@ async def get_destinations() -> AdminPublishDestinationsResponse:
         rows = await session.exec(
             select(PublishDestination).order_by(col(PublishDestination.created_at))
         )
-        destinations = []
-        for row in rows.all():
-            destination = AdminPublishDestination.from_row(row)
-            destination.next_run_at = next_run_at(
-                row.publish_frequency, datetime.now(UTC)
-            )
-            destinations.append(destination)
+        destinations = [_to_admin_destination(row) for row in rows.all()]
         return AdminPublishDestinationsResponse(destinations=destinations)
 
 
@@ -87,9 +87,7 @@ async def add_destination(body: PublishDestinationUpsert) -> AdminPublishDestina
         session.add(row)
         await session.commit()
         await session.refresh(row)
-        destination = AdminPublishDestination.from_row(row)
-        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
-        return destination
+        return _to_admin_destination(row)
 
 
 @router.put("/destinations/{destination_id}", response_model=AdminPublishDestination)
@@ -122,9 +120,7 @@ async def update_destination(
         session.add(row)
         await session.commit()
         await session.refresh(row)
-        destination = AdminPublishDestination.from_row(row)
-        destination.next_run_at = next_run_at(row.publish_frequency, datetime.now(UTC))
-        return destination
+        return _to_admin_destination(row)
 
 
 @router.post(
