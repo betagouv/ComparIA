@@ -778,14 +778,7 @@ async def oidc_callback(
     )
 
     redirect = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    redirect.set_cookie(
-        "auth_session",
-        token,
-        httponly=True,
-        secure=not settings.LANGUIA_DEBUG,
-        samesite="lax",
-        max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
-    )
+    _set_session_cookie(redirect, token)
     return redirect
 
 
