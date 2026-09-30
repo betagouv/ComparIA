@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import normalize_logo
@@ -72,6 +72,7 @@ from utils.database.models.app_settings import (
 from utils.database.models.auth import (
     LegalDocument,
     LegalDocumentKind,
+    NormalizedEmail,
     UserPublic,
     UserUpsert,
 )
@@ -115,7 +116,7 @@ class UsersPage(BaseModel):
 
 
 class InviteBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     # The inviting admin's language: the best guess we have for the invitee's.
     locale: str | None = Field(default=None, min_length=2, max_length=16)
 

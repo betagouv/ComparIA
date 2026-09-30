@@ -1,9 +1,8 @@
 import logging
 
-from sqlmodel import select
-
+from backend.auth.services import find_user_by_email
 from backend.config import settings
-from utils.database.models.auth import User
+from utils.database.models.auth import User, normalize_email
 from utils.database.session import get_session
 
 logger = logging.getLogger("comparia.db")
@@ -21,8 +20,8 @@ async def seed_admins() -> None:
 
     async with get_session() as session:
         for email in settings.ADMIN_EMAILS:
-            result = await session.exec(select(User).where(User.email == email))
-            user = result.first()
+            email = normalize_email(email)
+            user = await find_user_by_email(session, email)
             if user is None:
                 session.add(User(email=email, role="admin"))
                 logger.warning(f"[seed] created admin user {email}")

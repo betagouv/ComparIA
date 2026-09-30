@@ -70,7 +70,7 @@ from backend.config import settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
-from utils.database.models.auth import LegalDocument, User
+from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
@@ -85,7 +85,7 @@ from utils.storage.redis import (
 
 logger = logging.getLogger("languia")
 
-_email_adapter = TypeAdapter(EmailStr)
+_email_adapter = TypeAdapter(NormalizedEmail)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -116,14 +116,14 @@ class AuthConfig(BaseModel):
 
 
 class EmailRequestBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     altcha_payload: str
     # The language the visitor is reading the site in, for the email.
     locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class EmailVerifyBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     code: str
 
 
@@ -859,8 +859,8 @@ async def _complete_oidc_sign_in(
         return _login_error("invalid_nonce")
 
     try:
-        # Same normalisation as the email flow's `EmailStr`, so both methods
-        # resolve an address to the same account.
+        # Same normalisation as the email flow's, so both methods resolve an
+        # address to the same account.
         email = _email_adapter.validate_python(claims.get("email"))
     except ValidationError:
         return _login_error("no_email")
