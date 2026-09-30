@@ -179,12 +179,24 @@ class AppSettings(SQLModel, table=True):
     oidc_button_label: str | None = None
     oidc_button_logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     oidc_button_logo_content_type: str | None = None
+    # Outcome of the last "test connection": passed, the reason if not, when,
+    # and the fingerprint of the provider config it was run against.
+    oidc_connection_test: Annotated[dict | None, Field(sa_type=JSONB)] = None
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
     @property
     def logo_version(self) -> str | None:
         return logo_version(self.logo)
+
+
+class OIDCConnectionTest(SQLModel):
+    """The last connection test, when it was run on the config in force."""
+
+    passed: bool
+    # Named failure, None when it passed.
+    reason: str | None = None
+    tested_at: str
 
 
 class AppSettingsPublic(SQLModel):
@@ -214,6 +226,7 @@ class AppSettingsPublic(SQLModel):
     oidc_button_label: str | None
     oidc_has_button_logo: bool
     oidc_button_logo_content_type: str | None
+    oidc_connection_test: OIDCConnectionTest | None = None
     updated_at: str
     updated_by: uuid.UUID | None = None
 

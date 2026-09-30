@@ -35,7 +35,12 @@ from backend.arena.checks import (
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
-from backend.auth.oidc import oidc_available
+from backend.auth.oidc import (
+    check_oidc_connection,
+    connection_test_passed,
+    oidc_available,
+    oidc_config_fingerprint,
+)
 from backend.auth.services import create_invite
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -68,6 +73,7 @@ from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
     AppSettingsPublic,
+    OIDCConnectionTest,
 )
 from utils.database.models.auth import (
     LegalDocument,
@@ -397,6 +403,18 @@ async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> N
     logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
 
 
+def _current_connection_test(row: AppSettings) -> OIDCConnectionTest | None:
+    """The stored connection test, unless the provider config changed since."""
+    stored = row.oidc_connection_test
+    if not stored or stored.get("fingerprint") != oidc_config_fingerprint(row):
+        return None
+    return OIDCConnectionTest(
+        passed=stored["passed"],
+        reason=stored.get("reason"),
+        tested_at=stored["tested_at"],
+    )
+
+
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
     return AppSettingsPublic(
         auth_access_policy=row.auth_access_policy,
@@ -425,6 +443,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         oidc_button_label=row.oidc_button_label,
         oidc_has_button_logo=row.oidc_button_logo is not None,
         oidc_button_logo_content_type=row.oidc_button_logo_content_type,
+        oidc_connection_test=_current_connection_test(row),
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -484,6 +503,7 @@ async def patch_settings(
                     "oidc_client_id",
                     "oidc_client_secret_encrypted",
                     "oidc_scopes",
+                    "oidc_connection_test",
                 )
             },
         )
@@ -496,8 +516,45 @@ async def patch_settings(
                     "before enabling the oidc auth method."
                 ),
             )
+        # With the email code gone, SSO is the only way in: a config that was
+        # never shown to work, or was edited since, would lock everyone out.
+        if (
+            "email_code" in current.auth_methods
+            and "email_code" not in effective_methods
+            and not connection_test_passed(effective)
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Test the OIDC connection on the current provider config "
+                    "before removing the email code sign-in."
+                ),
+            )
     row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
+
+
+@router.post("/settings/oidc/test", response_model=OIDCConnectionTest)
+async def run_oidc_connection_test(current_user: RequiredAdmin) -> OIDCConnectionTest:
+    """Check the stored OIDC provider config and remember the outcome for the
+    config as it is now; editing the config makes the outcome stale."""
+    row = await get_app_settings()
+    reason = await check_oidc_connection(row)
+    result = {
+        "passed": reason is None,
+        "reason": reason,
+        "tested_at": datetime.now().isoformat(),
+    }
+    await update_app_settings(
+        {
+            "oidc_connection_test": {
+                **result,
+                "fingerprint": oidc_config_fingerprint(row),
+            }
+        },
+        updated_by=current_user.id,
+    )
+    return OIDCConnectionTest(**result)
 
 
 @router.put("/settings/logo", response_model=AppSettingsPublic)

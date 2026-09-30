@@ -2,7 +2,11 @@
   import { Button, Checkbox, Input, Select } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
   import { api } from '$lib/fastapi-client'
-  import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
+  import type {
+    AppSettingsPatch,
+    AppSettingsPublic,
+    OIDCConnectionTest
+  } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
@@ -26,7 +30,44 @@
   let oidcHasButtonLogo = $state(false)
   let oidcLogoVersion = $state(0)
 
+  // What the server holds, to tell edits not saved yet from the config the
+  // connection test ran against.
+  let savedIssuer = $state('')
+  let savedClientId = $state('')
+  let savedEmailCode = $state(true)
+  let connectionTest = $state<OIDCConnectionTest | null>(null)
+  let testingConnection = $state(false)
+
+  const connectionTestReasons: Record<string, () => string> = {
+    incomplete_config: () => m['admin.settings.oidc.test.reasons.incomplete_config'](),
+    secret_unreadable: () => m['admin.settings.oidc.test.reasons.secret_unreadable'](),
+    discovery_unreachable: () => m['admin.settings.oidc.test.reasons.discovery_unreachable'](),
+    discovery_invalid: () => m['admin.settings.oidc.test.reasons.discovery_invalid'](),
+    issuer_mismatch: () => m['admin.settings.oidc.test.reasons.issuer_mismatch'](),
+    endpoint_not_https: () => m['admin.settings.oidc.test.reasons.endpoint_not_https'](),
+    missing_endpoint: () => m['admin.settings.oidc.test.reasons.missing_endpoint']()
+  }
+
+  // The test ran on the saved config: editing the provider fields here makes
+  // it say nothing about what would be saved.
+  const providerEdited = $derived(
+    oidcIssuer.trim() !== savedIssuer ||
+      oidcClientId.trim() !== savedClientId ||
+      oidcClientSecret.trim() !== ''
+  )
+  const connectionTestPassed = $derived(!!connectionTest?.passed && !providerEdited)
+  // Without the email code, SSO is the only way in: it stays until the
+  // provider is shown to work. The backend enforces the same rule.
+  const emailCodeLocked = $derived(savedEmailCode && methodOidc && !connectionTestPassed)
+
   let errors = $state<Record<string, string>>({})
+
+  function applySaved(data: AppSettingsPublic) {
+    savedIssuer = data.oidc_issuer ?? ''
+    savedClientId = data.oidc_client_id ?? ''
+    savedEmailCode = data.auth_methods.includes('email_code')
+    connectionTest = data.oidc_connection_test ?? null
+  }
 
   async function load() {
     loading = true
@@ -42,6 +83,7 @@
       oidcScopes = data.oidc_scopes.join(' ')
       oidcButtonLabel = data.oidc_button_label ?? ''
       oidcHasButtonLogo = data.oidc_has_button_logo
+      applySaved(data)
     } finally {
       loading = false
     }
@@ -124,12 +166,26 @@
       oidcScopes = saved.oidc_scopes.join(' ')
       oidcButtonLabel = saved.oidc_button_label ?? ''
       oidcHasButtonLogo = saved.oidc_has_button_logo
+      applySaved(saved)
 
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
       saving = false
+    }
+  }
+
+  async function testConnection() {
+    testingConnection = true
+    try {
+      connectionTest = await api.request<OIDCConnectionTest>('/admin/settings/oidc/test', {
+        method: 'POST'
+      })
+    } catch (err) {
+      useToast((err as Error).message, 6000, 'error')
+    } finally {
+      testingConnection = false
     }
   }
 
@@ -211,6 +267,10 @@
           id="settings-method-email-code"
           label={m['admin.settings.authentification.authMethods.emailCode']()}
           bind:checked={methodEmailCode}
+          disabled={emailCodeLocked}
+          help={emailCodeLocked
+            ? m['admin.settings.authentification.authMethods.emailCodeLocked']()
+            : undefined}
         />
         <Checkbox
           id="settings-method-oidc"
@@ -293,6 +353,40 @@
             bind:value={oidcButtonLabel}
             groupClass="mt-4!"
           />
+
+          <div class="mt-4!">
+            <Button
+              type="button"
+              id="settings-oidc-test"
+              variant="secondary"
+              size="sm"
+              text={testingConnection
+                ? m['admin.settings.oidc.test.running']()
+                : m['admin.settings.oidc.test.button']()}
+              disabled={testingConnection || providerEdited || !savedIssuer || !oidcHasClientSecret}
+              onclick={testConnection}
+            />
+            {#if providerEdited}
+              <p id="settings-oidc-test-hint" class="fr-hint-text mt-1!">
+                {m['admin.settings.oidc.test.hint']()}
+              </p>
+            {:else if connectionTest}
+              <p
+                role="status"
+                class="fr-message mt-2! {connectionTest.passed
+                  ? 'fr-message--valid'
+                  : 'fr-message--error'}"
+              >
+                {#if connectionTest.passed}
+                  {m['admin.settings.oidc.test.passed']()}
+                {:else}
+                  {m['admin.settings.oidc.test.failed']({
+                    reason: connectionTestReasons[connectionTest.reason ?? '']?.() ?? ''
+                  })}
+                {/if}
+              </p>
+            {/if}
+          </div>
 
           <div class="mt-4!">
             <p class="fr-label mb-2!">{m['admin.settings.oidc.buttonLogo.label']()}</p>
