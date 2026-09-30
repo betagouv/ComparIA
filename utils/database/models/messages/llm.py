@@ -45,6 +45,15 @@ class LLMMessageCreate(LLMMessageBase):
     # so DB-loaded rows must validate back through LLMMessageCreate.
     reasoning_content: str | None = ""
 
+    # This is the shape the browser sees, on every streamed chunk and again in
+    # TurnPublic, so these three stay server-side: the provider's own id
+    # prefixes name the provider, and the token count and cache hit are
+    # per-model tells. They are still set and still saved, only not sent.
+    # Reveal reports the token counts once the vote is in.
+    generation_id: str | None = Field(default=None, exclude=True)
+    tokens: int | None = Field(default=None, exclude=True)
+    is_cached: bool = Field(default=False, exclude=True)
+
 
 class LLMMessageRead(LLMMessageFinal):
     pass

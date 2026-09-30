@@ -14,10 +14,16 @@
     { block: block },
     props.class
   ])
-  // FIXME check if aria-label else set aria-hidden="true"
+
+  // The glyph comes from a CSS pseudo-element, so the span holds no text. Named
+  // icons need role="img" or the name is dropped as prohibited on a generic
+  // span; unnamed ones are decorative and stay out of the accessibility tree.
+  const named = $derived(!!(props['aria-label'] || props['aria-labelledby']))
+  const role = $derived(props.role ?? (named ? 'img' : undefined))
+  const ariaHidden = $derived(props['aria-hidden'] ?? (named ? undefined : true))
 </script>
 
-<span {...props} class={classes}></span>
+<span {...props} {role} aria-hidden={ariaHidden} class={classes}></span>
 
 <style>
   /* set icon-size on element itself for div to set its size in block mode */

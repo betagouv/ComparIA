@@ -23,6 +23,20 @@
     legendSlot?: Snippet<[{ legend: string }]>
     labelSlot?: Snippet<[{ option: Option; index: number }]>
   } & HTMLFieldsetAttributes = $props()
+
+  const all = $derived(options.find((opt) => opt.value === 'all'))
+  const opts = $derived(options.filter((opt) => opt.value !== 'all'))
+
+  const allSelected = $derived(value.length === opts.length || value.length === 0)
+  const ariaAllSelected = $derived(allSelected ? 'true' : value.length === 0 ? 'false' : 'mixed')
+
+  function toggleAll() {
+    value = []
+  }
+
+  $effect(() => {
+    if (all && allSelected) toggleAll()
+  })
 </script>
 
 <fieldset
@@ -42,15 +56,44 @@
     {/if}
   </legend>
 
-  <div class="flex flex-wrap">
-    {#each options as option, i (option.value)}
+  {#if all}
+    <div
+      class={[
+        'fr-fieldset__element mb-2 pb-2 w-full border-b-1 border-[--grey-925-125]',
+        { 'grow-0! basis-auto!': row }
+      ]}
+    >
+      <div class="fr-checkbox-group">
+        <input
+          name="checkbox-{id}"
+          id="{id}-all"
+          type="checkbox"
+          value="all"
+          checked={allSelected}
+          aria-checked={ariaAllSelected}
+          onclick={() => toggleAll()}
+          disabled={value.length === 0}
+        />
+        <label class={['fr-label ms-6!', { 'inline-block!': row }, labelClass]} for="{id}-all">
+          {#if labelSlot}
+            {@render labelSlot({ option: all, index: -1 })}
+          {:else}
+            {all.label ?? all.value}
+          {/if}
+        </label>
+      </div>
+    </div>
+  {/if}
+
+  <div class="flex w-full flex-col">
+    {#each opts as option, i (option.value)}
       <div
         class={['fr-fieldset__element not-last:mb-2! last:mb-0!', { 'grow-0! basis-auto!': row }]}
       >
         <div class="fr-checkbox-group">
           <input
-            name="checkbox1"
-            id={`${id}-${option.value}`}
+            name="checkbox-{id}"
+            id="{id}-{option.value}"
             type="checkbox"
             value={option.value}
             bind:group={value}
@@ -73,19 +116,10 @@
 
 <style>
   /* Override only light theme blue to purple */
-  :root[data-fr-theme='light'] input[type='checkbox'] + label {
+  input[type='checkbox'] + label {
     --border-action-high-blue-france: var(--blue-france-main-525);
     --border-active-blue-france: var(--blue-france-main-525);
     --background-active-blue-france: var(--blue-france-main-525);
-  }
-
-  /* To avoid flickering at page load */
-  @media (prefers-color-scheme: light) {
-    :root[data-fr-theme='system'] input[type='checkbox'] + label {
-      --border-action-high-blue-france: var(--blue-france-main-525);
-      --border-active-blue-france: var(--blue-france-main-525);
-      --background-active-blue-france: var(--blue-france-main-525);
-    }
   }
 
   input[type='checkbox'] + label::before {

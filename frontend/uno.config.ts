@@ -34,16 +34,21 @@ export default defineConfig({
       white: 'var(--grey-1000-50)',
       black: 'var(--grey-0-1000)',
       primary: 'var(--blue-france-main-525)',
+      'light-primary': 'var(--brand-primary-soft)',
+      'very-light-primary': 'var(--brand-primary-softest)',
+      secondary: 'var(--brand-secondary)',
+      'secondary-text': 'var(--brand-secondary-text)',
       info: 'var(--info-425-625)',
       'light-info': 'var(--info-950-100)',
       'very-light-info': 'var(--cg-very-light-blue)',
       error: 'var(--error-425-625)',
       warning: 'var(--warning-425-625)',
-      success: 'var(--green-emeraude-main-632)',
+      // Text token, not the decorative --green-emeraude-main-632: that one only
+      // reached 3.06:1 on white, and this class is mostly used on text.
+      success: 'var(--text-default-success)',
       yellow: 'var(--yellow-tournesol-850-200)',
       green: 'var(--cg-green)',
       purple: 'var(--cg-purple)',
-      orange: 'var(--cg-orange)',
       red: 'var(--red-marianne-425-625-active)',
       grey: 'var(--grey-425-625)',
       'dark-grey': 'var(--grey-200-850)',
@@ -55,19 +60,22 @@ export default defineConfig({
       sm: '36em',
       md: '48em',
       lg: '62em',
-      xl: '78em'
+      xl: '78em',
+      '2xl': '88em',
+      '3xl': '115em'
     }
   },
   shortcuts: [
     {
       'cg-border': 'border-1 border-[--grey-925-125] border-solid rounded-xl',
       'c-bot-disk-a': 'w-[22px] h-[22px] rounded-full bg-purple',
-      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-orange'
+      'c-bot-disk-b': 'w-[22px] h-[22px] rounded-full bg-secondary',
+      'text-xxs': 'text-[10px] leading-normal'
     }
   ],
   safelist: [
     'text-primary',
-    'text-orange',
+    'text-secondary-text',
     'c-bot-disk-a',
     'c-bot-disk-b',
     'i-ri-dice-line',
@@ -84,6 +92,19 @@ export default defineConfig({
     'i-ri-bowl-line',
     'i-ri-music-2-line',
     'i-ri-book-open-line',
+    // cards
+    'i-ri-stack-line',
+    'i-ri-text-snippet',
+    'i-ri-price-tag-3-line',
+    'i-ri-shapes-line',
+    'i-ri-copyright-line',
+    'i-ri-calendar-line',
+    'i-ri-government-line',
+    // modalities
+    'i-ri-file-text-line',
+    'i-ri-image-upload-line',
+    'i-ri-volume-up-line',
+    'i-ri-video-line',
     ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })

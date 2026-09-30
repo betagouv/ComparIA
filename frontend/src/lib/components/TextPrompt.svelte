@@ -20,6 +20,7 @@
     el?: HTMLTextAreaElement
     class?: string
     onSubmit?: (value: string) => void
+    onSubmitBlocked?: () => void
     onBlur?: (value: string) => void
     onFocus?: () => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
@@ -41,6 +42,7 @@
     el = $bindable(),
     class: classNames = '',
     onSubmit = noop,
+    onSubmitBlocked = noop,
     onBlur = noop,
     onFocus = noop,
     ...nativeTextAreaProps
@@ -66,6 +68,8 @@
       e.preventDefault()
       if (!submitDisabled) {
         onSubmit(value)
+      } else {
+        onSubmitBlocked()
       }
     }
   }
@@ -76,7 +80,7 @@
 </script>
 
 <div class={['fr-input-group', classNames, { 'fr-input-group--error': !!error }]}>
-  <label for={id} class={['fr-label', { 'hidden!': hideLabel }]}>{label}</label>
+  <label for={id} class={['fr-label', { 'sr-only!': hideLabel }]}>{label}</label>
   <div class="relative">
     <textarea
       {id}
@@ -94,16 +98,15 @@
       onblur={() => onBlur?.(value)}
       {@attach updateAuto}
       {@attach updateRows}
-      onfocus={onFocus}
-    ></textarea>
+      onfocus={onFocus}></textarea>
     {#if submitBtn}
       <Button
         icon="arrow-up-line"
         iconOnly
         {size}
-        disabled={submitDisabled}
+        aria-disabled={submitDisabled}
         text={m['words.send']()}
-        onclick={() => onSubmit(value)}
+        onclick={() => (submitDisabled ? onSubmitBlocked() : onSubmit(value))}
         class="right-3 bottom-3 absolute"
       />
     {/if}

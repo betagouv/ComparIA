@@ -17,40 +17,73 @@ The models are organized in hierarchy:
 - DatasetData/PreferencesData: Rankings and user preferences
 """
 
-from typing import Annotated, Any, Literal, get_args
+from typing import Annotated, Any, Literal, Self, TypeVar, get_args
 
 from pydantic import (
     AfterValidator,
     BaseModel,
-    ConfigDict,
+    ValidationInfo,
     computed_field,
     field_validator,
+    model_validator,
 )
 
-# Type definitions for model categorization
-FriendlySize = Literal["XS", "S", "M", "L", "XL"]  # Human-readable size categories
-Distribution = Literal[
-    "api-only", "open-weights", "fully-open-source"
-]  # License/access types
-FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
+from backend.llms.utils import convert_range_to_value, get_llm_impact
+from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
+from utils.database.models.llms.llm import LLMDataBase
+
+# LLM scale classes
+SizeClass = Literal["XS", "S", "M", "L", "XL"]
+SIZE_CLASSES: tuple[SizeClass, ...] = get_args(SizeClass)
+SIZE_CLASSES_SCALE: dict[SizeClass, int | float] = {
+    # in billion params
+    "XS": 15,
+    "S": 60,
+    "M": 100,
+    "L": 400,
+    "XL": float("inf"),
+}
+
+EnergyClass = Literal["A", "B", "C", "D", "E", "F"]
+ENERGY_CLASSES: tuple[EnergyClass, ...] = get_args(EnergyClass)
+ENERGY_CLASSES_SCALE: dict[EnergyClass, int | float] = {
+    # in wh
+    "A": 100,
+    "B": 300,
+    "C": 1_000,
+    "D": 3_000,
+    "E": 10_000,
+    "F": float("inf"),
+}
+
+ClassT = TypeVar("ClassT", bound=SizeClass)
 
 
-class Endpoint(BaseModel):
+def get_class(scale: dict[ClassT, int | float], v: int | float) -> ClassT:
+    for k, kv in scale.items():
+        if v < kv:
+            return k
+    raise Exception("Error: Could not compute scale value")
+
+
+class LitellmEndpoint(BaseModel):
     """
-    API endpoint configuration for model access.
+    Litellm API endpoint configuration for LLM access.
 
     Specifies how to reach a model's API (OpenAI-compatible, custom, etc).
+    Computed from LLMDataEnabled
 
     Attributes:
-        api_type: API format (default "openai" for OpenAI-compatible APIs)
-        api_base: Base URL for the API endpoint
-        api_model_id: Model identifier used in API calls
+        model: Model identifier used in API calls
+        api_key: API secret key
+        base_url: Base URL for the API endpoint (optional)
+        api_verson: API version (optional)
     """
 
-    api_type: str | None = "openai"
-    api_base: str | None = None
-    api_version: str | None = None
-    api_model_id: str
+    model: str
+    api_key: str
+    base_url: str | None
+    api_version: str | None
 
 
 # Type alias: rounds floats to nearest integer
@@ -120,127 +153,104 @@ class PreferencesData(BaseModel):
     Aggregated counts of user ratings for specific quality attributes.
 
     Attributes:
-        positive_prefs_ratio: Percentage of positive preferences (useful, complete, etc.)
+        positive_prefs_ratio: Share of positive tags, null when the model has
+            no tagged votes or the instance has turned off a whole side
         total_prefs: Total number of preference votes received
-        useful/complete/creative/clear_formatting: Count of positive preferences
-        incorrect/superficial/instructions_not_followed: Count of negative preferences
+        counts: Count per vote tag key, including keys no longer offered
     """
 
-    positive_prefs_ratio: float
+    positive_prefs_ratio: float | None
     total_prefs: int
-    # Positive quality indicators
-    useful: int
-    clear_formatting: int
-    complete: int
-    creative: int
-    # Negative quality indicators
-    incorrect: int
-    instructions_not_followed: int
-    superficial: int
+    counts: dict[str, int]
 
     @field_validator("positive_prefs_ratio", mode="before")
     @classmethod
-    def handle_nan_ratio(cls, value: Any) -> float:
-        """Replace NaN values with -1 to prevent JSON serialization errors."""
+    def handle_nan_ratio(cls, value: Any) -> float | None:
+        """A ratio that cannot be computed is absent, not a number."""
         import math
 
         if isinstance(value, float) and math.isnan(value):
-            return -1
+            return None
         return value
 
 
-class LLMDataBase(BaseModel):
+class APILLMDataBase(LLMDataBase):
     """
-    Individual LLM base model definition (before enrichment).
-
-    See `utils/models/llms.py`.
-
-    !Warning: Make sure to reflect changes to `LLMDataRawBase`
+    Base LLM class used for LLM picker and LLM list.
     """
 
-    new: bool
-    status: Literal["archived", "missing_data", "disabled", "enabled"]
-    id: str
-    simple_name: str
-    license: str
-    fully_open_source: bool
-    release_date: str
-    arch: str
-    params: int | float
-    active_params: int | float | None
-    reasoning: bool | Literal["hybrid"]
-    quantization: Literal["q4", "q8"] | None
-    url: str | None
-    endpoint: Endpoint | None
-    pricey: bool
-    specific_portals: list[str] | None
-
-
-class LLMDataEnhanced(BaseModel):
-    """
-    Individual LLM enhanced model definition (after enrichment from Organisation).
-
-    See `utils/models/llms.py`.
-
-    !Warning: Make sure to reflect changes to `LLMDataRaw`
-    """
-
-    # Merged from License
-    distribution: Distribution
-    reuse: bool
-    commercial_use: bool | None
-    # Merged from Organisation
-    organisation: str
-    icon_path: str
-
-
-class LLMData(LLMDataBase, LLMDataEnhanced):
-    """
-    Final individual LLM model definition.
-
-    Populated with 'utils/models/generated-models.json' data.
-    It is immutable and no default values are defined so it expects complete data.
-    See `utils/models/llms.py`.
-    """
-
-    model_config = ConfigDict(frozen=True, extra="ignore")
-
-    status: Literal["archived", "enabled"]
-    friendly_size: FriendlySize
-    required_ram: int | float
-    wh_per_million_token: int | float
+    status: Literal["enabled", "archived"]
+    license: LLMLicensePublic
+    lab: LLMLabPublic
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def system_prompt(self) -> str | None:
-        """
-        Get model-specific system prompt if configured.
+    def size_class(self) -> SizeClass:
+        return get_class(SIZE_CLASSES_SCALE, self.params)
 
-        Allows customization of model behavior through system prompts.
-        Currently only specific French models (chocolatine, lfm-40b) have custom prompts.
-        Other models use None (no system prompt by default).
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def required_ram(self) -> int | float:
+        if self.quantization == "q8":
+            return self.params * 2
 
-        Args:
-            model_name: Model identifier (e.g., "openai/gpt-4", "chocolatine")
+        # We suppose from q4 to fp16
+        return self.params
 
-        Returns:
-            str: French system prompt, or None for no custom system prompt
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def wh_per_million_token(self) -> int | float:
+        impact = get_llm_impact(self, 1_000_000, None)
+        energy_kwh = convert_range_to_value(impact.energy.value)
 
-        Note:
-            The system prompt is included in the Comparison when provided.
-            This ensures consistent behavior across multiple comparisons.
-        """
-        return None
+        return energy_kwh * 1000
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def energy_class(self) -> EnergyClass:
+        return get_class(ENERGY_CLASSES_SCALE, self.wh_per_million_token)
 
 
-class LLMDataArchived(LLMData):
+class LLMDataArchived(APILLMDataBase):
     status: Literal["archived"]
 
 
-class LLMDataEnabled(LLMData):
+class LLMDataEnabled(APILLMDataBase):
     """
     Enabled LLM for proper typing with required Endpoint
     """
 
     status: Literal["enabled"]
-    endpoint: Endpoint
+    api_model_id: str
+    endpoint: LLMEndpoint
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def litellm_endpoint(self) -> LitellmEndpoint:
+        """
+        Litellm API endpoint args.
+        """
+        return LitellmEndpoint(
+            api_version=self.endpoint.api_version,
+            base_url=self.endpoint.api_base,
+            api_key=self.endpoint.api_key,
+            model=f"{self.endpoint.api_type}/{self.api_model_id}",
+        )
+
+
+class APILLMData(APILLMDataBase):
+    """
+    LLM data used for LLM list, sent to clients.
+    !Warning: make sure there's no secrets.
+    """
+
+    data: DatasetData | None = None
+    prefs: PreferencesData | None = None
+
+    @model_validator(mode="after")
+    def inject_ranking_data(self, info: ValidationInfo) -> Self:
+        if data := info.context.get("ranking"):
+            self.data = data.rankings.get(str(self.id))
+            self.prefs = data.preferences.get(str(self.id))
+
+        return self

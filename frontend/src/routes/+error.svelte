@@ -1,8 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { Link } from '$components/dsfr'
-  import Footer from '$components/Footer.svelte'
-  import { Header } from '$components/header'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import ovoidPictoSrc from '@gouvfr/dsfr/dist/artwork/background/ovoid.svg'
@@ -11,10 +9,8 @@
   const key = $derived(page.status === 404 ? '404' : 'unexpected')
 </script>
 
-<Header />
-
-<main>
-  <div class="fr-container">
+<main class="flex min-h-screen items-center justify-center">
+  <div class="fr-container h-fit!">
     <div
       class="fr-my-7w fr-mt-md-12w fr-mb-md-10w fr-grid-row fr-grid-row--gutters fr-grid-row--middle fr-grid-row--center"
     >
@@ -61,5 +57,3 @@
     </div>
   </div>
 </main>
-
-<Footer />

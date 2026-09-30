@@ -1,0 +1,6 @@
+# Report a vulnerability in compar:IA. Please do not open a public issue.
+Contact: mailto:ssi.snum@culture.gouv.fr
+Contact: mailto:contact@comparia.beta.gouv.fr
+Expires: 2027-09-01T00:00:00.000Z
+Preferred-Languages: fr, en
+Policy: https://github.com/betagouv/ComparIA/blob/next/SECURITY.md

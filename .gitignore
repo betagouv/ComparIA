@@ -83,3 +83,4 @@ CLAUDE.md
 AGENTS.md
 .claude
 ignored_files
+.playwright-mcp/

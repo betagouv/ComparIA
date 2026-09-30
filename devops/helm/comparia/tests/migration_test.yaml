@@ -1,0 +1,45 @@
+suite: automatic database migrations
+templates:
+  - migration-job.yaml
+values:
+  - ../ci/values-lint.yaml
+tests:
+  - it: renders the migration Job as a pre-install/pre-upgrade hook
+    asserts:
+      - isKind:
+          of: Job
+      - equal:
+          path: metadata.annotations["helm.sh/hook"]
+          value: pre-install,pre-upgrade
+      - equal:
+          path: metadata.annotations["helm.sh/hook-delete-policy"]
+          value: before-hook-creation,hook-succeeded
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value: ["uv", "run", "alembic", "upgrade", "head"]
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/betagouv/comparia-backend:latest
+
+  - it: resolves DB env from the chart-rendered Secret by default
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: RELEASE-NAME-comparia-secret
+
+  - it: resolves DB env from existingSecret when set
+    set:
+      secrets.existingSecret: my-external-secret
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: my-external-secret
+
+  - it: is present on every render regardless of other toggles
+    set:
+      cronjobs.ranking.enabled: false
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+    asserts:
+      - isKind:
+          of: Job

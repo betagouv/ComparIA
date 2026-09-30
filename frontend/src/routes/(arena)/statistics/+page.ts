@@ -1,0 +1,27 @@
+import { api } from '$lib/fastapi-client'
+import type { PageLoad } from './$types'
+
+export type StatisticsPeriod = '7d' | '30d' | '90d' | 'all'
+export type StatisticsSummary = {
+  period: StatisticsPeriod
+  granularity: 'day' | 'week' | 'month'
+  range_start: string
+  range_end: string
+  prompts_count: number
+  conversations_count: number
+  votes_count: number
+  models_count: number
+  activity: Array<{ date: string; prompts: number; conversations: number }>
+}
+
+export const load: PageLoad = async ({ fetch, url }) => {
+  const requestedPeriod = url.searchParams.get('period')
+  const period: StatisticsPeriod = ['7d', '30d', '90d', 'all'].includes(requestedPeriod ?? '')
+    ? (requestedPeriod as StatisticsPeriod)
+    : '30d'
+  const statistics = await api.request<StatisticsSummary>('/statistics/summary', {
+    fetch,
+    searchParams: { period }
+  })
+  return { statistics }
+}
