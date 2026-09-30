@@ -214,6 +214,7 @@ async def stream_comparison_messages(
 
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
+    pending: dict[BotPos, asyncio.Task[AnySSEEventMsg]] = {}
 
     try:
         # Create async generators for both models
@@ -233,26 +234,25 @@ async def stream_comparison_messages(
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
 
+        # One pending read per generator. It is kept across wake-ups rather than
+        # cancelled: cancelling a read that is waiting on the provider closes
+        # the generator under it. See `pending` above the `try`.
+
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):
-            # Collect pending tasks
-            tasks = [
-                asyncio.create_task(anext(generators[pos]))
-                for pos in BOT_POS
-                if not complete[pos]
-            ]
+            for pos in BOT_POS:
+                if not complete[pos] and pos not in pending:
+                    pending[pos] = asyncio.create_task(anext(generators[pos]))
 
-            if not tasks:
+            if not pending:
                 break
 
             # Wait for next chunk from either model
-            completed, pending = await asyncio.wait(
-                tasks, return_when=asyncio.FIRST_COMPLETED
+            completed, _ = await asyncio.wait(
+                pending.values(), return_when=asyncio.FIRST_COMPLETED
             )
-
-            # Cancel pending tasks to avoid concurrent anext() on the same generator
-            for task in pending:
-                task.cancel()
+            for pos in [pos for pos, task in pending.items() if task in completed]:
+                del pending[pos]
 
             # Process completed chunks
             for task in completed:
@@ -326,6 +326,9 @@ async def stream_comparison_messages(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
         yield {"type": "error", "error": "provider_error"}
+    finally:
+        for task in pending.values():
+            task.cancel()
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:

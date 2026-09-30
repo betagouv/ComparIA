@@ -147,7 +147,7 @@ async def bot_response_async(
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
+    async for llm_msg in stream_iter:
         # Yield complete chat only if there's content to display in current message
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
@@ -169,7 +169,9 @@ async def bot_response_async(
 
     # Fallback: count tokens locally if API didn't provide them
     if not llm_msg.tokens:
-        llm_msg.tokens = token_counter(
+        # Tokenizing a long answer takes a while: off the event loop.
+        llm_msg.tokens = await asyncio.to_thread(
+            token_counter,
             text=[llm_msg.reasoning_content, llm_msg.content],
             model=llm.human_id,
         )
