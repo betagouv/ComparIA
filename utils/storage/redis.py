@@ -31,6 +31,7 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 REDIS_AUTH_EMAIL_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_email_req:{{ip}}"
+REDIS_AUTH_OIDC_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_oidc_req:{{ip}}"
 REDIS_AUTH_EMAIL_REQ_EMAIL: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}auth_email_req_email:{{email}}"
 )
@@ -38,6 +39,10 @@ REDIS_AUTH_VERIFY_FAIL: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}auth_verify_fail:{{ip}}:{{email}}"
 )
 REDIS_AUTH_TOTP_FAIL: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_totp_fail:{{user}}"
+# OIDC authorization `state`/`nonce` pairs, stored at initiation and consumed
+# (deleted) on callback. Short TTL + NX-style write mirrors the Altcha replay
+# pattern in backend/arena/captcha.py.
+REDIS_OIDC_STATE_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}oidc_state:"
 REDIS_WEB_SEARCH_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
 )

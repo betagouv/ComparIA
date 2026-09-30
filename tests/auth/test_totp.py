@@ -740,7 +740,16 @@ def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
         def delete(self, _key):
             pass
 
-    with routed(verify_login_code=challenged, get_redis_client=NoRedis) as client:
+    async def email_code_enabled():
+        from types import SimpleNamespace
+
+        return SimpleNamespace(auth_methods=["email_code"])
+
+    with routed(
+        verify_login_code=challenged,
+        get_redis_client=NoRedis,
+        get_app_settings=email_code_enabled,
+    ) as client:
         r = client.post(
             "/auth/email/verify", json={"email": "admin@example.org", "code": "123456"}
         )
