@@ -9,6 +9,7 @@ Run with pytest, or directly:
 import asyncio
 import contextlib
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -125,7 +126,9 @@ def routed(row=None, terms_accepted=True, provider=None):
         ):
             app = FastAPI()
             app.include_router(auth_router.router)
-            client = TestClient(app)
+            # The browser reaches the backend on the origin the provider is told
+            # to come back to, as in a correct deployment.
+            client = TestClient(app, base_url=auth_router.settings.api_origin)
             client.cookies.set("anonymous_session", "token")
             client._provider = provider  # type: ignore[attr-defined]
             yield client, fake_redis
@@ -207,6 +210,50 @@ def test_oidc_login_redirects_to_the_provider_authorization_endpoint():
     assert "httponly" in set_cookie.lower()
     assert "samesite=lax" in set_cookie.lower()
     assert "path=/api/auth/oidc" in set_cookie.lower()
+
+
+def test_oidc_login_refuses_when_the_request_origin_is_not_the_callback_origin(caplog):
+    # The state cookie is set for the origin the login came in on; a callback on
+    # another origin could never send it back, so fail now instead of after the
+    # provider round trip.
+    with routed() as (client, fake_redis):
+        client.base_url = "http://elsewhere.example.test"
+        with caplog.at_level(logging.ERROR):
+            response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert _error_param(response) == "oidc_unavailable"
+    assert not client._provider.requests
+    assert not fake_redis.store
+    assert "oidc_state" not in response.headers.get("set-cookie", "")
+    assert "http://elsewhere.example.test" in caplog.text
+    assert auth_router.settings.api_origin in caplog.text
+
+
+def test_oidc_login_reads_the_origin_from_the_proxy_headers():
+    # Behind the ingress the backend sees an internal host over plain http.
+    with patched(auth_router.settings, COMPARIA_API_URL="https://arena.example.test"):
+        with routed() as (client, _fake_redis):
+            client.base_url = "http://backend.internal"
+            response = client.get(
+                "/auth/oidc/login",
+                follow_redirects=False,
+                headers={
+                    "x-forwarded-host": "arena.example.test",
+                    "x-forwarded-proto": "https",
+                },
+            )
+
+    assert response.status_code == 302
+    assert urlsplit(response.headers["location"]).netloc == "idp.example.test"
+
+
+def test_oidc_login_ignores_a_default_port_and_letter_case_in_the_origin():
+    with patched(auth_router.settings, COMPARIA_API_URL="https://Arena.example.test"):
+        with routed() as (client, _fake_redis):
+            client.base_url = "https://arena.example.test:443"
+            response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert urlsplit(response.headers["location"]).netloc == "idp.example.test"
 
 
 def test_oidc_login_requires_terms_acceptance_before_any_redirect():

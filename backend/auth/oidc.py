@@ -13,10 +13,11 @@ import logging
 import secrets
 from dataclasses import asdict, dataclass
 from typing import cast
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 
 import httpx
 from async_lru import alru_cache
+from fastapi import Request
 
 from backend.config import settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
@@ -153,6 +154,43 @@ def oidc_callback_url() -> str:
     backend does not share a host with the frontend.
     """
     return f"{settings.api_origin}/api/auth/oidc/callback"
+
+
+_DEFAULT_PORTS = {"http": 80, "https": 443}
+
+
+def _origin(scheme: str, host: str) -> str:
+    """`scheme://host[:port]` in one canonical spelling, to compare origins."""
+    parts = urlsplit(f"{scheme}://{host}")
+    name = (parts.hostname or "").lower()
+    if ":" in name:
+        name = f"[{name}]"
+    scheme = parts.scheme.lower()
+    port = parts.port
+    if port is None or port == _DEFAULT_PORTS.get(scheme):
+        return f"{scheme}://{name}"
+    return f"{scheme}://{name}:{port}"
+
+
+def callback_origin() -> str:
+    """Origin of the callback URL, where the provider sends the browser back."""
+    parts = urlsplit(oidc_callback_url())
+    return _origin(parts.scheme, parts.netloc)
+
+
+def request_origin(request: Request) -> str | None:
+    """Origin the browser used to reach this request, None when unknowable.
+
+    Behind the ingress the backend sees its own host over plain http, so the
+    forwarded headers win when present. Only used to diagnose a misconfigured
+    callback, never to decide what someone may do.
+    """
+    headers = request.headers
+    host = (headers.get("x-forwarded-host") or headers.get("host") or "").split(",")[0]
+    if not host.strip():
+        return None
+    scheme = (headers.get("x-forwarded-proto") or request.url.scheme).split(",")[0]
+    return _origin(scheme.strip(), host.strip())
 
 
 def build_authorization_url(

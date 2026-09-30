@@ -82,6 +82,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.matomoUrl`         | `""`                | `MATOMO_URL`. Left empty, the env vars are omitted and no analytics are loaded |
 | `config.matomoId`          | `""`                | `MATOMO_ID`. Only rendered when `config.matomoUrl` is set |
 | `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install |
+| `config.apiUrl`            | `""`                | `COMPARIA_API_URL`, origin the backend answers on, used as the OIDC callback origin (`<apiUrl>/api/auth/oidc/callback`). Left empty, the callback uses `config.appUrl`, which is right when the ingress serves the backend under `/api` of the app origin. Only matters for OIDC sign-in; login starts are refused when the origin it came in on differs from it |
 | `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/api/admin` |
 | `config.auth.domainAllowlist` | `[]`             | `AUTH_DOMAIN_ALLOWLIST`. If non-empty, only emails from these domains can request a login code |
 | `config.auth.sessionLengthDays` | `30`           | `AUTH_SESSION_LENGTH_DAYS`                            |

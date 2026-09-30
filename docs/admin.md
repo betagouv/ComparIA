@@ -78,6 +78,25 @@ Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translat
 
 An optional domain allowlist restricts who can ask for a login code, which is how you keep an instance to one organisation.
 
+### Single sign-on (OIDC)
+
+The same page lets people sign in through an OpenID Connect provider (ProConnect, Keycloak, Entra ID, or any provider that publishes a `/.well-known/openid-configuration` document) next to, or instead of, the email code. An email is one account whatever the method, and its letter case does not matter.
+
+1. At the provider, register a confidential client (authorization code flow) and give it this redirect URI:
+
+   ```
+   <origin the backend answers on>/api/auth/oidc/callback
+   ```
+
+   The origin is `COMPARIA_API_URL` when set, and `COMPARIA_APP_URL` otherwise. Behind the usual ingress, which serves the backend under `/api` of the app origin, leave `COMPARIA_API_URL` empty (`config.apiUrl` in the Helm chart). Set it only when the backend is reached on another origin, as in local development.
+2. In `/admin/authentification`, fill in the issuer URL, client ID, client secret and scopes (`openid` and `email` at least), and optionally the button label and logo. The issuer and the endpoints it announces have to be `https`; `http://localhost` and `http://127.0.0.1` are accepted for a local Keycloak.
+3. Use **Test connection**. It fetches the discovery document and checks that the stored secret can be decrypted, and says what is wrong when it fails. Removing the email code method is only possible once a test has passed for the current provider settings; changing the issuer, client ID or secret asks for a new test. This keeps you from locking everybody out, yourself included.
+4. Tick `oidc` in the enabled methods.
+
+The client secret is stored encrypted with `COMPARIA_ENCRYPTION_KEY`, like the other secrets, and is never sent back to the browser. If the key is rotated without keeping the old one after a comma (see above), the secret can no longer be read: the SSO button disappears from the login page until you enter the secret again.
+
+If the button is there but every sign-in comes back to the login page with an error, check that the origin in the address bar when signing in is the one in the redirect URI above. The backend refuses to start a sign-in from another origin and logs both origins, because the browser would never send its state cookie back to the callback.
+
 ## Legal pages
 
 `/admin/legal` holds the terms, privacy policy, the participation conditions, and any extra informational pages. Terms and the privacy policy are versioned: you edit a draft and publish it, and the published version is what visitors see.
