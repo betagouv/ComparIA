@@ -326,6 +326,25 @@ def test_callback_redirects_when_discovery_is_missing_required_endpoints():
     assert not client._login_calls
 
 
+def test_callback_refuses_a_non_https_token_or_userinfo_endpoint():
+    for endpoint, path in (
+        ("token_endpoint", "/token"),
+        ("userinfo_endpoint", "/userinfo"),
+    ):
+        provider = FakeProvider()
+        provider.discovery[endpoint] = f"http://idp.example.test{path}"
+        with routed(provider=provider) as client:
+            response = client.get(
+                "/auth/oidc/callback",
+                params={"code": "auth-code", "state": "good-state"},
+                follow_redirects=False,
+            )
+        assert _login_redirect(response) == "provider_error", endpoint
+        # No code, no client secret ever sent to a provider over plain http.
+        assert not provider.requests_to("/token"), endpoint
+        assert not client._login_calls, endpoint
+
+
 def test_callback_redirects_when_discovery_raises():
     provider = FakeProvider()
     provider.unreachable = True

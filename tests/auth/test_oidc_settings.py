@@ -297,6 +297,34 @@ def test_patch_issuer_must_be_an_http_url():
     assert response.status_code == 422
 
 
+def test_patch_issuer_must_be_https():
+    with admin_client() as client:
+        response = client.patch(
+            "/admin/settings", json={"oidc_issuer": "http://idp.example.test"}
+        )
+    assert response.status_code == 422
+
+
+def test_patch_issuer_accepts_plain_http_on_localhost_only():
+    """The local Keycloak runs over http; a lookalike host must not pass."""
+
+    async def update_app_settings(patch, updated_by):
+        return _settings_row(**patch)
+
+    accepted = ["http://localhost:8080", "http://127.0.0.1:8080/realms/x"]
+    refused = ["http://localhost.evil.test", "http://127.0.0.1.evil.test"]
+    with (
+        admin_client() as client,
+        patched(admin_router, update_app_settings=update_app_settings),
+    ):
+        for issuer in accepted:
+            response = client.patch("/admin/settings", json={"oidc_issuer": issuer})
+            assert response.status_code == 200, issuer
+        for issuer in refused:
+            response = client.patch("/admin/settings", json={"oidc_issuer": issuer})
+            assert response.status_code == 422, issuer
+
+
 if __name__ == "__main__":
     for name, fn in sorted(dict(globals()).items()):
         if name.startswith("test_"):

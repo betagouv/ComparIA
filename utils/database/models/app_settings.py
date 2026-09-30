@@ -9,6 +9,8 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.validation import is_secure_url
+
 from .publish import PublishFrequency
 from .utils import AutoDatetime, logo_version
 
@@ -258,8 +260,12 @@ class AppSettingsPatch(SQLModel):
     @field_validator("oidc_issuer")
     @classmethod
     def validate_oidc_issuer(cls, value: str | None) -> str | None:
-        if value and not value.startswith(("https://", "http://")):
-            raise ValueError("The OIDC issuer must be an http(s) URL")
+        # The id_token signature is not verified: TLS is what protects the
+        # exchange with the provider.
+        if value and not is_secure_url(value):
+            raise ValueError(
+                "The OIDC issuer must be an https URL (http only on localhost)"
+            )
         return value
 
     @field_validator("oidc_scopes")

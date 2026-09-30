@@ -22,6 +22,7 @@ from fastapi import Request
 from backend.config import settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import REDIS_OIDC_STATE_PREFIX, get_redis_client
+from utils.validation import is_secure_url
 
 logger = logging.getLogger("languia")
 
@@ -35,6 +36,9 @@ OIDC_STATE_TTL_SECONDS = 600
 _DISCOVERY_TTL_SECONDS = 600
 
 _DISCOVERY_PATH = "/.well-known/openid-configuration"
+
+# The endpoints the sign-in sends browsers, codes and the client secret to.
+_SECURED_ENDPOINTS = ("authorization_endpoint", "token_endpoint", "userinfo_endpoint")
 
 
 class OIDCProviderError(Exception):
@@ -99,11 +103,21 @@ def _same_issuer(a: object, b: object) -> bool:
 
 def validate_discovery(document: dict, issuer: str) -> dict:
     """Refuse a discovery document published for another issuer (OIDC
-    Discovery 4.3): the endpoints it lists are not the configured provider's."""
+    Discovery 4.3): the endpoints it lists are not the configured provider's.
+
+    Also refuse endpoints that are not https (plain http on localhost aside):
+    the id_token signature is not verified, so TLS is the only protection.
+    """
     if not _same_issuer(document.get("issuer"), issuer):
         raise OIDCProviderError(
             f"discovery issuer {document.get('issuer')!r} does not match {issuer!r}"
         )
+    for name in _SECURED_ENDPOINTS:
+        endpoint = document.get(name)
+        if endpoint is not None and not (
+            isinstance(endpoint, str) and is_secure_url(endpoint)
+        ):
+            raise OIDCProviderError(f"discovery {name} {endpoint!r} is not https")
     return document
 
 
