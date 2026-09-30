@@ -1,10 +1,13 @@
+import asyncio
 import hashlib
 import logging
 from functools import lru_cache, wraps
 from typing import Callable, Final, ParamSpec, TypeVar
 from uuid import uuid4
+from weakref import WeakKeyDictionary
 
 import redis
+import redis.asyncio
 from async_lru import alru_cache
 
 from backend.config import settings
@@ -73,16 +76,21 @@ REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
 )
 
 
+def _client_options() -> dict:
+    """Connection settings shared by the sync and the async client."""
+    return {
+        "host": settings.COMPARIA_REDIS_HOST,
+        "port": 6379,
+        "password": settings.COMPARIA_REDIS_PASSWORD,  # None keeps local dev unauthenticated
+        "decode_responses": True,  # returns strings instead of bytes
+    }
+
+
 @lru_cache
 def get_redis_client() -> redis.Redis:
     try:
         # Initialize Redis client
-        client = redis.Redis(
-            host=settings.COMPARIA_REDIS_HOST,
-            port=6379,
-            password=settings.COMPARIA_REDIS_PASSWORD,  # None keeps local dev unauthenticated
-            decode_responses=True,  # returns strings instead of bytes
-        )
+        client = redis.Redis(**_client_options())
 
         # Fail if we don't have a working redis
         if not (response := client.ping()):
@@ -91,6 +99,28 @@ def get_redis_client() -> redis.Redis:
         return client
     except Exception as e:
         raise Exception(f"Redis Connection Error: {e}")
+
+
+# One client per event loop: its connections belong to the loop that opened
+# them, and scripts and tests run a new loop for each `asyncio.run`.
+_async_clients: "WeakKeyDictionary[asyncio.AbstractEventLoop, redis.asyncio.Redis]" = (
+    WeakKeyDictionary()
+)
+
+
+def get_async_redis_client() -> redis.asyncio.Redis:
+    """
+    Client for code running on the event loop, which the sync one would block
+    for as long as Redis takes to answer. Same settings, and the same keys and
+    serialization as the sync one, which jobs keep using.
+
+    Not pinged here: nothing can be awaited in a factory, so an unreachable
+    Redis shows on the first command, which every caller already handles.
+    """
+    loop = asyncio.get_running_loop()
+    if loop not in _async_clients:
+        _async_clients[loop] = redis.asyncio.Redis(**_client_options())
+    return _async_clients[loop]
 
 
 def hash_content(content: str) -> str:
@@ -128,7 +158,7 @@ def redis_cache(redis_key: str, maxsize: int = 1) -> Callable[P, RT]:
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> RT:
             # On every calls, run the cached function with an added 'cache_key'
             # arg that, if different than last time, will not hit cache.
-            cache_key = retrieve_or_set_cache_key(redis_key)
+            cache_key = await retrieve_or_set_cache_key(redis_key)
             return await cached(cache_key, *args, **kwargs)
 
         return wrapper
@@ -136,18 +166,19 @@ def redis_cache(redis_key: str, maxsize: int = 1) -> Callable[P, RT]:
     return decorator
 
 
-def retrieve_or_set_cache_key(redis_key: str) -> str:
+async def retrieve_or_set_cache_key(redis_key: str) -> str:
     """
     Returns current 'redis_key' cache key if any or create one.
     Warning: If no redis, no cache mecanism.
     """
     try:
-        client = get_redis_client()
-        cache_key = client.get(redis_key)
+        client = get_async_redis_client()
+        cache_key = await client.get(redis_key)
         if not cache_key:
             # If no cache_key, create one.
-            cache_key = invalidate_cache(redis_key)
-        return cache_key
+            cache_key = await invalidate_cache(redis_key)
+        # decode_responses is on, so this is already a str.
+        return str(cache_key)
     except Exception as e:
         logger.warning(f"[CACHE] Error reading cache key '{redis_key}': {e}")
         # FIXME fallback to global variable cache key?
@@ -155,7 +186,7 @@ def retrieve_or_set_cache_key(redis_key: str) -> str:
         return str(uuid4())
 
 
-def invalidate_cache(redis_key: str) -> str:
+async def invalidate_cache(redis_key: str) -> str:
     """
     Invalidate cache by updating the given 'redis_key' cache key.
     Every functions decorated with `@redis_cache(redis_key)` will be forced to
@@ -163,8 +194,8 @@ def invalidate_cache(redis_key: str) -> str:
     """
     cache_key = str(uuid4())
     try:
-        client = get_redis_client()
-        client.setex(redis_key, 86400, cache_key)
+        client = get_async_redis_client()
+        await client.set(redis_key, cache_key, ex=86400)
         return cache_key
     except Exception as e:
         logger.warning(f"[CACHE] Error setting cache key '{redis_key}': {e}")

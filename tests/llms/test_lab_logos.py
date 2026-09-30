@@ -49,6 +49,10 @@ def session_factory(lab: LLMLab | None):
     return get_session
 
 
+async def no_invalidation(_key: str) -> str:
+    return ""
+
+
 def make_lab() -> LLMLab:
     return LLMLab(name="Example", logo="example.svg", origin_country="FR")
 
@@ -57,7 +61,7 @@ def test_upload_and_public_retrieval(monkeypatch: pytest.MonkeyPatch) -> None:
     lab = make_lab()
     monkeypatch.setattr(admin_lab_router, "get_session", session_factory(lab))
     monkeypatch.setattr(public_lab_router, "get_session", session_factory(lab))
-    monkeypatch.setattr(admin_lab_router, "invalidate_cache", lambda _key: None)
+    monkeypatch.setattr(admin_lab_router, "invalidate_cache", no_invalidation)
     upload = UploadFile(filename="logo.svg", file=io.BytesIO(b"<svg></svg>"))
     upload.headers = {"content-type": "image/svg+xml"}
 
@@ -76,7 +80,7 @@ def test_a_big_png_is_served_as_a_small_webp(monkeypatch: pytest.MonkeyPatch) ->
     lab = make_lab()
     monkeypatch.setattr(admin_lab_router, "get_session", session_factory(lab))
     monkeypatch.setattr(public_lab_router, "get_session", session_factory(lab))
-    monkeypatch.setattr(admin_lab_router, "invalidate_cache", lambda _key: None)
+    monkeypatch.setattr(admin_lab_router, "invalidate_cache", no_invalidation)
     png = io.BytesIO()
     Image.new("RGB", (2000, 2000), (0, 0, 145)).save(png, format="PNG")
     upload = UploadFile(filename="logo.png", file=io.BytesIO(png.getvalue()))
@@ -111,7 +115,7 @@ def test_remove_restores_builtin_fallback(monkeypatch: pytest.MonkeyPatch) -> No
     lab.logo_data = b"custom"
     lab.logo_content_type = "image/png"
     monkeypatch.setattr(admin_lab_router, "get_session", session_factory(lab))
-    monkeypatch.setattr(admin_lab_router, "invalidate_cache", lambda _key: None)
+    monkeypatch.setattr(admin_lab_router, "invalidate_cache", no_invalidation)
 
     result = asyncio.run(admin_lab_router.delete_lab_logo(lab.id))
 

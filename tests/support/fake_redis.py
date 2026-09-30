@@ -133,9 +133,8 @@ def _drop_built_clients() -> None:
     """The clients are built once and kept: forget the ones already built."""
     from utils.storage import redis as storage
 
-    for name in ("get_redis_client", "get_async_redis_client"):
-        if hasattr(storage, name):
-            getattr(storage, name).cache_clear()
+    storage.get_redis_client.cache_clear()
+    storage._async_clients.clear()
 
 
 def install(monkeypatch) -> FakeStore:

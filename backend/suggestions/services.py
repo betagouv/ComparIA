@@ -251,7 +251,7 @@ async def create_suggestion(
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionAlreadyExistsError() from error
-        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        await invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(suggestion)
         await session.refresh(category)
         return _to_admin_suggestion(suggestion, category)
@@ -306,7 +306,7 @@ async def create_suggestion_category(
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionCategoryAlreadyExistsError() from error
-        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        await invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(category)
         return _to_admin_category(category)
 
@@ -333,7 +333,7 @@ async def delete_suggestion_category(category_id: uuid.UUID) -> None:
         except IntegrityError as error:
             await session.rollback()
             raise SuggestionCategoryNotEmptyError() from error
-        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        await invalidate_cache(REDIS_SUGGESTIONS_KEY)
 
 
 async def set_suggestion_archived(
@@ -353,7 +353,7 @@ async def set_suggestion_archived(
         suggestion.updated_at = now
         session.add(suggestion)
         await session.commit()
-        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        await invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(suggestion)
         await session.refresh(category)
         return _to_admin_suggestion(suggestion, category)
@@ -373,7 +373,7 @@ async def set_suggestion_category_archived(
         category.archived_by = updated_by if archived else None
         session.add(category)
         await session.commit()
-        invalidate_cache(REDIS_SUGGESTIONS_KEY)
+        await invalidate_cache(REDIS_SUGGESTIONS_KEY)
         await session.refresh(category)
 
         suggestion_count = (
