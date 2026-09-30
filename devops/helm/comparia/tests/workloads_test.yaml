@@ -128,6 +128,25 @@ tests:
           content:
             name: MATOMO_ID
 
+  - it: omits COMPARIA_API_URL by default
+    template: backend-deployment.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_API_URL
+
+  - it: sets COMPARIA_API_URL when config.apiUrl is set
+    template: backend-deployment.yaml
+    set:
+      config.apiUrl: https://api.example.com
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_API_URL
+            value: https://api.example.com
+
   - it: uses distinct chart and app image tags
     template: backend-deployment.yaml
     set:

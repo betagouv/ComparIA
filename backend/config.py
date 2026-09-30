@@ -289,6 +289,8 @@ LOGO_SVG_MAX_SIZE = 64 * 1024
 LAB_LOGO_BOX = (160, 160)
 # The instance logo sits in the header at about 35 px high, and is often wide.
 INSTANCE_LOGO_BOX = (320, 120)
+# The OIDC sign-in button shows the provider logo at icon size.
+OIDC_LOGO_BOX = (160, 160)
 
 # Altcha PoW CAPTCHA settings
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end

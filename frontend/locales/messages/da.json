@@ -410,6 +410,7 @@
                 },
                 "authMethods": {
                     "emailCode": "E-mail kode",
+                    "emailCodeLocked": "Gennemfør en vellykket OIDC-forbindelsestest for at kunne fjerne denne loginmetode.",
                     "error": "Mindst én metode skal være aktiveret",
                     "label": "Godkendelsesmetoder",
                     "oidc": "Identitetsudbyder (OIDC)"
@@ -491,6 +492,22 @@
                     "hint": "Adskilt af mellemrum. Ex. : openid email",
                     "label": "Scopes",
                     "openidRequired": "Scopes skal indeholde openid"
+                },
+                "test": {
+                    "button": "Test forbindelsen",
+                    "failed": "Testen mislykkedes: {reason}",
+                    "hint": "Gem konfigurationen, før du tester den.",
+                    "passed": "Forbindelsen lykkedes: udbyderen svarer, og konfigurationen kan læses.",
+                    "reasons": {
+                        "discovery_invalid": "udbyderens discovery-dokument kan ikke læses.",
+                        "discovery_unreachable": "udbyderen kan ikke nås eller udgiver ikke et discovery-dokument.",
+                        "endpoint_not_https": "et af udbyderens endpoints er ikke https.",
+                        "incomplete_config": "konfigurationen er ufuldstændig.",
+                        "issuer_mismatch": "den udsteder, udbyderen angiver, svarer ikke til den konfigurerede URL.",
+                        "missing_endpoint": "et endpoint (autorisation, token eller userinfo) mangler i discovery-dokumentet.",
+                        "secret_unreadable": "den gemte client secret kan ikke læses, indtast den igen."
+                    },
+                    "running": "Tester…"
                 },
                 "title": "OIDC-konfiguration"
             },
@@ -734,6 +751,7 @@
                 "help": "De 6 cifre, som din app viser (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Forkert kode.",
                 "expired": "Login udløbet, bed om en ny kode pr. e-mail.",
+                "expiredSso": "Login udløbet, log ind igen med identitetsudbyderen.",
                 "emailChecked": "Din e-mailadresse er allerede bekræftet: kun koden fra din godkendelsesapp mangler."
             }
         },
@@ -750,6 +768,7 @@
                 "oidc_unavailable": "Login via identitetsudbyderen er ikke aktiveret på denne instans.",
                 "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen.",
                 "rate_limited": "For mange loginforsøg fra dette netværk. Prøv igen om en time.",
+                "server_error": "En teknisk fejl afbrød login. Prøv igen om lidt.",
                 "terms_required": "Acceptér de generelle brugsvilkår, før du logger ind."
             },
             "panelSubtitle": "Du bliver sendt videre til den identitetsudbyder, der er konfigureret til denne instans."

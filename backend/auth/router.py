@@ -18,6 +18,7 @@ from pydantic import (
     field_validator,
 )
 
+from backend.admin.logos import logo_response
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.services import merge_anonymous_comparisons
 from backend.auth.dependencies import (
@@ -30,10 +31,14 @@ from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.oidc import (
     OIDC_STATE_TTL_SECONDS,
     build_authorization_url,
+    callback_origin,
     consume_state,
     discover_provider,
+    email_explicitly_unverified,
     exchange_code_for_claims,
+    oidc_available,
     oidc_callback_url,
+    request_origin,
 )
 from backend.auth.services import (
     TOTP_CHALLENGE_TTL_MINUTES,
@@ -46,9 +51,7 @@ from backend.auth.services import (
     get_invite_token_info,
     get_user_from_token,
     has_current_terms_acceptance,
-)
-from backend.auth.services import oidc_login as oidc_login_service
-from backend.auth.services import (
+    login_with_oidc,
     record_anonymous_consent,
     record_user_consent,
     request_login_code,
@@ -71,7 +74,7 @@ from backend.config import settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip
-from utils.database.models.auth import LegalDocument, User
+from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
@@ -86,7 +89,7 @@ from utils.storage.redis import (
 
 logger = logging.getLogger("languia")
 
-_email_adapter = TypeAdapter(EmailStr)
+_email_adapter = TypeAdapter(NormalizedEmail)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -117,14 +120,14 @@ class AuthConfig(BaseModel):
 
 
 class EmailRequestBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     altcha_payload: str
     # The language the visitor is reading the site in, for the email.
     locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class EmailVerifyBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     code: str
 
 
@@ -276,9 +279,6 @@ async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
 @router.get("/config")
 async def get_config() -> AuthConfig:
     app_settings = await get_app_settings()
-    oidc_enabled = (
-        _oidc_configured(app_settings) and "oidc" in app_settings.auth_methods
-    )
     return AuthConfig(
         access_policy=app_settings.auth_access_policy,
         methods=app_settings.auth_methods,
@@ -295,18 +295,9 @@ async def get_config() -> AuthConfig:
         logo_version=app_settings.logo_version,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
-        oidc_enabled=oidc_enabled,
+        oidc_enabled=oidc_available(app_settings),
         oidc_button_label=app_settings.oidc_button_label,
         oidc_has_button_logo=app_settings.oidc_button_logo is not None,
-    )
-
-
-def _oidc_configured(app_settings) -> bool:
-    """An instance can actually use OIDC only with a complete provider config."""
-    return bool(
-        app_settings.oidc_issuer
-        and app_settings.oidc_client_id
-        and app_settings.oidc_client_secret_encrypted is not None
     )
 
 
@@ -315,20 +306,11 @@ async def get_config_logo() -> Response:
     app_settings = await get_app_settings()
     if not app_settings.logo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return Response(
-        content=app_settings.logo,
-        media_type=app_settings.logo_content_type or "image/png",
-        headers={
-            # Same as the lab logos: the URL carries the version.
-            "Cache-Control": "public, max-age=31536000, immutable",
-            # The logo can be an SVG, and an SVG can carry a <script>. Pages
-            # only ever show it in an <img>, where scripts never run, but
-            # opening this URL directly would render it as a document on our
-            # own origin. sandbox puts it in an opaque origin with scripting
-            # off, which leaves <img> untouched.
-            "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-            "Content-Disposition": "inline",
-        },
+    return logo_response(
+        app_settings.logo,
+        app_settings.logo_content_type or "image/png",
+        # Same as the lab logos: the URL carries the version.
+        "public, max-age=31536000, immutable",
     )
 
 
@@ -343,10 +325,11 @@ async def get_config_oidc_logo() -> Response:
     app_settings = await get_app_settings()
     if not app_settings.oidc_button_logo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return Response(
-        content=app_settings.oidc_button_logo,
-        media_type=app_settings.oidc_button_logo_content_type or "image/png",
-        headers={"Cache-Control": "public, max-age=300"},
+    return logo_response(
+        app_settings.oidc_button_logo,
+        app_settings.oidc_button_logo_content_type or "image/png",
+        # No version in the URL the login page uses, so no long caching.
+        "public, max-age=300",
     )
 
 
@@ -701,7 +684,23 @@ async def oidc_login(
     checkbox. Both ride along with the state until the callback.
     """
     app_settings = await get_app_settings()
-    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+    if not oidc_available(app_settings):
+        return _login_error("oidc_unavailable")
+
+    # The state cookie is only sent back to the origin that set it. If the
+    # provider is told to return somewhere else (COMPARIA_API_URL wrong or
+    # missing), every sign-in would end in invalid_state after a full round
+    # trip: say so now, and name both origins so the fix is obvious.
+    came_in_on = request_origin(request)
+    comes_back_to = callback_origin()
+    if came_in_on and came_in_on != comes_back_to:
+        logger.error(
+            "[OIDC] login started on %s but the callback URL is on %s: the state "
+            "cookie cannot come back. Set COMPARIA_API_URL to the origin the "
+            "backend is reached on.",
+            came_in_on,
+            comes_back_to,
+        )
         return _login_error("oidc_unavailable")
 
     try:
@@ -817,13 +816,17 @@ async def _complete_oidc_sign_in(
     minted — the round trip leaves no partial state behind.
     """
     app_settings = await get_app_settings()
-    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+    if not oidc_available(app_settings):
         return _login_error("oidc_unavailable")
 
     # Consume the issued state up front so a provider-error redirect,
     # a missing/invalid state, or a missing code all leave nothing behind
     # in Redis — the round trip leaves no partial state on any failure path.
-    pending = consume_state(state) if state else None
+    try:
+        pending = consume_state(state) if state else None
+    except Exception:
+        logger.exception("[OIDC] could not read the pending sign-in from Redis")
+        return _login_error("server_error")
 
     # The provider redirected back with an `error` param (OAuth2 standard) —
     # the user denied consent, or the provider rejected the request. There
@@ -846,14 +849,8 @@ async def _complete_oidc_sign_in(
     if not token_endpoint or not userinfo_endpoint:
         return _login_error("provider_error")
 
-    try:
-        client_secret = decrypt_secret(
-            app_settings.oidc_client_secret_encrypted.decode()
-        )
-    except SecretUnreadableError:
-        # A key dropped from COMPARIA_ENCRYPTION_KEY too early: the secret has
-        # to be entered again in the admin panel.
-        return _login_error("oidc_unavailable")
+    # Readable: `oidc_available` opened it above.
+    client_secret = decrypt_secret(app_settings.oidc_client_secret_encrypted.decode())
 
     try:
         claims = await exchange_code_for_claims(
@@ -878,13 +875,13 @@ async def _complete_oidc_sign_in(
         return _login_error("invalid_nonce")
 
     try:
-        # Same normalisation as the email flow's `EmailStr`, so both methods
-        # resolve an address to the same account.
+        # Same normalisation as the email flow's, so both methods resolve an
+        # address to the same account.
         email = _email_adapter.validate_python(claims.get("email"))
     except ValidationError:
         return _login_error("no_email")
 
-    if claims.get("email_verified") is False:
+    if email_explicitly_unverified(claims):
         # `email_verified` is an optional member claim of the `email` scope
         # (OIDC Core 5.4): some providers omit it entirely (ProConnect's
         # documented userinfo claims never include it), so treating "absent"
@@ -901,12 +898,16 @@ async def _complete_oidc_sign_in(
             return _login_error("domain_not_allowed")
 
     anonymous_user_hash = _anonymous_hash(request)
-    signed_in = await oidc_login_service(
-        email=email,
-        ip=get_ip(request),
-        user_agent=request.headers.get("user-agent"),
-        anonymous_user_hash=anonymous_user_hash,
-    )
+    try:
+        signed_in = await login_with_oidc(
+            email=email,
+            ip=get_ip(request),
+            user_agent=request.headers.get("user-agent"),
+            anonymous_user_hash=anonymous_user_hash,
+        )
+    except Exception:
+        logger.exception("[OIDC] could not resolve the account")
+        return _login_error("server_error")
     if not signed_in:
         return _login_error("account_unavailable")
     login, user_id = signed_in

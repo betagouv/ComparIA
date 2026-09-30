@@ -9,6 +9,7 @@
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import { signInMethods } from '$lib/signInMethods'
 
   const auth = getAuthContext()
   const platformName = $derived(auth.config?.platform_name || m['header.title']())
@@ -19,7 +20,15 @@
     env.PUBLIC_AUTH_LOGIN_DESCRIPTION || m['auth.login.description']()
   )
   // Set by the invite page once an admin's invite left only the authenticator to check.
-  const startAtTotp = page.url.searchParams.get('step') === 'totp'
+  let atTotpStep = $state(page.url.searchParams.get('step') === 'totp')
+  // Why the visitor was sent back to the SSO button, when the authenticator
+  // step expired on an instance without email codes.
+  let expiredNotice = $state<string>()
+
+  function onChallengeExpired(message: string) {
+    atTotpStep = false
+    expiredNotice = message
+  }
 
   async function onSuccess() {
     const redirect = page.url.searchParams.get('redirect')
@@ -31,15 +40,7 @@
     }
   }
 
-  // The server derives `oidc_enabled` from `methods` + a complete provider
-  // config, so the button only renders when OIDC would actually work. The
-  // email form is hidden when OIDC is the only enabled method.
-  const oidcEnabled = $derived(auth.config?.oidc_enabled ?? false)
-  const emailEnabled = $derived(auth.config?.methods?.includes('email_code') ?? true)
-  const oidcLabel = $derived(auth.config?.oidc_button_label || m['auth.oidc.buttonFallback']())
-  const oidcLogoUrl = $derived(
-    auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
-  )
+  const methods = $derived(signInMethods(auth.config))
   // The OIDC callback redirects back here with ?error=<reason> on any failure.
   // Render a clear message so the redirect isn't a silent no-op.
   // An explicit code → message-function map keeps the lookup type-safe against
@@ -56,24 +57,15 @@
     oidc_unavailable: () => m['auth.oidc.error.oidc_unavailable'](),
     provider_error: () => m['auth.oidc.error.provider_error'](),
     rate_limited: () => m['auth.oidc.error.rate_limited'](),
+    server_error: () => m['auth.oidc.error.server_error'](),
     terms_required: () => m['auth.oidc.error.terms_required']()
   }
   const errorCode = $derived(page.url.searchParams.get('error'))
   const redirect = $derived(page.url.searchParams.get('redirect'))
   const errorText = $derived(
-    errorCode && oidcErrorMessages[errorCode] ? oidcErrorMessages[errorCode]() : null
+    expiredNotice ??
+      (errorCode && oidcErrorMessages[errorCode] ? oidcErrorMessages[errorCode]() : null)
   )
-
-  // One tab per enabled auth method, so each method gets its own panel instead
-  // of a button stacked above the email form. With a single method there is
-  // nothing to switch between, so no tabs render at all.
-  const bothMethods = $derived(oidcEnabled && emailEnabled)
-  const tabs = $derived.by(() => {
-    const result: { id: string; label: string }[] = []
-    if (emailEnabled) result.push({ id: 'email', label: m['auth.login.tabEmail']() })
-    if (oidcEnabled) result.push({ id: 'sso', label: m['auth.login.tabSso']() })
-    return result
-  })
 </script>
 
 <SeoHead title={m['seo.titles.login']()} />
@@ -109,24 +101,38 @@
         <Alert title={errorText} variant="error" small role="alert" class="mb-6!" />
       {/if}
 
-      {#if startAtTotp}
+      {#if atTotpStep}
         <!-- The first factor already passed, by email or through the SSO
              provider: only the authenticator is left, whatever the methods. -->
-        <SignInForm {onSuccess} startAtTotp hideHeader class="py-0! px-0!" />
-      {:else if bothMethods}
-        <Tabs {tabs} label={m['auth.login.tabsLabel']()} initialId={errorText ? 'sso' : 'email'}>
+        <SignInForm {onSuccess} startAtTotp {onChallengeExpired} hideHeader class="py-0! px-0!" />
+      {:else if methods.bothMethods}
+        <Tabs
+          tabs={methods.tabs}
+          label={m['auth.login.tabsLabel']()}
+          initialId={errorText ? 'sso' : 'email'}
+        >
           {#snippet tab(tab)}
             {#if tab.id === 'email'}
               <SignInForm {onSuccess} hideHeader class="py-0! px-0!" />
             {:else}
-              <SSOSignIn {oidcLabel} {oidcLogoUrl} {redirect} class="my-0! mx-0!" />
+              <SSOSignIn
+                oidcLabel={methods.oidcLabel}
+                oidcLogoUrl={methods.oidcLogoUrl}
+                {redirect}
+                class="my-0! mx-0!"
+              />
             {/if}
           {/snippet}
         </Tabs>
-      {:else if emailEnabled}
+      {:else if methods.emailEnabled}
         <SignInForm {onSuccess} hideHeader class="py-0! px-0!" />
-      {:else if oidcEnabled}
-        <SSOSignIn {oidcLabel} {oidcLogoUrl} {redirect} class="my-0! mx-0!" />
+      {:else if methods.oidcEnabled}
+        <SSOSignIn
+          oidcLabel={methods.oidcLabel}
+          oidcLogoUrl={methods.oidcLogoUrl}
+          {redirect}
+          class="my-0! mx-0!"
+        />
       {/if}
     </div>
   </main>

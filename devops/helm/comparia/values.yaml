@@ -101,6 +101,10 @@ config:
   ## -- Public origin used to build absolute links in emails (e.g. login codes). Left empty, the
   ## app falls back to its own dev default (http://localhost:5173) -- set this for a real install.
   appUrl: ""
+  ## -- Origin the backend answers on, `COMPARIA_API_URL`. The OIDC provider sends the browser back to
+  ## `<apiUrl>/api/auth/oidc/callback`. Leave empty when the ingress serves the backend under /api of
+  ## the app origin (the usual layout): the callback then uses appUrl. Only used by OIDC sign-in.
+  apiUrl: ""
   ## -- Emails promoted to the admin role on startup, created if absent. Left empty, nobody can
   ## reach /admin. Example: ["you@example.com"].
   adminEmails: []

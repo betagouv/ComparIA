@@ -22,6 +22,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
+from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 from utils.database.models.auth import User  # noqa: E402
 
 
@@ -70,6 +71,7 @@ def _settings_row(**overrides):
         oidc_button_label=None,
         oidc_button_logo=None,
         oidc_button_logo_content_type=None,
+        oidc_connection_test=None,
         updated_at=datetime(2026, 1, 1),
         updated_by=None,
     )
@@ -82,7 +84,7 @@ def _configured_oidc_row(**overrides):
     fields = dict(
         oidc_issuer="https://issuer.example.test",
         oidc_client_id="client-id",
-        oidc_client_secret_encrypted=b"encrypted",
+        oidc_client_secret_encrypted=ENCRYPTED_CLIENT_SECRET,
     )
     fields.update(overrides)
     return _settings_row(**fields)
@@ -268,6 +270,13 @@ def test_patch_oidc_enabled_with_partial_provider_config_is_rejected():
     assert response.status_code == 400
 
 
+def test_patch_oidc_enabled_on_a_row_whose_secret_cannot_be_read_is_rejected():
+    row = _configured_oidc_row(oidc_client_secret_encrypted=b"not-a-fernet-token")
+    with admin_client(row) as client:
+        response = client.patch("/admin/settings", json={"auth_methods": ["oidc"]})
+    assert response.status_code == 400
+
+
 def test_patch_scopes_without_openid_are_rejected():
     with admin_client() as client:
         response = client.patch("/admin/settings", json={"oidc_scopes": ["email"]})
@@ -287,6 +296,34 @@ def test_patch_issuer_must_be_an_http_url():
             "/admin/settings", json={"oidc_issuer": "idp.example.test"}
         )
     assert response.status_code == 422
+
+
+def test_patch_issuer_must_be_https():
+    with admin_client() as client:
+        response = client.patch(
+            "/admin/settings", json={"oidc_issuer": "http://idp.example.test"}
+        )
+    assert response.status_code == 422
+
+
+def test_patch_issuer_accepts_plain_http_on_localhost_only():
+    """The local Keycloak runs over http; a lookalike host must not pass."""
+
+    async def update_app_settings(patch, updated_by):
+        return _settings_row(**patch)
+
+    accepted = ["http://localhost:8080", "http://127.0.0.1:8080/realms/x"]
+    refused = ["http://localhost.evil.test", "http://127.0.0.1.evil.test"]
+    with (
+        admin_client() as client,
+        patched(admin_router, update_app_settings=update_app_settings),
+    ):
+        for issuer in accepted:
+            response = client.patch("/admin/settings", json={"oidc_issuer": issuer})
+            assert response.status_code == 200, issuer
+        for issuer in refused:
+            response = client.patch("/admin/settings", json={"oidc_issuer": issuer})
+            assert response.status_code == 422, issuer
 
 
 if __name__ == "__main__":

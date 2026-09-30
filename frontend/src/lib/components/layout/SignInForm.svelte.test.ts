@@ -10,7 +10,10 @@ const mocks = vi.hoisted(() => ({
   conceal: vi.fn(),
   replaceState: vi.fn(),
   pageState: { url: new URL('http://localhost/login') },
-  authContext: { user: null, config: { access_policy: 'anonymous_first' } }
+  authContext: {
+    user: null,
+    config: { access_policy: 'anonymous_first', methods: ['email_code'] as string[] }
+  }
 }))
 
 vi.mock('$app/navigation', () => ({ replaceState: mocks.replaceState }))
@@ -271,6 +274,7 @@ describe('SignInForm authenticator step', () => {
     mocks.replaceState.mockClear()
     mocks.authContext.config.access_policy = 'anonymous_first'
     mocks.authContext.user = null
+    mocks.authContext.config.methods = ['email_code']
     mocks.pageState.url = new URL('http://localhost/login')
     Object.defineProperty(window, 'dsfr', {
       configurable: true,
@@ -344,6 +348,27 @@ describe('SignInForm authenticator step', () => {
     expect(document.activeElement).toBe(emailInput)
     // A reload must not land on the step again: only `step` goes, the rest stays.
     expect(mocks.replaceState).toHaveBeenCalledOnce()
+    expect(mocks.replaceState.mock.calls[0][0]).toBe('/login?redirect=%2Fadmin')
+  })
+
+  it('hands the visitor back to the sign-in provider when the challenge expires without email codes', async () => {
+    servesSignIn(() => Promise.reject(Object.assign(new Error('Gone'), { status: 410 })))
+    mocks.pageState.url = new URL('http://localhost/login?step=totp&redirect=%2Fadmin')
+    mocks.authContext.config.methods = ['oidc']
+    const onChallengeExpired = vi.fn()
+    const { container } = render(SignInForm, {
+      props: { startAtTotp: true, onChallengeExpired }
+    })
+
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-totp')!, {
+      target: { value: '000000' }
+    })
+    await fireEvent.click(container.querySelector<HTMLButtonElement>('button[type="submit"]')!)
+
+    await waitFor(() => expect(onChallengeExpired).toHaveBeenCalledOnce())
+    expect(onChallengeExpired.mock.calls[0][0]).toContain('fournisseur d’identité')
+    // No email step that could not be used.
+    expect(container.querySelector('#login-email')).toBeNull()
     expect(mocks.replaceState.mock.calls[0][0]).toBe('/login?redirect=%2Fadmin')
   })
 

@@ -1,6 +1,8 @@
 services:
   keycloak:
     # Local OIDC identity provider for testing the oidc auth method.
+    # Local development only: start-dev mode, default admin credentials, plain
+    # http. Never deploy it.
     # `make keycloak` starts it and configures the comparia client + test user
     # via devops/instances/keycloak/setup-keycloak.sh.
     image: quay.io/keycloak/keycloak:26.0@sha256:09a381c715ab0b111835b70f2905955274843a219c6f27efb348e4d9f4086858

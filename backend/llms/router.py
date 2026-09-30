@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from sqlmodel import select
 
+from backend.admin.logos import logo_response
 from backend.llms.data import LLMList, get_llms_list
 from utils.database.models.llms import LLMLab
 from utils.database.session import get_session
@@ -26,14 +27,10 @@ async def get_lab_logo(lab_id: UUID) -> Response:
         lab = result.one_or_none()
         if lab is None or lab.logo_data is None or lab.logo_content_type is None:
             raise HTTPException(status_code=404, detail="lab_logo_not_found")
-        return Response(
-            content=lab.logo_data,
-            media_type=lab.logo_content_type,
-            headers={
-                "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-                "X-Content-Type-Options": "nosniff",
-                # The URL carries the logo version, so a new upload is a new
-                # URL and the old bytes can stay in the browser for a year.
-                "Cache-Control": "public, max-age=31536000, immutable",
-            },
+        return logo_response(
+            lab.logo_data,
+            lab.logo_content_type,
+            # The URL carries the logo version, so a new upload is a new
+            # URL and the old bytes can stay in the browser for a year.
+            "public, max-age=31536000, immutable",
         )

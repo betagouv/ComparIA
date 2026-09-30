@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Configure the local Keycloak dev instance (started by keycloak.compose.yml)
-# for testing the OIDC auth method. Idempotent: re-running refreshes the
+# for testing the OIDC auth method. Local development only (Keycloak in
+# start-dev mode with default credentials). Idempotent: re-running refreshes the
 # client secret and the test user's password, and prints the values to use
 # in /admin/authentification.
 #
