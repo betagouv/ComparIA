@@ -321,6 +321,37 @@ def test_oidc_login_redirects_back_when_discovery_fails():
     assert "oidc_state" not in response.headers.get("set-cookie", "")
 
 
+def test_oidc_login_refuses_a_non_https_authorization_endpoint():
+    provider = FakeProvider()
+    provider.discovery["authorization_endpoint"] = "http://idp.example.test/authorize"
+    with routed(provider=provider) as (client, fake_redis):
+        response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert _error_param(response) == "provider_error"
+    assert not fake_redis.store
+    assert "oidc_state" not in response.headers.get("set-cookie", "")
+
+
+def test_oidc_login_accepts_plain_http_endpoints_on_localhost():
+    """The local Keycloak keeps working."""
+    local = "http://localhost:8080"
+    provider = FakeProvider()
+    provider.discovery = {
+        "issuer": local,
+        "authorization_endpoint": f"{local}/authorize",
+        "token_endpoint": f"{local}/token",
+        "userinfo_endpoint": f"{local}/userinfo",
+    }
+    with routed(_settings_row(oidc_issuer=local), provider=provider) as (
+        client,
+        _fake_redis,
+    ):
+        response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert response.status_code == 302
+    assert response.headers["location"].startswith(f"{local}/authorize?")
+
+
 def test_oidc_login_keeps_where_to_land_and_whether_to_merge():
     with routed() as (client, fake_redis):
         response = client.get(
