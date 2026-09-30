@@ -597,10 +597,10 @@ def test_callback_does_not_merge_unless_asked():
     assert client._merge_calls == []
 
 
-def test_callback_normalises_the_email_like_the_email_flow():
+def test_callback_lowercases_the_email_like_the_email_flow():
     with routed(provider=_provider(userinfo={"email": "Agent@Example.COM"})) as client:
         _callback(client)
-    assert client._login_calls[0]["email"] == "Agent@example.com"
+    assert client._login_calls[0]["email"] == "agent@example.com"
 
 
 def test_callback_rejects_a_malformed_email_claim():
@@ -655,7 +655,7 @@ def test_callback_reads_a_userinfo_answered_as_a_jwt():
     with routed(provider=provider) as client:
         response = _callback(client)
     assert response.status_code == 302
-    assert client._login_calls[0]["email"] == "Signed@example.com"
+    assert client._login_calls[0]["email"] == "signed@example.com"
 
 
 def test_callback_redirects_when_the_token_response_has_no_access_token():

@@ -1,7 +1,8 @@
 import uuid
 from typing import Annotated, Literal
 
-from sqlalchemy import Index, UniqueConstraint, text
+from pydantic import AfterValidator, EmailStr, field_validator
+from sqlalchemy import Index, UniqueConstraint, func, text
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
@@ -13,14 +14,34 @@ LegalDocumentKind = Literal["terms", "privacy_policy"]
 ConsentPurpose = Literal["terms_and_participation"]
 
 
+def normalize_email(email: str) -> str:
+    """The one spelling an address is stored and looked up under: an address
+    is one person's whatever its letter case, and providers and users do not
+    agree on it."""
+    return email.strip().lower()
+
+
+NormalizedEmail = Annotated[EmailStr, AfterValidator(normalize_email)]
+
+
 class UserBase(SQLModel):
     id: ModelId
-    email: str = Field(unique=True)
+    email: str
     role: Annotated[UserRole, Field(sa_type=String)] = "user"
+
+    @field_validator("email")
+    @classmethod
+    def _normalize_email(cls, value: str) -> str:
+        return normalize_email(value)
 
 
 class User(UserBase, table=True):
     __tablename__ = "auth_user"
+    __table_args__ = (
+        # Uniqueness is on the lowercased address, so two spellings of one
+        # address cannot become two accounts.
+        Index("uq_auth_user_email_lower", func.lower(text("email")), unique=True),
+    )
 
     created_at: AutoDatetime
     last_seen_at: AutoDatetime

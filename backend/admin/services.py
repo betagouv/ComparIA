@@ -4,7 +4,11 @@ from datetime import datetime
 from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.auth.services import drop_user_totp, revoke_user_access
+from backend.auth.services import (
+    drop_user_totp,
+    find_user_by_email,
+    revoke_user_access,
+)
 from utils.database.models.auth import (
     InviteToken,
     LoginCode,
@@ -156,8 +160,7 @@ async def list_users(
 
 async def create_user(data: UserUpsert) -> UserPublic:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == data.email))
-        existing = result.first()
+        existing = await find_user_by_email(session, data.email)
 
         if existing and existing.deleted_at is None:
             raise EmailAlreadyExistsError()

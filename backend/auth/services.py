@@ -23,6 +23,7 @@ from utils.database.models.auth import (
     TotpChallenge,
     User,
     UserTotp,
+    normalize_email,
 )
 from utils.database.models.comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -55,12 +56,19 @@ def _hash(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
+async def find_user_by_email(session: "AsyncSession", email: str) -> User | None:
+    """The account for an address, whatever the letter case either side."""
+    result = await session.exec(
+        select(User).where(func.lower(User.email) == normalize_email(email))
+    )
+    return result.first()
+
+
 async def request_login_code(email: str) -> str:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
             await session.flush()
 
@@ -204,8 +212,7 @@ async def verify_login_code(
     anonymous_user_hash: str | None = None,
 ) -> LoginResult | None:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
             return None
 
@@ -234,10 +241,9 @@ async def verify_login_code(
 
 async def create_invite(email: str, invited_by: uuid.UUID) -> str:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
             await session.flush()
         elif user.deleted_at is not None:
@@ -360,12 +366,9 @@ async def login_with_oidc(
     or the email form. Returns None for an account an admin deactivated.
     """
     async with get_session() as session:
-        result = await session.exec(
-            select(User).where(func.lower(User.email) == email.lower())
-        )
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
             await session.flush()
         elif user.deleted_at is not None:
