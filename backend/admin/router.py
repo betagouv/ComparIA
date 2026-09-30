@@ -34,7 +34,6 @@ from backend.arena.checks import (
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
-from backend.auth.encryption import encrypt_oidc_secret
 from backend.auth.services import create_invite
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -91,6 +90,7 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
 
 logger = logging.getLogger("languia")
@@ -465,16 +465,10 @@ async def patch_settings(
     patch = body.model_dump(exclude_unset=True)
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
-        try:
-            patch["oidc_client_secret_encrypted"] = (
-                encrypt_oidc_secret(secret) if secret else None
-            )
-        except RuntimeError as e:
-            # OIDC_ENCRYPTION_KEY missing or malformed: a server setup issue
-            # the admin can't fix from the panel, so say which one it is.
-            raise HTTPException(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)
-            ) from e
+        # Same key as every other secret at rest; the column holds bytes.
+        patch["oidc_client_secret_encrypted"] = (
+            encrypt_secret(secret).encode() if secret else None
+        )
     if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
         current = await get_app_settings()
         effective_methods = patch.get("auth_methods", current.auth_methods)

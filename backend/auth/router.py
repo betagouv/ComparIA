@@ -26,7 +26,6 @@ from backend.auth.dependencies import (
     anonymous_session_token,
 )
 from backend.auth.email import send_login_code
-from backend.auth.encryption import decrypt_oidc_secret
 from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.oidc import (
     OIDC_STATE_TTL_SECONDS,
@@ -75,7 +74,7 @@ from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
-from utils.secrets import SecretUnreadableError
+from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
@@ -848,11 +847,12 @@ async def _complete_oidc_sign_in(
         return _login_error("provider_error")
 
     try:
-        client_secret = decrypt_oidc_secret(app_settings.oidc_client_secret_encrypted)
-    except Exception:
-        # A rotated or missing OIDC_ENCRYPTION_KEY: the stored secret has to be
-        # entered again in the admin panel.
-        logger.exception("[OIDC] could not decrypt the stored client secret")
+        client_secret = decrypt_secret(
+            app_settings.oidc_client_secret_encrypted.decode()
+        )
+    except SecretUnreadableError:
+        # A key dropped from COMPARIA_ENCRYPTION_KEY too early: the secret has
+        # to be entered again in the admin panel.
         return _login_error("oidc_unavailable")
 
     try:

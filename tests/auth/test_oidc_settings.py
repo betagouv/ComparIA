@@ -16,7 +16,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
-os.environ.setdefault("OIDC_ENCRYPTION_KEY", "aa" * 32)
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -161,16 +160,16 @@ def test_patch_oidc_settings_encrypts_client_secret():
     encrypted = patch["oidc_client_secret_encrypted"]
     assert encrypted != b"super-secret"
 
-    from backend.auth.encryption import decrypt_oidc_secret
+    from utils.secrets import decrypt_secret
 
-    assert decrypt_oidc_secret(encrypted) == "super-secret"
+    assert decrypt_secret(encrypted.decode()) == "super-secret"
 
 
 def test_get_settings_does_not_expose_plaintext_secret():
     """A row with an encrypted secret must not leak the plaintext to the API consumer."""
-    from backend.auth.encryption import encrypt_oidc_secret
+    from utils.secrets import encrypt_secret
 
-    row = _settings_row(oidc_client_secret_encrypted=encrypt_oidc_secret("hidden"))
+    row = _settings_row(oidc_client_secret_encrypted=encrypt_secret("hidden").encode())
     with admin_client(row) as client:
         data = client.get("/admin/settings").json()
     assert "oidc_client_secret" not in data
@@ -288,18 +287,6 @@ def test_patch_issuer_must_be_an_http_url():
             "/admin/settings", json={"oidc_issuer": "idp.example.test"}
         )
     assert response.status_code == 422
-
-
-def test_patch_client_secret_without_an_encryption_key_says_so():
-    """A missing OIDC_ENCRYPTION_KEY is a server setup issue: the admin gets
-    told which one rather than a bare 500."""
-    with patched(admin_router.settings, OIDC_ENCRYPTION_KEY=None):
-        with admin_client() as client:
-            response = client.patch(
-                "/admin/settings", json={"oidc_client_secret": "super-secret"}
-            )
-    assert response.status_code == 503
-    assert "OIDC_ENCRYPTION_KEY" in response.json()["detail"]
 
 
 if __name__ == "__main__":

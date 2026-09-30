@@ -18,7 +18,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
-os.environ.setdefault("OIDC_ENCRYPTION_KEY", "aa" * 32)
 
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
@@ -32,6 +31,7 @@ from utils.database.models.auth import (  # noqa: E402
     TotpChallenge,
     User,
 )
+from utils.secrets import SecretUnreadableError  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -148,11 +148,11 @@ def routed(
 
     if decrypt is None:
 
-        def decrypt_oidc_secret(_ciphertext):
+        def decrypt_secret(_ciphertext):
             return "super-secret"
 
     else:
-        decrypt_oidc_secret = decrypt
+        decrypt_secret = decrypt
 
     with patched(
         auth_router,
@@ -161,7 +161,7 @@ def routed(
         discover_provider=discover_provider,
         exchange_code_for_claims=exchange_code_for_claims,
         oidc_login_service=oidc_login_service,
-        decrypt_oidc_secret=decrypt_oidc_secret,
+        decrypt_secret=decrypt_secret,
         merge_anonymous_comparisons=merge_anonymous_comparisons,
     ):
         app = FastAPI()
@@ -672,7 +672,7 @@ def test_callback_reports_a_deactivated_account():
 
 def test_callback_redirects_when_the_client_secret_cannot_be_decrypted():
     def decrypt(_ciphertext):
-        raise RuntimeError("OIDC_ENCRYPTION_KEY is not set")
+        raise SecretUnreadableError()
 
     with routed(decrypt=decrypt) as client:
         response = _callback(client)

@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
-os.environ.setdefault("OIDC_ENCRYPTION_KEY", "aa" * 32)
 
 import backend.auth.oidc as oidc  # noqa: E402
 from backend.auth.oidc import (  # noqa: E402
