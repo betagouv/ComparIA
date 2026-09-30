@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
-from backend.admin.logos import normalize_logo
+from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
@@ -40,7 +40,7 @@ from backend.auth.services import create_invite
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     INSTANCE_LOGO_BOX,
-    LOGO_UPLOAD_MAX_SIZE,
+    OIDC_LOGO_BOX,
     settings,
 )
 from backend.settings.informational_legal import (
@@ -505,10 +505,7 @@ async def upload_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
-    logo, content_type = normalize_logo(
-        content, file.content_type or "", INSTANCE_LOGO_BOX
-    )
+    logo, content_type = await read_logo(file, INSTANCE_LOGO_BOX)
     row = await update_app_settings(
         {"logo": logo, "logo_content_type": content_type},
         updated_by=current_user.id,
@@ -529,22 +526,9 @@ async def upload_oidc_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    if file.content_type not in _LOGO_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported content type: {file.content_type}",
-        )
-    content = await file.read()
-    if len(content) > _LOGO_MAX_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Logo file is too large (max 2 MB)",
-        )
+    logo, content_type = await read_logo(file, OIDC_LOGO_BOX)
     row = await update_app_settings(
-        {
-            "oidc_button_logo": content,
-            "oidc_button_logo_content_type": file.content_type,
-        },
+        {"oidc_button_logo": logo, "oidc_button_logo_content_type": content_type},
         updated_by=current_user.id,
     )
     return _to_app_settings_public(row)

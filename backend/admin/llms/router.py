@@ -5,8 +5,8 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import SQLModel, select
 
-from backend.admin.logos import normalize_logo
-from backend.config import LAB_LOGO_BOX, LOGO_UPLOAD_MAX_SIZE
+from backend.admin.logos import read_logo
+from backend.config import LAB_LOGO_BOX
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
@@ -138,8 +138,7 @@ async def upsert_lab(body: LLMLabUpsert):
 
 @router.put("/lab/{lab_id}/logo")
 async def upload_lab_logo(lab_id: UUID, file: UploadFile):
-    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
-    logo, content_type = normalize_logo(content, file.content_type or "", LAB_LOGO_BOX)
+    logo, content_type = await read_logo(file, LAB_LOGO_BOX)
     async with get_session() as session:
         lab = await session.get(LLMLab, lab_id)
         if lab is None:

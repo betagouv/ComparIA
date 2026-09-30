@@ -18,6 +18,7 @@ from pydantic import (
     field_validator,
 )
 
+from backend.admin.logos import logo_response
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.services import merge_anonymous_comparisons
 from backend.auth.dependencies import (
@@ -302,20 +303,11 @@ async def get_config_logo() -> Response:
     app_settings = await get_app_settings()
     if not app_settings.logo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return Response(
-        content=app_settings.logo,
-        media_type=app_settings.logo_content_type or "image/png",
-        headers={
-            # Same as the lab logos: the URL carries the version.
-            "Cache-Control": "public, max-age=31536000, immutable",
-            # The logo can be an SVG, and an SVG can carry a <script>. Pages
-            # only ever show it in an <img>, where scripts never run, but
-            # opening this URL directly would render it as a document on our
-            # own origin. sandbox puts it in an opaque origin with scripting
-            # off, which leaves <img> untouched.
-            "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
-            "Content-Disposition": "inline",
-        },
+    return logo_response(
+        app_settings.logo,
+        app_settings.logo_content_type or "image/png",
+        # Same as the lab logos: the URL carries the version.
+        "public, max-age=31536000, immutable",
     )
 
 
@@ -330,10 +322,11 @@ async def get_config_oidc_logo() -> Response:
     app_settings = await get_app_settings()
     if not app_settings.oidc_button_logo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return Response(
-        content=app_settings.oidc_button_logo,
-        media_type=app_settings.oidc_button_logo_content_type or "image/png",
-        headers={"Cache-Control": "public, max-age=300"},
+    return logo_response(
+        app_settings.oidc_button_logo,
+        app_settings.oidc_button_logo_content_type or "image/png",
+        # No version in the URL the login page uses, so no long caching.
+        "public, max-age=300",
     )
 
 
