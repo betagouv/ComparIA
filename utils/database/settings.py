@@ -48,5 +48,5 @@ async def update_app_settings(patch: dict, updated_by: uuid.UUID) -> AppSettings
         await session.commit()
         await session.refresh(row)
 
-    invalidate_cache(REDIS_APP_SETTINGS_KEY)
+    await invalidate_cache(REDIS_APP_SETTINGS_KEY)
     return row

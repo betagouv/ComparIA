@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Annotated, AsyncGenerator
 from uuid import UUID
@@ -5,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from backend.arena.captcha import generate_challenge
+from backend.arena.captcha import generate_challenge, verify_altcha_token
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
@@ -72,12 +73,12 @@ router = APIRouter(
 # Dependencies
 
 
-def assert_not_rate_limited(
+async def assert_not_rate_limited(
     anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
     """Rate-limit model usage per anonymous session, with the IP as a backstop
     for clients that drop the session cookie."""
-    if is_ratelimited(anonymous_user_hash, get_ip(request)):
+    if await is_ratelimited(anonymous_user_hash, get_ip(request)):
         logger.error(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
@@ -96,13 +97,43 @@ def _is_pricey(comparison: ComparisonRead, llms_data: LLMsData) -> bool:
     )
 
 
-def assert_not_block_cooldown(request: Request) -> None:
+async def assert_not_block_cooldown(request: Request) -> None:
     """Cool down IPs that keep tripping the content-safety guardrail."""
-    if is_block_cooldown(get_ip(request)):
+    if await is_block_cooldown(get_ip(request)):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="block_cooldown",
         )
+
+
+async def assert_captcha(token: str) -> None:
+    """
+    Verify the captcha solution sent with a message. Raises a 422 shaped like a
+    Pydantic validation error, which is what the frontend already reads: this
+    check used to be a field validator, which cannot await Redis.
+    """
+    ok, _error = await verify_altcha_token(token)
+    if not ok:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[
+                {
+                    "loc": ["body", "altcha_token"],
+                    "msg": "Value error, captcha_failed",
+                    "type": "value_error",
+                }
+            ],
+        )
+
+
+async def release_comparison(comparison_id: UUID) -> None:
+    """
+    Mark a comparison as no longer streaming, from the `finally` of a stream.
+    That is also where a client leaving lands, with the task already cancelled:
+    shielded, or the write is cancelled with it and the comparison stays locked
+    until the metadata expires.
+    """
+    await asyncio.shield(store_comparison_metadata(comparison_id, is_streaming=False))
 
 
 async def run_checks(
@@ -123,9 +154,9 @@ async def run_checks(
         # would take the whole arena down every time Mistral hiccups, which is
         # the worse trade: one connection slowed is better than all of them
         # stopped.
-        increment_blocked_prompts(get_ip(request))
+        await increment_blocked_prompts(get_ip(request))
     if result and result.block_message:
-        increment_blocked_prompts(get_ip(request))
+        await increment_blocked_prompts(get_ip(request))
         result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -140,14 +171,14 @@ async def run_checks(
     return result
 
 
-def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
+async def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
     """
     Stream a single 'warning' event and stop. Nothing is created and no model is
     called: the browser asks the user to confirm, and sends the prompt again with
     the one-time `warning_token` if they go ahead.
     """
-    count_warning_shown()
-    token = issue_warning_token(text, result.model)
+    await count_warning_shown()
+    token = await issue_warning_token(text, result.model)
     warnings = [{"kind": "prompt_check", "message": result.message or ""}]
 
     async def event_stream() -> AsyncGenerator[str]:
@@ -158,9 +189,9 @@ def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
     return create_sse_response(event_stream())
 
 
-def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
+async def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
     try:
-        metadata = retreive_comparison_metadata(comparison_id)
+        metadata = await retreive_comparison_metadata(comparison_id)
     except Exception as e:
         return None
 
@@ -184,7 +215,7 @@ async def get_comparison(
         HTTPException: If comparison doesn't exists, is already streamin or
         user id or anonymous user hash doesn't correspond to the Comparison.
     """
-    get_comparison_metadata(comparison_id)  # check if is_streaming
+    await get_comparison_metadata(comparison_id)  # check if is_streaming
 
     return await read_comparison(
         comparison_id, user.id if user else None, anonymous_user_hash
@@ -233,6 +264,8 @@ async def add_first_text(
     Raises:
         HTTPException: If rate limiting triggered or validation fails
     """
+    await assert_captcha(args.altcha_token)
+
     participation_terms_version = await get_current_terms_acceptance_version(
         user_id=user.id if user else None,
         anonymous_user_hash=anonymous_user_hash,
@@ -256,7 +289,7 @@ async def add_first_text(
         args.prompt_value, "prompt_value", request, args.warning_token
     )
     if check and check.pending_warning:
-        return warning_response(check, args.prompt_value)
+        return await warning_response(check, args.prompt_value)
     check = (await save_prompt_check_result(check)) if check else None
 
     # Select LLMs
@@ -312,7 +345,7 @@ async def add_first_text(
             web_search_results,
             prompt_check_result=check,
         )
-        store_comparison_metadata(comparison.id, is_streaming=True)
+        await store_comparison_metadata(comparison.id, is_streaming=True)
 
         try:
             yield format_sse_event(
@@ -324,7 +357,7 @@ async def add_first_text(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                increment_input_chars(
+                await increment_input_chars(
                     anonymous_user_hash,
                     get_ip(request),
                     len(args.prompt_value),
@@ -333,7 +366,7 @@ async def add_first_text(
 
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            await release_comparison(comparison.id)
 
     return create_sse_response(event_stream(comparison))
 
@@ -367,6 +400,8 @@ async def add_text(
     Raises:
         HTTPException: If Comparison not found or rate limiting triggered
     """
+    await assert_captcha(args.altcha_token)
+
     logger.info(
         f"'/add_text' on comparison '{comparison_.id}' ({len(args.message)} chars)",
         extra={"request": request},
@@ -383,7 +418,7 @@ async def add_text(
 
     check = await run_checks(args.message, "message", request, args.warning_token)
     if check and check.pending_warning:
-        return warning_response(check, args.message)
+        return await warning_response(check, args.message)
     check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
@@ -396,7 +431,7 @@ async def add_text(
             args.message,
             prompt_check_result=check,
         )
-        store_comparison_metadata(comparison.id, is_streaming=True)
+        await store_comparison_metadata(comparison.id, is_streaming=True)
 
         try:
             yield format_sse_event(
@@ -409,7 +444,7 @@ async def add_text(
 
             if not comparison.error:
                 llms_data = await get_llms_data()
-                increment_input_chars(
+                await increment_input_chars(
                     anonymous_user_hash,
                     get_ip(request),
                     len(args.message),
@@ -418,7 +453,7 @@ async def add_text(
 
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            await release_comparison(comparison.id)
 
     return create_sse_response(event_stream())
 
@@ -473,7 +508,7 @@ async def retry(
 
     await update_comparison_error(comparison, None)
 
-    store_comparison_metadata(comparison.id, is_streaming=True)
+    await store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
         f"retry on turn '{turn.id}'",
@@ -493,7 +528,7 @@ async def retry(
 
             if not comparison.error:
                 llms_data = await get_llms_data()
-                increment_input_chars(
+                await increment_input_chars(
                     anonymous_user_hash,
                     get_ip(request),
                     len(turn.user_msg.content),
@@ -502,7 +537,7 @@ async def retry(
 
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            await release_comparison(comparison.id)
 
     return create_sse_response(event_stream(comparison))
 

@@ -51,6 +51,10 @@ class FakeRedis:
         self.store.pop(key, None)
 
 
+async def _fake_verify_altcha_token(payload):
+    return True, None
+
+
 async def _fake_request_login_code(email):
     return "123456"
 
@@ -103,7 +107,7 @@ def fake_router(verify_login_code=None, has_current_terms_acceptance=None):
         "has_current_terms_acceptance": auth_router.has_current_terms_acceptance,
     }
     auth_router.get_redis_client = lambda: fake
-    auth_router.verify_altcha_token = lambda payload: (True, None)
+    auth_router.verify_altcha_token = _fake_verify_altcha_token
     auth_router.request_login_code = _fake_request_login_code
     auth_router.send_login_code = _fake_send_login_code
     auth_router.get_app_settings = _fake_get_app_settings
