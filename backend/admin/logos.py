@@ -10,6 +10,7 @@ size cap and a cheap scripting check.
 import re
 from io import BytesIO
 
+from fastapi import Response, UploadFile
 from PIL import Image, UnidentifiedImageError
 
 from backend.config import LOGO_SVG_MAX_SIZE, LOGO_UPLOAD_MAX_SIZE
@@ -20,6 +21,29 @@ LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
 # Scripts and inline handlers. The logo route answers with a sandbox CSP that
 # stops scripting anyway; this only keeps the obvious cases out of the database.
 _SVG_SCRIPTING = re.compile(rb"<script|\bon[a-z]+\s*=", re.IGNORECASE)
+
+
+# An SVG opened as a document carries its own <script>; sandbox puts it in an
+# opaque origin with scripting off and leaves <img> untouched.
+_LOGO_HEADERS = {
+    "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; sandbox",
+    "X-Content-Type-Options": "nosniff",
+}
+
+
+async def read_logo(file: UploadFile, box: tuple[int, int]) -> tuple[bytes, str]:
+    """An uploaded logo, ready to store. Every logo upload goes through here."""
+    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
+    return normalize_logo(content, file.content_type or "", box)
+
+
+def logo_response(content: bytes, content_type: str, cache_control: str) -> Response:
+    """A stored logo, served safely. Every logo route answers through here."""
+    return Response(
+        content=content,
+        media_type=content_type,
+        headers={**_LOGO_HEADERS, "Cache-Control": cache_control},
+    )
 
 
 def normalize_logo(
