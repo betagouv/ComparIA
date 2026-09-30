@@ -106,7 +106,7 @@ async def assert_not_block_cooldown(request: Request) -> None:
         )
 
 
-async def assert_captcha(token: str, field: str = "altcha_token") -> None:
+async def assert_captcha(token: str) -> None:
     """
     Verify the captcha solution sent with a message. Raises a 422 shaped like a
     Pydantic validation error, which is what the frontend already reads: this
@@ -118,7 +118,7 @@ async def assert_captcha(token: str, field: str = "altcha_token") -> None:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=[
                 {
-                    "loc": ["body", field],
+                    "loc": ["body", "altcha_token"],
                     "msg": "Value error, captcha_failed",
                     "type": "value_error",
                 }

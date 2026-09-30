@@ -55,3 +55,29 @@ def test_the_rate_limit_check_does_not_hold_the_loop_on_a_slow_redis(fake_redis)
     assert gap < LATENCY / 2
     # The four budgets were really read, one command after the other.
     assert len(fake_redis.calls) == 4
+
+
+def test_reading_the_response_cache_does_not_hold_the_loop_on_a_slow_redis(
+    fake_redis, monkeypatch
+):
+    from backend.arena import cache
+    from backend.config import settings
+
+    monkeypatch.setattr(settings, "CACHE_ENABLED", True)
+    monkeypatch.setattr(settings, "CACHE_PROBABILITY", 1.0)
+    fake_redis.latency = LATENCY
+
+    async def scenario():
+        answer = None
+
+        async def read():
+            nonlocal answer
+            answer = await cache.get_cached_response("model", "prompt")
+
+        gap = await longest_gap_while(read())
+        return answer, gap
+
+    answer, gap = asyncio.run(scenario())
+
+    assert answer is None
+    assert gap < LATENCY / 2

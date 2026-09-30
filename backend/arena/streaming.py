@@ -214,6 +214,9 @@ async def stream_comparison_messages(
 
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
+    # One pending read per generator. It is kept across wake-ups rather than
+    # cancelled: cancelling a read that is waiting on the provider closes the
+    # generator under it. Whatever is left is cancelled on the way out.
     pending: dict[BotPos, asyncio.Task[AnySSEEventMsg]] = {}
 
     try:
@@ -233,10 +236,6 @@ async def stream_comparison_messages(
         complete: dict[BotPos, bool] = {"a": False, "b": False}
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
-
-        # One pending read per generator. It is kept across wake-ups rather than
-        # cancelled: cancelling a read that is waiting on the provider closes
-        # the generator under it. See `pending` above the `try`.
 
         # Consume both generators in parallel
         while not (complete["a"] and complete["b"]):

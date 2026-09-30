@@ -34,10 +34,14 @@ def ask_in_background(arena) -> threading.Thread:
     return thread
 
 
-def slowest_cheap_request_while(arena, thread: threading.Thread) -> float:
+def slowest_cheap_request_while(
+    arena,
+    thread: threading.Thread,
+    paths: tuple[str, ...] = ("/api/auth/config", "/api/models/"),
+) -> float:
     slowest = 0.0
     while thread.is_alive():
-        for path in ("/api/auth/config", "/api/models/"):
+        for path in paths:
             started = time.perf_counter()
             assert arena.client.get(path).status_code == 200
             slowest = max(slowest, time.perf_counter() - started)
@@ -72,3 +76,17 @@ def test_cheap_requests_stay_fast_while_a_provider_answers_429_first(arena):
 
     assert slowest < BOUND
     assert len(arena.provider.requests) == 4
+
+
+def test_a_repeated_prompt_is_served_from_the_response_cache(arena, monkeypatch):
+    from backend.config import settings
+
+    monkeypatch.setattr(settings, "CACHE_ENABLED", True)
+    monkeypatch.setattr(settings, "CACHE_PROBABILITY", 1.0)
+
+    arena.ask()
+    asked = len(arena.provider.requests)
+    events = arena.ask()
+
+    assert len(arena.provider.requests) == asked
+    assert events[-1] == {"type": "complete"}
