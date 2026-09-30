@@ -755,7 +755,11 @@ def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
         )
 
     assert r.status_code == 200
-    assert r.json() == {"email": "admin@example.org", "totp_required": True}
+    assert r.json() == {
+        "email": "admin@example.org",
+        "totp_required": True,
+        "first_sign_in": False,
+    }
     assert "auth_totp_challenge" in r.cookies
     assert "auth_session" not in r.cookies
     cookies = r.headers.get_list("set-cookie")
@@ -880,7 +884,12 @@ def test_me_says_whether_the_authenticator_is_enrolled():
         r = client.get("/auth/me")
 
     assert r.json() == {
-        "user": {"email": "admin@example.test", "role": "admin", "totp_enabled": True}
+        "user": {
+            "email": "admin@example.test",
+            "role": "admin",
+            "totp_enabled": True,
+            "questionsAnswered": True,
+        }
     }
 
 
