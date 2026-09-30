@@ -735,6 +735,7 @@
                 "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Code incorrect.",
                 "expired": "Connexion expirée, demandez un nouveau code par email.",
+                "expiredSso": "Connexion expirée, reconnectez-vous avec le fournisseur d’identité.",
                 "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification."
             }
         },
