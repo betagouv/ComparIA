@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
 from sqlalchemy import delete as sa_delete
+from sqlalchemy import func
 from sqlalchemy import update as sa_update
 from sqlmodel import select
 
@@ -290,28 +291,37 @@ async def oidc_login(
     ip: str,
     user_agent: str | None,
     anonymous_user_hash: str | None = None,
-) -> str:
+) -> tuple[str, uuid.UUID] | None:
     """Resolve or create the `User` for an OIDC-authenticated email and mint a
     session, exactly like `verify_login_code` and `accept_invite` do for their
     flows. An email that already has an account — whether created by email
     code, invite, or admin seeding — is reused rather than duplicated, so
     an admin pre-seeded via `ADMIN_EMAILS` lands on their existing admin
     account on first OIDC login with no manual step.
+
+    The address is matched ignoring case: the provider is the authority on
+    the mailbox, and may not spell it the way it was typed into `ADMIN_EMAILS`
+    or the email form. Returns None for an account an admin deactivated.
     """
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
+        result = await session.exec(
+            select(User).where(func.lower(User.email) == email.lower())
+        )
         user = result.first()
         if not user:
             user = User(email=email)
             session.add(user)
             await session.flush()
+        elif user.deleted_at is not None:
+            return None
 
+        user_id = user.id
         token = await _create_session(
             session, user, ip, user_agent, anonymous_user_hash
         )
         await session.commit()
 
-    return token
+    return token, user_id
 
 
 async def get_user_from_token(token: str) -> User | None:

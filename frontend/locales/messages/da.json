@@ -484,7 +484,8 @@
                 },
                 "scopes": {
                     "hint": "Adskilt af mellemrum. Ex. : openid email",
-                    "label": "Scopes"
+                    "label": "Scopes",
+                    "openidRequired": "Scopes skal indeholde openid"
                 },
                 "title": "OIDC-konfiguration"
             },
@@ -727,6 +728,7 @@
         "oidc": {
             "buttonFallback": "Log ind med identitetsudbyderen",
             "error": {
+                "account_unavailable": "Kontoen, der er knyttet til denne adresse, er blevet deaktiveret eller slettet.",
                 "domain_not_allowed": "Din adresse tilhører ikke et domæne, der er godkendt til denne instans.",
                 "email_not_verified": "Identitetsudbyderen har ikke bekræftet din e-mailadresse.",
                 "invalid_nonce": "Login via identitetsudbyderen mislykkedes (ugyldigt token).",
@@ -735,6 +737,7 @@
                 "no_email": "Identitetsudbyderen returnerede ingen e-mailadresse.",
                 "oidc_unavailable": "Login via identitetsudbyderen er ikke aktiveret på denne instans.",
                 "provider_error": "Identitetsudbyderen afviste loginanmodningen. Prøv igen.",
+                "rate_limited": "For mange loginforsøg fra dette netværk. Prøv igen om en time.",
                 "terms_required": "Acceptér de generelle brugsvilkår, før du logger ind."
             },
             "panelSubtitle": "Du bliver sendt videre til den identitetsudbyder, der er konfigureret til denne instans."

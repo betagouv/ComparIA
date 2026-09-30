@@ -237,6 +237,7 @@
             <label class="fr-label">
               <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
               <input
+                class="fr-upload"
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml,image/webp"
                 disabled={uploadingLogo}
