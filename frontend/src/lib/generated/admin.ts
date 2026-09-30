@@ -146,8 +146,18 @@ export interface AppSettingsPublic {
   oidc_button_label: string | null;
   oidc_has_button_logo: boolean;
   oidc_button_logo_content_type: string | null;
+  oidc_connection_test?: OIDCConnectionTest | null;
   updated_at: string;
   updated_by?: string | null;
+}
+/**
+ * The last connection test, when it was run on the config in force.
+ */
+export interface OIDCConnectionTest {
+  passed: boolean;
+  reason?: string | null;
+  tested_at: string;
+  [k: string]: unknown;
 }
 /**
  * LLM definition.

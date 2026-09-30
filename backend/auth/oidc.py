@@ -8,6 +8,7 @@ provider.
 """
 
 import base64
+import hashlib
 import json
 import logging
 import secrets
@@ -47,7 +48,14 @@ _SECURED_ENDPOINTS = ("authorization_endpoint", "token_endpoint", "userinfo_endp
 
 
 class OIDCProviderError(Exception):
-    """The provider answered, but not with something we can trust."""
+    """The provider answered, but not with something we can trust.
+
+    `reason` names the failure for the admin's connection test.
+    """
+
+    def __init__(self, message: str, reason: str = "discovery_invalid"):
+        super().__init__(message)
+        self.reason = reason
 
 
 @dataclass
@@ -115,24 +123,92 @@ def validate_discovery(document: dict, issuer: str) -> dict:
     """
     if not _same_issuer(document.get("issuer"), issuer):
         raise OIDCProviderError(
-            f"discovery issuer {document.get('issuer')!r} does not match {issuer!r}"
+            f"discovery issuer {document.get('issuer')!r} does not match {issuer!r}",
+            reason="issuer_mismatch",
         )
     for name in _SECURED_ENDPOINTS:
         endpoint = document.get(name)
         if endpoint is not None and not (
             isinstance(endpoint, str) and is_secure_url(endpoint)
         ):
-            raise OIDCProviderError(f"discovery {name} {endpoint!r} is not https")
+            raise OIDCProviderError(
+                f"discovery {name} {endpoint!r} is not https",
+                reason="endpoint_not_https",
+            )
     return document
 
 
-@alru_cache(maxsize=4, ttl=_DISCOVERY_TTL_SECONDS)
-async def discover_provider(issuer: str) -> dict:
-    """Fetch the provider's discovery document."""
+async def fetch_discovery(issuer: str) -> dict:
+    """Fetch the provider's discovery document, bypassing the cache."""
     async with _http_client() as client:
         response = await client.get(discovery_url(issuer))
         response.raise_for_status()
         return validate_discovery(response.json(), issuer)
+
+
+@alru_cache(maxsize=4, ttl=_DISCOVERY_TTL_SECONDS)
+async def discover_provider(issuer: str) -> dict:
+    """The provider's discovery document, cached per issuer."""
+    return await fetch_discovery(issuer)
+
+
+def oidc_config_fingerprint(app_settings) -> str:
+    """Identifies the provider config a connection test was run against.
+
+    Built from the issuer, the client id and the stored secret as it sits in
+    the database (encrypted): neither the secret nor anything derived from its
+    plaintext is kept, and saving a secret again counts as editing it.
+    """
+    secret = app_settings.oidc_client_secret_encrypted
+    material = json.dumps(
+        [
+            app_settings.oidc_issuer,
+            app_settings.oidc_client_id,
+            secret.hex() if secret is not None else None,
+        ]
+    )
+    return hashlib.sha256(material.encode()).hexdigest()
+
+
+async def check_oidc_connection(app_settings) -> str | None:
+    """Try the configured provider without signing anyone in: None when it
+    looks usable, else the name of what is wrong.
+
+    Discovery is fetched fresh, its issuer and endpoints are checked the way a
+    sign-in would, and the stored secret must decrypt. No token exchange, so
+    nothing here can consume a code or need a user.
+    """
+    if not (
+        app_settings.oidc_issuer
+        and app_settings.oidc_client_id
+        and app_settings.oidc_client_secret_encrypted is not None
+    ):
+        return "incomplete_config"
+    try:
+        decrypt_secret(app_settings.oidc_client_secret_encrypted.decode())
+    except SecretUnreadableError:
+        return "secret_unreadable"
+    try:
+        discovery = await fetch_discovery(app_settings.oidc_issuer)
+    except OIDCProviderError as e:
+        return e.reason
+    except httpx.HTTPError:
+        return "discovery_unreachable"
+    except Exception:
+        return "discovery_invalid"
+    if not all(discovery.get(name) for name in _SECURED_ENDPOINTS):
+        return "missing_endpoint"
+    return None
+
+
+def connection_test_passed(app_settings) -> bool:
+    """Whether the stored connection test passed on the config in force."""
+    stored = app_settings.oidc_connection_test
+    return bool(
+        stored
+        and stored.get("passed")
+        and stored.get("fingerprint") == oidc_config_fingerprint(app_settings)
+    )
 
 
 def issue_state(*, redirect: str, merge: bool) -> tuple[str, str]:

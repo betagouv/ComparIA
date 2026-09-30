@@ -415,6 +415,7 @@
                 },
                 "authMethods": {
                     "emailCode": "Code par email",
+                    "emailCodeLocked": "Testez la connexion OIDC avec succès pour pouvoir retirer ce mode de connexion.",
                     "error": "Au moins une méthode doit être activée",
                     "label": "Méthodes d'authentification",
                     "oidc": "Fournisseur d'identité (OIDC)"
@@ -496,6 +497,22 @@
                     "hint": "Séparés par des espaces. Ex. : openid email",
                     "label": "Scopes",
                     "openidRequired": "Les scopes doivent inclure openid"
+                },
+                "test": {
+                    "button": "Tester la connexion",
+                    "failed": "Échec du test : {reason}",
+                    "hint": "Enregistrez la configuration avant de la tester.",
+                    "passed": "Connexion réussie : le fournisseur répond et la configuration est lisible.",
+                    "reasons": {
+                        "discovery_invalid": "le document de découverte du fournisseur est illisible.",
+                        "discovery_unreachable": "le fournisseur est injoignable ou ne publie pas de document de découverte.",
+                        "endpoint_not_https": "un des points d’accès du fournisseur n’est pas en https.",
+                        "incomplete_config": "la configuration est incomplète.",
+                        "issuer_mismatch": "l’émetteur annoncé par le fournisseur ne correspond pas à l’URL configurée.",
+                        "missing_endpoint": "il manque un point d’accès (autorisation, jeton ou userinfo) dans le document de découverte.",
+                        "secret_unreadable": "le client secret enregistré est illisible, saisissez-le à nouveau."
+                    },
+                    "running": "Test en cours…"
                 },
                 "title": "Configuration OIDC"
             }

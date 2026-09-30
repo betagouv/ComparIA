@@ -410,6 +410,7 @@
                 },
                 "authMethods": {
                     "emailCode": "E-mail kode",
+                    "emailCodeLocked": "Gennemfør en vellykket OIDC-forbindelsestest for at kunne fjerne denne loginmetode.",
                     "error": "Mindst én metode skal være aktiveret",
                     "label": "Godkendelsesmetoder",
                     "oidc": "Identitetsudbyder (OIDC)"
@@ -491,6 +492,22 @@
                     "hint": "Adskilt af mellemrum. Ex. : openid email",
                     "label": "Scopes",
                     "openidRequired": "Scopes skal indeholde openid"
+                },
+                "test": {
+                    "button": "Test forbindelsen",
+                    "failed": "Testen mislykkedes: {reason}",
+                    "hint": "Gem konfigurationen, før du tester den.",
+                    "passed": "Forbindelsen lykkedes: udbyderen svarer, og konfigurationen kan læses.",
+                    "reasons": {
+                        "discovery_invalid": "udbyderens discovery-dokument kan ikke læses.",
+                        "discovery_unreachable": "udbyderen kan ikke nås eller udgiver ikke et discovery-dokument.",
+                        "endpoint_not_https": "et af udbyderens endpoints er ikke https.",
+                        "incomplete_config": "konfigurationen er ufuldstændig.",
+                        "issuer_mismatch": "den udsteder, udbyderen angiver, svarer ikke til den konfigurerede URL.",
+                        "missing_endpoint": "et endpoint (autorisation, token eller userinfo) mangler i discovery-dokumentet.",
+                        "secret_unreadable": "den gemte client secret kan ikke læses, indtast den igen."
+                    },
+                    "running": "Tester…"
                 },
                 "title": "OIDC-konfiguration"
             },

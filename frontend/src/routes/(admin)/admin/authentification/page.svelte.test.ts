@@ -340,3 +340,109 @@ describe('admin authentification page — OIDC button logo', () => {
     expect(preview?.getAttribute('src')).toBe('/auth/config/oidc/logo?v=0')
   })
 })
+
+describe('admin authentification page — OIDC connection test', () => {
+  const configured: AppSettingsPublic = {
+    ...base,
+    auth_methods: ['email_code', 'oidc'],
+    oidc_has_client_secret: true,
+    oidc_issuer: 'https://auth.example.fr',
+    oidc_client_id: 'my-client'
+  }
+  const passed = { passed: true, reason: null, tested_at: '2026-01-02T10:00:00' }
+
+  function button(container: HTMLElement) {
+    return container.querySelector<HTMLButtonElement>('#settings-oidc-test')!
+  }
+
+  it('runs the test and shows that it passed', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    const { container, getByRole } = await renderPage(configured)
+    vi.mocked(api.request).mockResolvedValueOnce(passed)
+
+    await fireEvent.click(button(container))
+
+    await waitFor(() => expect(getByRole('status').textContent).toContain('Connexion réussie'))
+    expect(api.request).toHaveBeenCalledWith(
+      '/admin/settings/oidc/test',
+      expect.objectContaining({ method: 'POST' })
+    )
+  })
+
+  it('shows a readable reason when the test fails', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    const { container, getByRole } = await renderPage(configured)
+    vi.mocked(api.request).mockResolvedValueOnce({
+      passed: false,
+      reason: 'issuer_mismatch',
+      tested_at: '2026-01-02T10:00:00'
+    })
+
+    await fireEvent.click(button(container))
+
+    await waitFor(() => expect(getByRole('status').textContent).toContain('émetteur'))
+    expect(getByRole('status').textContent).not.toContain('issuer_mismatch')
+  })
+
+  it('shows the stored result next to the config on load', async () => {
+    const { getByRole } = await renderPage({ ...configured, oidc_connection_test: passed })
+    expect(getByRole('status').textContent).toContain('Connexion réussie')
+  })
+
+  it('asks to save before testing when the provider fields were edited', async () => {
+    const { container } = await renderPage(configured)
+    const issuer = container.querySelector<HTMLInputElement>('#settings-oidc-issuer')!
+    await fireEvent.input(issuer, { target: { value: 'https://other.example.fr' } })
+
+    expect(button(container).disabled).toBe(true)
+    expect(container.querySelector('#settings-oidc-test-hint')).toBeInTheDocument()
+  })
+
+  it('keeps email_code locked until a test passed on the current config', async () => {
+    const { container } = await renderPage(configured)
+    const emailCode = container.querySelector<HTMLInputElement>('#settings-method-email-code')!
+    expect(emailCode.disabled).toBe(true)
+    expect(container.querySelector('#settings-method-email-code-help')).toBeInTheDocument()
+  })
+
+  it('unlocks email_code after a passing test', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    const { container } = await renderPage(configured)
+    vi.mocked(api.request).mockResolvedValueOnce(passed)
+
+    await fireEvent.click(button(container))
+
+    await waitFor(() =>
+      expect(
+        container.querySelector<HTMLInputElement>('#settings-method-email-code')!.disabled
+      ).toBe(false)
+    )
+  })
+
+  it('unlocks email_code when the server reports a passing test on load', async () => {
+    const { container } = await renderPage({ ...configured, oidc_connection_test: passed })
+    expect(container.querySelector<HTMLInputElement>('#settings-method-email-code')!.disabled).toBe(
+      false
+    )
+  })
+
+  it('does not lock email_code on an instance without OIDC', async () => {
+    const { container } = await renderPage({ ...base, auth_methods: ['email_code'] })
+    expect(container.querySelector<HTMLInputElement>('#settings-method-email-code')!.disabled).toBe(
+      false
+    )
+  })
+
+  it('locks email_code again once the provider fields are edited', async () => {
+    const { container } = await renderPage({ ...configured, oidc_connection_test: passed })
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#settings-oidc-client-id')!, {
+      target: { value: 'another-client' }
+    })
+    expect(container.querySelector<HTMLInputElement>('#settings-method-email-code')!.disabled).toBe(
+      true
+    )
+  })
+})

@@ -71,6 +71,7 @@ def _settings_row(**overrides):
         oidc_button_label=None,
         oidc_button_logo=None,
         oidc_button_logo_content_type=None,
+        oidc_connection_test=None,
         updated_at=datetime(2026, 1, 1),
         updated_by=None,
     )
