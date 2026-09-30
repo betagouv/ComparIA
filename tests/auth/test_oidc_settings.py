@@ -54,6 +54,7 @@ def _settings_row(**overrides):
         secondary_color_dark="#CACAFB",
         homepage_url=None,
         logo=None,
+        logo_version=None,
         logo_content_type=None,
         analysis_endpoint_id=None,
         analysis_model=None,

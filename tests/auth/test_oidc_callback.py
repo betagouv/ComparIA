@@ -61,6 +61,7 @@ def _settings_row(**overrides):
         secondary_color_dark="#CACAFB",
         homepage_url=None,
         logo=None,
+        logo_version=None,
         enabled_locales=["fr"],
         default_locale="fr",
     )
