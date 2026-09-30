@@ -33,6 +33,7 @@ from backend.auth.oidc import (
     consume_state,
     discover_provider,
     exchange_code_for_claims,
+    oidc_available,
     oidc_callback_url,
 )
 from backend.auth.services import (
@@ -46,9 +47,7 @@ from backend.auth.services import (
     get_invite_token_info,
     get_user_from_token,
     has_current_terms_acceptance,
-)
-from backend.auth.services import oidc_login as oidc_login_service
-from backend.auth.services import (
+    login_with_oidc,
     record_anonymous_consent,
     record_user_consent,
     request_login_code,
@@ -276,9 +275,6 @@ async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
 @router.get("/config")
 async def get_config() -> AuthConfig:
     app_settings = await get_app_settings()
-    oidc_enabled = (
-        _oidc_configured(app_settings) and "oidc" in app_settings.auth_methods
-    )
     return AuthConfig(
         access_policy=app_settings.auth_access_policy,
         methods=app_settings.auth_methods,
@@ -295,18 +291,9 @@ async def get_config() -> AuthConfig:
         logo_version=app_settings.logo_version,
         enabled_locales=app_settings.enabled_locales,
         default_locale=app_settings.default_locale,
-        oidc_enabled=oidc_enabled,
+        oidc_enabled=oidc_available(app_settings),
         oidc_button_label=app_settings.oidc_button_label,
         oidc_has_button_logo=app_settings.oidc_button_logo is not None,
-    )
-
-
-def _oidc_configured(app_settings) -> bool:
-    """An instance can actually use OIDC only with a complete provider config."""
-    return bool(
-        app_settings.oidc_issuer
-        and app_settings.oidc_client_id
-        and app_settings.oidc_client_secret_encrypted is not None
     )
 
 
@@ -701,7 +688,7 @@ async def oidc_login(
     checkbox. Both ride along with the state until the callback.
     """
     app_settings = await get_app_settings()
-    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+    if not oidc_available(app_settings):
         return _login_error("oidc_unavailable")
 
     try:
@@ -817,7 +804,7 @@ async def _complete_oidc_sign_in(
     minted — the round trip leaves no partial state behind.
     """
     app_settings = await get_app_settings()
-    if "oidc" not in app_settings.auth_methods or not _oidc_configured(app_settings):
+    if not oidc_available(app_settings):
         return _login_error("oidc_unavailable")
 
     # Consume the issued state up front so a provider-error redirect,
@@ -846,14 +833,8 @@ async def _complete_oidc_sign_in(
     if not token_endpoint or not userinfo_endpoint:
         return _login_error("provider_error")
 
-    try:
-        client_secret = decrypt_secret(
-            app_settings.oidc_client_secret_encrypted.decode()
-        )
-    except SecretUnreadableError:
-        # A key dropped from COMPARIA_ENCRYPTION_KEY too early: the secret has
-        # to be entered again in the admin panel.
-        return _login_error("oidc_unavailable")
+    # Readable: `oidc_available` opened it above.
+    client_secret = decrypt_secret(app_settings.oidc_client_secret_encrypted.decode())
 
     try:
         claims = await exchange_code_for_claims(
@@ -901,7 +882,7 @@ async def _complete_oidc_sign_in(
             return _login_error("domain_not_allowed")
 
     anonymous_user_hash = _anonymous_hash(request)
-    signed_in = await oidc_login_service(
+    signed_in = await login_with_oidc(
         email=email,
         ip=get_ip(request),
         user_agent=request.headers.get("user-agent"),

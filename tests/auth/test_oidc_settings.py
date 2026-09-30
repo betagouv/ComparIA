@@ -22,6 +22,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
+from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 from utils.database.models.auth import User  # noqa: E402
 
 
@@ -82,7 +83,7 @@ def _configured_oidc_row(**overrides):
     fields = dict(
         oidc_issuer="https://issuer.example.test",
         oidc_client_id="client-id",
-        oidc_client_secret_encrypted=b"encrypted",
+        oidc_client_secret_encrypted=ENCRYPTED_CLIENT_SECRET,
     )
     fields.update(overrides)
     return _settings_row(**fields)
@@ -263,6 +264,13 @@ def test_patch_oidc_enabled_without_provider_config_is_rejected():
 
 def test_patch_oidc_enabled_with_partial_provider_config_is_rejected():
     row = _configured_oidc_row(oidc_client_secret_encrypted=None)
+    with admin_client(row) as client:
+        response = client.patch("/admin/settings", json={"auth_methods": ["oidc"]})
+    assert response.status_code == 400
+
+
+def test_patch_oidc_enabled_on_a_row_whose_secret_cannot_be_read_is_rejected():
+    row = _configured_oidc_row(oidc_client_secret_encrypted=b"not-a-fernet-token")
     with admin_client(row) as client:
         response = client.patch("/admin/settings", json={"auth_methods": ["oidc"]})
     assert response.status_code == 400

@@ -335,7 +335,7 @@ async def accept_invite(
     return login
 
 
-async def oidc_login(
+async def login_with_oidc(
     email: str,
     ip: str,
     user_agent: str | None,
