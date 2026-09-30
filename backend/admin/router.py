@@ -644,7 +644,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         )
 
     started = time.monotonic()
-    scores = read_cached_scores(body.text, check.model)
+    scores = await read_cached_scores(body.text, check.model)
     if scores is None:
         try:
             scores = await moderate(body.text, check.model, api_key)
@@ -658,7 +658,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
                 error=str(e),
             )
         latency_ms = int((time.monotonic() - started) * 1000)
-        write_cached_scores(body.text, check.model, scores)
+        await write_cached_scores(body.text, check.model, scores)
     else:
         latency_ms = 0
 

@@ -153,10 +153,13 @@ def routed(auth_methods=("email_code",), **overrides):
             default_locale="fr",
         )
 
+    async def solved(_payload):
+        return True, None
+
     with patched(
         auth_router,
         get_redis_client=lambda: FakeRedis(),
-        verify_altcha_token=lambda _payload: (True, None),
+        verify_altcha_token=solved,
         get_app_settings=app_settings,
         **overrides,
     ):

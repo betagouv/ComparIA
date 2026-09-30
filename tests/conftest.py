@@ -208,7 +208,6 @@ def arena(database, fake_redis, fake_provider, monkeypatch):
 
     from fastapi.testclient import TestClient
 
-    import backend.arena.models as arena_models
     import backend.arena.router as arena_router
     from backend.config import settings
     from backend.main import app
@@ -228,9 +227,10 @@ def arena(database, fake_redis, fake_provider, monkeypatch):
     async def no_check(_text, _field, _request, _warning_token=None):
         return None
 
-    monkeypatch.setattr(
-        arena_models, "verify_altcha_token", lambda _token: (True, None)
-    )
+    async def solved(_token):
+        return True, None
+
+    monkeypatch.setattr(arena_router, "verify_altcha_token", solved)
     monkeypatch.setattr(arena_router, "run_checks", no_check)
 
     async def seed():

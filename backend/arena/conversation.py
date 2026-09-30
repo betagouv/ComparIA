@@ -120,7 +120,7 @@ async def bot_response_async(
     """
     # Try cache on first turn only
     if turn_index == 0:
-        cached = get_cached_response(llm.id, turn.user_msg.content)
+        cached = await get_cached_response(llm.id, turn.user_msg.content)
         if cached:
             logger.info(
                 f"[CACHE] Serving cached response for {llm.id}",
@@ -181,7 +181,7 @@ async def bot_response_async(
 
     # Store successful response in cache (first turn only)
     if turn_index == 0:
-        store_cached_response(
+        await store_cached_response(
             llm.id,
             turn.user_msg.content,
             CachedResponse(
