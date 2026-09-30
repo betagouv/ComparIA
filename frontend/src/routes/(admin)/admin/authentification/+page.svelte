@@ -49,6 +49,10 @@
 
   onMount(load)
 
+  function parseScopes() {
+    return oidcScopes.split(' ').filter(Boolean)
+  }
+
   function validate() {
     const nextErrors: Record<string, string> = {}
     if (!methodEmailCode && !methodOidc) {
@@ -64,6 +68,9 @@
       const needSecret = !oidcHasClientSecret || oidcReplaceSecret
       if (needSecret && !oidcClientSecret.trim()) {
         nextErrors.oidcSecret = m['admin.settings.oidc.clientSecret.required']()
+      }
+      if (!parseScopes().includes('openid')) {
+        nextErrors.oidcScopes = m['admin.settings.oidc.scopes.openidRequired']()
       }
     }
     errors = nextErrors
@@ -85,15 +92,19 @@
           .split(',')
           .map((d) => d.trim())
           .filter(Boolean),
-        auth_methods: authMethods,
-        oidc_issuer: methodOidc ? oidcIssuer.trim() || null : null,
-        oidc_client_id: methodOidc ? oidcClientId.trim() || null : null,
-        oidc_scopes: methodOidc ? oidcScopes.split(' ').filter(Boolean) : [],
-        oidc_button_label: methodOidc ? oidcButtonLabel.trim() || null : null
+        auth_methods: authMethods
       }
 
-      if (methodOidc && (!oidcHasClientSecret || oidcReplaceSecret) && oidcClientSecret.trim()) {
-        patch.oidc_client_secret = oidcClientSecret.trim()
+      // Unticking OIDC only removes it from the methods: the provider config
+      // stays stored so it can be re-enabled without typing it again.
+      if (methodOidc) {
+        patch.oidc_issuer = oidcIssuer.trim() || null
+        patch.oidc_client_id = oidcClientId.trim() || null
+        patch.oidc_scopes = parseScopes()
+        patch.oidc_button_label = oidcButtonLabel.trim() || null
+        if ((!oidcHasClientSecret || oidcReplaceSecret) && oidcClientSecret.trim()) {
+          patch.oidc_client_secret = oidcClientSecret.trim()
+        }
       }
 
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
@@ -147,6 +158,7 @@
     try {
       await api.request('/admin/settings/oidc-logo', { method: 'DELETE', headers: {} })
       oidcHasButtonLogo = false
+      oidcLogoVersion++
       useToast(m['admin.settings.oidc.buttonLogo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
@@ -229,8 +241,8 @@
           />
 
           <div class="mt-4!" id="settings-oidc-secret-wrapper">
-            <p class="fr-label mb-1!">{m['admin.settings.oidc.clientSecret.label']()}</p>
             {#if oidcHasClientSecret && !oidcReplaceSecret}
+              <p class="fr-label mb-1!">{m['admin.settings.oidc.clientSecret.label']()}</p>
               <div class="gap-3 flex items-center">
                 <span
                   id="settings-oidc-secret-masked"
@@ -249,21 +261,19 @@
                 </button>
               </div>
             {:else}
-              <input
+              <!-- "Leave empty to keep the current value" only makes sense
+                   when there is a stored value to keep. -->
+              <Input
                 id="settings-oidc-secret"
                 type="password"
                 autocomplete="off"
-                class="fr-input"
-                aria-describedby={errors.oidcSecret ? 'settings-oidc-secret-error' : undefined}
-                aria-invalid={errors.oidcSecret ? 'true' : undefined}
+                label={m['admin.settings.oidc.clientSecret.label']()}
+                help={oidcHasClientSecret
+                  ? m['admin.settings.oidc.clientSecret.hint']()
+                  : undefined}
                 bind:value={oidcClientSecret}
+                error={errors.oidcSecret}
               />
-              {#if errors.oidcSecret}
-                <p class="fr-message fr-message--error" id="settings-oidc-secret-error">
-                  {errors.oidcSecret}
-                </p>
-              {/if}
-              <p class="fr-hint-text mt-1!">{m['admin.settings.oidc.clientSecret.hint']()}</p>
             {/if}
           </div>
 
@@ -272,6 +282,7 @@
             label={m['admin.settings.oidc.scopes.label']()}
             help={m['admin.settings.oidc.scopes.hint']()}
             bind:value={oidcScopes}
+            error={errors.oidcScopes}
             groupClass="mt-4!"
           />
 
@@ -288,7 +299,7 @@
             <div class="gap-4 flex items-center">
               {#if oidcHasButtonLogo}
                 <img
-                  src="{api.getUrl('/admin/settings/oidc-logo')}?v={oidcLogoVersion}"
+                  src={api.getUrl('/auth/config/oidc/logo', { v: oidcLogoVersion.toString() })}
                   alt=""
                   class="h-[32px] border border-[--border-default-grey]"
                 />
@@ -297,6 +308,7 @@
                 <label class="fr-label">
                   <span class="fr-sr-only">{m['admin.settings.oidc.buttonLogo.label']()}</span>
                   <input
+                    class="fr-upload"
                     type="file"
                     accept="image/png,image/jpeg,image/svg+xml,image/webp"
                     disabled={uploadingOidcLogo}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Modal, Tabs } from '$components/dsfr'
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
@@ -20,6 +21,9 @@
   const oidcLogoUrl = $derived(
     auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
   )
+  // Brings a visitor who signs in through the provider back to the page they
+  // opened the modal from.
+  const redirect = $derived(page.url.pathname + page.url.search)
   const bothMethods = $derived(oidcEnabled && emailEnabled)
   const tabs = $derived.by(() => {
     const result: { id: string; label: string }[] = []
@@ -54,7 +58,9 @@
     <!-- The published terms describe how data is used, so the modal does not
          repeat it and risk saying something different. -->
     {#if bothMethods || !emailEnabled}
-      <div class="-mt-12">
+      <!-- Same inset as SignInForm's own wrapper, which the modal content
+           relies on since it has no padding of its own. -->
+      <div class="-mt-12 mx-8 mb-10 pt-10">
         <h2 id="fr-modal-title-signin" class="fr-h4 text-primary! mb-4!">
           {m['auth.modal.email.title']()}
         </h2>
@@ -70,12 +76,13 @@
                   {onSuccess}
                   onLegalNavigate={closeModal}
                   hideHeader
-                  class="my-0! mx-0! min-w-0"
+                  class="py-0! px-0! min-w-0"
                 />
               {:else}
                 <SSOSignIn
                   {oidcLabel}
                   {oidcLogoUrl}
+                  {redirect}
                   onLegalNavigate={closeModal}
                   class="my-0! mx-0!"
                 />
@@ -83,16 +90,24 @@
             {/snippet}
           </Tabs>
         {:else}
-          <SSOSignIn {oidcLabel} {oidcLogoUrl} onLegalNavigate={closeModal} class="my-0! mx-0!" />
+          <SSOSignIn
+            {oidcLabel}
+            {oidcLogoUrl}
+            {redirect}
+            onLegalNavigate={closeModal}
+            class="my-0! mx-0!"
+          />
         {/if}
       </div>
     {:else}
-      <SignInForm
-        {onSuccess}
-        onLegalNavigate={closeModal}
-        titleId="fr-modal-title-signin"
-        class="min-w-0"
-      />
+      <div class="-mt-12">
+        <SignInForm
+          {onSuccess}
+          onLegalNavigate={closeModal}
+          titleId="fr-modal-title-signin"
+          class="min-w-0"
+        />
+      </div>
     {/if}
   </Modal>
 {/if}

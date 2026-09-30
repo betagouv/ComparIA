@@ -31,6 +31,7 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 REDIS_AUTH_EMAIL_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_email_req:{{ip}}"
+REDIS_AUTH_OIDC_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_oidc_req:{{ip}}"
 REDIS_AUTH_EMAIL_REQ_EMAIL: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}auth_email_req_email:{{email}}"
 )
