@@ -12,6 +12,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -24,9 +25,11 @@ from backend.auth.oidc import (  # noqa: E402
     PendingLogin,
     _decode_jwt_payload,
     merge_userinfo_claims,
+    oidc_available,
     validate_discovery,
     validate_id_token,
 )
+from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 
 ISSUER = "https://idp.example.test"
 CLIENT_ID = "client-123"
@@ -143,6 +146,40 @@ def test_validate_discovery_rejects_a_document_for_another_issuer():
         {"issuer": "https://elsewhere.test"},
         ISSUER,
     )
+
+
+def _config(**overrides):
+    fields = dict(
+        auth_methods=["email_code", "oidc"],
+        oidc_issuer=ISSUER,
+        oidc_client_id=CLIENT_ID,
+        oidc_client_secret_encrypted=ENCRYPTED_CLIENT_SECRET,
+        oidc_scopes=["openid", "email"],
+    )
+    fields.update(overrides)
+    return SimpleNamespace(**fields)
+
+
+def test_oidc_is_available_with_the_method_enabled_and_a_readable_config():
+    assert oidc_available(_config())
+
+
+def test_oidc_is_unavailable_unless_the_method_is_enabled():
+    assert not oidc_available(_config(auth_methods=["email_code"]))
+
+
+def test_oidc_is_unavailable_with_an_incomplete_provider_config():
+    for missing in (
+        dict(oidc_issuer=None),
+        dict(oidc_client_id=None),
+        dict(oidc_client_secret_encrypted=None),
+        dict(oidc_scopes=["email"]),
+    ):
+        assert not oidc_available(_config(**missing)), missing
+
+
+def test_oidc_is_unavailable_when_the_client_secret_cannot_be_read():
+    assert not oidc_available(_config(oidc_client_secret_encrypted=b"not-a-token"))
 
 
 class FakeRedis:

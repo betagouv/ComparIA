@@ -1,10 +1,10 @@
 """
 OIDC authorization-code flow mechanics.
 
-Only this module talks to the identity provider. The router imports
-`discover_provider` and `exchange_code_for_claims` by name and patches them
-in tests the same way the email flow patches `request_login_code` /
-`send_login_code`.
+Only this module talks to the identity provider, and only through
+`_http_client`: tests replace that one factory with a client on a mock
+transport, so the real discovery and code exchange code runs against a fake
+provider.
 """
 
 import base64
@@ -19,6 +19,7 @@ import httpx
 from async_lru import alru_cache
 
 from backend.config import settings
+from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import REDIS_OIDC_STATE_PREFIX, get_redis_client
 
 logger = logging.getLogger("languia")
@@ -48,6 +49,39 @@ class PendingLogin:
     merge: bool
 
 
+def oidc_available(app_settings) -> bool:
+    """Whether the instance can offer OIDC sign-in: the method is enabled, the
+    provider config is complete and the client secret can be read.
+
+    The one rule behind the public config, the sign-in start, the callback and
+    the admin settings check. `app_settings` is anything with the settings
+    row's `auth_methods` and `oidc_*` attributes, so the admin panel can ask
+    about a config it has not saved yet.
+    """
+    if "oidc" not in app_settings.auth_methods:
+        return False
+    if not (
+        app_settings.oidc_issuer
+        and app_settings.oidc_client_id
+        and app_settings.oidc_client_secret_encrypted is not None
+        and "openid" in app_settings.oidc_scopes
+    ):
+        return False
+    try:
+        decrypt_secret(app_settings.oidc_client_secret_encrypted.decode())
+    except SecretUnreadableError:
+        # A key dropped from COMPARIA_ENCRYPTION_KEY too early: the secret has
+        # to be entered again in the admin panel.
+        return False
+    return True
+
+
+def _http_client() -> httpx.AsyncClient:
+    """The single network seam: every call to the provider goes through the
+    client built here."""
+    return httpx.AsyncClient(timeout=10.0)
+
+
 def discovery_url(issuer: str) -> str:
     """Build the `.well-known/openid-configuration` URL for an issuer.
 
@@ -74,12 +108,8 @@ def validate_discovery(document: dict, issuer: str) -> dict:
 
 @alru_cache(maxsize=4, ttl=_DISCOVERY_TTL_SECONDS)
 async def discover_provider(issuer: str) -> dict:
-    """Fetch the provider's discovery document.
-
-    This is the single network seam: tests patch this name in `auth_router`
-    so no test ever reaches a real identity provider.
-    """
-    async with httpx.AsyncClient(timeout=10.0) as client:
+    """Fetch the provider's discovery document."""
+    async with _http_client() as client:
         response = await client.get(discovery_url(issuer))
         response.raise_for_status()
         return validate_discovery(response.json(), issuer)
@@ -182,14 +212,12 @@ async def exchange_code_for_claims(
 ) -> dict:
     """Exchange the authorization code for tokens and retrieve userinfo claims.
 
-    The single network seam in the callback flow: tests patch this name in
-    `auth_router` so no test ever reaches a real identity provider. Returns the
-    userinfo claims plus the `nonce` claim read from the id_token, so the
-    router can validate it against the stored nonce. The id_token and
+    Returns the userinfo claims plus the `nonce` claim read from the id_token,
+    so the router can validate it against the stored nonce. The id_token and
     access_token are discarded as soon as this function returns: ComparIA
     keeps no provider-side session, no refresh, no persisted token.
     """
-    async with httpx.AsyncClient(timeout=10.0) as client:
+    async with _http_client() as client:
         token_response = await client.post(
             token_endpoint,
             data={
