@@ -31,9 +31,9 @@ from backend.auth.export import AccountDataExport, build_account_export
 from backend.auth.oidc import (
     OIDC_STATE_TTL_SECONDS,
     build_authorization_url,
+    callback_origin,
     consume_state,
     discover_provider,
-    callback_origin,
     exchange_code_for_claims,
     oidc_available,
     oidc_callback_url,
