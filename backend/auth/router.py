@@ -34,6 +34,7 @@ from backend.auth.oidc import (
     callback_origin,
     consume_state,
     discover_provider,
+    email_explicitly_unverified,
     exchange_code_for_claims,
     oidc_available,
     oidc_callback_url,
@@ -821,7 +822,11 @@ async def _complete_oidc_sign_in(
     # Consume the issued state up front so a provider-error redirect,
     # a missing/invalid state, or a missing code all leave nothing behind
     # in Redis — the round trip leaves no partial state on any failure path.
-    pending = consume_state(state) if state else None
+    try:
+        pending = consume_state(state) if state else None
+    except Exception:
+        logger.exception("[OIDC] could not read the pending sign-in from Redis")
+        return _login_error("server_error")
 
     # The provider redirected back with an `error` param (OAuth2 standard) —
     # the user denied consent, or the provider rejected the request. There
@@ -876,7 +881,7 @@ async def _complete_oidc_sign_in(
     except ValidationError:
         return _login_error("no_email")
 
-    if claims.get("email_verified") is False:
+    if email_explicitly_unverified(claims):
         # `email_verified` is an optional member claim of the `email` scope
         # (OIDC Core 5.4): some providers omit it entirely (ProConnect's
         # documented userinfo claims never include it), so treating "absent"
@@ -893,12 +898,16 @@ async def _complete_oidc_sign_in(
             return _login_error("domain_not_allowed")
 
     anonymous_user_hash = _anonymous_hash(request)
-    signed_in = await login_with_oidc(
-        email=email,
-        ip=get_ip(request),
-        user_agent=request.headers.get("user-agent"),
-        anonymous_user_hash=anonymous_user_hash,
-    )
+    try:
+        signed_in = await login_with_oidc(
+            email=email,
+            ip=get_ip(request),
+            user_agent=request.headers.get("user-agent"),
+            anonymous_user_hash=anonymous_user_hash,
+        )
+    except Exception:
+        logger.exception("[OIDC] could not resolve the account")
+        return _login_error("server_error")
     if not signed_in:
         return _login_error("account_unavailable")
     login, user_id = signed_in

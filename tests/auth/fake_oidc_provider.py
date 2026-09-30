@@ -10,6 +10,7 @@ and code exchange code runs; only the network is faked.
 import base64
 import contextlib
 import json
+import time
 
 import httpx
 
@@ -52,6 +53,7 @@ class FakeProvider:
             "aud": CLIENT_ID,
             "sub": "user-1",
             "nonce": "the-nonce",
+            "exp": int(time.time()) + 3600,
         }
         self.userinfo_claims: dict = {
             "sub": "user-1",

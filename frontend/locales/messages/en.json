@@ -752,6 +752,7 @@
                 "oidc_unavailable": "Sign-in through an identity provider is not enabled on this instance.",
                 "provider_error": "The identity provider rejected the sign-in request. Try again.",
                 "rate_limited": "Too many sign-in attempts from this network. Try again in an hour.",
+                "server_error": "A technical error interrupted the sign-in. Try again in a few moments.",
                 "terms_required": "Accept the terms of use before signing in."
             },
             "panelSubtitle": "You will be redirected to the identity provider configured for this instance."

@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Literal
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import func
 from sqlalchemy import update as sa_update
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from backend.config import settings
@@ -359,14 +360,23 @@ async def login_with_oidc(
     The address is matched ignoring case: the provider is the authority on
     the mailbox, and may not spell it the way it was typed into `ADMIN_EMAILS`
     or the email form. Returns None for an account an admin deactivated.
+
+    Two first sign-ins with the same address race on the unique index: the
+    loser looks the account up again once and lands on the winner's.
     """
     async with get_session() as session:
         user = await find_user_by_email(session, email)
         if not user:
             user = User(email=normalize_email(email))
             session.add(user)
-            await session.flush()
-        elif user.deleted_at is not None:
+            try:
+                await session.flush()
+            except IntegrityError:
+                await session.rollback()
+                user = await find_user_by_email(session, email)
+                if not user:
+                    raise
+        if user.deleted_at is not None:
             return None
 
         user_id = user.id

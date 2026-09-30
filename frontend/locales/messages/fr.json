@@ -752,6 +752,7 @@
                 "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
                 "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez.",
                 "rate_limited": "Trop de tentatives de connexion depuis ce réseau. Réessayez dans une heure.",
+                "server_error": "Une erreur technique a interrompu la connexion. Réessayez dans quelques instants.",
                 "terms_required": "Acceptez les conditions générales d’utilisation avant de vous connecter."
             },
             "panelSubtitle": "Vous serez redirigé vers le fournisseur d’identité configuré pour cette instance."

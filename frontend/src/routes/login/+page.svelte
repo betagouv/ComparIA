@@ -57,6 +57,7 @@
     oidc_unavailable: () => m['auth.oidc.error.oidc_unavailable'](),
     provider_error: () => m['auth.oidc.error.provider_error'](),
     rate_limited: () => m['auth.oidc.error.rate_limited'](),
+    server_error: () => m['auth.oidc.error.server_error'](),
     terms_required: () => m['auth.oidc.error.terms_required']()
   }
   const errorCode = $derived(page.url.searchParams.get('error'))
