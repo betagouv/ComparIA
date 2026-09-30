@@ -1,9 +1,9 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
-import { paraglideLocaleSplit } from './src/vite/paraglideLocaleSplit.js'
 import { sveltekit } from '@sveltejs/kit/vite'
 import { svelteTesting } from '@testing-library/svelte/vite'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vitest/config'
+import { paraglideLocaleSplit } from './src/vite/paraglideLocaleSplit.js'
 
 export default defineConfig({
   plugins: [
@@ -47,5 +47,19 @@ export default defineConfig({
         }
       }
     ]
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'svelte',
+              test: /node_modules[\\/]svelte|@sveltejs/
+            }
+          ]
+        }
+      }
+    }
   }
 })

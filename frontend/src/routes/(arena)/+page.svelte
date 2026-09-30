@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Link } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'

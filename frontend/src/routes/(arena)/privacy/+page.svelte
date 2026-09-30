@@ -1,7 +1,7 @@
 <script lang="ts">
   import LegalDocument from '$components/LegalDocument.svelte'
   import PrivacyPolicyFallback from '$components/PrivacyPolicyFallback.svelte'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
 

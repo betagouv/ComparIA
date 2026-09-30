@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button, Checkbox } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
-  import MarkdownInline from '$components/markdown/MarkdownInline.svelte'
+  import { MarkdownCode as Markdown, MarkdownInline } from '$components/markdown'
   import { getAuthContext } from '$lib/auth.svelte'
   import {
     consentCheckboxLabel,

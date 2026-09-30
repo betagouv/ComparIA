@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { ARCHS, SIZE_CLASSES, type Archs, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { ConsoSizes } from '$lib/models'

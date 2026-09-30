@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { Link } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat } from '../components'

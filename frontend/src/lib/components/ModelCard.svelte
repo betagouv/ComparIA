@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import InfoCard from '$components/InfoCard.svelte'
+  import { AILogo } from '$components/layout'
   import OpennessScore from '$components/OpennessScore.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Commons } from '$lib/models'

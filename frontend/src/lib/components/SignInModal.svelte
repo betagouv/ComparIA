@@ -1,12 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { Modal, Tabs } from '$components/dsfr'
+  import { SignInForm } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
-  import SignInForm from './SignInForm.svelte'
   import SSOSignIn from './SSOSignIn.svelte'
 
   const auth = getAuthContext()

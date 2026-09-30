@@ -1,7 +1,7 @@
 <script lang="ts">
   import Copy from '$components/Copy.svelte'
   import { Icon } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import { MarkdownCode as Markdown } from '$components/markdown'
   import Pending from '$components/Pending.svelte'
   import type {
     APIVoteAnnotate,

@@ -12,7 +12,7 @@
     Table,
     Toggle
   } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminPublishDestination, AdminPublishStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'

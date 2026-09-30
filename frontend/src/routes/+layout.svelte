@@ -20,9 +20,7 @@
   import type { LayoutProps } from './$types'
 
   if (browser) {
-    // FIXME import only needed parts?
-    // @ts-expect-error - DSFR module import
-    import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
+    import('$lib/dsfr')
   }
 
   let { children, data }: LayoutProps = $props()

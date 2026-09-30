@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import NavBar, { type NavLink } from '$components/header/NavBar.svelte'
+  import { NavBar } from '$components/layout'
+  import type { NavLink } from '$components/layout/NavBar.svelte'
   import { initComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { LayoutProps } from './$types'

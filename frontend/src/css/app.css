@@ -1,4 +1,36 @@
-@import '@gouvfr/dsfr/dist/dsfr.min.css';
+/* Partial import of DSFR */
+@import '@gouvfr/dsfr/dist/core/core.min.css';
+@import '@gouvfr/dsfr/dist/scheme/scheme.min.css';
+
+@import '@gouvfr/dsfr/dist/component/accordion/accordion.min.css';
+@import '@gouvfr/dsfr/dist/component/alert/alert.min.css';
+@import '@gouvfr/dsfr/dist/component/badge/badge.min.css';
+@import '@gouvfr/dsfr/dist/component/button/button.min.css';
+@import '@gouvfr/dsfr/dist/component/link/link.min.css';
+@import '@gouvfr/dsfr/dist/component/highlight/highlight.min.css';
+
+@import '@gouvfr/dsfr/dist/component/form/form.min.css';
+@import '@gouvfr/dsfr/dist/component/radio/radio.min.css';
+@import '@gouvfr/dsfr/dist/component/input/input.min.css';
+@import '@gouvfr/dsfr/dist/component/checkbox/checkbox.min.css';
+@import '@gouvfr/dsfr/dist/component/select/select.min.css';
+@import '@gouvfr/dsfr/dist/component/toggle/toggle.min.css';
+
+@import '@gouvfr/dsfr/dist/component/navigation/navigation.min.css';
+@import '@gouvfr/dsfr/dist/component/modal/modal.min.css';
+@import '@gouvfr/dsfr/dist/component/skiplink/skiplink.min.css';
+@import '@gouvfr/dsfr/dist/component/tooltip/tooltip.min.css';
+@import '@gouvfr/dsfr/dist/component/search/search.min.css';
+@import '@gouvfr/dsfr/dist/component/card/card.min.css';
+@import '@gouvfr/dsfr/dist/component/segmented/segmented.min.css';
+@import '@gouvfr/dsfr/dist/component/tab/tab.min.css';
+@import '@gouvfr/dsfr/dist/component/pagination/pagination.min.css';
+@import '@gouvfr/dsfr/dist/component/table/table.min.css';
+@import '@gouvfr/dsfr/dist/component/translate/translate.min.css';
+@import '@gouvfr/dsfr/dist/component/sidemenu/sidemenu.min.css';
+@import '@gouvfr/dsfr/dist/component/logo/logo.min.css';
+@import '@gouvfr/dsfr/dist/component/header/header.min.css';
+
 /* icons.css picks which DSFR icons we ship; see the note in it. */
 @import './icons.css';
 
