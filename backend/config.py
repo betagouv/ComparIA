@@ -67,6 +67,9 @@ class Settings(BaseSettings):
     # must never be locked out. The real anti-abuse limit is per-email below.
     AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR: int = 2000
     AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR: int = 5
+    # Same reasoning: each OIDC sign-in start stores a state and may reach the
+    # provider, but a whole class signing in at once must still go through.
+    AUTH_OIDC_LOGIN_PER_IP_PER_HOUR: int = 2000
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
     # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
     # above only slows one attacker down; this one closes the login code itself.
@@ -82,6 +85,11 @@ class Settings(BaseSettings):
 
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
+    # Public origin the backend itself answers on, used for the OIDC redirect_uri
+    # the provider sends the browser back to. Deployed, the ingress puts the
+    # backend under /api of the app origin, so leaving this unset is right. In
+    # dev the two run on separate ports, so point it at the backend.
+    COMPARIA_API_URL: str | None = None
 
     # Number of reverse proxies in front of the app. X-Forwarded-For is only read
     # when this is > 0, and only the entry the outermost trusted proxy appended is
@@ -103,10 +111,15 @@ class Settings(BaseSettings):
     # refuses every request outside debug.
     METRICS_TOKEN: str | None = None
 
-    @field_validator("COMPARIA_APP_URL")
+    @field_validator("COMPARIA_APP_URL", "COMPARIA_API_URL")
     @classmethod
-    def _strip_trailing_slash(cls, value: str) -> str:
-        return value.rstrip("/")
+    def _strip_trailing_slash(cls, value: str | None) -> str | None:
+        return value.rstrip("/") if value else value
+
+    @property
+    def api_origin(self) -> str:
+        """Origin the OIDC provider redirects the browser back to."""
+        return self.COMPARIA_API_URL or self.COMPARIA_APP_URL
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email

@@ -1,10 +1,9 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import Dropdown from '$components/Dropdown.svelte'
   import { Badge, Button, Icon } from '$components/dsfr'
   import InfoCard from '$components/InfoCard.svelte'
+  import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import MiniCard from './MiniCard.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
   import { buildConsumptionSummary, formatLocalizedNumber } from '$lib/consumptionSummary'
   import { buildCostComparison } from '$lib/costComparison'
@@ -13,8 +12,9 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
-  import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import { buildUsageConsumption, USAGE_PROFILES, type UsageProfileId } from '$lib/usageProfiles'
+  import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import MiniCard from './MiniCard.svelte'
 
   let {
     data,

@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Badge, Button, Icon, Modal, Pagination, Search, Select } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'

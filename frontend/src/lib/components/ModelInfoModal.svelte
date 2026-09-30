@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Link, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { ENERGY_CLASSES } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'

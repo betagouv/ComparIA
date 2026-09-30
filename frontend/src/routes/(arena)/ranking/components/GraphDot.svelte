@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
+  import { AILogo } from '$components/layout'
   import type { BotModel } from '$lib/models'
   import type { ClassValue } from 'svelte/elements'
 

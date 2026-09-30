@@ -1,8 +1,8 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import AILogo from '$components/AILogo.svelte'
   import { Link } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'

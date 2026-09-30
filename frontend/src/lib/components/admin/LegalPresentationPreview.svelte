@@ -1,8 +1,10 @@
 <script lang="ts">
   import { Button, Checkbox, Input } from '$components/dsfr'
-  import { renderInlineMarkdown } from '$components/markdown/inline'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
-  import MarkdownInline from '$components/markdown/MarkdownInline.svelte'
+  import {
+    MarkdownCode as Markdown,
+    MarkdownInline,
+    renderInlineMarkdown
+  } from '$components/markdown'
   import { legalLinks } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
 

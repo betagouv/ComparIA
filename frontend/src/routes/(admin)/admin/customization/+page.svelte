@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
@@ -241,6 +241,7 @@
             <label class="fr-label">
               <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
               <input
+                class="fr-upload"
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml,image/webp"
                 disabled={uploadingLogo}
