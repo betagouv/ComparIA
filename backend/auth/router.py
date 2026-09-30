@@ -33,9 +33,11 @@ from backend.auth.oidc import (
     build_authorization_url,
     consume_state,
     discover_provider,
+    callback_origin,
     exchange_code_for_claims,
     oidc_available,
     oidc_callback_url,
+    request_origin,
 )
 from backend.auth.services import (
     TOTP_CHALLENGE_TTL_MINUTES,
@@ -682,6 +684,22 @@ async def oidc_login(
     """
     app_settings = await get_app_settings()
     if not oidc_available(app_settings):
+        return _login_error("oidc_unavailable")
+
+    # The state cookie is only sent back to the origin that set it. If the
+    # provider is told to return somewhere else (COMPARIA_API_URL wrong or
+    # missing), every sign-in would end in invalid_state after a full round
+    # trip: say so now, and name both origins so the fix is obvious.
+    came_in_on = request_origin(request)
+    comes_back_to = callback_origin()
+    if came_in_on and came_in_on != comes_back_to:
+        logger.error(
+            "[OIDC] login started on %s but the callback URL is on %s: the state "
+            "cookie cannot come back. Set COMPARIA_API_URL to the origin the "
+            "backend is reached on.",
+            came_in_on,
+            comes_back_to,
+        )
         return _login_error("oidc_unavailable")
 
     try:

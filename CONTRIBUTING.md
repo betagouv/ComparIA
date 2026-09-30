@@ -41,6 +41,10 @@ make dev      # backend on :8008, frontend on :5173
 
 For the DA instance, copy `.env.example` and set `COMPARIA_INSTANCE_NAME=da` and `COMPARIA_DB_URI` to the DA database before sourcing.
 
+### Local SSO with Keycloak (development only)
+
+`make keycloak` starts a throwaway Keycloak in Docker (`devops/instances/keycloak/`), creates a `comparia` client and a test user, and prints the values to enter at `/admin/authentification`. `make keycloak-down` stops it. It runs in Keycloak's `start-dev` mode with default admin credentials and plain http on localhost: use it for local development only, never on a deployed instance. Set `COMPARIA_API_URL="http://localhost:8008"` in your `.env` so the callback reaches the backend directly (see `.env.example`).
+
 ---
 
 ## Running with Docker (per instance)
