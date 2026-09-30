@@ -53,7 +53,7 @@ class LoginResult:
     # No session ever opened before this one. The sign-in form puts its
     # optional questions to a new account once, and after that only asks
     # again while a required one is unanswered.
-    first: bool
+    first: bool = False
 
 
 def _hash(value: str) -> str:
