@@ -131,7 +131,6 @@
   {/if}
 
   <Button
-    variant="secondary"
     onclick={onSignIn}
     disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
     class="mt-8 block w-full! justify-center"

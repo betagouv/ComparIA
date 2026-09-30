@@ -5,32 +5,18 @@
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
-  import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
+  import { signInMethods } from '$lib/signInMethods'
   import SSOSignIn from './SSOSignIn.svelte'
 
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   const platformName = getPlatformName()
 
-  // Same derivation as the login page: one tab per enabled auth method, no
-  // tabs at all when only one is available.
-  const oidcEnabled = $derived(auth.config?.oidc_enabled ?? false)
-  const emailEnabled = $derived(auth.config?.methods?.includes('email_code') ?? true)
-  const oidcLabel = $derived(auth.config?.oidc_button_label || m['auth.oidc.buttonFallback']())
-  const oidcLogoUrl = $derived(
-    auth.config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null
-  )
+  const methods = $derived(signInMethods(auth.config))
   // Brings a visitor who signs in through the provider back to the page they
   // opened the modal from.
   const redirect = $derived(page.url.pathname + page.url.search)
-  const bothMethods = $derived(oidcEnabled && emailEnabled)
-  const tabs = $derived.by(() => {
-    const result: { id: string; label: string }[] = []
-    if (emailEnabled) result.push({ id: 'email', label: m['auth.login.tabEmail']() })
-    if (oidcEnabled) result.push({ id: 'sso', label: m['auth.login.tabSso']() })
-    return result
-  })
 
   function closeModal() {
     const el = document.getElementById('fr-modal-signin')
@@ -57,7 +43,7 @@
   >
     <!-- The published terms describe how data is used, so the modal does not
          repeat it and risk saying something different. -->
-    {#if bothMethods || !emailEnabled}
+    {#if methods.bothMethods || !methods.emailEnabled}
       <!-- Same inset as SignInForm's own wrapper, which the modal content
            relies on since it has no padding of its own. -->
       <div class="-mt-12 mx-8 mb-10 pt-10">
@@ -68,8 +54,8 @@
           {m['auth.modal.email.subtitle']({ platformName })}
         </p>
 
-        {#if bothMethods}
-          <Tabs {tabs} label={m['auth.login.tabsLabel']()}>
+        {#if methods.bothMethods}
+          <Tabs tabs={methods.tabs} label={m['auth.login.tabsLabel']()}>
             {#snippet tab(tab)}
               {#if tab.id === 'email'}
                 <SignInForm
@@ -80,8 +66,8 @@
                 />
               {:else}
                 <SSOSignIn
-                  {oidcLabel}
-                  {oidcLogoUrl}
+                  oidcLabel={methods.oidcLabel}
+                  oidcLogoUrl={methods.oidcLogoUrl}
                   {redirect}
                   onLegalNavigate={closeModal}
                   class="my-0! mx-0!"
@@ -91,8 +77,8 @@
           </Tabs>
         {:else}
           <SSOSignIn
-            {oidcLabel}
-            {oidcLogoUrl}
+            oidcLabel={methods.oidcLabel}
+            oidcLogoUrl={methods.oidcLogoUrl}
             {redirect}
             onLegalNavigate={closeModal}
             class="my-0! mx-0!"

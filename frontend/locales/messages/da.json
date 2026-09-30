@@ -734,6 +734,7 @@
                 "help": "De 6 cifre, som din app viser (Google Authenticator, Aegis, FreeOTP…).",
                 "error": "Forkert kode.",
                 "expired": "Login udløbet, bed om en ny kode pr. e-mail.",
+                "expiredSso": "Login udløbet, log ind igen med identitetsudbyderen.",
                 "emailChecked": "Din e-mailadresse er allerede bekræftet: kun koden fra din godkendelsesapp mangler."
             }
         },
