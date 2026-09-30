@@ -164,7 +164,7 @@ async def bot_response_async(
             extra={"request": request},
         )
         raise EmptyResponseError(
-            f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
+            f"No answer from API '{llm.api_model_id}' for model '{llm.id}'"
         )
 
     # Fallback: count tokens locally if API didn't provide them
