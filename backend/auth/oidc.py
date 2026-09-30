@@ -11,6 +11,7 @@ import base64
 import json
 import logging
 import secrets
+import time
 from dataclasses import asdict, dataclass
 from typing import cast
 from urllib.parse import urlencode, urlsplit
@@ -36,6 +37,10 @@ OIDC_STATE_TTL_SECONDS = 600
 _DISCOVERY_TTL_SECONDS = 600
 
 _DISCOVERY_PATH = "/.well-known/openid-configuration"
+
+# How far past its `exp` an id_token is still taken: the provider's clock and
+# ours are never exactly the same.
+_ID_TOKEN_CLOCK_SKEW_SECONDS = 60
 
 # The endpoints the sign-in sends browsers, codes and the client secret to.
 _SECURED_ENDPOINTS = ("authorization_endpoint", "token_endpoint", "userinfo_endpoint")
@@ -324,7 +329,8 @@ def validate_id_token(id_token: str, *, issuer: str, client_id: str) -> dict:
 
     The signature is not verified: the token comes straight from the token
     endpoint over TLS, which the spec accepts in place of it. `iss` and `aud`
-    still have to be ours.
+    still have to be ours, and the token must not be expired (a small clock skew
+    aside).
     """
     try:
         claims = _decode_jwt_payload(id_token)
@@ -336,7 +342,26 @@ def validate_id_token(id_token: str, *, issuer: str, client_id: str) -> dict:
     audiences = audience if isinstance(audience, list) else [audience]
     if client_id not in audiences:
         raise OIDCProviderError("id_token was not issued for this client")
+    expires_at = claims.get("exp")
+    # `exp` is required by OIDC Core; a bool is an int to Python, not a time.
+    if isinstance(expires_at, bool) or not isinstance(expires_at, int | float):
+        raise OIDCProviderError("id_token has no valid exp")
+    if expires_at + _ID_TOKEN_CLOCK_SKEW_SECONDS < time.time():
+        raise OIDCProviderError("id_token is expired")
     return claims
+
+
+def email_explicitly_unverified(claims: dict) -> bool:
+    """Whether the provider actively disclaims having verified the address.
+
+    `email_verified` is a boolean, but some providers send it as a string, and
+    `"false"` is as much a refusal as `false`. Anything that is neither reads
+    as absent, which is accepted: see the callback.
+    """
+    value = claims.get("email_verified")
+    if isinstance(value, str):
+        value = {"true": True, "false": False}.get(value.strip().lower())
+    return value is False
 
 
 def _decode_jwt_payload(token: str) -> dict:

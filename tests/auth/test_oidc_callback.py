@@ -9,6 +9,7 @@ import asyncio
 import contextlib
 import os
 import sys
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -20,8 +21,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+import pytest  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy.exc import IntegrityError, OperationalError  # noqa: E402
 
 import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
@@ -436,10 +439,12 @@ class _FakeResult:
 class FakeSession:
     """Records added objects and replays canned results for `login_with_oidc`."""
 
-    def __init__(self, results):
+    def __init__(self, results, flush_errors=()):
         self.results = list(results)
+        self.flush_errors = list(flush_errors)
         self.added = []
         self.committed = False
+        self.rolled_back = 0
 
     async def exec(self, _statement):
         return _FakeResult(self.results.pop(0) if self.results else [])
@@ -451,7 +456,12 @@ class FakeSession:
         self.added.append(value)
 
     async def flush(self):
-        pass
+        # A test queues the errors the next flushes raise, in order.
+        if self.flush_errors:
+            raise self.flush_errors.pop(0)
+
+    async def rollback(self):
+        self.rolled_back += 1
 
     async def commit(self):
         self.committed = True
@@ -754,6 +764,113 @@ def test_oidc_login_refuses_a_deactivated_account():
 
     assert signed_in is None
     assert not session.committed
+
+
+def test_callback_redirects_when_redis_fails_on_the_state():
+    def consume_state(_state):
+        raise ConnectionError("redis is down")
+
+    with routed() as client, patched(auth_router, consume_state=consume_state):
+        response = _callback(client)
+    assert _login_redirect(response) == "server_error"
+    assert not client._login_calls
+
+
+def test_callback_redirects_when_the_database_fails_resolving_the_account():
+    async def login(**_kwargs):
+        raise OperationalError("select", {}, Exception("database is down"))
+
+    with routed(login=login) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "server_error"
+
+
+def test_oidc_login_ends_on_one_account_when_a_concurrent_sign_in_created_it_first():
+    """Two first sign-ins with the same email: the loser's insert hits the
+    unique index, then finds the winner's row."""
+    winner = User(email="agent@example.com")
+    session = FakeSession(
+        results=[[], [winner]],
+        flush_errors=[
+            IntegrityError("insert", {}, Exception("uq_auth_user_email_lower"))
+        ],
+    )
+    with fake_session(session):
+        signed_in = asyncio.run(
+            auth_services.login_with_oidc(
+                email="agent@example.com",
+                ip="127.0.0.1",
+                user_agent=None,
+                anonymous_user_hash=None,
+            )
+        )
+
+    assert signed_in
+    assert signed_in[1] == winner.id
+    assert session.rolled_back == 1
+    assert session.committed
+
+
+def test_oidc_login_gives_up_after_one_retry_of_the_lookup():
+    session = FakeSession(
+        results=[[], []],
+        flush_errors=[
+            IntegrityError("insert", {}, Exception("uq_auth_user_email_lower"))
+        ],
+    )
+    with fake_session(session):
+        with pytest.raises(IntegrityError):
+            asyncio.run(
+                auth_services.login_with_oidc(
+                    email="agent@example.com",
+                    ip="127.0.0.1",
+                    user_agent=None,
+                    anonymous_user_hash=None,
+                )
+            )
+    assert not session.committed
+
+
+def test_callback_rejects_an_expired_id_token():
+    provider = _provider(id_token={"exp": int(time.time()) - 3600})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_tolerates_a_little_clock_skew_on_the_id_token():
+    provider = _provider(id_token={"exp": int(time.time()) - 10})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._login_calls
+
+
+def test_callback_rejects_an_id_token_without_an_expiry():
+    provider = _provider()
+    del provider.id_token_claims["exp"]
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_rejects_an_email_verified_claim_sent_as_the_string_false():
+    for value in ("false", "False", " FALSE "):
+        provider = _provider(userinfo={"email_verified": value})
+        with routed(provider=provider) as client:
+            response = _callback(client)
+        assert _login_redirect(response) == "email_not_verified", value
+        assert not client._login_calls
+
+
+def test_callback_accepts_an_email_verified_claim_sent_as_the_string_true():
+    provider = _provider(userinfo={"email_verified": "true"})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._login_calls
 
 
 if __name__ == "__main__":

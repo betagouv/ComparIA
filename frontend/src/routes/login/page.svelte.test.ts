@@ -90,6 +90,7 @@ describe('login page', () => {
     oidc_unavailable: 'n’est pas activée',
     provider_error: 'a refusé la demande',
     rate_limited: 'Trop de tentatives',
+    server_error: 'erreur technique',
     terms_required: 'Acceptez les conditions'
   }
 
