@@ -909,7 +909,21 @@ async def _complete_oidc_sign_in(
     )
     if not signed_in:
         return _login_error("account_unavailable")
-    token, user_id = signed_in
+    login, user_id = signed_in
+
+    if login.kind == "totp_challenge":
+        # The provider vouched for the first factor only: the login page picks
+        # up at the authenticator step, like after an admin's invite. Nothing
+        # is merged into an account the visitor has not fully signed in to.
+        query = urlencode(
+            {"step": "totp", "redirect": _safe_redirect(pending.redirect)}
+        )
+        challenged = RedirectResponse(
+            url=f"{settings.COMPARIA_APP_URL}/login?{query}",
+            status_code=status.HTTP_302_FOUND,
+        )
+        _set_login_cookie(challenged, login)
+        return challenged
 
     if pending.merge and anonymous_user_hash:
         try:
@@ -922,7 +936,7 @@ async def _complete_oidc_sign_in(
         url=f"{settings.COMPARIA_APP_URL}{_safe_redirect(pending.redirect)}",
         status_code=status.HTTP_302_FOUND,
     )
-    _set_session_cookie(redirect, token)
+    _set_login_cookie(redirect, login)
     return redirect
 
 

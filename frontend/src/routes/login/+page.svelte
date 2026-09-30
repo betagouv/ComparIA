@@ -110,18 +110,22 @@
         <Alert title={errorText} variant="error" small role="alert" class="mb-6!" />
       {/if}
 
-      {#if bothMethods}
+      {#if startAtTotp}
+        <!-- The first factor already passed, by email or through the SSO
+             provider: only the authenticator is left, whatever the methods. -->
+        <SignInForm {onSuccess} startAtTotp hideHeader class="py-0! px-0!" />
+      {:else if bothMethods}
         <Tabs {tabs} label={m['auth.login.tabsLabel']()} initialId={errorText ? 'sso' : 'email'}>
           {#snippet tab(tab)}
             {#if tab.id === 'email'}
-              <SignInForm {onSuccess} {startAtTotp} hideHeader class="py-0! px-0!" />
+              <SignInForm {onSuccess} hideHeader class="py-0! px-0!" />
             {:else}
               <SSOSignIn {oidcLabel} {oidcLogoUrl} {redirect} class="my-0! mx-0!" />
             {/if}
           {/snippet}
         </Tabs>
       {:else if emailEnabled}
-        <SignInForm {onSuccess} {startAtTotp} hideHeader class="py-0! px-0!" />
+        <SignInForm {onSuccess} hideHeader class="py-0! px-0!" />
       {:else if oidcEnabled}
         <SSOSignIn {oidcLabel} {oidcLogoUrl} {redirect} class="my-0! mx-0!" />
       {/if}

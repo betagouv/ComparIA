@@ -340,13 +340,15 @@ async def oidc_login(
     ip: str,
     user_agent: str | None,
     anonymous_user_hash: str | None = None,
-) -> tuple[str, uuid.UUID] | None:
+) -> tuple[LoginResult, uuid.UUID] | None:
     """Resolve or create the `User` for an OIDC-authenticated email and mint a
-    session, exactly like `verify_login_code` and `accept_invite` do for their
-    flows. An email that already has an account — whether created by email
-    code, invite, or admin seeding — is reused rather than duplicated, so
-    an admin pre-seeded via `ADMIN_EMAILS` lands on their existing admin
-    account on first OIDC login with no manual step.
+    session, or a TOTP challenge when the account has an authenticator,
+    exactly like `verify_login_code` and `accept_invite` do for their flows:
+    the provider only stands in for the first factor. An email that already
+    has an account — whether created by email code, invite, or admin
+    seeding — is reused rather than duplicated, so an admin pre-seeded via
+    `ADMIN_EMAILS` lands on their existing admin account on first OIDC login
+    with no manual step.
 
     The address is matched ignoring case: the provider is the authority on
     the mailbox, and may not spell it the way it was typed into `ADMIN_EMAILS`
@@ -365,12 +367,12 @@ async def oidc_login(
             return None
 
         user_id = user.id
-        token = await _create_session(
+        login = await _open_session_or_challenge(
             session, user, ip, user_agent, anonymous_user_hash
         )
         await session.commit()
 
-    return token, user_id
+    return login, user_id
 
 
 async def get_user_from_token(token: str) -> User | None:

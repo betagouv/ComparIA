@@ -27,7 +27,11 @@ import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.oidc import PendingLogin  # noqa: E402
-from utils.database.models.auth import User  # noqa: E402
+from utils.database.models.auth import (  # noqa: E402
+    AuthSession,
+    TotpChallenge,
+    User,
+)
 
 
 @contextlib.contextmanager
@@ -132,7 +136,7 @@ def routed(
 
         async def oidc_login_service(**kwargs):
             login_calls.append(kwargs)
-            return "session-token", USER_ID
+            return auth_services.LoginResult("session", "session-token"), USER_ID
 
     else:
         oidc_login_service = oidc_login
@@ -687,6 +691,50 @@ def test_callback_passes_the_configured_issuer_to_the_code_exchange():
         _callback(client)
     assert seen[0]["issuer"] == "https://idp.example.test"
     assert seen[0]["client_id"] == "client-123"
+
+
+def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
+    """The provider stands in for the email code, not for the authenticator:
+    an enrolled admin gets a challenge, never a session, like in the email
+    flow."""
+    admin = User(email="boss@example.com", role="admin")
+    confirmed_totp = uuid.uuid4()
+    session = FakeSession(results=[[admin], [confirmed_totp]])
+    with fake_session(session):
+        login, user_id = asyncio.run(
+            auth_services.oidc_login(
+                email="boss@example.com",
+                ip="127.0.0.1",
+                user_agent=None,
+                anonymous_user_hash=None,
+            )
+        )
+
+    assert login.kind == "totp_challenge"
+    assert user_id == admin.id
+    assert any(isinstance(obj, TotpChallenge) for obj in session.added)
+    assert not any(isinstance(obj, AuthSession) for obj in session.added)
+
+
+def test_callback_hands_an_enrolled_admin_to_the_authenticator_step():
+    async def oidc_login(**_kwargs):
+        return auth_services.LoginResult("totp_challenge", "challenge-token"), USER_ID
+
+    pending = PendingLogin(nonce="the-nonce", redirect="/admin", merge=True)
+    with routed(pending=pending, oidc_login=oidc_login) as client:
+        response = _callback(client)
+
+    assert response.status_code == 302
+    assert response.headers["location"] == (
+        f"{auth_router.settings.COMPARIA_APP_URL}/login?step=totp&redirect=%2Fadmin"
+    )
+    cookies = response.headers.get_list("set-cookie")
+    assert any(c.startswith("auth_totp_challenge=challenge-token") for c in cookies)
+    assert not any(c.startswith("auth_session=challenge-token") for c in cookies)
+    # A session left open for another account does not survive either.
+    assert any(c.startswith('auth_session=""') for c in cookies)
+    # Nothing lands in an account the visitor has not fully signed in to.
+    assert client._merge_calls == []
 
 
 def test_oidc_login_refuses_a_deactivated_account():
