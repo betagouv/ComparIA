@@ -86,6 +86,15 @@ An optional domain allowlist restricts who can ask for a login code, which is ho
 
 `/admin/utilisateurs` is where you search accounts, change roles, invite people by email, reset someone's two-factor authentication and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
+## Audience measurement
+
+Matomo only stays exempt from consent while its data is kept apart from the arena's. Comparisons no longer keep the Matomo visitor id, but older rows may still hold one. Count them, then clear them:
+
+```bash
+make db-clear-visitor-ids            # counts, changes nothing
+make db-clear-visitor-ids COMMIT=1   # clears them
+```
+
 ## Publishing
 
 `/admin/publication` sets where the open datasets go, and how often.

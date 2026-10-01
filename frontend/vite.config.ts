@@ -13,7 +13,10 @@ export default defineConfig({
       project: './comparia.inlang',
       outdir: './src/lib/i18n',
       outputStructure: 'locale-modules',
-      strategy: ['cookie', 'custom-url', 'baseLocale']
+      strategy: ['cookie', 'custom-url', 'baseLocale'],
+      // Paraglide keeps the cookie 400 days by default, past the 13 months the
+      // CNIL allows for a cookie set without consent.
+      cookieMaxAge: 60 * 60 * 24 * 390
     }),
     paraglideLocaleSplit({ project: './comparia.inlang', outdir: './src/lib/i18n' })
   ],

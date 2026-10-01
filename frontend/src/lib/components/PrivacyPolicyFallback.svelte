@@ -1,7 +1,10 @@
 <script lang="ts">
+  import MatomoOptOut from '$components/MatomoOptOut.svelte'
   import { TERMS_PATH } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const { matomoUrl }: { matomoUrl: string | null } = $props()
 </script>
 
 <!-- Served until a privacy policy is published from the backoffice. -->
@@ -12,7 +15,9 @@
   <p>{m['general.privacy.cookiesDesc']()}</p>
   <p>{m['general.privacy.cookiesDescMore']()}</p>
 
-  <div id="matomo-opt-out"></div>
+  {#if matomoUrl}
+    <MatomoOptOut url={matomoUrl} />
+  {/if}
 
   <h2 id="cookie-banner">{m['general.privacy.cookiesBannerTitle']()}</h2>
   <p>{m['general.privacy.cookiesBannerDesc']()}</p>
@@ -102,8 +107,4 @@
       )}
     </li>
   </ul>
-
-  <script
-    src="https://stats.beta.gouv.fr/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=auto&showIntro=1"
-  ></script>
 </div>
