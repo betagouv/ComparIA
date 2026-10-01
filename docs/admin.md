@@ -94,6 +94,20 @@ An account is first warned by email, once, 30 days before the deadline or as soo
 
 The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: the CronJob reads the same `config.smtp.*` and `config.appUrl` values as the backend, and without them no warning goes out and nothing is erased.
 
+### Retention
+
+`comparia-cli db purge-retention` (or `make db-purge-retention`) applies the other retention periods of the privacy policy. Each rule runs on its own, in batches of 5,000 rows, so a run that stops halfway is picked up by the next one. Defaults, all overridable on the command line:
+
+- comparison IP addresses are replaced by `erased` after 3 months (`--ip-months`). Nothing in the app reads them back.
+- comparisons lose their account, Matomo visitor id and anonymous session hash after 24 months (`--comparison-months`). The conversation text and votes stay, which is what the datasets are built from.
+- session rows, login codes and 2FA challenges are deleted 12 months after they expired or were revoked (`--session-months`). An account that still exists keeps its latest session row, with the IP and browser blanked: `purge-inactive` reads it to tell a dormant account, which gets a warning, from a login code nobody used, which does not. A consent proof that names a deleted session keeps everything but that link.
+- moderation results are deleted after 12 months (`--prompt-check-months`).
+- consent proofs are deleted 5 years after the account was deleted, or after the anonymous session ended for a visitor who never signed in (`--consent-years`).
+
+Accounts themselves are left to `purge-inactive`. Like it, the command is a dry run until you pass `--apply`, and only counts the rows each rule would change. The dry run counts each rule against today's data, so the anonymous consents freed by deleting an account's proof in the same run only show up once applied.
+
+The Helm chart runs it daily with `cronjobs.purgeRetention`, off by default. Change the periods there and in the published privacy policy together: the policy is what people were told.
+
 ## Publishing
 
 `/admin/publication` sets where the open datasets go, and how often.
