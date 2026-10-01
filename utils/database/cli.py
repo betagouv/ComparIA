@@ -9,6 +9,7 @@ from .actions import (
     archive_corrupted,
     archive_spam,
     backfill_pii_spam,
+    clear_visitor_ids,
     llm_analyze,
     migrate_comparisons,
     migrate_llm_messages,
@@ -47,6 +48,7 @@ cli_db.command(llm_analyze)
 cli_db.command(backfill_pii_spam)
 cli_db.command(seed_admins, name="seed-admins")
 cli_db.command(reset_totp, name="reset-totp")
+cli_db.command(clear_visitor_ids, name="clear-visitor-ids")
 cli_db.command(cli_archive)
 cli_db.command(cli_migrate)
 
