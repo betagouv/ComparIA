@@ -147,6 +147,8 @@ describe('invite consent', () => {
         : base(path, options)
     )
     const { container } = render(InvitePage)
+    await waitFor(() => expect(container.querySelector('#invite-consent')).not.toBeNull())
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#invite-consent')!)
     await waitFor(() => expect(acceptButton(container).disabled).toBe(false))
 
     await fireEvent.click(acceptButton(container))
