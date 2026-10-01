@@ -11,8 +11,8 @@ The chart deploys:
 - a `Secret` (chart-rendered from values, or a pre-existing one you point it
   at) carrying API keys and DB/Redis connection info
 - a pre-install/pre-upgrade Job that runs the app's Alembic migrations
-- three CronJobs (ranking computation, dataset publication, LLM-based
-  analysis), the last one optional
+- five CronJobs (ranking computation, dataset publication, LLM-based
+  analysis, inactive account purge, retention purge), the last three optional
 - an optional Ingress
 
 It does not include a Postgres or Redis instance, an S3 log-archival sidecar,
@@ -138,7 +138,7 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the three is independently toggleable — there is no combined switch.
+Each of the five is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
@@ -146,6 +146,16 @@ Each of the three is independently toggleable — there is no combined switch.
 | `cronjobs.ranking.schedule`          | `"17 * * * *"` | |
 | `cronjobs.analyze.enabled`           | `false` | LLM-based moderation/data-quality pass, consumes `OPENROUTER_API_KEY`. Off by default so enabling it — and paying for the LLM calls — is deliberate. |
 | `cronjobs.analyze.schedule`          | `"35 3 * * *"` | |
+| `cronjobs.purgeInactive.enabled`     | `false` | Weekly warn-then-erase of accounts not signed in for `months`. Off by default: state the retention period in the privacy policy first. Needs SMTP. |
+| `cronjobs.purgeInactive.schedule`    | `"20 4 * * 1"` | |
+| `cronjobs.purgeInactive.months`      | `24`    | Months without a sign-in before an account is warned, then erased 30 days later. |
+| `cronjobs.purgeRetention.enabled`    | `false` | Daily blanking or deletion of data past the periods below. Off by default: state the same periods in the privacy policy first. |
+| `cronjobs.purgeRetention.schedule`   | `"50 4 * * *"` | |
+| `cronjobs.purgeRetention.ipMonths`   | `3`     | Months before a comparison's IP address is blanked. |
+| `cronjobs.purgeRetention.comparisonMonths` | `24` | Months before a comparison is cut off from its account, Matomo visitor and anonymous session. The text stays. |
+| `cronjobs.purgeRetention.sessionMonths` | `12` | Months after a session, login code or 2FA challenge stopped working before it is deleted. |
+| `cronjobs.purgeRetention.promptCheckMonths` | `12` | Months before a moderation result is deleted. |
+| `cronjobs.purgeRetention.consentYears` | `5`  | Years after an account's deletion, or an anonymous session's end, before its consent proof is deleted. |
 | `cronjobs.publish.enabled`           | `true`  | Dataset publication, see below. Harmless on an instance with no publish destination. |
 | `cronjobs.publish.schedule`          | `"*/10 * * * *"` | How often the job looks for a destination to publish. Not the publication frequency. |
 | `cronjobs.publish.activeDeadlineSeconds` | `21600` | A run still going after this is killed. |

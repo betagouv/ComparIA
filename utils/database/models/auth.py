@@ -25,6 +25,9 @@ class User(UserBase, table=True):
     created_at: AutoDatetime
     last_seen_at: AutoDatetime
     deleted_at: OptionalDatetime = None
+    # Set once the inactivity warning has gone out, cleared at the next sign-in,
+    # so a purge run never mails the same person twice.
+    inactivity_warned_at: OptionalDatetime = None
 
     login_codes: list["LoginCode"] = Relationship(back_populates="user")
     auth_sessions: list["AuthSession"] = Relationship(back_populates="user")
