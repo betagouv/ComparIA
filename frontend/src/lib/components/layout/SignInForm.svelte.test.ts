@@ -4,7 +4,7 @@ import type { MySurveyAnswer, PublicSurveyQuestion } from '$lib/generated/backen
 import { expectAccessible } from '$lib/testing/a11y'
 import { getTestLocale } from '$lib/testing/reactive-locale.svelte'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import SignInForm from './SignInForm.svelte'
 
 const mocks = vi.hoisted(() => ({
@@ -108,6 +108,10 @@ describe('SignInForm consent', () => {
       configurable: true,
       value: () => ({ modal: { conceal: mocks.conceal } })
     })
+  })
+
+  afterAll(() => {
+    mocks.questions = []
   })
 
   it('does not request a code until the terms are accepted', async () => {
