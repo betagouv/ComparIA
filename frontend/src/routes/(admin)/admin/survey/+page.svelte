@@ -1,6 +1,5 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { getAuthContext } from '$lib/auth.svelte'
   import {
     Badge,
     Button,
@@ -13,7 +12,8 @@
     Toggle,
     Tooltip
   } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type {
     AdminSurveyQuestion,
@@ -21,12 +21,12 @@
     SurveyQuestionCreate,
     SurveyQuestionUpdate
   } from '$lib/generated/admin'
-  import SurveyAnswersChart from './SurveyAnswersChart.svelte'
   import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import type { PageData } from './$types'
+  import SurveyAnswersChart from './SurveyAnswersChart.svelte'
 
   let { data }: { data: PageData } = $props()
 
