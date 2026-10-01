@@ -3,6 +3,7 @@ templates:
   - cronjob-ranking.yaml
   - cronjob-analyze.yaml
   - cronjob-purge-inactive.yaml
+  - cronjob-purge-retention.yaml
   - cronjob-publish.yaml
 values:
   - ../ci/values-lint.yaml
@@ -90,12 +91,68 @@ tests:
             name: AUTH_SESSION_LENGTH_DAYS
             value: "30"
 
+  - it: omits the purge-retention CronJob by default
+    template: cronjob-purge-retention.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the purge-retention CronJob with the policy periods
+    template: cronjob-purge-retention.yaml
+    set:
+      cronjobs.purgeRetention.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: CronJob
+      - equal:
+          path: spec.schedule
+          value: "50 4 * * *"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value:
+            - ./comparia-cli
+            - db
+            - purge-retention
+            - --ip-months
+            - "3"
+            - --comparison-months
+            - "24"
+            - --session-months
+            - "12"
+            - --prompt-check-months
+            - "12"
+            - --consent-years
+            - "5"
+            - --apply
+
+  - it: passes overridden periods to the purge-retention CronJob
+    template: cronjob-purge-retention.yaml
+    set:
+      cronjobs.purgeRetention.enabled: true
+      cronjobs.purgeRetention.ipMonths: 1
+      cronjobs.purgeRetention.consentYears: 6
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[4]
+          value: "1"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[12]
+          value: "6"
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_INSTANCE_NAME
+            value: fr
+
   - it: toggles each cronjob independently of the others
     template: cronjob-ranking.yaml
     set:
       cronjobs.ranking.enabled: true
       cronjobs.analyze.enabled: true
       cronjobs.purgeInactive.enabled: true
+      cronjobs.purgeRetention.enabled: true
     asserts:
       - hasDocuments:
           count: 1
