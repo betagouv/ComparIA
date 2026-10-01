@@ -304,11 +304,13 @@ describe('SignInForm authenticator step', () => {
   }
 
   async function reachTheAuthenticatorStep(container: HTMLElement) {
+    await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())
+    await fireEvent.click(container.querySelector<HTMLInputElement>('#login-consent')!)
     const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
-    await waitFor(() => expect(submit.disabled).toBe(false))
     await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
       target: { value: 'admin@example.test' }
     })
+    await waitFor(() => expect(submit.disabled).toBe(false))
     await fireEvent.click(submit)
     const codeInput = await waitFor(() => container.querySelector<HTMLInputElement>('#login-code')!)
     await fireEvent.input(codeInput, { target: { value: '123456' } })
