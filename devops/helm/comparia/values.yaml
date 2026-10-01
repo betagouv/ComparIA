@@ -187,6 +187,18 @@ cronjobs:
     enabled: false
     schedule: "20 4 * * 1"
     months: 12
+  ## -- Blanks or deletes what is past the retention periods below: comparison IPs, the
+  ## identifiers on old comparisons, session traces, moderation results and old consent
+  ## proofs. Off by default, like the account purge: turn it on once the privacy policy
+  ## states the same periods, after a dry run of `comparia-cli db purge-retention`.
+  purgeRetention:
+    enabled: false
+    schedule: "50 4 * * *"
+    ipMonths: 3
+    comparisonMonths: 24
+    sessionMonths: 12
+    promptCheckMonths: 12
+    consentYears: 5
 
 ingress:
   enabled: false
