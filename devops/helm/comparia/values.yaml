@@ -186,7 +186,7 @@ cronjobs:
   purgeInactive:
     enabled: false
     schedule: "20 4 * * 1"
-    months: 12
+    months: 24
   ## -- Blanks or deletes what is past the retention periods below: comparison IPs, the
   ## identifiers on old comparisons, session traces, moderation results and old consent
   ## proofs. Off by default, like the account purge: turn it on once the privacy policy

@@ -151,7 +151,7 @@ Each of the five is independently toggleable — there is no combined switch.
 | `cronjobs.publish.activeDeadlineSeconds` | `21600` | A run still going after this is killed. |
 | `cronjobs.purgeInactive.enabled`     | `false` | Weekly warn-then-erase of accounts not signed in for `months`. Off by default: state the retention period in the privacy policy first. Needs SMTP. |
 | `cronjobs.purgeInactive.schedule`    | `"20 4 * * 1"` | |
-| `cronjobs.purgeInactive.months`      | `12`    | Months without a sign-in before an account is warned, then erased 30 days later. |
+| `cronjobs.purgeInactive.months`      | `24`    | Months without a sign-in before an account is warned, then erased 30 days later. |
 | `cronjobs.purgeRetention.enabled`    | `false` | Daily blanking or deletion of data past the periods below. Off by default: state the same periods in the privacy policy first. |
 | `cronjobs.purgeRetention.schedule`   | `"50 4 * * *"` | |
 | `cronjobs.purgeRetention.ipMonths`   | `3`     | Months before a comparison's IP address is blanked. |

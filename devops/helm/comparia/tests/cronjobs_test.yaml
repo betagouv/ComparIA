@@ -49,6 +49,15 @@ tests:
       - hasDocuments:
           count: 0
 
+  - it: warns then erases after the policy's two years by default
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value: ["./comparia-cli", "db", "purge-inactive", "--months", "24", "--apply"]
+
   - it: renders the purge-inactive CronJob with the configured retention
     template: cronjob-purge-inactive.yaml
     set:

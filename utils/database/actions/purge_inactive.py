@@ -12,7 +12,7 @@ from backend.config import settings
 logger = logging.getLogger("comparia.db")
 
 
-async def purge_inactive(months: int = 12, apply: bool = False) -> None:
+async def purge_inactive(months: int = 24, apply: bool = False) -> None:
     """Warn then erase accounts not signed in for N months.
 
     Dry run by default: lists who would get the warning, who would be erased
