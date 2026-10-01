@@ -997,6 +997,7 @@
             "dataUseDesc": "In any case, the publisher commits to implementing means to ensure the anonymization of dialogue data before making it publicly available.",
             "dataUseTitle": "What processing is done on the conversation data?",
             "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
+            "optOutTitle": "Opting out of audience measurement",
             "privacyData": "The data collected on the site are as follows:",
             "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
             "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
