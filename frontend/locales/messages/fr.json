@@ -936,6 +936,7 @@
             "dataUseDesc": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurer de l’anonymisation des données de dialogue avant leur mise à disposition publique.",
             "dataUseTitle": "Quels sont les traitements réalisés sur les données de conversation ?",
             "desc": "Le service est édité par le service du numérique du ministère de la Culture.",
+            "optOutTitle": "Vous opposer à la mesure d’audience",
             "privacyData": "Les données collectées sur le site sont les suivantes :",
             "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
             "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",

@@ -935,6 +935,7 @@
             "dataUseDesc": "Under alle omstændigheder forpligter udgiveren sig til at implementere foranstaltninger, der sikrer anonymiseringen af dialogdata, inden disse gøres offentligt tilgængelige.",
             "dataUseTitle": "Hvilken behandling foretages der af samtaledataene?",
             "desc": "Tjenesten udgives af det franske kulturministeriums digitale afdeling.",
+            "optOutTitle": "Fravælg måling af besøg",
             "privacyData": "De data, der indsamles på hjemmesiden, er følgende:",
             "privacyDataArena": "Data relateret til brugeres samtaler med modellerne: spørgsmål stillet af brugere, modellernes svar og brugerpræferencer udtrykt mellem de to modeller",
             "privacyDataForm": "Data relateret til spørgeskemaet \"Hjælp os med at forbedre compar:IA\".",
