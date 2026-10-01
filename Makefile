@@ -75,6 +75,10 @@ db-reset-totp: ## Forget an admin's authenticator app and sign them out (usage: 
 	@if [ -z "$(EMAIL)" ]; then echo "Error: EMAIL is not set"; exit 1; fi
 	./comparia-cli db reset-totp "$(EMAIL)"
 
+db-clear-visitor-ids: ## Count the comparisons still holding a Matomo visitor id, or clear them with COMMIT=1 (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db clear-visitor-ids $(if $(COMMIT),--commit)
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
