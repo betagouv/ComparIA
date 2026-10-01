@@ -17,7 +17,11 @@ const mocks = vi.hoisted(() => ({
   answers: [] as MySurveyAnswer[]
 }))
 
-vi.mock('$app/navigation', () => ({ replaceState: mocks.replaceState }))
+vi.mock('$app/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$app/navigation')>()),
+  invalidate: () => Promise.resolve(),
+  replaceState: mocks.replaceState
+}))
 
 vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
 
@@ -441,11 +445,6 @@ describe('SignInForm authenticator step', () => {
     expect(mocks.replaceState).not.toHaveBeenCalled()
   })
 })
-
-vi.mock('$app/navigation', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('$app/navigation')>()),
-  invalidate: () => Promise.resolve()
-}))
 
 describe('SignInForm after the code', () => {
   const question: PublicSurveyQuestion = {
