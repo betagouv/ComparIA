@@ -18,7 +18,13 @@ vi.mock('$lib/auth.svelte', () => ({
   getAuthContext: () => mocks.auth,
   logout: vi.fn()
 }))
-vi.mock('$app/navigation', () => ({ goto: mocks.goto }))
+vi.mock('$app/navigation', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('$app/navigation')>()
+  return {
+    ...actual,
+    goto: mocks.goto
+  }
+})
 // Only the query string is driven by the tests; the rest of `page` stays real.
 vi.mock('$app/state', async (importOriginal) => {
   const original = await importOriginal<typeof import('$app/state')>()
