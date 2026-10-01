@@ -4,9 +4,10 @@ import secrets
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from sqlalchemy import delete as sa_delete
+from sqlalchemy import func
 from sqlalchemy import update as sa_update
 from sqlmodel import select
 
@@ -19,7 +20,9 @@ from utils.database.models.auth import (
     InviteToken,
     LegalDocument,
     LoginCode,
+    TotpChallenge,
     User,
+    UserTotp,
 )
 from utils.database.models.comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -35,6 +38,17 @@ logger = logging.getLogger("languia")
 
 _LOGIN_CODE_TTL_MINUTES = 10
 _INVITE_TOKEN_TTL_HOURS = 24
+# Also how long the browser keeps the challenge cookie.
+TOTP_CHALLENGE_TTL_MINUTES = 10
+
+
+@dataclass
+class LoginResult:
+    """What a successful first factor hands back: a session, or a challenge
+    token when the account still has to present its authenticator code."""
+
+    kind: Literal["session", "totp_challenge"]
+    token: str
 
 
 def _hash(value: str) -> str:
@@ -102,6 +116,42 @@ async def _create_session(
     return token
 
 
+async def _has_confirmed_totp(session: "AsyncSession", user_id: uuid.UUID) -> bool:
+    result = await session.exec(
+        select(UserTotp.id).where(
+            UserTotp.user_id == user_id, UserTotp.confirmed_at.is_not(None)
+        )
+    )
+    return result.first() is not None
+
+
+async def _open_session_or_challenge(
+    session: "AsyncSession",
+    user: User,
+    ip: str,
+    user_agent: str | None,
+    anonymous_user_hash: str | None = None,
+) -> LoginResult:
+    """A user with a confirmed authenticator gets no session yet, only a
+    short-lived challenge that `verify_totp_challenge` turns into one.
+    Does not commit; caller owns the transaction."""
+    if not await _has_confirmed_totp(session, user.id):
+        token = await _create_session(
+            session, user, ip, user_agent, anonymous_user_hash
+        )
+        return LoginResult(kind="session", token=token)
+
+    token = secrets.token_urlsafe(32)
+    session.add(
+        TotpChallenge(
+            user_id=user.id,
+            token_hash=_hash(token),
+            expires_at=datetime.now() + timedelta(minutes=TOTP_CHALLENGE_TTL_MINUTES),
+        )
+    )
+    return LoginResult(kind="totp_challenge", token=token)
+
+
 async def _associate_anonymous_acceptance(
     session: "AsyncSession",
     user: User,
@@ -152,7 +202,7 @@ async def verify_login_code(
     ip: str,
     user_agent: str | None,
     anonymous_user_hash: str | None = None,
-) -> str | None:
+) -> LoginResult | None:
     async with get_session() as session:
         result = await session.exec(select(User).where(User.email == email))
         user = result.first()
@@ -173,13 +223,13 @@ async def verify_login_code(
 
         login_code.used_at = datetime.now()
 
-        token = await _create_session(
+        login = await _open_session_or_challenge(
             session, user, ip, user_agent, anonymous_user_hash
         )
 
         await session.commit()
 
-    return token
+    return login
 
 
 async def create_invite(email: str, invited_by: uuid.UUID) -> str:
@@ -262,7 +312,7 @@ async def accept_invite(
     ip: str,
     user_agent: str | None,
     anonymous_user_hash: str | None = None,
-) -> str | None:
+) -> LoginResult | None:
     async with get_session() as session:
         result = await session.exec(
             select(InviteToken).where(
@@ -281,13 +331,53 @@ async def accept_invite(
 
         invite.used_at = datetime.now()
 
-        session_token = await _create_session(
+        login = await _open_session_or_challenge(
             session, user, ip, user_agent, anonymous_user_hash
         )
 
         await session.commit()
 
-    return session_token
+    return login
+
+
+async def oidc_login(
+    email: str,
+    ip: str,
+    user_agent: str | None,
+    anonymous_user_hash: str | None = None,
+) -> tuple[LoginResult, uuid.UUID] | None:
+    """Resolve or create the `User` for an OIDC-authenticated email and mint a
+    session, or a TOTP challenge when the account has an authenticator,
+    exactly like `verify_login_code` and `accept_invite` do for their flows:
+    the provider only stands in for the first factor. An email that already
+    has an account — whether created by email code, invite, or admin
+    seeding — is reused rather than duplicated, so an admin pre-seeded via
+    `ADMIN_EMAILS` lands on their existing admin account on first OIDC login
+    with no manual step.
+
+    The address is matched ignoring case: the provider is the authority on
+    the mailbox, and may not spell it the way it was typed into `ADMIN_EMAILS`
+    or the email form. Returns None for an account an admin deactivated.
+    """
+    async with get_session() as session:
+        result = await session.exec(
+            select(User).where(func.lower(User.email) == email.lower())
+        )
+        user = result.first()
+        if not user:
+            user = User(email=email)
+            session.add(user)
+            await session.flush()
+        elif user.deleted_at is not None:
+            return None
+
+        user_id = user.id
+        login = await _open_session_or_challenge(
+            session, user, ip, user_agent, anonymous_user_hash
+        )
+        await session.commit()
+
+    return login, user_id
 
 
 async def get_user_from_token(token: str) -> User | None:
@@ -322,6 +412,22 @@ async def revoke_current_session(token: str) -> None:
             await session.commit()
 
 
+async def revoke_totp_challenge(token: str) -> None:
+    """Spend a half-finished sign-in the visitor walked away from. Marked
+    used rather than deleted: its wrong codes still count towards the
+    account's hourly cap."""
+    async with get_session() as session:
+        await session.execute(
+            sa_update(TotpChallenge)
+            .where(
+                TotpChallenge.token_hash == _hash(token),
+                TotpChallenge.used_at.is_(None),
+            )
+            .values(used_at=datetime.now())
+        )
+        await session.commit()
+
+
 async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:
     async with get_session() as session:
         await session.execute(
@@ -333,6 +439,51 @@ async def revoke_all_user_sessions(user_id: uuid.UUID) -> None:
             .values(revoked_at=datetime.now())
         )
         await session.commit()
+
+
+async def _revoke_other_user_sessions(
+    session: "AsyncSession", user_id: uuid.UUID, keep_token: str
+) -> None:
+    """Does not commit; caller owns the transaction."""
+    await session.execute(
+        sa_update(AuthSession)
+        .where(
+            AuthSession.user_id == user_id,
+            AuthSession.token_hash != _hash(keep_token),
+            AuthSession.revoked_at.is_(None),
+        )
+        .values(revoked_at=datetime.now())
+    )
+
+
+async def revoke_user_access(session: "AsyncSession", user_id: uuid.UUID) -> None:
+    """Close every way into the account: live sessions, unused email codes
+    and unused invite links. For an account being deleted or reset, so that
+    a later revival does not bring an old token back to life. Does not commit."""
+    now = datetime.now()
+    await session.execute(
+        sa_update(AuthSession)
+        .where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
+        .values(revoked_at=now)
+    )
+    await session.execute(
+        sa_update(LoginCode)
+        .where(LoginCode.user_id == user_id, LoginCode.used_at.is_(None))
+        .values(used_at=now)
+    )
+    await session.execute(
+        sa_delete(InviteToken).where(
+            InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+        )
+    )
+
+
+async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:
+    """Forget the authenticator and any sign-in waiting on it. Does not commit."""
+    await session.execute(
+        sa_delete(TotpChallenge).where(TotpChallenge.user_id == user_id)
+    )
+    await session.execute(sa_delete(UserTotp).where(UserTotp.user_id == user_id))
 
 
 async def record_user_consent(
@@ -509,6 +660,7 @@ async def erase_user_account(user_id: uuid.UUID) -> None:
         await session.execute(
             sa_delete(InviteToken).where(InviteToken.user_id == user_id)
         )
+        await drop_user_totp(session, user_id)
 
         # The row itself stays: the consent logs point at it, and it is what
         # stops a new sign-in from reviving the erased account.

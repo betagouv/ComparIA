@@ -81,7 +81,9 @@
     ]}
   >
     <img
-      src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+      src={auth.config?.has_custom_logo
+        ? api.getUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
+        : '/orgs/comparia.png'}
       aria-hidden="true"
       alt=""
       class="h-[35px]"
@@ -98,35 +100,36 @@
 
 {#snippet account()}
   {@const { icon: connectionIcon, text: connectionText, ...connectionProps } = connectionBtnProps}
-  <div class="gap-1 pb-3 flex flex-col">
-    {#if auth.user}
-      <p
-        class={[
-          'text-sm mb-0! text-grey px-4 min-w-0 max-w-full [overflow-wrap:anywhere]',
-          { 'lg:hidden': !expanded }
-        ]}
-      >
-        {auth.user.email}
-      </p>
-    {/if}
-
+  <div class="py-2 flex flex-col">
     {@render renderLink({
       href: '/settings',
       label: m['seo.titles.settings'](),
       icon: 'i-ri-settings-4-line',
-      class: 'text-sm! text-black! fr-sidemenu__link font-normal! py-2! before:content-none!'
+      class: 'text-sm! text-black! fr-sidemenu__link font-normal! before:content-none!'
     })}
 
     <button
       type="button"
       {...connectionProps}
       class={[
-        'text-sm! text-black! fr-sidemenu__link font-normal! py-2! gap-2 flex w-full! items-center before:content-none!',
+        'text-sm! text-black! fr-sidemenu__link font-normal! py-2! gap-2 flex w-full! before:content-none!',
         { 'lg:justify-center': !expanded }
       ]}
     >
-      <Icon icon={connectionIcon} block size={expanded ? 'sm' : 'md'} />
-      <span class={{ 'lg:sr-only': !expanded }}>{connectionText}</span>
+      <Icon
+        aria-label={auth.user ? connectionText : undefined}
+        icon={connectionIcon}
+        block
+        size={expanded ? 'sm' : 'md'}
+      />
+      <span
+        class={{
+          'lg:sr-only': !expanded,
+          'text-grey [overflow-wrap:anywhere]': !!auth.user
+        }}
+      >
+        {auth.user ? auth.user.email : connectionText}
+      </span>
     </button>
   </div>
 {/snippet}
@@ -157,7 +160,7 @@
     <Button
       variant="tertiary-no-outline"
       size="sm"
-      class="px-1! lg:block! hidden!"
+      class="px-2! lg:block! hidden!"
       aria-label={m[expanded ? 'actions.reduceMenu' : 'actions.expandMenu']()}
       aria-expanded={expanded}
       onclick={() => (expanded = !expanded)}
@@ -185,7 +188,7 @@
   </div>
 
   <div class="lg:flex min-h-0 hidden flex-auto flex-col">
-    <nav class="py-4" aria-label={m['a11y.mainNav']()}>
+    <nav class="py-4 pb-8" aria-label={m['a11y.mainNav']()}>
       <ul class="fr-sidemenu__list">
         {#each navLinks as link (link.href)}
           <li class="fr-sidemenu__item">
@@ -234,7 +237,7 @@
             <li class="fr-nav__item">
               {@render renderLink({
                 ...link,
-                class: 'fr-nav__link text-black! font-normal!',
+                class: 'fr-nav__link text-black! font-normal! before:content-none!',
                 'data-fr-js-modal-button': 'true',
                 'aria-controls': 'fr-modal-menu'
               })}

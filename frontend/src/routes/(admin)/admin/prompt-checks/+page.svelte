@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Alert, Button, Icon, Select, Toggle } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { promptCheckMessage } from '$lib/apiErrors'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { ARCHS, SIZE_CLASSES, type Archs, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { ConsoSizes } from '$lib/models'
@@ -222,10 +222,9 @@
         <svg
           bind:this={svg}
           role="img"
-          aria-labelledby="energy-graph-title"
+          aria-label={m['ranking.energy.views.graph.title']()}
           aria-describedby="energy-graph-desc"
         >
-          <title id="energy-graph-title">{m['ranking.energy.views.graph.title']()}</title>
           <desc id="energy-graph-desc">{m['a11y.energyGraphDesc']()}</desc>
           <!-- y axis -->
           <g class="axis y-axis">
@@ -296,10 +295,11 @@
                 customLogoId={hoveredModelData.lab.has_custom_logo
                   ? hoveredModelData.lab.id
                   : undefined}
+                customLogoVersion={hoveredModelData.lab.logo_version}
                 alt={hoveredModelData.lab.name}
                 class="me-1"
               />
-              <strong class="leading-normal text-[14px]">{hoveredModelData.id}</strong>
+              <strong class="leading-normal text-[14px]">{hoveredModelData.human_id}</strong>
             </div>
 
             <div class="mt-1 text-[12px]">

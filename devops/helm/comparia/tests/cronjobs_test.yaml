@@ -3,6 +3,7 @@ templates:
   - cronjob-ranking.yaml
   - cronjob-analyze.yaml
   - cronjob-purge-inactive.yaml
+  - cronjob-publish.yaml
 values:
   - ../ci/values-lint.yaml
 tests:
@@ -98,3 +99,113 @@ tests:
     asserts:
       - hasDocuments:
           count: 1
+
+  - it: renders the publish CronJob by default
+    template: cronjob-publish.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: CronJob
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-comparia-publish
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value: ["uv", "run", "python", "-m", "utils.dataset.job"]
+
+  - it: omits the publish CronJob when disabled
+    template: cronjob-publish.yaml
+    set:
+      cronjobs.publish.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: ticks every ten minutes by default and lets the schedule be overridden
+    template: cronjob-publish.yaml
+    asserts:
+      - equal:
+          path: spec.schedule
+          value: "*/10 * * * *"
+
+  - it: takes the schedule from the value
+    template: cronjob-publish.yaml
+    set:
+      cronjobs.publish.schedule: "*/30 * * * *"
+    asserts:
+      - equal:
+          path: spec.schedule
+          value: "*/30 * * * *"
+
+  - it: forbids concurrent runs and stops a run after six hours
+    template: cronjob-publish.yaml
+    asserts:
+      - equal:
+          path: spec.concurrencyPolicy
+          value: Forbid
+      - equal:
+          path: spec.jobTemplate.spec.activeDeadlineSeconds
+          value: 21600
+
+  - it: takes the deadline from the value
+    template: cronjob-publish.yaml
+    set:
+      cronjobs.publish.activeDeadlineSeconds: 7200
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.activeDeadlineSeconds
+          value: 7200
+
+  - it: runs BLAS and OpenMP on a single thread
+    template: cronjob-publish.yaml
+    asserts:
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: OPENBLAS_NUM_THREADS
+            value: "1"
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: OMP_NUM_THREADS
+            value: "1"
+
+  - it: takes its resources from the dedicated publish block
+    template: cronjob-publish.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].resources.requests.memory
+          value: 2Gi
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].resources.limits.memory
+          value: 8Gi
+
+  - it: does not share resources with the analyze CronJob
+    template: cronjob-publish.yaml
+    set:
+      resources.cronjobs.limits.memory: 1Gi
+      resources.publish.limits.memory: 12Gi
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].resources.limits.memory
+          value: 12Gi
+
+  - it: uses the same image and secret as the other cronjobs
+    template: cronjob-publish.yaml
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].image
+          value: "ghcr.io/betagouv/comparia-backend:latest"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: RELEASE-NAME-comparia-secret
+
+  - it: uses an existing secret like the other cronjobs
+    template: cronjob-publish.yaml
+    set:
+      secrets.existingSecret: my-secret
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: my-secret

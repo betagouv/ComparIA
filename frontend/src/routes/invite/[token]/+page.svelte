@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import {
@@ -85,10 +85,16 @@
         await submitConsent(terms, false)
         consentRequired = false
       }
-      await api.request('/auth/invite/accept', {
-        method: 'POST',
-        body: JSON.stringify({ token })
-      })
+      const { totp_required } = await api.request<{ success: boolean; totp_required: boolean }>(
+        '/auth/invite/accept',
+        { method: 'POST', body: JSON.stringify({ token }) }
+      )
+      if (totp_required) {
+        // An invite sent to an admin who already has an authenticator: the
+        // challenge cookie is set, the sign-in form finishes from there.
+        goto(resolve('/login?step=totp'))
+        return
+      }
       const data = await api.request<{ user: AuthUser | null }>('/auth/me')
       auth.user = data.user
       useToast(m['auth.success'](), 4000)
@@ -108,7 +114,9 @@
   <header class="px-8 py-10 gap-20 md:justify-center flex basis-1/2 flex-col">
     <div class="gap-2 flex items-center">
       <img
-        src={auth.config?.has_custom_logo ? api.getUrl('/auth/config/logo') : '/orgs/comparia.png'}
+        src={auth.config?.has_custom_logo
+          ? api.getUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
+          : '/orgs/comparia.png'}
         aria-hidden="true"
         alt=""
         class="h-[35px]"

@@ -1,6 +1,6 @@
+import type { BotModel, Commons, PersonalRow } from '$lib/models'
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import type { BotModel, Commons, PersonalRow } from '$lib/models'
 import PersonalTable from './PersonalTable.svelte'
 
 const commons = { modelsCount: 2, currency: { code: 'EUR' }, rankClasses: {} } as Commons
@@ -13,7 +13,9 @@ const model = {
   params: 123,
   arch: 'dense',
   license: { kind: 'open-source' },
-  lab: { name: 'Mistral', logo: 'mistral' }
+  lab: { name: 'Mistral', logo: 'mistral' },
+  release_date: new Date(),
+  badges: { license: { text: 'MIT' } }
 } as BotModel
 
 const rows: PersonalRow[] = [
@@ -78,7 +80,7 @@ describe('personal ranking table', () => {
       [...row.querySelectorAll('td')].map((cell) => cell.textContent?.trim())
     )
 
-    expect(cells[0].slice(0, 6)).toEqual(['1', 'mistral-large', '0,866', '20', '18-2-0', '4'])
+    expect(cells[0].slice(0, 6)).toEqual(['1', 'mistral-large', '0,866', '20', '18-0-2', '4'])
     expect(cells[1].slice(2, 6)).toEqual(['0,667', '1', '1-0-0', ''])
   })
 

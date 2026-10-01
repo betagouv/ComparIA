@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis keycloak keycloak-down models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
 
 # Variables
 PYTHON := python3
@@ -74,6 +74,11 @@ db-purge-inactive: ## Warn then erase accounts unused for MONTHS (default 12); d
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db purge-inactive --months $(or $(MONTHS),12) $(if $(filter 1 true yes,$(APPLY)),--apply)
 
+db-reset-totp: ## Forget an admin's authenticator app and sign them out (usage: make db-reset-totp EMAIL=admin@example.org, requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	@if [ -z "$(EMAIL)" ]; then echo "Error: EMAIL is not set"; exit 1; fi
+	./comparia-cli db reset-totp "$(EMAIL)"
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
@@ -81,6 +86,15 @@ redis: ## Launch Redis using docker compose
 
 redis-down: ## Stop Redis
 	docker compose -f devops/instances/redis/redis.compose.yml down
+
+keycloak: ## Launch a local Keycloak (OIDC test IdP) and configure the comparia client + test user
+	@$(MAKE) network
+	@echo "Starting Keycloak..."
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml up -d
+	bash devops/instances/keycloak/setup-keycloak.sh
+
+keycloak-down: ## Stop the local Keycloak
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml down
 
 
 ###################################

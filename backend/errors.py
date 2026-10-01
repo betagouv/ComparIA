@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
@@ -72,8 +74,37 @@ AUTH_REQUIRED_RESPONSE = JSONResponse(
 )
 
 
+class TotpSetupRequiredError(HTTPException):
+    """An admin who has not enrolled an authenticator yet."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN, detail="totp_setup_required"
+        )
+
+
+class TotpSecretUnreadableError(HTTPException):
+    """An enrolled secret that no configured encryption key opens. Not the
+    caller's doing: the operator dropped a key too early."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="totp_secret_unreadable",
+        )
+
+
 class RoleRequiredError(HTTPException):
     def __init__(self, role: str = "admin") -> None:
         super().__init__(
             status_code=status.HTTP_403_FORBIDDEN, detail=f"{role}_required"
         )
+
+
+class LogoRejectedError(HTTPException):
+    """The upload is not a logo we can store: wrong type, too big, or not an image."""
+
+    def __init__(
+        self, reason: Literal["logo_unsupported_type", "logo_too_large", "logo_invalid"]
+    ) -> None:
+        super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=reason)

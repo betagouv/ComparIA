@@ -19,6 +19,7 @@ from .actions import (
     migrate_user_messages,
     migrate_votes,
     purge_inactive,
+    reset_totp,
     seed_admins,
 )
 from .lint import lint, log_archived
@@ -47,6 +48,7 @@ cli_db.command(llm_analyze)
 cli_db.command(backfill_pii_spam)
 cli_db.command(seed_admins, name="seed-admins")
 cli_db.command(purge_inactive, name="purge-inactive")
+cli_db.command(reset_totp, name="reset-totp")
 cli_db.command(cli_archive)
 cli_db.command(cli_migrate)
 

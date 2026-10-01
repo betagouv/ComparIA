@@ -11,8 +11,8 @@ The chart deploys:
 - a `Secret` (chart-rendered from values, or a pre-existing one you point it
   at) carrying API keys and DB/Redis connection info
 - a pre-install/pre-upgrade Job that runs the app's Alembic migrations
-- three optional CronJobs (ranking computation, LLM-based analysis, inactive
-  account purge)
+- four CronJobs (ranking computation, dataset publication, LLM-based
+  analysis, inactive account purge), the last two optional
 - an optional Ingress
 
 It does not include a Postgres or Redis instance, an S3 log-archival sidecar,
@@ -58,7 +58,8 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `resources.backend`       | see `values.yaml` | Backend requests/limits    |
 | `resources.frontend`      | see `values.yaml` | Frontend requests/limits   |
 | `resources.migration`     | see `values.yaml` | Migration Job requests/limits |
-| `resources.cronjobs`      | see `values.yaml` | Applied to all three CronJobs |
+| `resources.cronjobs`      | see `values.yaml` | Applied to the analyze CronJob |
+| `resources.publish`       | see `values.yaml` | Applied to the publish CronJob |
 | `backend.extraEnv`        | `[]`    | Extra env vars for the backend container, for anything not covered by `config.*`/`secrets.*` below, same shape as a container's `env:` list |
 | `frontend.extraEnv`       | `[]`    | Extra env vars for the frontend container, same shape |
 | `frontend.publicApiUrl`   | `""`    | Public URL the frontend is served at; empty means same-origin |
@@ -99,11 +100,11 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 workload's `envFrom` at that Secret and renders no `Secret` of its own. Use
 this if you manage secrets externally (Vault, sealed-secrets, ...) — your
 Secret should provide whichever of the keys below your setup needs
-(`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`,
+(`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`, `COMPARIA_ENCRYPTION_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
-`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`). In
-this mode the chart cannot validate that a required key is present — that is
-your Secret's responsibility.
+`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
+`METRICS_TOKEN`). In this mode the chart cannot validate that a required key
+is present — that is your Secret's responsibility.
 
 Otherwise, the chart renders a `Secret` from these values:
 
@@ -112,6 +113,7 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.dbUri`                | yes      | `COMPARIA_DB_URI`, e.g. `postgresql://user:pass@host:5432/db` |
 | `secrets.redisHost`            | yes      | `COMPARIA_REDIS_HOST`                     |
 | `secrets.altchaHmacKey`        | yes      | `ALTCHA_HMAC_KEY`, e.g. `openssl rand -hex 32` |
+| `secrets.encryptionKey` | yes     | `COMPARIA_ENCRYPTION_KEY`, a Fernet key (see `values.yaml`) |
 | `secrets.openrouterApiKey`     | at least one of these four | `OPENROUTER_API_KEY` |
 | `secrets.albertKey`            | at least one of these four | `ALBERT_KEY` |
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |
@@ -120,6 +122,10 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.mistralApiKey`        | no       | `MISTRAL_API_KEY`, Mistral moderation API. Left empty, prompt checks (content safety, personal data) no-op |
 | `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
 | `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
+| `secrets.metricsToken`         | no       | `METRICS_TOKEN`, bearer token protecting `/metrics` |
+
+`/metrics` answers 401 until `secrets.metricsToken` is set, and the Prometheus
+scrape config must then send `Authorization: Bearer <token>`.
 
 ### Automatic database migrations
 
@@ -132,7 +138,7 @@ toggleable.
 
 ### Maintenance cronjobs (`cronjobs.*`)
 
-Each of the three is independently toggleable — there is no combined switch.
+Each of the four is independently toggleable — there is no combined switch.
 
 | Value                              | Default | Description |
 | ------------------------------------ | ------- | ------------ |
@@ -143,13 +149,34 @@ Each of the three is independently toggleable — there is no combined switch.
 | `cronjobs.purgeInactive.enabled`     | `false` | Weekly warn-then-erase of accounts not signed in for `months`. Off by default: state the retention period in the privacy policy first. Needs SMTP. |
 | `cronjobs.purgeInactive.schedule`    | `"20 4 * * 1"` | |
 | `cronjobs.purgeInactive.months`      | `12`    | Months without a sign-in before an account is warned, then erased 30 days later. |
+| `cronjobs.publish.enabled`           | `true`  | Dataset publication, see below. Harmless on an instance with no publish destination. |
+| `cronjobs.publish.schedule`          | `"*/10 * * * *"` | How often the job looks for a destination to publish. Not the publication frequency. |
+| `cronjobs.publish.activeDeadlineSeconds` | `21600` | A run still going after this is killed. |
 
-#### Dataset export
+#### Dataset publication
 
-The dataset export is not a CronJob: it runs on the backend's internal
-scheduler (leader election via a Postgres advisory lock) and on demand from
-the admin panel. The export destination (HuggingFace repo path + token) is
-stored in the database and configured through the admin panel only.
+The publish job is the CronJob that carries out dataset publication, in its
+own pod so that its memory needs do not fall on the backend. Every tick it
+starts a publish run for each publish destination that is due on its
+frequency (chosen per destination in the admin panel: daily at 03:00 UTC,
+weekly on Monday, monthly on the first) or that has a pending publish request
+(created destination, frequency change or "publish now" in the admin panel),
+one after the other. With nothing due, or no destination at all, it exits
+straight away. A request therefore waits at most one tick.
+
+The job holds a Postgres advisory lock for the whole run, so two release
+colors, or a Job created by hand from the CronJob, never publish at the same
+time. A run left open by a pod that died (OOMKill, eviction, deadline) is
+closed as failed by the next tick. A failed run is not retried before the
+next occurrence; a publish request from the admin panel starts it again.
+
+Runs use `resources.publish`, requests 2Gi and limits 8Gi to start with:
+tighten them from the memory the first production run actually used.
+Destinations (HuggingFace repo path + token, or S3 bucket) are stored in the
+database and configured through the admin panel only.
+
+To start a run by hand, create a Job from the CronJob:
+`kubectl create job --from=cronjob/<release>-publish <release>-publish-manual`.
 
 ### Ingress (`ingress.*`)
 

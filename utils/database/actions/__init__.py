@@ -12,4 +12,5 @@ from .migrate_turns import migrate_turns
 from .migrate_user_messages import migrate_user_messages
 from .migrate_votes import migrate_votes
 from .purge_inactive import purge_inactive
+from .reset_totp import reset_totp
 from .seed import seed_admins

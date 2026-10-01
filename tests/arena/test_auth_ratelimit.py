@@ -25,6 +25,7 @@ from fastapi.testclient import TestClient
 
 import backend.auth.router as auth_router
 import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.auth.services import LoginResult
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
@@ -60,6 +61,7 @@ async def _fake_send_login_code(email, code, **_colors):
 
 async def _fake_get_app_settings():
     return SimpleNamespace(
+        auth_methods=["email_code"],
         auth_domain_allowlist=None,
         platform_name="Compar:IA",
         primary_color_light="#6464F3",
@@ -226,7 +228,7 @@ def test_successful_verify_clears_fail_counter():
 
     async def wrong_then_right(**kwargs):
         calls["n"] += 1
-        return None if calls["n"] == 1 else "sometoken"
+        return None if calls["n"] == 1 else LoginResult("session", "sometoken")
 
     with fake_router(verify_login_code=wrong_then_right) as (client, fake):
         r = client.post(
@@ -372,7 +374,7 @@ def test_verify_refuses_a_cross_site_origin():
     cookie in a visitor's browser."""
 
     async def always_right(**kwargs):
-        return "sometoken"
+        return LoginResult("session", "sometoken")
 
     with fake_router(verify_login_code=always_right) as (client, _fake):
         r = client.post(

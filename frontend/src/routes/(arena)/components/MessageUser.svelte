@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import { MarkdownCode as Markdown } from '$components/markdown'
   import type { UserMessage } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { validExternalUrl } from '$lib/routing'

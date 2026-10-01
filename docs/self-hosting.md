@@ -33,11 +33,18 @@ Edit `.env` and fill in at minimum:
 | `REDIS_PASSWORD`     | A strong password for Redis                          |
 | `OPENROUTER_API_KEY` | API key from [openrouter.ai](https://openrouter.ai)  |
 | `ALTCHA_HMAC_KEY`    | A random secret key for spam protection              |
+| `COMPARIA_ENCRYPTION_KEY` | A Fernet key encrypting secrets stored in the database |
 
 Generate random values for `POSTGRES_PASSWORD`, `REDIS_PASSWORD` and `ALTCHA_HMAC_KEY` with for example:
 
 ```bash
 openssl rand -hex 32
+```
+
+`COMPARIA_ENCRYPTION_KEY` has to be a Fernet key, which is a different format:
+
+```bash
+python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 ```
 
 **3. Configure and start the database.** See [Database configuration](#database-configuration) below.
@@ -145,6 +152,24 @@ cd devops/standalone_docker_install/
 docker compose --env-file .env pull
 docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env up -d --build
 ```
+
+## Dataset publishing
+
+The admin panel records a publication request when a destination is created, when its frequency changes and on "publish now". The backend does not carry it out: a separate publish job does, and Docker Compose does not run one yet. Until it does, no publication starts by itself on a Compose instance and a request stays pending.
+
+Run the job by hand, or from a host cron, to start every publication that is due or requested:
+
+```bash
+docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env run --rm backend uv run python -m utils.dataset.job
+```
+
+For example every ten minutes, as the Helm chart does:
+
+```
+*/10 * * * * cd /path/to/comparia && docker compose -f devops/standalone_docker_install/docker-compose.yml --env-file .env run --rm backend uv run python -m utils.dataset.job
+```
+
+The command exits at once when nothing is due. `run --rm` starts a container of its own with the `backend` service's settings, `mem_limit` included: raise it in `docker-compose.yml` if a run on a large database is killed for memory.
 
 ## Useful commands
 

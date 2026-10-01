@@ -11,7 +11,7 @@
   }: {
     logo: string | null
     customLogoId?: string
-    customLogoVersion?: number
+    customLogoVersion?: string | null
     alt: string
     size?: 'sm' | 'md' | 'lg'
   } & HTMLImgAttributes = $props()
@@ -28,9 +28,7 @@
 {#if customLogoId}
   <img
     {...props}
-    src={api.getUrl(`/models/labs/${customLogoId}/logo`, {
-      v: (customLogoVersion ?? 0).toString()
-    })}
+    src={api.getUrl(`/models/labs/${customLogoId}/logo`, { v: customLogoVersion ?? '' })}
     class={['object-contain', sizeClass, props.class]}
   />
 {:else if logo?.includes('.')}

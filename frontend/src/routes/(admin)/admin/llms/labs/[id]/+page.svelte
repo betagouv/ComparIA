@@ -2,9 +2,9 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import AILogo from '$components/AILogo.svelte'
   import { Button } from '$components/dsfr'
   import Form from '$components/form/Form.svelte'
+  import { AILogo } from '$components/layout'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { useForm } from '$lib/stores/form.svelte'
@@ -15,8 +15,8 @@
   const id = $derived(page.params.id)
   const method = $derived(id === 'create' ? 'post' : 'put')
   let uploadingLogo = $state(false)
-  let logoVersion = $state(0)
   let hasCustomLogo = $derived(data.formProps.data.has_custom_logo)
+  let logoVersion = $derived(data.formProps.data.logo_version)
   const form = $derived(
     useForm({
       url: '/admin/llms/lab',
@@ -47,7 +47,7 @@
       )
       Object.assign(data.formProps.data, updated)
       hasCustomLogo = true
-      logoVersion++
+      logoVersion = updated.logo_version
       useToast('Logo updated', 4000)
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')

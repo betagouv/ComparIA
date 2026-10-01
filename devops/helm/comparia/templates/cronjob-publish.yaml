@@ -1,0 +1,49 @@
+{{- if .Values.cronjobs.publish.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-publish
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: publish
+spec:
+  schedule: {{ .Values.cronjobs.publish.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      activeDeadlineSeconds: {{ .Values.cronjobs.publish.activeDeadlineSeconds }}
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: publish
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: publish
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command: ["uv", "run", "python", "-m", "utils.dataset.job"]
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                - name: COMPARIA_INSTANCE_NAME
+                  value: {{ .Values.config.instanceName | quote }}
+                # BLAS and OpenMP size their thread pools, and the scratch
+                # buffers that go with them, off the node's core count rather
+                # than this container's memory limit.
+                - name: OPENBLAS_NUM_THREADS
+                  value: "1"
+                - name: OMP_NUM_THREADS
+                  value: "1"
+              resources:
+                {{- toYaml .Values.resources.publish | nindent 16 }}
+{{- end }}

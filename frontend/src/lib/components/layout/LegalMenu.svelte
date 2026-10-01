@@ -17,12 +17,12 @@
     title={m['header.legal.title']()}
     buttonClass={[
       'legal-menu-btn fr-btn fr-btn--tertiary-no-outline rounded-sm! gap-2 justify-start',
-      { 'lg:w-full lg:justify-center lg:px-0!': !expanded }
+      { 'lg:w-full lg:justify-center lg:px-0! ms-[2px]!': !expanded }
     ]}
     closeOnSelect
   >
     {#snippet buttonLabel(label: string)}
-      <Icon icon="i-ri-scales-3-line" block size="xs" />
+      <Icon icon="i-ri-scales-3-line" block size={expanded ? 'xs' : 'md'} />
       <span class={{ 'lg:sr-only': !expanded }}>{label}</span>
       <Icon
         icon="i-ri-arrow-down-s-line"

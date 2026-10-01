@@ -288,6 +288,8 @@
   span :global(pre) {
     overflow-x: auto;
     max-width: 100%;
+    /* Quick fix to avoid way too light base color on code block */
+    color: unset;
   }
 
   /* CUSTOM */

@@ -1,3 +1,4 @@
+import logging
 import time
 import uuid
 from datetime import datetime
@@ -7,17 +8,20 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
+from backend.admin.logos import normalize_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
     CannotDemoteLastAdminError,
+    CannotResetOwnTotpError,
     EmailAlreadyExistsError,
     cancel_user_invite,
     create_user,
     delete_user,
     get_user,
     list_users,
+    reset_user_totp,
     update_user,
 )
 from backend.admin.suggestions import router as admin_suggestions_router
@@ -31,7 +35,12 @@ from backend.arena.checks import (
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
 from backend.auth.services import create_invite
-from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
+from backend.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    INSTANCE_LOGO_BOX,
+    LOGO_UPLOAD_MAX_SIZE,
+    settings,
+)
 from backend.settings.informational_legal import (
     InformationalLegalPages,
     get_informational_legal_pages,
@@ -81,7 +90,10 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
+
+logger = logging.getLogger("languia")
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -152,10 +164,6 @@ async def put_admin_informational_legal_pages(
         updated_by=current_user.id,
     )
     return body
-
-
-_LOGO_MAX_SIZE = 2 * 1024 * 1024
-_LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
 
 
 def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
@@ -370,6 +378,22 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 
+@router.delete("/users/{user_id}/totp", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> None:
+    try:
+        reset = await reset_user_totp(user_id, current_user.id)
+    except CannotResetOwnTotpError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Change your own authenticator from your account page",
+        )
+    if not reset:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # Who reset whom is worth a line in the log: the target's next sign-in
+    # needs only an email code until they enrol again.
+    logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
+
+
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
     return AppSettingsPublic(
         auth_access_policy=row.auth_access_policy,
@@ -387,8 +411,17 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
         has_custom_logo=row.logo is not None,
+        logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
         default_locale=row.default_locale,
+        auth_methods=row.auth_methods,
+        oidc_issuer=row.oidc_issuer,
+        oidc_client_id=row.oidc_client_id,
+        oidc_has_client_secret=row.oidc_client_secret_encrypted is not None,
+        oidc_scopes=row.oidc_scopes,
+        oidc_button_label=row.oidc_button_label,
+        oidc_has_button_logo=row.oidc_button_logo is not None,
+        oidc_button_logo_content_type=row.oidc_button_logo_content_type,
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -429,14 +462,63 @@ async def patch_settings(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="Unknown LLM endpoint",
                 )
-    row = await update_app_settings(
-        body.model_dump(exclude_unset=True), updated_by=current_user.id
-    )
+    patch = body.model_dump(exclude_unset=True)
+    if "oidc_client_secret" in patch:
+        secret = patch.pop("oidc_client_secret")
+        # Same key as every other secret at rest; the column holds bytes.
+        patch["oidc_client_secret_encrypted"] = (
+            encrypt_secret(secret).encode() if secret else None
+        )
+    if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
+        current = await get_app_settings()
+        effective_methods = patch.get("auth_methods", current.auth_methods)
+        if "oidc" in effective_methods:
+            issuer = patch.get("oidc_issuer", current.oidc_issuer)
+            client_id = patch.get("oidc_client_id", current.oidc_client_id)
+            secret_enc = patch.get(
+                "oidc_client_secret_encrypted",
+                current.oidc_client_secret_encrypted,
+            )
+            scopes = patch.get("oidc_scopes", current.oidc_scopes)
+            if not (issuer and client_id and secret_enc and "openid" in scopes):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "OIDC provider config (issuer, client_id, client_secret, "
+                        "scopes including openid) must be complete before "
+                        "enabling the oidc auth method."
+                    ),
+                )
+    row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
 
 
 @router.put("/settings/logo", response_model=AppSettingsPublic)
 async def upload_logo(
+    current_user: RequiredAdmin,
+    file: UploadFile,
+) -> AppSettingsPublic:
+    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
+    logo, content_type = normalize_logo(
+        content, file.content_type or "", INSTANCE_LOGO_BOX
+    )
+    row = await update_app_settings(
+        {"logo": logo, "logo_content_type": content_type},
+        updated_by=current_user.id,
+    )
+    return _to_app_settings_public(row)
+
+
+@router.delete("/settings/logo", response_model=AppSettingsPublic)
+async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
+    row = await update_app_settings(
+        {"logo": None, "logo_content_type": None}, updated_by=current_user.id
+    )
+    return _to_app_settings_public(row)
+
+
+@router.put("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def upload_oidc_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
@@ -452,16 +534,20 @@ async def upload_logo(
             detail="Logo file is too large (max 2 MB)",
         )
     row = await update_app_settings(
-        {"logo": content, "logo_content_type": file.content_type},
+        {
+            "oidc_button_logo": content,
+            "oidc_button_logo_content_type": file.content_type,
+        },
         updated_by=current_user.id,
     )
     return _to_app_settings_public(row)
 
 
-@router.delete("/settings/logo", response_model=AppSettingsPublic)
-async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
+@router.delete("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
     row = await update_app_settings(
-        {"logo": None, "logo_content_type": None}, updated_by=current_user.id
+        {"oidc_button_logo": None, "oidc_button_logo_content_type": None},
+        updated_by=current_user.id,
     )
     return _to_app_settings_public(row)
 

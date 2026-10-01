@@ -66,7 +66,7 @@ async def main(
         Rebuild the normal dataset from an existing raw parquet instead of the DB
     record: bool
         Record the run in the database, for the admin panel to read. What the
-        scheduler passes; off by hand so a local export does not overwrite the
+        publish job passes; off by hand so a local export does not overwrite the
         instance's last run.
     destination_id: UUID | None
         Send only to this destination. Used by per-destination schedules and
@@ -88,7 +88,11 @@ async def main(
         )
     except Exception as exc:
         if run_id:
-            await finish_run(run_id, error=str(exc))
+            # str(exc) alone: some exceptions, MemoryError included, carry no
+            # message and stringify to '', which the panel then reads as 'no
+            # error' next to a run marked failed. repr() as a fallback keeps
+            # the exact 'no rows' message the panel matches on intact.
+            await finish_run(run_id, error=str(exc) or repr(exc))
         raise
     else:
         if run_id:

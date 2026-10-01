@@ -151,6 +151,13 @@ def test_public_config_carries_the_deployment_url():
         return SimpleNamespace(
             auth_access_policy="anonymous_first",
             auth_domain_allowlist=[],
+            auth_methods=["email_code"],
+            oidc_issuer=None,
+            oidc_client_id=None,
+            oidc_client_secret_encrypted=None,
+            oidc_scopes=["openid", "email"],
+            oidc_button_label=None,
+            oidc_button_logo=None,
             platform_name="Arène de test",
             primary_color_light="#000091",
             primary_color_dark="#8585F6",
@@ -158,6 +165,7 @@ def test_public_config_carries_the_deployment_url():
             secondary_color_dark="#CACAFB",
             homepage_url=None,
             logo=None,
+            logo_version=None,
             enabled_locales=["fr"],
             default_locale="fr",
         )
@@ -200,6 +208,8 @@ def test_erasure_anonymises_the_account_and_clears_its_credentials():
     assert deleted_tables(session.statements) == {
         "auth_login_code",
         "auth_invite_token",
+        "auth_totp",
+        "auth_totp_challenge",
     }
 
 

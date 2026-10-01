@@ -1,7 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import TabNav from '$components/dsfr/TabNav.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { m } from '$lib/i18n/messages'
   import type { LayoutProps } from './$types'
 

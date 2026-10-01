@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import InfoCard from '$components/InfoCard.svelte'
+  import { AILogo } from '$components/layout'
   import OpennessScore from '$components/OpennessScore.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Commons } from '$lib/models'
@@ -25,12 +25,7 @@
   })
 </script>
 
-<article
-  class={[
-    'fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! w-full bg-none!',
-    { 'border-primary!': model.new }
-  ]}
->
+<article class="fr-card fr-enlarge-link cg-border rounded-xl bg-very-light-grey! w-full bg-none!">
   <div class="fr-card__body">
     <div class="fr-card__content px-3! pt-3!">
       <h3
@@ -39,6 +34,7 @@
         <AILogo
           logo={model.lab.logo}
           customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+          customLogoVersion={model.lab.logo_version}
           alt={model.lab.name}
         />
         <div>

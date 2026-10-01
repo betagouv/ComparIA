@@ -140,11 +140,12 @@ class FakeRedis:
 
 
 @contextlib.contextmanager
-def routed(**overrides):
+def routed(auth_methods=("email_code",), **overrides):
     """Serve the router with the plumbing every login route needs stubbed out."""
 
     async def app_settings():
         return SimpleNamespace(
+            auth_methods=list(auth_methods),
             auth_domain_allowlist=[],
             platform_name="Compar:IA",
             primary_color_light="#6464F3",
@@ -412,6 +413,20 @@ def test_login_code_requires_a_current_acceptance():
     assert response.status_code == 428
 
 
+def test_login_code_is_refused_when_email_sign_in_is_disabled():
+    """Unticking the method hides the form; the endpoints must close too, or
+    an SSO-only instance can still be entered by posting to them directly."""
+    with routed(auth_methods=("oidc",)) as test_client:
+        requested = test_client.post(
+            "/auth/email/request", json={"email": "a@b.fr", "altcha_payload": "valid"}
+        )
+        verified = test_client.post(
+            "/auth/email/verify", json={"email": "a@b.fr", "code": "123456"}
+        )
+    assert requested.status_code == 403
+    assert verified.status_code == 403
+
+
 def test_invite_acceptance_requires_a_current_acceptance():
     async def declined(**_kwargs):
         return False
@@ -436,7 +451,7 @@ def test_an_accepted_invite_carries_the_acceptance_of_the_visitor():
 
     async def accept_invite(**kwargs):
         accepted.update(kwargs)
-        return "session-token"
+        return auth_services.LoginResult("session", "session-token")
 
     with routed(
         has_current_terms_acceptance=granted, accept_invite=accept_invite

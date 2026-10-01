@@ -241,6 +241,7 @@ export interface LLMLabPublic {
    */
   origin_country: string;
   has_custom_logo?: boolean;
+  logo_version?: string | null;
   [k: string]: unknown;
 }
 /**
