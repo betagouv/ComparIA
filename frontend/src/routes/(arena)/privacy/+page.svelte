@@ -22,7 +22,7 @@
         locale={data.privacyPolicy.locale}
       />
     {:else}
-      <PrivacyPolicyFallback />
+      <PrivacyPolicyFallback matomoUrl={data.matomoUrl} />
     {/if}
   </div>
 </div>
