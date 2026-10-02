@@ -38,11 +38,7 @@ from tests.auth.fake_oidc_provider import (  # noqa: E402
     FakeProvider,
     serving,
 )
-from utils.database.models.auth import (  # noqa: E402
-    AuthSession,
-    TotpChallenge,
-    User,
-)
+from utils.database.models.auth import AuthSession, TotpChallenge, User  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -711,7 +707,7 @@ def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
     flow."""
     admin = User(email="boss@example.com", role="admin")
     confirmed_totp = uuid.uuid4()
-    session = FakeSession(results=[[admin], [confirmed_totp]])
+    session = FakeSession(results=[[admin], [None], [confirmed_totp]])
     with fake_session(session):
         login, user_id = asyncio.run(
             auth_services.login_with_oidc(
