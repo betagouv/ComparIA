@@ -20,6 +20,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
+from uuid import UUID
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -34,12 +35,15 @@ from utils.dataset.models import (
     DatasetComparisonExtraMetadata,
 )
 
-# --- llms fixture (only `.wh_per_million_token` is read) -------------------
+# --- llms fixture (only `.wh_per_million_token` and `.human_id` are read) --
 
+LLM_A = UUID("11111111-1111-4111-8111-111111111111")
+LLM_B = UUID("22222222-2222-4222-8222-222222222222")
 LLMS = {
-    "model-a": SimpleNamespace(wh_per_million_token=1000.0),
-    "model-b": SimpleNamespace(wh_per_million_token=500.0),
+    LLM_A: SimpleNamespace(wh_per_million_token=1000.0, human_id="model-a"),
+    LLM_B: SimpleNamespace(wh_per_million_token=500.0, human_id="model-b"),
 }
+HUMAN_IDS = {str(llm_id): llm.human_id for llm_id, llm in LLMS.items()}
 
 
 async def _llms_data():
@@ -71,6 +75,13 @@ def oracle_comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     comparison = DatasetComparison.model_validate(db_comparison, context=ctx)
     comp_data = comparison.model_dump()
     comp_meta = comp_data.pop("metadata_")
+    # The old pipeline exported the raw llm id, datasets now carry the human_id
+    for key in ("model_a", "model_b"):
+        comp_data[key] = HUMAN_IDS.get(comp_data[key], comp_data[key])
+    if selection := comp_meta["custom_models_selection"]:
+        comp_meta["custom_models_selection"] = tuple(
+            HUMAN_IDS.get(llm_id, llm_id) for llm_id in selection
+        )
     comp_extra_meta = comp_data.pop("extra_metadata_")
     comp_turns = comp_data.pop("turns_")
 
@@ -136,8 +147,8 @@ def comparison(
     *,
     sys_a=None,
     sys_b=None,
-    llm_id_a="model-a",
-    llm_id_b="model-b",
+    llm_id_a=LLM_A,
+    llm_id_b=LLM_B,
     mode="random",
     custom_models_selection=None,
     categories=None,
@@ -243,7 +254,7 @@ def equivalent_cases():
     yield "custom_models_selection list serialization", comparison(
         [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
         mode="custom",
-        custom_models_selection=["model-a", "model-b"],
+        custom_models_selection=[str(LLM_A), str(LLM_B)],
         categories=["code"],
         languages=["fr", "en"],
         short_summary="a summary",
@@ -416,6 +427,35 @@ def time_to_vote_value_cases():
     yield "both answered, no vote", no_vote, None
 
 
+def model_id_value_cases():
+    # (name, comparison, expected (model_a, model_b, custom_models_selection)).
+    # Pins the readable ids: the oracle maps them too, so equivalence alone
+    # would not catch a uuid leaking into the dataset again.
+    unknown = UUID("33333333-3333-4333-8333-333333333333")
+    one_turn = [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))]
+    yield "known llms -> human_id", comparison(one_turn), ("model-a", "model-b", None)
+    yield "custom selection -> human_id", comparison(
+        one_turn, mode="custom", custom_models_selection=[str(LLM_B), str(LLM_A)]
+    ), ("model-a", "model-b", ("model-b", "model-a"))
+    yield "unknown llm -> raw uuid", comparison(one_turn, llm_id_b=unknown), (
+        "model-a",
+        str(unknown),
+        None,
+    )
+    yield "legacy empty llm_id -> empty", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))], llm_id_a=""
+    ), ("", "model-b", None)
+
+
+def _model_ids(comp) -> tuple:
+    row = comparison_to_turns(comp)[0]
+    return (
+        row["model_a"],
+        row["model_b"],
+        row["metadata"]["custom_models_selection"],
+    )
+
+
 def run():
     failures = []
 
@@ -449,6 +489,13 @@ def run():
         else:
             print(f"  ok  time_to_vote: {name}  ({got!r})")
 
+    for name, comp, expected in model_id_value_cases():
+        got = _model_ids(comp)
+        if got != expected:
+            failures.append(f"[MODEL_IDS {name}] got {got!r}, expected {expected!r}")
+        else:
+            print(f"  ok  model ids: {name}")
+
     print()
     if failures:
         print(f"FAILED ({len(failures)}):")
@@ -472,6 +519,12 @@ def test_skips():
 def test_time_to_vote_values():
     for name, comp, expected in time_to_vote_value_cases():
         got = comparison_to_turns(comp)[0]["metadata"]["time_to_vote"]
+        assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
+
+
+def test_model_id_values():
+    for name, comp, expected in model_id_value_cases():
+        got = _model_ids(comp)
         assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
 
 

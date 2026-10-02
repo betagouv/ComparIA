@@ -173,8 +173,8 @@ class DatasetComparison(SQLModel):
 
     # Actual data
     comparison_id: Annotated[str, BeforeValidator(str), Field(validation_alias="id")]
-    model_a: Annotated[str, Field(validation_alias="llm_id_a")]
-    model_b: Annotated[str, Field(validation_alias="llm_id_b")]
+    model_a: Annotated[str, BeforeValidator(str), Field(validation_alias="llm_id_a")]
+    model_b: Annotated[str, BeforeValidator(str), Field(validation_alias="llm_id_b")]
     timestamp: Annotated[datetime, Field(validation_alias="created_at")]
 
     # Extracted to build rows
