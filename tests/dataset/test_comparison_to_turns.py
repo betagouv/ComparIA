@@ -51,6 +51,7 @@ async def _llms_data():
 
 
 compute.get_llms_data = _llms_data  # patch, so no DB is needed
+compute.get_all_llms_data = _llms_data
 
 
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:

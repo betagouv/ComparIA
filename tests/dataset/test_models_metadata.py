@@ -3,16 +3,16 @@ import json
 from datetime import date, datetime
 from uuid import uuid4
 
-from backend.llms.models import APILLMDataBase
 from utils.dataset import compute
+from utils.dataset.models import DatasetLLM
 
 NOW = datetime(2026, 1, 1)
 
 
 def llm(
     human_id: str, status: str = "enabled", license_kind: str = "open-source"
-) -> APILLMDataBase:
-    return APILLMDataBase.model_validate(
+) -> DatasetLLM:
+    return DatasetLLM.model_validate(
         {
             "id": uuid4(),
             "created_at": NOW,
@@ -56,26 +56,26 @@ def llm(
     )
 
 
-def write(tmp_path, llms: list[APILLMDataBase]) -> list[dict]:
+def write(tmp_path, llms: list[DatasetLLM]) -> list[dict]:
     async def _llms_data():
         return {m.id: m for m in llms}
 
-    compute.get_llms_data, original = _llms_data, compute.get_llms_data
+    compute.get_all_llms_data, original = _llms_data, compute.get_all_llms_data
     try:
         asyncio.run(compute.write_models_metadata(tmp_path))
     finally:
-        compute.get_llms_data = original
+        compute.get_all_llms_data = original
     return json.loads((tmp_path / compute.MODELS_FILENAME).read_text())
 
 
 def test_models_are_listed_by_human_id_with_their_uuid(tmp_path):
-    b, a = llm("model-b", status="archived"), llm("model-a")
+    c, b, a = llm("model-c", "disabled"), llm("model-b", "archived"), llm("model-a")
 
-    models = write(tmp_path, [b, a])
+    models = write(tmp_path, [c, b, a])
 
-    assert [m["human_id"] for m in models] == ["model-a", "model-b"]
+    assert [m["human_id"] for m in models] == ["model-a", "model-b", "model-c"]
     assert models[0]["id"] == str(a.id)
-    assert models[1]["status"] == "archived"
+    assert [m["status"] for m in models] == ["enabled", "archived", "disabled"]
 
 
 def test_models_carry_metadata_but_no_internal_plumbing(tmp_path):
