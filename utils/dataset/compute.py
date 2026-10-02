@@ -65,6 +65,14 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
         raise
 
 
+@alru_cache
+async def get_llms_human_ids() -> dict[str, str]:
+    # Datasets carry the readable id, the uuid means nothing outside our db.
+    return {
+        str(llm_id): llm.human_id for llm_id, llm in (await get_llms_data()).items()
+    }
+
+
 async def count_dataset_rows(datasets: list[Datasets]):
     """Display row counts for each dataset without performing export."""
     try:
@@ -141,6 +149,10 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     llms = await get_llms_data()
     llm_a = llms.get(comp.llm_id_a)  # .get() tolerates empty/unknown llm_id
     llm_b = llms.get(comp.llm_id_b)
+    # Legacy empty ids and unknown llms are kept as they are.
+    human_ids = await get_llms_human_ids()
+    model_a = human_ids.get(str(comp.llm_id_a), str(comp.llm_id_a))
+    model_b = human_ids.get(str(comp.llm_id_b), str(comp.llm_id_b))
 
     # A side's full conversation opens with its system prompt (when present),
     # then alternates user / assistant for every turn.
@@ -208,6 +220,10 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     # ErrorDetails). The totals are appended in DatasetComparisonMetadata field
     # order so the merged dict matches the old model_dump output exactly.
     base_meta = DatasetComparisonBaseMetadata.model_validate(comp).model_dump()
+    if selection := base_meta["custom_models_selection"]:
+        base_meta["custom_models_selection"] = tuple(
+            human_ids.get(llm_id, llm_id) for llm_id in selection
+        )
     comp_meta = {
         **base_meta,
         "total_tokens_a": _total(turns_metadata, "tokens_a"),
@@ -232,8 +248,8 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             **row,
             "turn": idx,
             "comparison_id": comparison_id,
-            "model_a": str(comp.llm_id_a),
-            "model_b": str(comp.llm_id_b),
+            "model_a": model_a,
+            "model_b": model_b,
             "timestamp": comp.created_at,
             "full_conversation_a": full_conversation_a,
             "full_conversation_b": full_conversation_b,
