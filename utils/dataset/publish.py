@@ -33,10 +33,10 @@ LOCAL_NAMES: dict[Datasets, str] = {
 # Files a build produces, as suffixes of the base name.
 _SUFFIXES = (".parquet", "_samples.tsv", "_samples.jsonl")
 
-# Published beside the data under its own name: the vocabulary the
-# keyword_annotations columns refer to. Rewritten every run, so it never needs
-# sweeping.
-_EXTRA_FILES = ("vote_tags.json",)
+# Published beside the data under their own name: the vocabulary the
+# keyword_annotations columns refer to, and the models model_a|b refer to.
+# Rewritten every run, so they never need sweeping.
+_EXTRA_FILES = ("vote_tags.json", "models.json")
 
 # The only files a run owns. Anything else on a destination belongs to whoever
 # put it there: the dataset card, its images, a LICENSE, the repository's own
