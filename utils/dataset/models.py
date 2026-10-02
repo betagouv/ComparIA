@@ -11,6 +11,7 @@ from pydantic import (
 from sqlmodel import SQLModel
 
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
+from backend.llms.models import APILLMDataBase
 from utils.database.models import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
     ArchivedReason,
@@ -20,10 +21,20 @@ from utils.database.models import (
     PublishDataset,
     UserMessageRead,
 )
+from utils.database.models.llms.constants import LLMStatus
 
 # Same two datasets a destination subscribes to, kept in one place so the two
 # lists cannot drift apart.
 Datasets = PublishDataset
+
+
+class DatasetLLM(APILLMDataBase):
+    """
+    Any LLM a published comparison can point at. Disabled ones included: the
+    arena stopped offering them, their comparisons are still published.
+    """
+
+    status: LLMStatus  # type: ignore[assignment]  # widened on purpose, see above
 
 
 class DatasetTurnMetadata(SQLModel):
@@ -173,8 +184,8 @@ class DatasetComparison(SQLModel):
 
     # Actual data
     comparison_id: Annotated[str, BeforeValidator(str), Field(validation_alias="id")]
-    model_a: Annotated[str, Field(validation_alias="llm_id_a")]
-    model_b: Annotated[str, Field(validation_alias="llm_id_b")]
+    model_a: Annotated[str, BeforeValidator(str), Field(validation_alias="llm_id_a")]
+    model_b: Annotated[str, BeforeValidator(str), Field(validation_alias="llm_id_b")]
     timestamp: Annotated[datetime, Field(validation_alias="created_at")]
 
     # Extracted to build rows
