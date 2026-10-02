@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { replaceState } from '$app/navigation'
+  import { invalidate, replaceState } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Input } from '$components/dsfr'
+  import SurveyFormSignup from '$components/SurveyFormSignup.svelte'
   import TotpCodeInput from '$components/TotpCodeInput.svelte'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
@@ -19,15 +20,19 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { onMount, tick, untrack } from 'svelte'
+  import { getSurveyContext } from '$lib/survey'
+  import { onMount, tick } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
+
+  export type Step = 'email' | 'code' | 'totp' | 'questions'
 
   let {
     onSuccess,
     onLegalNavigate,
     titleId,
     startAtTotp = false,
+    step = $bindable(startAtTotp ? 'totp' : 'email'),
     hideHeader = false,
     ...props
   }: {
@@ -37,23 +42,25 @@
     titleId?: string
     /** The email code was already checked elsewhere: only the authenticator is left. */
     startAtTotp?: boolean
+    step?: Step
     /** Hides the internal title and subtitle when the host page already shows them. */
     hideHeader?: boolean
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
   const platformName = getPlatformName()
+  const survey = getSurveyContext()
   const locale = getLocale()
-  let step = $state<'email' | 'code' | 'totp'>(untrack(() => (startAtTotp ? 'totp' : 'email')))
   let email = $state('')
   let code = $state('')
   let totpCode = $state('')
   let mergeComparisons = $state(false)
   let loading = $state(false)
   let error = $state<string>()
+  let firstSignIn = $state(false)
 
   let terms = $state<ConsentDocument>()
-  let consentRequired = $state(false)
+  let consentRecorded = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
@@ -71,8 +78,7 @@
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
       terms = snapshot.document
-      consentRequired = !snapshot.accepted
-      consented = snapshot.accepted
+      consentRecorded = snapshot.accepted
     } catch {
       terms = undefined
       consentError = m['consent.loadFailed']()
@@ -94,16 +100,16 @@
       consentError = m['consent.loadFailed']()
       return
     }
-    if (consentRequired && !consented) {
+    if (!consented) {
       consentError = m['consent.required']()
       return
     }
     loading = true
     error = undefined
     try {
-      if (consentRequired) {
+      if (!consentRecorded) {
         await submitConsent(terms, false)
-        consentRequired = false
+        consentRecorded = true
       }
       const altcha_payload = await consumeAltchaToken()
       await api.request('/auth/email/request', {
@@ -121,21 +127,31 @@
   async function signedIn() {
     const data = await api.request<{ user: AuthUser | null }>('/auth/me')
     auth.user = data.user
+    // Before the questions, not after: the sign-in has already happened, and
+    // closing the form on the questions must not lose the merge asked for.
     if (mergeComparisons) {
       await api.request('/arena/comparison/merge', { method: 'POST' })
     }
-    onSuccess?.()
-    useToast(m['auth.success'](), 4000)
+    await invalidate('survey:signup')
+    // Ask questions if any and user didn't yet answered it
+    if (survey.signupQuestions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
+      step = 'questions'
+    } else {
+      firstSignIn = false
+      onLoginCompleted()
+    }
   }
 
   async function verifyCode() {
     loading = true
     error = undefined
     try {
-      const { totp_required } = await api.request<{ email: string; totp_required: boolean }>(
-        '/auth/email/verify',
-        { method: 'POST', body: JSON.stringify({ email, code }) }
-      )
+      const { totp_required, first_sign_in } = await api.request<{
+        email: string
+        totp_required: boolean
+        first_sign_in: boolean
+      }>('/auth/email/verify', { method: 'POST', body: JSON.stringify({ email, code }) })
+      firstSignIn = first_sign_in
       if (totp_required) {
         // Admins with an authenticator: no session yet, one more step.
         step = 'totp'
@@ -220,138 +236,158 @@
     else if (step === 'code') verifyCode()
     else verifyTotp()
   }
+
+  function onLoginCompleted() {
+    // Reset first: a wrapping modal reads the step when it closes, and must
+    // not take this close for the questions being walked away from.
+    step = startAtTotp ? 'totp' : 'email'
+    onSuccess?.()
+    useToast(m['auth.success'](), 4000)
+  }
 </script>
 
 <div bind:this={formContainer} {...props} class={['py-10 px-8', props.class]}>
-  {#if !hideHeader}
-    <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
-    <p class="text-xs! mb-6! text-grey">
-      {m['auth.modal.email.subtitle']({ platformName })}
-    </p>
-  {/if}
+  {#if step !== 'questions'}
+    {#if !hideHeader}
+      <h2 id={titleId} class="fr-h4 text-primary! mb-4!">{m['auth.modal.email.title']()}</h2>
+      <p class="text-xs! mb-6! text-grey">
+        {m['auth.modal.email.subtitle']({ platformName })}
+      </p>
+    {/if}
 
-  <form onsubmit={onSubmit}>
-    {#if emailAlreadyChecked}
-      <p class="text-sm! text-grey mb-4!">{m['auth.modal.totp.emailChecked']()}</p>
-    {:else}
-      <Input
-        id="login-email"
-        bind:value={email}
-        type="email"
-        label={m['auth.modal.email.emailLabel']()}
-        error={step === 'email' ? error : undefined}
-        disabled={loading || step !== 'email'}
-        autocomplete="email"
-        required
-        class="mb-4!"
-      />
+    <form onsubmit={onSubmit}>
+      {#if emailAlreadyChecked}
+        <p class="text-sm! text-grey mb-4!">{m['auth.modal.totp.emailChecked']()}</p>
+      {:else}
+        <Input
+          id="login-email"
+          bind:value={email}
+          type="email"
+          label={m['auth.modal.email.emailLabel']()}
+          error={step === 'email' ? error : undefined}
+          disabled={loading || step !== 'email'}
+          autocomplete="email"
+          required
+          class="mb-4!"
+        />
 
-      {#if step !== 'email'}
+        {#if step !== 'email'}
+          <Button
+            type="button"
+            size="xs"
+            variant="tertiary-no-outline"
+            text={m['auth.modal.code.changeEmail']()}
+            disabled={loading}
+            onclick={onChangeEmail}
+            class="-mt-2! mb-4! text-black! underline"
+          />
+        {/if}
+      {/if}
+
+      {#if terms}
+        <Checkbox
+          id="login-consent"
+          class="text-xs! mt-1!"
+          bind:checked={consented}
+          required
+          disabled={loading || step !== 'email'}
+          label={consentLabel}
+          links={legalLinks()}
+          linksClass="text-xs! leading-5!"
+          onLinkClick={onLegalNavigate}
+          error={consentError}
+        />
+      {:else if consentError}
+        <p class="fr-error-text fr-text--sm" role="alert">{consentError}</p>
         <Button
-          type="button"
-          size="xs"
-          variant="tertiary-no-outline"
-          text={m['auth.modal.code.changeEmail']()}
-          disabled={loading}
-          onclick={onChangeEmail}
-          class="-mt-2! mb-4! text-black! underline"
+          size="sm"
+          variant="secondary"
+          text={m['consent.retry']()}
+          disabled={consentLoading}
+          onclick={() => readConsent(true)}
         />
       {/if}
-    {/if}
 
-    {#if canMergeComparisons}
-      <Checkbox
-        id="login-merge"
-        class="text-xs! mt-1!"
-        bind:checked={mergeComparisons}
-        disabled={step !== 'email'}
-        label={m['auth.modal.merge']()}
-      />
-    {/if}
-
-    {#if terms}
-      <Checkbox
-        id="login-consent"
-        class="text-xs! mt-1!"
-        bind:checked={consented}
-        disabled={loading || step !== 'email' || !consentRequired}
-        label={consentLabel}
-        links={legalLinks()}
-        linksClass="text-xs! leading-5!"
-        onLinkClick={onLegalNavigate}
-        error={consentError}
-      />
-    {:else if consentError}
-      <p class="fr-error-text fr-text--sm" role="alert">{consentError}</p>
-      <Button
-        size="sm"
-        variant="secondary"
-        text={m['consent.retry']()}
-        disabled={consentLoading}
-        onclick={() => readConsent(true)}
-      />
-    {/if}
-
-    {#if step === 'totp'}
-      <TotpCodeInput
-        id="login-totp"
-        bind:value={totpCode}
-        label={m['auth.modal.totp.label']()}
-        help={m['auth.modal.totp.help']()}
-        {error}
-        disabled={loading}
-        groupClass="mt-6!"
-      />
-      <Button
-        type="submit"
-        text={loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
-        disabled={loading || totpCode.length !== 6}
-        class="mt-8 block! w-full!"
-      />
-    {:else if step === 'code'}
-      <Input
-        id="login-code"
-        bind:value={code}
-        type="text"
-        label={m['auth.modal.code.label']()}
-        {error}
-        disabled={loading}
-        inputmode="numeric"
-        maxlength={6}
-        autocomplete="one-time-code"
-        oninput={(e) => {
-          code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6)
-        }}
-        required
-        groupClass="mt-6!"
-      />
-      <Button
-        type="submit"
-        text={loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
-        disabled={loading}
-        class="mt-8 block! w-full!"
-      />
-
-      <div class="mt-3 flex items-center justify-between">
-        <p class="text-sm! text-grey mb-0!">
-          {m['auth.modal.code.notReceived']()}
-        </p>
-        <Button
-          size="xs"
-          variant="tertiary-no-outline"
-          text={m['auth.modal.code.resend']()}
-          disabled={loading}
-          onclick={() => onResend()}
-          class="text-black! underline"
+      {#if canMergeComparisons}
+        <Checkbox
+          id="login-merge"
+          class="text-xs! mt-1!"
+          bind:checked={mergeComparisons}
+          disabled={step !== 'email'}
+          label={m['auth.modal.merge']()}
         />
-      </div>
-    {:else}
-      <Button
-        type="submit"
-        text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-        disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
-        class="mt-8 block! w-full!"
-      />
-    {/if}
-  </form>
+      {/if}
+
+      {#if step === 'totp'}
+        <TotpCodeInput
+          id="login-totp"
+          bind:value={totpCode}
+          label={m['auth.modal.totp.label']()}
+          help={m['auth.modal.totp.help']()}
+          {error}
+          disabled={loading}
+          groupClass="mt-6!"
+        />
+        <Button
+          type="submit"
+          text={loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
+          disabled={loading || totpCode.length !== 6}
+          class="mt-8 block! w-full!"
+        />
+      {:else if step === 'code'}
+        <Input
+          id="login-code"
+          bind:value={code}
+          type="text"
+          label={m['auth.modal.code.label']()}
+          {error}
+          disabled={loading}
+          inputmode="numeric"
+          maxlength={6}
+          autocomplete="one-time-code"
+          oninput={(e) => {
+            code = e.currentTarget.value.replace(/\D/g, '').slice(0, 6)
+          }}
+          required
+          groupClass="mt-6!"
+        />
+        <Button
+          type="submit"
+          text={loading ? m['auth.modal.code.verifying']() : m['auth.modal.code.submit']()}
+          disabled={loading}
+          class="mt-8 block! w-full!"
+        />
+
+        <div class="mt-3 flex items-center justify-between">
+          <p class="text-sm! text-grey mb-0!">
+            {m['auth.modal.code.notReceived']()}
+          </p>
+          <Button
+            size="xs"
+            variant="tertiary-no-outline"
+            text={m['auth.modal.code.resend']()}
+            disabled={loading}
+            onclick={() => onResend()}
+            class="text-black! underline"
+          />
+        </div>
+      {:else}
+        <Button
+          type="submit"
+          text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
+          disabled={loading || consentLoading || !terms || !consented || !email}
+          class="mt-8 block! w-full!"
+        />
+      {/if}
+    </form>
+  {:else}
+    <SurveyFormSignup
+      id="signin-survey"
+      title={m['survey.signup.title']()}
+      description={m['survey.signup.description']()}
+      questions={survey.signupQuestions}
+      answers={survey.signupAnswers}
+      onSuccess={onLoginCompleted}
+    />
+  {/if}
 </div>
