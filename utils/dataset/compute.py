@@ -37,6 +37,7 @@ from .export import StreamingDatasetExporter
 from .models import (
     DatasetComparisonBaseMetadata,
     DatasetComparisonExtraMetadata,
+    DatasetLLM,
     Datasets,
 )
 from .publish import LOCAL_NAMES
@@ -66,10 +67,21 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
 
 
 @alru_cache
+async def get_all_llms_data() -> dict[UUID, DatasetLLM]:
+    """
+    Every LLM, whatever its status, to name and describe the models the
+    published comparisons point at.
+    """
+    async with get_session() as session:
+        llms = (await session.exec(select(LLMData))).all()
+    return {llm.id: DatasetLLM.model_validate(llm) for llm in llms}
+
+
+@alru_cache
 async def get_llms_human_ids() -> dict[str, str]:
     # Datasets carry the readable id, the uuid means nothing outside our db.
     return {
-        str(llm_id): llm.human_id for llm_id, llm in (await get_llms_data()).items()
+        str(llm_id): llm.human_id for llm_id, llm in (await get_all_llms_data()).items()
     }
 
 
@@ -550,7 +562,7 @@ _MODELS_EXCLUDE: dict = {
 _PROPRIETARY_UNKNOWN = ("params", "active_params", "size_class", "required_ram")
 
 
-def _model_metadata(llm: APILLMDataBase) -> dict:
+def _model_metadata(llm: DatasetLLM) -> dict:
     data = llm.model_dump(mode="json", exclude=_MODELS_EXCLUDE)
     if llm.license.kind == "proprietary":
         data.update(dict.fromkeys(_PROPRIETARY_UNKNOWN))
@@ -562,10 +574,10 @@ async def write_models_metadata(export_dir: Path) -> None:
     Describe the models that 'model_a|b' refer to, by their `human_id`.
 
     The `id` stays in the file so rows published while the dataset carried
-    uuids can still be joined. Archived models stay too: rows already
-    published still carry them.
+    uuids can still be joined. Archived and disabled models stay too: rows
+    already published still carry them.
     """
-    llms = sorted((await get_llms_data()).values(), key=lambda llm: llm.human_id)
+    llms = sorted((await get_all_llms_data()).values(), key=lambda llm: llm.human_id)
     export_dir.mkdir(parents=True, exist_ok=True)
     (export_dir / MODELS_FILENAME).write_text(
         json.dumps(
