@@ -9,7 +9,9 @@ from utils.dataset import compute
 NOW = datetime(2026, 1, 1)
 
 
-def llm(human_id: str, status: str = "enabled") -> APILLMDataBase:
+def llm(
+    human_id: str, status: str = "enabled", license_kind: str = "open-source"
+) -> APILLMDataBase:
     return APILLMDataBase.model_validate(
         {
             "id": uuid4(),
@@ -36,7 +38,7 @@ def llm(human_id: str, status: str = "enabled") -> APILLMDataBase:
                 "id": uuid4(),
                 "created_at": NOW,
                 "updated_at": NOW,
-                "kind": "open-source",
+                "kind": license_kind,
                 "name": "Apache 2.0",
                 "reuse": True,
                 "commercial_use": True,
@@ -83,8 +85,10 @@ def test_models_carry_metadata_but_no_internal_plumbing(tmp_path):
     assert model["release_date"] == "2026-01-01"
     assert model["lab"] == {"name": "Lab", "origin_country": "FR"}
     assert model["license"]["name"] == "Apache 2.0"
-    assert "wh_per_million_token" in model and "size_class" in model
+    assert model["size_class"] == "XS"
+    assert model["energy_class"] is not None
     for key in (
+        "wh_per_million_token",
         "api_model_id",
         "endpoint_id",
         "rate_limited",
@@ -95,3 +99,12 @@ def test_models_carry_metadata_but_no_internal_plumbing(tmp_path):
     ):
         assert key not in model
     assert "id" not in model["license"]
+
+
+def test_proprietary_models_hide_their_estimated_size(tmp_path):
+    (model,) = write(tmp_path, [llm("model-a", license_kind="proprietary")])
+
+    for key in ("params", "active_params", "size_class", "required_ram"):
+        assert model[key] is None, key
+    assert model["energy_class"] is not None
+    assert model["arch"] == "dense"

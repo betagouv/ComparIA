@@ -524,8 +524,10 @@ async def write_vote_tags_vocabulary(export_dir: Path) -> None:
 
 MODELS_FILENAME = "models.json"
 
-# Internal plumbing, meaningless outside our db or our providers.
+# Internal plumbing, meaningless outside our db or our providers, and the
+# precise energy figure, an estimate we only publish as its class.
 _MODELS_EXCLUDE: dict = {
+    "wh_per_million_token": True,
     "created_at": True,
     "updated_at": True,
     "api_model_id": True,
@@ -544,6 +546,16 @@ _MODELS_EXCLUDE: dict = {
     "license": {"id", "created_at", "updated_at"},
 }
 
+# Labs don't disclose these for proprietary models, ours are estimates.
+_PROPRIETARY_UNKNOWN = ("params", "active_params", "size_class", "required_ram")
+
+
+def _model_metadata(llm: APILLMDataBase) -> dict:
+    data = llm.model_dump(mode="json", exclude=_MODELS_EXCLUDE)
+    if llm.license.kind == "proprietary":
+        data.update(dict.fromkeys(_PROPRIETARY_UNKNOWN))
+    return data
+
 
 async def write_models_metadata(export_dir: Path) -> None:
     """
@@ -557,7 +569,7 @@ async def write_models_metadata(export_dir: Path) -> None:
     export_dir.mkdir(parents=True, exist_ok=True)
     (export_dir / MODELS_FILENAME).write_text(
         json.dumps(
-            [llm.model_dump(mode="json", exclude=_MODELS_EXCLUDE) for llm in llms],
+            [_model_metadata(llm) for llm in llms],
             ensure_ascii=False,
             indent=2,
         )
