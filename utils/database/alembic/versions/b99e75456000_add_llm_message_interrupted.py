@@ -1,7 +1,7 @@
 """add llm_message interrupted
 
 Revision ID: b99e75456000
-Revises: 269a5fc3959c
+Revises: 5c8bd69940b5
 Create Date: 2026-09-15 16:20:17.000106
 
 """
@@ -14,7 +14,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "b99e75456000"
-down_revision: Union[str, Sequence[str], None] = "269a5fc3959c"
+down_revision: Union[str, Sequence[str], None] = "5c8bd69940b5"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
