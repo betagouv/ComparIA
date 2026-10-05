@@ -11,6 +11,11 @@ class ActivityPoint(BaseModel):
     date: date
     prompts: int
     conversations: int
+    # The bucket still under way, with an estimate of what it will hold once
+    # full, or None when it is too early to say.
+    partial: bool = False
+    projected_prompts: int | None = None
+    projected_conversations: int | None = None
 
 
 class StatisticsSummary(BaseModel):

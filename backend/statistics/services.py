@@ -15,6 +15,7 @@ from .models import (
     StatisticsPeriod,
     StatisticsSummary,
 )
+from .projection import bucket_share, day_share, project
 
 logger = logging.getLogger("languia")
 
@@ -119,6 +120,8 @@ async def get_statistics_summary(
                 .order_by(conversation_bucket)
             )
         ).all()
+        now = datetime.now()
+        share_of_today = await day_share(session, now)
 
     def normalize_bucket(value: datetime | date) -> date:
         return value.date() if isinstance(value, datetime) else value
@@ -157,6 +160,17 @@ async def get_statistics_summary(
         )
         for day in activity_dates
     ]
+    if activity:
+        # The last bucket is still filling up: estimate what it will hold.
+        current = activity[-1]
+        bucket_start = datetime.combine(
+            max(current.date, start or current.date), time.min
+        )
+        bucket_end = datetime.combine(_next_bucket(current.date, granularity), time.min)
+        share = bucket_share(bucket_start, bucket_end, now, granularity, share_of_today)
+        current.partial = True
+        current.projected_prompts = project(current.prompts, share)
+        current.projected_conversations = project(current.conversations, share)
     summary = StatisticsSummary(
         period=period,
         granularity=granularity,
