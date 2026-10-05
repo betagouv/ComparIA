@@ -53,6 +53,12 @@ class Settings(BaseSettings):
     # this is here to end a query that has stopped moving, not a slow one.
     DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000
 
+    # Admin activity panel. Its queries run on their own two connections and
+    # stop after this long, so a heavy filter fails alone instead of taking
+    # connections the arena needs.
+    ADMIN_ACTIVITY_STATEMENT_TIMEOUT_MS: int = 15_000
+    ADMIN_ACTIVITY_CACHE_SECONDS: int = 300
+
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
