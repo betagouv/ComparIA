@@ -1,92 +1,119 @@
-name: Check Missing Translations
-
-on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'frontend/locales/messages/*.json'
-      - '.github/workflows/check-translations.yml'
-    types: [opened, synchronize, reopened]
+name: Check translations
 
 permissions:
-  pull-requests: write
+  contents: read
+
+# Lists the French strings a pull request adds or changes, and which of the
+# nearly complete languages still lack them. Languages that are mostly
+# untranslated are left out, or the comment would list thousands of keys.
+on:
+  pull_request:
+    branches:
+      - develop
+      - next
+    paths:
+      - 'frontend/locales/messages/fr.json'
+      - '.github/workflows/check-translations.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-translations:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    timeout-minutes: 5
 
-      - name: Check missing translations
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - name: List French strings the other languages lack
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           python3 << 'EOF'
+          import glob
           import json
           import os
-          import glob
+          import subprocess
 
-          def get_leaf_keys(d, parent_key=""):
-              keys = set()
+          MESSAGES = "frontend/locales/messages"
+          # A language is checked once it covers this share of the French keys
+          COVERAGE = 0.9
+          MAX_LISTED = 50
+
+          def leaves(d, parent=""):
+              out = {}
               for k, v in d.items():
-                  key = f"{parent_key}.{k}" if parent_key else k
+                  key = f"{parent}.{k}" if parent else k
                   if isinstance(v, dict):
-                      keys |= get_leaf_keys(v, key)
-                  elif v:  # skip empty strings
-                      keys.add(key)
-              return keys
+                      out.update(leaves(v, key))
+                  elif v:
+                      out[key] = v
+              return out
 
-          fr = json.loads(open("frontend/locales/messages/fr.json").read())
-          fr_keys = get_leaf_keys(fr)
+          fr = leaves(json.load(open(f"{MESSAGES}/fr.json")))
+          base = subprocess.run(
+              ["git", "show", f"{os.environ['BASE_SHA']}:{MESSAGES}/fr.json"],
+              capture_output=True,
+              text=True,
+          )
+          fr_base = leaves(json.loads(base.stdout)) if base.returncode == 0 else {}
 
-          locale_files = sorted(glob.glob("frontend/locales/messages/*.json"))
-          body_parts = []
+          added = sorted(k for k in fr if k not in fr_base)
+          changed = sorted(k for k in fr if k in fr_base and fr[k] != fr_base[k])
 
-          for filepath in locale_files:
-              lang_code = os.path.basename(filepath).replace(".json", "")
-              if lang_code == "fr":
-                  continue
+          def listing(keys):
+              shown = "\n".join(f"- `{k}`" for k in keys[:MAX_LISTED])
+              if len(keys) > MAX_LISTED:
+                  shown += f"\n- and {len(keys) - MAX_LISTED} more"
+              return shown
 
-              other = json.loads(open(filepath).read())
-              other_keys = get_leaf_keys(other)
-
-              missing = sorted(fr_keys - other_keys)
-              obsolete = sorted(other_keys - fr_keys)
-
-              if missing:
-                  items = "\n".join(f"- `{k}`" for k in missing)
-                  body_parts.append(
-                      f"### `{lang_code}.json` is missing {len(missing)} key(s) present in `fr.json`\n\n"
-                      f"{items}"
-                  )
-
-              if obsolete:
-                  items = "\n".join(f"- `{k}`" for k in obsolete)
-                  body_parts.append(
-                      f"### `{lang_code}.json` has {len(obsolete)} obsolete key(s) not in `fr.json` (should be removed)\n\n"
-                      f"{items}"
-                  )
-
-          if body_parts:
-              body = "## Missing Translations\n\n" + "\n\n".join(body_parts)
+          parts = ["<!-- check-translations -->", "## Translations"]
+          if not added and not changed:
+              parts.append("This pull request adds or changes no French text.")
           else:
-              body = "## Missing Translations\n\nAll locale files are in sync with `fr.json`!"
+              parts.append(
+                  f"This pull request adds {len(added)} and changes {len(changed)} "
+                  "French strings."
+              )
+              for path in sorted(glob.glob(f"{MESSAGES}/*.json")):
+                  lang = os.path.basename(path)[: -len(".json")]
+                  if lang == "fr":
+                      continue
+                  other = leaves(json.load(open(path)))
+                  if len(fr.keys() & other.keys()) < COVERAGE * len(fr):
+                      continue
+                  missing = [k for k in added if k not in other]
+                  if missing:
+                      parts.append(f"### `{lang}` lacks {len(missing)} new strings\n\n{listing(missing)}")
+                  if changed:
+                      parts.append(
+                          f"### `{lang}` may need updating for {len(changed)} changed strings\n\n"
+                          f"{listing(changed)}"
+                      )
 
-          with open("/tmp/comment-body.md", "w") as f:
-              f.write(body)
+          with open(os.environ["RUNNER_TEMP"] + "/comment.md", "w") as f:
+              f.write("\n\n".join(parts) + "\n")
           EOF
 
-      - name: Find existing comment
-        uses: peter-evans/find-comment@v3
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: '## Missing Translations'
-
-      - name: Post or update PR comment
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body-path: /tmp/comment-body.md
-          edit-mode: replace
+      - name: Post or update the comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | contains("<!-- check-translations -->"))) | .id' | head -n 1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          else
+            gh pr comment "$PR" --repo "$REPO" --body-file "$RUNNER_TEMP/comment.md"
+          fi
