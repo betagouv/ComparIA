@@ -35,6 +35,20 @@ If the only admin is locked out, there is no button left. Run the same reset fro
 
 Then sign in with an email code and set the app up again from `/settings`.
 
+## Activity
+
+`/admin/activite` shows what happens in the arena. The two filters at the top, period and model, apply to both tabs and stay in the address, so a link shows a colleague the same view. Mode, cohort, custom dates and archived conversations have no control on the page but still work when set in the address (`mode=`, `cohort=`, `start=`/`end=`, `include_archived=true`).
+
+**Vue d'ensemble** opens on the journey as a funnel: conversations started, those with at least one vote, those where the models were revealed, with the share that goes on at each step. Each step, and each group that stopped before the next one, opens the matching conversations. Under it sit the message counts, the activity over time, and the share of each vote and mode. Prompt checks have their own page under Vérifications. The counts are kept for five minutes; the link at the bottom computes them again. The period still under way is drawn as an estimate of what it will hold once full, read from how a typical day fills up, rather than as the drop its partial count would show.
+
+**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects, keywords and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
+
+To try the panel at the size of a real instance on a debug database:
+
+```bash
+make db-seed-activity COUNT=500000
+```
+
 ## LLMs
 
 `/admin/llms` has four tabs, and the order matters, because a model points at the other three.
