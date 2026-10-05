@@ -4,7 +4,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { PageProps } from './$types'
-  import ConversationActivityChart from './ConversationActivityChart.svelte'
+  import ConversationActivityChart from '$components/ConversationActivityChart.svelte'
 
   const { data }: PageProps = $props()
   const numberFormatter = new Intl.NumberFormat(getLocale())
@@ -82,7 +82,9 @@
           table: m['statistics.activity.tableLabel'](),
           date: m['statistics.activity.dateLabel'](),
           prompts: m['statistics.activity.promptsLabel'](),
-          conversations: m['statistics.activity.conversationsLabel']()
+          conversations: m['statistics.activity.conversationsLabel'](),
+          ongoing: m['statistics.activity.ongoingLabel'](),
+          estimate: m['statistics.activity.estimateLabel']()
         }}
       />
     </section>
