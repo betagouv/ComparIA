@@ -35,6 +35,8 @@ class FakeSession:
             9,
             [(day, 42, 17)],
             [(day, 12)],
+            # The intraday profile: too few messages, so the clock is used.
+            (0, 0),
         ]
 
     async def exec(self, statement):
@@ -68,7 +70,9 @@ def test_get_statistics_summary_aggregates_activity(monkeypatch):
     )
     assert activity_point.prompts == 42
     assert activity_point.conversations == 12
-    assert len(session.statements) == 3
+    assert len(session.statements) == 4
+    assert summary.activity[-1].partial
+    assert not activity_point.partial
     redis.setex.assert_called_once()
 
 
