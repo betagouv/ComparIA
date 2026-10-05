@@ -44,7 +44,7 @@ NOW = datetime(2026, 9, 15, 12, 0)
 PERIODS = RetentionPeriods()
 
 TRUNCATE = text(
-    "TRUNCATE prompt_check_result, user_message, turn, comparison, "
+    "TRUNCATE prompt_check_result, user_message, turn, llm_message, comparison, "
     "auth_consent_log, anonymous_consent_log, auth_session, auth_login_code, "
     "auth_totp_challenge, auth_invite_token, auth_totp, legal_document, "
     "llm_data, llm_lab, llm_license, auth_user CASCADE"
@@ -150,19 +150,26 @@ async def add_comparison(
     visitor_id="matomo-visitor",
     anonymous_user_hash="a" * 64,
     prompt="Bonjour, je m'appelle Camille",
+    cohorts=None,
+    contains_pii=None,
+    archived_at=None,
 ):
     comparison_id, turn_id = uuid.uuid4(), uuid.uuid4()
     await execute(
         "INSERT INTO comparison (id, created_at, updated_at, ip, visitor_id, "
-        "user_id, anonymous_user_hash, participation_terms_version, mode, "
-        "revealed, llm_id_a, llm_id_b) VALUES (:id, :at, :at, :ip, :visitor, "
-        ":user_id, :hash, '1', 'random', false, :llm, :llm)",
+        "user_id, anonymous_user_hash, participation_terms_version, cohorts, "
+        "contains_pii, archived_at, mode, revealed, llm_id_a, llm_id_b) VALUES "
+        "(:id, :at, :at, :ip, :visitor, :user_id, :hash, '1', :cohorts, :pii, "
+        ":archived_at, 'random', false, :llm, :llm)",
         id=comparison_id,
         at=created_at,
         ip=ip,
         visitor=visitor_id,
         user_id=user_id,
         hash=anonymous_user_hash,
+        cohorts=cohorts,
+        pii=contains_pii,
+        archived_at=archived_at,
         llm=LLM_ID,
     )
     await execute(
@@ -182,6 +189,34 @@ async def add_comparison(
         content=prompt,
     )
     return comparison_id, turn_id
+
+
+async def add_answers(execute, turn_id):
+    """Both model answers of a turn, which the turn points at."""
+    message_ids = uuid.uuid4(), uuid.uuid4()
+    for message_id in message_ids:
+        await execute(
+            "INSERT INTO llm_message (id, role, created_at, responded_at, "
+            "updated_at, content, generation_id, tokens, is_cached) VALUES "
+            "(:id, 'assistant', :at, :at, :at, 'Bonjour Camille', 'gen', 3, false)",
+            id=message_id,
+            at=NOW,
+        )
+    await execute(
+        "UPDATE turn SET llm_msg_a_id = :a, llm_msg_b_id = :b WHERE id = :id",
+        a=message_ids[0],
+        b=message_ids[1],
+        id=turn_id,
+    )
+    return message_ids
+
+
+async def add_conversation(execute, created_at, **kwargs):
+    """A comparison with a question, both answers and a moderation result."""
+    comparison_id, turn_id = await add_comparison(execute, created_at, **kwargs)
+    await add_answers(execute, turn_id)
+    await add_prompt_check(execute, created_at, turn_id)
+    return comparison_id
 
 
 async def add_session(execute, user_id, expires_at, revoked_at=None):
@@ -591,5 +626,86 @@ def test_each_rule_follows_its_own_period():
         assert await ids(execute, "prompt_check_result") == {kept_check}
         assert await ids(execute, "auth_session") == {kept_session}
         assert await ids(execute, "auth_consent_log") == {kept_consent}
+
+    run(scenario)
+
+
+async def conversation_counts(execute):
+    return {
+        table: len(await ids(execute, table))
+        for table in (
+            "comparison",
+            "turn",
+            "user_message",
+            "llm_message",
+            "prompt_check_result",
+        )
+    }
+
+
+def test_conversations_flagged_as_personal_go_30_days_after_the_analysis(
+    monkeypatch,
+):
+    monkeypatch.setattr(retention, "CONVERSATION_BATCH_SIZE", 2)
+
+    async def scenario(execute):
+        for _ in range(4):
+            await add_conversation(
+                execute,
+                NOW - timedelta(days=40),
+                contains_pii=True,
+                archived_at=NOW - timedelta(days=31),
+            )
+        # Flagged long after it was written: the clock starts at the analysis.
+        recent_flag = await add_conversation(
+            execute,
+            months_ago(6),
+            contains_pii=True,
+            archived_at=NOW - timedelta(days=29),
+        )
+        # Imported from the legacy schema, without an analysis date.
+        await add_conversation(execute, months_ago(6), contains_pii=True)
+        clean = await add_conversation(execute, months_ago(6), contains_pii=False)
+
+        report = await purge_expired_data(PERIODS, apply=True, now=NOW)
+
+        assert report.counts["pii_conversations"] == 5
+        assert await ids(execute, "comparison") == {recent_flag, clean}
+        assert await conversation_counts(execute) == {
+            "comparison": 2,
+            "turn": 2,
+            "user_message": 2,
+            "llm_message": 4,
+            "prompt_check_result": 2,
+        }
+
+        again = await purge_expired_data(PERIODS, apply=True, now=NOW)
+        assert again.counts["pii_conversations"] == 0
+
+    run(scenario)
+
+
+def test_partner_cohort_conversations_go_after_30_days():
+    async def scenario(execute):
+        await add_conversation(execute, NOW - timedelta(days=31), cohorts="pix")
+        pupil_recent = await add_conversation(
+            execute, NOW - timedelta(days=29), cohorts="pix"
+        )
+        no_cohort = await add_conversation(execute, months_ago(6), cohorts="")
+        untagged = await add_conversation(execute, months_ago(6))
+
+        dry = await purge_expired_data(PERIODS, apply=False, now=NOW)
+        assert dry.counts["cohort_conversations"] == 1
+        assert len(await ids(execute, "comparison")) == 4
+
+        report = await purge_expired_data(PERIODS, apply=True, now=NOW)
+
+        assert report.counts["cohort_conversations"] == 1
+        assert await ids(execute, "comparison") == {
+            pupil_recent,
+            no_cohort,
+            untagged,
+        }
+        assert (await conversation_counts(execute))["llm_message"] == 6
 
     run(scenario)

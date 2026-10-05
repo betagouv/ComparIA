@@ -2,8 +2,9 @@
 
 Accounts are handled by backend/auth/inactivity.py, which has to warn people
 before it erases anything. Everything here goes without notice: it either
-blanks the columns that point back at someone or deletes rows that only
-existed to trace a session or a check.
+blanks the columns that point back at someone, deletes rows that only
+existed to trace a session or a check, or deletes whole conversations that
+will never be published.
 """
 
 import logging
@@ -30,7 +31,9 @@ from utils.database.models.auth import (
     User,
 )
 from utils.database.models.comparison import Comparison
+from utils.database.models.messages import LLMMessage, UserMessage
 from utils.database.models.prompt_check import PromptCheckResult
+from utils.database.models.turn import Turn
 from utils.database.session import get_session
 
 logger = logging.getLogger("comparia.db")
@@ -38,6 +41,10 @@ logger = logging.getLogger("comparia.db")
 # Rows touched per transaction. The comparison table holds millions of rows
 # and the arena keeps writing to it: small batches keep each lock short.
 BATCH_SIZE = 5000
+# A conversation brings its turns and messages along, and the ids of a batch
+# travel as query parameters: smaller batches stay far below the driver's
+# limit on parameters.
+CONVERSATION_BATCH_SIZE = 200
 
 
 @dataclass
@@ -56,6 +63,14 @@ class RetentionPeriods:
     # Proof that the terms were accepted, counted from the account's
     # deletion, or from the end of the anonymous session for a visitor.
     consent_years: int = 5
+    # Conversations the analysis flagged as holding personal data. They are
+    # never published nor counted in the ranking; the delay leaves time to
+    # catch a wrong flag. Counted from the analysis.
+    pii_days: int = 30
+    # Conversations that came through a partner programme, Pix pupils for
+    # now. They are never published, and nothing reads them once the
+    # anonymous session, 30 days at most, is over.
+    cohort_days: int = 30
 
 
 @dataclass
@@ -71,6 +86,8 @@ class _Rule:
     where: ColumnElement[bool]
     # None deletes the matching rows, otherwise the columns to overwrite.
     values: dict | None = None
+    # Delete the matching comparisons with their turns and messages.
+    whole_conversations: bool = False
 
 
 def _rules(periods: RetentionPeriods, now: datetime) -> list[_Rule]:
@@ -79,6 +96,8 @@ def _rules(periods: RetentionPeriods, now: datetime) -> list[_Rule]:
     session_cutoff = add_months(now, -periods.session_months)
     prompt_check_cutoff = add_months(now, -periods.prompt_check_months)
     consent_cutoff = add_months(now, -12 * periods.consent_years)
+    pii_cutoff = now - timedelta(days=periods.pii_days)
+    cohort_cutoff = now - timedelta(days=periods.cohort_days)
     # An anonymous session cannot outlive its cookie, which is never renewed,
     # so its last use is at most that long after the consent.
     anonymous_consent_cutoff = consent_cutoff - timedelta(
@@ -108,6 +127,29 @@ def _rules(periods: RetentionPeriods, now: datetime) -> list[_Rule]:
     )
 
     return [
+        # First, so the rules below do not blank rows about to go.
+        _Rule(
+            "pii_conversations",
+            Comparison,
+            and_(
+                col(Comparison.contains_pii).is_(True),
+                # The analysis sets archived_at; rows imported from the
+                # legacy schema may lack it.
+                func.coalesce(col(Comparison.archived_at), col(Comparison.created_at))
+                < pii_cutoff,
+            ),
+            whole_conversations=True,
+        ),
+        _Rule(
+            "cohort_conversations",
+            Comparison,
+            and_(
+                col(Comparison.cohorts).is_not(None),
+                col(Comparison.cohorts) != "",
+                col(Comparison.created_at) < cohort_cutoff,
+            ),
+            whole_conversations=True,
+        ),
         _Rule(
             "comparison_identifiers",
             Comparison,
@@ -200,6 +242,8 @@ async def _apply(rule: _Rule) -> int:
     """Run the rule in batches, each in its own transaction, until no row
     matches. A batch only picks rows that still match, so a run that stops
     halfway leaves nothing half done and the next one carries on."""
+    if rule.whole_conversations:
+        return await _delete_conversations(rule)
     total = 0
     while True:
         batch = select(rule.table.id).where(rule.where).limit(BATCH_SIZE)
@@ -215,6 +259,50 @@ async def _apply(rule: _Rule) -> int:
             await session.commit()
         total += result.rowcount
         if result.rowcount < BATCH_SIZE:
+            return total
+
+
+async def _delete_conversations(rule: _Rule) -> int:
+    """Delete the comparisons the rule matches, in batches like _apply. The
+    foreign keys carry no ON DELETE CASCADE: what points at a turn goes
+    first, then the turns, then the model messages they pointed at."""
+    total = 0
+    while True:
+        async with get_session() as session:
+            comparison_ids = (
+                await session.exec(
+                    select(col(Comparison.id))
+                    .where(rule.where)
+                    .limit(CONVERSATION_BATCH_SIZE)
+                )
+            ).all()
+            turns = (
+                await session.exec(
+                    select(
+                        col(Turn.id), col(Turn.llm_msg_a_id), col(Turn.llm_msg_b_id)
+                    ).where(col(Turn.comparison_id).in_(comparison_ids))
+                )
+            ).all()
+            turn_ids = [turn_id for turn_id, _, _ in turns]
+            message_ids = [
+                message_id
+                for _, msg_a, msg_b in turns
+                for message_id in (msg_a, msg_b)
+                if message_id is not None
+            ]
+            for statement in (
+                sa_delete(PromptCheckResult).where(
+                    col(PromptCheckResult.turn_id).in_(turn_ids)
+                ),
+                sa_delete(UserMessage).where(col(UserMessage.turn_id).in_(turn_ids)),
+                sa_delete(Turn).where(col(Turn.id).in_(turn_ids)),
+                sa_delete(LLMMessage).where(col(LLMMessage.id).in_(message_ids)),
+                sa_delete(Comparison).where(col(Comparison.id).in_(comparison_ids)),
+            ):
+                await session.execute(statement)
+            await session.commit()
+        total += len(comparison_ids)
+        if len(comparison_ids) < CONVERSATION_BATCH_SIZE:
             return total
 
 
