@@ -14,6 +14,8 @@ async def purge_retention(
     session_months: int = DEFAULTS.session_months,
     prompt_check_months: int = DEFAULTS.prompt_check_months,
     consent_years: int = DEFAULTS.consent_years,
+    pii_days: int = DEFAULTS.pii_days,
+    cohort_days: int = DEFAULTS.cohort_days,
     apply: bool = False,
 ) -> None:
     """Blank or delete what the privacy policy says is kept no longer.
@@ -24,8 +26,10 @@ async def purge_retention(
     session, and deletes session rows, login codes and 2FA challenges
     session-months after they stopped working, moderation results older than
     prompt-check-months, and consent proofs consent-years after the account
-    was deleted or the anonymous session ended. Accounts themselves are
-    handled by purge-inactive.
+    was deleted or the anonymous session ended. Deletes whole conversations
+    pii-days after the analysis flagged them as holding personal data, and
+    cohort-days after they came through a partner programme. Accounts
+    themselves are handled by purge-inactive.
     """
     if not settings.COMPARIA_DB_URI:
         logger.warning("[retention] COMPARIA_DB_URI is not set, nothing to do")
@@ -37,6 +41,8 @@ async def purge_retention(
         session_months=session_months,
         prompt_check_months=prompt_check_months,
         consent_years=consent_years,
+        pii_days=pii_days,
+        cohort_days=cohort_days,
     )
     if min(vars(periods).values()) < 1:
         logger.error("[retention] refused: every period must be at least 1")

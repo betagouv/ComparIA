@@ -27,6 +27,8 @@ action = importlib.import_module("utils.database.actions.purge_retention")
         "session_months",
         "prompt_check_months",
         "consent_years",
+        "pii_days",
+        "cohort_days",
     ],
 )
 def test_refuses_a_period_under_one(monkeypatch, period):
@@ -52,3 +54,5 @@ def test_passes_the_periods_through(monkeypatch):
     assert seen["periods"].ip_months == 2
     assert seen["periods"].comparison_months == 24
     assert seen["periods"].consent_years == 6
+    assert seen["periods"].pii_days == 30
+    assert seen["periods"].cohort_days == 30
