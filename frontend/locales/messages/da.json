@@ -45,6 +45,145 @@
         "selectLanguage": "Vælg sprog"
     },
     "admin": {
+        "activity": {
+            "title": "Aktivitet",
+            "subTitle": "Hvad der sker i arenaen: de stillede spørgsmål, de sammenlignede modeller, stemmerne.",
+            "tabs": {
+                "overview": "Overblik",
+                "conversations": "Samtaler"
+            },
+            "filters": {
+                "label": "Filtre",
+                "period": "Periode",
+                "model": "Model",
+                "search": "Søg i beskederne",
+                "periodsShort": {
+                    "24h": "24 t",
+                    "7d": "7 d",
+                    "30d": "30 d",
+                    "90d": "90 d",
+                    "365d": "12 md",
+                    "all": "Alle"
+                },
+                "journey": "Forløb",
+                "allModels": "Alle modeller",
+                "allJourneys": "Alle forløb"
+            },
+            "modes": {
+                "random": "Tilfældig",
+                "big-vs-small": "Stor mod lille",
+                "small-models": "Små modeller",
+                "custom": "Valgt manuelt"
+            },
+            "choices": {
+                "a_better": "A er bedst",
+                "b_better": "B er bedst",
+                "both_good": "Begge er gode",
+                "both_bad": "Begge er dårlige",
+                "idk": "Ved ikke",
+                "none": "Ingen stemme"
+            },
+            "flags": {
+                "pii": "Personoplysninger",
+                "spam": "Spam",
+                "error": "Fejl",
+                "archived": "Arkiveret",
+                "not_analyzed": "Ikke analyseret endnu"
+            },
+            "overview": {
+                "computedAt": "Tal beregnet kl. {time}",
+                "refresh": "Opdater",
+                "metrics": {
+                    "conversations": "Samtaler",
+                    "prompts": "Sendte beskeder",
+                    "voteRate": "Beskeder med stemme",
+                    "commentRate": "Beskeder med kommentar",
+                    "promptsPerConversation": "Beskeder pr. samtale",
+                    "errorRate": "Samtaler med fejl"
+                },
+                "ofPrompts": "{count} af {total} beskeder",
+                "ofConversations": "{count} af {total} samtaler",
+                "activityTitle": "Aktivitet over tid",
+                "activityChartTitle": "Samtaler og beskeder",
+                "activityTable": "Samtaler og beskeder pr. periode",
+                "activityDate": "Periode",
+                "funnelTitle": "Forløb",
+                "funnel": {
+                    "started": "Påbegyndte samtaler",
+                    "voted": "Med mindst én stemme",
+                    "revealed": "Modeller afsløret",
+                    "continue": "{share} fortsætter",
+                    "dropped": "{count} stopper her"
+                },
+                "choicesTitle": "Stemmer",
+                "modesTitle": "Tilstande",
+                "empty": "Ingen samtaler i denne periode.",
+                "unvoted": "Uden stemme: {count} beskeder ({share})"
+            },
+            "conversations": {
+                "caption": "Samtaler",
+                "cols": {
+                    "date": "Dato",
+                    "models": "Modeller",
+                    "conversation": "Samtale",
+                    "journey": "Forløb"
+                },
+                "count": "{count} samtaler",
+                "countCapped": "Mere end {count} samtaler",
+                "next": "Næste",
+                "first": "Tilbage til de nyeste",
+                "empty": "Ingen samtaler matcher disse filtre.",
+                "hiddenPrompt": "Skjult: personoplysninger",
+                "open": "Åbn siden",
+                "previous": "Forrige",
+                "nextOne": "Næste",
+                "turnsCount": "{count} beskeder"
+            },
+            "conversation": {
+                "title": "Samtale",
+                "back": "Tilbage til samtalerne",
+                "prompt": "Besked {index}",
+                "analysis": "Analyse",
+                "notAnalyzed": "Denne samtale er ikke analyseret endnu.",
+                "summary": "Resumé",
+                "keywords": "Nøgleord",
+                "categories": "Emner",
+                "languages": "Sprog",
+                "details": "Detaljer",
+                "mode": "Tilstand",
+                "cohort": "Kohorte",
+                "revealed": "Modeller afsløret",
+                "yes": "Ja",
+                "no": "Nej",
+                "archived": "Arkiveret: {reason}",
+                "error": "Fejl: {code}",
+                "systemPrompts": "Systeminstruktioner",
+                "piiWarning": "Analysen fandt personoplysninger i denne samtale. Teksten er skjult.",
+                "show": "Vis teksten",
+                "unknownModel": "Slettet model",
+                "tokens": "tokens",
+                "noAnswer": "Intet svar: fejl eller timeout.",
+                "vote": "Stemme: {choice}",
+                "readMore": "Læs mere",
+                "readLess": "Vis mindre",
+                "versus": "{a} mod {b}"
+            },
+            "errors": {
+                "timeout": "Forespørgslen tog for lang tid. Afgræns perioden eller fjern nogle filtre.",
+                "generic": "Dataene kunne ikke indlæses."
+            },
+            "verdicts": {
+                "preferred": "Foretrukket",
+                "rejected": "Fravalgt",
+                "mixed": "Delte meninger"
+            },
+            "stages": {
+                "started": "Ingen stemme",
+                "voted": "Stemt",
+                "revealed": "Afsløret",
+                "commented": "Kommenteret"
+            }
+        },
         "endpointKey": {
             "hint": "Lad feltet stå tomt for at beholde den aktuelle nøgle. Indtast en ny for at erstatte den.",
             "remove": "Fjern nøgle",
@@ -168,6 +307,7 @@
             "title": "LLM-datakonfiguration"
         },
         "nav": {
+            "activity": "Aktivitet",
             "authentification": "Autentificering",
             "customization": "Tilpasning",
             "legal": "Juridiske dokumenter",
@@ -2017,6 +2157,8 @@
         "activity": {
             "conversationsLabel": "Samtaler",
             "dateLabel": "Dato",
+            "estimateLabel": "skøn for den igangværende periode",
+            "ongoingLabel": "i gang",
             "promptsLabel": "Indsendte prompts",
             "sectionTitle": "Aktivitet",
             "tableLabel": "Vis data som tabel",
