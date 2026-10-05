@@ -134,6 +134,10 @@ tests:
             - "12"
             - --consent-years
             - "5"
+            - --pii-days
+            - "30"
+            - --cohort-days
+            - "30"
             - --apply
 
   - it: passes overridden periods to the purge-retention CronJob
@@ -142,6 +146,7 @@ tests:
       cronjobs.purgeRetention.enabled: true
       cronjobs.purgeRetention.ipMonths: 1
       cronjobs.purgeRetention.consentYears: 6
+      cronjobs.purgeRetention.cohortDays: 7
     asserts:
       - equal:
           path: spec.jobTemplate.spec.template.spec.containers[0].command[4]
@@ -149,6 +154,9 @@ tests:
       - equal:
           path: spec.jobTemplate.spec.template.spec.containers[0].command[12]
           value: "6"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[16]
+          value: "7"
       - contains:
           path: spec.jobTemplate.spec.template.spec.containers[0].env
           content:

@@ -44,6 +44,10 @@ spec:
                 - {{ $periods.promptCheckMonths | int | quote }}
                 - --consent-years
                 - {{ $periods.consentYears | int | quote }}
+                - --pii-days
+                - {{ $periods.piiDays | int | quote }}
+                - --cohort-days
+                - {{ $periods.cohortDays | int | quote }}
                 - --apply
               envFrom:
                 - secretRef:
