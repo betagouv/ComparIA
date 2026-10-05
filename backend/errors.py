@@ -108,3 +108,14 @@ class LogoRejectedError(HTTPException):
         self, reason: Literal["logo_unsupported_type", "logo_too_large", "logo_invalid"]
     ) -> None:
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, detail=reason)
+
+
+class ActivityQueryTimeoutError(HTTPException):
+    """An admin activity query that ran past its statement timeout. The admin
+    can narrow the period or the filters and try again."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="activity_query_timeout",
+        )

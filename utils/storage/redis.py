@@ -54,6 +54,9 @@ REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
 REDIS_STATISTICS_SUMMARY_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}statistics:summary:{{period}}"
 )
+REDIS_ADMIN_ACTIVITY_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}admin_activity:{{name}}:{{digest}}"
+)
 REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 # Consecutive failures of the prompt check, written by the runner and read by
 # the admin panel. A check that quietly stops working looks exactly like a

@@ -7,6 +7,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from backend.admin.activity import router as admin_activity_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import normalize_logo
 from backend.admin.publishing import router as admin_publishing_router
@@ -99,6 +100,7 @@ router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
 )
 
+router.include_router(admin_activity_router)
 router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_vote_tags_router)
