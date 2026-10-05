@@ -1,7 +1,12 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'
-import type { HandleClientError } from '@sveltejs/kit'
+import type { ClientInit, HandleClientError } from '@sveltejs/kit'
+import { loadLocaleMessages } from 'virtual:locale-messages'
+
+// Runs before SvelteKit loads any page or layout, so every message function
+// already has its locale. See src/vite/paraglideLocaleSplit.ts.
+export const init: ClientInit = loadLocaleMessages
 
 // Catches UnauthorizedError thrown by any load() before the root layout's
 // onMount registers the redirect/modal handler (e.g. on first navigation),

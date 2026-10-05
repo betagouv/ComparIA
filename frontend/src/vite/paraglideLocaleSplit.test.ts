@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { dropFallbackReexports, fallbackOf, splitLocaleImports } from './paraglideLocaleSplit'
+import {
+  dropFallbackReexports,
+  fallbackOf,
+  localeLoaderModule,
+  splitLocaleImports
+} from './paraglideLocaleSplit'
 
 const settings = { locales: ['da', 'fr', 'nb-NO'], baseLocale: 'fr' }
 
@@ -28,29 +33,16 @@ const index = [
 ].join('\n')
 
 describe('splitLocaleImports', () => {
-  it('replaces the static imports with one dynamic import picked by getLocale', () => {
-    const out = splitLocaleImports(index, settings, new Map())
+  it('replaces the static imports with the virtual module binding', () => {
+    const out = splitLocaleImports(index, settings)
 
     expect(out).not.toMatch(/^import \* as/m)
-    expect(out).toContain(
-      'const __messages = await ({ "da": () => import("./da.js"), "fr": () => import("./fr.js"), ' +
-        '"nb-NO": () => import("./nb-NO.js") }[getLocale()] ?? (() => import("./fr.js")))()'
-    )
-    expect(out).toContain('const __da = __messages, __fr = __messages, __nb_no2 = __messages')
-  })
-
-  it('loads the base locale alongside a locale that falls back on it', () => {
-    const out = splitLocaleImports(index, settings, new Map([['nb-NO', 'fr']]))
-
-    expect(out).toContain(
-      '"nb-NO": () => Promise.all([import("./fr.js"), import("./nb-NO.js")])' +
-        '.then(([base, own]) => ({ ...base, ...own }))'
-    )
-    expect(out).toContain('"da": () => import("./da.js")')
+    expect(out).not.toContain('await')
+    expect(out).toContain('import { messages as __messages } from "virtual:locale-messages"')
   })
 
   it('collapses every dispatcher to one call and keeps the exports', () => {
-    const out = splitLocaleImports(index, settings, new Map())
+    const out = splitLocaleImports(index, settings)
 
     expect(out).not.toContain('if (locale ===')
     expect(out).toContain(
@@ -63,23 +55,59 @@ describe('splitLocaleImports', () => {
 
   it('throws when the import block is missing', () => {
     const noImports = index.replace(/^import \* as .*\n/gm, '')
-    expect(() => splitLocaleImports(noImports, settings, new Map())).toThrow(/no `import \* as/)
+    expect(() => splitLocaleImports(noImports, settings)).toThrow(/no `import \* as/)
   })
 
   it('throws when the imported locales differ from settings.json', () => {
-    expect(() =>
-      splitLocaleImports(index, { ...settings, locales: ['da', 'fr'] }, new Map())
-    ).toThrow(/imports \[da,fr,nb-NO\] but settings.json lists \[da,fr\]/)
+    expect(() => splitLocaleImports(index, { ...settings, locales: ['da', 'fr'] })).toThrow(
+      /imports \[da,fr,nb-NO\] but settings.json lists \[da,fr\]/
+    )
   })
 
   it('throws when a dispatcher body has an unexpected shape', () => {
     const odd = index.replace('\treturn __fr.bye(inputs)', '\treturn __fr.bye(inputs, options)')
-    expect(() => splitLocaleImports(odd, settings, new Map())).toThrow(/collapsed 1 of 2/)
+    expect(() => splitLocaleImports(odd, settings)).toThrow(/collapsed 1 of 2/)
   })
 
   it('throws when getLocale is no longer imported', () => {
     const noRuntime = index.replace('getLocale, ', '')
-    expect(() => splitLocaleImports(noRuntime, settings, new Map())).toThrow(/getLocale/)
+    expect(() => splitLocaleImports(noRuntime, settings)).toThrow(/getLocale/)
+  })
+})
+
+describe('localeLoaderModule', () => {
+  const dir = '/app/src/lib/i18n/messages'
+
+  it('picks one locale with getLocale, inside a function', () => {
+    const out = localeLoaderModule(settings, new Map(), dir)
+
+    expect(out).toContain('import { getLocale } from "/app/src/lib/i18n/runtime.js"')
+    expect(out).toContain(
+      'const loaders = { "da": () => import("/app/src/lib/i18n/messages/da.js"), ' +
+        '"fr": () => import("/app/src/lib/i18n/messages/fr.js"), ' +
+        '"nb-NO": () => import("/app/src/lib/i18n/messages/nb-NO.js") }'
+    )
+    expect(out).toContain(
+      'messages = await (loaders[getLocale()] ?? (() => import("/app/src/lib/i18n/messages/fr.js")))()'
+    )
+    expect(out).not.toMatch(/^const \w+ = await/m)
+  })
+
+  it('loads the base locale alongside a locale that falls back on it', () => {
+    const out = localeLoaderModule(settings, new Map([['nb-NO', 'fr']]), dir)
+
+    expect(out).toContain(
+      '"nb-NO": () => Promise.all([import("/app/src/lib/i18n/messages/fr.js"), ' +
+        'import("/app/src/lib/i18n/messages/nb-NO.js")]).then(([base, own]) => ({ ...base, ...own }))'
+    )
+  })
+
+  it('names the mistake when a message runs before the load', async () => {
+    const out = localeLoaderModule(settings, new Map(), dir).replace(/^import .*$/m, '')
+    const url = `data:text/javascript,${encodeURIComponent(out)}`
+    const { messages } = await import(/* @vite-ignore */ url)
+
+    expect(() => messages.hello({})).toThrow(/"hello" used before loadLocaleMessages\(\)/)
   })
 })
 
