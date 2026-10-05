@@ -1,3 +1,9 @@
+from backend.activity.models import (
+    ActivityConversation,
+    ActivityConversationsPage,
+    ActivityFilterOptions,
+    ActivityOverview,
+)
 from backend.admin.router import (
     AdminLegalDocument,
     PublishLegalDocumentBody,
