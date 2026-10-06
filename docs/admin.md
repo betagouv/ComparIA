@@ -86,22 +86,13 @@ An optional domain allowlist restricts who can ask for a login code, which is ho
 
 `/admin/utilisateurs` is where you search accounts, change roles, invite people by email, reset someone's two-factor authentication and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
-## Audience measurement
-
-Matomo only stays exempt from consent while its data is kept apart from the arena's. Comparisons no longer keep the Matomo visitor id, but older rows may still hold one. Count them, then clear them:
-
-```bash
-make db-clear-visitor-ids            # counts, changes nothing
-make db-clear-visitor-ids COMMIT=1   # clears them
-```
-
 ### Inactive accounts
 
 `comparia-cli db purge-inactive --months N` (or `make db-purge-inactive MONTHS=N`) removes accounts nobody has signed into for N months. The default is 24, the two years the privacy policy states. It is a dry run until you pass `--apply` (`APPLY=1` with make): it lists who would get the warning, who would be erased, which rows asked for a login code but never signed in, and which admins would have matched. Run it that way from the CLI first to preview what the CronJob below will do.
 
 An account is first warned by email, once, 30 days before the deadline or as soon as it is found past it, in the language the person accepted the terms in. It is erased at the later of the deadline and 30 days after the warning, unless the person signs in again meanwhile, which resets the clock. Erasure is what the person gets when they delete their own account from the settings page, which goes further than a deletion from the admin panel: sessions are revoked, login codes and invite links go, the email address is replaced by a placeholder, the consent proof is kept without its address, and the conversations stay in the research datasets with no link back to the person. Rows that asked for a login code but never signed in are erased without a warning once past the deadline, as there was never an account to keep. Accounts holding an invite that can still be accepted are left alone. Admins are never erased, only listed. "Signed in" is what counts, not visits: a session lasts `AUTH_SESSION_LENGTH_DAYS` (30 by default), so the command refuses a number of months whose window, 30 days of notice included, would reach an account still on a live session.
 
-The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: the CronJob reads the same `config.smtp.*` and `config.appUrl` values as the backend, and without them no warning goes out and nothing is erased.
+The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: the CronJob reads the same `config.smtp.*` and `config.appUrl` values as the backend, and without them no warning goes out. Accounts warned on an earlier run, and rows that never signed in, are still erased.
 
 ### Retention
 
@@ -112,12 +103,21 @@ The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by
 - session rows, login codes and 2FA challenges are deleted 12 months after they expired or were revoked (`--session-months`). An account that still exists keeps its latest session row, with the IP and browser blanked: `purge-inactive` reads it to tell a dormant account, which gets a warning, from a login code nobody used, which does not. A consent proof that names a deleted session keeps everything but that link.
 - moderation results are deleted after 12 months (`--prompt-check-months`).
 - consent proofs are deleted 5 years after the account was deleted, or after the anonymous session ended for a visitor who never signed in (`--consent-years`).
-- conversations the analysis flagged as holding personal data are deleted 30 days after the analysis (`--pii-days`), with their turns, messages and moderation results. They are never published nor counted in the ranking; the 30 days leave time to catch a wrong flag. Rows imported without an analysis date count from their creation.
-- conversations that came through a partner programme (the `cohorts` column, Pix pupils for now) are deleted 30 days after they were written (`--cohort-days`), the same way. They are never published.
+- conversations the analysis flagged as holding personal data are deleted 30 days after the analysis (`--pii-days`), with their turns, messages and moderation results. They are never published nor counted in the ranking. Rows imported without an analysis date count from their creation.
+- conversations that came through a partner programme (the `cohorts` column, Pix pupils for now) are deleted 30 days after they were written (`--cohort-days`), the same way. They are never published nor counted in the ranking, so only the person's own history loses them.
 
 Accounts themselves are left to `purge-inactive`. Like it, the command is a dry run until you pass `--apply`, and only counts the rows each rule would change. The dry run counts each rule against today's data, so the anonymous consents freed by deleting an account's proof in the same run only show up once applied.
 
 The Helm chart runs it daily with `cronjobs.purgeRetention`, off by default. Change the periods there and in the published privacy policy together: the policy is what people were told.
+
+## Audience measurement
+
+Matomo only stays exempt from consent while its data is kept apart from the arena's. Comparisons no longer keep the Matomo visitor id, but older rows may still hold one. Count them, then clear them:
+
+```bash
+make db-clear-visitor-ids            # counts, changes nothing
+make db-clear-visitor-ids COMMIT=1   # clears them
+```
 
 ## Publishing
 

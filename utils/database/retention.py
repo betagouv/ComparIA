@@ -64,12 +64,11 @@ class RetentionPeriods:
     # deletion, or from the end of the anonymous session for a visitor.
     consent_years: int = 5
     # Conversations the analysis flagged as holding personal data. They are
-    # never published nor counted in the ranking; the delay leaves time to
-    # catch a wrong flag. Counted from the analysis.
+    # never published nor counted in the ranking. Counted from the analysis.
     pii_days: int = 30
     # Conversations that came through a partner programme, Pix pupils for
-    # now. They are never published, and nothing reads them once the
-    # anonymous session, 30 days at most, is over.
+    # now. They are never published nor counted in the ranking; only the
+    # person's own history shows them.
     cohort_days: int = 30
 
 
