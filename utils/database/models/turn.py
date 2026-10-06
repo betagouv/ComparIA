@@ -34,7 +34,7 @@ KeywordAnnotations = Annotated[list[str], Field(sa_type=JSONB)]
 
 
 class TurnBase(BaseDBModel):
-    comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id")]
+    comparison_id: Annotated[uuid.UUID, Field(foreign_key="comparison.id", index=True)]
     choice: Annotated[TurnChoice | None, Field(sa_type=String)] = None
     # Set when the user submits their choice vote (once per turn). Used to
     # measure how long they took to vote after both models finished.
