@@ -39,6 +39,11 @@ def _before_send(event: dict, hint: dict) -> dict:
     for breadcrumb in event.get("breadcrumbs", {}).get("values", []):
         if "data" in breadcrumb:
             breadcrumb["data"] = _scrub(breadcrumb["data"])
+        # Every log line of the request rides along as a breadcrumb, already
+        # formatted, so a line that interpolated a prompt or an address would
+        # leave with it. The level and logger name still say what ran.
+        if breadcrumb.get("type") == "log":
+            breadcrumb.pop("message", None)
     event["extra"] = _scrub(event.get("extra", {}))
     return event
 
