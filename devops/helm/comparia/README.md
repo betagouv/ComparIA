@@ -159,6 +159,8 @@ Each of the five is independently toggleable — there is no combined switch.
 | `cronjobs.purgeRetention.sessionMonths` | `12` | Months after a session, login code or 2FA challenge stopped working before it is deleted. |
 | `cronjobs.purgeRetention.promptCheckMonths` | `12` | Months before a moderation result is deleted. |
 | `cronjobs.purgeRetention.consentYears` | `5`  | Years after an account's deletion, or an anonymous session's end, before its consent proof is deleted. |
+| `cronjobs.purgeRetention.piiDays` | `30` | Days after the analysis flagged a conversation as holding personal data before it is deleted. |
+| `cronjobs.purgeRetention.cohortDays` | `30` | Days before a conversation from a partner programme (Pix) is deleted. |
 
 #### Dataset publication
 

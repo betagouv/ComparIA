@@ -182,7 +182,8 @@ cronjobs:
     activeDeadlineSeconds: 21600
   ## -- Warns then erases accounts not signed in for `months`. Off by default: the
   ## privacy policy has to state the retention period before it runs. Needs SMTP
-  ## configured, otherwise nobody is warned and nothing is erased.
+  ## configured, otherwise nobody is warned; accounts warned earlier and rows
+  ## that never signed in are still erased.
   purgeInactive:
     enabled: false
     schedule: "20 4 * * 1"
