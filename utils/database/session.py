@@ -80,6 +80,43 @@ def get_engine() -> AsyncEngine | None:
     return _engine
 
 
+_activity_engine: AsyncEngine | None = None
+
+
+def get_activity_engine() -> AsyncEngine | None:
+    """
+    The admin activity panel's engine. Its aggregates read every comparison of
+    a period, and an admin can pick a period of several years: they get two
+    connections of their own and a statement timeout, so the worst filter an
+    admin can build fails on its own instead of starving the arena's pool.
+    """
+    global _activity_engine
+    if not settings.COMPARIA_DB_URI:
+        return None
+    if _activity_engine is None:
+        _activity_engine = create_async_engine(
+            _async_url(settings.COMPARIA_DB_URI),
+            pool_size=2,
+            max_overflow=0,
+            connect_args={
+                "options": (
+                    "-c statement_timeout="
+                    f"{settings.ADMIN_ACTIVITY_STATEMENT_TIMEOUT_MS}"
+                )
+            },
+        )
+    return _activity_engine
+
+
+@asynccontextmanager
+async def get_activity_session() -> AsyncGenerator[AsyncSession, None]:
+    engine = get_activity_engine()
+    if engine is None:
+        raise RuntimeError("COMPARIA_DB_URI is not configured")
+    async with AsyncSession(engine) as session:
+        yield session
+
+
 async def init_db():
     engine = get_engine()
     if engine is None:

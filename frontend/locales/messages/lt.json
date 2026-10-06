@@ -200,6 +200,8 @@
         "activity": {
             "conversationsLabel": "Pokalbiai",
             "dateLabel": "Data",
+            "estimateLabel": "dabartinio laikotarpio įvertis",
+            "ongoingLabel": "vyksta",
             "promptsLabel": "Pateiktos užklausos",
             "sectionTitle": "Aktyvumas",
             "tableLabel": "Rodyti duomenis lentelėje",

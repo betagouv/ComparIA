@@ -46,6 +46,145 @@
         "selectLanguage": "Select a language"
     },
     "admin": {
+        "activity": {
+            "title": "Activity",
+            "subTitle": "What happens in the arena: the questions asked, the models compared, the votes.",
+            "tabs": {
+                "overview": "Overview",
+                "conversations": "Conversations"
+            },
+            "filters": {
+                "label": "Filters",
+                "period": "Period",
+                "model": "Model",
+                "search": "Search the messages",
+                "periodsShort": {
+                    "24h": "24 h",
+                    "7d": "7 d",
+                    "30d": "30 d",
+                    "90d": "90 d",
+                    "365d": "12 mo",
+                    "all": "All"
+                },
+                "journey": "Journey",
+                "allModels": "All models",
+                "allJourneys": "All journeys"
+            },
+            "modes": {
+                "random": "Random",
+                "big-vs-small": "Big against small",
+                "small-models": "Small models",
+                "custom": "Chosen by hand"
+            },
+            "choices": {
+                "a_better": "A is better",
+                "b_better": "B is better",
+                "both_good": "Both good",
+                "both_bad": "Both bad",
+                "idk": "Don't know",
+                "none": "No vote"
+            },
+            "flags": {
+                "pii": "Personal data",
+                "spam": "Spam",
+                "error": "Error",
+                "archived": "Archived",
+                "not_analyzed": "Not analysed yet"
+            },
+            "overview": {
+                "computedAt": "Figures computed at {time}",
+                "refresh": "Refresh",
+                "metrics": {
+                    "conversations": "Conversations",
+                    "prompts": "Messages sent",
+                    "voteRate": "Messages voted on",
+                    "commentRate": "Messages commented on",
+                    "promptsPerConversation": "Messages per conversation",
+                    "errorRate": "Conversations with an error"
+                },
+                "ofPrompts": "{count} of {total} messages",
+                "ofConversations": "{count} of {total} conversations",
+                "activityTitle": "Activity over time",
+                "activityChartTitle": "Conversations and messages",
+                "activityTable": "Conversations and messages per period",
+                "activityDate": "Period",
+                "funnelTitle": "Journey",
+                "funnel": {
+                    "started": "Conversations started",
+                    "voted": "With at least one vote",
+                    "revealed": "Models revealed",
+                    "continue": "{share} go on",
+                    "dropped": "{count} stop here"
+                },
+                "choicesTitle": "Votes",
+                "modesTitle": "Modes",
+                "empty": "No conversation in this period.",
+                "unvoted": "No vote: {count} messages ({share})"
+            },
+            "conversations": {
+                "caption": "Conversations",
+                "cols": {
+                    "date": "Date",
+                    "models": "Models",
+                    "conversation": "Conversation",
+                    "journey": "Journey"
+                },
+                "count": "{count} conversations",
+                "countCapped": "More than {count} conversations",
+                "next": "Next",
+                "first": "Back to the newest",
+                "empty": "No conversation matches these filters.",
+                "hiddenPrompt": "Hidden: personal data",
+                "open": "Open the page",
+                "previous": "Previous",
+                "nextOne": "Next",
+                "turnsCount": "{count} messages"
+            },
+            "conversation": {
+                "title": "Conversation",
+                "back": "Back to conversations",
+                "prompt": "Message {index}",
+                "analysis": "Analysis",
+                "notAnalyzed": "This conversation has not been analysed yet.",
+                "summary": "Summary",
+                "keywords": "Keywords",
+                "categories": "Subjects",
+                "languages": "Languages",
+                "details": "Details",
+                "mode": "Mode",
+                "cohort": "Cohort",
+                "revealed": "Models revealed",
+                "yes": "Yes",
+                "no": "No",
+                "archived": "Archived: {reason}",
+                "error": "Error: {code}",
+                "systemPrompts": "System prompts",
+                "piiWarning": "The analysis found personal data in this conversation. The text is hidden.",
+                "show": "Show the text",
+                "unknownModel": "Deleted model",
+                "tokens": "tokens",
+                "noAnswer": "No answer: error or timeout.",
+                "vote": "Vote: {choice}",
+                "readMore": "Read more",
+                "readLess": "Show less",
+                "versus": "{a} vs {b}"
+            },
+            "errors": {
+                "timeout": "The query took too long. Narrow the period or remove some filters.",
+                "generic": "The data could not be loaded."
+            },
+            "verdicts": {
+                "preferred": "Preferred",
+                "rejected": "Rejected",
+                "mixed": "Mixed"
+            },
+            "stages": {
+                "started": "No vote",
+                "voted": "Voted",
+                "revealed": "Revealed",
+                "commented": "Commented"
+            }
+        },
         "endpointKey": {
             "hint": "Leave the field empty to keep the current key. Enter a new one to replace it.",
             "remove": "Remove the key",
@@ -169,6 +308,7 @@
             "title": "LLMs data configuration"
         },
         "nav": {
+            "activity": "Activity",
             "authentification": "Authentication",
             "customization": "Customization",
             "legal": "Legal documents",
@@ -2064,6 +2204,8 @@
         "activity": {
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
+            "estimateLabel": "estimate for the current period",
+            "ongoingLabel": "in progress",
             "promptsLabel": "Prompts submitted",
             "sectionTitle": "Activity",
             "tableLabel": "View data as a table",

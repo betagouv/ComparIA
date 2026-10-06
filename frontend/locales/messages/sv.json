@@ -582,6 +582,8 @@
         "activity": {
             "conversationsLabel": "Konversationer",
             "dateLabel": "Datum",
+            "estimateLabel": "uppskattning för innevarande period",
+            "ongoingLabel": "pågår",
             "promptsLabel": "Skickade prompter",
             "sectionTitle": "Aktivitet",
             "tableLabel": "Visa data som tabell",
