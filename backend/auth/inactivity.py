@@ -178,6 +178,7 @@ async def warn_inactive_user(user: User, months: int, now: datetime) -> bool:
         logger.error(f"[purge] no warning sent to {user.id}: {type(error).__name__}")
         return False
     if not sent:
+        logger.error(f"[purge] no warning sent to {user.id}: SMTP is not configured")
         return False
     async with get_session() as session:
         row = await session.get(User, user.id)

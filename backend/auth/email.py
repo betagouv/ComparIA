@@ -399,12 +399,12 @@ async def send_inactivity_warning(
         # Unlike a login code, there is nothing to read in the logs instead:
         # a warning that was not sent must not be recorded, or the account
         # would be erased on the next run without anyone hearing about it.
+        # The purge runs every week over every dormant account, so the
+        # address stays out of the logs; the caller logs the user id.
         if settings.LANGUIA_DEBUG:
-            logger.info(f"[AUTH] SMTP is not configured, no warning sent to {to_email}")
+            logger.info("[AUTH] SMTP is not configured, no inactivity warning sent")
         else:
-            logger.error(
-                f"[AUTH] SMTP is not configured, no warning sent to {to_email}"
-            )
+            logger.error("[AUTH] SMTP is not configured, no inactivity warning sent")
         return False
     message = _build_inactivity_message(
         last_seen_at,

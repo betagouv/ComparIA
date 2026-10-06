@@ -7,6 +7,7 @@ Run with pytest, or directly:
 
 import asyncio
 import contextlib
+import logging
 import os
 import smtplib
 import sys
@@ -473,16 +474,22 @@ def test_a_delivery_failure_skips_the_account_and_the_run_goes_on():
 
 
 @pytest.mark.parametrize("debug", [False, True])
-def test_without_smtp_the_warning_is_reported_as_not_sent(debug):
+def test_without_smtp_the_warning_is_reported_as_not_sent(debug, caplog):
     """A debug instance logs login codes instead of mailing them, but a
     warning it never sent must not count as sent: the account would be
-    erased on the next run without anyone hearing about it."""
-    with patched(email.settings, SMTP_HOST=None, LANGUIA_DEBUG=debug):
+    erased on the next run without anyone hearing about it. The address
+    stays out of the logs, as the purge would write it every week."""
+    with (
+        patched(email.settings, SMTP_HOST=None, LANGUIA_DEBUG=debug),
+        caplog.at_level(logging.INFO, logger="languia"),
+    ):
         sent = asyncio.run(
             send_inactivity_warning("someone@example.test", NOW - NOTICE, NOW)
         )
 
     assert sent is False
+    assert "SMTP is not configured" in caplog.text
+    assert "someone@example.test" not in caplog.text
 
 
 def _parts(message):
