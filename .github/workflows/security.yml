@@ -3,17 +3,16 @@ name: Security
 permissions:
   contents: read
 
-# Pull requests and pushes to the integration branches are scanned as they
-# happen. The weekly run picks up new CodeQL queries without waiting for a
-# push; gitleaks skips it, there are no new commits to scan.
+# Pull requests and pushes to the integration branches are scanned for
+# leaked secrets as they happen. CodeQL is not run here: the repository's
+# code scanning default setup already covers Python, JavaScript/TypeScript
+# and Actions, and GitHub rejects workflow results while it is on.
 on:
   pull_request:
   push:
     branches:
       - develop
       - next
-  schedule:
-    - cron: '17 4 * * 1'
 
 # A newer pull request run supersedes the older one. Pushes are never
 # cancelled: the gitleaks range of a cancelled push would never be scanned.
@@ -22,39 +21,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  codeql:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    permissions:
-      contents: read
-      actions: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language:
-          - python
-          - javascript-typescript
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
-        with:
-          languages: ${{ matrix.language }}
-          build-mode: none
-
-      - name: Run CodeQL analysis
-        uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
-        with:
-          category: /language:${{ matrix.language }}
-
   gitleaks:
-    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
