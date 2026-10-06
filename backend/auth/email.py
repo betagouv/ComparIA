@@ -218,7 +218,7 @@ async def send_login_code(
         if settings.LANGUIA_DEBUG:
             logger.info(f"[AUTH] Login code for {to_email}: {code}")
         else:
-            logger.error(f"[AUTH] SMTP is not configured, no code sent to {to_email}")
+            logger.error("[AUTH] SMTP is not configured, no login code sent")
         return
     message = _build_login_message(
         code,
@@ -243,7 +243,7 @@ async def send_invite_link(
         if settings.LANGUIA_DEBUG:
             logger.info(f"[AUTH] Invite link for {to_email}: {link}")
         else:
-            logger.error(f"[AUTH] SMTP is not configured, no invite sent to {to_email}")
+            logger.error("[AUTH] SMTP is not configured, no invite sent")
         return
     message = _build_invite_message(
         link,
