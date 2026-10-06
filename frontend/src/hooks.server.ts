@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
 import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
-import { defineCustomServerStrategy } from '$lib/i18n/runtime'
+import { cookieMaxAge, defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
@@ -53,7 +53,7 @@ function originOf(url: string): string | null {
 const EXTRA_CSP_SOURCES: Record<string, (string | null)[]> = {
   'script-src': [originOf(MATOMO_URL)],
   'connect-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')],
-  'img-src': [originOf(MATOMO_URL)]
+  'img-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')]
 }
 
 function withRuntimeOrigins(policy: string): string {
@@ -163,7 +163,12 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
     event.request = localizedRequest
     if (locale !== event.cookies.get('PARAGLIDE_LOCALE')) {
-      event.cookies.set('PARAGLIDE_LOCALE', locale, { path: '/', httpOnly: false })
+      // Same lifetime as the cookie Paraglide sets in the browser.
+      event.cookies.set('PARAGLIDE_LOCALE', locale, {
+        path: '/',
+        httpOnly: false,
+        maxAge: cookieMaxAge
+      })
     }
 
     return resolve(event, {

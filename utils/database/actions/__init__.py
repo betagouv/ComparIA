@@ -2,6 +2,7 @@ from .archive_blacklisted_grok import archive_blacklisted_grok
 from .archive_corrupted import archive_corrupted
 from .archive_spam import archive_spam
 from .backfill_pii_spam import backfill_pii_spam
+from .clear_visitor_ids import clear_visitor_ids
 from .llm_analyze import llm_analyze
 from .migrate_comparisons import migrate_comparisons
 from .migrate_llm_messages import migrate_llm_messages
@@ -11,5 +12,7 @@ from .migrate_system_messages import migrate_system_messages
 from .migrate_turns import migrate_turns
 from .migrate_user_messages import migrate_user_messages
 from .migrate_votes import migrate_votes
+from .purge_inactive import purge_inactive
+from .purge_retention import purge_retention
 from .reset_totp import reset_totp
 from .seed import seed_admins

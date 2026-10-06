@@ -1,0 +1,21 @@
+services:
+  keycloak:
+    # Local OIDC identity provider for testing the oidc auth method.
+    # `make keycloak` starts it and configures the comparia client + test user
+    # via devops/instances/keycloak/setup-keycloak.sh.
+    image: quay.io/keycloak/keycloak:26.0@sha256:09a381c715ab0b111835b70f2905955274843a219c6f27efb348e4d9f4086858
+    command: ["start-dev"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "127.0.0.1:8080:8080"
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 200
+    networks:
+      - comparia-net
+
+networks:
+  comparia-net:
+    external: true

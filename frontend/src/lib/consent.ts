@@ -1,5 +1,5 @@
 import { resolve } from '$app/paths'
-import { renderInlineMarkdown } from '$components/markdown/inline'
+import { renderInlineMarkdown } from '$components/markdown'
 import { api } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import {

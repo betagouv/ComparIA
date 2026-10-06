@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Badge, Button, Icon, Input, Modal, Select, Table } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminVoteTag } from '$lib/generated/admin'

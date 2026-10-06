@@ -3,10 +3,10 @@ revision = 3
 requires-python = ">=3.13"
 resolution-markers = [
     "python_full_version >= '3.15' and sys_platform == 'win32'",
-    "python_full_version == '3.14.*' and sys_platform == 'win32'",
     "python_full_version >= '3.15' and sys_platform == 'emscripten'",
-    "python_full_version == '3.14.*' and sys_platform == 'emscripten'",
     "python_full_version >= '3.15' and sys_platform != 'emscripten' and sys_platform != 'win32'",
+    "python_full_version == '3.14.*' and sys_platform == 'win32'",
+    "python_full_version == '3.14.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.14.*' and sys_platform != 'emscripten' and sys_platform != 'win32'",
     "python_full_version < '3.14' and sys_platform == 'win32'",
     "python_full_version < '3.14' and sys_platform == 'emscripten'",
@@ -1553,7 +1553,7 @@ requires-dist = [
     { name = "alembic", specifier = ">=1.19.1" },
     { name = "altcha", specifier = ">=1.0.0,<2.0.0" },
     { name = "async-lru", specifier = ">=2.3.0" },
-    { name = "cryptography", specifier = ">=45.0.0" },
+    { name = "cryptography", specifier = ">=46.0.5" },
     { name = "ecologits", specifier = "==0.10.2" },
     { name = "fastapi", specifier = ">=0.133.0" },
     { name = "google-auth", specifier = ">=2.48.0" },

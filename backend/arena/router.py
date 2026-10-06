@@ -45,7 +45,7 @@ from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredU
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import MAX_TURNS_PER_COMPARISON
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
-from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
     VoteTagSignMismatchError,
@@ -280,7 +280,6 @@ async def add_first_text(
             anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
             participation_terms_version=participation_terms_version,
-            visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,

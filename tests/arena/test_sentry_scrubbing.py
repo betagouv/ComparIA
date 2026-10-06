@@ -11,6 +11,7 @@ Run with pytest, or directly:
 """
 
 import json
+import logging
 import os
 import sys
 from pathlib import Path
@@ -78,6 +79,39 @@ def event_for_a_failed_completion():
     return json.dumps(transport.events[0], default=str)
 
 
+def event_after_logging(line):
+    """The event for an error raised after `line` was logged in the same scope."""
+    transport = CapturingTransport()
+    options = shipped_options()
+    options["transport"] = transport
+    logger = logging.getLogger("languia")
+    level = logger.level
+    logger.setLevel(logging.INFO)
+
+    sentry_sdk.init(**options)
+    try:
+        logger.info(line)
+        try:
+            raise RuntimeError("provider unreachable")
+        except RuntimeError as error:
+            sentry_sdk.capture_exception(error)
+    finally:
+        sentry_sdk.get_client().close()
+        logger.setLevel(level)
+
+    assert transport.events, "the client dropped the event before we could read it"
+    return transport.events[0]
+
+
+def test_a_logged_line_does_not_ride_along_as_a_breadcrumb():
+    event = event_after_logging("prompt: Je m'appelle Camille Martin")
+    breadcrumbs = event["breadcrumbs"]["values"]
+
+    assert "Camille" not in json.dumps(event, default=str)
+    # The breadcrumb is still there, so the event still shows what ran.
+    assert any(crumb.get("category") == "languia" for crumb in breadcrumbs)
+
+
 def test_a_provider_key_never_reaches_sentry():
     assert API_KEY not in event_for_a_failed_completion()
 
@@ -109,6 +143,7 @@ def test_the_accept_route_is_left_alone():
 
 
 if __name__ == "__main__":
+    test_a_logged_line_does_not_ride_along_as_a_breadcrumb()
     test_a_provider_key_never_reaches_sentry()
     test_the_event_still_says_what_broke()
     test_transactions_go_through_the_same_scrubber()

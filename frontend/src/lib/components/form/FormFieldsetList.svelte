@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import Button from '$components/dsfr/Button.svelte'
+  import { Button } from '$components/dsfr'
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import { FormFieldset } from '.'

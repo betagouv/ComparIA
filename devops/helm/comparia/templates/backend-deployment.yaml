@@ -58,65 +58,7 @@ spec:
             - secretRef:
                 name: {{ include "comparia.secretName" . }}
           env:
-            - name: COMPARIA_INSTANCE_NAME
-              value: {{ .Values.config.instanceName | quote }}
-            - name: AUTH_ACCESS_POLICY
-              value: {{ .Values.config.authAccessPolicy | quote }}
-            - name: LOG_FORMAT
-              value: {{ .Values.config.logFormat | quote }}
-            - name: LOGDIR
-              value: "/data"
-            - name: VOTES_OBJECTIVE
-              value: {{ .Values.config.votesObjective | quote }}
-            - name: CACHE_ENABLED
-              value: {{ .Values.config.cache.enabled | quote }}
-            - name: CACHE_PROBABILITY
-              value: {{ .Values.config.cache.probability | quote }}
-            - name: CACHE_TTL
-              value: {{ .Values.config.cache.ttl | quote }}
-            - name: CACHE_MAX_RESPONSES
-              value: {{ .Values.config.cache.maxResponses | quote }}
-            {{- if .Values.config.sentryDsn }}
-            - name: SENTRY_DSN
-              value: {{ .Values.config.sentryDsn | quote }}
-            - name: SENTRY_ENVIRONMENT
-              value: {{ .Values.config.sentryEnvironment | quote }}
-            {{- end }}
-            - name: ADMIN_EMAILS
-              value: {{ .Values.config.adminEmails | toJson | quote }}
-            - name: AUTH_DOMAIN_ALLOWLIST
-              value: {{ .Values.config.auth.domainAllowlist | toJson | quote }}
-            - name: AUTH_SESSION_LENGTH_DAYS
-              value: {{ .Values.config.auth.sessionLengthDays | quote }}
-            - name: DISPLAY_CURRENCY
-              value: {{ .Values.config.currency.display | quote }}
-            {{- if .Values.config.currency.rateFromUsd }}
-            - name: DISPLAY_CURRENCY_RATE_FROM_USD
-              value: {{ .Values.config.currency.rateFromUsd | quote }}
-            {{- end }}
-            - name: EXCHANGE_RATE_API_URL
-              value: {{ .Values.config.currency.exchangeApiUrl | quote }}
-            - name: EXCHANGE_RATE_CACHE_SECONDS
-              value: {{ .Values.config.currency.exchangeCacheSeconds | quote }}
-            {{- if .Values.config.appUrl }}
-            - name: COMPARIA_APP_URL
-              value: {{ .Values.config.appUrl | quote }}
-            {{- end }}
-            {{- if .Values.config.emailFrom }}
-            - name: EMAIL_FROM
-              value: {{ .Values.config.emailFrom | quote }}
-            {{- end }}
-            - name: EMAIL_FROM_NAME
-              value: {{ .Values.config.emailFromName | quote }}
-            {{- if .Values.config.smtp.host }}
-            - name: SMTP_HOST
-              value: {{ .Values.config.smtp.host | quote }}
-            - name: SMTP_PORT
-              value: {{ .Values.config.smtp.port | quote }}
-            {{- end }}
-            {{- with .Values.backend.extraEnv }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
+            {{- include "comparia.backendEnv" . | nindent 12 }}
           resources:
             {{- toYaml .Values.resources.backend | nindent 12 }}
           volumeMounts:

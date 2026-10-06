@@ -34,7 +34,7 @@ dependencies = [
     "polars>=1.43.2",
     "pillow>=12.3.0",
     "pyotp>=2.10.0",
-    "cryptography>=45.0.0",
+    "cryptography>=46.0.5",
     "segno>=1.6.0",
 ]
 

@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { Link, Modal } from '$components/dsfr'
-  import Badge from '$components/dsfr/Badge.svelte'
-  import Icon from '$components/dsfr/Icon.svelte'
+  import { Badge, Icon, Link, Modal } from '$components/dsfr'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
 

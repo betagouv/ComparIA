@@ -3,6 +3,8 @@ templates:
   - cronjob-ranking.yaml
   - cronjob-analyze.yaml
   - cronjob-publish.yaml
+  - cronjob-purge-inactive.yaml
+  - cronjob-purge-retention.yaml
 values:
   - ../ci/values-lint.yaml
 tests:
@@ -41,11 +43,133 @@ tests:
           path: spec.jobTemplate.spec.template.spec.containers[0].command
           value: ["./comparia-cli", "db", "lint", "--fix", "--with-llm-analyze"]
 
-  - it: toggles each cronjob independently of the other
+  - it: omits the purge-inactive CronJob by default
+    template: cronjob-purge-inactive.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: warns then erases after the policy's two years by default
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value: ["./comparia-cli", "db", "purge-inactive", "--months", "24", "--apply"]
+
+  - it: renders the purge-inactive CronJob with the configured retention
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+      cronjobs.purgeInactive.months: 6
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: CronJob
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value: ["./comparia-cli", "db", "purge-inactive", "--months", "6", "--apply"]
+
+  - it: gives the purge-inactive CronJob the backend env, SMTP and app URL included
+    template: cronjob-purge-inactive.yaml
+    set:
+      cronjobs.purgeInactive.enabled: true
+      config.appUrl: https://comparia.example
+      config.smtp.host: smtp.example.com
+    asserts:
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_INSTANCE_NAME
+            value: fr
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: SMTP_HOST
+            value: smtp.example.com
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_APP_URL
+            value: https://comparia.example
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: AUTH_SESSION_LENGTH_DAYS
+            value: "30"
+
+  - it: omits the purge-retention CronJob by default
+    template: cronjob-purge-retention.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders the purge-retention CronJob with the policy periods
+    template: cronjob-purge-retention.yaml
+    set:
+      cronjobs.purgeRetention.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: CronJob
+      - equal:
+          path: spec.schedule
+          value: "50 4 * * *"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command
+          value:
+            - ./comparia-cli
+            - db
+            - purge-retention
+            - --ip-months
+            - "3"
+            - --comparison-months
+            - "24"
+            - --session-months
+            - "12"
+            - --prompt-check-months
+            - "12"
+            - --consent-years
+            - "5"
+            - --pii-days
+            - "30"
+            - --cohort-days
+            - "30"
+            - --apply
+
+  - it: passes overridden periods to the purge-retention CronJob
+    template: cronjob-purge-retention.yaml
+    set:
+      cronjobs.purgeRetention.enabled: true
+      cronjobs.purgeRetention.ipMonths: 1
+      cronjobs.purgeRetention.consentYears: 6
+      cronjobs.purgeRetention.cohortDays: 7
+    asserts:
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[4]
+          value: "1"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[12]
+          value: "6"
+      - equal:
+          path: spec.jobTemplate.spec.template.spec.containers[0].command[16]
+          value: "7"
+      - contains:
+          path: spec.jobTemplate.spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_INSTANCE_NAME
+            value: fr
+
+  - it: toggles each cronjob independently of the others
     template: cronjob-ranking.yaml
     set:
       cronjobs.ranking.enabled: true
       cronjobs.analyze.enabled: true
+      cronjobs.purgeInactive.enabled: true
+      cronjobs.purgeRetention.enabled: true
     asserts:
       - hasDocuments:
           count: 1

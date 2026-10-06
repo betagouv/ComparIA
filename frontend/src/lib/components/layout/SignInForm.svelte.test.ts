@@ -1,9 +1,9 @@
+import SignInModal from '$components/SignInModal.svelte'
 import { resetConsent } from '$lib/consent'
 import { expectAccessible } from '$lib/testing/a11y'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import SignInForm from './SignInForm.svelte'
-import SignInModal from './SignInModal.svelte'
 
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),

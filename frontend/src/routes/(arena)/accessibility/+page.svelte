@@ -1,6 +1,6 @@
 <script lang="ts">
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'

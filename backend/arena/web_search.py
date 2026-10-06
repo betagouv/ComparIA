@@ -90,7 +90,7 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
         if not results:
             return None
 
-        logger.info(f"[CACHE] Web search cache hit for prompt: '{prompt}'.")
+        logger.info("[CACHE] Web search cache hit.")
         return [LinkupSearchTextResult.model_construct(**result) for result in results]
 
     except Exception as e:
@@ -116,7 +116,7 @@ def store_cached_search_results(
             settings.CACHE_TTL,
             json.dumps([result.model_dump() for result in web_search_results]),
         )
-        logger.info(f"[CACHE] Stored web search cache for prompt: '{prompt}'.")
+        logger.info("[CACHE] Stored web search cache.")
 
     except Exception as e:
         logger.warning(f"[CACHE] Error storing web search cache: {e}")

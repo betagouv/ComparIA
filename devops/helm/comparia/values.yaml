@@ -180,6 +180,29 @@ cronjobs:
     schedule: "*/10 * * * *"
     ## -- Kills a run that hangs, on a destination that never answers for instance.
     activeDeadlineSeconds: 21600
+  ## -- Warns then erases accounts not signed in for `months`. Off by default: the
+  ## privacy policy has to state the retention period before it runs. Needs SMTP
+  ## configured, otherwise nobody is warned; accounts warned earlier and rows
+  ## that never signed in are still erased.
+  purgeInactive:
+    enabled: false
+    schedule: "20 4 * * 1"
+    months: 24
+  ## -- Blanks or deletes what is past the retention periods below: comparison IPs, the
+  ## identifiers on old comparisons, session traces, moderation results, old consent
+  ## proofs, and whole conversations flagged as personal or from a partner programme
+  ## (Pix). Off by default, like the account purge: turn it on once the privacy policy
+  ## states the same periods, after a dry run of `comparia-cli db purge-retention`.
+  purgeRetention:
+    enabled: false
+    schedule: "50 4 * * *"
+    ipMonths: 3
+    comparisonMonths: 24
+    sessionMonths: 12
+    promptCheckMonths: 12
+    consentYears: 5
+    piiDays: 30
+    cohortDays: 30
 
 ingress:
   enabled: false

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
-  import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
+  import { MarkdownCode as Markdown } from '$components/markdown'
   import { tryGetAuthContext } from '$lib/authContext.svelte'
+  import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import type { AdminLegalDocument, PublishLegalDocumentBody } from '$lib/generated/admin'
   import { getLocales } from '$lib/global.svelte'
