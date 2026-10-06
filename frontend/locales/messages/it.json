@@ -194,6 +194,7 @@
             "dataUseDesc": "In ogni caso, l'editore si impegna ad adottare le misure necessarie per garantire l'anonimizzazione dei dati relativi ai dialoghi prima di renderli pubblici.",
             "dataUseTitle": "Quali elaborazioni vengono effettuate sui dati della conversazione?",
             "desc": "Il servizio è pubblicato dal dipartimento digitale del Ministero Francese della Cultura.",
+            "optOutTitle": "Opporsi alla misurazione delle visite",
             "privacyData": "I dati raccolti sul sito sono i seguenti:",
             "privacyDataArena": "Dati relativi alle conversazioni degli utenti con i modelli : domande poste dagli utenti, risposte dei modelli e preferenze espresse dagli utenti tra i due modelli",
             "privacyDataForm": "Dati relativi al questionario “Aiutaci a migliorare compar:AI”.",
