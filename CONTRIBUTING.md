@@ -110,6 +110,8 @@ make db-migrate
 make db-migrate-status   # show current migration revision
 ```
 
+Working on a copy of another instance's database (a production dump, for example) needs that instance's `COMPARIA_ENCRYPTION_KEY` in your `.env`. Without it, debug mode falls back to a fixed development key that opens none of the copied secrets: every endpoint's models are disabled, and the backend logs one error per row at startup.
+
 ---
 
 ## Models

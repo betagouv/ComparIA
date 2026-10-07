@@ -21,6 +21,7 @@ from .actions import (
     migrate_votes,
     purge_inactive,
     purge_retention,
+    reencrypt_secrets,
     reset_totp,
     seed_admins,
 )
@@ -53,6 +54,7 @@ cli_db.command(purge_inactive, name="purge-inactive")
 cli_db.command(purge_retention, name="purge-retention")
 cli_db.command(reset_totp, name="reset-totp")
 cli_db.command(clear_visitor_ids, name="clear-visitor-ids")
+cli_db.command(reencrypt_secrets, name="reencrypt-secrets")
 cli_db.command(cli_archive)
 cli_db.command(cli_migrate)
 

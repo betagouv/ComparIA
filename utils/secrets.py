@@ -20,6 +20,12 @@ class SecretUnreadableError(Exception):
     """A stored secret that no configured key opens. The secret exists, so
     the caller must not read this as a missing one, nor as a wrong input."""
 
+    def __init__(
+        self,
+        message: str = "a stored secret cannot be decrypted with the configured keys",
+    ) -> None:
+        super().__init__(message)
+
 
 def _keys() -> list[str]:
     return [k.strip() for k in settings.COMPARIA_ENCRYPTION_KEY.split(",") if k.strip()]
@@ -47,6 +53,16 @@ def decrypt_secret(token: str) -> str:
             "[SECRETS] a stored secret cannot be decrypted with the current keys"
         )
         raise SecretUnreadableError()
+
+
+def can_decrypt(token: str) -> bool:
+    """Whether a configured key opens the token. Unlike decrypt_secret, logs
+    nothing: for a caller that reports the row itself."""
+    try:
+        _fernet().decrypt(token.encode())
+        return True
+    except InvalidToken:
+        return False
 
 
 def needs_reencryption(token: str) -> bool:

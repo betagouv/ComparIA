@@ -74,10 +74,11 @@ class Settings(BaseSettings):
     # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
     # above only slows one attacker down; this one closes the login code itself.
     AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
-    # Fernet key(s) for secrets stored in the database, starting with the
-    # admins' authenticator secrets. Comma-separated to rotate: the first
-    # encrypts, every one decrypts, and a secret re-encrypts with the first the
-    # next time it is used.
+    # Fernet key(s) for secrets stored in the database: the admins'
+    # authenticator secrets, the OIDC client secret, the endpoints' API keys,
+    # the moderation key and the publishing credentials. Comma-separated to
+    # rotate: the first encrypts, every one decrypts, and
+    # `comparia-cli db reencrypt-secrets` rewrites every secret with the first.
     COMPARIA_ENCRYPTION_KEY: str = ""
 
     # Anonymous

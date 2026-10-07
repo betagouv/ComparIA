@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from sqlalchemy import and_, or_
 from sqlmodel import SQLModel, col
 
+from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.comparison import (
     Comparison,
     ComparisonLLMAnalysisFailedUpdate,
@@ -21,6 +22,7 @@ from utils.database.utils import (
     get_db_comparisons_stream,
     parse_full_conversation,
 )
+from utils.secrets import SecretUnreadableError
 
 logger = logging.getLogger("comparia.db.llm_analyze")
 
@@ -70,6 +72,11 @@ async def get_analysis_model() -> AnalysisModel:
         raise AnalysisNotConfigured(
             f"The '{endpoint.name}' endpoint has no API key, so analysis cannot run."
         )
+    # A key is stored but no configured encryption key opens it: not a
+    # missing key, and never a string to send.
+    if isinstance(endpoint.api_key, UnreadableSecret):
+        ref = UnreadableRow(LLMEndpoint.__tablename__, endpoint.id, "api_key")
+        raise SecretUnreadableError(f"{ref.message()}, endpoint '{endpoint.name}'")
 
     return AnalysisModel(
         model=f"{endpoint.api_type}/{app_settings.analysis_model}",
