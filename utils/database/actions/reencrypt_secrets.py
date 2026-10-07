@@ -1,4 +1,5 @@
 import logging
+from collections import Counter
 
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -33,7 +34,7 @@ async def reencrypt_secrets() -> None:
     rewritten by hand. One
     transaction, with the rows locked for its duration.
     """
-    counts: dict[str, int] = {}
+    counts: Counter[str] = Counter()
     async with get_session() as session:
         rows = await load_secret_rows(session, lock=True)
 
@@ -55,7 +56,7 @@ async def reencrypt_secrets() -> None:
                 # hand; the write goes through the type and the first key.
                 flag_modified(row, column)
                 session.add(row)
-                counts[model.__tablename__] = counts.get(model.__tablename__, 0) + 1
+                counts[model.__tablename__] += 1
 
         for model, column in TOKEN_COLUMNS:
             for row in rows[model]:
@@ -70,7 +71,7 @@ async def reencrypt_secrets() -> None:
                     rewritten.encode() if isinstance(token, bytes) else rewritten,
                 )
                 session.add(row)
-                counts[model.__tablename__] = counts.get(model.__tablename__, 0) + 1
+                counts[model.__tablename__] += 1
 
         await session.commit()
 
