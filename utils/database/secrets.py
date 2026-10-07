@@ -15,7 +15,7 @@ from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import UserTotp
 from utils.database.models.llms.endpoint import LLMEndpoint
 from utils.database.models.prompt_check import PromptCheck
-from utils.database.models.publish import SECRET_FIELDS, PublishDestination
+from utils.database.models.publish import PublishDestination
 from utils.database.session import get_session
 from utils.secrets import can_decrypt
 
@@ -64,14 +64,11 @@ def unreadable_secrets(rows: dict[type, list]) -> list[UnreadableRow]:
             value = getattr(row, column)
             if isinstance(value, UnreadableSecret):
                 found.append(UnreadableRow(model.__tablename__, row.id, column))
-            elif isinstance(value, dict):
-                for field in SECRET_FIELDS.get(value.get("kind"), ()):
-                    if isinstance(value.get(field), UnreadableSecret):
-                        found.append(
-                            UnreadableRow(
-                                model.__tablename__, row.id, f"{column}.{field}"
-                            )
-                        )
+            elif isinstance(row, PublishDestination):
+                for field in row.unreadable_fields():
+                    found.append(
+                        UnreadableRow(model.__tablename__, row.id, f"{column}.{field}")
+                    )
     for model, column in TOKEN_COLUMNS:
         for row in rows.get(model, ()):
             token = getattr(row, column)
