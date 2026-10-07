@@ -1,7 +1,7 @@
 """encrypt_stored_secrets
 
 Revision ID: c3e7a9b2d4f6
-Revises: 5c8bd69940b5
+Revises: a3d6f1c9e842
 Create Date: 2026-09-14 00:00:00.000000
 
 Rewrites the provider API keys, the moderation key and the publishing
@@ -24,7 +24,7 @@ from utils.secrets import SecretUnreadableError, decrypt_secret, encrypt_secret
 
 # revision identifiers, used by Alembic.
 revision: str = "c3e7a9b2d4f6"
-down_revision: Union[str, Sequence[str], None] = "5c8bd69940b5"
+down_revision: Union[str, Sequence[str], None] = "a3d6f1c9e842"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
