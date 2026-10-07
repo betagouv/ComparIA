@@ -1,7 +1,7 @@
 """add_survey
 
 Revision ID: 3dd0208cf1b8
-Revises: 5c8bd69940b5
+Revises: a3d6f1c9e842
 Create Date: 2026-08-10 00:00:00.000000
 
 """
@@ -15,7 +15,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "3dd0208cf1b8"
-down_revision: Union[str, Sequence[str], None] = "5c8bd69940b5"
+down_revision: Union[str, Sequence[str], None] = "a3d6f1c9e842"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
