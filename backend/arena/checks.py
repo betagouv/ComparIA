@@ -58,7 +58,9 @@ PII_MESSAGE = "pii"
 _DECISIONS = {"off": "pass", "log": "logged", "warn": "warned", "block": "blocked"}
 
 
-async def moderate(text: str, model: str, api_key: str) -> dict[str, float]:
+async def moderate(
+    text: str, model: str, api_key: str | UnreadableSecret
+) -> dict[str, float]:
     """Score one prompt with the Mistral moderation API.
 
     A stored key no configured encryption key opens is a failed call, not a

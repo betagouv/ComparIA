@@ -44,7 +44,8 @@ class LLMEndpoint(LLMEndpointPrivate, table=True):
     __tablename__ = "llm_endpoint"
 
     # Same field as LLMEndpointPrivate, stored encrypted; the form schema and
-    # the public model are unchanged.
+    # the public model are unchanged. Reads as an UnreadableSecret, not a str,
+    # when no configured key opens it.
     api_key: Annotated[str | None, Field(sa_type=EncryptedStr, **FIELDS["api_key"])] = (
         None
     )
