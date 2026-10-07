@@ -8,7 +8,11 @@ from pydantic import TypeAdapter, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from utils.database.encrypted import EncryptedJSONFields, UnreadableSecret
+from utils.database.encrypted import (
+    EncryptedJSONFields,
+    UnreadableRow,
+    UnreadableSecret,
+)
 from utils.secrets import SecretUnreadableError
 from utils.validation import NonEmptyStr
 
@@ -161,9 +165,9 @@ class PublishDestination(PublishDestinationBase, table=True):
             if isinstance(self.config.get(field), UnreadableSecret)
         ]
         if unreadable:
+            column = f"config.{', '.join(unreadable)}"
             raise SecretUnreadableError(
-                f"publish_destination {self.id}.config.{', '.join(unreadable)} "
-                "cannot be decrypted with COMPARIA_ENCRYPTION_KEY"
+                UnreadableRow(self.__tablename__, self.id, column).message()
             )
         return _CONFIG.validate_python(self.config)
 

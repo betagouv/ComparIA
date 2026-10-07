@@ -40,9 +40,7 @@ async def reencrypt_secrets() -> None:
         unreadable = unreadable_secrets(rows)
         if unreadable:
             for ref in unreadable:
-                logger.error(
-                    f"[secrets] {ref} cannot be decrypted with the configured keys"
-                )
+                logger.error(f"[secrets] {ref.message()}")
             raise UnreadableSecretsError(
                 f"{len(unreadable)} stored secrets cannot be decrypted with "
                 "COMPARIA_ENCRYPTION_KEY, nothing was changed. Put the key they "

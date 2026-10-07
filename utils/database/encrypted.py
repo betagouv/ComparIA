@@ -12,6 +12,7 @@ the query for one bad one; the marker lets each reader deal with its own row.
 
 import base64
 import binascii
+from dataclasses import dataclass
 from typing import Any
 
 from sqlalchemy import String, TypeDecorator
@@ -62,6 +63,22 @@ class UnreadableSecret:
 
     def __str__(self) -> str:
         raise SecretUnreadableError()
+
+
+@dataclass(frozen=True)
+class UnreadableRow:
+    """Where a secret no configured key opens is stored: what an error names
+    instead of the value."""
+
+    table: str
+    row_id: Any
+    column: str
+
+    def __str__(self) -> str:
+        return f"{self.table} {self.row_id}.{self.column}"
+
+    def message(self) -> str:
+        return f"{self} cannot be decrypted with COMPARIA_ENCRYPTION_KEY"
 
 
 def _read(token: str) -> str | UnreadableSecret:
