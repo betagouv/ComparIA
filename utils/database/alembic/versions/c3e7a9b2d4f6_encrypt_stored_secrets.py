@@ -30,9 +30,12 @@ depends_on: Union[str, Sequence[str], None] = None
 
 _STRING_COLUMNS = (("llm_endpoint", "api_key"), ("prompt_check", "api_key"))
 
-# Frozen copies of what the models and utils.database.encrypted said when this
-# migration was written: a destination kind or a heuristic that changes later
-# must not change what this revision does.
+# A frozen copy of the secret fields the models declared when this migration
+# was written, and the heuristic only this revision needs: a destination kind
+# added later must not change what it does. Every Fernet token starts with
+# the version byte 0x80 and a timestamp whose first bytes stay zero until
+# 2106, base64-encoded; version, timestamp, iv, one AES block and the hmac
+# make 73 bytes, 100 characters once encoded, so no token is shorter.
 _SECRET_FIELDS = {
     "huggingface": ("token",),
     "s3": ("access_key", "secret_key"),
