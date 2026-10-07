@@ -18,7 +18,7 @@ from utils.database.models.llms.endpoint import LLMEndpoint
 from utils.database.models.prompt_check import PromptCheck
 from utils.database.models.publish import SECRET_FIELDS, PublishDestination
 from utils.database.session import get_session
-from utils.secrets import SecretUnreadableError, decrypt_secret
+from utils.secrets import can_decrypt
 
 logger = logging.getLogger("comparia.db")
 
@@ -86,11 +86,7 @@ def unreadable_secrets(rows: dict[type, list]) -> list[UnreadableRow]:
     for model, column in TOKEN_COLUMNS:
         for row in rows.get(model, ()):
             token = getattr(row, column)
-            if not token:
-                continue
-            try:
-                decrypt_secret(token_text(token))
-            except SecretUnreadableError:
+            if token and not can_decrypt(token_text(token)):
                 found.append(UnreadableRow(model.__tablename__, row.id, column))
     return found
 

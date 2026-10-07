@@ -299,7 +299,7 @@ def test_the_startup_check_names_every_unreadable_row_and_changes_nothing(caplog
 
     with (
         fake_session(session, secrets_check),
-        caplog.at_level(logging.ERROR, logger="comparia.db"),
+        caplog.at_level(logging.ERROR),
     ):
         unreadable = asyncio.run(secrets_check.log_unreadable_secrets())
 
@@ -309,8 +309,8 @@ def test_the_startup_check_names_every_unreadable_row_and_changes_nothing(caplog
         f"auth_totp {bad_totp.id}.pending_secret_encrypted",
         "app_settings 1.oidc_client_secret_encrypted",
     ]
-    messages = [r.getMessage() for r in caplog.records if r.name == "comparia.db"]
-    assert len(messages) == 4, "one per row, on top of the decrypt's own line"
+    messages = [r.getMessage() for r in caplog.records]
+    assert len(messages) == 4, "one per row, nothing more"
     assert all(str(ref) in msg for ref, msg in zip(unreadable, messages))
     assert lost not in "".join(messages)
     assert session.added == [] and session.commits == 0

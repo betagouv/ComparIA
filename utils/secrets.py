@@ -55,6 +55,16 @@ def decrypt_secret(token: str) -> str:
         raise SecretUnreadableError()
 
 
+def can_decrypt(token: str) -> bool:
+    """Whether a configured key opens the token. Unlike decrypt_secret, logs
+    nothing: for a caller that reports the row itself."""
+    try:
+        _fernet().decrypt(token.encode())
+        return True
+    except InvalidToken:
+        return False
+
+
 def needs_reencryption(token: str) -> bool:
     """True when the token was made with an older key of the list."""
     keys = _keys()
