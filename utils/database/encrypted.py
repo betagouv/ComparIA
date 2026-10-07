@@ -114,16 +114,14 @@ class EncryptedStr(TypeDecorator):
 class EncryptedJSONFields(TypeDecorator):
     """A JSONB column whose named fields are stored encrypted.
 
-    `secret_fields` maps the value of a discriminator key (default `kind`) to
-    the fields to protect, so one column can hold several shapes.
+    `secret_fields` maps the value of the `kind` key to the fields to protect,
+    so one column can hold several shapes.
     """
 
     impl = JSONB
     cache_ok = True
 
-    def __init__(
-        self, secret_fields: dict[str, tuple[str, ...]], discriminator: str = "kind"
-    ) -> None:
+    def __init__(self, secret_fields: dict[str, tuple[str, ...]]) -> None:
         super().__init__()
         self._secret_fields = dict(secret_fields)
         # Constructor arguments make the statement cache key, which has to be
@@ -131,10 +129,9 @@ class EncryptedJSONFields(TypeDecorator):
         self.secret_fields = tuple(
             sorted((kind, tuple(fields)) for kind, fields in secret_fields.items())
         )
-        self.discriminator = discriminator
 
     def _fields(self, value: dict) -> tuple[str, ...]:
-        return self._secret_fields.get(value.get(self.discriminator), ())
+        return self._secret_fields.get(value.get("kind"), ())
 
     def _map(self, value: Any, transform: Any) -> Any:
         if not isinstance(value, dict):
