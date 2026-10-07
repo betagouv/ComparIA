@@ -379,11 +379,11 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
             r.getMessage() for r in caplog.records if "rows rewritten" in r.getMessage()
         ]
         assert infos == [
-            "[secrets] llm_endpoint: 2 rows rewritten",
-            "[secrets] prompt_check: 1 rows rewritten",
-            "[secrets] publish_destination: 1 rows rewritten",
-            "[secrets] auth_totp: 1 rows rewritten",
-            "[secrets] app_settings: 1 rows rewritten",
+            "[SECRETS] llm_endpoint: 2 rows rewritten",
+            "[SECRETS] prompt_check: 1 rows rewritten",
+            "[SECRETS] publish_destination: 1 rows rewritten",
+            "[SECRETS] auth_totp: 1 rows rewritten",
+            "[SECRETS] app_settings: 1 rows rewritten",
         ]
     finally:
         settings.COMPARIA_ENCRYPTION_KEY = current
