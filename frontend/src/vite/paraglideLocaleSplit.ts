@@ -4,11 +4,19 @@ import type { Plugin } from 'vite'
 
 // Paraglide's `locale-modules` output imports every locale file statically
 // from messages/_index.js, so the client downloads all of them. In the client
-// build only, this rewrites those imports into one dynamic import picked by
-// getLocale(), which reads the PARAGLIDE_LOCALE cookie hooks.server.ts sets on
-// every response. Rolldown then emits one chunk per locale and the browser
-// fetches only the visitor's. Switching language already reloads the page, so
-// the next locale is fetched then. The server bundle keeps every locale.
+// build only, this swaps those imports for the `messages` binding of a
+// virtual module, virtual:locale-messages, whose loadLocaleMessages() fetches
+// the one locale picked by getLocale(). getLocale() reads the
+// PARAGLIDE_LOCALE cookie hooks.server.ts sets on every response. Rolldown
+// then emits one chunk per locale and the browser fetches only the visitor's.
+// Switching language already reloads the page, so the next locale is fetched
+// then. The server bundle keeps every locale.
+//
+// hooks.client.ts awaits loadLocaleMessages() in SvelteKit's `init` hook,
+// which runs before any page or layout module is loaded. The load used to be
+// a top-level await in _index.js, which made the root layout an async
+// module. On iPhones the arena then hydrated without running the root
+// layout's load, read the models from empty data and went blank.
 //
 // Two more rewrites keep the chunks small:
 //
@@ -31,6 +39,9 @@ type Options = {
 }
 
 export type Settings = { locales: string[]; baseLocale: string }
+
+export const VIRTUAL_ID = 'virtual:locale-messages'
+const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID
 
 const IMPORT_LINE = /^import \* as (\S+) from "\.\/(.+)\.js"$/
 const RUNTIME_IMPORT = /^import \{[^}]*\bgetLocale\b[^}]*\} from "\.\.\/runtime\.js"$/m
@@ -73,11 +84,7 @@ export function dropFallbackReexports(code: string): string {
     .join('\n')
 }
 
-export function splitLocaleImports(
-  code: string,
-  { locales, baseLocale }: Settings,
-  fallbacks: Map<string, string>
-): string {
+export function splitLocaleImports(code: string, { locales, baseLocale }: Settings): string {
   if (!RUNTIME_IMPORT.test(code)) fail('_index.js no longer imports getLocale from ../runtime.js')
 
   const lines = code.split('\n')
@@ -99,24 +106,7 @@ export function splitLocaleImports(
   }
   if (!aliases.has(baseLocale)) fail(`base locale "${baseLocale}" has no import in _index.js`)
 
-  const load = (locale: string) => `import(${JSON.stringify(`./${locale}.js`)})`
-  const loaders = locales
-    .map((locale) => {
-      const fallback = fallbacks.get(locale)
-      const loader = fallback
-        ? `() => Promise.all([${load(fallback)}, ${load(locale)}]).then(([base, own]) => ({ ...base, ...own }))`
-        : `() => ${load(locale)}`
-      return `${JSON.stringify(locale)}: ${loader}`
-    })
-    .join(', ')
-  const bindings = [...aliases.values()].map((alias) => `${alias} = __messages`).join(', ')
-
-  lines.splice(
-    start,
-    end - start,
-    `const __messages = await ({ ${loaders} }[getLocale()] ?? (() => ${load(baseLocale)}))()`,
-    `const ${bindings}`
-  )
+  lines.splice(start, end - start, `import { messages as __messages } from "${VIRTUAL_ID}"`)
 
   const joined = lines.join('\n')
   const dispatchers = joined.split(LOCALE_PICK).length - 1
@@ -131,32 +121,81 @@ export function splitLocaleImports(
   return output
 }
 
+// The virtual module's code in the client build. `messages` starts as a proxy
+// that names the mistake, because a message rendered before
+// loadLocaleMessages() would otherwise fail as "undefined is not an object".
+export function localeLoaderModule(
+  { locales, baseLocale }: Settings,
+  fallbacks: Map<string, string>,
+  messagesDir: string
+): string {
+  const load = (locale: string) => `import(${JSON.stringify(resolve(messagesDir, `${locale}.js`))})`
+  const loaders = locales
+    .map((locale) => {
+      const fallback = fallbacks.get(locale)
+      const loader = fallback
+        ? `() => Promise.all([${load(fallback)}, ${load(locale)}]).then(([base, own]) => ({ ...base, ...own }))`
+        : `() => ${load(locale)}`
+      return `${JSON.stringify(locale)}: ${loader}`
+    })
+    .join(', ')
+
+  return [
+    `import { getLocale } from ${JSON.stringify(resolve(messagesDir, '../runtime.js'))}`,
+    `const loaders = { ${loaders} }`,
+    'export let messages = new Proxy({}, {',
+    '  get(_, key) {',
+    '    throw new Error(`Message "${String(key)}" used before loadLocaleMessages() resolved`)',
+    '  }',
+    '})',
+    'export async function loadLocaleMessages() {',
+    `  messages = await (loaders[getLocale()] ?? (() => ${load(baseLocale)}))()`,
+    '}'
+  ].join('\n')
+}
+
 export function paraglideLocaleSplit({ project, outdir }: Options): Plugin {
   let settings: Settings
   let messagesDir: string
+  let isBuild: boolean
+
+  // Dev and SSR keep paraglide's static imports, so there is nothing to load.
+  const isSplitClient = (plugin: { environment?: { name: string } }, ssr?: boolean) =>
+    isBuild && (plugin.environment ? plugin.environment.name === 'client' : !ssr)
+
+  const fallbacksOf = () => {
+    const fallbacks = new Map<string, string>()
+    for (const locale of settings.locales) {
+      const file = readFileSync(resolve(messagesDir, `${locale}.js`), 'utf8')
+      const fallback = fallbackOf(file, locale, settings.baseLocale)
+      if (fallback) fallbacks.set(locale, fallback)
+    }
+    return fallbacks
+  }
 
   return {
     name: 'paraglide-locale-split',
     enforce: 'post',
-    apply: 'build',
     configResolved(config) {
       const raw = readFileSync(resolve(config.root, project, 'settings.json'), 'utf8')
       const { locales, baseLocale } = JSON.parse(raw) as Settings
       settings = { locales, baseLocale }
       messagesDir = resolve(config.root, outdir, 'messages')
+      isBuild = config.command === 'build'
+    },
+    resolveId(id) {
+      if (id === VIRTUAL_ID) return RESOLVED_VIRTUAL_ID
+    },
+    load(id, options) {
+      if (id !== RESOLVED_VIRTUAL_ID) return
+      if (!isSplitClient(this, options?.ssr)) return 'export async function loadLocaleMessages() {}'
+      return localeLoaderModule(settings, fallbacksOf(), messagesDir)
     },
     transform(code, id, options) {
-      const isClient = this.environment ? this.environment.name === 'client' : !options?.ssr
-      if (!isClient) return
+      if (!isSplitClient(this, options?.ssr)) return
 
       if (id === resolve(messagesDir, '_index.js')) {
-        const fallbacks = new Map<string, string>()
-        for (const locale of settings.locales) {
-          const file = readFileSync(resolve(messagesDir, `${locale}.js`), 'utf8')
-          const fallback = fallbackOf(file, locale, settings.baseLocale)
-          if (fallback) fallbacks.set(locale, fallback)
-        }
-        return { code: splitLocaleImports(code, settings, fallbacks), map: null }
+        return { code: splitLocaleImports(code, settings), map: null }
       }
 
       const locale = settings.locales.find((locale) => id === resolve(messagesDir, `${locale}.js`))
