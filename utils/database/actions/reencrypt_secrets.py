@@ -40,7 +40,7 @@ async def reencrypt_secrets() -> None:
         unreadable = unreadable_secrets(rows)
         if unreadable:
             for ref in unreadable:
-                logger.error(f"[secrets] {ref.message()}")
+                logger.error(f"[SECRETS] {ref.message()}")
             raise UnreadableSecretsError(
                 f"{len(unreadable)} stored secrets cannot be decrypted with "
                 "COMPARIA_ENCRYPTION_KEY, nothing was changed. Put the key they "
@@ -75,7 +75,7 @@ async def reencrypt_secrets() -> None:
         await session.commit()
 
     for table, count in counts.items():
-        logger.info(f"[secrets] {table}: {count} rows rewritten")
+        logger.info(f"[SECRETS] {table}: {count} rows rewritten")
     logger.info(
-        f"[secrets] {sum(counts.values())} secrets rewritten with the current key"
+        f"[SECRETS] {sum(counts.values())} secrets rewritten with the current key"
     )
