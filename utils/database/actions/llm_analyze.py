@@ -5,7 +5,7 @@ import uuid
 from enum import Enum
 
 from pydantic import ValidationError
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from sqlmodel import SQLModel, col
 
 from utils.database.models.comparison import (
@@ -27,6 +27,10 @@ logger = logging.getLogger("comparia.db.llm_analyze")
 TO_ANALYZE_CONDITION = and_(
     col(Comparison.archived) == False,
     col(Comparison.llm_analyzed) == None,
+    # The analysis decides what gets published, and partner programme
+    # conversations (Pix pupils) never are: sending them to the analysis
+    # model would only pass pupils' text to one more provider.
+    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
 )
 
 
