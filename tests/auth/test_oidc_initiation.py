@@ -225,8 +225,10 @@ def test_oidc_login_refuses_when_the_request_origin_is_not_the_callback_origin(c
     assert not client._provider.requests
     assert not fake_redis.store
     assert "oidc_state" not in response.headers.get("set-cookie", "")
-    assert "http://elsewhere.example.test" in caplog.text
-    assert auth_router.settings.api_origin in caplog.text
+    assert (
+        "http://elsewhere.example.test",
+        auth_router.settings.api_origin,
+    ) in [record.args for record in caplog.records]
 
 
 def test_oidc_login_reads_the_origin_from_the_proxy_headers():
@@ -260,9 +262,9 @@ def test_oidc_login_requires_terms_acceptance_before_any_redirect():
     with routed(terms_accepted=False) as (client, _fake_redis):
         response = client.get("/auth/oidc/login", follow_redirects=False)
 
-    assert not client._provider.requests, (
-        "the provider was called before the terms gate"
-    )
+    assert (
+        not client._provider.requests
+    ), "the provider was called before the terms gate"
 
     # Reached from a browser link: resolves to a redirect the login page
     # renders, not a JSON error page.
