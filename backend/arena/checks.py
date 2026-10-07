@@ -24,7 +24,7 @@ import httpx
 import sentry_sdk
 
 from backend.config import settings
-from utils.database.encrypted import UnreadableSecret
+from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.prompt_check import PromptCheck, PromptCheckResult
 from utils.database.prompt_checks import get_prompt_check
 from utils.secrets import SecretUnreadableError
@@ -66,8 +66,9 @@ async def moderate(text: str, model: str, api_key: str) -> dict[str, float]:
     the failure like any other so the panel shows the check unhealthy.
     """
     if isinstance(api_key, UnreadableSecret):
+        # The configuration is a single row, id 1.
         raise SecretUnreadableError(
-            "prompt_check 1.api_key cannot be decrypted with COMPARIA_ENCRYPTION_KEY"
+            UnreadableRow(PromptCheck.__tablename__, 1, "api_key").message()
         )
     async with httpx.AsyncClient(timeout=MODERATION_TIMEOUT) as client:
         response = await client.post(

@@ -6,12 +6,11 @@ COMPARIA_ENCRYPTION_KEY decrypts. Nothing here writes.
 """
 
 import logging
-from dataclasses import dataclass
 from typing import Any
 
 from sqlmodel import select
 
-from utils.database.encrypted import UnreadableSecret
+from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import UserTotp
 from utils.database.models.llms.endpoint import LLMEndpoint
@@ -35,16 +34,6 @@ TOKEN_COLUMNS: tuple[tuple[type, str], ...] = (
     (UserTotp, "pending_secret_encrypted"),
     (AppSettings, "oidc_client_secret_encrypted"),
 )
-
-
-@dataclass(frozen=True)
-class UnreadableRow:
-    table: str
-    row_id: Any
-    column: str
-
-    def __str__(self) -> str:
-        return f"{self.table} {self.row_id}.{self.column}"
 
 
 def token_text(token: str | bytes) -> str:
@@ -100,7 +89,7 @@ async def log_unreadable_secrets() -> list[UnreadableRow]:
         unreadable = unreadable_secrets(await load_secret_rows(session))
     for ref in unreadable:
         logger.error(
-            f"[SECRETS] {ref} cannot be decrypted with COMPARIA_ENCRYPTION_KEY: "
+            f"[SECRETS] {ref.message()}: "
             "put the key it was written with back in the list"
         )
     return unreadable

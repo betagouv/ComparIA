@@ -15,7 +15,7 @@ from backend.config import (
 from backend.llms.currency import CurrencyInfo, get_currency_info
 from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
 from backend.utils.countries import get_ranking
-from utils.database.encrypted import UnreadableSecret
+from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.llms import LLMData
 from utils.database.session import get_session
 from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
@@ -55,10 +55,10 @@ class LLMsData(BaseModel):
             if isinstance(api_key, UnreadableSecret):
                 if llm.endpoint.id not in unreadable:
                     unreadable.add(llm.endpoint.id)
+                    ref = UnreadableRow("llm_endpoint", llm.endpoint.id, "api_key")
                     logger.error(
-                        f"[SECRETS] llm_endpoint {llm.endpoint.id}.api_key "
-                        f"('{llm.endpoint.name}') cannot be decrypted with "
-                        "COMPARIA_ENCRYPTION_KEY: its models are disabled"
+                        f"[SECRETS] {ref.message()}: the models of "
+                        f"'{llm.endpoint.name}' are disabled"
                     )
                 continue
             kept[llm.id] = llm
