@@ -2,11 +2,11 @@ import logging
 
 from sqlalchemy.orm.attributes import flag_modified
 
-from utils.database.models.auth import UserTotp
 from utils.database.secrets import (
     ENCRYPTED_COLUMNS,
-    TOTP_COLUMNS,
+    TOKEN_COLUMNS,
     load_secret_rows,
+    token_text,
     unreadable_secrets,
 )
 from utils.database.session import get_session
@@ -29,7 +29,8 @@ async def reencrypt_secrets() -> None:
     this, then drop the old key. Every secret is read first; if one cannot
     be, nothing is written and the command fails. The encrypted columns
     re-encrypt on any write, so touching them is enough; the authenticator
-    secrets hold their tokens explicitly and are rewritten by hand. One
+    secrets and the OIDC client secret hold their tokens explicitly and are
+    rewritten by hand. One
     transaction, with the rows locked for its duration.
     """
     counts: dict[str, int] = {}
@@ -58,15 +59,20 @@ async def reencrypt_secrets() -> None:
                 session.add(row)
                 counts[model.__tablename__] = counts.get(model.__tablename__, 0) + 1
 
-        for totp in rows[UserTotp]:
-            for column in TOTP_COLUMNS:
-                token = getattr(totp, column)
-                if token and needs_reencryption(token):
-                    setattr(totp, column, encrypt_secret(decrypt_secret(token)))
-                    session.add(totp)
-                    counts[UserTotp.__tablename__] = (
-                        counts.get(UserTotp.__tablename__, 0) + 1
-                    )
+        for model, column in TOKEN_COLUMNS:
+            for row in rows[model]:
+                token = getattr(row, column)
+                if not token or not needs_reencryption(token_text(token)):
+                    continue
+                rewritten = encrypt_secret(decrypt_secret(token_text(token)))
+                # Written back the way the column holds it.
+                setattr(
+                    row,
+                    column,
+                    rewritten.encode() if isinstance(token, bytes) else rewritten,
+                )
+                session.add(row)
+                counts[model.__tablename__] = counts.get(model.__tablename__, 0) + 1
 
         await session.commit()
 

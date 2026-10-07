@@ -12,6 +12,7 @@ from typing import Any
 from sqlmodel import select
 
 from utils.database.encrypted import UnreadableSecret
+from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import UserTotp
 from utils.database.models.llms.endpoint import LLMEndpoint
 from utils.database.models.prompt_check import PromptCheck
@@ -27,8 +28,13 @@ ENCRYPTED_COLUMNS: tuple[tuple[type, str], ...] = (
     (PromptCheck, "api_key"),
     (PublishDestination, "config"),
 )
-# The authenticator secrets hold their tokens explicitly, decoded by hand.
-TOTP_COLUMNS = ("secret_encrypted", "pending_secret_encrypted")
+# The columns that hold their tokens explicitly, decoded by hand: the
+# authenticator secrets as text, the OIDC client secret as bytes.
+TOKEN_COLUMNS: tuple[tuple[type, str], ...] = (
+    (UserTotp, "secret_encrypted"),
+    (UserTotp, "pending_secret_encrypted"),
+    (AppSettings, "oidc_client_secret_encrypted"),
+)
 
 
 @dataclass(frozen=True)
@@ -41,12 +47,18 @@ class UnreadableRow:
         return f"{self.table} {self.row_id}.{self.column}"
 
 
+def token_text(token: str | bytes) -> str:
+    """The token a column holds, as text."""
+    return token.decode() if isinstance(token, bytes) else token
+
+
 async def load_secret_rows(session: Any, lock: bool = False) -> dict[type, list]:
     """Every row that holds a secret, by model. Locked when the caller means
     to rewrite them, so a save from the admin panel waits for the whole run
     rather than being overwritten by what was read before it."""
     rows: dict[type, list] = {}
-    for model in (*(model for model, _ in ENCRYPTED_COLUMNS), UserTotp):
+    models = dict.fromkeys(model for model, _ in (*ENCRYPTED_COLUMNS, *TOKEN_COLUMNS))
+    for model in models:
         statement = select(model)
         if lock:
             statement = statement.with_for_update()
@@ -71,15 +83,15 @@ def unreadable_secrets(rows: dict[type, list]) -> list[UnreadableRow]:
                                 model.__tablename__, row.id, f"{column}.{field}"
                             )
                         )
-    for totp in rows.get(UserTotp, ()):
-        for column in TOTP_COLUMNS:
-            token = getattr(totp, column)
+    for model, column in TOKEN_COLUMNS:
+        for row in rows.get(model, ()):
+            token = getattr(row, column)
             if not token:
                 continue
             try:
-                decrypt_secret(token)
+                decrypt_secret(token_text(token))
             except SecretUnreadableError:
-                found.append(UnreadableRow(UserTotp.__tablename__, totp.id, column))
+                found.append(UnreadableRow(model.__tablename__, row.id, column))
     return found
 
 

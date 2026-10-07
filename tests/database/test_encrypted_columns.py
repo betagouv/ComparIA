@@ -35,6 +35,7 @@ from utils.database.encrypted import (  # noqa: E402
     UnreadableSecret,
     looks_encrypted,
 )
+from utils.database.models.app_settings import AppSettings  # noqa: E402
 from utils.database.models.auth import UserTotp  # noqa: E402
 from utils.database.models.llms import LLMEndpoint  # noqa: E402
 from utils.database.models.prompt_check import PromptCheck  # noqa: E402
@@ -293,6 +294,7 @@ def test_the_startup_check_names_every_unreadable_row_and_changes_nothing(caplog
         prompt_check=[PromptCheck(id=1, api_key="sk-fine")],
         publish_destination=[bad_destination],
         auth_totp=[bad_totp],
+        app_settings=[AppSettings(id=1, oidc_client_secret_encrypted=lost.encode())],
     )
 
     with (
@@ -305,9 +307,10 @@ def test_the_startup_check_names_every_unreadable_row_and_changes_nothing(caplog
         f"llm_endpoint {bad_endpoint.id}.api_key",
         f"publish_destination {bad_destination.id}.config.token",
         f"auth_totp {bad_totp.id}.pending_secret_encrypted",
+        "app_settings 1.oidc_client_secret_encrypted",
     ]
     messages = [r.getMessage() for r in caplog.records if r.name == "comparia.db"]
-    assert len(messages) == 3, "one per row, on top of the decrypt's own line"
+    assert len(messages) == 4, "one per row, on top of the decrypt's own line"
     assert all(str(ref) in msg for ref, msg in zip(unreadable, messages))
     assert lost not in "".join(messages)
     assert session.added == [] and session.commits == 0
@@ -353,6 +356,7 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
     settings.COMPARIA_ENCRYPTION_KEY = old_key
     _fernet.cache_clear()
     old_totp_token = EncryptedStr().process_bind_param("JBSWY3DP", None)
+    old_oidc_token = EncryptedStr().process_bind_param("client-secret", None)
     settings.COMPARIA_ENCRYPTION_KEY = f"{current},{old_key}"
     _fernet.cache_clear()
     try:
@@ -366,18 +370,24 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
                 totp(old_totp_token),
                 totp(EncryptedStr().process_bind_param("fresh", None)),
             ],
+            app_settings=[
+                AppSettings(id=1, oidc_client_secret_encrypted=old_oidc_token.encode())
+            ],
         )
 
         with fake_session(session, rotation), caplog.at_level(logging.INFO):
             asyncio.run(rotation.reencrypt_secrets())
 
         assert session.commits == 1
-        assert len(session.statements) == 4
+        assert len(session.statements) == 5
         assert all(s._for_update_arg is not None for s in session.statements)
-        assert len(session.added) == 5
-        rewritten = session.added[-1]
+        assert len(session.added) == 6
+        rewritten = session.added[-2]
         assert rewritten.secret_encrypted != old_totp_token
         assert decrypt_secret(rewritten.secret_encrypted) == "JBSWY3DP"
+        oidc = session.added[-1].oidc_client_secret_encrypted
+        assert isinstance(oidc, bytes) and oidc != old_oidc_token.encode()
+        assert decrypt_secret(oidc.decode()) == "client-secret"
         infos = [
             r.getMessage() for r in caplog.records if "rows rewritten" in r.getMessage()
         ]
@@ -386,6 +396,7 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
             "[secrets] prompt_check: 1 rows rewritten",
             "[secrets] publish_destination: 1 rows rewritten",
             "[secrets] auth_totp: 1 rows rewritten",
+            "[secrets] app_settings: 1 rows rewritten",
         ]
     finally:
         settings.COMPARIA_ENCRYPTION_KEY = current
