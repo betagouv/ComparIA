@@ -10,8 +10,6 @@ decodes a whole result set at once, so raising here would fail every row of
 the query for one bad one; the marker lets each reader deal with its own row.
 """
 
-import base64
-import binascii
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,28 +17,6 @@ from sqlalchemy import String, TypeDecorator
 from sqlalchemy.dialects.postgresql import JSONB
 
 from utils.secrets import SecretUnreadableError, decrypt_secret, encrypt_secret
-
-# Every Fernet token starts with the version byte 0x80 and a timestamp whose
-# first bytes stay zero until 2106, base64-encoded: what a migration checks
-# to tell an encrypted value from one still in clear.
-FERNET_PREFIX = "gAAAAA"
-# Version, timestamp, iv, one AES block and the hmac: 73 bytes, 100 characters
-# once base64-encoded. No token is shorter.
-_FERNET_MIN_LENGTH = 100
-
-
-def looks_encrypted(value: Any) -> bool:
-    if (
-        not isinstance(value, str)
-        or len(value) < _FERNET_MIN_LENGTH
-        or not value.startswith(FERNET_PREFIX)
-    ):
-        return False
-    try:
-        base64.b64decode(value, altchars=b"-_", validate=True)
-    except (binascii.Error, ValueError):
-        return False
-    return True
 
 
 class UnreadableSecret:

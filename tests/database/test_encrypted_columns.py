@@ -33,7 +33,6 @@ from utils.database.encrypted import (  # noqa: E402
     EncryptedJSONFields,
     EncryptedStr,
     UnreadableSecret,
-    looks_encrypted,
 )
 from utils.database.models.app_settings import AppSettings  # noqa: E402
 from utils.database.models.auth import UserTotp  # noqa: E402
@@ -77,7 +76,6 @@ def test_a_string_column_stores_a_token_and_reads_the_value_back():
     column = EncryptedStr()
     stored = column.process_bind_param("sk-secret", None)
     assert stored != "sk-secret"
-    assert looks_encrypted(stored)
     assert decrypt_secret(stored) == "sk-secret"
     assert column.process_result_value(stored, None) == "sk-secret"
 
@@ -100,8 +98,8 @@ def test_only_the_secret_fields_of_a_config_are_encrypted():
 
     stored = column.process_bind_param(config, None)
     assert stored["bucket"] == "open-data"
-    assert looks_encrypted(stored["access_key"])
-    assert looks_encrypted(stored["secret_key"])
+    assert decrypt_secret(stored["access_key"]) == "AK"
+    assert decrypt_secret(stored["secret_key"]) == "SK"
     assert config["access_key"] == "AK", "the caller's dict is left alone"
 
     assert column.process_result_value(stored, None) == config
@@ -111,17 +109,6 @@ def test_an_unknown_kind_is_stored_as_is():
     column = EncryptedJSONFields(SECRET_FIELDS)
     config = {"kind": "ftp", "password": "p"}
     assert column.process_bind_param(config, None) == config
-
-
-def test_looks_encrypted_tells_tokens_from_plain_values():
-    assert looks_encrypted(EncryptedStr().process_bind_param("x", None))
-    assert looks_encrypted(token_from_a_lost_key(""))
-    assert not looks_encrypted("sk-plain")
-    assert not looks_encrypted(None)
-    # The prefix alone is not enough: a token is base64 and never short.
-    assert not looks_encrypted("gAAAAA-short")
-    assert not looks_encrypted("gAAAAA" + "!" * 100)
-    assert not looks_encrypted("gAAAAA" + "A" * 93)
 
 
 def test_a_json_lookup_on_the_encrypted_column_compiles_and_caches():
