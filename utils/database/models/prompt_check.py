@@ -115,7 +115,8 @@ class PromptCheck(SQLModel, table=True):
     model: str = Field(default=DEFAULT_MODEL)
     # Overrides MISTRAL_API_KEY when set, so an instance can be configured
     # without a redeploy. Never leaves the backend: PromptCheckPublic reports
-    # whether one is set, not what it is. Encrypted at rest.
+    # whether one is set, not what it is. Encrypted at rest; reads as an
+    # UnreadableSecret, not a str, when no configured key opens it.
     api_key: str | None = Field(default=None, sa_type=EncryptedStr)
     categories: Annotated[dict[str, dict], Field(sa_type=JSONB)] = {}
     updated_at: AutoDatetime
