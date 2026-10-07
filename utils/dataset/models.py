@@ -25,6 +25,25 @@ from utils.database.models import (
 # lists cannot drift apart.
 Datasets = PublishDataset
 
+# Shape of one respondent's published-question answers, keyed by the
+# question's stable `key` (never its editable, per-locale label): a single
+# option key for a 'select' question, a list of option keys for a
+# 'checkbox_group' one. Published in the dataset JSON-encoded under the
+# turn's `respondent` field (see utils/dataset/compute.py,
+# `get_survey_respondent_answers` and `_reference_rows`) rather than as a
+# struct/map parquet column, because the key set is admin-editable and a
+# fixed nested column can't express a set of keys that grows over time.
+#
+# What a reader of the dataset needs to be told, on the dataset card:
+#  - `{}` means not asked, nothing answered, or a set of answers shared by
+#    fewer than SURVEY_MIN_RESPONDENTS_PER_PROFILE respondents, withheld so it
+#    cannot single anyone out;
+#  - only questions an admin published are included, archived ones are not;
+#  - it is the respondent's latest answer, not the one they held when the
+#    conversation happened, so two releases can disagree about the same row.
+RespondentAnswer = str | list[str]
+RespondentAnswers = dict[str, RespondentAnswer]
+
 
 class DatasetTurnMetadata(SQLModel):
     tokens_a: int | None

@@ -15,6 +15,7 @@ No DB and no pytest required:
 """
 
 import asyncio
+import json
 import os
 import sys
 from datetime import datetime
@@ -47,6 +48,17 @@ async def _llms_data():
 
 
 compute.get_llms_data = _llms_data  # patch, so no DB is needed
+
+
+# --- survey respondent answers fixture (no published questions here; that's
+# covered on its own in test_respondent.py) ---------------------------------
+
+
+async def _survey_respondent_answers():
+    return {}
+
+
+compute.get_survey_respondent_answers = _survey_respondent_answers  # patch, no DB
 
 
 def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
@@ -84,6 +96,10 @@ def oracle_comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 **comp_data,
                 "metadata": {**turn_meta, **comp_meta},
                 "extra_metadata": comp_extra_meta,
+                # No published questions in the mocked
+                # `get_survey_respondent_answers` above, so every respondent
+                # (signed-in or anonymous) resolves to "answered nothing".
+                "respondent": json.dumps({}, ensure_ascii=False, sort_keys=True),
             }
         )
     return turns

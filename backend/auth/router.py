@@ -70,6 +70,7 @@ from backend.auth.totp import (
 from backend.config import settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip
 from utils.database.models.auth import LegalDocument, User
 from utils.database.models.utils import as_naive_utc
@@ -508,7 +509,11 @@ async def email_verify(
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     totp_required = _set_login_cookie(response, login)
-    return {"email": body.email, "totp_required": totp_required}
+    return {
+        "email": body.email,
+        "totp_required": totp_required,
+        "first_sign_in": login.first,
+    }
 
 
 @router.post("/totp/verify", response_model=None)
@@ -1010,6 +1015,11 @@ async def get_me(request: Request) -> dict:
             "email": user.email,
             "role": user.role,
             "totp_enabled": await has_confirmed_totp(user.id),
+            # Whether a required signup question is still unanswered, which
+            # holds every arena write until it is (see survey/dependencies.py).
+            "questionsAnswered": await signup_questions_answered(
+                user_id=user.id, anonymous_user_hash=None
+            ),
         }
     }
 

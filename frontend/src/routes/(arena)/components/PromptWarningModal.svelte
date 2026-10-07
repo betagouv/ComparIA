@@ -39,11 +39,11 @@
       aria-controls={modalId}
       onclick={() => onEdit?.()}
     />
-    <Button
-      text={m['arene.promptWarning.proceed']()}
-      aria-controls={modalId}
-      onclick={() => onProceed?.()}
-    />
+    <!-- No aria-controls: DSFR would close the modal on its own listener, and
+         the close reaches onClose, and so onEdit, before this handler runs.
+         onEdit drops the pending request, which onProceed needs to send it.
+         Sending clears the warnings, which closes the modal anyway. -->
+    <Button text={m['arene.promptWarning.proceed']()} onclick={() => onProceed?.()} />
   </div>
 </Modal>
 

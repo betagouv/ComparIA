@@ -13,6 +13,7 @@ from sqlmodel import select
 
 from backend.config import settings
 from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
+from backend.survey.services import carry_over_anonymous, delete_for_user
 from utils.database.models.auth import (
     AnonymousConsentLog,
     AuthSession,
@@ -49,6 +50,10 @@ class LoginResult:
 
     kind: Literal["session", "totp_challenge"]
     token: str
+    # No session ever opened before this one. The sign-in form puts its
+    # optional questions to a new account once, and after that only asks
+    # again while a required one is unanswered.
+    first: bool = False
 
 
 def _hash(value: str) -> str:
@@ -112,6 +117,7 @@ async def _create_session(
         await _associate_anonymous_acceptance(
             session, user, auth_session, anonymous_user_hash
         )
+        await carry_over_anonymous(session, anonymous_user_hash, user.id)
 
     return token
 
@@ -135,11 +141,19 @@ async def _open_session_or_challenge(
     """A user with a confirmed authenticator gets no session yet, only a
     short-lived challenge that `verify_totp_challenge` turns into one.
     Does not commit; caller owns the transaction."""
+    # Sessions are revoked, never deleted, so any row at all means the
+    # account has signed in before.
+    first = (
+        await session.exec(
+            select(AuthSession.id).where(AuthSession.user_id == user.id).limit(1)
+        )
+    ).first() is None
+
     if not await _has_confirmed_totp(session, user.id):
         token = await _create_session(
             session, user, ip, user_agent, anonymous_user_hash
         )
-        return LoginResult(kind="session", token=token)
+        return LoginResult(kind="session", token=token, first=first)
 
     token = secrets.token_urlsafe(32)
     session.add(
@@ -149,7 +163,7 @@ async def _open_session_or_challenge(
             expires_at=datetime.now() + timedelta(minutes=TOTP_CHALLENGE_TTL_MINUTES),
         )
     )
-    return LoginResult(kind="totp_challenge", token=token)
+    return LoginResult(kind="totp_challenge", token=token, first=first)
 
 
 async def _associate_anonymous_acceptance(
@@ -656,6 +670,11 @@ async def erase_user_account(user_id: uuid.UUID) -> None:
                 anonymous_user_hash=None,
             )
         )
+        # Survey answers are the most personal rows an account carries, and
+        # unlike conversations they were never offered for publication under
+        # the research terms, so they are deleted outright rather than
+        # anonymised.
+        await delete_for_user(session, user_id)
         await session.execute(sa_delete(LoginCode).where(LoginCode.user_id == user_id))
         await session.execute(
             sa_delete(InviteToken).where(InviteToken.user_id == user_id)

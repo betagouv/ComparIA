@@ -26,11 +26,7 @@ import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.oidc import PendingLogin  # noqa: E402
-from utils.database.models.auth import (  # noqa: E402
-    AuthSession,
-    TotpChallenge,
-    User,
-)
+from utils.database.models.auth import AuthSession, TotpChallenge, User  # noqa: E402
 from utils.secrets import SecretUnreadableError  # noqa: E402
 
 
@@ -699,7 +695,7 @@ def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
     flow."""
     admin = User(email="boss@example.com", role="admin")
     confirmed_totp = uuid.uuid4()
-    session = FakeSession(results=[[admin], [confirmed_totp]])
+    session = FakeSession(results=[[admin], [None], [confirmed_totp]])
     with fake_session(session):
         login, user_id = asyncio.run(
             auth_services.oidc_login(
