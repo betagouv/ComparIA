@@ -155,15 +155,19 @@ class PublishDestination(PublishDestinationBase, table=True):
 
     config: Annotated[dict, Field(sa_type=EncryptedJSONFields(SECRET_FIELDS))]
 
-    def parsed_config(self) -> HuggingFaceConfig | S3Config:
-        """Raises SecretUnreadableError, naming the row, for credentials the
-        configured encryption keys do not open: the destination is still
-        there, it cannot be used until its key is back."""
-        unreadable = [
+    def unreadable_fields(self) -> list[str]:
+        """The credentials of the config that no configured key opens."""
+        return [
             field
             for field in SECRET_FIELDS.get(self.config.get("kind"), ())
             if isinstance(self.config.get(field), UnreadableSecret)
         ]
+
+    def parsed_config(self) -> HuggingFaceConfig | S3Config:
+        """Raises SecretUnreadableError, naming the row, for credentials the
+        configured encryption keys do not open: the destination is still
+        there, it cannot be used until its key is back."""
+        unreadable = self.unreadable_fields()
         if unreadable:
             column = f"config.{', '.join(unreadable)}"
             raise SecretUnreadableError(
