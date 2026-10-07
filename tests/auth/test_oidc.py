@@ -11,7 +11,9 @@ import base64
 import json
 import os
 import sys
+import time
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -23,10 +25,13 @@ from backend.auth.oidc import (  # noqa: E402
     OIDCProviderError,
     PendingLogin,
     _decode_jwt_payload,
+    email_explicitly_unverified,
     merge_userinfo_claims,
+    oidc_available,
     validate_discovery,
     validate_id_token,
 )
+from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 
 ISSUER = "https://idp.example.test"
 CLIENT_ID = "client-123"
@@ -66,7 +71,15 @@ def test_decode_jwt_payload_handles_unpadded_base64url():
 
 
 def _id_token(**claims):
-    return _fake_jwt({"iss": ISSUER, "aud": CLIENT_ID, "sub": "user-1", **claims})
+    return _fake_jwt(
+        {
+            "iss": ISSUER,
+            "aud": CLIENT_ID,
+            "sub": "user-1",
+            "exp": int(time.time()) + 3600,
+            **claims,
+        }
+    )
 
 
 def test_validate_id_token_returns_the_claims_of_a_token_issued_for_us():
@@ -93,6 +106,43 @@ def test_validate_id_token_rejects_a_token_for_another_client():
     raises(
         OIDCProviderError, validate_id_token, token, issuer=ISSUER, client_id=CLIENT_ID
     )
+
+
+def test_validate_id_token_rejects_an_expired_token():
+    token = _id_token(exp=int(time.time()) - 3600)
+    raises(
+        OIDCProviderError, validate_id_token, token, issuer=ISSUER, client_id=CLIENT_ID
+    )
+
+
+def test_validate_id_token_allows_a_small_clock_skew():
+    token = _id_token(exp=int(time.time()) - 10)
+    assert validate_id_token(token, issuer=ISSUER, client_id=CLIENT_ID)
+
+
+def test_validate_id_token_rejects_a_missing_or_unreadable_expiry():
+    for exp in (None, "soon", True):
+        token = _id_token(exp=exp)
+        raises(
+            OIDCProviderError,
+            validate_id_token,
+            token,
+            issuer=ISSUER,
+            client_id=CLIENT_ID,
+        )
+
+
+def test_email_explicitly_unverified_reads_booleans_and_strings():
+    for value in (False, "false", "False", " FALSE "):
+        assert email_explicitly_unverified({"email_verified": value}), value
+    for value in (True, "true", "TRUE"):
+        assert not email_explicitly_unverified({"email_verified": value}), value
+
+
+def test_email_explicitly_unverified_treats_anything_else_as_absent():
+    assert not email_explicitly_unverified({})
+    assert not email_explicitly_unverified({"email_verified": None})
+    assert not email_explicitly_unverified({"email_verified": "maybe"})
 
 
 def test_validate_id_token_rejects_a_malformed_token():
@@ -143,6 +193,40 @@ def test_validate_discovery_rejects_a_document_for_another_issuer():
         {"issuer": "https://elsewhere.test"},
         ISSUER,
     )
+
+
+def _config(**overrides):
+    fields = dict(
+        auth_methods=["email_code", "oidc"],
+        oidc_issuer=ISSUER,
+        oidc_client_id=CLIENT_ID,
+        oidc_client_secret_encrypted=ENCRYPTED_CLIENT_SECRET,
+        oidc_scopes=["openid", "email"],
+    )
+    fields.update(overrides)
+    return SimpleNamespace(**fields)
+
+
+def test_oidc_is_available_with_the_method_enabled_and_a_readable_config():
+    assert oidc_available(_config())
+
+
+def test_oidc_is_unavailable_unless_the_method_is_enabled():
+    assert not oidc_available(_config(auth_methods=["email_code"]))
+
+
+def test_oidc_is_unavailable_with_an_incomplete_provider_config():
+    for missing in (
+        dict(oidc_issuer=None),
+        dict(oidc_client_id=None),
+        dict(oidc_client_secret_encrypted=None),
+        dict(oidc_scopes=["email"]),
+    ):
+        assert not oidc_available(_config(**missing)), missing
+
+
+def test_oidc_is_unavailable_when_the_client_secret_cannot_be_read():
+    assert not oidc_available(_config(oidc_client_secret_encrypted=b"not-a-token"))
 
 
 class FakeRedis:

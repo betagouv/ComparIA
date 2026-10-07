@@ -19,6 +19,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import { signInMethods } from '$lib/signInMethods'
   import { onMount, tick, untrack } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -29,6 +30,7 @@
     titleId,
     startAtTotp = false,
     hideHeader = false,
+    onChallengeExpired,
     ...props
   }: {
     onSuccess?: () => void
@@ -39,6 +41,10 @@
     startAtTotp?: boolean
     /** Hides the internal title and subtitle when the host page already shows them. */
     hideHeader?: boolean
+    /** The authenticator challenge ran out on an instance without email codes:
+     *  the host sends the visitor back to its sign-in provider button, since
+     *  there is no email step to restart at. */
+    onChallengeExpired?: (message: string) => void
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
@@ -61,6 +67,7 @@
 
   const consentLabel = $derived(terms ? consentCheckboxLabel(terms, true) : '')
   const canMergeComparisons = $derived(auth.config.access_policy === 'anonymous_first')
+  const emailEnabled = $derived(signInMethods(auth.config).emailEnabled)
   // Opened straight at the authenticator step: there is no address to show
   // or change, the invite already checked it.
   const emailAlreadyChecked = $derived(startAtTotp && step === 'totp')
@@ -166,7 +173,9 @@
       if (status === 401 || status === 410) {
         // Too many wrong codes, the ten minutes ran out, or the challenge
         // cookie never reached us: start over.
-        await restartAtEmail(m['auth.modal.totp.expired']())
+        await restartAtEmail(
+          emailEnabled ? m['auth.modal.totp.expired']() : m['auth.modal.totp.expiredSso']()
+        )
       } else if (!status || status >= 500) {
         // Nothing reached the backend, or it could not answer: not a wrong code.
         error = m['errors.unknown']()
@@ -186,6 +195,11 @@
       params.delete('step')
       const qs = params.toString()
       replaceState(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, {})
+    }
+    if (!emailEnabled && onChallengeExpired) {
+      loading = false
+      onChallengeExpired(message)
+      return
     }
     step = 'email'
     code = ''

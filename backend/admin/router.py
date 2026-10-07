@@ -2,13 +2,14 @@ import logging
 import time
 import uuid
 from datetime import datetime
+from types import SimpleNamespace
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
-from backend.admin.logos import normalize_logo
+from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
@@ -34,11 +35,17 @@ from backend.arena.checks import (
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
+from backend.auth.oidc import (
+    check_oidc_connection,
+    connection_test_passed,
+    oidc_available,
+    oidc_config_fingerprint,
+)
 from backend.auth.services import create_invite
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     INSTANCE_LOGO_BOX,
-    LOGO_UPLOAD_MAX_SIZE,
+    OIDC_LOGO_BOX,
     settings,
 )
 from backend.settings.informational_legal import (
@@ -66,10 +73,12 @@ from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
     AppSettingsPublic,
+    OIDCConnectionTest,
 )
 from utils.database.models.auth import (
     LegalDocument,
     LegalDocumentKind,
+    NormalizedEmail,
     UserPublic,
     UserUpsert,
 )
@@ -113,7 +122,7 @@ class UsersPage(BaseModel):
 
 
 class InviteBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
     # The inviting admin's language: the best guess we have for the invitee's.
     locale: str | None = Field(default=None, min_length=2, max_length=16)
 
@@ -394,6 +403,18 @@ async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> N
     logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
 
 
+def _current_connection_test(row: AppSettings) -> OIDCConnectionTest | None:
+    """The stored connection test, unless the provider config changed since."""
+    stored = row.oidc_connection_test
+    if not stored or stored.get("fingerprint") != oidc_config_fingerprint(row):
+        return None
+    return OIDCConnectionTest(
+        passed=stored["passed"],
+        reason=stored.get("reason"),
+        tested_at=stored["tested_at"],
+    )
+
+
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
     return AppSettingsPublic(
         auth_access_policy=row.auth_access_policy,
@@ -422,6 +443,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         oidc_button_label=row.oidc_button_label,
         oidc_has_button_logo=row.oidc_button_logo is not None,
         oidc_button_logo_content_type=row.oidc_button_logo_content_type,
+        oidc_connection_test=_current_connection_test(row),
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -472,25 +494,67 @@ async def patch_settings(
     if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
         current = await get_app_settings()
         effective_methods = patch.get("auth_methods", current.auth_methods)
-        if "oidc" in effective_methods:
-            issuer = patch.get("oidc_issuer", current.oidc_issuer)
-            client_id = patch.get("oidc_client_id", current.oidc_client_id)
-            secret_enc = patch.get(
-                "oidc_client_secret_encrypted",
-                current.oidc_client_secret_encrypted,
-            )
-            scopes = patch.get("oidc_scopes", current.oidc_scopes)
-            if not (issuer and client_id and secret_enc and "openid" in scopes):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        "OIDC provider config (issuer, client_id, client_secret, "
-                        "scopes including openid) must be complete before "
-                        "enabling the oidc auth method."
-                    ),
+        effective = SimpleNamespace(
+            auth_methods=effective_methods,
+            **{
+                field: patch.get(field, getattr(current, field))
+                for field in (
+                    "oidc_issuer",
+                    "oidc_client_id",
+                    "oidc_client_secret_encrypted",
+                    "oidc_scopes",
+                    "oidc_connection_test",
                 )
+            },
+        )
+        if "oidc" in effective_methods and not oidc_available(effective):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "OIDC provider config (issuer, client_id, readable "
+                    "client_secret, scopes including openid) must be complete "
+                    "before enabling the oidc auth method."
+                ),
+            )
+        # With the email code gone, SSO is the only way in: a config that was
+        # never shown to work, or was edited since, would lock everyone out.
+        if (
+            "email_code" in current.auth_methods
+            and "email_code" not in effective_methods
+            and not connection_test_passed(effective)
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Test the OIDC connection on the current provider config "
+                    "before removing the email code sign-in."
+                ),
+            )
     row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
+
+
+@router.post("/settings/oidc/test", response_model=OIDCConnectionTest)
+async def run_oidc_connection_test(current_user: RequiredAdmin) -> OIDCConnectionTest:
+    """Check the stored OIDC provider config and remember the outcome for the
+    config as it is now; editing the config makes the outcome stale."""
+    row = await get_app_settings()
+    reason = await check_oidc_connection(row)
+    result = {
+        "passed": reason is None,
+        "reason": reason,
+        "tested_at": datetime.now().isoformat(),
+    }
+    await update_app_settings(
+        {
+            "oidc_connection_test": {
+                **result,
+                "fingerprint": oidc_config_fingerprint(row),
+            }
+        },
+        updated_by=current_user.id,
+    )
+    return OIDCConnectionTest(**result)
 
 
 @router.put("/settings/logo", response_model=AppSettingsPublic)
@@ -498,10 +562,7 @@ async def upload_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    content = await file.read(LOGO_UPLOAD_MAX_SIZE + 1)
-    logo, content_type = normalize_logo(
-        content, file.content_type or "", INSTANCE_LOGO_BOX
-    )
+    logo, content_type = await read_logo(file, INSTANCE_LOGO_BOX)
     row = await update_app_settings(
         {"logo": logo, "logo_content_type": content_type},
         updated_by=current_user.id,
@@ -522,22 +583,9 @@ async def upload_oidc_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    if file.content_type not in _LOGO_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported content type: {file.content_type}",
-        )
-    content = await file.read()
-    if len(content) > _LOGO_MAX_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Logo file is too large (max 2 MB)",
-        )
+    logo, content_type = await read_logo(file, OIDC_LOGO_BOX)
     row = await update_app_settings(
-        {
-            "oidc_button_logo": content,
-            "oidc_button_logo_content_type": file.content_type,
-        },
+        {"oidc_button_logo": logo, "oidc_button_logo_content_type": content_type},
         updated_by=current_user.id,
     )
     return _to_app_settings_public(row)

@@ -100,6 +100,10 @@ subset would silently leave it without SMTP or with the default session length.
 - name: COMPARIA_APP_URL
   value: {{ .Values.config.appUrl | quote }}
 {{- end }}
+{{- if .Values.config.apiUrl }}
+- name: COMPARIA_API_URL
+  value: {{ .Values.config.apiUrl | quote }}
+{{- end }}
 {{- if .Values.config.emailFrom }}
 - name: EMAIL_FROM
   value: {{ .Values.config.emailFrom | quote }}

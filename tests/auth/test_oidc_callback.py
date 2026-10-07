@@ -9,29 +9,40 @@ import asyncio
 import contextlib
 import os
 import sys
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
+from urllib.parse import parse_qs
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+import pytest  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy.exc import IntegrityError, OperationalError  # noqa: E402
 
 import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.oidc import PendingLogin  # noqa: E402
+from tests.auth.fake_oidc_provider import (  # noqa: E402
+    CLIENT_ID,
+    CLIENT_SECRET,
+    ENCRYPTED_CLIENT_SECRET,
+    ISSUER,
+    FakeProvider,
+    serving,
+)
 from utils.database.models.auth import (  # noqa: E402
     AuthSession,
     TotpChallenge,
     User,
 )
-from utils.secrets import SecretUnreadableError  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -51,9 +62,9 @@ def _settings_row(**overrides):
         auth_access_policy="anonymous_first",
         auth_domain_allowlist=[],
         auth_methods=["email_code", "oidc"],
-        oidc_issuer="https://idp.example.test",
-        oidc_client_id="client-123",
-        oidc_client_secret_encrypted=b"encrypted",
+        oidc_issuer=ISSUER,
+        oidc_client_id=CLIENT_ID,
+        oidc_client_secret_encrypted=ENCRYPTED_CLIENT_SECRET,
         oidc_scopes=["openid", "email"],
         oidc_button_label="Se connecter avec ProConnect",
         oidc_button_logo=b"png-bytes",
@@ -73,15 +84,6 @@ def _settings_row(**overrides):
     return SimpleNamespace(**fields)
 
 
-def _discovery():
-    return {
-        "issuer": "https://idp.example.test",
-        "authorization_endpoint": "https://idp.example.test/authorize",
-        "token_endpoint": "https://idp.example.test/token",
-        "userinfo_endpoint": "https://idp.example.test/userinfo",
-    }
-
-
 USER_ID = uuid.uuid4()
 
 
@@ -89,14 +91,14 @@ USER_ID = uuid.uuid4()
 def routed(
     row=None,
     pending=None,
-    exchange=None,
-    discover=None,
-    oidc_login=None,
-    decrypt=None,
+    provider=None,
+    login=None,
     state_cookie="good-state",
 ):
     if row is None:
         row = _settings_row()
+    if provider is None:
+        provider = FakeProvider()
     if pending is None:
         pending = PendingLogin(nonce="the-nonce", redirect="/", merge=False)
 
@@ -108,61 +110,33 @@ def routed(
         # once per request, so returning the pending login is enough.
         return pending if state == "good-state" else None
 
-    if discover is None:
-
-        async def discover_provider(_issuer):
-            return _discovery()
-
-    else:
-        discover_provider = discover
-
-    if exchange is None:
-
-        async def exchange_code_for_claims(**_kwargs):
-            return {
-                "email": "agent@example.com",
-                "email_verified": True,
-                "nonce": "the-nonce",
-            }
-
-    else:
-        exchange_code_for_claims = exchange
-
-    # Spy: records whether the happy-path `oidc_login` service ran. Failure
+    # Spy: records whether the happy-path `login_with_oidc` service ran. Failure
     # paths must never reach it (no User row, no session minted).
     login_calls = []
 
-    if oidc_login is None:
+    if login is None:
 
-        async def oidc_login_service(**kwargs):
+        async def login_with_oidc(**kwargs):
             login_calls.append(kwargs)
             return auth_services.LoginResult("session", "session-token"), USER_ID
 
     else:
-        oidc_login_service = oidc_login
+        login_with_oidc = login
 
     merge_calls = []
 
     async def merge_anonymous_comparisons(user_id, anonymous_user_hash):
         merge_calls.append((user_id, anonymous_user_hash))
 
-    if decrypt is None:
-
-        def decrypt_secret(_ciphertext):
-            return "super-secret"
-
-    else:
-        decrypt_secret = decrypt
-
-    with patched(
-        auth_router,
-        get_app_settings=get_app_settings,
-        consume_state=consume_state,
-        discover_provider=discover_provider,
-        exchange_code_for_claims=exchange_code_for_claims,
-        oidc_login_service=oidc_login_service,
-        decrypt_secret=decrypt_secret,
-        merge_anonymous_comparisons=merge_anonymous_comparisons,
+    with (
+        serving(provider),
+        patched(
+            auth_router,
+            get_app_settings=get_app_settings,
+            consume_state=consume_state,
+            login_with_oidc=login_with_oidc,
+            merge_anonymous_comparisons=merge_anonymous_comparisons,
+        ),
     ):
         app = FastAPI()
         app.include_router(auth_router.router)
@@ -174,7 +148,16 @@ def routed(
         # Expose the spies without changing the `routed() as client` convention.
         client._login_calls = login_calls  # type: ignore[attr-defined]
         client._merge_calls = merge_calls  # type: ignore[attr-defined]
+        client._provider = provider  # type: ignore[attr-defined]
         yield client
+
+
+def _provider(*, id_token=None, userinfo=None):
+    """The default fake provider with some claims changed."""
+    provider = FakeProvider()
+    provider.id_token_claims.update(id_token or {})
+    provider.userinfo_claims.update(userinfo or {})
+    return provider
 
 
 def _login_redirect(response):
@@ -243,10 +226,8 @@ def test_callback_rejects_a_missing_code():
 
 
 def test_callback_rejects_a_nonce_mismatch():
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": "agent@example.com", "nonce": "different-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    provider = _provider(id_token={"nonce": "different-nonce"})
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -258,10 +239,7 @@ def test_callback_rejects_a_nonce_mismatch():
 
 
 def test_callback_rejects_when_provider_returns_no_email():
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": None, "email_verified": True, "nonce": "the-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    with routed(provider=_provider(userinfo={"email": None})) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -278,14 +256,10 @@ def test_callback_rejects_an_unverified_email():
     claim any email (including a pre-seeded admin's) and take over that
     account by matching on email."""
 
-    async def exchange_code_for_claims(**_kwargs):
-        return {
-            "email": "boss@example.com",
-            "email_verified": False,
-            "nonce": "the-nonce",
-        }
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    provider = _provider(
+        userinfo={"email": "boss@example.com", "email_verified": False}
+    )
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -302,10 +276,9 @@ def test_callback_allows_a_missing_email_verified_claim():
     An absent claim must not lock out every login from
     those providers; only an explicit `false` is rejected."""
 
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": "agent@example.com", "nonce": "the-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    provider = _provider()
+    del provider.userinfo_claims["email_verified"]
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -343,10 +316,9 @@ def test_callback_rejects_when_oidc_disabled_in_methods():
 
 
 def test_callback_redirects_when_discovery_is_missing_required_endpoints():
-    async def discover_provider(_issuer):
-        return {"issuer": "https://idp.example.test"}
-
-    with routed(discover=discover_provider) as client:
+    provider = FakeProvider()
+    provider.discovery = {"issuer": ISSUER}
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -357,11 +329,29 @@ def test_callback_redirects_when_discovery_is_missing_required_endpoints():
     assert not client._login_calls
 
 
-def test_callback_redirects_when_discovery_raises():
-    async def discover_provider(_issuer):
-        raise RuntimeError("network down")
+def test_callback_refuses_a_non_https_token_or_userinfo_endpoint():
+    for endpoint, path in (
+        ("token_endpoint", "/token"),
+        ("userinfo_endpoint", "/userinfo"),
+    ):
+        provider = FakeProvider()
+        provider.discovery[endpoint] = f"http://idp.example.test{path}"
+        with routed(provider=provider) as client:
+            response = client.get(
+                "/auth/oidc/callback",
+                params={"code": "auth-code", "state": "good-state"},
+                follow_redirects=False,
+            )
+        assert _login_redirect(response) == "provider_error", endpoint
+        # No code, no client secret ever sent to a provider over plain http.
+        assert not provider.requests_to("/token"), endpoint
+        assert not client._login_calls, endpoint
 
-    with routed(discover=discover_provider) as client:
+
+def test_callback_redirects_when_discovery_raises():
+    provider = FakeProvider()
+    provider.unreachable = True
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -386,14 +376,13 @@ def test_callback_redirects_when_provider_returns_an_error_param():
     assert not client._login_calls
 
 
-def test_callback_redirects_when_code_exchange_raises():
+def test_callback_redirects_when_the_token_endpoint_rejects_the_code():
     """A denied/expired/reused code makes the token endpoint reject the
     exchange; the round trip is unrecoverable from the browser."""
 
-    async def exchange_code_for_claims(**_kwargs):
-        raise RuntimeError("token endpoint returned 400")
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    provider = FakeProvider()
+    provider.token_status = 400
+    with routed(provider=provider) as client:
         response = client.get(
             "/auth/oidc/callback",
             params={"code": "auth-code", "state": "good-state"},
@@ -413,12 +402,12 @@ def test_callback_failure_leaves_no_session_cookie_on_any_path():
         ("provider_error_param", {}, {"error": "access_denied"}),
         (
             "no_email",
-            {"exchange": _no_email_exchange},
+            {"provider": _provider(userinfo={"email": None})},
             {"code": "x", "state": "good-state"},
         ),
         (
             "email_not_verified",
-            {"exchange": _unverified_email_exchange},
+            {"provider": _provider(userinfo={"email_verified": False})},
             {"code": "x", "state": "good-state"},
         ),
         (
@@ -436,18 +425,6 @@ def test_callback_failure_leaves_no_session_cookie_on_any_path():
         assert not client._login_calls
 
 
-async def _no_email_exchange(**_kwargs):
-    return {"email": None, "email_verified": True, "nonce": "the-nonce"}
-
-
-async def _unverified_email_exchange(**_kwargs):
-    return {
-        "email": "agent@example.com",
-        "email_verified": False,
-        "nonce": "the-nonce",
-    }
-
-
 class _FakeResult:
     def __init__(self, rows):
         self.rows = rows
@@ -460,12 +437,14 @@ class _FakeResult:
 
 
 class FakeSession:
-    """Records added objects and replays canned results for `oidc_login`."""
+    """Records added objects and replays canned results for `login_with_oidc`."""
 
-    def __init__(self, results):
+    def __init__(self, results, flush_errors=()):
         self.results = list(results)
+        self.flush_errors = list(flush_errors)
         self.added = []
         self.committed = False
+        self.rolled_back = 0
 
     async def exec(self, _statement):
         return _FakeResult(self.results.pop(0) if self.results else [])
@@ -477,7 +456,12 @@ class FakeSession:
         self.added.append(value)
 
     async def flush(self):
-        pass
+        # A test queues the errors the next flushes raise, in order.
+        if self.flush_errors:
+            raise self.flush_errors.pop(0)
+
+    async def rollback(self):
+        self.rolled_back += 1
 
     async def commit(self):
         self.committed = True
@@ -497,7 +481,7 @@ def test_oidc_login_creates_a_user_when_none_exists():
     session = FakeSession(results=[[]])
     with fake_session(session):
         token = asyncio.run(
-            auth_services.oidc_login(
+            auth_services.login_with_oidc(
                 email="newcomer@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
@@ -518,7 +502,7 @@ def test_oidc_login_reuses_an_existing_account_instead_of_duplicating_it():
     session = FakeSession(results=[[existing]])
     with fake_session(session):
         token = asyncio.run(
-            auth_services.oidc_login(
+            auth_services.login_with_oidc(
                 email="agent@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
@@ -536,7 +520,7 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
     session = FakeSession(results=[[admin]])
     with fake_session(session):
         token = asyncio.run(
-            auth_services.oidc_login(
+            auth_services.login_with_oidc(
                 email="boss@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
@@ -552,17 +536,17 @@ def test_oidc_login_lands_on_a_pre_seeded_admin_account():
 def test_callback_reuses_an_existing_account_instead_of_duplicating_it():
     """Router-seam test: an existing email-code account is reused when the
     same email authenticates via OIDC. Wires the real
-    `oidc_login` service to a FakeSession that already holds a User row for
+    `login_with_oidc` service to a FakeSession that already holds a User row for
     the callback's email, then asserts the callback succeeds and adds no
     new User to the session."""
     existing = User(email="agent@example.com")
     session = FakeSession(results=[[existing]])
 
-    async def oidc_login(**kwargs):
-        return await auth_services.oidc_login(**kwargs)
+    async def login(**kwargs):
+        return await auth_services.login_with_oidc(**kwargs)
 
     with fake_session(session):
-        with routed(oidc_login=oidc_login) as client:
+        with routed(login=login) as client:
             response = client.get(
                 "/auth/oidc/callback",
                 params={"code": "auth-code", "state": "good-state"},
@@ -642,55 +626,83 @@ def test_callback_does_not_merge_unless_asked():
     assert client._merge_calls == []
 
 
-def test_callback_normalises_the_email_like_the_email_flow():
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": "Agent@Example.COM", "nonce": "the-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+def test_callback_lowercases_the_email_like_the_email_flow():
+    with routed(provider=_provider(userinfo={"email": "Agent@Example.COM"})) as client:
         _callback(client)
-    assert client._login_calls[0]["email"] == "Agent@example.com"
+    assert client._login_calls[0]["email"] == "agent@example.com"
 
 
 def test_callback_rejects_a_malformed_email_claim():
-    async def exchange_code_for_claims(**_kwargs):
-        return {"email": "not-an-address", "nonce": "the-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+    with routed(provider=_provider(userinfo={"email": "not-an-address"})) as client:
         response = _callback(client)
     assert _login_redirect(response) == "no_email"
     assert not client._login_calls
 
 
 def test_callback_reports_a_deactivated_account():
-    async def oidc_login(**_kwargs):
+    async def login(**_kwargs):
         return None
 
-    with routed(oidc_login=oidc_login) as client:
+    with routed(login=login) as client:
         response = _callback(client)
     assert _login_redirect(response) == "account_unavailable"
 
 
 def test_callback_redirects_when_the_client_secret_cannot_be_decrypted():
-    def decrypt(_ciphertext):
-        raise SecretUnreadableError()
-
-    with routed(decrypt=decrypt) as client:
+    row = _settings_row(oidc_client_secret_encrypted=b"not-a-fernet-token")
+    with routed(row=row) as client:
         response = _callback(client)
     assert _login_redirect(response) == "oidc_unavailable"
     assert not client._login_calls
 
 
-def test_callback_passes_the_configured_issuer_to_the_code_exchange():
-    seen = []
-
-    async def exchange_code_for_claims(**kwargs):
-        seen.append(kwargs)
-        return {"email": "agent@example.com", "nonce": "the-nonce"}
-
-    with routed(exchange=exchange_code_for_claims) as client:
+def test_callback_sends_the_configured_client_and_the_code_to_the_token_endpoint():
+    with routed() as client:
         _callback(client)
-    assert seen[0]["issuer"] == "https://idp.example.test"
-    assert seen[0]["client_id"] == "client-123"
+    (token_request,) = client._provider.requests_to("/token")
+    form = parse_qs(token_request.content.decode())
+    assert form["grant_type"] == ["authorization_code"]
+    assert form["code"] == ["auth-code"]
+    assert form["client_id"] == [CLIENT_ID]
+    assert form["client_secret"] == [CLIENT_SECRET]
+    assert form["redirect_uri"] == [auth_router.oidc_callback_url()]
+
+
+def test_callback_rejects_an_id_token_issued_by_another_provider():
+    provider = _provider(id_token={"iss": "https://elsewhere.test"})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_reads_a_userinfo_answered_as_a_jwt():
+    """ProConnect signs its userinfo response: it comes back as
+    `application/jwt`, not JSON."""
+    provider = _provider(userinfo={"email": "Signed@Example.com"})
+    provider.userinfo_as_jwt = True
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._login_calls[0]["email"] == "signed@example.com"
+
+
+def test_callback_redirects_when_the_token_response_has_no_access_token():
+    provider = FakeProvider()
+    provider.token_body = {"id_token": "whatever", "token_type": "Bearer"}
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_rejects_an_id_token_without_a_nonce():
+    provider = _provider()
+    del provider.id_token_claims["nonce"]
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "invalid_nonce"
+    assert not client._login_calls
 
 
 def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
@@ -702,7 +714,7 @@ def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
     session = FakeSession(results=[[admin], [confirmed_totp]])
     with fake_session(session):
         login, user_id = asyncio.run(
-            auth_services.oidc_login(
+            auth_services.login_with_oidc(
                 email="boss@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
@@ -717,11 +729,11 @@ def test_oidc_login_owes_the_second_factor_of_an_admin_with_an_authenticator():
 
 
 def test_callback_hands_an_enrolled_admin_to_the_authenticator_step():
-    async def oidc_login(**_kwargs):
+    async def login(**_kwargs):
         return auth_services.LoginResult("totp_challenge", "challenge-token"), USER_ID
 
     pending = PendingLogin(nonce="the-nonce", redirect="/admin", merge=True)
-    with routed(pending=pending, oidc_login=oidc_login) as client:
+    with routed(pending=pending, login=login) as client:
         response = _callback(client)
 
     assert response.status_code == 302
@@ -742,7 +754,7 @@ def test_oidc_login_refuses_a_deactivated_account():
     session = FakeSession(results=[[deleted]])
     with fake_session(session):
         signed_in = asyncio.run(
-            auth_services.oidc_login(
+            auth_services.login_with_oidc(
                 email="gone@example.com",
                 ip="127.0.0.1",
                 user_agent=None,
@@ -752,6 +764,113 @@ def test_oidc_login_refuses_a_deactivated_account():
 
     assert signed_in is None
     assert not session.committed
+
+
+def test_callback_redirects_when_redis_fails_on_the_state():
+    def consume_state(_state):
+        raise ConnectionError("redis is down")
+
+    with routed() as client, patched(auth_router, consume_state=consume_state):
+        response = _callback(client)
+    assert _login_redirect(response) == "server_error"
+    assert not client._login_calls
+
+
+def test_callback_redirects_when_the_database_fails_resolving_the_account():
+    async def login(**_kwargs):
+        raise OperationalError("select", {}, Exception("database is down"))
+
+    with routed(login=login) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "server_error"
+
+
+def test_oidc_login_ends_on_one_account_when_a_concurrent_sign_in_created_it_first():
+    """Two first sign-ins with the same email: the loser's insert hits the
+    unique index, then finds the winner's row."""
+    winner = User(email="agent@example.com")
+    session = FakeSession(
+        results=[[], [winner]],
+        flush_errors=[
+            IntegrityError("insert", {}, Exception("uq_auth_user_email_lower"))
+        ],
+    )
+    with fake_session(session):
+        signed_in = asyncio.run(
+            auth_services.login_with_oidc(
+                email="agent@example.com",
+                ip="127.0.0.1",
+                user_agent=None,
+                anonymous_user_hash=None,
+            )
+        )
+
+    assert signed_in
+    assert signed_in[1] == winner.id
+    assert session.rolled_back == 1
+    assert session.committed
+
+
+def test_oidc_login_gives_up_after_one_retry_of_the_lookup():
+    session = FakeSession(
+        results=[[], []],
+        flush_errors=[
+            IntegrityError("insert", {}, Exception("uq_auth_user_email_lower"))
+        ],
+    )
+    with fake_session(session):
+        with pytest.raises(IntegrityError):
+            asyncio.run(
+                auth_services.login_with_oidc(
+                    email="agent@example.com",
+                    ip="127.0.0.1",
+                    user_agent=None,
+                    anonymous_user_hash=None,
+                )
+            )
+    assert not session.committed
+
+
+def test_callback_rejects_an_expired_id_token():
+    provider = _provider(id_token={"exp": int(time.time()) - 3600})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_tolerates_a_little_clock_skew_on_the_id_token():
+    provider = _provider(id_token={"exp": int(time.time()) - 10})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._login_calls
+
+
+def test_callback_rejects_an_id_token_without_an_expiry():
+    provider = _provider()
+    del provider.id_token_claims["exp"]
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert _login_redirect(response) == "provider_error"
+    assert not client._login_calls
+
+
+def test_callback_rejects_an_email_verified_claim_sent_as_the_string_false():
+    for value in ("false", "False", " FALSE "):
+        provider = _provider(userinfo={"email_verified": value})
+        with routed(provider=provider) as client:
+            response = _callback(client)
+        assert _login_redirect(response) == "email_not_verified", value
+        assert not client._login_calls
+
+
+def test_callback_accepts_an_email_verified_claim_sent_as_the_string_true():
+    provider = _provider(userinfo={"email_verified": "true"})
+    with routed(provider=provider) as client:
+        response = _callback(client)
+    assert response.status_code == 302
+    assert client._login_calls
 
 
 if __name__ == "__main__":

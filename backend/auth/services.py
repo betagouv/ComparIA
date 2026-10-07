@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Literal
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import func
 from sqlalchemy import update as sa_update
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from backend.config import settings
@@ -23,6 +24,7 @@ from utils.database.models.auth import (
     TotpChallenge,
     User,
     UserTotp,
+    normalize_email,
 )
 from utils.database.models.comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -55,12 +57,19 @@ def _hash(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
+async def find_user_by_email(session: "AsyncSession", email: str) -> User | None:
+    """The account for an address, whatever the letter case either side."""
+    result = await session.exec(
+        select(User).where(func.lower(User.email) == normalize_email(email))
+    )
+    return result.first()
+
+
 async def request_login_code(email: str) -> str:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
             await session.flush()
 
@@ -204,8 +213,7 @@ async def verify_login_code(
     anonymous_user_hash: str | None = None,
 ) -> LoginResult | None:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
             return None
 
@@ -234,10 +242,9 @@ async def verify_login_code(
 
 async def create_invite(email: str, invited_by: uuid.UUID) -> str:
     async with get_session() as session:
-        result = await session.exec(select(User).where(User.email == email))
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
             await session.flush()
         elif user.deleted_at is not None:
@@ -340,7 +347,7 @@ async def accept_invite(
     return login
 
 
-async def oidc_login(
+async def login_with_oidc(
     email: str,
     ip: str,
     user_agent: str | None,
@@ -358,17 +365,23 @@ async def oidc_login(
     The address is matched ignoring case: the provider is the authority on
     the mailbox, and may not spell it the way it was typed into `ADMIN_EMAILS`
     or the email form. Returns None for an account an admin deactivated.
+
+    Two first sign-ins with the same address race on the unique index: the
+    loser looks the account up again once and lands on the winner's.
     """
     async with get_session() as session:
-        result = await session.exec(
-            select(User).where(func.lower(User.email) == email.lower())
-        )
-        user = result.first()
+        user = await find_user_by_email(session, email)
         if not user:
-            user = User(email=email)
+            user = User(email=normalize_email(email))
             session.add(user)
-            await session.flush()
-        elif user.deleted_at is not None:
+            try:
+                await session.flush()
+            except IntegrityError:
+                await session.rollback()
+                user = await find_user_by_email(session, email)
+                if not user:
+                    raise
+        if user.deleted_at is not None:
             return None
 
         user_id = user.id

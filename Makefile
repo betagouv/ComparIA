@@ -95,7 +95,7 @@ redis: ## Launch Redis using docker compose
 redis-down: ## Stop Redis
 	docker compose -f devops/instances/redis/redis.compose.yml down
 
-keycloak: ## Launch a local Keycloak (OIDC test IdP) and configure the comparia client + test user
+keycloak: ## Launch a local Keycloak (OIDC test IdP, local dev only) and configure the comparia client + test user
 	@$(MAKE) network
 	@echo "Starting Keycloak..."
 	docker compose -f devops/instances/keycloak/keycloak.compose.yml up -d
