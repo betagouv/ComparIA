@@ -31,6 +31,10 @@ vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
   getPlatformName: () => 'Compar:IA',
   tryGetAuthContext: () => mocks.authContext
 }))
+vi.mock('$lib/survey', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/survey')>()),
+  getSurveyContext: () => ({ signupQuestions: [], signupAnswers: [] })
+}))
 vi.mock('$lib/captcha.svelte', () => ({ consumeAltchaToken: () => Promise.resolve('token') }))
 vi.mock('$lib/chatService.svelte', () => ({
   getComparisonsContext: () => [],

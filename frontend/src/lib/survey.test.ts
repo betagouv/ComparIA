@@ -15,7 +15,7 @@ const question = (id: string, required = false): PublicSurveyQuestion => ({
   ]
 })
 
-const answer = (id: string, selected: string[], extra: Partial<MySurveyAnswer> = {}) => ({
+const answer = (id: string, selected: string, extra: Partial<MySurveyAnswer> = {}) => ({
   question_id: id,
   question_key: id,
   label: `Question ${id}`,
@@ -25,13 +25,13 @@ const answer = (id: string, selected: string[], extra: Partial<MySurveyAnswer> =
     { key: `${id}-b`, label: 'B' },
     { key: `${id}-old`, label: 'Old', archived: true }
   ],
-  selected_keys: selected,
+  value: selected,
   ...extra
 })
 
 describe('profileQuestions', () => {
   it('adds the questions answered outside the signup form', () => {
-    const listed = profileQuestions([question('signup')], [answer('vote', ['vote-a'])])
+    const listed = profileQuestions([question('signup')], [answer('vote', 'vote-a')])
 
     expect(listed.map((q) => q.id)).toEqual(['signup', 'vote'])
     // An archived option nobody holds is not offered.
@@ -39,13 +39,13 @@ describe('profileQuestions', () => {
   })
 
   it('leaves out archived questions', () => {
-    const listed = profileQuestions([], [answer('gone', ['gone-a'], { archived: true })])
+    const listed = profileQuestions([], [answer('gone', 'gone-a', { archived: true })])
 
     expect(listed).toEqual([])
   })
 
   it('keeps an archived option on the question that holds it', () => {
-    const listed = profileQuestions([question('signup')], [answer('signup', ['signup-old'])])
+    const listed = profileQuestions([question('signup')], [answer('signup', 'signup-old')])
 
     expect(listed[0].options.map((o) => o.key)).toEqual(['signup-a', 'signup-b', 'signup-old'])
   })

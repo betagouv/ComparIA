@@ -82,7 +82,7 @@ describe('SurveyModal recording', () => {
 
     await waitFor(() => expect(paths()).toContain('/survey/answers'))
     expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
-      answers: [{ question_id: 'q1', option_keys: ['q1-b'] }]
+      answers: [{ question_id: 'q1', value: 'q1-b' }]
     })
 
     // One save total even if close fires again, and the showing is not
@@ -137,7 +137,7 @@ describe('SurveyModal answers', () => {
 
     await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
     expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
-      answers: [{ question_id: 'q2', option_keys: ['q2-a'] }]
+      answers: [{ question_id: 'q2', value: 'q2-a' }]
     })
   }, 10000)
 })

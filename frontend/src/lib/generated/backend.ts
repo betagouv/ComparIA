@@ -338,7 +338,7 @@ export interface MySurveyAnswer {
   label: string;
   input_type: "select" | "checkbox_group";
   options: PublicSurveyOption[];
-  selected_keys: string[];
+  value: string | string[];
   archived?: boolean;
 }
 export interface PublicSurveyOption {
@@ -412,7 +412,7 @@ export interface SurveyAnswerSubmit {
 }
 export interface SurveyQuestionAnswer {
   question_id: string;
-  option_keys: string[];
+  value: string | string[];
 }
 /**
  * Closing the popup and declining it are the same thing: both count as one
