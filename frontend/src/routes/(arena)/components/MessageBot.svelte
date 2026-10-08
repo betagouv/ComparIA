@@ -8,16 +8,14 @@
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
-  import { isAdmin } from '$lib/authContext.svelte'
   import type { AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { AgentActivity, AgentTrace, VoteAnnotate } from '.'
+  import { AgentActivity, VoteAnnotate } from '.'
   import { SvelteMap } from 'svelte/reactivity'
   import type { ActivityStep } from './toolActivity'
 
   export type MessageBotProps = {
     id: string
-    prompt: string
     turnSide: ComparisonTurnSide
     bot: Bot
     choice: TurnChoice | null
@@ -25,15 +23,7 @@
     onVoteAnnotate: (data: Omit<APIVoteAnnotate, 'turn_id'>) => void
   }
 
-  let {
-    id,
-    prompt,
-    turnSide,
-    bot,
-    choice,
-    disabled = false,
-    onVoteAnnotate
-  }: MessageBotProps = $props()
+  let { id, turnSide, bot, choice, disabled = false, onVoteAnnotate }: MessageBotProps = $props()
 
   const prefKind = $derived.by(() => {
     if (!choice || choice == 'idk') return null
@@ -117,10 +107,6 @@
       role="group"
       aria-label={m[`models.names.${bot}`]()}
     >
-      {#if isAdmin() && message.agent_trace?.length}
-        <AgentTrace id="{id}-agent-trace" {prompt} events={message.agent_trace} />
-      {/if}
-
       {#each blocks as block, index (index)}
         {#if block.type === 'text'}
           <Markdown message={block.content} chatbot />

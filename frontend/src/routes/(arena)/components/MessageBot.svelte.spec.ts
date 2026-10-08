@@ -15,7 +15,6 @@ const turnSide = (llm_msg: Record<string, unknown>) => ({
 const props = (llm_msg: Record<string, unknown>) =>
   ({
     id: 'message-a',
-    prompt: 'Find current information.',
     bot: 'a' as const,
     choice: null,
     onVoteAnnotate: () => undefined,

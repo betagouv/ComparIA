@@ -1,6 +1,5 @@
 export { default as ErrorDisplay } from './ErrorDisplay.svelte'
 export { default as AgentActivity } from './AgentActivity.svelte'
-export { default as AgentTrace } from './AgentTrace.svelte'
 export { default as GroupedMessages } from './GroupedMessages.svelte'
 export { default as GuidedPromptSuggestions } from './GuidedPromptSuggestions.svelte'
 export { default as MessageBot } from './MessageBot.svelte'
