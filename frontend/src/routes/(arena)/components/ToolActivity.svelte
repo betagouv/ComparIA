@@ -178,9 +178,14 @@
         </ul>
       {:else if resultSummary}
         <p class="mt-0! mb-0! text-sm whitespace-pre-line">
-          {#each resultSummarySegments as segment}
+          {#each resultSummarySegments as segment, index (index)}
             {#if segment.url}
-              <Link href={segment.url} text={segment.text} class="text-sm!" style="--underline-img: none" />
+              <Link
+                href={segment.url}
+                text={segment.text}
+                class="text-sm!"
+                style="--underline-img: none"
+              />
             {:else}
               {segment.text}
             {/if}
