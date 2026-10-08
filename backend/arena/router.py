@@ -256,7 +256,7 @@ async def add_first_text(
     # who read the logs are not the audience the user wrote for. What is left is
     # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, web_search={args.web_search})",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, tools={args.tools})",
         extra={"request": request},
     )
 
