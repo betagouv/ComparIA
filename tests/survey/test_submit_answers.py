@@ -41,8 +41,8 @@ class FakeResult:
     def __init__(self, rows):
         self.rows = rows
 
-    def all(self):
-        return self.rows
+    def one_or_none(self):
+        return self.rows if self.rows else None
 
 
 class FakeSession:
@@ -74,28 +74,28 @@ class FakeSession:
         self.added.append(value)
 
 
-def _submit(session, option_keys):
+def _submit(session, value):
     payload = SurveyAnswerSubmit(
-        answers=[SurveyQuestionAnswer(question_id=QUESTION_ID, option_keys=option_keys)]
+        answers=[SurveyQuestionAnswer(question_id=QUESTION_ID, value=value)]
     )
     asyncio.run(submit_answers(session, payload, uuid.uuid4(), None, "v1"))
 
 
 def test_a_live_option_is_accepted():
     session = FakeSession([])
-    _submit(session, ["25_34"])
-    assert [answer.option_key for answer in session.added] == ["25_34"]
+    _submit(session, "25_34")
+    assert [answer.value for answer in session.added] == ["25_34"]
 
 
 def test_an_archived_option_the_respondent_holds_can_be_kept():
     session = FakeSession(["under_25"])
-    _submit(session, ["under_25"])
-    assert [answer.option_key for answer in session.added] == ["under_25"]
+    _submit(session, "under_25")
+    assert [answer.value for answer in session.added] == ["under_25"]
 
 
 def test_an_archived_option_cannot_be_newly_chosen():
     try:
-        _submit(FakeSession([]), ["under_25"])
+        _submit(FakeSession([]), "under_25")
     except SurveyOptionUnknownError:
         return
     raise AssertionError("an archived option was accepted from someone not holding it")

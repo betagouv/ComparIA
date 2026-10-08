@@ -2,9 +2,11 @@ import re
 import unicodedata
 import uuid
 from datetime import timedelta
+from typing import Any
 
 from sqlalchemy import String, cast
 from sqlalchemy import delete as sa_delete
+from sqlalchemy import func, true
 from sqlalchemy import update as sa_update
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, func, select
@@ -22,6 +24,7 @@ from utils.database.models.survey import (
     PublicSurveyQuestion,
     SurveyAnswer,
     SurveyAnswerSubmit,
+    SurveyAnswerValue,
     SurveyInputType,
     SurveyOption,
     SurveyOptionWrite,
@@ -119,12 +122,29 @@ def _respondent_clause(
     return col(model.anonymous_user_hash) == anonymous_user_hash
 
 
-def _check_answer_shape(input_type: SurveyInputType, option_keys: list[str]) -> None:
-    """A 'select' question is single-choice: the frontend renders radios, and a
-    second key arriving anyway means the client and the question disagree
-    about its own shape."""
-    if input_type == "select" and len(option_keys) > 1:
-        raise ValueError("a 'select' question accepts at most one option")
+def _validate_answer_value(
+    input_type: SurveyInputType, value: Any
+) -> SurveyAnswerValue | None:
+    """
+    Validate an answer value depending on input_type.
+    Also normalize nonish values to None.
+    """
+    if value is None or not len(value):
+        return None
+    if input_type == "select":
+        if not isinstance(value, str):
+            raise ValueError("a 'select' question only accepts a string")
+        return value
+    if input_type == "checkbox_group":
+        if not isinstance(value, list) or not all(
+            (v and isinstance(v, str) and len(v) for v in value)
+        ):
+            raise ValueError(
+                "a 'checkbox_group' question only accepts a list of string"
+            )
+        return value
+
+    raise ValueError("Unknown survey question 'input_type'")
 
 
 @redis_cache(REDIS_SURVEY_KEY)
@@ -348,7 +368,7 @@ async def submit_answers(
         if question is None or question.archived_at is not None:
             raise SurveyQuestionNotFoundError()
 
-        _check_answer_shape(question.input_type, answer.option_keys)
+        value = _validate_answer_value(question.input_type, answer.value)
 
         live_keys = {
             option.key
@@ -358,18 +378,23 @@ async def submit_answers(
         # An option archived since it was chosen stops being offered, but the
         # person who holds it can keep it: saving the profile page untouched
         # sends it straight back, and that must not fail or drop the answer.
-        held_keys = set(
-            (
-                await session.exec(
-                    select(SurveyAnswer.option_key)
-                    .where(SurveyAnswer.question_id == answer.question_id)
-                    .where(
-                        _respondent_clause(SurveyAnswer, user_id, anonymous_user_hash)
-                    )
-                )
-            ).all()
+        current_value = (
+            await session.exec(
+                select(SurveyAnswer.value)
+                .where(SurveyAnswer.question_id == answer.question_id)
+                .where(_respondent_clause(SurveyAnswer, user_id, anonymous_user_hash))
+            )
+        ).one_or_none()
+        held_keys = (
+            set(current_value if isinstance(current_value, list) else [current_value])
+            if current_value
+            else set()
         )
-        unknown = set(answer.option_keys) - live_keys - held_keys
+        unknown = (
+            (set(value if isinstance(value, list) else [value]) - live_keys - held_keys)
+            if value
+            else None
+        )
         if unknown:
             raise SurveyOptionUnknownError(", ".join(sorted(unknown)))
 
@@ -379,11 +404,11 @@ async def submit_answers(
             .where(_respondent_clause(SurveyAnswer, user_id, anonymous_user_hash))
         )
 
-        for option_key in answer.option_keys:
+        if value:
             session.add(
                 SurveyAnswer(
                     question_id=answer.question_id,
-                    option_key=option_key,
+                    value=value,
                     user_id=user_id,
                     anonymous_user_hash=anonymous_user_hash,
                     question_revision=question.revision,
@@ -414,15 +439,15 @@ async def my_answers(
     if not rows:
         return []
 
-    selected: dict[uuid.UUID, list[str]] = {}
-    for row in rows:
-        selected.setdefault(row.question_id, []).append(row.option_key)
+    selected: dict[uuid.UUID, SurveyAnswerValue] = {
+        row.question_id: row.value for row in rows
+    }
 
     questions_by_id = {question.id: question for question in await _all_questions()}
     default_locale = await _default_locale()
 
     results = []
-    for question_id, option_keys in selected.items():
+    for question_id, value in selected.items():
         question = questions_by_id.get(question_id)
         if question is None:
             continue
@@ -434,7 +459,7 @@ async def my_answers(
                 label=public.label,
                 input_type=question.input_type,
                 options=public.options,
-                selected_keys=option_keys,
+                value=value,
                 archived=question.archived_at is not None,
             )
         )
@@ -508,15 +533,10 @@ async def carry_over_anonymous(
     just_answered = dict(
         (
             await session.exec(
-                select(
-                    SurveyAnswer.question_id,
-                    func.max(SurveyAnswer.answered_at),
-                )
-                .where(
+                select(SurveyAnswer.question_id, SurveyAnswer.answered_at).where(
                     SurveyAnswer.anonymous_user_hash == anonymous_user_hash,
                     col(SurveyAnswer.user_id).is_(None),
                 )
-                .group_by(col(SurveyAnswer.question_id))
             )
         ).all()
     )
@@ -524,15 +544,10 @@ async def carry_over_anonymous(
         account_answered = dict(
             (
                 await session.exec(
-                    select(
-                        SurveyAnswer.question_id,
-                        func.max(SurveyAnswer.answered_at),
-                    )
-                    .where(
+                    select(SurveyAnswer.question_id, SurveyAnswer.answered_at).where(
                         SurveyAnswer.user_id == user_id,
                         col(SurveyAnswer.question_id).in_(list(just_answered)),
                     )
-                    .group_by(col(SurveyAnswer.question_id))
                 )
             ).all()
         )
@@ -652,6 +667,28 @@ def _respondent_expr():
 
 
 async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
+    def select_count_query(question_id: uuid):
+        return (
+            select(SurveyAnswer.value, func.count())
+            .where(SurveyAnswer.question_id == question_id)
+            .group_by(col(SurveyAnswer.value))
+        )
+
+    def checkbox_group_count_query(question_id: uuid):
+        item = (
+            func.jsonb_array_elements_text(SurveyAnswer.value)
+            .table_valued("value")
+            .lateral("item")
+        )
+
+        return (
+            select(item.c.value, func.count())
+            .where(SurveyAnswer.question_id == question_id)
+            .select_from(SurveyAnswer)
+            .join(item, true())
+            .group_by(item.c.value)
+        )
+
     questions = list(
         (
             await session.exec(
@@ -660,20 +697,6 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
         ).all()
     )
 
-    # Counted in the database: the answer table grows with every respondent,
-    # and this runs on every admin read and after every admin write.
-    answer_counts: dict[tuple[uuid.UUID, str], int] = {
-        (question_id, option_key): count
-        for question_id, option_key, count in (
-            await session.exec(
-                select(
-                    SurveyAnswer.question_id,
-                    SurveyAnswer.option_key,
-                    func.count(),
-                ).group_by(col(SurveyAnswer.question_id), col(SurveyAnswer.option_key))
-            )
-        ).all()
-    }
     respondent_counts: dict[uuid.UUID, int] = dict(
         (
             await session.exec(
@@ -690,12 +713,24 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
 
     admin_questions = []
     for question in questions:
+        # Counted in the database: the answer table grows with every respondent,
+        # and this runs on every admin read and after every admin write.
+        counts = {
+            v: count
+            for v, count in (
+                await session.exec(
+                    select_count_query(question.id)
+                    if question.input_type == "select"
+                    else checkbox_group_count_query(question.id)
+                )
+            ).all()
+        }
         options = [
             AdminSurveyOption(
                 key=option.key,
                 labels=option.labels,
                 archived=option.archived,
-                answer_count=answer_counts.get((question.id, option.key), 0),
+                answer_count=counts.get(option.key, 0),
             )
             for option in (SurveyOption.model_validate(raw) for raw in question.options)
         ]

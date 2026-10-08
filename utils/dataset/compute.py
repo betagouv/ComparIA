@@ -152,7 +152,7 @@ def _survey_answers_query(publishable_versions: set[str]):
             SurveyQuestion.input_type,
             SurveyAnswer.user_id,
             SurveyAnswer.anonymous_user_hash,
-            SurveyAnswer.option_key,
+            SurveyAnswer.value,
         )
         .join(
             SurveyAnswer,
@@ -204,16 +204,16 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
 
 def fold_survey_answers(rows) -> dict[str, RespondentAnswers]:
     answers: dict[str, RespondentAnswers] = {}
-    for question_key, input_type, user_id, anonymous_user_hash, option_key in rows:
+    for question_key, input_type, user_id, anonymous_user_hash, value in rows:
         respondent = _respondent_key(user_id, anonymous_user_hash)
         if respondent is None:
             continue
         per_respondent = answers.setdefault(respondent, {})
         if input_type == "checkbox_group":
             per_respondent.setdefault(question_key, [])  # type: ignore[assignment]
-            per_respondent[question_key].append(option_key)  # type: ignore[union-attr]
+            per_respondent[question_key].append(value)  # type: ignore[union-attr]
         else:
-            per_respondent[question_key] = option_key
+            per_respondent[question_key] = value
     return answers
 
 

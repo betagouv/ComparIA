@@ -52,6 +52,7 @@ QuestionLabel = Annotated[
 OptionLabel = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)
 ]
+SurveyAnswerValue = str | list[str]
 
 
 class SurveyOption(SQLModel):
@@ -110,7 +111,7 @@ class SurveyQuestion(SurveyQuestionBase, table=True):
 
 class SurveyAnswerBase(BaseDBModel):
     question_id: uuid.UUID = Field(foreign_key="survey_question.id", index=True)
-    option_key: Annotated[str, Field(max_length=100)]
+    value: Annotated[SurveyAnswerValue, Field(sa_type=JSONB)]
     # Exactly one of the two is set, mirroring how 'comparison' carries
     # ownership. Anonymous visitors are the bulk of an anonymous_first
     # instance, and excluding them would describe only the users committed
@@ -141,7 +142,6 @@ class SurveyAnswer(SurveyAnswerBase, table=True):
         Index(
             "uq_survey_answer_respondent_option",
             "question_id",
-            "option_key",
             text(f"COALESCE(user_id, '{NO_USER_SENTINEL}'::uuid)"),
             text("COALESCE(anonymous_user_hash, '')"),
             unique=True,
@@ -201,7 +201,7 @@ class SurveyQuestionAnswer(SQLModel):
     question_id: uuid.UUID
     # One key for 'select', any number for 'checkbox_group'. An empty list
     # clears the answer, which is how the profile page removes one.
-    option_keys: list[str]
+    value: SurveyAnswerValue
 
 
 class SurveyAnswerSubmit(SQLModel):
@@ -225,7 +225,7 @@ class MySurveyAnswer(SQLModel):
     label: str
     input_type: SurveyInputType
     options: list[PublicSurveyOption]
-    selected_keys: list[str]
+    value: SurveyAnswerValue
     # An archived question stays in the export, but is no longer editable:
     # the profile page leaves it out.
     archived: bool = False

@@ -16,12 +16,14 @@ import os
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-from backend.survey.services import _check_answer_shape, _key  # noqa: E402
+from backend.survey.services import _key, _validate_answer_value  # noqa: E402
 
 
 def test_accents_and_spaces_become_a_plain_slug():
@@ -57,20 +59,22 @@ def test_the_key_fits_the_column():
 
 
 def test_select_accepts_at_most_one_key():
-    _check_answer_shape("select", [])
-    _check_answer_shape("select", ["a"])
-    try:
-        _check_answer_shape("select", ["a", "b"])
-    except ValueError:
-        pass
-    else:
-        raise AssertionError("expected a ValueError for two keys on a select question")
+    _validate_answer_value("select", None)
+    _validate_answer_value("select", [])
+    _validate_answer_value("select", "a")
+
+    with pytest.raises(ValueError):
+        _validate_answer_value("select", ["a", "b"])
 
 
 def test_checkbox_group_accepts_any_number_of_keys():
-    _check_answer_shape("checkbox_group", [])
-    _check_answer_shape("checkbox_group", ["a"])
-    _check_answer_shape("checkbox_group", ["a", "b", "c"])
+    _validate_answer_value("checkbox_group", None)
+    _validate_answer_value("checkbox_group", [])
+    _validate_answer_value("checkbox_group", ["a"])
+    _validate_answer_value("checkbox_group", ["a", "b", "c"])
+
+    with pytest.raises(ValueError):
+        _validate_answer_value("checkbox_group", "a")
 
 
 if __name__ == "__main__":

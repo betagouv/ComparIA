@@ -69,6 +69,7 @@ from .survey import (
     PublicSurveyQuestionsResponse,
     SurveyAnswer,
     SurveyAnswerSubmit,
+    SurveyAnswerValue,
     SurveyDismiss,
     SurveyInputType,
     SurveyOption,
