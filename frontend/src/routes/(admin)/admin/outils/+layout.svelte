@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { m } from '$lib/i18n/messages'
 
   import type { LayoutProps } from './$types'
