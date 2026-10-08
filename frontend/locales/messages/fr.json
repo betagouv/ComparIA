@@ -635,6 +635,85 @@
                 "unreachable": "Le serveur ne répond pas ou renvoie une erreur.",
                 "timeout": "Le serveur a mis trop de temps à répondre.",
                 "unknown_builtin": "Aucun outil intégré ne porte cette clé."
+            },
+            "wizard": {
+                "progress": "Étapes de l'ajout",
+                "stepState": "Étape {current} sur {total}",
+                "next": "Continuer",
+                "steps": {
+                    "choose": "Choisir",
+                    "connect": "Connecter",
+                    "limit": "Limiter",
+                    "present": "Présenter",
+                    "review": "Créer"
+                },
+                "choose": {
+                    "title": "Quel outil ajouter ?",
+                    "hint": "Un outil donne aux modèles une capacité de plus : chercher sur le web, dans des données publiques ou dans une documentation. Les modèles décident seuls de s'en servir.",
+                    "presets": "Serveurs publics, sans identifiant",
+                    "added": "Déjà ajouté",
+                    "custom": "Ou bien",
+                    "other": "Autre serveur MCP",
+                    "otherHint": "L'adresse de votre choix, avec ou sans identifiant.",
+                    "webSearch": "Recherche web",
+                    "webSearchDescription": "Chercher des informations récentes sur le web.",
+                    "webSearchHint": "Des résultats du web, fournis par Linkup.",
+                    "webSearchExists": "Déjà ajoutée : modifiez-la depuis la liste des outils."
+                },
+                "connect": {
+                    "title": "Se connecter au serveur",
+                    "titleWebSearch": "Se connecter à Linkup",
+                    "hint": "Le test interroge le service avec ces informations. Rien n'est enregistré avant la dernière étape.",
+                    "url": "Adresse du serveur",
+                    "urlHint": "L'adresse HTTP du serveur MCP, souvent terminée par /mcp.",
+                    "secretMcp": "Identifiant (facultatif)",
+                    "secretMcpHint": "Laissez vide si le serveur est public. Sinon, un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Il est chiffré et ne s'affiche plus ensuite.",
+                    "secretWebSearch": "Clé API Linkup (facultative)",
+                    "secretWebSearchHint": "Laissez vide pour utiliser celle du serveur (LINKUP_API_KEY). Elle est chiffrée et ne s'affiche plus ensuite.",
+                    "test": "Tester la connexion",
+                    "mustTest": "Testez la connexion pour continuer."
+                },
+                "limit": {
+                    "title": "Choisir les fonctions",
+                    "hint": "Les modèles ne voient que les fonctions cochées. Tout laisser coché propose aussi celles que le serveur ajoutera plus tard.",
+                    "all": "Tout cocher",
+                    "none": "Tout décocher",
+                    "needOne": "Cochez au moins une fonction.",
+                    "count": "{count} sur {total}",
+                    "titleWebSearch": "Choisir les sites",
+                    "hintWebSearch": "Limitez la recherche à des sites de confiance, ou écartez-en certains.",
+                    "scope": "Sites cherchés",
+                    "scopeAll": "Tout le web",
+                    "scopeOnly": "Seulement ces sites",
+                    "scopeExcept": "Sauf ces sites",
+                    "domains": "Sites, un par ligne",
+                    "domainsHint": "Par exemple service-public.fr. Une adresse collée est réduite à son domaine."
+                },
+                "present": {
+                    "title": "Présenter l'outil aux visiteurs",
+                    "hint": "Ce nom et cette phrase apparaissent quand un visiteur choisit ses outils, avant une comparaison.",
+                    "label": "Nom",
+                    "key": "Identifiant technique : {key}",
+                    "description": "Description",
+                    "descriptionHint": "Une phrase qui dit ce que l'outil permet de faire.",
+                    "preview": "Ce que voit le visiteur"
+                },
+                "review": {
+                    "title": "Vérifier et créer",
+                    "kind": "Type",
+                    "mcp": "Serveur MCP",
+                    "secret": "Identifiant",
+                    "functions": "Fonctions",
+                    "allFunctions": "Toutes ({count}), et celles ajoutées plus tard",
+                    "noDescription": "Aucune",
+                    "edit": "Modifier",
+                    "enable": "Proposer aux visiteurs dès maintenant",
+                    "enableHint": "Sinon, l'outil est créé désactivé et vous l'activez plus tard depuis sa page.",
+                    "create": "Créer l'outil",
+                    "creating": "Création…",
+                    "created": "Outil créé.",
+                    "failed": "L'outil n'a pas été créé"
+                }
             }
         },
         "voteTags": {
