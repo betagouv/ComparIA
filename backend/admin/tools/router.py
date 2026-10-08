@@ -1,9 +1,17 @@
 import logging
+from uuid import UUID
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
-from utils.database.models import Tool, ToolUpsert
+from backend.admin.tools.models import ToolTestResult
+from backend.admin.tools.services import (
+    check_tool,
+    clear_tool_secret,
+    to_admin,
+    upsert_tool,
+)
+from utils.database.models import Tool, ToolAdmin, ToolUpsert
 from utils.database.session import get_session
 from utils.utils import FormJsonSchema
 
@@ -13,10 +21,12 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 
 
 @router.get("/data")
-async def get_data():
+async def get_data() -> dict[str, list[ToolAdmin]]:
     async with get_session() as session:
         rows = await session.exec(select(Tool).order_by(Tool.created_at))
-        return {"tools": rows.all()}
+        # The credential never leaves the backend. The panel only needs to
+        # know whether one is set.
+        return {"tools": [to_admin(row) for row in rows.all()]}
 
 
 @router.get("/schemas")
@@ -26,14 +36,24 @@ async def get_schemas():
 
 @router.post("/tool")
 @router.put("/tool")
-async def upsert_tool(body: ToolUpsert) -> Tool:
+async def upsert(body: ToolUpsert) -> ToolAdmin:
     async with get_session() as session:
-        db_tool = await session.get(Tool, body.id)
-        if db_tool:
-            db_tool.sqlmodel_update(body.model_dump(exclude={"id", "created_at"}))
-        else:
-            db_tool = Tool.model_validate(body)
-        session.add(db_tool)
-        await session.commit()
-        await session.refresh(db_tool)
-        return db_tool
+        return to_admin(await upsert_tool(body, session))
+
+
+@router.delete("/tool/{tool_id}/secret")
+async def delete_secret(tool_id: UUID) -> ToolAdmin:
+    async with get_session() as session:
+        row = await clear_tool_secret(tool_id, session)
+        if not row:
+            raise HTTPException(status_code=404, detail="tool_not_found")
+        return to_admin(row)
+
+
+@router.post("/tool/{tool_id}/test")
+async def check(tool_id: UUID) -> ToolTestResult:
+    async with get_session() as session:
+        row = await session.get(Tool, tool_id)
+        if not row:
+            raise HTTPException(status_code=404, detail="tool_not_found")
+    return await check_tool(row)
