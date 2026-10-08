@@ -18,7 +18,7 @@ from backend.survey.services import my_answers
 from utils.database.models.auth import ConsentLog, User
 from utils.database.models.comparison import Comparison
 from utils.database.models.llms import LLMData
-from utils.database.models.survey import MySurveyAnswer, SurveyAnswer
+from utils.database.models.survey import MySurveyAnswer, SurveyAnswer, SurveyAnswerValue
 from utils.database.models.turn import Turn
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
@@ -72,7 +72,7 @@ class ExportedConversation(BaseModel):
 
 class ExportedSurveyAnswer(BaseModel):
     question: str
-    options: list[str]
+    value: SurveyAnswerValue
     answered_at: datetime
 
 
@@ -129,11 +129,13 @@ def _conversation(
 def _survey_answer(
     answer: MySurveyAnswer, answered_at: datetime
 ) -> ExportedSurveyAnswer:
-    selected = set(answer.selected_keys)
+    value = (
+        next((option.label for option in answer.options if option.key == answer.value))
+        if answer.input_type == "select"
+        else [option.label for option in answer.options if option.key in answer.value]
+    )
     return ExportedSurveyAnswer(
-        question=answer.label,
-        options=[option.label for option in answer.options if option.key in selected],
-        answered_at=answered_at,
+        question=answer.label, value=value, answered_at=answered_at
     )
 
 
