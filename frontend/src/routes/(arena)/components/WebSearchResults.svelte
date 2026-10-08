@@ -2,6 +2,7 @@
   import { Icon, Link } from '$components/dsfr'
   import type { WebSearchResults } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { ExternalHref } from '$lib/routing'
   import { isSafeWebSource } from '$lib/utils/commons'
 
   export type WebSearchResultsProps = {
@@ -10,7 +11,11 @@
   }
 
   let { id, results }: WebSearchResultsProps = $props()
-  const safeResults = $derived(results.filter((result) => isSafeWebSource(result.url)))
+  const safeResults = $derived(
+    results.filter((result): result is WebSearchResults & { url: ExternalHref } =>
+      isSafeWebSource(result.url)
+    )
+  )
 </script>
 
 {#if safeResults.length > 0}

@@ -2,6 +2,7 @@
   import { Icon, Link } from '$components/dsfr'
   import type { AgentTraceToolCall, AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
+  import type { ExternalHref } from '$lib/routing'
   import { isSafeWebSource } from '$lib/utils/commons'
 
   export type ToolActivityProps = {
@@ -30,7 +31,7 @@
   }
 
   const sources = $derived.by(() => {
-    const uniqueSources: { url: string; name: string; favicon: string | null }[] = []
+    const uniqueSources: { url: ExternalHref; name: string; favicon: string | null }[] = []
     for (const source of result?.results ?? []) {
       const url = source.url
       if (
@@ -90,7 +91,7 @@
     return null
   })
 
-  type TextSegment = { text: string; url?: string }
+  type TextSegment = { text: string; url?: ExternalHref }
 
   function linkifyText(text: string): TextSegment[] {
     const segments: TextSegment[] = []
