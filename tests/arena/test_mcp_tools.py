@@ -180,7 +180,7 @@ async def _test_a_server_that_never_answers_is_dropped_within_the_timeout():
     """A hanging server must not hold the turn open."""
 
     @asynccontextmanager
-    async def hang(url: str, auth_header: str | None):
+    async def hang(row):
         await asyncio.sleep(30)
         yield None
 
@@ -215,12 +215,19 @@ async def _test_a_row_without_an_address_yields_nothing():
     assert await mcp_tools.resolve_mcp_tools(row) == []
 
 
-def test_authentication_header_is_read_and_malformed_ones_ignored():
+def test_a_credential_is_sent_as_a_header_or_a_bearer_token():
+    """
+    A whole header is sent as written; anything else is a token, which is
+    what most servers expect, as Anthropic's MCP connector does.
+    """
+    assert mcp_tools._headers("X-API-Key: abc") == {"X-API-Key": "abc"}
     assert mcp_tools._headers("Authorization: Bearer abc") == {
         "Authorization": "Bearer abc"
     }
+    assert mcp_tools._headers("abc") == {"Authorization": "Bearer abc"}
+    assert mcp_tools._headers("Bearer abc") == {"Authorization": "Bearer abc"}
     assert mcp_tools._headers(None) is None
-    assert mcp_tools._headers("nonsense") is None
+    assert mcp_tools._headers("  ") is None
 
 
 def test_a_successful_call_records_what_came_back():
@@ -270,7 +277,7 @@ def _fake_session():
     from contextlib import asynccontextmanager
 
     @asynccontextmanager
-    async def session(url, auth_header):
+    async def session(row):
         yield object()
 
     return session
@@ -286,7 +293,7 @@ if __name__ == "__main__":
         test_a_server_that_never_answers_is_dropped_within_the_timeout,
         test_nonsense_from_a_server_yields_nothing,
         test_a_row_without_an_address_yields_nothing,
-        test_authentication_header_is_read_and_malformed_ones_ignored,
+        test_a_credential_is_sent_as_a_header_or_a_bearer_token,
         test_a_successful_call_records_what_came_back,
     ]
     for test in tests:

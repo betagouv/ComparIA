@@ -113,13 +113,14 @@ def test_public_shape_never_carries_server_credentials():
         label="Données publiques",
         kind="mcp",
         url="https://mcp.data.gouv.fr/mcp",
-        auth_header="Authorization: Bearer secret-token",
+        secret_encrypted="encrypted-secret-token",
         enabled=True,
     )
     served = ToolPublic.model_validate(row, from_attributes=True).model_dump()
 
     assert set(served) == {"key", "label", "description"}
     assert "secret-token" not in str(served)
+    assert "mcp.data.gouv.fr" not in str(served)
 
 
 if __name__ == "__main__":

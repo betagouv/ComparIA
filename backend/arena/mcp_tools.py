@@ -8,11 +8,12 @@ produce several specifications. The loop never learns they came from a server.
 import asyncio
 import json
 import logging
+import re
 import time
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncIterator, Awaitable, Callable, cast
 
-from backend.arena.tools import ToolResult, ToolSpec
+from backend.arena.tools import ToolResult, ToolSpec, read_secret
 from utils.database.models.messages.llm import ToolSource
 from backend.config import (
     MCP_CALL_TIMEOUT_SECONDS,
@@ -36,23 +37,33 @@ UNTRUSTED_WARNING = (
 )
 
 
-def _headers(auth_header: str | None) -> dict[str, str] | None:
-    """Read the administered 'Name: value' header, ignoring anything else."""
-    if not auth_header:
+# 'Name: value', the name being a valid header token. Anything else is a token.
+_HEADER = re.compile(r"^([A-Za-z0-9!#$%&'*+.^_`|~-]+):\s*(\S.*)$")
+
+
+def _headers(credential: str | None) -> dict[str, str] | None:
+    """
+    Turn the administered credential into request headers.
+
+    Most servers want a bearer token, which is what a bare value is sent as.
+    Some want a header of their own ('X-API-Key: ...'), which is written out
+    whole.
+    """
+    if not credential or not credential.strip():
         return None
-    name, separator, value = auth_header.partition(":")
-    if not separator or not name.strip() or not value.strip():
-        logger.warning("Ignoring malformed MCP authentication header")
-        return None
-    return {name.strip(): value.strip()}
+    credential = credential.strip()
+    if match := _HEADER.match(credential):
+        return {match.group(1): match.group(2).strip()}
+    token = re.sub(r"^bearer\s+", "", credential, flags=re.IGNORECASE)
+    return {"Authorization": f"Bearer {token}"}
 
 
 @asynccontextmanager
-async def _session(url: str, auth_header: str | None) -> AsyncIterator["ClientSession"]:
+async def _session(row: "Tool") -> AsyncIterator["ClientSession"]:
     from mcp import ClientSession
     from mcp.client.streamable_http import streamablehttp_client
 
-    async with streamablehttp_client(url, headers=_headers(auth_header)) as (
+    async with streamablehttp_client(str(row.url), headers=_headers(read_secret(row))) as (
         read,
         write,
         _,
@@ -64,9 +75,11 @@ async def _session(url: str, auth_header: str | None) -> AsyncIterator["ClientSe
 
 def _cache_key(row: "Tool") -> str:
     # The address is part of the key so that re-pointing a row never serves the
-    # previous server's functions.
+    # previous server's functions, and so is the credential: a server may list
+    # more to a caller it knows. A Fernet token changes on every save, so
+    # saving the credential again lists the server again.
     return REDIS_MCP_SCHEMAS_KEY.format(
-        server_hash=hash_content(f"{row.key}|{row.url}")
+        server_hash=hash_content(f"{row.key}|{row.url}|{row.secret_encrypted or ''}")
     )
 
 
@@ -101,11 +114,28 @@ async def _list_server(row: "Tool") -> list[dict[str, Any]]:
     from litellm import experimental_mcp_client
 
     async with asyncio.timeout(MCP_DISCOVERY_TIMEOUT_SECONDS):
-        async with _session(str(row.url), row.auth_header) as session:
+        async with _session(row) as session:
             schemas = await experimental_mcp_client.load_mcp_tools(
                 session=session, format="openai"
             )
     return [dict(schema) for schema in schemas]
+
+
+async def list_server_functions(row: "Tool") -> list[dict[str, str]]:
+    """
+    What the server offers right now, for an administrator testing it.
+
+    Unlike a turn, this never falls back on the cache: a stale answer would
+    hide the very failure being checked for. Errors are the caller's.
+    """
+    schemas = await _list_server(row)
+    _write_cache(row, schemas)
+    functions = [schema.get("function") or {} for schema in schemas]
+    return [
+        {"name": f["name"], "description": f.get("description") or ""}
+        for f in functions
+        if f.get("name")
+    ]
 
 
 async def discover_schemas(row: "Tool") -> list[dict[str, Any]]:
@@ -152,7 +182,7 @@ def _run(row: "Tool", name: str) -> Callable[[str], Awaitable[ToolResult]]:
 
         try:
             async with asyncio.timeout(MCP_CALL_TIMEOUT_SECONDS):
-                async with _session(str(row.url), row.auth_header) as session:
+                async with _session(row) as session:
                     result = await experimental_mcp_client.call_openai_tool(
                         session=session,
                         openai_tool=cast(
@@ -191,11 +221,15 @@ async def resolve_mcp_tools(row: "Tool") -> list[ToolSpec]:
         logger.warning("MCP tool '%s' has no server address", row.key)
         return []
 
+    # None offers everything the server lists, as Anthropic's MCP toolset does
+    # by default; a list is an allowlist, so a function the server adds later
+    # stays off until an administrator turns it on.
+    allowed = set(row.allowed_functions) if row.allowed_functions else None
     specs: list[ToolSpec] = []
     try:
         for schema in await discover_schemas(row):
             name = (schema.get("function") or {}).get("name")
-            if not name:
+            if not name or (allowed is not None and name not in allowed):
                 continue
             specs.append(
                 ToolSpec(

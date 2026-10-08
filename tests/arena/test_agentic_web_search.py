@@ -18,6 +18,7 @@ from utils.database.models import (
     AgentTraceToolCall,
     AgentTraceToolResult,
     LLMMessageCreate,
+    Tool,
 )
 
 
@@ -36,7 +37,9 @@ class FakeRedis:
 
 def _web_search_tools():
     """Resolve web search the way the arena does when the user enables it."""
-    return resolve_builtin_tools(["web_search"])
+    return resolve_builtin_tools(
+        [Tool(key="web_search", label="Recherche web", kind="builtin", enabled=True)]
+    )
 
 
 def _trace_sources(message: LLMMessageCreate) -> list:
@@ -197,7 +200,7 @@ async def _test_model_can_search_then_stream_final_answer():
         content="Fresh information",
     )
 
-    async def fake_search(query: str, raise_on_error: bool = False):
+    async def fake_search(query: str, _config=None, raise_on_error: bool = False):
         assert query == "latest public news"
         assert raise_on_error is True
         return [result]
@@ -309,7 +312,7 @@ async def _test_reasoning_only_tool_round_is_retried_for_a_final_answer():
         content="A public profile.",
     )
 
-    async def fake_search(_query: str, raise_on_error: bool = False):
+    async def fake_search(_query: str, _config=None, raise_on_error: bool = False):
         assert raise_on_error is True
         return [result]
 
@@ -637,7 +640,7 @@ def test_invalid_tool_arguments_return_error_without_search():
 async def _test_invalid_tool_arguments_return_error_without_search():
     called = False
 
-    async def fake_search(query: str, raise_on_error: bool = False):
+    async def fake_search(query: str, _config=None, raise_on_error: bool = False):
         nonlocal called
         called = True
         return []
@@ -704,7 +707,7 @@ async def _test_fragmented_streamed_tool_arguments_are_reconstructed():
             ]
         )
 
-    async def fake_search(query: str, raise_on_error: bool = False):
+    async def fake_search(query: str, _config=None, raise_on_error: bool = False):
         queries.append(query)
         return []
 
@@ -775,7 +778,7 @@ async def _test_tool_call_budget_forces_a_final_answer():
             ]
         )
 
-    async def fake_search(query: str, raise_on_error: bool = False):
+    async def fake_search(query: str, _config=None, raise_on_error: bool = False):
         nonlocal search_count
         search_count += 1
         return []
@@ -1506,7 +1509,7 @@ async def _test_identical_repeated_calls_are_refused_and_marked():
 
     search_count = 0
 
-    async def fake_search(query: str, raise_on_error: bool = False):
+    async def fake_search(query: str, _config=None, raise_on_error: bool = False):
         nonlocal search_count
         search_count += 1
         return []

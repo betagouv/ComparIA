@@ -94,30 +94,59 @@ def remember_tool_rejection(model: str) -> None:
         logger.warning("Could not store tool rejection: %s", e)
 
 
-def _builtin_registry() -> dict[str, Callable[[], ToolSpec | None]]:
+def read_secret(row: "Tool") -> str | None:
+    """
+    The row's credential in clear, or None.
+
+    A credential no configured key opens is treated as missing: the tool stops
+    being offered rather than failing every call it would make.
+    """
+    from utils.secrets import SecretUnreadableError, decrypt_secret
+
+    if not row.secret_encrypted:
+        return None
+    try:
+        return decrypt_secret(row.secret_encrypted)
+    except SecretUnreadableError:
+        logger.error("The credential of tool '%s' cannot be decrypted", row.key)
+        return None
+
+
+def _builtin_registry() -> dict[str, Callable[["Tool"], ToolSpec | None]]:
     # Imported here so tool modules can depend on the shapes above.
     from backend.arena.web_search import web_search_tool_spec
 
     return {"web_search": web_search_tool_spec}
 
 
-def resolve_builtin_tools(keys: Iterable[str]) -> list[ToolSpec]:
+def resolve_builtin_tools(rows: Iterable["Tool"]) -> list[ToolSpec]:
     """
-    Turn built-in tool keys into specifications.
+    Turn built-in tool rows into specifications.
 
     A key that is unknown, or a tool that is not configured, yields nothing:
     the model is simply never told about it.
     """
     registry = _builtin_registry()
     specs: list[ToolSpec] = []
-    for key in keys:
-        build = registry.get(key)
+    for row in rows:
+        build = registry.get(row.key)
         if build is None:
-            logger.warning("Unknown built-in tool '%s'", key)
+            logger.warning("Unknown built-in tool '%s'", row.key)
             continue
-        if spec := build():
+        if spec := build(row):
             specs.append(spec)
     return specs
+
+
+def can_run(row: "Tool") -> bool:
+    """
+    Whether a row has what it needs to be offered: a built-in its
+    credential, an MCP tool its address. Nothing here touches the network,
+    so a server that is down still counts; the turn finds that out.
+    """
+    if row.kind == "mcp":
+        return bool(row.url)
+    return bool(resolve_builtin_tools([row]))
 
 
 async def get_enabled_tools() -> list["Tool"]:
@@ -168,7 +197,7 @@ async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
     specs = [
         replace(spec, label=labels.get(spec.name, spec.label))
         for spec in resolve_builtin_tools(
-            [tool.key for tool in selected if tool.kind == "builtin"]
+            [tool for tool in selected if tool.kind == "builtin"]
         )
     ]
     # Servers are listed side by side: waiting on them in turn would multiply the
