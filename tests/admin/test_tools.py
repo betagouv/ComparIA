@@ -3,6 +3,7 @@ The tools panel writes credentials it can never read back, and tests a tool
 with what is stored.
 """
 
+import asyncio
 import os
 import sys
 import uuid
@@ -279,3 +280,68 @@ def test_an_unsaved_mcp_tool_without_an_address_says_so(database):
         assert result == {"ok": False, "error": "no_url", "functions": None}
 
     database(scenario)
+
+
+class _Rows:
+    """What session.execute hands back for the usage query."""
+
+    def __init__(self, rows):
+        self.rows = rows
+
+    async def execute(self, *_args, **_kwargs):
+        return iter(self.rows)
+
+
+def test_usage_is_counted_by_key_then_by_label_for_older_calls():
+    datagouv = Tool(id=uuid.uuid4(), **MCP)
+    web = Tool(id=uuid.uuid4(), **WEB_SEARCH)
+    rows = _Rows(
+        [
+            # (tool key, label, function name, calls, failures)
+            ("datagouv", "Données publiques", "search_datasets", 5, 1),
+            # Recorded before calls carried the key.
+            ("", "Données publiques", "get_dataset", 2, 0),
+            ("", "web_search", "web_search", 3, 2),
+            # A function the model made up: nobody's.
+            ("", "invented", "invented", 4, 4),
+        ]
+    )
+
+    usage = asyncio.run(services.tool_usage([datagouv, web], rows))
+
+    counts = {u.id: (u.calls, u.failures) for u in usage}
+    assert counts == {datagouv.id: (7, 1), web.id: (3, 2)}
+
+
+class _Redis:
+    def __init__(self) -> None:
+        self.values: dict[str, str] = {}
+
+    def get(self, key):
+        return self.values.get(key)
+
+    def setex(self, key, ttl, value):
+        self.values[key] = value
+
+
+def test_health_is_cached_until_asked_again_or_the_settings_change(monkeypatch):
+    checked: list[str] = []
+
+    async def check_tool(row, remember=True):
+        checked.append(row.key)
+        return services.ToolTestResult(ok=False, error="unreachable")
+
+    monkeypatch.setattr(services, "check_tool", check_tool)
+    monkeypatch.setattr(services, "get_redis_client", lambda: _Redis.shared)
+    _Redis.shared = _Redis()
+    row = Tool(id=uuid.uuid4(), **MCP)
+
+    first = asyncio.run(services.tools_health([row]))
+    asyncio.run(services.tools_health([row]))
+    assert checked == ["datagouv"]
+    assert first[0].ok is False and first[0].error == "unreachable"
+
+    asyncio.run(services.tools_health([row], refresh=True))
+    row.url = "https://mcp.example.org/v2/mcp"
+    asyncio.run(services.tools_health([row]))
+    assert checked == ["datagouv", "datagouv", "datagouv"]

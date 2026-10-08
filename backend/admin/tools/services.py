@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import httpx
@@ -9,19 +10,27 @@ from linkup import (
     LinkupInsufficientCreditError,
     LinkupNoResultError,
 )
+from sqlalchemy import text
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.admin.tools.models import (
     ToolDraft,
     ToolFunction,
+    ToolHealth,
     ToolTestError,
     ToolTestResult,
+    ToolUsage,
 )
 from backend.arena.mcp_tools import list_server_functions
 from backend.arena.web_search import WEB_SEARCH_TOOL_NAME, web_search_config
-from backend.config import WEB_SEARCH_TOOL_TIMEOUT_SECONDS
+from backend.config import (
+    TOOL_HEALTH_TTL,
+    TOOL_USAGE_DAYS,
+    WEB_SEARCH_TOOL_TIMEOUT_SECONDS,
+)
 from utils.database.models import Tool, ToolAdmin, ToolUpsert
 from utils.secrets import encrypt_secret
+from utils.storage.redis import REDIS_TOOL_HEALTH_KEY, get_redis_client, hash_content
 
 logger = logging.getLogger("languia")
 
@@ -168,3 +177,76 @@ async def set_tool_enabled(
     await session.commit()
     await session.refresh(row)
     return row
+
+
+# Every tool call in the window with the status of its result. A call is
+# matched to its row by key; calls recorded before the key existed fall back
+# on the label, and web search's on its function name, which is its key.
+_USAGE = text("""
+    WITH events AS (
+        SELECT m.id AS message_id, e
+        FROM llm_message m, jsonb_array_elements(m.agent_trace) e
+        WHERE jsonb_typeof(m.agent_trace) = 'array' AND m.created_at >= :since
+    ),
+    calls AS (
+        SELECT message_id, e->>'tool_call_id' AS call_id, e->>'tool' AS tool,
+               e->>'label' AS label, e->>'name' AS name
+        FROM events WHERE e->>'type' = 'tool_call'
+    ),
+    results AS (
+        SELECT message_id, e->>'tool_call_id' AS call_id, e->>'status' AS status
+        FROM events WHERE e->>'type' = 'tool_result'
+    )
+    SELECT c.tool, c.label, c.name, count(*) AS calls,
+           count(*) FILTER (WHERE r.status = 'error') AS failures
+    FROM calls c LEFT JOIN results r USING (message_id, call_id)
+    GROUP BY c.tool, c.label, c.name
+""")
+
+
+async def tool_usage(rows: list[Tool], session: AsyncSession) -> list[ToolUsage]:
+    since = datetime.now() - timedelta(days=TOOL_USAGE_DAYS)
+    by_key = {row.key: ToolUsage(id=row.id) for row in rows}
+    by_label = {row.label: by_key[row.key] for row in rows}
+    for tool, label, name, calls, failures in await session.execute(
+        _USAGE, {"since": since}
+    ):
+        usage = by_key.get(tool) or by_label.get(label) or by_key.get(name)
+        if usage:
+            usage.calls += calls
+            usage.failures += failures
+    return list(by_key.values())
+
+
+def _health_key(row: Tool) -> str:
+    # Anything a check depends on is in the key, so saving a new address,
+    # credential or filter checks again rather than showing the old verdict.
+    settings = (
+        f"{row.id}|{row.url}|{row.secret_encrypted}"
+        f"|{row.allowed_domains}|{row.blocked_domains}"
+    )
+    return REDIS_TOOL_HEALTH_KEY.format(tool_id=hash_content(settings))
+
+
+async def _health(row: Tool, refresh: bool) -> ToolHealth:
+    key = _health_key(row)
+    if not refresh:
+        try:
+            if cached := get_redis_client().get(key):
+                return ToolHealth.model_validate_json(cached)
+        except Exception as e:
+            logger.warning("Could not read tool health: %s", e)
+    result = await check_tool(row)
+    health = ToolHealth(
+        id=row.id, ok=result.ok, error=result.error, checked_at=datetime.now(UTC)
+    )
+    try:
+        get_redis_client().setex(key, TOOL_HEALTH_TTL, health.model_dump_json())
+    except Exception as e:
+        logger.warning("Could not store tool health: %s", e)
+    return health
+
+
+async def tools_health(rows: list[Tool], refresh: bool = False) -> list[ToolHealth]:
+    """Whether each tool answers now, checked side by side."""
+    return list(await asyncio.gather(*(_health(row, refresh) for row in rows)))

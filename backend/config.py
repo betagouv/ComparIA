@@ -327,6 +327,12 @@ MCP_CALL_TIMEOUT_SECONDS = 20
 MCP_SCHEMA_TTL = 900  # 15 min
 MCP_SCHEMA_STALE_TTL = 86_400  # 24h
 MCP_MAX_RESULT_LENGTH = 12_000
+# The tools list checks every tool when it opens. Long enough that reopening
+# it does not call each server (and spend a web search) again; short enough
+# that an outage shows within the hour.
+TOOL_HEALTH_TTL = 600  # 10 min
+# Calls counted in the tools list.
+TOOL_USAGE_DAYS = 30
 
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"

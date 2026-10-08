@@ -4,13 +4,21 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
-from backend.admin.tools.models import ToolDraft, ToolSwitch, ToolTestResult
+from backend.admin.tools.models import (
+    ToolDraft,
+    ToolHealth,
+    ToolSwitch,
+    ToolTestResult,
+    ToolUsage,
+)
 from backend.admin.tools.services import (
     check_draft,
     check_tool,
     clear_tool_secret,
     set_tool_enabled,
     to_admin,
+    tool_usage,
+    tools_health,
     upsert_tool,
 )
 from utils.database.models import Tool, ToolAdmin, ToolUpsert
@@ -29,6 +37,22 @@ async def get_data() -> dict[str, list[ToolAdmin]]:
         # The credential never leaves the backend. The panel only needs to
         # know whether one is set.
         return {"tools": [to_admin(row) for row in rows.all()]}
+
+
+@router.get("/usage")
+async def get_usage() -> list[ToolUsage]:
+    async with get_session() as session:
+        rows = (await session.exec(select(Tool))).all()
+        return await tool_usage(list(rows), session)
+
+
+@router.get("/health")
+async def get_health(refresh: bool = False) -> list[ToolHealth]:
+    # Slow on a cold cache: one call per server. The list asks for it after
+    # it has shown the tools, not before.
+    async with get_session() as session:
+        rows = (await session.exec(select(Tool))).all()
+    return await tools_health(list(rows), refresh)
 
 
 @router.get("/schemas")

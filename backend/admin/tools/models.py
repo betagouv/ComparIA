@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -40,3 +42,17 @@ class ToolDraft(BaseModel):
 
 class ToolSwitch(BaseModel):
     enabled: bool
+
+
+class ToolHealth(BaseModel):
+    id: UUID
+    ok: bool
+    error: ToolTestError | None = None
+    checked_at: datetime
+
+
+class ToolUsage(BaseModel):
+    id: UUID
+    # Calls models made over TOOL_USAGE_DAYS, and how many failed.
+    calls: int = 0
+    failures: int = 0
