@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation'
-  import { resolve } from '$app/paths'
+  import { invalidateAll } from '$app/navigation'
   import { page } from '$app/state'
   import { Alert, Button, Checkbox } from '$components/dsfr'
   import { FormInput, type FormInputProps } from '$components/form'
@@ -32,7 +31,6 @@
   const { data }: PageProps = $props()
 
   const id = $derived(page.params.id)
-  const method = $derived(id === 'create' ? 'post' : 'put')
   const hasSecret = $derived(!!(data.formProps.data as ToolAdmin).has_secret)
 
   let confirmingRemoval = $state(false)
@@ -46,15 +44,10 @@
       ...data.formProps,
       omitKeys: ['updated_at', 'created_at', 'has_secret'],
       i18nKey: 'tool_upsert',
-      method,
-      onSuccess: async (updated) => {
-        // Reloaded rather than patched: the credential typed in is dropped
-        // from the form, and whether one is now set comes from the server.
-        await invalidateAll()
-        if (method === 'post') {
-          await goto(resolve(`/admin/outils/${updated.id}`))
-        }
-      }
+      method: 'put',
+      // Reloaded rather than patched: the credential typed in is dropped
+      // from the form, and whether one is now set comes from the server.
+      onSuccess: () => invalidateAll()
     })
   )
 
@@ -225,33 +218,31 @@
     }}
   />
 
-  {#if id !== 'create'}
-    <section class="mt-6! p-6 cg-border max-w-[700px]" aria-labelledby="tool-test-title">
-      <h2 id="tool-test-title" class="text-xl!">{m['admin.tools.test']()}</h2>
-      <p class="fr-hint-text">{m['admin.tools.testHint']()}</p>
-      <Button
-        id="tool-test"
-        icon="flashlight-line"
-        variant="secondary"
-        text={testing ? m['admin.tools.testing']() : m['admin.tools.test']()}
-        disabled={testing}
-        onclick={runTest}
-      />
-      <div aria-live="polite" class="mt-4">
-        {#if testResult?.ok}
-          <Alert
-            small
-            variant="success"
-            title={testResult.functions
-              ? m['admin.tools.testOkFunctions']({ count: testResult.functions.length })
-              : m['admin.tools.testOk']()}
-          />
-        {:else if testResult}
-          <Alert variant="error" title={m['admin.tools.testFailed']()}>
-            <p>{testResult.error ? testErrors[testResult.error]() : ''}</p>
-          </Alert>
-        {/if}
-      </div>
-    </section>
-  {/if}
+  <section class="mt-6! p-6 cg-border max-w-[700px]" aria-labelledby="tool-test-title">
+    <h2 id="tool-test-title" class="text-xl!">{m['admin.tools.test']()}</h2>
+    <p class="fr-hint-text">{m['admin.tools.testHint']()}</p>
+    <Button
+      id="tool-test"
+      icon="flashlight-line"
+      variant="secondary"
+      text={testing ? m['admin.tools.testing']() : m['admin.tools.test']()}
+      disabled={testing}
+      onclick={runTest}
+    />
+    <div aria-live="polite" class="mt-4">
+      {#if testResult?.ok}
+        <Alert
+          small
+          variant="success"
+          title={testResult.functions
+            ? m['admin.tools.testOkFunctions']({ count: testResult.functions.length })
+            : m['admin.tools.testOk']()}
+        />
+      {:else if testResult}
+        <Alert variant="error" title={m['admin.tools.testFailed']()}>
+          <p>{testResult.error ? testErrors[testResult.error]() : ''}</p>
+        </Alert>
+      {/if}
+    </div>
+  </section>
 </div>
