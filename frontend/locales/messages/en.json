@@ -641,35 +641,18 @@
                 "stepState": "Step {current} of {total}",
                 "next": "Continue",
                 "steps": {
-                    "choose": "Choose",
                     "connect": "Connect",
                     "limit": "Limit",
                     "present": "Present",
                     "review": "Create"
                 },
-                "choose": {
-                    "title": "Which tool do you want to add?",
-                    "hint": "A tool gives models one more ability: searching the web, public data or documentation. Models decide on their own whether to use it.",
-                    "presets": "Public servers, no credential needed",
-                    "added": "Already added",
-                    "custom": "Or",
-                    "other": "Another MCP server",
-                    "otherHint": "Any address, with or without a credential.",
-                    "webSearch": "Web search",
-                    "webSearchDescription": "Search the web for recent information.",
-                    "webSearchHint": "Web results, provided by Linkup.",
-                    "webSearchExists": "Already added: edit it from the tool list."
-                },
                 "connect": {
-                    "title": "Connect to the server",
-                    "titleWebSearch": "Connect to Linkup",
-                    "hint": "The test calls the service with these details. Nothing is saved before the last step.",
+                    "title": "Connect to the MCP server",
+                    "hint": "An MCP server gives models new functions: searching data, reading documentation. Enter its address and test the connection. Nothing is saved before the last step.",
                     "url": "Server address",
                     "urlHint": "The MCP server's HTTP address, often ending in /mcp.",
-                    "secretMcp": "Credential (optional)",
-                    "secretMcpHint": "Leave empty if the server is public. Otherwise, a token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. It is encrypted and never shown again.",
-                    "secretWebSearch": "Linkup API key (optional)",
-                    "secretWebSearchHint": "Leave empty to use the server's key (LINKUP_API_KEY). It is encrypted and never shown again.",
+                    "secret": "Credential (optional)",
+                    "secretHint": "Leave empty if the server is public. Otherwise, a token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. It is encrypted and never shown again.",
                     "test": "Test the connection",
                     "mustTest": "Test the connection to continue."
                 },
@@ -679,15 +662,7 @@
                     "all": "Tick all",
                     "none": "Untick all",
                     "needOne": "Tick at least one function.",
-                    "count": "{count} of {total}",
-                    "titleWebSearch": "Choose the sites",
-                    "hintWebSearch": "Limit the search to trusted sites, or leave some out.",
-                    "scope": "Sites searched",
-                    "scopeAll": "The whole web",
-                    "scopeOnly": "Only these sites",
-                    "scopeExcept": "All but these sites",
-                    "domains": "Sites, one per line",
-                    "domainsHint": "For example service-public.fr. A pasted address is cut down to its domain."
+                    "count": "{count} of {total}"
                 },
                 "present": {
                     "title": "Present the tool to visitors",
@@ -700,18 +675,16 @@
                 },
                 "review": {
                     "title": "Check and create",
-                    "kind": "Type",
-                    "mcp": "MCP server",
                     "secret": "Credential",
                     "functions": "Functions",
                     "allFunctions": "All ({count}), and those added later",
                     "noDescription": "None",
                     "edit": "Edit",
                     "enable": "Offer to visitors now",
-                    "enableHint": "Otherwise the tool is created switched off, and you switch it on later from its page.",
+                    "enableHint": "Otherwise the tool is created switched off, and you switch it on later from the list.",
                     "create": "Create the tool",
                     "creating": "Creating…",
-                    "created": "Tool created.",
+                    "created": "'{label}' is added.",
                     "failed": "The tool was not created"
                 }
             },

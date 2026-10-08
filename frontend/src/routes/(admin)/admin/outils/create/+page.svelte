@@ -2,35 +2,21 @@
   import { goto, invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
   import ToolCard from '$components/ToolCard.svelte'
-  import {
-    Alert,
-    Badge,
-    Button,
-    Checkbox,
-    Icon,
-    Input,
-    Segmented,
-    Textarea,
-    Toggle
-  } from '$components/dsfr'
+  import { Alert, Button, Checkbox, Input, Textarea, Toggle } from '$components/dsfr'
+  import Link from '$components/dsfr/Link.svelte'
   import { api, ValidationError } from '$lib/fastapi-client'
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { tick } from 'svelte'
   import type { PageProps } from './$types'
-  import { MCP_PRESETS, toKey, uniqueKey, type ToolPreset } from './presets'
+  import { toKey, uniqueKey } from './keys'
 
   type ToolTestResult = {
     ok: boolean
     error: keyof typeof testErrors | null
     functions: { name: string; description: string }[] | null
   }
-  type Choice = { kind: 'mcp'; preset?: ToolPreset } | { kind: 'builtin' }
-  type Scope = 'all' | 'only' | 'except'
-
-  const WEB_SEARCH = 'web_search'
-  const DOMAINS_EXAMPLE = 'service-public.fr\nlegifrance.gouv.fr'
 
   const testErrors = {
     no_credential: m['admin.tools.errors.no_credential'],
@@ -45,7 +31,6 @@
   const { data }: PageProps = $props()
 
   const steps = [
-    m['admin.tools.wizard.steps.choose'](),
     m['admin.tools.wizard.steps.connect'](),
     m['admin.tools.wizard.steps.limit'](),
     m['admin.tools.wizard.steps.present'](),
@@ -55,43 +40,23 @@
   let step = $state(0)
   let heading = $state<HTMLHeadingElement>()
 
-  let choice = $state<Choice>()
   let url = $state('')
   let secret = $state('')
   let testing = $state(false)
   let testResult = $state<ToolTestResult>()
   let allowedFunctions = $state<string[]>([])
-  let scope = $state<Scope>('all')
-  let domains = $state('')
   let label = $state('')
   let description = $state('')
   let enabled = $state(true)
   let saving = $state(false)
   let saveErrors = $state<string[]>([])
 
-  const existing = $derived(data.tools as ToolAdmin[])
-  const takenKeys = $derived(existing.map((tool) => tool.key))
-  const takenUrls = $derived(existing.map((tool) => tool.url).filter(Boolean))
-  const webSearchRow = $derived(existing.find((tool) => tool.key === WEB_SEARCH))
-
-  const isMcp = $derived(choice?.kind === 'mcp')
-  const key = $derived(isMcp ? uniqueKey(toKey(label), takenKeys) : WEB_SEARCH)
+  const takenKeys = $derived((data.tools as ToolAdmin[]).map((tool) => tool.key))
+  const key = $derived(uniqueKey(toKey(label), takenKeys))
   const functions = $derived(testResult?.functions ?? [])
-  const domainList = $derived(
-    domains
-      .split(/[\s,]+/)
-      .map((domain) => domain.trim())
-      .filter(Boolean)
-  )
 
   const canContinue = $derived(
-    [
-      !!choice,
-      !!testResult?.ok,
-      isMcp ? allowedFunctions.length > 0 : scope === 'all' || domainList.length > 0,
-      label.trim().length > 0,
-      true
-    ][step]
+    [!!testResult?.ok, allowedFunctions.length > 0, label.trim().length > 0, true][step]
   )
 
   async function goTo(index: number) {
@@ -99,23 +64,6 @@
     saveErrors = []
     await tick()
     heading?.focus()
-  }
-
-  function choose(next: Choice) {
-    choice = next
-    testResult = undefined
-    allowedFunctions = []
-    secret = ''
-    if (next.kind === 'mcp') {
-      url = next.preset?.url ?? ''
-      label = next.preset?.label ?? ''
-      description = next.preset?.description ?? ''
-    } else {
-      url = ''
-      label = m['admin.tools.wizard.choose.webSearch']()
-      description = m['admin.tools.wizard.choose.webSearchDescription']()
-    }
-    goTo(1)
   }
 
   // A test only stands for what it was run with.
@@ -129,7 +77,7 @@
     try {
       testResult = await api.request<ToolTestResult>('/admin/tools/test', {
         method: 'post',
-        body: JSON.stringify({ kind: choice!.kind, key, url: url || null, secret: secret || null })
+        body: JSON.stringify({ kind: 'mcp', url: url.trim(), secret: secret || null })
       })
       // Everything the server offers starts ticked; unticking is the choice.
       allowedFunctions = testResult.functions?.map((f) => f.name) ?? []
@@ -154,29 +102,26 @@
   async function create() {
     saving = true
     saveErrors = []
-    const allTicked = allowedFunctions.length === functions.length
     const body: ToolUpsert = {
       key,
       label: label.trim(),
       description: description.trim() || null,
-      kind: choice!.kind,
-      url: isMcp ? url.trim() : null,
+      kind: 'mcp',
+      url: url.trim(),
       // All ticked is stored as no list, so functions the server adds later
       // are offered too, as the step said.
-      allowed_functions: isMcp && !allTicked ? allowedFunctions : null,
-      allowed_domains: !isMcp && scope === 'only' ? domainList : null,
-      blocked_domains: !isMcp && scope === 'except' ? domainList : null,
+      allowed_functions: allowedFunctions.length === functions.length ? null : allowedFunctions,
       enabled,
       secret: secret.trim() || null
     }
     try {
-      const created = await api.request<ToolAdmin>('/admin/tools/tool', {
+      await api.request<ToolAdmin>('/admin/tools/tool', {
         method: 'post',
         body: JSON.stringify(body)
       })
-      useToast(m['admin.tools.wizard.review.created'](), 5000, 'success')
+      useToast(m['admin.tools.wizard.review.created']({ label: body.label }), 5000, 'success')
       await invalidateAll()
-      await goto(resolve(`/admin/outils/${created.id}`))
+      await goto(resolve('/admin/outils'))
     } catch (error) {
       saveErrors =
         error instanceof ValidationError && error.errors
@@ -217,100 +162,25 @@
 
   {#if step === 0}
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
-      {m['admin.tools.wizard.choose.title']()}
-    </h2>
-    <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.choose.hint']()}</p>
-
-    <h3 class="fr-text--md font-bold mb-3!">{m['admin.tools.wizard.choose.presets']()}</h3>
-    <ul class="m-0 mb-8 gap-3 p-0 md:grid-cols-2 grid list-none">
-      {#each MCP_PRESETS as preset (preset.key)}
-        {@const added = takenUrls.includes(preset.url)}
-        <li class="p-0">
-          <button
-            type="button"
-            class="choice-card gap-1 rounded-xl px-4 py-3 flex h-full w-full flex-col text-left"
-            disabled={added}
-            onclick={() => choose({ kind: 'mcp', preset })}
-          >
-            <span class="gap-2 flex w-full items-center justify-between">
-              <span class="font-bold">{preset.label}</span>
-              {#if added}
-                <Badge size="sm" text={m['admin.tools.wizard.choose.added']()} />
-              {:else}
-                <span class="fr-text--xs mb-0! text-[--text-mention-grey]">{preset.source}</span>
-              {/if}
-            </span>
-            <span class="fr-text--sm mb-0! text-[--text-mention-grey]">{preset.description}</span>
-          </button>
-        </li>
-      {/each}
-    </ul>
-
-    <h3 class="fr-text--md font-bold mb-3!">{m['admin.tools.wizard.choose.custom']()}</h3>
-    <ul class="m-0 gap-3 p-0 md:grid-cols-2 grid list-none">
-      <li class="p-0">
-        <button
-          type="button"
-          class="choice-card gap-3 rounded-xl px-4 py-3 flex h-full w-full items-start text-left"
-          onclick={() => choose({ kind: 'mcp' })}
-        >
-          <Icon icon="i-ri-plug-line" class="mt-1 text-primary" />
-          <span>
-            <span class="font-bold block">{m['admin.tools.wizard.choose.other']()}</span>
-            <span class="fr-text--sm mb-0! block text-[--text-mention-grey]">
-              {m['admin.tools.wizard.choose.otherHint']()}
-            </span>
-          </span>
-        </button>
-      </li>
-      <li class="p-0">
-        <button
-          type="button"
-          class="choice-card gap-3 rounded-xl px-4 py-3 flex h-full w-full items-start text-left"
-          disabled={!!webSearchRow}
-          onclick={() => choose({ kind: 'builtin' })}
-        >
-          <Icon icon="i-ri-search-line" class="mt-1 text-primary" />
-          <span>
-            <span class="font-bold block">{m['admin.tools.wizard.choose.webSearch']()}</span>
-            <span class="fr-text--sm mb-0! block text-[--text-mention-grey]">
-              {webSearchRow
-                ? m['admin.tools.wizard.choose.webSearchExists']()
-                : m['admin.tools.wizard.choose.webSearchHint']()}
-            </span>
-          </span>
-        </button>
-      </li>
-    </ul>
-  {:else if step === 1}
-    <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
-      {isMcp
-        ? m['admin.tools.wizard.connect.title']()
-        : m['admin.tools.wizard.connect.titleWebSearch']()}
+      {m['admin.tools.wizard.connect.title']()}
     </h2>
     <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.connect.hint']()}</p>
 
-    {#if isMcp}
-      <Input
-        id="wizard-url"
-        type="url"
-        label={m['admin.tools.wizard.connect.url']()}
-        help={m['admin.tools.wizard.connect.urlHint']()}
-        placeholder="https://exemple.fr/mcp"
-        bind:value={url}
-        oninput={changed}
-      />
-    {/if}
+    <Input
+      id="wizard-url"
+      type="url"
+      label={m['admin.tools.wizard.connect.url']()}
+      help={m['admin.tools.wizard.connect.urlHint']()}
+      placeholder="https://exemple.fr/mcp"
+      bind:value={url}
+      oninput={changed}
+    />
     <Input
       id="wizard-secret"
       type="password"
       autocomplete="off"
-      label={isMcp
-        ? m['admin.tools.wizard.connect.secretMcp']()
-        : m['admin.tools.wizard.connect.secretWebSearch']()}
-      help={isMcp
-        ? m['admin.tools.wizard.connect.secretMcpHint']()
-        : m['admin.tools.wizard.connect.secretWebSearchHint']()}
+      label={m['admin.tools.wizard.connect.secret']()}
+      help={m['admin.tools.wizard.connect.secretHint']()}
       bind:value={secret}
       oninput={changed}
     />
@@ -320,7 +190,7 @@
       icon="flashlight-line"
       variant="secondary"
       text={testing ? m['admin.tools.testing']() : m['admin.tools.wizard.connect.test']()}
-      disabled={testing || (isMcp && !url.trim())}
+      disabled={testing || !url.trim()}
       onclick={runTest}
     />
     <div aria-live="polite" class="mt-4">
@@ -328,9 +198,7 @@
         <Alert
           small
           variant="success"
-          title={testResult.functions
-            ? m['admin.tools.testOkFunctions']({ count: testResult.functions.length })
-            : m['admin.tools.testOk']()}
+          title={m['admin.tools.testOkFunctions']({ count: functions.length })}
         />
       {:else if testResult}
         <Alert variant="error" title={m['admin.tools.testFailed']()}>
@@ -338,82 +206,52 @@
         </Alert>
       {/if}
     </div>
-  {:else if step === 2}
-    {#if isMcp}
-      <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
-        {m['admin.tools.wizard.limit.title']()}
-      </h2>
-      <p class="mb-4! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
-      <div class="mb-2 gap-2 flex">
-        <Button
-          size="sm"
-          variant="tertiary-no-outline"
-          text={m['admin.tools.wizard.limit.all']()}
-          onclick={() => (allowedFunctions = functions.map((f) => f.name))}
-        />
-        <Button
-          size="sm"
-          variant="tertiary-no-outline"
-          text={m['admin.tools.wizard.limit.none']()}
-          onclick={() => (allowedFunctions = [])}
-        />
-      </div>
-      <fieldset class="fr-fieldset" aria-labelledby="wizard-functions-legend">
-        <legend id="wizard-functions-legend" class="fr-sr-only">
-          {m['admin.tools.functionsLegend']()}
-        </legend>
-        {#each functions as fn (fn.name)}
-          <div class="fr-fieldset__element">
-            <Checkbox
-              id="wizard-function-{fn.name}"
-              label={fn.name}
-              help={firstSentence(fn.description)}
-              bind:checked={
-                () => allowedFunctions.includes(fn.name),
-                (checked) => toggleFunction(fn.name, checked)
-              }
-            />
-          </div>
-        {/each}
-      </fieldset>
-      <p class="fr-text--sm text-[--text-mention-grey]" aria-live="polite">
-        {allowedFunctions.length === 0
-          ? m['admin.tools.wizard.limit.needOne']()
-          : m['admin.tools.wizard.limit.count']({
-              count: allowedFunctions.length,
-              total: functions.length
-            })}
-      </p>
-    {:else}
-      <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
-        {m['admin.tools.wizard.limit.titleWebSearch']()}
-      </h2>
-      <p class="mb-6! text-[--text-mention-grey]">
-        {m['admin.tools.wizard.limit.hintWebSearch']()}
-      </p>
-      <Segmented
-        id="wizard-scope"
-        legend={m['admin.tools.wizard.limit.scope']()}
-        bind:value={scope}
-        options={[
-          { value: 'all', label: m['admin.tools.wizard.limit.scopeAll']() },
-          { value: 'only', label: m['admin.tools.wizard.limit.scopeOnly']() },
-          { value: 'except', label: m['admin.tools.wizard.limit.scopeExcept']() }
-        ]}
-        class="mb-6!"
+  {:else if step === 1}
+    <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
+      {m['admin.tools.wizard.limit.title']()}
+    </h2>
+    <p class="mb-4! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
+    <div class="mb-2 gap-2 flex">
+      <Button
+        size="sm"
+        variant="tertiary-no-outline"
+        text={m['admin.tools.wizard.limit.all']()}
+        onclick={() => (allowedFunctions = functions.map((f) => f.name))}
       />
-      {#if scope !== 'all'}
-        <Textarea
-          id="wizard-domains"
-          rows={4}
-          label={m['admin.tools.wizard.limit.domains']()}
-          help={m['admin.tools.wizard.limit.domainsHint']()}
-          placeholder={DOMAINS_EXAMPLE}
-          bind:value={domains}
-        />
-      {/if}
-    {/if}
-  {:else if step === 3}
+      <Button
+        size="sm"
+        variant="tertiary-no-outline"
+        text={m['admin.tools.wizard.limit.none']()}
+        onclick={() => (allowedFunctions = [])}
+      />
+    </div>
+    <fieldset class="fr-fieldset" aria-labelledby="wizard-functions-legend">
+      <legend id="wizard-functions-legend" class="fr-sr-only">
+        {m['admin.tools.functionsLegend']()}
+      </legend>
+      {#each functions as fn (fn.name)}
+        <div class="fr-fieldset__element">
+          <Checkbox
+            id="wizard-function-{fn.name}"
+            label={fn.name}
+            help={firstSentence(fn.description)}
+            bind:checked={
+              () => allowedFunctions.includes(fn.name),
+              (checked) => toggleFunction(fn.name, checked)
+            }
+          />
+        </div>
+      {/each}
+    </fieldset>
+    <p class="fr-text--sm text-[--text-mention-grey]" aria-live="polite">
+      {allowedFunctions.length === 0
+        ? m['admin.tools.wizard.limit.needOne']()
+        : m['admin.tools.wizard.limit.count']({
+            count: allowedFunctions.length,
+            total: functions.length
+          })}
+    </p>
+  {:else if step === 2}
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
       {m['admin.tools.wizard.present.title']()}
     </h2>
@@ -424,7 +262,7 @@
         <Input
           id="wizard-label"
           label={m['admin.tools.wizard.present.label']()}
-          help={isMcp ? m['admin.tools.wizard.present.key']({ key }) : undefined}
+          help={m['admin.tools.wizard.present.key']({ key })}
           maxlength={60}
           required
           bind:value={label}
@@ -474,48 +312,27 @@
     {/snippet}
 
     <dl class="m-0 mb-6 ps-0!">
-      {@render row(
-        m['admin.tools.wizard.review.kind'](),
-        isMcp ? m['admin.tools.wizard.review.mcp']() : m['admin.tools.wizard.choose.webSearch'](),
-        0
-      )}
-      {#if isMcp}
-        {@render row(m['admin.tools.wizard.connect.url'](), url, 1)}
-      {/if}
+      {@render row(m['admin.tools.wizard.connect.url'](), url.trim(), 0)}
       {@render row(
         m['admin.tools.wizard.review.secret'](),
         secret.trim() ? m['admin.tools.secretSet']() : m['admin.tools.secretUnset'](),
+        0
+      )}
+      {@render row(
+        m['admin.tools.wizard.review.functions'](),
+        allowedFunctions.length === functions.length
+          ? m['admin.tools.wizard.review.allFunctions']({ count: functions.length })
+          : `${m['admin.tools.wizard.limit.count']({
+              count: allowedFunctions.length,
+              total: functions.length
+            })} : ${allowedFunctions.join(', ')}`,
         1
       )}
-      {#if isMcp}
-        {@render row(
-          m['admin.tools.wizard.review.functions'](),
-          allowedFunctions.length === functions.length
-            ? m['admin.tools.wizard.review.allFunctions']({ count: functions.length })
-            : `${m['admin.tools.wizard.limit.count']({
-                count: allowedFunctions.length,
-                total: functions.length
-              })} : ${allowedFunctions.join(', ')}`,
-          2
-        )}
-      {:else}
-        {@render row(
-          m['admin.tools.wizard.limit.scope'](),
-          scope === 'all'
-            ? m['admin.tools.wizard.limit.scopeAll']()
-            : `${
-                scope === 'only'
-                  ? m['admin.tools.wizard.limit.scopeOnly']()
-                  : m['admin.tools.wizard.limit.scopeExcept']()
-              } : ${domainList.join(', ')}`,
-          2
-        )}
-      {/if}
-      {@render row(m['admin.tools.wizard.present.label'](), label.trim(), 3)}
+      {@render row(m['admin.tools.wizard.present.label'](), label.trim(), 2)}
       {@render row(
         m['admin.tools.wizard.present.description'](),
         description.trim() || m['admin.tools.wizard.review.noDescription'](),
-        3
+        2
       )}
     </dl>
 
@@ -535,36 +352,35 @@
     {/if}
   {/if}
 
-  {#if step > 0}
-    <div class="mt-8 gap-4 pt-6 flex justify-between border-t border-[--border-default-grey]">
+  <div class="mt-8 gap-4 pt-6 flex justify-between border-t border-[--border-default-grey]">
+    {#if step === 0}
+      <Link button variant="secondary" text={m['words.cancel']()} href={resolve('/admin/outils')} />
+    {:else}
       <Button variant="secondary" text={m['words.back']()} onclick={() => goTo(step - 1)} />
-      {#if step < steps.length - 1}
-        <Button
-          id="wizard-next"
-          text={m['admin.tools.wizard.next']()}
-          disabled={!canContinue}
-          title={!canContinue && step === 1
-            ? m['admin.tools.wizard.connect.mustTest']()
-            : undefined}
-          onclick={() => goTo(step + 1)}
-        />
-      {:else}
-        <Button
-          id="wizard-create"
-          icon="check-line"
-          text={saving
-            ? m['admin.tools.wizard.review.creating']()
-            : m['admin.tools.wizard.review.create']()}
-          disabled={saving}
-          onclick={create}
-        />
-      {/if}
-    </div>
-    {#if step === 1 && !canContinue}
-      <p class="fr-text--sm mt-2! text-end text-[--text-mention-grey]">
-        {m['admin.tools.wizard.connect.mustTest']()}
-      </p>
     {/if}
+    {#if step < steps.length - 1}
+      <Button
+        id="wizard-next"
+        text={m['admin.tools.wizard.next']()}
+        disabled={!canContinue}
+        onclick={() => goTo(step + 1)}
+      />
+    {:else}
+      <Button
+        id="wizard-create"
+        icon="check-line"
+        text={saving
+          ? m['admin.tools.wizard.review.creating']()
+          : m['admin.tools.wizard.review.create']()}
+        disabled={saving}
+        onclick={create}
+      />
+    {/if}
+  </div>
+  {#if step === 0 && !canContinue}
+    <p class="fr-text--sm mt-2! text-end text-[--text-mention-grey]">
+      {m['admin.tools.wizard.connect.mustTest']()}
+    </p>
   {/if}
 </div>
 
@@ -599,21 +415,6 @@
 
   .wizard-step.done:hover {
     color: var(--blue-france-main-525);
-  }
-
-  .choice-card {
-    background-color: var(--background-default-grey);
-    border: 1px solid var(--border-default-grey);
-    transition: border-color 120ms ease-out;
-  }
-
-  .choice-card:hover:not(:disabled) {
-    border-color: var(--blue-france-main-525);
-  }
-
-  .choice-card:disabled {
-    cursor: default;
-    opacity: 0.6;
   }
 
   h2:focus {

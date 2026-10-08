@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MCP_PRESETS, toKey, uniqueKey } from './presets'
+import { toKey, uniqueKey } from './keys'
 
 describe('toKey', () => {
   it('turns a French label into a plain key', () => {
@@ -16,12 +16,5 @@ describe('uniqueKey', () => {
 
   it('falls back on a default when the label had nothing to keep', () => {
     expect(uniqueKey(toKey('!!!'), [])).toBe('outil')
-  })
-})
-
-describe('MCP_PRESETS', () => {
-  it('never offers the same server or key twice', () => {
-    expect(new Set(MCP_PRESETS.map((p) => p.url)).size).toBe(MCP_PRESETS.length)
-    expect(new Set(MCP_PRESETS.map((p) => p.key)).size).toBe(MCP_PRESETS.length)
   })
 })
