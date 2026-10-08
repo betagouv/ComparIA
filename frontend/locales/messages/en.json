@@ -712,6 +712,7 @@
             "tooltip": "Allow the models to search for information online and cite more recent sources. <strong>Each model independently chooses whether to use this tool</strong> based on your message.<br>If you do not allow it, the models answer only from what they learned during training and cannot verify information online."
         },
         "tools": {
+            "clear": "Clear all",
             "contract": "Once enabled, the selected tools are offered to both compared models, which remain free to use them or not.",
             "count": "{count} tools",
             "label": "Tools",

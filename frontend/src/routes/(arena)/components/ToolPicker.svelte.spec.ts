@@ -13,19 +13,18 @@ describe('ToolPicker', () => {
   it('starts with nothing selected', () => {
     const { container } = render(ToolPicker, { props: { tools, selected: [] } })
 
-    expect(screen.getByText('Aucun outil')).toBeTruthy()
+    expect(container.querySelector('button')?.textContent).toContain('Aucun outil')
     const toolTags = container.querySelectorAll<HTMLButtonElement>('button[aria-pressed]')
     expect(toolTags.length).toBe(tools.length)
     for (const tag of toolTags) expect(tag.getAttribute('aria-pressed')).toBe('false')
   })
 
-  it('renders tools as pressable pills and toggles their selection', async () => {
+  it('renders tools as pressable cards and toggles their selection', async () => {
     const { container } = render(ToolPicker, { props: { tools, selected: [] } })
     const webSearch = container.querySelector<HTMLButtonElement>(
       'button[aria-describedby="tool-web_search-description"]'
     )
 
-    expect(webSearch?.classList.contains('fr-tag')).toBe(true)
     expect(webSearch?.getAttribute('aria-pressed')).toBe('false')
 
     await fireEvent.click(webSearch!)
@@ -33,6 +32,21 @@ describe('ToolPicker', () => {
 
     await fireEvent.click(webSearch!)
     expect(webSearch?.getAttribute('aria-pressed')).toBe('false')
+  })
+
+  it('shows each description next to its tool', () => {
+    render(ToolPicker, { props: { tools, selected: [] } })
+
+    expect(screen.getByText('Chercher sur le web').id).toBe('tool-web_search-description')
+  })
+
+  it('clears the selection in one click', async () => {
+    const { container } = render(ToolPicker, {
+      props: { tools, selected: ['web_search', 'datagouv'] }
+    })
+
+    await fireEvent.click(screen.getByText('Tout désélectionner'))
+    expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(0)
   })
 
   it('shows the tools title only once in the modal', () => {

@@ -712,6 +712,7 @@
             "tooltip": "Autorisez les modèles à rechercher des informations en ligne et à citer des sources plus récentes. <strong>Chaque modèle choisit librement d’utiliser ou non cet outil</strong> selon votre message.<br>Si vous ne l’autorisez pas, les modèles répondent uniquement à partir de ce qu’ils ont appris pendant leur entraînement et ne peuvent pas vérifier d’informations en ligne."
         },
         "tools": {
+            "clear": "Tout désélectionner",
             "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
             "count": "{count} outils",
             "label": "Outils",

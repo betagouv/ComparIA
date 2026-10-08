@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ToolCard from '$components/ToolCard.svelte'
   import { Button, Icon, Modal } from '$components/dsfr'
   import type { ToolPublic } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
@@ -56,68 +57,48 @@
   >
     <h2 id="{modalId}-title" class="fr-h4 mb-6!">{m['arenaHome.tools.label']()}</h2>
 
-    <ul class="fr-tags-group mb-6!">
+    <p class="fr-text--sm mb-6! text-[--text-mention-grey]">
+      {m['arenaHome.tools.contract']()}
+    </p>
+
+    <!-- DSFR's tag styles are not loaded, so the list is laid out here. -->
+    <ul class="m-0 gap-3 p-0 md:grid-cols-2 grid list-none">
       {#each tools as tool (tool.key)}
-        <li>
-          <button
-            type="button"
-            class={[
-              'tool-pill fr-tag gap-2 bg-white! px-4! py-2! text-base! rounded-full! border-2! border-solid!',
-              selected.includes(tool.key)
-                ? 'border-primary! text-primary!'
-                : 'text-dark-grey! border-[--border-default-grey]!'
-            ]}
-            aria-pressed={selected.includes(tool.key)}
-            aria-describedby={tool.description ? `tool-${tool.key}-description` : undefined}
+        {@const pressed = selected.includes(tool.key)}
+        <li class="p-0">
+          <ToolCard
+            id={tool.key}
+            label={tool.label}
+            description={tool.description}
+            {pressed}
             onclick={() => toggleTool(tool.key)}
-          >
-            <Icon icon="i-ri-tools-line" size="sm" />
-            {tool.label}
-          </button>
-          {#if tool.description}
-            <span id="tool-{tool.key}-description" class="fr-sr-only">{tool.description}</span>
-          {/if}
+          />
         </li>
       {/each}
     </ul>
 
-    <p class="fr-text--sm mb-0! text-[--text-mention-grey]">
-      {m['arenaHome.tools.contract']()}
-    </p>
+    <div class="mt-8 gap-4 flex flex-wrap items-center justify-between">
+      <span class="fr-text--sm mb-0! text-[--text-mention-grey]" aria-live="polite">
+        {selected.length === 0
+          ? m['arenaHome.tools.none']()
+          : m['arenaHome.tools.count']({ count: selected.length })}
+      </span>
+      <span class="gap-2 flex">
+        {#if selected.length > 0}
+          <Button
+            variant="tertiary-no-outline"
+            text={m['arenaHome.tools.clear']()}
+            onclick={() => (selected = [])}
+          />
+        {/if}
+        <Button text={m['words.validate']()} aria-controls={modalId} />
+      </span>
+    </div>
   </Modal>
 {/if}
 
 <style>
   :global(.tools-modal.fr-modal) {
     background-color: rgba(22, 22, 22, 0.2);
-  }
-
-  :global(.tools-modal .tool-pill[aria-pressed='true']) {
-    color: var(--text-action-high-blue-france);
-    background-color: var(--background-lifted-grey) !important;
-    background-image: none !important;
-    border-color: var(--blue-france-main-525) !important;
-    animation: tool-pill-select 160ms ease-out;
-  }
-
-  :global(.tools-modal .tool-pill[aria-pressed='true']::after) {
-    display: none;
-    content: none;
-  }
-
-  @keyframes tool-pill-select {
-    from {
-      transform: scale(0.97);
-    }
-
-    to {
-      transform: scale(1);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(.tools-modal .tool-pill[aria-pressed='true']) {
-      animation: none;
-    }
   }
 </style>
