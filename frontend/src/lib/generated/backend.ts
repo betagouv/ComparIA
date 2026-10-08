@@ -96,6 +96,7 @@ export interface AgentTraceToolCall {
   tool_call_id: string;
   name: string;
   label?: string;
+  tool?: string;
   arguments_json: string;
   arguments?: {
     [k: string]: unknown;
