@@ -714,6 +714,22 @@
                     "created": "Outil créé.",
                     "failed": "L'outil n'a pas été créé"
                 }
+            },
+            "list": {
+                "intro": "Les outils activés sont proposés aux visiteurs avant chaque comparaison. Désactivez-en un pour le retirer tout de suite, sans perdre sa configuration.",
+                "add": "Ajouter un serveur MCP",
+                "label": "Outil",
+                "address": "Adresse",
+                "functions": "Fonctions",
+                "secret": "Identifiant",
+                "enabled": "Activé",
+                "updated": "Modifié",
+                "builtin": "Intégré",
+                "allFunctions": "Toutes",
+                "someFunctions": "{count} choisies",
+                "switch": "Activer {label}",
+                "switchedOn": "« {label} » est proposé aux visiteurs.",
+                "switchedOff": "« {label} » n'est plus proposé aux visiteurs."
             }
         },
         "voteTags": {

@@ -714,6 +714,22 @@
                     "created": "Tool created.",
                     "failed": "The tool was not created"
                 }
+            },
+            "list": {
+                "intro": "Switched-on tools are offered to visitors before each comparison. Switch one off to withdraw it at once, without losing its settings.",
+                "add": "Add an MCP server",
+                "label": "Tool",
+                "address": "Address",
+                "functions": "Functions",
+                "secret": "Credential",
+                "enabled": "On",
+                "updated": "Updated",
+                "builtin": "Built in",
+                "allFunctions": "All",
+                "someFunctions": "{count} chosen",
+                "switch": "Switch on {label}",
+                "switchedOn": "'{label}' is offered to visitors.",
+                "switchedOff": "'{label}' is no longer offered to visitors."
             }
         },
         "voteTags": {
