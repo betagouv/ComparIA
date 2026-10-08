@@ -11,7 +11,12 @@ from linkup import (
 )
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.admin.tools.models import ToolFunction, ToolTestError, ToolTestResult
+from backend.admin.tools.models import (
+    ToolDraft,
+    ToolFunction,
+    ToolTestError,
+    ToolTestResult,
+)
 from backend.arena.mcp_tools import list_server_functions
 from backend.arena.web_search import WEB_SEARCH_TOOL_NAME, web_search_config
 from backend.config import WEB_SEARCH_TOOL_TIMEOUT_SECONDS
@@ -78,11 +83,11 @@ def _contains(error: BaseException, kind: type[BaseException]) -> bool:
     return False
 
 
-async def _test_mcp(row: Tool) -> ToolTestResult:
+async def _test_mcp(row: Tool, remember: bool) -> ToolTestResult:
     if not row.url:
         return ToolTestResult(ok=False, error="no_url")
     try:
-        functions = await list_server_functions(row)
+        functions = await list_server_functions(row, remember=remember)
     except BaseException as e:
         if isinstance(e, (KeyboardInterrupt, SystemExit, asyncio.CancelledError)):
             raise
@@ -130,10 +135,23 @@ async def _test_web_search(row: Tool) -> ToolTestResult:
     return ToolTestResult(ok=True)
 
 
-async def check_tool(row: Tool) -> ToolTestResult:
+async def check_tool(row: Tool, remember: bool = True) -> ToolTestResult:
     """Try the tool the way a turn would, with what is stored now."""
     if row.kind == "mcp":
-        return await _test_mcp(row)
+        return await _test_mcp(row, remember)
     if row.key == WEB_SEARCH_TOOL_NAME:
         return await _test_web_search(row)
     return ToolTestResult(ok=False, error="unknown_builtin")
+
+
+async def check_draft(draft: ToolDraft) -> ToolTestResult:
+    """Try a tool that is still being set up, without saving anything."""
+    secret = draft.secret.strip() if draft.secret else ""
+    row = Tool(
+        key=draft.key or (WEB_SEARCH_TOOL_NAME if draft.kind == "builtin" else "draft"),
+        label=draft.key or "draft",
+        kind=draft.kind,
+        url=draft.url.strip() if draft.url else None,
+        secret_encrypted=encrypt_secret(secret) if secret else None,
+    )
+    return await check_tool(row, remember=False)

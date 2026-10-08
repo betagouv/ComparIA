@@ -123,15 +123,19 @@ async def _list_server(row: "Tool") -> list[dict[str, Any]]:
     return [dict(schema) for schema in schemas]
 
 
-async def list_server_functions(row: "Tool") -> list[dict[str, str]]:
+async def list_server_functions(
+    row: "Tool", remember: bool = True
+) -> list[dict[str, str]]:
     """
     What the server offers right now, for an administrator testing it.
 
     Unlike a turn, this never falls back on the cache: a stale answer would
-    hide the very failure being checked for. Errors are the caller's.
+    hide the very failure being checked for. Errors are the caller's. A row
+    that is not saved yet is not remembered, since no turn will look it up.
     """
     schemas = await _list_server(row)
-    _write_cache(row, schemas)
+    if remember:
+        _write_cache(row, schemas)
     functions = [schema.get("function") or {} for schema in schemas]
     return [
         {"name": f["name"], "description": f.get("description") or ""}

@@ -115,7 +115,7 @@ def test_conflicting_domain_lists_are_refused(database):
 
 
 def test_testing_an_mcp_server_lists_its_functions(database, monkeypatch):
-    async def list_server_functions(row):
+    async def list_server_functions(row, remember=True):
         return [{"name": "search_datasets", "description": "Search."}]
 
     monkeypatch.setattr(services, "list_server_functions", list_server_functions)
@@ -135,7 +135,7 @@ def test_testing_an_mcp_server_lists_its_functions(database, monkeypatch):
 
 
 def test_a_server_refusing_the_credential_says_so(database, monkeypatch):
-    async def list_server_functions(row):
+    async def list_server_functions(row, remember=True):
         request = httpx.Request("POST", row.url)
         refused = httpx.HTTPStatusError(
             "401", request=request, response=httpx.Response(401, request=request)
@@ -160,7 +160,7 @@ def test_a_server_refusing_the_credential_says_so(database, monkeypatch):
 def test_an_unreachable_server_and_a_missing_address_are_told_apart(
     database, monkeypatch
 ):
-    async def list_server_functions(row):
+    async def list_server_functions(row, remember=True):
         raise ConnectionError("no route to host")
 
     monkeypatch.setattr(services, "list_server_functions", list_server_functions)
@@ -217,5 +217,43 @@ def test_web_search_test_tells_a_bad_key_from_a_good_one(database, monkeypatch):
         # No result for the probe query still means the key was accepted.
         assert good_result["ok"] is True
         assert seen_keys == ["bad", "good"]
+
+    database(scenario)
+
+
+def test_a_tool_is_tested_before_it_is_saved(database, monkeypatch):
+    seen = {}
+
+    async def list_server_functions(row, remember=True):
+        seen.update(url=row.url, secret=decrypt_secret(row.secret_encrypted))
+        seen["remember"] = remember
+        return [{"name": "search_datasets", "description": "Search."}]
+
+    monkeypatch.setattr(services, "list_server_functions", list_server_functions)
+
+    async def scenario():
+        async with client() as api:
+            response = await api.post(
+                "/tools/test",
+                json={"kind": "mcp", "url": MCP["url"], "secret": " token "},
+            )
+            listed = (await api.get("/tools/data")).json()["tools"]
+
+        assert response.json()["functions"] == [
+            {"name": "search_datasets", "description": "Search."}
+        ]
+        # Not saved, and not cached under a credential no row will carry.
+        assert seen == {"url": MCP["url"], "secret": "token", "remember": False}
+        assert listed == []
+
+    database(scenario)
+
+
+def test_an_unsaved_mcp_tool_without_an_address_says_so(database):
+    async def scenario():
+        async with client() as api:
+            result = (await api.post("/tools/test", json={"kind": "mcp"})).json()
+
+        assert result == {"ok": False, "error": "no_url", "functions": None}
 
     database(scenario)

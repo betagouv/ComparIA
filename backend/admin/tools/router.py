@@ -4,8 +4,9 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
-from backend.admin.tools.models import ToolTestResult
+from backend.admin.tools.models import ToolDraft, ToolTestResult
 from backend.admin.tools.services import (
+    check_draft,
     check_tool,
     clear_tool_secret,
     to_admin,
@@ -57,3 +58,8 @@ async def check(tool_id: UUID) -> ToolTestResult:
         if not row:
             raise HTTPException(status_code=404, detail="tool_not_found")
     return await check_tool(row)
+
+
+@router.post("/test")
+async def check_unsaved(body: ToolDraft) -> ToolTestResult:
+    return await check_draft(body)
