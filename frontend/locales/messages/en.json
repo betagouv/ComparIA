@@ -1006,22 +1006,6 @@
             "running": "Searching…",
             "sources": "{count} source(s)"
         },
-        "agentTrace": {
-            "intermediate": "Intermediate model message",
-            "label": "View execution trace",
-            "query": "Search query: ",
-            "reasoning": "Reasoning shared by the model",
-            "request": "User request",
-            "sources": "source(s)",
-            "status": {
-                "empty": "No results",
-                "error": "Failed",
-                "success": "Successful"
-            },
-            "technicalDetails": "Show technical details",
-            "toolCall": "Tool call",
-            "toolResult": "Tool response"
-        },
         "activity": {
             "calling": "Consulting",
             "failed": "The tool did not answer",

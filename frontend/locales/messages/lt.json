@@ -65,18 +65,6 @@
             "running": "Ieškoma…",
             "sources": "{count} šaltinis (-iai)"
         },
-        "agentTrace": {
-            "intermediate": "Tarpinis modelio pranešimas",
-            "label": "Rodyti vykdymo seką",
-            "query": "Naudota paieška: ",
-            "reasoning": "Modelio pateiktas samprotavimas",
-            "request": "Naudotojo užklausa",
-            "sources": "šaltinis (-iai)",
-            "status": { "empty": "Rezultatų nėra", "error": "Nepavyko", "success": "Pavyko" },
-            "technicalDetails": "Rodyti techninę informaciją",
-            "toolCall": "Įrankio iškvietimas",
-            "toolResult": "Įrankio atsakymas"
-        },
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
         "conversation": "Pokalbis",
         "errors": {

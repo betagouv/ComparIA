@@ -897,22 +897,6 @@
             "results": "{count} resultater",
             "running": "Søger…",
             "sources": "{count} kilde(r)"
-        },
-        "agentTrace": {
-            "intermediate": "Midlertidig modelbesked",
-            "label": "Se udførelsesspor",
-            "query": "Anvendt søgning: ",
-            "reasoning": "Begrundelse delt af modellen",
-            "request": "Brugeranmodning",
-            "sources": "kilde(r)",
-            "status": {
-                "empty": "Ingen resultater",
-                "error": "Mislykket",
-                "success": "Gennemført"
-            },
-            "technicalDetails": "Vis tekniske detaljer",
-            "toolCall": "Værktøjskald",
-            "toolResult": "Værktøjssvar"
         }
     },
     "closeModal": "Luk pop op-vinduet",

@@ -8,28 +8,6 @@
             "running": "Recèrca en cors…",
             "sources": "{count} font(s)"
         },
-        "agentTrace": {
-            "intermediate": "Messatge intermediari del modèl",
-            "label": "Veire la traça d’execucion",
-            "query": "Recèrca utilizada : ",
-            "reasoning": "Rasonament partejat pel modèl",
-            "request": "Requèsta de l’utilizaire",
-            "sources": "font(s)",
-            "status": { "empty": "Cap de resultat", "error": "Fracàs", "success": "Capitada" },
-            "technicalDetails": "Afichar los detalhs tecnics",
-            "toolCall": "Apèl de l’aisina",
-            "toolResult": "Responsa de l’aisina"
-        }
-    },
-    "arenaHome": {
-        "tools": {
-            "contract": "Un còp activadas, las aisinas seleccionadas son prepausadas als dos modèls comparats, que demòran liures de las utilizar o non.",
-            "count": "{count} aisinas",
-            "label": "Aisinas",
-            "legend": "Aisinas",
-            "locked": "Las aisinas son fixadas per tota la conversa.",
-            "none": "Cap d'aisina"
-        },
         "title": "Cossí vos pòdi ajudar uèi ?",
         "webSearch": {
             "label": "Autorizar la recèrca web",

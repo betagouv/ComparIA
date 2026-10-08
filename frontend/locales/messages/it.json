@@ -70,18 +70,6 @@
             "running": "Ricerca in corso…",
             "sources": "{count} fonte/i"
         },
-        "agentTrace": {
-            "intermediate": "Messaggio intermedio del modello",
-            "label": "Vedi la traccia di esecuzione",
-            "query": "Ricerca utilizzata: ",
-            "reasoning": "Ragionamento condiviso dal modello",
-            "request": "Richiesta dell’utente",
-            "sources": "fonte/i",
-            "status": { "empty": "Nessun risultato", "error": "Errore", "success": "Riuscito" },
-            "technicalDetails": "Mostra dettagli tecnici",
-            "toolCall": "Chiamata allo strumento",
-            "toolResult": "Risposta dello strumento"
-        },
         "continuePrompt": "Continua la conversazione…",
         "conversation": "Conversazione",
         "errors": {

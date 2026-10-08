@@ -70,18 +70,6 @@
             "running": "Søker…",
             "sources": "{count} kilde(r)"
         },
-        "agentTrace": {
-            "intermediate": "Midlertidig modellmelding",
-            "label": "Se kjøringssporet",
-            "query": "Søk som ble brukt: ",
-            "reasoning": "Resonnement delt av modellen",
-            "request": "Brukerforespørsel",
-            "sources": "kilde(r)",
-            "status": { "empty": "Ingen resultater", "error": "Mislyktes", "success": "Vellykket" },
-            "technicalDetails": "Vis tekniske detaljer",
-            "toolCall": "Verktøykall",
-            "toolResult": "Verktøysvar"
-        },
         "continuePrompt": "Fortsett samtalen med KI-modellene",
         "conversation": "Samtale",
         "errors": {

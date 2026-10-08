@@ -68,18 +68,6 @@
             "running": "Otsin…",
             "sources": "{count} allikas(t)"
         },
-        "agentTrace": {
-            "intermediate": "Mudeli vahesõnum",
-            "label": "Vaata täitmisjälge",
-            "query": "Kasutatud otsing: ",
-            "reasoning": "Mudeli jagatud arutluskäik",
-            "request": "Kasutaja päring",
-            "sources": "allikas(t)",
-            "status": { "empty": "Tulemusi pole", "error": "Ebaõnnestus", "success": "Õnnestus" },
-            "technicalDetails": "Kuva tehnilised üksikasjad",
-            "toolCall": "Tööriistakutse",
-            "toolResult": "Tööriista vastus"
-        },
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",
         "conversation": "Vestlus",
         "errors": {

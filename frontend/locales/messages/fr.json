@@ -996,22 +996,6 @@
         "webSearch": {
             "label": "Résultats de recherche Web associés."
         },
-        "agentTrace": {
-            "intermediate": "Message intermédiaire du modèle",
-            "label": "Voir la trace d’exécution",
-            "query": "Recherche utilisée : ",
-            "reasoning": "Raisonnement transmis par le modèle",
-            "request": "Requête utilisateur",
-            "sources": "source(s)",
-            "status": {
-                "empty": "Aucun résultat",
-                "error": "Échec",
-                "success": "Succès"
-            },
-            "technicalDetails": "Afficher les détails techniques",
-            "toolCall": "Appel de l’outil",
-            "toolResult": "Réponse de l’outil"
-        },
         "tools": {
             "done": "Terminé",
             "fixed": "Outils fixés pour cette conversation : {tools}",
