@@ -291,13 +291,14 @@ async def litellm_stream_iter(
                 extra={"request": request},
             )
             raise ContextTooLongError from exc
-        except litellm.BadRequestError:
+        except (litellm.BadRequestError, litellm.NotFoundError):
             # Providers disagree on how they refuse tools: some raise
-            # UnsupportedParamsError, others a plain 400. Retrying without
-            # schemas costs one request and tells us which it was -- an
-            # unrelated 400 simply fails again, and that one reaches the caller.
-            # ContextWindowExceededError is also a BadRequestError; it is caught
-            # above, so it never reaches here.
+            # UnsupportedParamsError, others a plain 400, and OpenRouter a 404
+            # when routing filtered out every endpoint for tool support.
+            # Retrying without schemas costs one request and tells us which it
+            # was -- an unrelated 400 or 404 simply fails again, and that one
+            # reaches the caller. ContextWindowExceededError is also a
+            # BadRequestError; it is caught above, so it never reaches here.
             if "tools" not in call_kwargs:
                 raise
             logger.info(

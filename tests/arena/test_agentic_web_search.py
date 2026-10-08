@@ -437,6 +437,96 @@ async def _test_provider_rejection_answers_and_is_remembered():
     assert message.agent_stop_reason is None
 
 
+def test_a_router_with_no_tool_capable_endpoint_is_a_rejection_too():
+    asyncio.run(_test_a_router_with_no_tool_capable_endpoint_is_a_rejection_too())
+
+
+async def _test_a_router_with_no_tool_capable_endpoint_is_a_rejection_too():
+    """
+    OpenRouter answers tools it cannot route with a 404, not a 400: every
+    endpoint left for the model was filtered out for tool support. Read as
+    a refusal, the model still answers without them.
+    """
+    calls: list[dict[str, Any]] = []
+    redis = FakeRedis()
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        if "tools" in kwargs:
+            raise litellm.NotFoundError(
+                message="No endpoints found for meta-llama/llama-4-scout. Every "
+                "candidate endpoint was removed during routing: Filter by Tool "
+                "Compatibility removed deepinfra/fp8",
+                model="openrouter/meta-llama/llama-4-scout",
+                llm_provider="openrouter",
+            )
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="plain",
+                    delta={"role": "assistant", "content": "Fallback answer."},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm("openrouter/meta-llama/llama-4-scout"),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=_web_search_tools(),
+        ):
+            pass
+
+        assert tools.model_rejects_tools("openrouter/meta-llama/llama-4-scout")
+
+    assert message.content == "Fallback answer."
+    assert ["tools" in call for call in calls] == [True, False]
+
+
+def test_a_model_that_is_gone_still_fails_with_or_without_tools():
+    asyncio.run(_test_a_model_that_is_gone_still_fails_with_or_without_tools())
+
+
+async def _test_a_model_that_is_gone_still_fails_with_or_without_tools():
+    """The retry costs one request; a 404 that has nothing to do with tools
+    comes back and reaches the caller."""
+
+    async def fake_completion(**kwargs):
+        raise litellm.NotFoundError(
+            message="No endpoints found for retired/model.",
+            model="openrouter/retired/model",
+            llm_provider="openrouter",
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
+    ):
+        try:
+            async for _ in integration.litellm_stream_iter(
+                llm=_llm("openrouter/retired/model"),
+                messages=[UserMessage(content="Hello")],
+                msg=LLMMessageCreate(),
+                temperature=0.7,
+                max_new_tokens=100,
+                tools=_web_search_tools(),
+            ):
+                pass
+        except litellm.NotFoundError:
+            return
+    raise AssertionError("the 404 was swallowed")
+
+
 def test_remembered_rejection_skips_the_wasted_request():
     asyncio.run(_test_remembered_rejection_skips_the_wasted_request())
 
