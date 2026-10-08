@@ -1,7 +1,8 @@
 import uuid
 from typing import Annotated, Literal
 
-from sqlalchemy import Index, UniqueConstraint, text
+from pydantic import AfterValidator, EmailStr, field_validator
+from sqlalchemy import Index, UniqueConstraint, func, text
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
@@ -13,18 +14,41 @@ LegalDocumentKind = Literal["terms", "privacy_policy"]
 ConsentPurpose = Literal["terms_and_participation"]
 
 
+def normalize_email(email: str) -> str:
+    """The one spelling an address is stored and looked up under: an address
+    is one person's whatever its letter case, and providers and users do not
+    agree on it."""
+    return email.strip().lower()
+
+
+NormalizedEmail = Annotated[EmailStr, AfterValidator(normalize_email)]
+
+
 class UserBase(SQLModel):
     id: ModelId
-    email: str = Field(unique=True)
+    email: str
     role: Annotated[UserRole, Field(sa_type=String)] = "user"
+
+    @field_validator("email")
+    @classmethod
+    def _normalize_email(cls, value: str) -> str:
+        return normalize_email(value)
 
 
 class User(UserBase, table=True):
     __tablename__ = "auth_user"
+    __table_args__ = (
+        # Uniqueness is on the lowercased address, so two spellings of one
+        # address cannot become two accounts.
+        Index("uq_auth_user_email_lower", func.lower(text("email")), unique=True),
+    )
 
     created_at: AutoDatetime
     last_seen_at: AutoDatetime
     deleted_at: OptionalDatetime = None
+    # Set once the inactivity warning has gone out, cleared at the next sign-in,
+    # so a purge run never mails the same person twice.
+    inactivity_warned_at: OptionalDatetime = None
 
     login_codes: list["LoginCode"] = Relationship(back_populates="user")
     auth_sessions: list["AuthSession"] = Relationship(back_populates="user")
@@ -39,6 +63,7 @@ class UserPublic(UserBase):
     created_at: str
     last_seen_at: str
     source: str
+    totp_enabled: bool = False
 
 
 class LoginCode(SQLModel, table=True):
@@ -79,6 +104,45 @@ class InviteToken(SQLModel, table=True):
     created_at: AutoDatetime
     expires_at: Datetime
     used_at: OptionalDatetime = None
+
+
+class UserTotp(SQLModel, table=True):
+    """An admin's authenticator secret, Fernet-encrypted at rest.
+
+    `pending_*` is the secret shown as a QR code but not yet confirmed with a
+    code; confirming promotes it, so an abandoned device change never drops the
+    live secret. `last_used_step` is the last accepted 30 s window, kept to
+    refuse a code replayed within its window.
+    """
+
+    __tablename__ = "auth_totp"
+
+    id: ModelId
+    user_id: uuid.UUID = Field(foreign_key="auth_user.id", unique=True)
+    secret_encrypted: str | None = None
+    confirmed_at: OptionalDatetime = None
+    pending_secret_encrypted: str | None = None
+    pending_created_at: OptionalDatetime = None
+    last_used_step: int | None = None
+    created_at: AutoDatetime
+    updated_at: AutoDatetime
+
+
+class TotpChallenge(SQLModel, table=True):
+    """The half-signed-in state between a valid email code and a valid
+    authenticator code. No auth_session exists until it is consumed."""
+
+    __tablename__ = "auth_totp_challenge"
+
+    id: ModelId
+    # Read per user: the hourly cap sums a user's attempts, a reset drops
+    # their rows.
+    user_id: uuid.UUID = Field(foreign_key="auth_user.id", index=True)
+    token_hash: str = Field(index=True)
+    created_at: AutoDatetime
+    expires_at: Datetime
+    used_at: OptionalDatetime = None
+    attempts: int = 0
 
 
 class LegalDocument(SQLModel, table=True):

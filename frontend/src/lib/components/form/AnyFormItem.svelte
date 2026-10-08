@@ -2,7 +2,7 @@
   import * as components from '$components/form'
   import type { AnyFormItemProps } from '$lib/utils/form'
 
-  let { value = $bindable(), ...props }: AnyFormItemProps = $props()
+  let { value = $bindable(), ...props }: AnyFormItemProps & { value: any } = $props()
 </script>
 
 {#if props.component === 'input'}

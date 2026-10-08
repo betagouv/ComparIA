@@ -285,12 +285,26 @@ def test_mutable_presentation_comes_from_app_settings():
 
 def test_presentation_uses_defaults_when_not_configured():
     async def app_settings():
-        return SimpleNamespace(legal_presentation=None)
+        return SimpleNamespace(legal_presentation=None, default_locale="fr")
 
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
 
     assert result == legal.fallback_legal_presentation()
+
+
+def test_default_presentation_follows_the_visitor_locale():
+    async def app_settings():
+        return SimpleNamespace(legal_presentation=None, default_locale="da")
+
+    with patch.object(legal, "get_app_settings", app_settings):
+        english = asyncio.run(legal.get_legal_presentation("en"))
+        instance_default = asyncio.run(legal.get_legal_presentation())
+        unknown = asyncio.run(legal.get_legal_presentation("lt"))
+
+    assert english.arena.title == "Before you start"
+    assert instance_default.arena.title == "Før du starter"
+    assert unknown.arena.title == "Avant de commencer"
 
 
 def terms_document(**overrides) -> LegalDocument:
@@ -313,7 +327,7 @@ def public_client(presentation=None, document=None):
     async def active_document(_kind, _language):
         return document
 
-    async def get_presentation():
+    async def get_presentation(_locale):
         return presentation or legal.fallback_legal_presentation()
 
     app = FastAPI()

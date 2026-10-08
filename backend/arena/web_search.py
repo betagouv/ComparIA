@@ -238,7 +238,7 @@ def store_cached_search_results(
             settings.CACHE_TTL,
             json.dumps([result.model_dump() for result in web_search_results]),
         )
-        logger.info("[CACHE] Stored web search results.")
+        logger.info("[CACHE] Stored web search cache.")
 
     except Exception as e:
         logger.warning(f"[CACHE] Error storing web search cache: {e}")

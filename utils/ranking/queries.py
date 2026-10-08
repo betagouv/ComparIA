@@ -4,6 +4,7 @@ Database queries for fetching turns vote data for ranking computation.
 
 import logging
 
+from sqlalchemy import or_
 from sqlalchemy.orm import aliased
 from sqlmodel import col, select
 
@@ -16,7 +17,9 @@ logger = configure_logger(logging.getLogger("ranking.queries"))
 
 async def fetch_votes() -> list[dict]:
     """
-    Fetch all non-archived Turn's votes joined with Comparison data.
+    Fetch the votes the public ranking counts, joined with Comparison data:
+    not archived, not from a partner programme (Pix), not flagged as holding
+    personal data.
 
     The two assistant answers (content + token count) are joined in as well so
     the ranking can control for answer style (length, markdown formatting); see
@@ -46,6 +49,17 @@ async def fetch_votes() -> list[dict]:
             .join(msg_a, col(Turn.llm_msg_a_id) == col(msg_a.id), isouter=True)
             .join(msg_b, col(Turn.llm_msg_b_id) == col(msg_b.id), isouter=True)
             .where(col(Comparison.archived).is_not(True))
+            # Promised to Pix and to the ministry: pupils' votes stay out of
+            # the public ranking, as their conversations stay out of the
+            # datasets. Same test as utils.dataset.runs.PUBLISHABLE, since
+            # an ordinary visitor's comparison holds NULL there.
+            .where(
+                or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == "")
+            )
+            # Flagged conversations are archived, but backfill_pii_spam's
+            # 'archived != True' skips rows whose archived is NULL: test the
+            # flag itself.
+            .where(col(Comparison.contains_pii).is_not(True))
             .where(
                 col(Turn.choice).in_(["both_good", "both_bad", "a_better", "b_better"])
             )

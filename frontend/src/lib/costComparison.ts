@@ -1,7 +1,5 @@
 export type CostComparison =
-  | { kind: 'more' | 'less'; factor: number }
-  | { kind: 'similar' }
-  | { kind: 'unavailable' }
+  { kind: 'more' | 'less'; factor: number } | { kind: 'similar' } | { kind: 'unavailable' }
 
 export function buildCostComparison(cost: number, otherCost: number): CostComparison {
   if (

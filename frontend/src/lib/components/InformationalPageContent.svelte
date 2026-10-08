@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
-  import { stripLeadingTitle } from '$components/markdown/headings'
+  import { MarkdownCode as Markdown, stripLeadingTitle } from '$components/markdown'
 
   const { content }: { content: string } = $props()
 </script>

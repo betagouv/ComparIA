@@ -1,18 +1,23 @@
 <script module lang="ts">
-  import type { BaseFormFieldProps } from '$lib/utils/form'
+  import type { BaseFormFieldProps, FormItemSnippetProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
   export type FormFieldProps = {
-    formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
-  } & Omit<BaseFormFieldProps<'input' | 'select' | 'checkbox', string | boolean | null>, 'value'>
+    formItem: Snippet<[FormItemSnippetProps]>
+  } & BaseFormFieldProps<'input' | 'select' | 'checkbox'>
 </script>
 
 <script lang="ts">
   let { id, label, required, hidden, component, help, errors, formItem }: FormFieldProps = $props()
 
   const messagesId = $derived(`${id}-messages`)
-  const props_ = $derived({ 'aria-describedby': messagesId, id, required })
   const error = $derived(errors?.[id])
+  const props_ = $derived({
+    'aria-describedby': messagesId,
+    'aria-invalid': error ? ('true' as const) : undefined,
+    id,
+    required
+  })
 </script>
 
 <div class={[`fr-${component}-group`, { [`fr-${component}-group--error`]: !!error, hidden }]}>
@@ -32,11 +37,11 @@
     {@render formItem?.(props_)}
   {/if}
 
-  {#if error}
-    <div class="fr-messages-group" id={messagesId} aria-live="polite">
+  <div class="fr-messages-group" id={messagesId} aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
 
 <style lang="postcss">

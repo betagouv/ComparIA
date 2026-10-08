@@ -10,6 +10,7 @@
         "modelSheet": "Fiche du modèle",
         "modeSelection": "Choix des modèles à comparer",
         "newWindow": "nouvelle fenêtre",
+        "priceGraphDesc": "Nuage de points : chaque modèle est positionné selon son score de préférence en ordonnée et son prix de sortie par million de jetons en abscisse. Une ligne relie les modèles de la frontière de Pareto. Les mêmes données sont disponibles sous forme de tableau.",
         "shareLinkLabel": "Lien de partage du résultat",
         "skipToContent": "Aller au contenu principal",
         "suggestionCategories": "Catégories de suggestions de questions",
@@ -22,6 +23,10 @@
         "copyLink": {
             "do": "Copier le lien",
             "done": "Lien copié dans le presse-papiers"
+        },
+        "copyKey": {
+            "do": "Copier la clé",
+            "done": "Clé copiée"
         },
         "copyMessage": {
             "do": "Copier le message",
@@ -104,7 +109,7 @@
                 "externalUrl": "Adresse de la page externe",
                 "externalUrlError": "Saisissez une adresse HTTPS valide.",
                 "externalUrlHelp": "L’adresse doit commencer par https://.",
-                "internal": "Page hébergée sur Compar:IA",
+                "internal": "Page hébergée sur {platformName}",
                 "loading": "Chargement des pages d’information…",
                 "locale": "Langue du contenu",
                 "modeLabel": "Destination",
@@ -172,9 +177,9 @@
             "promptChecks": "Vérifications",
             "publishing": "Jeux de données",
             "suggestions": "Suggestions",
+            "tools": "Outils",
             "users": "Utilisateurs",
-            "voteTags": "Étiquettes de vote",
-            "tools": "Outils"
+            "voteTags": "Étiquettes de vote"
         },
         "panelLink": "Administration",
         "promptChecks": {
@@ -216,6 +221,10 @@
                 },
                 "decisionLegend": "Résultat",
                 "empty": "Écrivez un message avant de lancer le test.",
+                "errors": {
+                    "call_failed": "L'appel à Mistral a échoué : {error}",
+                    "no_api_key": "Aucune clé API Mistral n'est configurée : la vérification ne peut pas s'exécuter."
+                },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
                 "labelHint": "Écrivez ici le message tel qu'une personne l'enverrait.",
@@ -262,8 +271,8 @@
             },
             "saveApiKey": "Enregistrer la clé",
             "saveCategories": "Enregistrer les catégories",
-            "saved": "Vérification mise à jour",
             "saveModel": "Enregistrer le modèle",
+            "saved": "Vérification mise à jour",
             "saving": "Enregistrement...",
             "settings": {
                 "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",
@@ -356,12 +365,13 @@
             "nameLabel": "Nom",
             "nextRun": "Prochaine publication : {date}",
             "nextRunNever": "Aucune publication programmée.",
+            "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",
-            "publishing": "Publication…",
             "publishNow": "Publier",
             "publishStarted": "Publication démarrée",
+            "publishing": "Publication…",
             "rawWarning": "Cette destination reçoit le jeu brut, qui contient les conversations mises de côté pour données personnelles. Vérifiez qu'elle est privée.",
             "regionLabel": "Région",
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
@@ -403,6 +413,13 @@
                 "domainAllowlist": {
                     "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines.",
                     "label": "Domaines email autorisés"
+                },
+                "authMethods": {
+                    "emailCode": "Code par email",
+                    "emailCodeLocked": "Testez la connexion OIDC avec succès pour pouvoir retirer ce mode de connexion.",
+                    "error": "Au moins une méthode doit être activée",
+                    "label": "Méthodes d'authentification",
+                    "oidc": "Fournisseur d'identité (OIDC)"
                 }
             },
             "customization": {
@@ -448,7 +465,58 @@
             "save": "Enregistrer",
             "saved": "Paramètres mis à jour",
             "saving": "Enregistrement...",
-            "subtitle": "Configuration de l'application."
+            "subtitle": "Configuration de l'application.",
+            "oidc": {
+                "buttonLabel": {
+                    "hint": "Ex. : Se connecter avec ProConnect",
+                    "label": "Libellé du bouton"
+                },
+                "buttonLogo": {
+                    "hint": "PNG, JPEG, SVG ou WebP, 2 Mo maximum.",
+                    "label": "Logo du bouton",
+                    "reset": "Supprimer",
+                    "resetDone": "Logo supprimé",
+                    "updated": "Logo mis à jour"
+                },
+                "clientId": {
+                    "label": "Client ID",
+                    "required": "Le client ID est requis"
+                },
+                "clientSecret": {
+                    "hint": "Laissez vide pour conserver la valeur actuelle",
+                    "label": "Client secret",
+                    "replace": "Remplacer",
+                    "required": "Le client secret est requis pour activer l'OIDC",
+                    "set": "Secret enregistré"
+                },
+                "issuer": {
+                    "hint": "Ex. : https://auth.example.gouv.fr",
+                    "label": "URL de l'émetteur (issuer)",
+                    "required": "L'URL de l'émetteur est requise"
+                },
+                "scopes": {
+                    "hint": "Séparés par des espaces. Ex. : openid email",
+                    "label": "Scopes",
+                    "openidRequired": "Les scopes doivent inclure openid"
+                },
+                "test": {
+                    "button": "Tester la connexion",
+                    "failed": "Échec du test : {reason}",
+                    "hint": "Enregistrez la configuration avant de la tester.",
+                    "passed": "Connexion réussie : le fournisseur répond et la configuration est lisible.",
+                    "reasons": {
+                        "discovery_invalid": "le document de découverte du fournisseur est illisible.",
+                        "discovery_unreachable": "le fournisseur est injoignable ou ne publie pas de document de découverte.",
+                        "endpoint_not_https": "un des points d’accès du fournisseur n’est pas en https.",
+                        "incomplete_config": "la configuration est incomplète.",
+                        "issuer_mismatch": "l’émetteur annoncé par le fournisseur ne correspond pas à l’URL configurée.",
+                        "missing_endpoint": "il manque un point d’accès (autorisation, jeton ou userinfo) dans le document de découverte.",
+                        "secret_unreadable": "le client secret enregistré est illisible, saisissez-le à nouveau."
+                    },
+                    "running": "Test en cours…"
+                },
+                "title": "Configuration OIDC"
+            }
         },
         "suggestions": {
             "actions": "Actions",
@@ -458,9 +526,14 @@
             "allLocales": "Toutes les langues",
             "allStatuses": "Tous les statuts",
             "archive": "Archiver",
+            "archiveCategory": "Archiver la catégorie",
             "archiveConfirm": "Archiver cette suggestion ? Elle ne sera plus proposée dans l’arène, mais pourra être restaurée.",
-            "archived": "Archivée",
             "archiveSuccess": "Suggestion archivée.",
+            "archived": "Archivée",
+            "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
+            "categoryArchiveSuccess": "Catégorie archivée.",
+            "categoryCountSummary": "{available} disponibles sur {total} suggestions",
+            "collapseCategory": "Replier la catégorie",
             "available": "Disponible",
             "cancel": "Annuler",
             "categories": "Catégories",
@@ -485,6 +558,8 @@
             "categoryTooltip": "Information complémentaire",
             "categoryTooltipHint": "Facultatif. Cette information sera accessible depuis une infobulle.",
             "categoryValidation": "Saisissez un nom, une description et choisissez une icône.",
+            "categoryRestoreConfirm": "Restaurer « {title} » ? Seules les suggestions dont le statut est « Disponible » seront de nouveau proposées dans l’arène.",
+            "categoryRestoreSuccess": "Catégorie restaurée.",
             "charactersMaximum": "{count} caractères maximum",
             "confirm": "Confirmer",
             "createSuccess": "Suggestion ajoutée.",
@@ -492,6 +567,7 @@
             "deleteCategory": "Supprimer la catégorie",
             "duplicateError": "Cette suggestion existe déjà dans cette catégorie.",
             "empty": "Aucune suggestion ne correspond aux filtres sélectionnés.",
+            "expandCategory": "Déplier la catégorie",
             "filters": "Filtres",
             "iconArt": "Art",
             "iconBook": "Livre",
@@ -522,9 +598,13 @@
             "prompt": "Suggestion",
             "promptHint": "La suggestion pourra contenir des champs à compléter entre crochets.",
             "restore": "Restaurer",
+            "restoreCategory": "Restaurer la catégorie",
             "restoreConfirm": "Restaurer cette suggestion ? Elle sera de nouveau proposée dans l’arène.",
             "restoreSuccess": "Suggestion restaurée.",
             "status": "Statut",
+            "search": "Rechercher une suggestion",
+            "searchFilter": "Recherche",
+            "resultCount": "{count} suggestions trouvées",
             "subtitle": "Ajoutez et gérez les suggestions proposées dans l’arène.",
             "tableCaption": "Suggestions de prompts",
             "title": "Suggestions de prompts",
@@ -534,8 +614,8 @@
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
             "archive": "Masquer",
-            "archived": "Masquée",
             "archiveSuccess": "Étiquette masquée",
+            "archived": "Masquée",
             "cancel": "Annuler",
             "colActions": "Actions",
             "colKey": "Clé",
@@ -562,9 +642,9 @@
             "labelError": "Renseignez un emoji et au moins un libellé contenant une lettre ou un chiffre.",
             "labelFor": "Libellé ({locale})",
             "labelHelp": "Sert à construire la clé publiée dans le jeu de données.",
-            "moved": "{label} déplacée en position {position} sur {total}.",
             "moveDown": "Descendre",
             "moveUp": "Monter",
+            "moved": "{label} déplacée en position {position} sur {total}.",
             "negative": "Étiquettes négatives",
             "positive": "Étiquettes positives",
             "reserved": "Livrée",
@@ -582,9 +662,6 @@
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
             "question": "Quels modèles voulez-vous comparer ?"
         },
-        "errors": {
-            "rateLimitCustomSelection": "Le choix de modèles est limité pour garantir un accès équitable à tous. Vous pouvez continuer à utiliser le mode aléatoire, ou réessayer plus tard."
-        },
         "modelSelection": "Sélection des modèles",
         "prompt": {
             "label": "Écrivez votre première requête",
@@ -596,10 +673,17 @@
         },
         "suggestions": {
             "fallback": "Explorer la catégorie : {category}",
-            "generateAnother": "Générer un autre message",
-            "title": "Suggestions de prompts"
+            "generateAnother": "Générer une autre requête",
+            "title": "Suggestions de requêtes"
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
+        "webSearch": {
+            "disabled": "Recherche web désactivée",
+            "enabled": "Recherche web activée",
+            "help": "Chaque modèle décide lui-même s’il est utile de lancer une recherche.",
+            "label": "Autoriser la recherche web",
+            "tooltip": "Autorisez les modèles à rechercher des informations en ligne et à citer des sources plus récentes. <strong>Chaque modèle choisit librement d’utiliser ou non cet outil</strong> selon votre message.<br>Si vous ne l’autorisez pas, les modèles répondent uniquement à partir de ce qu’ils ont appris pendant leur entraînement et ne peuvent pas vérifier d’informations en ligne."
+        },
         "tools": {
             "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
             "count": "{count} outils",
@@ -607,16 +691,24 @@
             "legend": "Outils",
             "locked": "Les outils sont fixés pour toute la conversation.",
             "none": "Aucun outil"
-        },
-        "webSearch": {
-            "disabled": "Recherche web désactivée",
-            "enabled": "Recherche web activée",
-            "help": "Chaque modèle décide lui-même s’il est utile de lancer une recherche.",
-            "label": "Autoriser la recherche web",
-            "tooltip": "Autorisez les modèles à rechercher des informations en ligne et à citer des sources plus récentes. <strong>Chaque modèle choisit librement d’utiliser ou non cet outil</strong> selon votre message.<br>Si vous ne l’autorisez pas, les modèles répondent uniquement à partir de ce qu’ils ont appris pendant leur entraînement et ne peuvent pas vérifier d’informations en ligne."
         }
     },
     "arene": {
+        "apiErrors": {
+            "block_cooldown": "Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+            "captcha_failed": "Vérification anti-robot échouée, veuillez réessayer.",
+            "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
+            "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
+            "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "prompt_check": {
+                "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
+                "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+            },
+            "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
+            "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
+        },
         "promptWarning": {
             "edit": "Modifier mon message",
             "proceed": "Envoyer quand même",
@@ -628,8 +720,16 @@
             "signIn": "Se connecter",
             "title": "Discussions"
         },
+        "login": {
+            "description": "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe.",
+            "tabEmail": "Email",
+            "tabSso": "SSO",
+            "tabsLabel": "Méthodes de connexion",
+            "title": "Bienvenue sur {platformName}"
+        },
         "modal": {
             "code": {
+                "changeEmail": "Modifier l’adresse email",
                 "error": "Code invalide ou expiré.",
                 "label": "Code reçu par email",
                 "notReceived": "Vous n’avez rien reçu ?",
@@ -641,14 +741,14 @@
                 "emailLabel": "Email",
                 "submit": "Recevoir le code de connexion",
                 "submitting": "Envoi en cours...",
-                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur compar:IA",
+                "subtitle": "Accédez à votre historique de discussion et à un quota plus élevé d'utilisation de modèles en étant connecté. La création de compte reste facultative sur {platformName}",
                 "title": "Se connecter ou s'inscrire"
             },
             "info": {
                 "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
                 "datasetsTitle": "Les jeux de données compar:IA",
-                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers.",
                 "neverAddress": "des adresses (postale, email)",
                 "neverName": "votre nom, prénom ou celui d'un tiers",
@@ -656,7 +756,33 @@
                 "neverPersonal": "des informations médicales, financières ou juridiques personnelles",
                 "neverPhone": "des numéros de téléphone"
             },
-            "merge": "Fusionner les conversations existantes avec votre compte"
+            "merge": "Fusionner les conversations existantes avec votre compte",
+            "totp": {
+                "label": "Code de l’application d’authentification",
+                "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
+                "error": "Code incorrect.",
+                "expired": "Connexion expirée, demandez un nouveau code par email.",
+                "expiredSso": "Connexion expirée, reconnectez-vous avec le fournisseur d’identité.",
+                "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification."
+            }
+        },
+        "oidc": {
+            "buttonFallback": "Se connecter avec le fournisseur d’identité",
+            "error": {
+                "account_unavailable": "Le compte associé à cette adresse a été désactivé ou supprimé.",
+                "domain_not_allowed": "Votre adresse n’appartient pas à un domaine autorisé pour cette instance.",
+                "email_not_verified": "Le fournisseur d’identité n’a pas confirmé votre adresse e-mail.",
+                "invalid_nonce": "La connexion via le fournisseur d’identité a échoué (jeton invalide).",
+                "invalid_state": "La connexion via le fournisseur d’identité a expiré. Réessayez.",
+                "missing_code": "La connexion via le fournisseur d’identité est incomplète. Réessayez.",
+                "no_email": "Le fournisseur d’identité n’a pas renvoyé d’adresse e-mail.",
+                "oidc_unavailable": "La connexion via le fournisseur d’identité n’est pas activée sur cette instance.",
+                "provider_error": "Le fournisseur d’identité a refusé la demande de connexion. Réessayez.",
+                "rate_limited": "Trop de tentatives de connexion depuis ce réseau. Réessayez dans une heure.",
+                "server_error": "Une erreur technique a interrompu la connexion. Réessayez dans quelques instants.",
+                "terms_required": "Acceptez les conditions générales d’utilisation avant de vous connecter."
+            },
+            "panelSubtitle": "Vous serez redirigé vers le fournisseur d’identité configuré pour cette instance."
         },
         "settings": {
             "account": {
@@ -696,43 +822,52 @@
             "tabAbout": "À propos",
             "tabAccount": "Compte",
             "tabsLabel": "Rubriques des paramètres",
-            "title": "Paramètres"
-        },
-        "success": "Vous êtes connecté !",
-        "settings": {
             "title": "Paramètres",
-            "logout": "Se déconnecter"
-        }
+            "totp": {
+                "title": "Double authentification",
+                "desc": "L’accès à l’administration demande, en plus du code reçu par email, un code d’une application d’authentification installée sur votre téléphone.",
+                "status": "Statut :",
+                "statusOn": "Activée",
+                "statusOff": "Non configurée",
+                "setup": "Configurer une application",
+                "change": "Changer d’appareil",
+                "success": "Application d’authentification activée.",
+                "required": {
+                    "title": "Configuration requise",
+                    "desc": "Configurez une application d’authentification pour accéder à l’administration."
+                },
+                "modal": {
+                    "title": "Configurer l’application d’authentification",
+                    "currentHelp": "Pour changer d’appareil, saisissez d’abord un code de l’application en place.",
+                    "currentLabel": "Code de l’application actuelle",
+                    "continue": "Continuer",
+                    "loading": "Préparation…",
+                    "scanHelp": "Scannez ce QR code avec votre application (Google Authenticator, Aegis, FreeOTP…), puis saisissez le code qu’elle affiche.",
+                    "qrAlt": "QR code à scanner avec votre application d’authentification",
+                    "manualKey": "Ou saisissez cette clé à la main :",
+                    "manualKeyLabel": "Clé secrète",
+                    "confirmLabel": "Code affiché par l’application",
+                    "confirm": "Activer",
+                    "confirming": "Vérification…",
+                    "otherSessions": "Vos autres sessions seront déconnectées.",
+                    "invalid": "Code incorrect.",
+                    "tooMany": "Trop de tentatives, réessayez dans quelques minutes.",
+                    "expired": "Ce QR code a expiré, recommencez.",
+                    "sessionExpired": "Session expirée, reconnectez-vous.",
+                    "restart": "Recommencez depuis le début.",
+                    "failedTitle": "La configuration n’a pas pu démarrer"
+                }
+            }
+        },
+        "success": "Vous êtes connecté !"
     },
     "chatbot": {
-        "agentTrace": {
-            "intermediate": "Message intermédiaire du modèle",
-            "label": "Voir la trace d’exécution",
-            "query": "Recherche utilisée : ",
-            "reasoning": "Raisonnement transmis par le modèle",
-            "request": "Requête utilisateur",
-            "sources": "source(s)",
-            "status": { "empty": "Aucun résultat", "error": "Échec", "success": "Succès" },
-            "technicalDetails": "Afficher les détails techniques",
-            "toolCall": "Appel de l’outil",
-            "toolResult": "Réponse de l’outil"
-        },
         "announce": {
             "generating": "Les modèles rédigent leur réponse…",
             "ready": "Les deux réponses sont prêtes."
         },
         "continuePrompt": "Continuer à discuter…",
         "conversation": "Conversation",
-        "tools": {
-            "done": "Terminé",
-            "fixed": "Outils fixés pour cette conversation : {tools}",
-            "noResult": "Aucun résultat",
-            "none": "Aucun outil utilisé",
-            "result": "1 résultat",
-            "results": "{count} résultats",
-            "running": "Recherche en cours…",
-            "sources": "{count} source(s)"
-        },
         "errors": {
             "other": {
                 "message": "Une erreur temporaire est survenue.",
@@ -753,6 +888,32 @@
         "revealButton": "Terminer et découvrir les modèles",
         "webSearch": {
             "label": "Résultats de recherche Web associés."
+        },
+        "agentTrace": {
+            "intermediate": "Message intermédiaire du modèle",
+            "label": "Voir la trace d’exécution",
+            "query": "Recherche utilisée : ",
+            "reasoning": "Raisonnement transmis par le modèle",
+            "request": "Requête utilisateur",
+            "sources": "source(s)",
+            "status": {
+                "empty": "Aucun résultat",
+                "error": "Échec",
+                "success": "Succès"
+            },
+            "technicalDetails": "Afficher les détails techniques",
+            "toolCall": "Appel de l’outil",
+            "toolResult": "Réponse de l’outil"
+        },
+        "tools": {
+            "done": "Terminé",
+            "fixed": "Outils fixés pour cette conversation : {tools}",
+            "noResult": "Aucun résultat",
+            "none": "Aucun outil utilisé",
+            "result": "1 résultat",
+            "results": "{count} résultats",
+            "running": "Recherche en cours…",
+            "sources": "{count} source(s)"
         }
     },
     "closeModal": "Fermer la fenêtre modale",
@@ -818,16 +979,14 @@
         "links": {
             "accessibility": "Accessibilité : non conforme",
             "legal": "Mentions légales",
-            "privacy": "Politique de confidentialité",
             "rgesn": "Écoconception",
-            "sources": "Code source",
-            "tos": "Modalités d'utilisation"
+            "sources": "Code source"
         }
     },
     "general": {
         "a11y": {
             "desc": "Cette déclaration d’accessibilité s’applique au site <strong>{domain}</strong>.",
-            "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
+            "disclaimer": "<strong>{platformName}</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
             "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de {domain} pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
@@ -893,6 +1052,7 @@
             "dataUseDesc": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurer de l’anonymisation des données de dialogue avant leur mise à disposition publique.",
             "dataUseTitle": "Quels sont les traitements réalisés sur les données de conversation ?",
             "desc": "Le service est édité par le service du numérique du ministère de la Culture.",
+            "optOutTitle": "Vous opposer à la mesure d’audience",
             "privacyData": "Les données collectées sur le site sont les suivantes :",
             "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
             "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",
@@ -1224,7 +1384,7 @@
                 "title": "Révélation"
             }
         },
-        "homeTitle": "Accueil - compar:IA",
+        "homeTitle": "Accueil - {platformName}",
         "legal": {
             "label": "Légal",
             "title": "Informations légales"
@@ -1235,7 +1395,7 @@
             "count": "{count} votes",
             "legend": "Légende",
             "objective": "Obj : {count}k",
-            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données {platformName} mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
         }
     },
     "home": {
@@ -1263,10 +1423,10 @@
         "accepting": "Connexion en cours...",
         "backToLogin": "Se connecter autrement",
         "invalid": "Ce lien d'invitation n'est plus valide. Il a peut-être expiré ou déjà été utilisé.",
-        "title": "Vous avez été invité·e sur compar:IA"
+        "title": "Vous avez été invité·e sur {platformName}"
     },
     "maintenance": {
-        "desc": "compar:IA est actuellement en maintenance. Nous serons de retour très prochainement.",
+        "desc": "{platformName} est actuellement en maintenance. Nous serons de retour très prochainement.",
         "title": "Site en maintenance"
     },
     "models": {
@@ -1327,7 +1487,7 @@
                 "title": "Rang classement",
                 "title_short": "Classement",
                 "to": "#{min} à {max}",
-                "tooltip": "Position du modèle dans le classement compar:IA, établi à partir des votes des utilisatrices et utilisateurs."
+                "tooltip": "Position du modèle dans le classement {platformName}, établi à partir des votes des utilisatrices et utilisateurs."
             },
             "release": {
                 "title": "Sortie"
@@ -1440,6 +1600,12 @@
             "a": "Modèle A",
             "b": "Modèle B"
         },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
+                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
+            }
+        },
         "opennessSovereignty": {
             "fields": {
                 "commercial_use": "Usage commercial",
@@ -1453,12 +1619,6 @@
                 "reuse": "Réutilisation des sorties"
             },
             "title": "Niveau d’ouverture"
-        },
-        "openWeight": {
-            "tooltips": {
-                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
-                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
-            }
         },
         "performance": {
             "fields": {
@@ -1475,7 +1635,7 @@
             "rankFromTo": "Rang {min} à {max}",
             "rankSingle": "Rang {min}",
             "title": "Niveau de performance par rapport aux autres modèles",
-            "tooltip": "Le niveau de performance est calculé à partir des votes compar:IA avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
+            "tooltip": "Le niveau de performance est calculé à partir des votes {platformName} avec un score Bradley-Terry. Il reflète la préférence observée des utilisateurs, pas une vérité absolue sur le modèle."
         },
         "release": "Sortie {date}",
         "size": {
@@ -1526,28 +1686,6 @@
         }
     },
     "ranking": {
-        "personal": {
-            "cols": {
-                "battles": "Comparaisons",
-                "general_rank": "Rang général",
-                "record": "Bilan (V-D-É)",
-                "score": "Mon score"
-            },
-            "loading": "Chargement de votre classement…",
-            "noVotes": "Votez lors d’une comparaison pour commencer votre classement.",
-            "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
-            "title": "Mon classement",
-            "tooltips": {
-                "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
-            },
-            "totalModels": "Modèles classés :",
-            "totalVotes": "Mes votes :"
-        },
-        "views": {
-            "general": "Général",
-            "legend": "Vue du classement",
-            "personal": "Mon classement"
-        },
         "energy": {
             "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
@@ -1591,7 +1729,7 @@
                     },
                     "3": {
                         "descs": {
-                            "1": "compar:IA utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
+                            "1": "{platformName} utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
                             "2": "Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de l'inférence (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).",
                             "3": "La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille et l’architecture du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.",
                             "4": "Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement."
@@ -1606,7 +1744,7 @@
         },
         "methodo": {
             "desc": {
-                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
+                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé {platformName} pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
                 "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {notebookLinkProps}>carnet méthodologique</a>."
             },
             "impacts": {
@@ -1683,6 +1821,28 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
+        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que l’incertitude sur son score descend sous ±30 points : continuez à voter !",
+        "personal": {
+            "cols": {
+                "battles": "Comparaisons",
+                "general_rank": "Rang général",
+                "record": "Bilan (V-É-D)",
+                "score": "Mon score"
+            },
+            "loading": "Chargement de votre classement…",
+            "noVotes": "Votez lors d’une comparaison pour commencer votre classement.",
+            "signedOut": "Connectez-vous pour voir le classement issu de vos votes.",
+            "title": "Mon classement",
+            "tooltips": {
+                "battles": "Nombre de comparaisons où vous avez voté sur ce modèle. « Je ne sais pas » ne compte pas.",
+                "general_rank": "Position du modèle dans le classement général, établi à partir des votes de tous les utilisateurs.",
+                "rank": "Position du modèle dans votre classement, du score le plus élevé au plus bas. À score égal, le rang général départage.",
+                "record": "Victoires, défaites et égalités du modèle dans vos votes. « Les deux sont bonnes » compte comme une égalité, « les deux sont mauvaises » comme une défaite pour chacun.",
+                "score": "Un modèle comparé peu de fois est rapproché de votre moyenne personnelle plutôt que d’afficher un score extrême."
+            },
+            "totalModels": "Modèles classés :",
+            "totalVotes": "Mes votes :"
+        },
         "preferences": {
             "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
             "modal": {
@@ -1712,6 +1872,49 @@
             },
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
+        "price": {
+            "desc": "Ce graphique met en regard le score de satisfaction (score Bradley-Terry) de chaque modèle et son prix de sortie, c'est-à-dire le prix indicatif d'un million de jetons générés via l'API du fournisseur. Les prix sont ceux affichés publiquement par les fournisseurs, convertis en {currency}. Tous les modèles classés y figurent, y compris les modèles propriétaires. La ligne relie les modèles qu'aucun autre ne bat à la fois sur le score et sur le prix : c'est la frontière de Pareto.",
+            "tabLabel": "Focus prix",
+            "title": "Les modèles les plus appréciés sont-ils les plus chers ?",
+            "views": {
+                "graph": {
+                    "desc": "Survolez un modèle pour connaître son score Bradley-Terry (BT) et ses prix d'entrée et de sortie",
+                    "legends": {
+                        "frontier": "Frontière de Pareto",
+                        "frontierOnly": "Afficher seulement la frontière",
+                        "frontierSub": "Modèles qu'aucun autre ne bat à la fois sur le score et sur le prix",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Poids ouverts",
+                            "proprietary": "Propriétaire"
+                        },
+                        "license": "Filtrer par licence"
+                    },
+                    "title": "Score de satisfaction Bradley-Terry (BT) VS prix de sortie par million de jetons",
+                    "tooltip": {
+                        "elo": "Score BT",
+                        "license": "Licence",
+                        "onFrontier": "Sur la frontière de Pareto",
+                        "price_in": "Prix d'entrée (1M jetons)",
+                        "price_out": "Prix de sortie (1M jetons)"
+                    },
+                    "xLabel": "Prix de sortie par million de jetons ({currency}, échelle logarithmique)",
+                    "yLabel": "Score Bradley-Terry (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>Plus un modèle est haut</strong> sur le graphique, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus il est à droite</strong>, moins il coûte cher par jeton généré.",
+                        "2": "<strong>En haut à droite</strong> se trouvent les modèles à la fois appréciés et bon marché. La ligne relie ceux qu'aucun autre modèle ne bat sur les deux critères à la fois : pour chacun d'eux, obtenir un meilleur score oblige à payer plus cher.",
+                        "3": "L'axe des prix est <strong>logarithmique</strong> : un même écart sur l'axe correspond au même rapport de prix, de 0,1 à 1 comme de 1 à 10. Les prix sont indicatifs, relevés sur les grilles publiques des fournisseurs, et ne tiennent pas compte des remises, du cache ou des offres de traitement par lots."
+                    },
+                    "subTitle": "Exemples de lecture du graphique",
+                    "title": "Comment trouver le bon équilibre entre performance perçue et prix ?"
+                },
+                "table": {
+                    "title": "Tableau des prix par modèle"
+                }
+            }
+        },
         "ranking": {
             "desc": "Ce classement est calculé à partir des votes recueillis lors de <strong>comparaisons à l’aveugle</strong>, selon le modèle statistique <strong>Bradley-Terry</strong>. Il reflète des <strong>préférences subjectives</strong> et doit être interprété avec prudence : il ne mesure ni la factualité des réponses ni la performance globale des modèles.",
             "tabLabel": "Classement"
@@ -1731,6 +1934,8 @@
                     "n_match": "Total votes",
                     "name": "Modèle",
                     "organisation": "Organisation",
+                    "price_in": "Prix d’entrée<br>(1M tokens)",
+                    "price_out": "Prix de sortie<br>(1M tokens)",
                     "rank": "Classe",
                     "rank_number": "Rang",
                     "release": "Date sortie",
@@ -1742,6 +1947,7 @@
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
+                    "price": "Prix indicatif d’utilisation via API pour un million de jetons, converti dans la devise affichée. L’entrée correspond à la requête envoyée, la sortie à la réponse générée.",
                     "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du rang de classement : plus l'intervalle est étroit, plus l'estimation du rang est fiable. Il y a 95% de chances que le vrai rang du modèle soit dans cette plage."
@@ -1755,47 +1961,16 @@
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
-        "title": "Des votes… au classement des modèles"
+        "title": "Des votes… au classement des modèles",
+        "views": {
+            "general": "Général",
+            "legend": "Vue du classement",
+            "personal": "Mon classement"
+        }
     },
     "reveal": {
-        "equivalent": {
-            "co2": {
-                "label": "CO<sub>2</sub> émis",
-                "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée.",
-                "unit": "tonnes"
-            },
-            "desc": "Si tous les Français qui utilisent l’IA générative (48%) avaient eu cette discussion, cela représenterait :",
-            "scales": {
-                "baguette_production": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de la production de baguettes traditions. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Baguettes produites"
-                },
-                "mango_import": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de la production à la livraison de mangues importées en avion. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Mangues importées"
-                },
-                "one_year_tree_absortion": {
-                    "tooltip": "Estimation basée sur une moyenne : un arbre mature absorbe ~22 kg CO₂/an (≈48 lb). Le résultat est un ordre de grandeur : cela varie selon l’espèce, l’âge, le climat et le sol. (Source <a {linkProps}>USDA</a>)",
-                    "unit": "Arbres pour absorber le CO2 pendant 1 an"
-                },
-                "package_delivery": {
-                    "tooltip": "Donnée calculée selon l’impact carbone de livraisons à domicile de colis de 1kg. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Livraisons de colis"
-                },
-                "paris_nyc_flights": {
-                    "tooltip": "Donnée calculée selon l’impact carbone d’un aller retour Paris New York en avion long courrier. (source <a {linkProps}>ADEME</a>)",
-                    "unit": "A/R Paris - NYC en avion"
-                },
-                "pool_filing": {
-                    "tooltip": "Donnée calculée selon l’impact carbone d’un remplissage d’une piscine d’un particulier 8 x 4m (source <a {linkProps}>ADEME</a>)",
-                    "unit": "Remplissages de piscine"
-                }
-            },
-            "title": "Équivalences en tonnes de CO2",
-            "title_tooltip": "Les équivalences sont des projections pour illustrer l'effet de masse, nous avons multiplié l'impact de votre discussion avec ce modèle à l'ensemble des utilisateurs d'IA en France : 48% des Français déclarent aujourd’hui avoir recours à l’IA générative, jamais une technologie numérique n'avait été adoptée aussi vite.(source <a {linkProps}>Baromètre du numérique du CREDOC</a>)"
-        },
         "feedback": {
-            "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
+            "description": "Faites découvrir {platformName} en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
             "example": "Exemple de partage de résultat",
             "moreOnVotes": "En savoir plus sur les votes",
             "shareResult": "Partager votre résultat"
@@ -1845,7 +2020,7 @@
                     }
                 },
                 "estimate": "Pour les scénarios, cette estimation porte sur la génération de la réponse. Elle ne modélise ni le contexte envoyé au modèle ni les effets éventuels du cache.",
-                "title": "Énergie de génération estimée",
+                "title": "Énergie estimée",
                 "tooltip": "Exprimée en milliwattheures, cette estimation représente l'électricité mobilisée par le modèle pour générer une réponse. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
             },
             "how": {
@@ -1861,9 +2036,9 @@
                     "dense": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>dense</strong> : il mobilise l’ensemble de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "matformer": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>Matformer</strong> : il adapte la part de ses paramètres mobilisée à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "moe": "<strong>{model}</strong> est un modèle <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse (environ <strong>{activeParams} milliards</strong> sur <strong>{params} milliards</strong>). Sa classe énergétique est <strong>{energyClass}</strong>.",
+                    "moeProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>.",
                     "unknown": "<strong>{model}</strong> est un modèle <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
-                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>.",
-                    "moeProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> à l’architecture <strong>par mélange d’experts</strong> : il n’active qu’une partie de ses paramètres à chaque réponse. Sa classe énergétique est <strong>{energyClass}</strong>."
+                    "unknownProprietary": "<strong>{model}</strong> est un modèle propriétaire <strong>{size}</strong> dont l’architecture n’est pas communiquée. Compte tenu de sa taille, sa classe énergétique est <strong>{energyClass}</strong>."
                 },
                 "comparison": {
                     "comparable": "une consommation <strong>comparable</strong> à celle de <strong>{otherModel}</strong>",
@@ -1925,20 +2100,20 @@
         }
     },
     "seo": {
-        "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
-        "title": "compar:IA, le comparateur d'IA conversationnelles",
+        "desc": "{platformName} est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
+        "title": "{platformName}, le comparateur d'IA conversationnelles",
         "titles": {
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
-            "home": "Accueil",
+            "invite": "Invitation",
+            "login": "Connexion",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
             "rgesn": "Déclaration d’écoconception",
-            "settings": "Paramètres",
-            "share": "Mon bilan"
+            "settings": "Paramètres"
         }
     },
     "statistics": {
@@ -1978,7 +2153,6 @@
         "title": "Statistiques de la plateforme"
     },
     "vote": {
-        "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
         "choices": {
             "negative": {
                 "comment": "Précisez ce que vous n’avez pas aimé…",
@@ -1997,7 +2171,7 @@
             }
         },
         "continueReminder": "Votez pour une réponse ou choisissez « Passer le vote » avant de continuer.",
-        "importantDesc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
+        "importantDesc": "Votre préférence enrichit les jeux de données {platformName} dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois.",
         "title": "Quel modèle d’IA préférez-vous ?",
         "turn": {
             "choices": {
@@ -2011,18 +2185,8 @@
         },
         "yours": "Votre vote"
     },
-    "welcome": {
-        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées.",
-        "go": "C'est parti",
-        "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
-        "title": "Bienvenue sur compar:IA !",
-        "tos": {
-            "desc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d’IA plus inclusifs.",
-            "moreInfos": "En savoir plus sur le projet."
-        },
-        "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
-    },
     "words": {
+        "NA": "N/A",
         "activated": "Activé",
         "add": "Ajouter",
         "allowed": "autorisé",
@@ -2034,7 +2198,6 @@
         "deactivated": "Désactivé",
         "forbidden": "interdit",
         "loading": "Chargement",
-        "NA": "N/A",
         "new": "Nouveau",
         "no": "Non",
         "private": "privé",

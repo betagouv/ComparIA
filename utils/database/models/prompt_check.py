@@ -49,20 +49,24 @@ OFF_BY_DEFAULT = ("health", "law", "financial")
 # triggered category asks for.
 _ACTION_RANK = {"off": 0, "log": 1, "warn": 2, "block": 3}
 
-# Seeded configuration. Everything starts on log: nothing is refused or shown to
-# anyone until an admin has watched the verdicts on real traffic.
+# Seeded configuration. A fresh install has to be safe before anyone has looked
+# at it, so the categories that describe abuse rather than a topic act straight
+# away: `jailbreaking` refuses the prompt, `sexual` and `selfharm` ask the user
+# to confirm. Loosening any of them is then a deliberate admin decision, not the
+# result of nobody having touched the page yet. The rest stay on log, where they
+# cost nothing and build the picture an admin needs before acting on them.
 #
 # `sexual` and `selfharm` sit below the rest on purpose. Mistral has no
 # minor-specific category and scores an explicit request involving a child at
 # 0.41, so a 0.5 threshold misses it.
 DEFAULT_CATEGORIES: dict[str, dict] = {
-    "sexual": {"threshold": 0.3, "action": "log"},
-    "selfharm": {"threshold": 0.3, "action": "log"},
+    "sexual": {"threshold": 0.3, "action": "warn"},
+    "selfharm": {"threshold": 0.3, "action": "warn"},
     "hate_and_discrimination": {"threshold": 0.5, "action": "log"},
     "violence_and_threats": {"threshold": 0.5, "action": "log"},
     "dangerous": {"threshold": 0.5, "action": "log"},
     "criminal": {"threshold": 0.5, "action": "log"},
-    "jailbreaking": {"threshold": 0.5, "action": "log"},
+    "jailbreaking": {"threshold": 0.5, "action": "block"},
     "pii": {"threshold": 0.5, "action": "log"},
     "health": {"threshold": 0.5, "action": "off"},
     "law": {"threshold": 0.5, "action": "off"},

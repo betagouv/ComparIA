@@ -1,9 +1,9 @@
 <script module lang="ts">
   export type FormInputProps = {
     type: HTMLInputElement['type']
-    placeholder: HTMLInputElement['placeholder']
+    placeholder?: HTMLInputElement['placeholder']
     step?: HTMLInputElement['step']
-  } & BaseFormFieldProps<'input', string | number>
+  } & BaseFormFieldProps<'input'>
 </script>
 
 <script lang="ts">
@@ -19,7 +19,7 @@
     step,
     children,
     ...props
-  }: FormInputProps & SvelteHTMLElements['div'] = $props()
+  }: FormInputProps & { value: string | number } & SvelteHTMLElements['div'] = $props()
 </script>
 
 <FormField {...props} component="input">

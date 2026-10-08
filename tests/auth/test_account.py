@@ -65,7 +65,8 @@ class FakeSession:
     async def get(self, _model, _id):
         return self.user
 
-    async def exec(self, _statement):
+    async def exec(self, statement):
+        self.statements.append(statement)
         return FakeResult(self.results.pop(0) if self.results else [])
 
     async def execute(self, statement):
@@ -150,6 +151,13 @@ def test_public_config_carries_the_deployment_url():
         return SimpleNamespace(
             auth_access_policy="anonymous_first",
             auth_domain_allowlist=[],
+            auth_methods=["email_code"],
+            oidc_issuer=None,
+            oidc_client_id=None,
+            oidc_client_secret_encrypted=None,
+            oidc_scopes=["openid", "email"],
+            oidc_button_label=None,
+            oidc_button_logo=None,
             platform_name="Arène de test",
             primary_color_light="#000091",
             primary_color_dark="#8585F6",
@@ -157,6 +165,7 @@ def test_public_config_carries_the_deployment_url():
             secondary_color_dark="#CACAFB",
             homepage_url=None,
             logo=None,
+            logo_version=None,
             enabled_locales=["fr"],
             default_locale="fr",
         )
@@ -199,6 +208,8 @@ def test_erasure_anonymises_the_account_and_clears_its_credentials():
     assert deleted_tables(session.statements) == {
         "auth_login_code",
         "auth_invite_token",
+        "auth_totp",
+        "auth_totp_challenge",
     }
 
 
@@ -305,6 +316,25 @@ def test_erasure_is_not_replayed_on_an_already_erased_account():
 
     assert session.statements == []
     assert not session.committed
+
+
+def test_signing_in_claims_no_conversation_on_its_own():
+    """Attribution is the explicit merge, keyed on the anonymous session
+    cookie. The analytics visitor id is readable by any script on the page,
+    so a sign-in must not use it to hand conversations over."""
+    user = User(email="personne@example.test")
+    session = FakeSession(user)
+
+    async def run():
+        return await auth_services._create_session(
+            session, user, "192.0.2.10", "UA", anonymous_user_hash=None
+        )
+
+    asyncio.run(run())
+
+    assert not [
+        s for s in session.statements if s.is_update and s.table.name == "comparison"
+    ]
 
 
 if __name__ == "__main__":

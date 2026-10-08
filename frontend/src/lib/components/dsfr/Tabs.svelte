@@ -1,15 +1,11 @@
 <script
   lang="ts"
-  generics="T extends { id: string; label: string; href?: string; content?: string, icon?: string }"
+  generics="T extends { id: string; label: string; href?: ResolvedPathname; content?: string, icon?: string }"
 >
-  import { resolve } from '$app/paths'
+  import type { ResolvedPathname } from '$app/types'
   import { untrack, type Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
   import { Icon } from '.'
-
-  // resolve() is typed for routes known at compile time, one literal per call. Tabs
-  // takes its hrefs as plain strings, so the generic signature can never match.
-  const resolveHref = resolve as (href: string) => string
 
   let {
     tabs,
@@ -80,7 +76,7 @@
     {#each items as item, i (i)}
       <li role="presentation" class="whitespace-nowrap">
         {#if item.href}
-          <a {...item.props} href={resolveHref(item.href)}>
+          <a {...item.props} href={item.href}>
             {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
           </a>
         {:else}

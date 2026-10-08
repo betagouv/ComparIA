@@ -1,25 +1,20 @@
+import type { Consumption } from '$lib/generated/backend'
+import type { EnergyClasses } from '$lib/generated/constants'
 import { m } from '$lib/i18n/messages'
 import { getLocale } from '$lib/i18n/runtime'
+import type { BotModel } from '$lib/models'
 
 export const MULTIPLE_THRESHOLD = 2
 export const COMPARABLE_THRESHOLD = 1.1
 
-type SizeClass = 'XS' | 'S' | 'M' | 'L' | 'XL'
-type EnergyClass = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
-
-export interface ConsumptionSummaryModel {
-  name: string
-  size_class: SizeClass
-  license: { kind: 'proprietary' | 'open-weights' | 'open-source' }
-  arch: 'moe' | 'matformer' | 'dense' | 'maybe-moe' | 'maybe-matformer' | 'maybe-dense' | 'na'
-  params: number
-  active_params: number | null
-  energy_class: EnergyClass
+export type ConsumptionSummaryModel = Pick<
+  BotModel,
+  'name' | 'size_class' | 'arch' | 'params' | 'active_params' | 'energy_class'
+> & {
+  license: Pick<BotModel['license'], 'kind'>
 }
 
-export interface ConsumptionSummaryData {
-  tokens: number
-  energy_mwh: number
+export type ConsumptionSummaryData = Pick<Consumption, 'tokens' | 'energy_mwh'> & {
   usage?: string
 }
 
@@ -95,7 +90,7 @@ function buildClassification(model: ConsumptionSummaryModel): string {
 
 function buildUnknownClassification(
   model: ConsumptionSummaryModel,
-  inputs: { model: string; size: string; energyClass: EnergyClass }
+  inputs: { model: string; size: string; energyClass: EnergyClasses }
 ): string {
   return model.license.kind === 'proprietary'
     ? m['reveal.impacts.summary.classification.unknownProprietary'](inputs)

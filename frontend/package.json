@@ -55,11 +55,11 @@
     "svelte": "^5.56.9",
     "svelte-check": "^4.7.6",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "unocss": "^66.7.5",
     "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.15.2",

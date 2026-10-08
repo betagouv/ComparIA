@@ -41,6 +41,7 @@ import backend.suggestions.services as suggestion_services
 from backend.suggestions.services import (
     list_admin_suggestions,
     list_public_suggestions,
+    set_suggestion_category_archived,
 )
 from utils.database.models.auth import User
 from utils.database.models.suggestion import (
@@ -56,6 +57,10 @@ requires_test_db = pytest.mark.skipif(
 
 BASE_TIME = datetime(2026, 1, 1, 12, 0, 0)
 TRUNCATE = "TRUNCATE prompt_suggestion, suggestion_category, auth_user CASCADE"
+
+
+def _clear_public_suggestions_cache() -> None:
+    suggestion_services.invalidate_cache(suggestion_services.REDIS_SUGGESTIONS_KEY)
 
 
 def _async_url(url: str) -> str:
@@ -85,14 +90,14 @@ def _run(scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
         try:
             async with engine.begin() as connection:
                 await connection.execute(text(TRUNCATE))
-            suggestion_services._clear_public_suggestions_cache()
+            _clear_public_suggestions_cache()
             async with session_scope() as session:
                 return await scenario(session)
         finally:
             suggestion_services.get_session = original_get_session  # type: ignore[assignment]
             async with engine.begin() as connection:
                 await connection.execute(text(TRUNCATE))
-            suggestion_services._clear_public_suggestions_cache()
+            _clear_public_suggestions_cache()
             await engine.dispose()
 
     return asyncio.run(main())
@@ -199,6 +204,41 @@ def test_public_suggestions_exclude_archived_ones() -> None:
 
 
 @requires_test_db
+def test_restoring_category_preserves_individually_archived_suggestions() -> None:
+    async def scenario(session: AsyncSession) -> None:
+        seeded = await _seed(session)
+        admin_id = uuid.uuid4()
+        session.add(User(id=admin_id, email="admin@example.org", role="admin"))
+        await session.commit()
+
+        archived_category = await set_suggestion_category_archived(
+            seeded["alpha"], archived=True, updated_by=admin_id
+        )
+        assert archived_category.archived is True
+        assert archived_category.available_suggestion_count == 2
+
+        hidden = await list_public_suggestions("fr")
+        assert {category.key for category in hidden.categories} == {"beta"}
+
+        restored_category = await set_suggestion_category_archived(
+            seeded["alpha"], archived=False, updated_by=admin_id
+        )
+        assert restored_category.archived is False
+        assert restored_category.available_suggestion_count == 2
+
+        restored = await list_public_suggestions("fr")
+        alpha = next(
+            category for category in restored.categories if category.key == "alpha"
+        )
+        assert [suggestion.text for suggestion in alpha.suggestions] == [
+            "alpha available one",
+            "alpha available two",
+        ]
+
+    _run(scenario)
+
+
+@requires_test_db
 def test_public_suggestions_are_empty_for_a_locale_without_rows() -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
@@ -221,7 +261,7 @@ def test_public_suggestions_are_served_from_the_cache_until_invalidated() -> Non
         await session.commit()
 
         assert len((await list_public_suggestions("fr")).categories) == 2
-        suggestion_services._clear_public_suggestions_cache()
+        _clear_public_suggestions_cache()
         assert (await list_public_suggestions("fr")).categories == []
 
     _run(scenario)
@@ -260,21 +300,41 @@ def test_admin_suggestions_return_every_row_and_category_counts() -> None:
         suggestions, total, categories = await list_admin_suggestions()
 
         assert total == 5
-        # Available first, most recently updated first, then the archived ones.
+        # French categories first, then suggestions available within each category.
         assert [suggestion.text for suggestion in suggestions] == [
-            "dansk available",
             "beta available lettre",
             "alpha available two",
             "alpha available one",
             "alpha archived lettre",
+            "dansk available",
         ]
         assert [
             (category.key, category.suggestion_count) for category in categories
         ] == [
-            ("dansk", 1),
             ("beta", 1),
             ("alpha", 3),
+            ("dansk", 1),
         ]
+
+    _run(scenario)
+
+
+@requires_test_db
+def test_admin_suggestions_sort_archived_categories_last() -> None:
+    async def scenario(session: AsyncSession) -> None:
+        seeded = await _seed(session)
+        admin_id = uuid.uuid4()
+        session.add(User(id=admin_id, email="admin@example.org", role="admin"))
+        await session.commit()
+
+        await set_suggestion_category_archived(
+            seeded["beta"], archived=True, updated_by=admin_id
+        )
+        suggestions, _, categories = await list_admin_suggestions()
+
+        assert suggestions[-1].text == "beta available lettre"
+        assert categories[-1].key == "beta"
+        assert categories[-1].archived is True
 
     _run(scenario)
 
@@ -374,9 +434,9 @@ def test_admin_suggestions_paginate_without_losing_the_total() -> None:
             pages.append([suggestion.text for suggestion in suggestions])
 
         assert pages == [
-            ["dansk available", "beta available lettre"],
-            ["alpha available two", "alpha available one"],
-            ["alpha archived lettre"],
+            ["beta available lettre", "alpha available two"],
+            ["alpha available one", "alpha archived lettre"],
+            ["dansk available"],
         ]
 
     _run(scenario)

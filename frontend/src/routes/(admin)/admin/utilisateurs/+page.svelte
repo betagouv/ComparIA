@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { invalidate } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Badge, Button, Icon, Link, Table } from '$components/dsfr'
+  import { page } from '$app/state'
   import ConfirmDeleteUserModal from '$components/ConfirmDeleteUserModal.svelte'
+  import ConfirmResetTotpModal from '$components/ConfirmResetTotpModal.svelte'
+  import { Badge, Button, Icon, Link, Table } from '$components/dsfr'
   import InviteUserModal from '$components/InviteUserModal.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
-  import { api } from '$lib/fastapi-client'
+  import { api, type ApiError } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { getLocale } from '$lib/i18n/runtime'
-  import type { OrderingMethod, TableCol } from '$lib/utils/data'
-  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
+  import type { TableCol } from '$lib/utils/data'
+  import { toRelativeTime } from '$lib/utils/data'
+  import { untrack } from 'svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -18,8 +21,54 @@
   const locale = getLocale()
   const auth = getAuthContext()
 
+  const baseRoute = '/admin/utilisateurs'
+
   const users = $derived(data.users.items)
   const total = $derived(data.users.total)
+
+  // Initialized from the SSR-loaded data, resynchronized below whenever
+  // SvelteKit refreshes the page data.
+  // svelte-ignore state_referenced_locally
+  let search = $state(data.search)
+  // svelte-ignore state_referenced_locally
+  let currentPage = $state(data.users.page - 1)
+  // svelte-ignore state_referenced_locally
+  let pageSize = $state(data.users.page_size)
+
+  $effect(() => {
+    search = data.search
+    currentPage = data.users.page - 1
+    pageSize = data.users.page_size
+  })
+
+  $effect(() => {
+    if (search === data.search) return
+
+    const timeout = setTimeout(() => updateQuery({ search, page: '1' }), 300)
+    return () => clearTimeout(timeout)
+  })
+
+  $effect(() => {
+    if (currentPage === data.users.page - 1) return
+    updateQuery({ page: String(currentPage + 1) })
+  })
+
+  $effect(() => {
+    if (pageSize === data.users.page_size) return
+    updateQuery({ page_size: pageSize, page: 1 })
+  })
+
+  // Rebuild the params from the current url on every change: a browser Back
+  // is then picked up, and no effect writes to state it also reads.
+  function updateQuery(updates: Record<string, string | number>) {
+    const params = untrack(() => new URLSearchParams(page.url.searchParams))
+    for (const [key, value] of Object.entries(updates)) {
+      if (value) params.set(key, value.toString())
+      else params.delete(key)
+    }
+
+    goto(resolve(`${baseRoute}?${params.toString()}`))
+  }
 
   function sourceBadgeVariant(source: string) {
     switch (source) {
@@ -58,6 +107,35 @@
     }
   }
 
+  let userToReset = $state<{ id: string; email: string } | null>(null)
+
+  function openResetTotpModal(row: { id: string; email: string }) {
+    userToReset = row
+    const el = document.getElementById('fr-modal-reset-totp')
+    if (el) {
+      // @ts-expect-error - DSFR is globally available
+      window.dsfr(el).modal.disclose()
+    }
+  }
+
+  async function confirmResetTotp() {
+    if (!userToReset) return
+    try {
+      await api.request(`/admin/users/${userToReset.id}/totp`, { method: 'DELETE' })
+      useToast(`2FA reset for ${userToReset.email}, they will enrol again`, 4000)
+      await refetch()
+    } catch (err) {
+      if ((err as ApiError).status === 404) {
+        // Already reset by a peer, never enrolled, or the account is gone:
+        // the list is what is stale, not the request.
+        useToast(`${userToReset.email} has no 2FA to reset`, 6000, 'error')
+        await refetch()
+      } else {
+        useToast((err as Error).message, 6000, 'error')
+      }
+    }
+  }
+
   async function cancelInvite(row: { id: string; email: string }) {
     try {
       await api.request(`/admin/users/${row.id}/invite`, { method: 'DELETE' })
@@ -68,41 +146,38 @@
     }
   }
 
+  // Not orderable: the server paginates newest first, so sorting here would
+  // only reorder the current page.
   const cols = [
-    { id: 'email', label: 'Email', orderable: true },
-    { id: 'source', label: 'Source', orderable: true },
-    { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
+    { id: 'email', label: 'Email' },
+    { id: 'role', label: 'Role' },
+    { id: 'source', label: 'Source' },
+    { id: 'totp_enabled', label: '2FA', kind: 'boolean' },
+    { id: 'created_at', label: 'Added', kind: 'date' },
     { id: 'actions', label: 'Actions' }
   ] satisfies TableCol[]
-  type ColKey = (typeof cols)[number]['id']
 
-  let orderingCol = $state<ColKey>('created_at')
-  let orderingMethod = $state<OrderingMethod>('descending')
-  let search = $state('')
-
-  const tableRows = $derived(
+  const rows = $derived(
     users.map((u) => ({
       ...u,
       id: u.id!,
+      totp_enabled: u.totp_enabled ?? false,
       created_at: new Date(u.created_at),
-      search: toSearchString([u.email, u.source]),
       actions: undefined
     }))
-  )
-  const sortedRows = $derived(
-    sortRows(tableRows, cols, { col: orderingCol, method: orderingMethod, search })
   )
 </script>
 
 <PageLayout seoTitle="Users" title="Users" subtitle="Registered users">
   <Table
     bind:search
-    bind:orderingMethod
-    bind:orderingCol
+    bind:currentPage
+    bind:maxRowsPerPage={pageSize}
+    itemCount={total}
     caption="Users"
     hideCaption
     {cols}
-    rows={sortedRows}
+    {rows}
   >
     {#snippet headerRight()}
       <div class="gap-2 flex">
@@ -119,8 +194,18 @@
     {#snippet cell(row, col)}
       {#if col.id === 'email'}
         <span class="fr-text--sm">{row.email}</span>
+      {:else if col.id === 'role'}
+        <Badge size="sm" text={row.role} variant={row.role === 'admin' ? 'blue-ecume' : ''} />
       {:else if col.id === 'source'}
         <Badge size="sm" text={row.source} variant={sourceBadgeVariant(row.source)} />
+      {:else if col.id === 'totp_enabled'}
+        {#if row.totp_enabled}
+          <Badge size="sm" text="Enabled" variant="green" noTooltip />
+        {:else if row.role === 'admin'}
+          <Badge size="sm" text="Not set up" variant="yellow" noTooltip />
+        {:else}
+          <span class="fr-text--sm text-[--text-disabled-grey]">—</span>
+        {/if}
       {:else if col.id === 'created_at'}
         <span class="fr-text--sm text-[--text-mention-grey]">
           {toRelativeTime(row.created_at, locale)}
@@ -140,6 +225,18 @@
                 onclick={() => cancelInvite(row)}
               >
                 <Icon icon="i-ri-mail-close-line" />
+              </Button>
+            {/if}
+            {#if row.totp_enabled}
+              <Button
+                iconOnly
+                variant="tertiary-no-outline"
+                size="sm"
+                title="Reset 2FA"
+                aria-label={`Reset 2FA for ${row.email}`}
+                onclick={() => openResetTotpModal(row)}
+              >
+                <Icon icon="i-ri-shield-keyhole-line" />
               </Button>
             {/if}
             <Link
@@ -177,3 +274,4 @@
 
 <InviteUserModal onSuccess={refetch} />
 <ConfirmDeleteUserModal email={userToDelete?.email ?? null} onConfirm={confirmDelete} />
+<ConfirmResetTotpModal email={userToReset?.email ?? null} onConfirm={confirmResetTotp} />

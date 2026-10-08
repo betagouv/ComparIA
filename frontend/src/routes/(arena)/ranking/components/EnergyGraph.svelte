@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { ARCHS, SIZE_CLASSES, type Archs, type SizeClasses } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { ConsoSizes } from '$lib/models'
@@ -9,29 +9,31 @@
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
+  import GraphDot from './GraphDot.svelte'
 
   type ModelGraphData = (typeof models)[number]
 
   const { models: baseModels } = getModelsWithDataContext()
   const data = $derived(applyStyleControl(baseModels))
 
-  const dotSizes = { XS: 5, S: 7, M: 9, L: 11, XL: 13 } as const
+  // Big enough for the lab mark to read at the smallest size.
+  const dotSizes = { XS: 8, S: 10, M: 12, L: 14, XL: 16 } as const
 
   const models = $derived(
     data
-      .filter((m) => m.license.kind !== 'proprietary')
+      .filter((llm) => llm.license.kind !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
-      .map((m) => {
+      .map((llm) => {
         return {
-          ...m,
-          x: m.consumption,
-          y: m.data.elo,
-          radius: dotSizes[m.size_class],
-          class: m.license.kind === 'proprietary' ? 'na' : m.arch,
+          ...llm,
+          x: llm.consumption,
+          y: llm.data.elo,
+          radius: dotSizes[llm.size_class],
+          class: llm.license.kind === 'proprietary' ? 'na' : llm.arch,
           consoSize:
-            m.consumption < 150
+            llm.consumption < 150
               ? ('S' as const)
-              : m.consumption < 5000
+              : llm.consumption < 5000
                 ? ('M' as const)
                 : ('L' as const)
         }
@@ -43,7 +45,7 @@
   let consos = $state<ConsoSizes[]>(['S', 'M'])
   let showArchived = $state(true)
   const sizeFilter = {
-    id: 'size',
+    id: 'energy-size',
     legend: m['models.list.filters.size.legend'](),
     options: SIZE_CLASSES.map((value) => ({
       value,
@@ -51,7 +53,7 @@
     }))
   }
   const consoFilter = {
-    id: 'conso',
+    id: 'energy-conso',
     legend: m['models.conso.filterLegend'](),
     options: CONSO_SIZES.map((value) => ({
       value,
@@ -61,11 +63,11 @@
 
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
-    return models.filter((m) => {
-      const sizeMatch = sizes.length === 0 || sizes.includes(m.size_class)
-      const consoMatch = consos.length === 0 || consos.includes(m.consoSize)
-      const searchMatch = !_search || m.search.includes(_search)
-      const archivedMatch = m.status === 'enabled' || showArchived
+    return models.filter((llm) => {
+      const sizeMatch = sizes.length === 0 || sizes.includes(llm.size_class)
+      const consoMatch = consos.length === 0 || consos.includes(llm.consoSize)
+      const searchMatch = !_search || llm.search.includes(_search)
+      const archivedMatch = llm.status === 'enabled' || showArchived
 
       return sizeMatch && consoMatch && searchMatch && archivedMatch
     })
@@ -73,7 +75,7 @@
 
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
-  const hoveredModelData = $derived(filteredModels.find((m) => m.id === hoveredModel))
+  const hoveredModelData = $derived(filteredModels.find((llm) => llm.id === hoveredModel))
   const tooltipExtraData = $derived(
     hoveredModelData?.license.kind === 'proprietary'
       ? (['arch'] as const)
@@ -87,11 +89,13 @@
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
 
   const minMaxX = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (m) => m.x) as [number, number]
-    return [min - 5, max + 15] as const
+    const [min, max] = extent(filteredModels, (llm) => llm.x) as [number, number]
+    // Room for a whole dot on either side, whatever the range.
+    const room = Math.max(max - min, 100) * 0.04
+    return [min - room, max + room] as const
   })
   const minMaxY = $derived.by(() => {
-    const [min, max] = extent(filteredModels, (m) => m.y) as [number, number]
+    const [min, max] = extent(filteredModels, (llm) => llm.y) as [number, number]
     return [min - 5, max + 35] as const
   })
   const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
@@ -99,11 +103,20 @@
   const xTicks = $derived(ticks(...minMaxX, 7))
   const yTicks = $derived(ticks(...minMaxY, 9))
 
-  onMount(resize)
+  onMount(() => {
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (!entry) return
 
-  function resize() {
-    ;({ width, height } = svg!.getBoundingClientRect())
-  }
+      const { width: nextWidth, height: nextHeight } = entry.contentRect
+      if (nextWidth === 0 || nextHeight === 0) return
+
+      width = nextWidth
+      height = nextHeight
+    })
+
+    resizeObserver.observe(svg!)
+    return () => resizeObserver.disconnect()
+  })
 
   function onModelHover(model: ModelGraphData) {
     hoveredModel = model.id
@@ -111,15 +124,12 @@
   }
 </script>
 
-<svelte:window onresize={resize} />
-
 {#snippet legend(kind: string)}
   <div
-    id="graph-legend"
-    class="cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
+    class="graph-legend cg-border rounded-md! bg-very-light-grey p-4 leading-normal flex h-full flex-col text-[12px]"
   >
     <Search
-      id="energy-graph-model-search"
+      id="energy-graph-model-search-{kind}"
       bind:value={search}
       label={m['words.search']()}
       class="mb-5"
@@ -130,6 +140,7 @@
     </p>
     <CheckboxGroup
       {...consoFilter}
+      id="{consoFilter.id}-{kind}"
       bind:value={consos}
       legendClass="sr-only"
       labelClass="text-dark-grey! text-[12px]! font-medium!"
@@ -142,7 +153,14 @@
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
 
-    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-5!">
+    <CheckboxGroup
+      {...sizeFilter}
+      id="{sizeFilter.id}-{kind}"
+      bind:value={sizes}
+      legendClass="sr-only"
+      row
+      class="mb-5!"
+    >
       {#snippet labelSlot({ option })}
         <div class="flex items-center">
           <div
@@ -155,7 +173,7 @@
     </CheckboxGroup>
 
     <Toggle
-      id="archived-{kind}"
+      id="energy-archived-{kind}"
       bind:value={showArchived}
       label={m['models.list.filters.archived.label']()}
       checkedLabel={m['models.list.filters.archived.checkedLabel']()}
@@ -204,10 +222,9 @@
         <svg
           bind:this={svg}
           role="img"
-          aria-labelledby="energy-graph-title"
+          aria-label={m['ranking.energy.views.graph.title']()}
           aria-describedby="energy-graph-desc"
         >
-          <title id="energy-graph-title">{m['ranking.energy.views.graph.title']()}</title>
           <desc id="energy-graph-desc">{m['a11y.energyGraphDesc']()}</desc>
           <!-- y axis -->
           <g class="axis y-axis">
@@ -247,17 +264,20 @@
           {/if}
 
           <!-- data -->
-          {#each filteredModels as m (m.id)}
-            <circle
-              cx={xScale(m.x)}
-              cy={yScale(m.y)}
-              r={m.radius}
+          {#each filteredModels as llm (llm.id)}
+            <GraphDot
+              cx={xScale(llm.x)}
+              cy={yScale(llm.y)}
+              r={llm.radius}
+              model={llm}
               class={[
-                m.class,
-                { hovered: hoveredModel === m.id, blurred: hoveredModel && hoveredModel !== m.id }
+                llm.class,
+                {
+                  hovered: hoveredModel === llm.id,
+                  blurred: hoveredModel && hoveredModel !== llm.id
+                }
               ]}
-              aria-hidden="true"
-              onpointerenter={() => onModelHover(m)}
+              onpointerenter={() => onModelHover(llm)}
               onpointerleave={() => (hoveredModel = undefined)}
             />
           {/each}
@@ -272,10 +292,14 @@
             <div class="flex">
               <AILogo
                 logo={hoveredModelData.lab.logo}
+                customLogoId={hoveredModelData.lab.has_custom_logo
+                  ? hoveredModelData.lab.id
+                  : undefined}
+                customLogoVersion={hoveredModelData.lab.logo_version}
                 alt={hoveredModelData.lab.name}
                 class="me-1"
               />
-              <strong class="leading-normal text-[14px]">{hoveredModelData.id}</strong>
+              <strong class="leading-normal text-[14px]">{hoveredModelData.human_id}</strong>
             </div>
 
             <div class="mt-1 text-[12px]">
@@ -382,35 +406,38 @@
       }
     }
 
-    circle {
-      stroke-width: 1px;
-      stroke: var(--grey-200-850);
+    /* Dots live in GraphDot, hence the :global hooks. A ring in the
+       architecture colour around the lab mark. */
+    svg :global(circle) {
+      fill: var(--background-default-grey);
+      stroke-width: 2px;
+    }
 
-      &.hovered {
-        stroke: var(--grey-200-850);
-      }
-
-      &.blurred {
-        opacity: 0.5;
-      }
+    svg :global(circle),
+    svg :global(foreignObject) {
+      transition: opacity 0.15s;
+    }
+    svg :global(circle.blurred),
+    svg :global(circle.blurred + foreignObject) {
+      opacity: 0.4;
     }
 
     /* Dots color */
-    .na {
-      fill: #cecece;
-      background-color: #cecece;
+    :global(.na) {
+      stroke: #cecece;
+      border-color: #cecece;
     }
-    .moe {
-      fill: var(--green-archipel-main-557);
-      background-color: var(--green-archipel-main-557);
+    :global(.moe) {
+      stroke: var(--green-archipel-main-557);
+      border-color: var(--green-archipel-main-557);
     }
-    .dense {
-      fill: var(--cg-orange);
-      background-color: var(--cg-orange);
+    :global(.dense) {
+      stroke: var(--cg-orange);
+      border-color: var(--cg-orange);
     }
-    .matformer {
-      fill: var(--blue-france-main-525);
-      background-color: var(--blue-france-main-525);
+    :global(.matformer) {
+      stroke: var(--blue-france-main-525);
+      border-color: var(--blue-france-main-525);
     }
   }
 
@@ -425,10 +452,17 @@
     }
   }
 
-  #graph-legend {
+  .graph-legend {
     .dot {
       width: var(--size, 16px);
       height: var(--size, 16px);
+    }
+
+    /* Rings, like the dots on the chart. */
+    .dot.moe,
+    .dot.dense,
+    .dot.matformer {
+      border-width: 3px;
     }
   }
 </style>

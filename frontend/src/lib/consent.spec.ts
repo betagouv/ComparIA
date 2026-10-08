@@ -115,10 +115,12 @@ describe('consent', () => {
     const [first, second] = await Promise.all([loadConsent('fr', false), loadConsent('fr', false)])
 
     expect(request).toHaveBeenCalledTimes(2)
-    expect(request.mock.calls.map(([path]) => path)).toEqual([
-      '/settings/legal/terms?locale=fr',
-      '/auth/consent/anonymous'
-    ])
+    expect(request).toHaveBeenNthCalledWith(
+      1,
+      '/settings/legal/terms',
+      expect.objectContaining({ searchParams: { locale: 'fr' } })
+    )
+    expect(request).toHaveBeenNthCalledWith(2, '/auth/consent/anonymous')
     expect(first).toBe(second)
     expect(first.accepted).toBe(false)
     expect(first.document).toEqual(document)

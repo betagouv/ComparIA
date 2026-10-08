@@ -1,10 +1,12 @@
 <script lang="ts">
   import LegalDocument from '$components/LegalDocument.svelte'
+  import MatomoOptOut from '$components/MatomoOptOut.svelte'
   import PrivacyPolicyFallback from '$components/PrivacyPolicyFallback.svelte'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { m } from '$lib/i18n/messages'
+  import type { PageProps } from './$types'
 
-  let { data } = $props()
+  const { data }: PageProps = $props()
 </script>
 
 <SeoHead title={m['seo.titles.donnees-personnelles']()} />
@@ -20,8 +22,13 @@
         content={data.privacyPolicy.content}
         locale={data.privacyPolicy.locale}
       />
+      <!-- The published policy is sanitized Markdown and cannot carry the script. -->
+      {#if data.matomoUrl}
+        <h2 id="matomo-opt-out-title">{m['general.privacy.optOutTitle']()}</h2>
+        <MatomoOptOut url={data.matomoUrl} />
+      {/if}
     {:else}
-      <PrivacyPolicyFallback />
+      <PrivacyPolicyFallback matomoUrl={data.matomoUrl} />
     {/if}
   </div>
 </div>

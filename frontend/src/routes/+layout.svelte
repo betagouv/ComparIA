@@ -6,7 +6,8 @@
   import Toaster from '$components/Toaster.svelte'
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
-  import { UnauthorizedError } from '$lib/fastapi-client'
+  import { getPlatformName } from '$lib/authContext.svelte'
+  import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
@@ -16,14 +17,13 @@
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import 'uno.css'
   import '../css/app.css'
+  import type { LayoutProps } from './$types'
 
   if (browser) {
-    // FIXME import only needed parts?
-    // @ts-expect-error - DSFR module import
-    import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
+    import('$lib/dsfr')
   }
 
-  let { children, data } = $props()
+  let { children, data }: LayoutProps = $props()
   // svelte-ignore state_referenced_locally
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
@@ -35,21 +35,22 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
-      goto(`?${params}` + page.url.hash)
+      goto(resolve(`${page.url.pathname}?${params}${page.url.hash}`))
     }
   })
 
   // svelte-ignore state_referenced_locally
   setVotesContext(data.votes)
   // svelte-ignore state_referenced_locally
-  setModelsContext(data.data)
+  setModelsContext(data.data, getPlatformName())
   setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
-    if (_event.reason instanceof UnauthorizedError) {
+    if (isTotpSetupRequired(_event.reason)) {
+      goto(resolve(TOTP_SETUP_PATH))
+    } else if (_event.reason instanceof UnauthorizedError) {
       goto(resolve('/login'))
     }
   }

@@ -1,10 +1,11 @@
 <script lang="ts">
   import InformationalPageContent from '$components/InformationalPageContent.svelte'
   import LegalNoticeFallback from '$components/LegalNoticeFallback.svelte'
-  import SeoHead from '$components/SEOHead.svelte'
+  import { SeoHead } from '$components/layout'
   import { m } from '$lib/i18n/messages'
+  import type { PageProps } from './$types'
 
-  let { data } = $props()
+  const { data }: PageProps = $props()
 </script>
 
 {#if data.content}

@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend dev-controller build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run
+.PHONY: help install install-backend install-frontend test test-backend test-frontend test-dataset dev dev-redis dev-backend dev-frontend build-frontend db-generate-init-old db db-prd-local docker-app-up docker-app-down docker-app-logs clean redis keycloak keycloak-down models-doc up-fr down-fr logs-fr display-env-fr up-da down-da logs-da display-env-da dataset-export dataset-export-dry-run helm-lint helm-test
 
 # Variables
 PYTHON := python3
@@ -7,6 +7,7 @@ NPM := yarn
 BACKEND_PORT := 8008
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
+HELM_CHART := devops/helm/comparia
 
 COMPARIA_REDIS_HOST ?= localhost
 export COMPARIA_REDIS_HOST
@@ -69,6 +70,23 @@ db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_D
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db seed-admins
 
+db-reset-totp: ## Forget an admin's authenticator app and sign them out (usage: make db-reset-totp EMAIL=admin@example.org, requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	@if [ -z "$(EMAIL)" ]; then echo "Error: EMAIL is not set"; exit 1; fi
+	./comparia-cli db reset-totp "$(EMAIL)"
+
+db-clear-visitor-ids: ## Count the comparisons still holding a Matomo visitor id, or clear them with COMMIT=1 (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db clear-visitor-ids $(if $(COMMIT),--commit)
+
+db-purge-inactive: ## Warn then erase accounts unused for MONTHS (default 24); dry run unless APPLY=1 (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db purge-inactive --months $(or $(MONTHS),24) $(if $(filter 1 true yes,$(APPLY)),--apply)
+
+db-purge-retention: ## Blank or delete data past the privacy policy's retention periods; dry run unless APPLY=1 (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db purge-retention $(if $(filter 1 true yes,$(APPLY)),--apply)
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
@@ -76,6 +94,15 @@ redis: ## Launch Redis using docker compose
 
 redis-down: ## Stop Redis
 	docker compose -f devops/instances/redis/redis.compose.yml down
+
+keycloak: ## Launch a local Keycloak (OIDC test IdP, local dev only) and configure the comparia client + test user
+	@$(MAKE) network
+	@echo "Starting Keycloak..."
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml up -d
+	bash devops/instances/keycloak/setup-keycloak.sh
+
+keycloak-down: ## Stop the local Keycloak
+	docker compose -f devops/instances/keycloak/keycloak.compose.yml down
 
 
 ###################################
@@ -137,6 +164,8 @@ install-backend: ## Install Python backend dependencies with uv
 		echo "uv is not installed. Installing..."; \
 		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
+	# ^ upstream's own installer, fetched over TLS; verifying its signature or
+	# using a package manager (brew install uv, pipx install uv) is safer
 	$(UV) sync
 
 install-frontend: ## Install npm frontend dependencies
@@ -218,3 +247,12 @@ dataset-export-dry-run: ## Build the datasets locally and send them nowhere (req
 		exit 1; \
 	fi
 	$(UV) run python -m utils.dataset.run --dry-run
+
+###################################
+# Helm chart (devops/helm/comparia)
+###################################
+helm-lint: ## Lint the self-hosting Helm chart
+	helm lint $(HELM_CHART) -f $(HELM_CHART)/ci/values-lint.yaml
+
+helm-test: ## Run the Helm chart's helm-unittest suite
+	helm unittest $(HELM_CHART)

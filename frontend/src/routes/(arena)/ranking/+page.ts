@@ -1,9 +1,10 @@
 import { api } from '$lib/fastapi-client'
 import type { PersonalRanking } from '$lib/generated/backend'
+import type { PageLoad } from './$types'
 
 export type RankingView = 'general' | 'personal'
 
-export async function load({ fetch, url, parent }) {
+export const load: PageLoad = async ({ fetch, url, parent }) => {
   const { auth } = await parent()
   const view: RankingView = url.searchParams.get('view') === 'personal' ? 'personal' : 'general'
 

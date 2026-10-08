@@ -1,6 +1,6 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Link, Table, Toggle } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsWithDataContext } from '$lib/models'
@@ -24,7 +24,7 @@
 
   const { lastUpdateDate, models: data, commons } = getModelsWithDataContext()
   let selectedModel = $state<string>()
-  const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
+  const selectedModelData = $derived(data.find((llm) => llm.id === selectedModel))
 
   const tags = getVoteTagsContext()
   const positiveTags = $derived(voteTagsBySign(tags, 'positive'))
@@ -77,7 +77,7 @@
   )
 
   let orderingCol = $state<ColKind | undefined>(undefined)
-  let orderingMethod = $state(initialOrderMethod)
+  let orderingMethod = $derived(initialOrderMethod)
   let search = $state('')
   let asPercentage = $state(false)
 
@@ -98,6 +98,8 @@
       human_id: model.human_id,
       simple_name: model.name,
       logo: model.lab.logo,
+      customLogoId: model.lab.has_custom_logo ? model.lab.id : undefined,
+      customLogoVersion: model.lab.logo_version,
       organisation: model.lab.name,
       ...model.prefs,
       ...model.prefs.counts,
@@ -111,7 +113,7 @@
     const _search = search.toLowerCase()
 
     return rows
-      .filter((m) => (!_search ? true : m.search.includes(_search)))
+      .filter((llm) => (!_search ? true : llm.search.includes(_search)))
       .sort((ma, mb) => {
         const [a, b] = orderingMethod === 'ascending' ? [mb, ma] : [ma, mb]
         return sortIfDefined(a, b, orderingCol ?? defaultOrderCol)
@@ -142,7 +144,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class="text-grey! text-[14px]!"
+        class="text-grey! bg-none! text-[14px]! no-underline!"
         onclick={() => onDownloadData()}
       />
     </div>
@@ -161,7 +163,13 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <AILogo logo={model.logo} alt={model.organisation} class="me-1 inline-block align-middle" />
+      <AILogo
+        logo={model.logo}
+        customLogoId={model.customLogoId}
+        customLogoVersion={model.customLogoVersion}
+        alt={model.organisation}
+        class="me-1 inline-block align-middle"
+      />
       <a
         href="#{model.id}"
         data-fr-opened="false"

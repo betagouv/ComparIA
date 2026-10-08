@@ -227,7 +227,9 @@ async function reachVote(page: Page) {
  */
 async function reachResults(page: Page) {
   await reachVote(page)
-  await page.locator('button[data-choice="a_better"]').click()
+  // Two vote grids, one per breakpoint, and the one that does not apply is
+  // display:none — so match on the visible one rather than the first.
+  await page.locator('button[data-choice="a_better"]:visible').click()
 
   // The reveal button stays aria-disabled until the vote has registered, and
   // Playwright treats aria-disabled as not actionable.
@@ -241,7 +243,7 @@ test('voting hands focus to the controls it just revealed', async ({ page }) => 
   await reachVote(page)
 
   // Keyboard, because that is who this is for.
-  await page.locator('button[data-choice="a_better"]').focus()
+  await page.locator('button[data-choice="a_better"]:visible').focus()
   await page.keyboard.press('Enter')
 
   // Voting unmounts the fieldset holding the focused button. The annotation box

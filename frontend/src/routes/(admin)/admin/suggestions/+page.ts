@@ -9,16 +9,19 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
     locale: url.searchParams.get('language') ?? '',
     category_id: url.searchParams.get('category_id') ?? ''
   }
-  const params = new URLSearchParams({
+  const searchParams = new URLSearchParams({
     page: url.searchParams.get('page') ?? '1',
     page_size: url.searchParams.get('page_size') ?? '25'
   })
 
   for (const [key, value] of Object.entries(filters)) {
-    if (value) params.set(key, value)
+    if (value) searchParams.set(key, value)
   }
 
-  const suggestions = await api.request<SuggestionsPage>(`/admin/suggestions?${params}`, { fetch })
+  const suggestions = await api.request<SuggestionsPage>('/admin/suggestions', {
+    fetch,
+    searchParams
+  })
 
   depends('admin:suggestions')
 

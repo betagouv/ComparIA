@@ -1,24 +1,29 @@
+import logging
 import time
 import uuid
 from datetime import datetime
+from types import SimpleNamespace
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from backend.admin.llms import admin_llms_router
+from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.tools import admin_tools_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
     CannotDemoteLastAdminError,
+    CannotResetOwnTotpError,
     EmailAlreadyExistsError,
     cancel_user_invite,
     create_user,
     delete_user,
     get_user,
     list_users,
+    reset_user_totp,
     update_user,
 )
 from backend.admin.suggestions import router as admin_suggestions_router
@@ -31,8 +36,19 @@ from backend.arena.checks import (
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
 from backend.auth.email import send_invite_link
+from backend.auth.oidc import (
+    check_oidc_connection,
+    connection_test_passed,
+    oidc_available,
+    oidc_config_fingerprint,
+)
 from backend.auth.services import create_invite
-from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, settings
+from backend.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    INSTANCE_LOGO_BOX,
+    OIDC_LOGO_BOX,
+    settings,
+)
 from backend.settings.informational_legal import (
     InformationalLegalPages,
     get_informational_legal_pages,
@@ -58,10 +74,12 @@ from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,
     AppSettingsPublic,
+    OIDCConnectionTest,
 )
 from utils.database.models.auth import (
     LegalDocument,
     LegalDocumentKind,
+    NormalizedEmail,
     UserPublic,
     UserUpsert,
 )
@@ -82,7 +100,10 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
+
+logger = logging.getLogger("languia")
 
 router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
@@ -103,7 +124,9 @@ class UsersPage(BaseModel):
 
 
 class InviteBody(BaseModel):
-    email: EmailStr
+    email: NormalizedEmail
+    # The inviting admin's language: the best guess we have for the invitee's.
+    locale: str | None = Field(default=None, min_length=2, max_length=16)
 
 
 class AdminLegalDocument(BaseModel):
@@ -152,10 +175,6 @@ async def put_admin_informational_legal_pages(
         updated_by=current_user.id,
     )
     return body
-
-
-_LOGO_MAX_SIZE = 2 * 1024 * 1024
-_LOGO_CONTENT_TYPES = {"image/png", "image/jpeg", "image/svg+xml", "image/webp"}
 
 
 def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
@@ -352,7 +371,15 @@ async def invite_user(
 ) -> None:
     token = await create_invite(body.email, invited_by=current_user.id)
     link = f"{settings.COMPARIA_APP_URL}/invite/{token}"
-    await send_invite_link(body.email, link)
+    app_settings = await get_app_settings()
+    await send_invite_link(
+        body.email,
+        link,
+        platform_name=app_settings.platform_name,
+        primary_color=app_settings.primary_color_light,
+        secondary_color=app_settings.secondary_color_light,
+        locale=body.locale or app_settings.default_locale,
+    )
 
 
 @router.delete("/users/{user_id}/invite", status_code=status.HTTP_204_NO_CONTENT)
@@ -360,6 +387,34 @@ async def remove_user_invite(user_id: uuid.UUID) -> None:
     canceled = await cancel_user_invite(user_id)
     if not canceled:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+
+@router.delete("/users/{user_id}/totp", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> None:
+    try:
+        reset = await reset_user_totp(user_id, current_user.id)
+    except CannotResetOwnTotpError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Change your own authenticator from your account page",
+        )
+    if not reset:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # Who reset whom is worth a line in the log: the target's next sign-in
+    # needs only an email code until they enrol again.
+    logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
+
+
+def _current_connection_test(row: AppSettings) -> OIDCConnectionTest | None:
+    """The stored connection test, unless the provider config changed since."""
+    stored = row.oidc_connection_test
+    if not stored or stored.get("fingerprint") != oidc_config_fingerprint(row):
+        return None
+    return OIDCConnectionTest(
+        passed=stored["passed"],
+        reason=stored.get("reason"),
+        tested_at=stored["tested_at"],
+    )
 
 
 def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
@@ -379,8 +434,18 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
         has_custom_logo=row.logo is not None,
+        logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
         default_locale=row.default_locale,
+        auth_methods=row.auth_methods,
+        oidc_issuer=row.oidc_issuer,
+        oidc_client_id=row.oidc_client_id,
+        oidc_has_client_secret=row.oidc_client_secret_encrypted is not None,
+        oidc_scopes=row.oidc_scopes,
+        oidc_button_label=row.oidc_button_label,
+        oidc_has_button_logo=row.oidc_button_logo is not None,
+        oidc_button_logo_content_type=row.oidc_button_logo_content_type,
+        oidc_connection_test=_current_connection_test(row),
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
     )
@@ -421,10 +486,77 @@ async def patch_settings(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="Unknown LLM endpoint",
                 )
-    row = await update_app_settings(
-        body.model_dump(exclude_unset=True), updated_by=current_user.id
-    )
+    patch = body.model_dump(exclude_unset=True)
+    if "oidc_client_secret" in patch:
+        secret = patch.pop("oidc_client_secret")
+        # Same key as every other secret at rest; the column holds bytes.
+        patch["oidc_client_secret_encrypted"] = (
+            encrypt_secret(secret).encode() if secret else None
+        )
+    if "auth_methods" in patch or any(k.startswith("oidc_") for k in patch):
+        current = await get_app_settings()
+        effective_methods = patch.get("auth_methods", current.auth_methods)
+        effective = SimpleNamespace(
+            auth_methods=effective_methods,
+            **{
+                field: patch.get(field, getattr(current, field))
+                for field in (
+                    "oidc_issuer",
+                    "oidc_client_id",
+                    "oidc_client_secret_encrypted",
+                    "oidc_scopes",
+                    "oidc_connection_test",
+                )
+            },
+        )
+        if "oidc" in effective_methods and not oidc_available(effective):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "OIDC provider config (issuer, client_id, readable "
+                    "client_secret, scopes including openid) must be complete "
+                    "before enabling the oidc auth method."
+                ),
+            )
+        # With the email code gone, SSO is the only way in: a config that was
+        # never shown to work, or was edited since, would lock everyone out.
+        if (
+            "email_code" in current.auth_methods
+            and "email_code" not in effective_methods
+            and not connection_test_passed(effective)
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Test the OIDC connection on the current provider config "
+                    "before removing the email code sign-in."
+                ),
+            )
+    row = await update_app_settings(patch, updated_by=current_user.id)
     return _to_app_settings_public(row)
+
+
+@router.post("/settings/oidc/test", response_model=OIDCConnectionTest)
+async def run_oidc_connection_test(current_user: RequiredAdmin) -> OIDCConnectionTest:
+    """Check the stored OIDC provider config and remember the outcome for the
+    config as it is now; editing the config makes the outcome stale."""
+    row = await get_app_settings()
+    reason = await check_oidc_connection(row)
+    result = {
+        "passed": reason is None,
+        "reason": reason,
+        "tested_at": datetime.now().isoformat(),
+    }
+    await update_app_settings(
+        {
+            "oidc_connection_test": {
+                **result,
+                "fingerprint": oidc_config_fingerprint(row),
+            }
+        },
+        updated_by=current_user.id,
+    )
+    return OIDCConnectionTest(**result)
 
 
 @router.put("/settings/logo", response_model=AppSettingsPublic)
@@ -432,19 +564,9 @@ async def upload_logo(
     current_user: RequiredAdmin,
     file: UploadFile,
 ) -> AppSettingsPublic:
-    if file.content_type not in _LOGO_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Unsupported content type: {file.content_type}",
-        )
-    content = await file.read()
-    if len(content) > _LOGO_MAX_SIZE:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Logo file is too large (max 2 MB)",
-        )
+    logo, content_type = await read_logo(file, INSTANCE_LOGO_BOX)
     row = await update_app_settings(
-        {"logo": content, "logo_content_type": file.content_type},
+        {"logo": logo, "logo_content_type": content_type},
         updated_by=current_user.id,
     )
     return _to_app_settings_public(row)
@@ -454,6 +576,28 @@ async def upload_logo(
 async def remove_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
     row = await update_app_settings(
         {"logo": None, "logo_content_type": None}, updated_by=current_user.id
+    )
+    return _to_app_settings_public(row)
+
+
+@router.put("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def upload_oidc_logo(
+    current_user: RequiredAdmin,
+    file: UploadFile,
+) -> AppSettingsPublic:
+    logo, content_type = await read_logo(file, OIDC_LOGO_BOX)
+    row = await update_app_settings(
+        {"oidc_button_logo": logo, "oidc_button_logo_content_type": content_type},
+        updated_by=current_user.id,
+    )
+    return _to_app_settings_public(row)
+
+
+@router.delete("/settings/oidc-logo", response_model=AppSettingsPublic)
+async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
+    row = await update_app_settings(
+        {"oidc_button_logo": None, "oidc_button_logo_content_type": None},
+        updated_by=current_user.id,
     )
     return _to_app_settings_public(row)
 
@@ -492,10 +636,9 @@ async def patch_prompt_check(
     return _to_prompt_check_status(row)
 
 
-NO_API_KEY_MESSAGE = (
-    "Aucune clé API Mistral n'est configurée : la vérification ne peut pas "
-    "s'exécuter."
-)
+# Keys the admin page translates, like the verdict messages from `checks`.
+NO_API_KEY_MESSAGE = "no_api_key"
+CALL_FAILED_MESSAGE = "call_failed"
 
 
 class PromptCheckTryBody(BaseModel):
@@ -518,6 +661,8 @@ class PromptCheckTryResult(BaseModel):
     triggered: dict[str, str]
     message: str | None
     latency_ms: int
+    # What the moderation call said when `decision` is "error".
+    error: str | None = None
 
 
 @router.post("/prompt-check/try", response_model=PromptCheckTryResult)
@@ -558,8 +703,9 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
                 decision="error",
                 scores={},
                 triggered={},
-                message=f"L'appel à Mistral a échoué : {e}",
+                message=CALL_FAILED_MESSAGE,
                 latency_ms=int((time.monotonic() - started) * 1000),
+                error=str(e),
             )
         latency_ms = int((time.monotonic() - started) * 1000)
         write_cached_scores(body.text, check.model, scores)

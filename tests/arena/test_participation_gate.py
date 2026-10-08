@@ -113,7 +113,7 @@ def send_first_message():
         {
             "type": "http",
             "method": "POST",
-            "path": "/arena/add_first_text",
+            "path": "/api/arena/add_first_text",
             "path_params": {},
             "query_string": b"",
             "headers": [],

@@ -25,7 +25,7 @@ def test_the_thinly_translated_locales_stay_off_until_an_admin_asks() -> None:
     # They remain patchable, they just aren't served to anyone by default.
     off_by_default = set(SUPPORTED_LOCALES) - set(DEFAULT_ENABLED_LOCALES)
 
-    assert off_by_default == {"lt", "sv"}
+    assert off_by_default == {"it", "lt", "nb-NO", "sv"}
     assert AppSettingsPatch(enabled_locales=["fr", "lt"]).enabled_locales == [
         "fr",
         "lt",

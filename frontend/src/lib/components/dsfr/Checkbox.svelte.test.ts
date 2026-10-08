@@ -1,3 +1,4 @@
+import type { ExternalHref } from '$lib/routing'
 import { render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import Checkbox from './Checkbox.svelte'
@@ -27,7 +28,7 @@ describe('Checkbox', () => {
       checked: false,
       label: 'J’accepte',
       links: [
-        { label: 'Piège', href: 'javascript:alert(1)' },
+        { label: 'Piège', href: 'javascript:alert(1)' as ExternalHref },
         { label: 'Protocole', href: 'http://example.test/cgu' }
       ]
     })

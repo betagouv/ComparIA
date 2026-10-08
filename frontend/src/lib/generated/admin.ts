@@ -26,6 +26,7 @@ export interface AdminPublishDestination {
   enabled: boolean;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   next_run_at?: string | null;
+  request_pending_seconds?: number | null;
 }
 export interface HuggingFaceConfigPublic {
   kind?: "huggingface";
@@ -74,7 +75,9 @@ export interface AdminSuggestionCategory {
   icon: string;
   tooltip?: string | null;
   display_order: number;
-  suggestion_count: number;
+  archived?: boolean;
+  suggestion_count?: number;
+  available_suggestion_count?: number;
 }
 export interface AdminVoteTag {
   id: string;
@@ -109,6 +112,12 @@ export interface AppSettingsPatch {
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
+  auth_methods?: string[] | null;
+  oidc_issuer?: string | null;
+  oidc_client_id?: string | null;
+  oidc_client_secret?: string | null;
+  oidc_scopes?: string[] | null;
+  oidc_button_label?: string | null;
 }
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
@@ -126,10 +135,29 @@ export interface AppSettingsPublic {
   publish_hour: number;
   publish_timezone: string;
   has_custom_logo: boolean;
+  logo_version?: string | null;
   enabled_locales: string[];
   default_locale: string;
+  auth_methods: string[];
+  oidc_issuer: string | null;
+  oidc_client_id: string | null;
+  oidc_has_client_secret: boolean;
+  oidc_scopes: string[];
+  oidc_button_label: string | null;
+  oidc_has_button_logo: boolean;
+  oidc_button_logo_content_type: string | null;
+  oidc_connection_test?: OIDCConnectionTest | null;
   updated_at: string;
   updated_by?: string | null;
+}
+/**
+ * The last connection test, when it was run on the config in force.
+ */
+export interface OIDCConnectionTest {
+  passed: boolean;
+  reason?: string | null;
+  tested_at: string;
+  [k: string]: unknown;
 }
 /**
  * LLM definition.
@@ -152,11 +180,11 @@ export interface LLMData {
   /**
    * Complete identifier used for API calls.
    */
-  api_model_id: string | null;
+  api_model_id?: string | null;
   /**
    * The LLM's endpoint information, create it first if not already available
    */
-  endpoint_id: string | null;
+  endpoint_id?: string | null;
   /**
    * Apply rate limits (usually for high API costs LLMs).
    */
@@ -201,31 +229,31 @@ export interface LLMData {
   /**
    * Active parameters in billions (only for MoE LLMs).
    */
-  active_params: number | null;
+  active_params?: number | null;
   /**
    * Size of its context window in tokens.
    */
-  context_tokens: number | null;
+  context_tokens?: number | null;
   /**
    * Quantization scheme applied (q4, q8, or None for full precision).
    */
-  quantization: ("q4" | "q8") | null;
+  quantization?: ("q4" | "q8") | null;
   /**
    * What kind of media the LLM can have in input.
    */
   inputs: ("text" | "image" | "audio" | "video")[];
   /**
-   * Price per million input tokens in $.
+   * Price per million input tokens in USD.
    */
   price_in: number;
   /**
-   * Price per million output tokens in $.
+   * Price per million output tokens in USD.
    */
   price_out: number;
   /**
    * System message to add in llm call if specified
    */
-  system_prompt: string | null;
+  system_prompt?: string | null;
   /**
    * List of links to display in LLM card.
    */
@@ -303,11 +331,29 @@ export interface LLMLab {
   /**
    * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
    */
-  logo: string;
+  logo: string | null;
   /**
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
   origin_country: string;
+  logo_data?: string | null;
+  logo_content_type?: string | null;
+}
+export interface LLMLabPublic {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  name: string;
+  /**
+   * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
+   */
+  logo: string | null;
+  /**
+   * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
+   */
+  origin_country: string;
+  has_custom_logo?: boolean;
+  logo_version?: string | null;
 }
 /**
  * LLM licence metadata.
@@ -402,25 +448,6 @@ export interface SuggestionCreate {
   category_id: string;
   text: string;
 }
-export interface UpdateLegalPresentationBody {
-  presentation: LegalPresentation;
-}
-export interface LegalPresentation {
-  arena: ArenaLegalPresentation;
-  sign_in: SignInLegalPresentation;
-  [k: string]: unknown;
-}
-export interface ArenaLegalPresentation {
-  title: string;
-  introduction: string;
-  checkbox_label: string;
-  button_label?: string | null;
-  [k: string]: unknown;
-}
-export interface SignInLegalPresentation {
-  checkbox_label: string;
-  [k: string]: unknown;
-}
 /**
  * A tool the arena may offer to models, configured rather than declared.
  */
@@ -457,6 +484,25 @@ export interface Tool {
    */
   enabled?: boolean;
 }
+export interface UpdateLegalPresentationBody {
+  presentation: LegalPresentation;
+}
+export interface LegalPresentation {
+  arena: ArenaLegalPresentation;
+  sign_in: SignInLegalPresentation;
+  [k: string]: unknown;
+}
+export interface ArenaLegalPresentation {
+  title: string;
+  introduction: string;
+  checkbox_label: string;
+  button_label?: string | null;
+  [k: string]: unknown;
+}
+export interface SignInLegalPresentation {
+  checkbox_label: string;
+  [k: string]: unknown;
+}
 export interface UserPublic {
   id?: string;
   email: string;
@@ -464,6 +510,7 @@ export interface UserPublic {
   created_at: string;
   last_seen_at: string;
   source: string;
+  totp_enabled?: boolean;
 }
 export interface UserUpsert {
   id?: string;

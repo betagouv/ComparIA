@@ -1,12 +1,13 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import { convertFromUsd, currencyFormatter } from '$lib/currency'
   import type { Archs } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
-  import { sortIfDefined } from '$lib/utils/data'
+  import { sortIfDefined, toShortDate } from '$lib/utils/data'
 
   type ColKind =
     | 'rank'
@@ -15,6 +16,8 @@
     | 'trust_range'
     | 'n_match'
     | 'consumption'
+    | 'price_in'
+    | 'price_out'
     | 'size'
     | 'arch'
     | 'release'
@@ -54,11 +57,13 @@
     filterProprietary?: boolean
   } = $props()
 
-  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
+  const locale = getLocale()
+  const NumberFormater = new Intl.NumberFormat(locale, { maximumSignificantDigits: 3 })
+  const priceFormat = $derived(currencyFormatter(commons.currency, locale))
 
   const totalVotesLabel = $derived(NumberFormater.format(totalVotes))
   let selectedModel = $state<string>()
-  const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
+  const selectedModelData = $derived(data.find((llm) => llm.id === selectedModel))
 
   // Escape hatch back to numbered ranks. Deliberately not persisted: classes
   // are the honest default and a sticky toggle would quietly undo that.
@@ -73,6 +78,9 @@
         { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
         { id: 'n_match' },
         { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
+        // Opt-in: the general ranking stays as it is, the price tab asks for them.
+        { id: 'price_in', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
+        { id: 'price_out', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
         { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
         { id: 'release' },
@@ -80,7 +88,7 @@
         { id: 'license' }
       ] as const
     )
-      .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
+      .filter((col) => (includedCols ? includedCols.includes(col.id) : !('optIn' in col)))
       .map((col) => ({
         ...col,
         // The rank column shows whichever the toggle asked for, so its header
@@ -96,8 +104,8 @@
       }))
   )
 
-  let orderingCol = $state(initialOrderCol)
-  let orderingMethod = $state(initialOrderMethod)
+  let orderingCol = $derived(initialOrderCol)
+  let orderingMethod = $derived(initialOrderMethod)
   let search = $state('')
 
   const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
@@ -156,7 +164,7 @@
     const _search = search.toLowerCase()
 
     return rows
-      .filter((m) => (!_search ? true : m.search.includes(_search)))
+      .filter((llm) => (!_search ? true : llm.search.includes(_search)))
       .sort((ma, mb) => {
         const [a, b] = orderingMethod === 'ascending' ? [mb, ma] : [ma, mb]
 
@@ -174,6 +182,9 @@
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
             return b.consumption - a.consumption
           }
+          case 'price_in':
+          case 'price_out':
+            return b[orderingCol] - a[orderingCol]
           case 'trust_range': {
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
             const bCount = b.data.trust_range[0] + b.data.trust_range[1]
@@ -234,6 +245,7 @@
             id="{id}-show-ranks"
             bind:value={showRanks}
             label={m['ranking.table.showRanks.label']()}
+            variant="secondary"
             hideCheckLabel
             class="mb-0! pr-13! text-[14px]! whitespace-nowrap"
           />
@@ -250,7 +262,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class={['text-[14px]!', { 'text-grey!': raw }]}
+        class={['bg-none! text-[14px]! no-underline!', { 'text-grey!': raw }]}
         onclick={() => onDownloadData()}
       />
     </div>
@@ -280,7 +292,13 @@
       <div
         class="sm:max-w-none sm:overflow-visible max-w-[205px] overflow-hidden overflow-ellipsis"
       >
-        <AILogo logo={model.lab.logo} alt={model.lab.name} class="me-1 inline-block align-middle" />
+        <AILogo
+          logo={model.lab.logo}
+          customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+          customLogoVersion={model.lab.logo_version}
+          alt={model.lab.name}
+          class="me-1 inline-block align-middle"
+        />
         <a
           href="#{model.human_id}"
           data-fr-opened="false"
@@ -297,7 +315,7 @@
         {m['ranking.table.data.billions']({ count: model.params })}
       {/if}
     {:else if col.id === 'release'}
-      {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
+      {toShortDate(model.release_date, locale, '2-digit')}
     {:else if col.id === 'license'}
       {#if raw}
         {model.badges.license.text}
@@ -310,15 +328,15 @@
       {:else}
         <div class="gap-2 flex min-w-[160px] items-center">
           <div
-            class="rounded-xs bg-light-info h-2 relative flex-1"
+            class="rounded-xs bg-light-primary h-2 relative flex-1"
             title={m['ranking.table.data.tooltips.trust_range']()}
           >
             <div
-              class="rounded-xs bg-info top-0 absolute h-full"
+              class="rounded-xs bg-primary top-0 absolute h-full"
               style="left: {model.ciLeft}%; width: {model.ciWidth}%"
             ></div>
             <div
-              class="bg-info h-2 w-2 ring-white absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
+              class="bg-primary h-2 w-2 ring-white absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ring-2"
               style="left: {model.ciDot}%"
             ></div>
           </div>
@@ -334,10 +352,12 @@
         {model.consumption} mWh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="rounded-xs bg-info h-[4px] w-[--range-width]"></div>
+            <div class="rounded-xs bg-primary h-[4px] w-[--range-width]"></div>
           </div>
         {/if}
       {/if}
+    {:else if col.id === 'price_in' || col.id === 'price_out'}
+      {priceFormat.format(convertFromUsd(model[col.id], commons.currency))}
     {:else if col.id === 'arch'}
       {m[`generated.archs.${model.arch}.name`]()}
     {:else if col.id === 'n_match'}

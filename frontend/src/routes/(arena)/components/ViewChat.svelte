@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { getComparison, modeInfos } from '$lib/chatService.svelte'
+  import { getComparison, getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { page } from '$app/state'
@@ -45,6 +45,7 @@
   let voteReminder = $state(false)
   let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
+  const modeInfos = getModeInfos()
   const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison?.mode)!)
 
   const canContinue = $derived(

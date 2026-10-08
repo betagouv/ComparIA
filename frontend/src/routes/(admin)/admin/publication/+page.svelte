@@ -12,16 +12,16 @@
     Table,
     Toggle
   } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminPublishDestination, AdminPublishStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import { untrack } from 'svelte'
-  import type { PageData } from './$types'
+  import type { PageProps } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  let { data }: PageProps = $props()
 
   const refetch = () => invalidate('admin:publishing')
 
@@ -293,6 +293,14 @@
       monthly: m['admin.publishing.frequencyMonthly']()
     })[frequency]
 
+  function formatPending(seconds: number) {
+    const minutes = Math.floor(seconds / 60)
+    if (minutes < 1) return '< 1 min'
+    if (minutes < 60) return `${minutes} min`
+    const hours = Math.floor(minutes / 60)
+    return hours < 48 ? `${hours} h` : `${Math.floor(hours / 24)} d`
+  }
+
   function formatDate(value: string | null) {
     if (!value) return ''
     // The API answers in UTC; an administrator reads their own clock.
@@ -420,6 +428,13 @@
             {#if row.next_run_at}
               <small class="text-grey block">
                 {m['admin.publishing.nextRun']({ date: formatDate(row.next_run_at) })}
+              </small>
+            {/if}
+            {#if row.request_pending_seconds != null}
+              <small class="text-grey block">
+                {m['admin.publishing.requestPending']({
+                  duration: formatPending(row.request_pending_seconds)
+                })}
               </small>
             {/if}
           </span>

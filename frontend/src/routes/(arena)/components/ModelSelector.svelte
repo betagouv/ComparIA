@@ -1,9 +1,9 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon, Search } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
-  import { modeInfos as modeChoices } from '$lib/chatService.svelte'
+  import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
@@ -35,6 +35,7 @@
       }))
   })
 
+  const modeChoices = getModeInfos()
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
   const { modelA, modelB } = $derived({
     modelA: models.find((model) => model.id === modelsSelection[0]),
@@ -92,11 +93,23 @@
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
-      <AILogo logo={modelA.lab.logo} alt="" class="me-1 inline" />
+      <AILogo
+        logo={modelA.lab.logo}
+        customLogoId={modelA.lab.has_custom_logo ? modelA.lab.id : undefined}
+        customLogoVersion={modelA.lab.logo_version}
+        alt=""
+        class="me-1 inline"
+      />
       {modelA.name}
       <strong class="mx-2">VS</strong>
       {#if modelB}
-        <AILogo logo={modelB.lab.logo} alt="" class="me-1 inline" />
+        <AILogo
+          logo={modelB.lab.logo}
+          customLogoId={modelB.lab.has_custom_logo ? modelB.lab.id : undefined}
+          customLogoVersion={modelB.lab.logo_version}
+          alt=""
+          class="me-1 inline"
+        />
         {modelB.name}
       {:else}
         {m['words.random']()}
@@ -210,7 +223,13 @@
                     <label {...labelProps}>
                       {@render input(opt)}
                       <div class="text-dark-grey flex">
-                        <AILogo logo={opt.lab.logo} alt="" class="me-2" />
+                        <AILogo
+                          logo={opt.lab.logo}
+                          customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
+                          customLogoVersion={opt.lab.logo_version}
+                          alt=""
+                          class="me-2"
+                        />
                         <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
                           >{opt.name}</strong
                         >

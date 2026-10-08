@@ -1,7 +1,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Alert, Button, Icon, Select, Toggle } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
+  import { promptCheckMessage } from '$lib/apiErrors'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -117,6 +118,15 @@
   let benchRunning = $state(false)
   let benchError = $state('')
   let benchResult = $state<PromptCheckTry | null>(null)
+
+  function benchMessage(result: PromptCheckTry): string {
+    if (result.decision === 'error') {
+      if (result.message === 'no_api_key') return m['admin.promptChecks.bench.errors.no_api_key']()
+      return m['admin.promptChecks.bench.errors.call_failed']({ error: result.error ?? '' })
+    }
+    if (!result.message) return m['admin.promptChecks.bench.messageNone']()
+    return promptCheckMessage(result.message)
+  }
   // Figé au moment du test : la personne peut modifier les réglages ensuite,
   // le panneau doit rester le compte rendu de ce qui a réellement été essayé.
   let benchUsed = $state<Record<string, CategoryConfig>>({})
@@ -198,7 +208,9 @@
   async function loadStats(period: StatsPeriod) {
     statsLoading = true
     try {
-      stats = await api.request<PromptCheckStats>(`/admin/prompt-check/stats?period=${period}`)
+      stats = await api.request<PromptCheckStats>('/admin/prompt-check/stats', {
+        searchParams: { period }
+      })
     } finally {
       statsLoading = false
     }
@@ -588,8 +600,7 @@
               rows="4"
               bind:value={benchText}
               disabled={benchRunning}
-              aria-describedby="prompt-check-bench-messages"
-            ></textarea>
+              aria-describedby="prompt-check-bench-messages"></textarea>
             {#if benchError}
               <div class="fr-messages-group" id="prompt-check-bench-messages" aria-live="polite">
                 <p class="fr-message fr-message--error">{benchError}</p>
@@ -634,7 +645,7 @@
               {m['admin.promptChecks.bench.messageTitle']()}
             </h3>
             <p class="text-sm mb-5!" id="prompt-check-bench-message">
-              {benchResult.message ?? m['admin.promptChecks.bench.messageNone']()}
+              {benchMessage(benchResult)}
             </p>
 
             <h3 class="text-sm mb-1! text-dark-grey font-bold">

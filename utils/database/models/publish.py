@@ -10,7 +10,7 @@ from sqlmodel import Field, SQLModel, String
 
 from utils.validation import NonEmptyStr
 
-from .utils import BaseDBModel, Datetime, OptionalDatetime
+from .utils import BaseDBModel, Datetime, OptionalDatetime, utc_now
 
 # The two datasets a run produces. Code, not configuration: a destination picks
 # which of them it receives, it cannot invent a third.
@@ -136,6 +136,11 @@ class PublishDestinationBase(BaseDBModel):
     datasets: Annotated[list[str], Field(sa_type=JSONB)]
     enabled: bool = Field(default=True)
     publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
+    # When the admin panel asked for a run, until the publish job starts it.
+    publish_requested_at: OptionalDatetime = None
+    # When the last run for this destination started, whatever came of it. A
+    # failed run counts as the run of its occurrence: no retry before the next.
+    last_run_started_at: OptionalDatetime = None
 
 
 class PublishDestination(PublishDestinationBase, table=True):
@@ -176,6 +181,10 @@ class AdminPublishDestination(SQLModel):
     enabled: bool
     publish_frequency: PublishFrequency
     next_run_at: datetime | None = None
+    # How long the destination has been waiting for the publish job to pick up
+    # its request. A few minutes is the job's tick; much longer means the job
+    # is not running.
+    request_pending_seconds: int | None = None
 
     @classmethod
     def from_row(cls, row: PublishDestination) -> "AdminPublishDestination":
@@ -187,6 +196,11 @@ class AdminPublishDestination(SQLModel):
             datasets=row.datasets,  # type: ignore[arg-type]
             enabled=row.enabled,
             publish_frequency=row.publish_frequency,
+            request_pending_seconds=(
+                None
+                if row.publish_requested_at is None
+                else max(0, int((utc_now() - row.publish_requested_at).total_seconds()))
+            ),
         )
 
 

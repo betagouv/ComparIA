@@ -151,9 +151,15 @@ async def litellm_stream_iter(
         extra={"request": request},
     )
 
-    if settings.SENTRY_DSN:
-        litellm.input_callback = ["sentry"]
-        litellm.failure_callback.append("sentry")
+    # Debug mode can be enabled but is very verbose for streaming
+    # from backend.config import debug
+    # if debug:
+    #     litellm._turn_on_debug()
+
+    # No input_callback here: it would ship every raw prompt to Sentry as a
+    # breadcrumb. Failures are reported explicitly via sentry_sdk.capture_exception
+    # elsewhere instead of the litellm failure_callback, which also carries the
+    # request body.
 
     is_ordbogen = bool(endpoint.base_url and "ordbogen.ai" in endpoint.base_url)
     api_messages: list[dict[str, Any]] = [

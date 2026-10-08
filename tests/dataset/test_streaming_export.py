@@ -185,7 +185,12 @@ def check_reference_schema(failures):
         short_summary="s",
         enabled_tools=["web_search"],
         cohorts="c",
-        error={"message": "e", "pos": "a", "is_timeout": False},
+        error={
+            "code": "provider_error",
+            "message": "e",
+            "pos": "a",
+            "is_timeout": False,
+        },
         llm_analyzed=True,
         contains_pii=False,
         contains_spam=False,
@@ -326,6 +331,14 @@ def test_temporal_nulls_stream_cleanly():
     failures = []
     check_temporal_nulls(failures)
     assert not failures, failures
+
+
+def test_default_batch_keeps_one_flush_well_under_the_export_memory_cap():
+    # A flush turns the whole buffer into a pandas frame then an Arrow table;
+    # the export subprocess is capped at 2 GiB of address space.
+    from utils.dataset.export import BATCH_ROWS
+
+    assert BATCH_ROWS <= 2_000
 
 
 if __name__ == "__main__":

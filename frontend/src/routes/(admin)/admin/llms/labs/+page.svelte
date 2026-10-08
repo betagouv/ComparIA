@@ -1,8 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import AILogo from '$components/AILogo.svelte'
-  import { Table } from '$components/dsfr'
-  import Link from '$components/dsfr/Link.svelte'
+  import { Link, Table } from '$components/dsfr'
+  import { AILogo } from '$components/layout'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -66,7 +65,12 @@
   {#snippet cell(lab, col)}
     {#if col.id === 'name'}
       <div class="gap-2 flex items-center">
-        <AILogo logo={lab.logo} alt="" />
+        <AILogo
+          logo={lab.logo}
+          customLogoId={lab.has_custom_logo ? lab.id : undefined}
+          customLogoVersion={lab.logo_version}
+          alt=""
+        />
         <a href={resolve(`${baseRoute}/${lab.id}`)}>{lab[col.id]}</a>
       </div>
     {:else if col.id === 'created_at' || col.id === 'updated_at'}

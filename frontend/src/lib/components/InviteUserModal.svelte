@@ -2,6 +2,7 @@
   import { Button, Input, Modal } from '$components/dsfr'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { getLocale } from '$lib/i18n/runtime'
 
   let { onSuccess }: { onSuccess?: () => void } = $props()
 
@@ -24,7 +25,7 @@
     try {
       await api.request('/admin/users/invite', {
         method: 'POST',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, locale: getLocale() })
       })
       useToast(`Invitation sent to ${email}`, 4000)
       email = ''

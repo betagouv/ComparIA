@@ -91,7 +91,7 @@ def test_reads_the_singleton_row(db: FakeSession) -> None:
 
     assert row.model == DEFAULT_MODEL
     assert set(row.categories) == set(DEFAULT_CATEGORIES)
-    assert row.categories["sexual"] == {"threshold": 0.3, "action": "log"}
+    assert row.categories["sexual"] == {"threshold": 0.3, "action": "warn"}
 
 
 def test_falls_back_to_the_defaults_before_the_row_exists(db: FakeSession) -> None:

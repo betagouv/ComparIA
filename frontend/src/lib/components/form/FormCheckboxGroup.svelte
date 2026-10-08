@@ -1,14 +1,25 @@
 <script module lang="ts">
   export type FormCheckboxGroupProps = {
     options: Option<string>[]
-  } & BaseFormFieldProps<'checkbox-group', string[]>
+    // The admin form only holds the keys the user touched, so the group may
+    // render before its own key exists.
+  } & BaseFormFieldProps<'checkbox-group'>
 </script>
 
 <script lang="ts">
   import type { BaseFormFieldProps, Option } from '$lib/utils/form'
   import { FormField, FormFieldset } from '.'
 
-  let { value = $bindable(), disabled, options, ...props }: FormCheckboxGroupProps = $props()
+  let {
+    value = $bindable(),
+    disabled,
+    options,
+    ...props
+  }: FormCheckboxGroupProps & { value?: string[] } = $props()
+
+  function onToggle(option: string, checked: boolean) {
+    value = checked ? [...(value ?? []), option] : (value ?? []).filter((v) => v !== option)
+  }
 </script>
 
 <FormFieldset {...props} component="fieldset">
@@ -17,7 +28,15 @@
       <div class="fr-fieldset__element">
         <FormField id={`${id}-${opt.value}`} label={opt.label} component="checkbox">
           {#snippet formItem({ id })}
-            <input name={id} {id} type="checkbox" value={opt.value} {disabled} bind:group={value} />
+            <input
+              name={id}
+              {id}
+              type="checkbox"
+              value={opt.value}
+              {disabled}
+              checked={value?.includes(opt.value) ?? false}
+              onchange={(e) => onToggle(opt.value, e.currentTarget.checked)}
+            />
           {/snippet}
         </FormField>
       </div>

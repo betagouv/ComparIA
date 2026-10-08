@@ -15,8 +15,8 @@ class Settings(BaseSettings):
         env_file=ROOT_DIR / ".env", env_file_encoding="utf-8", extra="ignore"
     )
     LANGUIA_DEBUG: bool = False
-    LANGUIA_CONTROLLER_URL: str | None = "http://localhost:21001"
     COMPARIA_REDIS_HOST: str = "localhost"
+    COMPARIA_REDIS_PASSWORD: str | None = None
     MOCK_RESPONSE: bool = False
     LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
@@ -28,7 +28,6 @@ class Settings(BaseSettings):
     LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
     MISTRAL_API_KEY: str | None = None
-    ALBERT_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
 
@@ -39,9 +38,9 @@ class Settings(BaseSettings):
     # values themselves are unchanged, so Redis keys stay put.
     COMPARIA_INSTANCE_NAME: str = "fr"
 
-    # Display currency. Model prices are stored in euros and converted for the UI.
+    # Display currency. Model prices are stored in US dollars and converted for the UI.
     DISPLAY_CURRENCY: str = "EUR"
-    DISPLAY_CURRENCY_RATE_FROM_EUR: float | None = None
+    DISPLAY_CURRENCY_RATE_FROM_USD: float | None = None
     EXCHANGE_RATE_API_URL: str = "https://api.frankfurter.dev/v2"
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
@@ -52,16 +51,10 @@ class Settings(BaseSettings):
     EXCHANGE_RATE_CACHE_SECONDS: int = 86_400
 
     RANKING_INTERVAL_SECONDS: int = 3600  # 1 hour
-    REPO_ORG: str = "ministere-culture"
     VOTES_OBJECTIVE: int = 300_000
     ALTCHA_HMAC_KEY: str = ""
 
-    # Dataset publishing. The schedule itself lives in the admin panel; these
-    # are the boundaries the run gets on the machine. Off here, a larger
-    # deployment can run this same image as a dedicated scheduler replica.
-    DATASET_SCHEDULER_ENABLED: bool = True
-    DATASET_RUN_TIMEOUT: int = 6 * 3600
-    DATASET_MEMORY_LIMIT_GB: int = 8
+    # Dataset publishing. The schedule itself lives in the admin panel.
     # Generous: the export's single read walks the whole comparison table, and
     # this is here to end a query that has stopped moving, not a slow one.
     DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000
@@ -80,18 +73,59 @@ class Settings(BaseSettings):
     # must never be locked out. The real anti-abuse limit is per-email below.
     AUTH_EMAIL_REQUEST_PER_IP_PER_HOUR: int = 2000
     AUTH_EMAIL_REQUEST_PER_EMAIL_PER_HOUR: int = 5
+    # Same reasoning: each OIDC sign-in start stores a state and may reach the
+    # provider, but a whole class signing in at once must still go through.
+    AUTH_OIDC_LOGIN_PER_IP_PER_HOUR: int = 2000
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
+    # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
+    # above only slows one attacker down; this one closes the login code itself.
+    AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
+    # Fernet key(s) for secrets stored in the database, starting with the
+    # admins' authenticator secrets. Comma-separated to rotate: the first
+    # encrypts, every one decrypts, and a secret re-encrypts with the first the
+    # next time it is used.
+    COMPARIA_ENCRYPTION_KEY: str = ""
 
     # Anonymous
     ANONYMOUS_SESSION_LENGTH_DAYS: int = 30
 
     # Public app origin, used to build absolute links in emails (e.g. invite links)
     COMPARIA_APP_URL: str = "http://localhost:5173"
+    # Public origin the backend itself answers on, used for the OIDC redirect_uri
+    # the provider sends the browser back to. Deployed, the ingress puts the
+    # backend under /api of the app origin, so leaving this unset is right. In
+    # dev the two run on separate ports, so point it at the backend.
+    COMPARIA_API_URL: str | None = None
 
-    @field_validator("COMPARIA_APP_URL")
+    # Number of reverse proxies in front of the app. X-Forwarded-For is only read
+    # when this is > 0, and only the entry the outermost trusted proxy appended is
+    # kept, so a client cannot pick its own IP by sending the header itself.
+    # Set it to the real number of hops in every deployment (1 behind Caddy alone).
+    COMPARIA_TRUSTED_PROXY_COUNT: int = 0
+
+    # Session cookies carry the Secure flag unless this is turned off for local
+    # HTTP development. Never tie it to the debug flag: debug logging and cookie
+    # security are separate decisions.
+    COMPARIA_COOKIE_SECURE: bool = True
+
+    # Extra browser origins allowed to call the API with credentials. The
+    # deployments serve the front and the API from one origin through Caddy, so
+    # this stays empty outside development.
+    COMPARIA_CORS_ORIGINS: list[str] = []
+
+    # /metrics requires "Authorization: Bearer <token>". Unset, the endpoint
+    # refuses every request outside debug.
+    METRICS_TOKEN: str | None = None
+
+    @field_validator("COMPARIA_APP_URL", "COMPARIA_API_URL")
     @classmethod
-    def _strip_trailing_slash(cls, value: str) -> str:
-        return value.rstrip("/")
+    def _strip_trailing_slash(cls, value: str | None) -> str | None:
+        return value.rstrip("/") if value else value
+
+    @property
+    def api_origin(self) -> str:
+        """Origin the OIDC provider redirects the browser back to."""
+        return self.COMPARIA_API_URL or self.COMPARIA_APP_URL
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email
@@ -117,11 +151,11 @@ class Settings(BaseSettings):
             raise ValueError("DISPLAY_CURRENCY must be a three-letter ISO 4217 code")
         return currency
 
-    @field_validator("DISPLAY_CURRENCY_RATE_FROM_EUR")
+    @field_validator("DISPLAY_CURRENCY_RATE_FROM_USD")
     @classmethod
     def validate_manual_currency_rate(cls, value: float | None) -> float | None:
         if value is not None and value <= 0:
-            raise ValueError("DISPLAY_CURRENCY_RATE_FROM_EUR must be greater than zero")
+            raise ValueError("DISPLAY_CURRENCY_RATE_FROM_USD must be greater than zero")
         return value
 
     @field_validator("EXCHANGE_RATE_CACHE_SECONDS")
@@ -134,11 +168,54 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Generate a random HMAC key if not configured (dev mode)
+# A per-process key breaks the captcha across replicas and across restarts, so it
+# is a dev-only convenience. Outside debug the deployment has to provide one.
 if not settings.ALTCHA_HMAC_KEY:
+    if not settings.LANGUIA_DEBUG:
+        raise RuntimeError(
+            "ALTCHA_HMAC_KEY is required. Generate one with: openssl rand -hex 32"
+        )
     import secrets
 
     settings.ALTCHA_HMAC_KEY = secrets.token_hex(32)
+
+ENCRYPTION_KEY_HELP = (
+    "Generate one with: python -c 'from cryptography.fernet import Fernet; "
+    "print(Fernet.generate_key().decode())'"
+)
+
+
+def check_encryption_keys(value: str) -> None:
+    """Refuse a key Fernet would refuse, at boot rather than at the first
+    admin enrolment. Several keys may be listed, comma-separated."""
+    from cryptography.fernet import Fernet
+
+    keys = [k.strip() for k in value.split(",") if k.strip()]
+    if not keys:
+        raise RuntimeError(
+            f"COMPARIA_ENCRYPTION_KEY is required. {ENCRYPTION_KEY_HELP}"
+        )
+    for key in keys:
+        try:
+            Fernet(key)
+        except (ValueError, TypeError) as e:
+            raise RuntimeError(
+                "COMPARIA_ENCRYPTION_KEY is not a valid Fernet key: 32 url-safe "
+                f"base64-encoded bytes, not a hex string. {ENCRYPTION_KEY_HELP}"
+            ) from e
+
+
+# Unlike the captcha key, a random one here would lock every local admin out on
+# each restart, so debug gets a fixed key instead of a fresh one.
+if not settings.COMPARIA_ENCRYPTION_KEY and settings.LANGUIA_DEBUG:
+    import base64
+    import hashlib
+
+    settings.COMPARIA_ENCRYPTION_KEY = base64.urlsafe_b64encode(
+        hashlib.sha256(b"comparia-dev-totp-key").digest()
+    ).decode()
+
+check_encryption_keys(settings.COMPARIA_ENCRYPTION_KEY)
 
 # Create directory for JSON backup files
 os.makedirs(settings.LOGDIR, exist_ok=True)
@@ -177,6 +254,19 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 # so users behind a shared NAT (schools, hospitals) each get their own budget.
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
+# The per-session budget above is the one that matters, since users behind one
+# shared NAT each get their own. But a client that drops the `anonymous_session`
+# cookie gets a fresh session on every request, so the same budget also runs per
+# IP as a backstop. Twenty times the room, because that IP may be a whole
+# building.
+RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 20
+
+# Cheap models are not free either, and only pricey ones used to be counted, so
+# nothing at all stopped someone hammering the rest. Wider still: an ordinary
+# session must never meet this.
+RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
+RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
+
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts only blocks in a rolling window; once an IP crosses the
 # threshold it is cooled down for the rest of the window WITHOUT calling the
@@ -186,6 +276,27 @@ RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+# Every turn resends the whole transcript to both models, so an endless
+# conversation costs more on each message. Cap it.
+MAX_TURNS_PER_COMPARISON = 20
+
+# Bounds on the free-text and tag annotations a voter can attach to a turn.
+MAX_VOTE_KEYWORD_ANNOTATIONS = 20
+MAX_VOTE_CUSTOM_ANNOTATION_LEN = 1_000
+
+# Admin-uploaded logos. The upload cap only bounds what one request may carry:
+# rasters are resized into the box below and stored as WebP, so what is served
+# to every visitor stays a few KB whatever the original was.
+LOGO_UPLOAD_MAX_SIZE = 2 * 1024 * 1024
+# An SVG is stored as uploaded, so it gets a cap of its own.
+LOGO_SVG_MAX_SIZE = 64 * 1024
+# The largest lab logo slot is 34 px; 160 covers 4x pixel density with margin.
+LAB_LOGO_BOX = (160, 160)
+# The instance logo sits in the header at about 35 px high, and is often wide.
+INSTANCE_LOGO_BOX = (320, 120)
+# The OIDC sign-in button shows the provider logo at icon size.
+OIDC_LOGO_BOX = (160, 160)
 
 # Altcha PoW CAPTCHA settings
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end

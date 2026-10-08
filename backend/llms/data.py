@@ -130,13 +130,7 @@ class LLMsData(BaseModel):
                 logger.critical("No model to choose from")
                 # No models available at all
                 # FIXME use Error that can be toasted
-                # raise Exception(
-                #     duration=0,
-                #     message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-                # )
-                raise Exception(
-                    "Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
-                )
+                raise Exception("No model available for this mode")
             else:
                 # Fall back to all models if couldn't respect exclusions
                 # FIXME hmm readding excluded models ?
@@ -186,8 +180,14 @@ class LLMsData(BaseModel):
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
-            # Custom selection are not uuid
-            custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+            # `AddFirstTextBody` already refuses anything but one or two UUIDs,
+            # but this is also called from the CLI, where nothing has checked.
+            if len(custom_selection) > 2:
+                raise ValueError("At most two models can be selected.")
+            try:
+                custom_selection = [UUID(llm_id) for llm_id in custom_selection]
+            except ValueError:
+                raise ValueError("Custom LLMs selection contains invalid ids")
 
             if unknown_llms := [
                 llm_id

@@ -44,8 +44,9 @@ from backend.arena.streaming import (
 from backend.arena.tools import get_enabled_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
-from backend.llms.data import get_llms_data, pick_replacement_model
-from backend.utils.user import get_ip, get_matomo_tracker_from_cookies
+from backend.config import MAX_TURNS_PER_COMPARISON
+from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
     VoteTagSignMismatchError,
@@ -76,16 +77,25 @@ router = APIRouter(
 def assert_not_rate_limited(
     anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
-    """Rate-limit expensive-model usage per anonymous session (not per IP)."""
-    if is_ratelimited(anonymous_user_hash):
+    """Rate-limit model usage per anonymous session, with the IP as a backstop
+    for clients that drop the session cookie."""
+    if is_ratelimited(anonymous_user_hash, get_ip(request)):
         logger.error(
-            "Too much text submitted to pricey models for anonymous session",
+            "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            detail="rate_limited",
         )
+
+
+def _is_pricey(comparison: ComparisonRead, llms_data: LLMsData) -> bool:
+    """Whether either side of this comparison is an expensive model."""
+    return any(
+        llm_id in llms_data.pricey_models
+        for llm_id in (comparison.llm_id_a, comparison.llm_id_b)
+    )
 
 
 def assert_not_block_cooldown(request: Request) -> None:
@@ -93,7 +103,7 @@ def assert_not_block_cooldown(request: Request) -> None:
     if is_block_cooldown(get_ip(request)):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
+            detail="block_cooldown",
         )
 
 
@@ -107,6 +117,15 @@ async def run_checks(
     user about and to persist on the turn.
     """
     result = await run_prompt_check(text, request, warning_token=warning_token)
+    if result and result.decision == "error":
+        # The check fails open, so a prompt that times out the moderation API
+        # still reaches the models. Left at that, an attacker who can induce
+        # timeouts gets an unchecked arena for free, so a failure spends the
+        # same per-IP budget a block does. Refusing the prompt outright instead
+        # would take the whole arena down every time Mistral hiccups, which is
+        # the worse trade: one connection slowed is better than all of them
+        # stopped.
+        increment_blocked_prompts(get_ip(request))
     if result and result.block_message:
         increment_blocked_prompts(get_ip(request))
         result = await save_prompt_check_result(result)
@@ -151,7 +170,7 @@ def get_comparison_metadata(comparison_id: UUID) -> ComparisonMetadata | None:
     if metadata.is_streaming:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Veuillez attendre la fin de la réponse des modèles.",
+            detail="comparison_streaming",
         )
 
     return metadata
@@ -232,8 +251,12 @@ async def add_first_text(
             detail="Accept the terms in force before participating.",
         )
 
+    # Prompts stay out of the logs. They go to a file and to Loki, the in-app
+    # notice tells people not to put personal data in them, and the operators
+    # who read the logs are not the audience the user wrote for. What is left is
+    # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called with: {args.model_dump_json()}",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, web_search={args.web_search})",
         extra={"request": request},
     )
 
@@ -259,7 +282,6 @@ async def add_first_text(
             anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
             participation_terms_version=participation_terms_version,
-            visitor_id=get_matomo_tracker_from_cookies(request.cookies),
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
@@ -293,22 +315,27 @@ async def add_first_text(
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(anonymous_user_hash, len(args.prompt_value))
+            if not comparison.error:
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.prompt_value),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
             await update_comparison_tool_capability(comparison)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
@@ -343,9 +370,18 @@ async def add_text(
         HTTPException: If Comparison not found or rate limiting triggered
     """
     logger.info(
-        f"'/add_text' on comparison '{comparison_.id}' called with: {args.model_dump_json()}",
+        f"'/add_text' on comparison '{comparison_.id}' ({len(args.message)} chars)",
         extra={"request": request},
     )
+
+    # Each turn resends the whole transcript to both models, so the cost of a
+    # conversation grows with its square. `/retry` re-runs the last turn rather
+    # than adding one, so this is the only place the transcript can grow.
+    if len(comparison_.turns) >= MAX_TURNS_PER_COMPARISON:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="max_turns_reached",
+        )
 
     check = await run_checks(args.message, "message", request, args.warning_token)
     if check and check.pending_warning:
@@ -364,23 +400,28 @@ async def add_text(
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
 
-        yield format_sse_event({"type": "add", "turn": TurnPublic.model_validate(turn)})
+        try:
+            yield format_sse_event(
+                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            llms_data = await get_llms_data()
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(anonymous_user_hash, len(args.message))
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(args.message),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
             await update_comparison_tool_capability(comparison)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream())
 
@@ -414,7 +455,7 @@ async def retry(
     if turn.user_msg is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+            detail="retry_unavailable",
         )
 
     # If comparison has not yet trully started
@@ -425,7 +466,7 @@ async def retry(
                 # Another timeout error occured even tho llms have been rerolled already
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                    detail="retry_unavailable",
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
@@ -438,7 +479,7 @@ async def retry(
     store_comparison_metadata(comparison.id, is_streaming=True)
 
     logger.info(
-        f"retry with user message: {turn.user_msg.content}",
+        f"retry on turn '{turn.id}'",
         extra={"request": request},
     )
 
@@ -448,23 +489,24 @@ async def retry(
             {"type": "update", "turn": TurnPublic.model_validate(turn)}
         )
 
-        # Stream both model responses
-        async for chunk in stream_comparison_messages(comparison, turn, request):
-            yield format_sse_event(chunk)
+        try:
+            # Stream both model responses
+            async for chunk in stream_comparison_messages(comparison, turn, request):
+                yield format_sse_event(chunk)
 
-        if not comparison.error:
-            llms_data = await get_llms_data()
-            # Increment input chars for pricey llms
-            for llm_id in [comparison.llm_id_a, comparison.llm_id_b]:
-                if llm_id in llms_data.pricey_models:
-                    increment_input_chars(
-                        anonymous_user_hash, len(turn.user_msg.content)
-                    )
+            if not comparison.error:
+                llms_data = await get_llms_data()
+                increment_input_chars(
+                    anonymous_user_hash,
+                    get_ip(request),
+                    len(turn.user_msg.content),
+                    pricey=_is_pricey(comparison, llms_data),
+                )
 
-            await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
             await update_comparison_tool_capability(comparison)
-
-        store_comparison_metadata(comparison.id, is_streaming=False)
+        finally:
+            store_comparison_metadata(comparison.id, is_streaming=False)
 
     return create_sse_response(event_stream(comparison))
 
@@ -488,8 +530,9 @@ async def vote(
     Raises:
         HTTPException: If Comparison not found or forbidden vote attempts.
     """
+    # `vote.model_dump_json()` would carry the voter's free-text annotation.
     logger.info(
-        f"'/vote' on comparison '{comparison.id}' called with: {vote.model_dump_json()}",
+        f"'/vote' on comparison '{comparison.id}' for turn '{vote.turn_id}'",
         extra={"request": request},
     )
 
@@ -536,13 +579,16 @@ async def vote(
     await update_turn_vote(turn.id, vote)
 
 
-@router.get("/reveal/{comparison_id}")
+@router.post("/reveal/{comparison_id}")
 async def reveal(
     comparison: ComparisonAnno,
     request: Request,
 ) -> RevealData:
     """
     Get reveal data for a Comparison.
+
+    POST, not GET: it marks the comparison revealed, and a browser or a crawler
+    is free to replay a GET.
 
     Args:
         comparison: linked Comparison

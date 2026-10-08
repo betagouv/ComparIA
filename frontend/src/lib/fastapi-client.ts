@@ -11,19 +11,26 @@ import type {
   AssistantMessage,
   Bot
 } from '$lib/chatService.svelte'
+import { omit } from '$lib/utils/commons'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
   const ssr = !browser // browser false if SSR
 
+  // /api: every backend route lives there (see backend/main.py) so it never
+  // collides with a same-named SvelteKit page once both sit behind the same
+  // host with no base path (e.g. /admin, /models, /settings are pages too).
   if (ssr) {
     // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
-    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (
+      (publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') +
+      '/api'
+    )
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
-    return publicEnv.PUBLIC_API_URL || 'http://localhost:8008'
+    return (publicEnv.PUBLIC_API_URL || 'http://localhost:8008') + '/api'
   } else {
     // Client-side: use public URL or origin
-    return window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    return (window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') + '/api'
   }
 }
 
@@ -65,16 +72,21 @@ export interface SSEWarningEvent {
 }
 
 export type SSEEvent =
-  | SSEInitEvent
-  | SSEUpdateEvent
-  | SSECompleteEvent
-  | SSEChunkEvent
-  | SSEErrorEvent
-  | SSEWarningEvent
+  SSEInitEvent | SSEUpdateEvent | SSECompleteEvent | SSEChunkEvent | SSEErrorEvent | SSEWarningEvent
 
 export class InternalError extends Error {
   constructor(message: string) {
     super(message)
+  }
+}
+
+/** Longer than the backend's longest provider timeout, but still terminal. */
+export const SSE_INACTIVITY_TIMEOUT_MS = 90_000
+
+export class StreamTimeoutError extends Error {
+  constructor() {
+    super('The response stream stopped sending data')
+    this.name = 'StreamTimeoutError'
   }
 }
 
@@ -99,8 +111,22 @@ export class UnauthorizedError extends Error {
   }
 }
 
-/** Any error thrown by the client, carrying the HTTP status it came from. */
-export type ApiError = Error & { status?: number }
+/**
+ * Any error thrown by the client, carrying the HTTP status it came from and
+ * the backend's `detail` as sent, so callers can branch on a known key.
+ */
+export type ApiError = Error & { status?: number; detail?: unknown }
+
+type SearchParams = URLSearchParams | Record<string, string>
+
+// What `require_admin` answers a signed-in admin who has not enrolled an
+// authenticator yet. Not a reason to sign in again: a reason to enrol.
+export const TOTP_SETUP_REQUIRED = 'totp_setup_required'
+export const TOTP_SETUP_PATH = '/settings?totp=required'
+
+export function isTotpSetupRequired(error: unknown): boolean {
+  return error instanceof UnauthorizedError && error.message === TOTP_SETUP_REQUIRED
+}
 
 /**
  * FastAPI client class
@@ -115,8 +141,12 @@ export class FastAPIClient {
   /**
    * Get full URL for an endpoint
    */
-  getUrl(path: string): string {
-    return `${this.baseUrl}${path}`
+  getUrl(path: string, searchParams?: SearchParams): string {
+    const url = new URL(`${this.baseUrl}${path}`)
+    if (searchParams) {
+      url.search = new URLSearchParams(searchParams).toString()
+    }
+    return url.href
   }
 
   async parseErrorResponse(
@@ -127,21 +157,23 @@ export class FastAPIClient {
     const message = `Error ${response.status} [${method}](${path}): `
     const content = await response.text()
     let error: Error
+    let detail: string | PydanticValidationError[] | undefined
     try {
-      const detail = JSON.parse(content).detail
+      const parsed = JSON.parse(content).detail as string | PydanticValidationError[]
+      detail = parsed
       if (response.status === 401 || response.status === 403) {
-        error = new UnauthorizedError(detail)
+        error = new UnauthorizedError(parsed as string)
       } else if (response.status === 422) {
-        error = new ValidationError(detail)
+        error = new ValidationError(parsed)
       } else if (response.status === 429) {
-        error = new ValidationError(detail)
+        error = new ValidationError(parsed)
       } else {
-        error = new InternalError(message + detail)
+        error = new InternalError(message + parsed)
       }
     } catch {
       error = new Error(message + content)
     }
-    return Object.assign(error, { status: response.status })
+    return Object.assign(error, { status: response.status, detail })
   }
 
   /**
@@ -149,24 +181,30 @@ export class FastAPIClient {
    */
   async request<T>(
     path: string,
-    options: RequestInit & { fetch?: typeof fetch } = { fetch }
+    options: RequestInit & { fetch?: typeof fetch; searchParams?: SearchParams } = {
+      fetch
+    }
   ): Promise<T> {
-    const url = this.getUrl(path)
+    const url = this.getUrl(path, options.searchParams)
+
     // Get svelte load function's fetch or use default
     const _fetch = options.fetch ?? fetch
-    delete options.fetch
+    const opts: RequestInit = omit(options as Record<PropertyKey, unknown>, [
+      'fetch',
+      'searchParams'
+    ])
 
     try {
       const response = await _fetch(url, {
-        ...options,
-        headers: options.headers ?? {
+        ...opts,
+        headers: opts.headers ?? {
           'Content-Type': 'application/json'
         },
         credentials: 'include'
       })
 
       if (!response.ok) {
-        throw await this.parseErrorResponse(response, path, options.method)
+        throw await this.parseErrorResponse(response, path, opts.method)
       }
 
       if (response.status === 204) {
@@ -183,8 +221,9 @@ export class FastAPIClient {
   /**
    * Stream responses using Server-Sent Events (SSE)
    */
-  async *stream(path: string, body: any): AsyncGenerator<SSEEvent> {
+  async *stream(path: string, body: unknown): AsyncGenerator<SSEEvent> {
     const url = this.getUrl(path)
+    const controller = new AbortController()
 
     console.debug(`Streaming from ${path}`)
 
@@ -195,7 +234,8 @@ export class FastAPIClient {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(body),
-        credentials: 'include'
+        credentials: 'include',
+        signal: controller.signal
       })
 
       if (!response.ok) {
@@ -208,7 +248,24 @@ export class FastAPIClient {
       let buffer = ''
 
       while (true) {
-        const { done, value } = await reader.read()
+        let timer: ReturnType<typeof setTimeout> | undefined
+        const timeout = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new StreamTimeoutError()), SSE_INACTIVITY_TIMEOUT_MS)
+        })
+        let result: ReadableStreamReadResult<Uint8Array>
+        try {
+          result = await Promise.race([reader.read(), timeout])
+        } catch (error) {
+          if (error instanceof StreamTimeoutError) {
+            void reader.cancel(error).catch(() => undefined)
+            controller.abort(error)
+          }
+          throw error
+        } finally {
+          clearTimeout(timer)
+        }
+
+        const { done, value } = result
 
         if (done) break
 

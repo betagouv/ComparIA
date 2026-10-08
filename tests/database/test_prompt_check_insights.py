@@ -208,7 +208,8 @@ def test_try_reports_a_failed_call(
 
     assert result.decision == "error"
     assert result.scores == {}
-    assert "too slow" in result.message
+    assert result.message == admin_router.CALL_FAILED_MESSAGE
+    assert "too slow" in result.error
     assert checks.REDIS_CHECK_FAILURES_KEY not in redis.store
 
 

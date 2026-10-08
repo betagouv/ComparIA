@@ -1,6 +1,6 @@
 <script module lang="ts">
   export type LinkProps = {
-    href: string
+    href: ExternalHref | ResolvedPathname | `#${string}`
     button?: boolean
     hideExternalIcon?: boolean
   } & ButtonProps &
@@ -8,7 +8,9 @@
 </script>
 
 <script lang="ts">
+  import type { ResolvedPathname } from '$app/types'
   import { m } from '$lib/i18n/messages'
+  import type { ExternalHref } from '$lib/routing'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import type { ButtonProps } from './Button.svelte'
 

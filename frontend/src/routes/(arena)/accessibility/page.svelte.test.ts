@@ -10,6 +10,7 @@ vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => auth }))
 
 describe('Accessibility declaration', () => {
   it('names the domain it applies to', () => {
+    // @ts-expect-error Page doesn't need more data
     const { container } = render(AccessibilityPage, { data: { content: null } })
 
     expect(container.textContent).toContain('arene.example.test')
@@ -18,6 +19,7 @@ describe('Accessibility declaration', () => {
 
   it('falls back to the platform name when the URL is unusable', () => {
     auth.config.platform_url = 'not a url'
+    // @ts-expect-error Page doesn't need more data
     const { container } = render(AccessibilityPage, { data: { content: null } })
 
     expect(container.textContent).toContain('Arène de test')

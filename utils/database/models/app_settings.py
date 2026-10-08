@@ -9,8 +9,10 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.validation import is_secure_url
+
 from .publish import PublishFrequency
-from .utils import AutoDatetime
+from .utils import AutoDatetime, logo_version
 
 PRIMARY_COLOR_LIGHT_DEFAULT = "#6464F3"
 PRIMARY_COLOR_DARK_DEFAULT = "#9898F8"
@@ -79,11 +81,11 @@ def _normalize_homepage_url(value: object) -> str | None:
 # An instance enables a subset of these. Anything outside the tuple is refused
 # rather than stored, because the frontend has no messages for it and would fall
 # back to the base locale without telling anyone.
-SUPPORTED_LOCALES = ("da", "en", "fr", "lt", "sv")
+SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
 
 # What a new instance starts with, and what the migration backfills onto the
-# existing ones. Narrower than SUPPORTED_LOCALES: lt and sv ship far too few
-# translated messages to be offered unasked, which is why prod carried
+# existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
+# few translated messages to be offered unasked, which is why prod carried
 # PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
 # /admin/locales, which is the point of the setting.
 DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
@@ -167,8 +169,34 @@ class AppSettings(SQLModel, table=True):
         DEFAULT_ENABLED_LOCALES
     )
     default_locale: str = Field(default="fr")
+    auth_methods: Annotated[list[str], Field(sa_type=JSONB)] = list(["email_code"])
+    oidc_issuer: str | None = None
+    oidc_client_id: str | None = None
+    oidc_client_secret_encrypted: Annotated[
+        bytes | None, Field(sa_type=LargeBinary)
+    ] = None
+    oidc_scopes: Annotated[list[str], Field(sa_type=JSONB)] = list(["openid", "email"])
+    oidc_button_label: str | None = None
+    oidc_button_logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    oidc_button_logo_content_type: str | None = None
+    # Outcome of the last "test connection": passed, the reason if not, when,
+    # and the fingerprint of the provider config it was run against.
+    oidc_connection_test: Annotated[dict | None, Field(sa_type=JSONB)] = None
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
+
+    @property
+    def logo_version(self) -> str | None:
+        return logo_version(self.logo)
+
+
+class OIDCConnectionTest(SQLModel):
+    """The last connection test, when it was run on the config in force."""
+
+    passed: bool
+    # Named failure, None when it passed.
+    reason: str | None = None
+    tested_at: str
 
 
 class AppSettingsPublic(SQLModel):
@@ -187,10 +215,23 @@ class AppSettingsPublic(SQLModel):
     publish_hour: int
     publish_timezone: str
     has_custom_logo: bool
+    logo_version: str | None = None
     enabled_locales: list[str]
     default_locale: str
+    auth_methods: list[str]
+    oidc_issuer: str | None
+    oidc_client_id: str | None
+    oidc_has_client_secret: bool
+    oidc_scopes: list[str]
+    oidc_button_label: str | None
+    oidc_has_button_logo: bool
+    oidc_button_logo_content_type: str | None
+    oidc_connection_test: OIDCConnectionTest | None = None
     updated_at: str
     updated_by: uuid.UUID | None = None
+
+
+_VALID_AUTH_METHODS = frozenset({"email_code", "oidc"})
 
 
 class AppSettingsPatch(SQLModel):
@@ -210,6 +251,44 @@ class AppSettingsPatch(SQLModel):
     publish_frequency: PublishFrequency | None = None
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
+    auth_methods: list[str] | None = None
+    oidc_issuer: str | None = None
+    oidc_client_id: str | None = None
+    oidc_client_secret: str | None = None
+    oidc_scopes: list[str] | None = None
+    oidc_button_label: str | None = None
+
+    @field_validator("auth_methods")
+    @classmethod
+    def validate_auth_methods(cls, value: list[str] | None) -> list[str] | None:
+        if value is None:
+            return None
+        if not value:
+            raise ValueError("At least one auth method must be enabled")
+        unknown = sorted(set(value) - _VALID_AUTH_METHODS)
+        if unknown:
+            raise ValueError(f"Unknown auth methods: {', '.join(unknown)}")
+        return value
+
+    @field_validator("oidc_issuer")
+    @classmethod
+    def validate_oidc_issuer(cls, value: str | None) -> str | None:
+        # The id_token signature is not verified: TLS is what protects the
+        # exchange with the provider.
+        if value and not is_secure_url(value):
+            raise ValueError(
+                "The OIDC issuer must be an https URL (http only on localhost)"
+            )
+        return value
+
+    @field_validator("oidc_scopes")
+    @classmethod
+    def validate_oidc_scopes(cls, value: list[str] | None) -> list[str] | None:
+        # Without `openid` the provider runs plain OAuth2: no id_token, so no
+        # nonce to check and nothing that says who signed in.
+        if value is not None and "openid" not in value:
+            raise ValueError("OIDC scopes must include openid")
+        return value
 
     @field_validator("publish_timezone")
     @classmethod

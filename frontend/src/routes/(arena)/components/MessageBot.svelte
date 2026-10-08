@@ -1,7 +1,7 @@
 <script lang="ts">
   import Copy from '$components/Copy.svelte'
   import { Icon } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import { MarkdownCode as Markdown } from '$components/markdown'
   import Pending from '$components/Pending.svelte'
   import type {
     APIVoteAnnotate,
@@ -9,7 +9,7 @@
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
-  import { isAdmin } from '$lib/auth.svelte'
+  import { isAdmin } from '$lib/authContext.svelte'
   import type { AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
@@ -123,7 +123,7 @@
 
       {#each trace as event, index (`${event.type}-${index}`)}
         {#if event.type === 'reasoning'}
-          {@render reasoningBlock(event.content, `reasoning-${message.generation_id}-${index}`)}
+          {@render reasoningBlock(event.content, `reasoning-${id}-${index}`)}
         {:else if event.type === 'intermediate_content'}
           <Markdown message={event.content} chatbot />
         {:else if event.type === 'tool_call'}
@@ -139,7 +139,7 @@
       {#if liveReasoning}
         {@render reasoningBlock(
           liveReasoning,
-          `reasoning-${message.generation_id}-live`,
+          `reasoning-${id}-live`,
           turnSide.status === 'generating' && !message.content
         )}
       {/if}

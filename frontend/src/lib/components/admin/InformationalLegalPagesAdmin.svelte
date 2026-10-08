@@ -1,6 +1,8 @@
 <script lang="ts">
   import { Button, Checkbox, Input, Select, Textarea } from '$components/dsfr'
+  import { getPlatformName, tryGetAuthContext } from '$lib/authContext.svelte'
   import { api } from '$lib/fastapi-client'
+  import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
@@ -17,17 +19,21 @@
   type InformationalPages = { pages: Record<PageKey, PageConfig> }
 
   const pageKeys: PageKey[] = ['legal_notice', 'accessibility', 'ecodesign']
-  const locales = [
-    { value: 'fr', label: 'Français' },
-    { value: 'en', label: 'English' }
-  ]
+  // The locales the instance serves, so each page can be written in each.
+  const auth = tryGetAuthContext()
+  const platformName = getPlatformName()
+  const defaultLocale = auth?.config.default_locale ?? 'fr'
+  const locales = getLocales(auth?.config.enabled_locales).map((item) => ({
+    value: item.code,
+    label: item.long
+  }))
 
   let loading = $state(true)
   let saving = $state(false)
   let selectedLocales = $state<Record<PageKey, string>>({
-    legal_notice: 'fr',
-    accessibility: 'fr',
-    ecodesign: 'fr'
+    legal_notice: defaultLocale,
+    accessibility: defaultLocale,
+    ecodesign: defaultLocale
   })
   let errors = $state<Partial<Record<PageKey, string>>>({})
   let pages = $state<InformationalPages['pages']>()
@@ -104,7 +110,7 @@
               <div class="fr-radio-group">
                 <input id="{key}-internal" type="radio" value="internal" bind:group={config.mode} />
                 <label class="fr-label" for="{key}-internal">
-                  {m['admin.legal.informational.internal']()}
+                  {m['admin.legal.informational.internal']({ platformName })}
                 </label>
               </div>
             </div>

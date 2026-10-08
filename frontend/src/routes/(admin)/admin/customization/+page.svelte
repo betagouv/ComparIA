@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
+  import { getVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { contrastRatio, isHexColor } from '$lib/theme'
@@ -17,7 +18,6 @@
   let votesObjective = $state('')
   let platformName = $state('')
   let hasCustomLogo = $state(false)
-  let logoVersion = $state(0)
   let primaryColorLight = $state('')
   let primaryColorDark = $state('')
   let secondaryColorLight = $state('')
@@ -34,10 +34,13 @@
   })
   let errors = $state<Record<string, string>>({})
 
-  const logoSrc = $derived(
-    hasCustomLogo ? `${api.getUrl('/auth/config/logo')}?v=${logoVersion}` : '/orgs/comparia.png'
-  )
   const auth = getAuthContext()
+  const logoSrc = $derived(
+    hasCustomLogo
+      ? api.getUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
+      : '/orgs/comparia.png'
+  )
+  const votes = getVotesContext()
 
   async function load() {
     loading = true
@@ -130,6 +133,8 @@
         method: 'PATCH',
         body: JSON.stringify(patch)
       })
+      votesObjective = String(saved.votes_objective)
+      votes.objective = saved.votes_objective
       platformName = saved.platform_name
       primaryColorLight = saved.primary_color_light
       primaryColorDark = saved.primary_color_dark
@@ -162,10 +167,14 @@
     try {
       const formData = new FormData()
       formData.append('file', file)
-      await api.request('/admin/settings/logo', { method: 'PUT', body: formData, headers: {} })
+      const updated = await api.request<AppSettingsPublic>('/admin/settings/logo', {
+        method: 'PUT',
+        body: formData,
+        headers: {}
+      })
       hasCustomLogo = true
       auth.config.has_custom_logo = true
-      logoVersion++
+      auth.config.logo_version = updated.logo_version ?? null
       useToast(m['admin.settings.customization.logo.updated'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
@@ -181,6 +190,7 @@
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
       hasCustomLogo = false
       auth.config.has_custom_logo = false
+      auth.config.logo_version = null
       useToast(m['admin.settings.customization.logo.resetDone'](), 4000)
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
@@ -231,6 +241,7 @@
             <label class="fr-label">
               <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
               <input
+                class="fr-upload"
                 type="file"
                 accept="image/png,image/jpeg,image/svg+xml,image/webp"
                 disabled={uploadingLogo}

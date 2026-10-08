@@ -1,6 +1,8 @@
 services:
   postgres-simple:
-    image: postgres:18
+    # Local dev only, bound to loopback below: the comparia:comparia
+    # credentials never leave the host.
+    image: postgres:18@sha256:7157393f508fd8eb46119937fab39813783fe3e7d4c6316c45c12ce2ea25e61d
     environment:
       POSTGRES_USER: comparia
       POSTGRES_PASSWORD: comparia
@@ -9,6 +11,9 @@ services:
       - db-data:/var/lib/postgresql
     ports:
       - "127.0.0.1:5432:5432"
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 200
     networks:
       comparia-net:
         aliases:

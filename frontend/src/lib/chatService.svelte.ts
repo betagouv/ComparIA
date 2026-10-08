@@ -1,7 +1,8 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
+import { arenaErrorMessage, isArenaErrorKey, promptCheckMessage } from '$lib/apiErrors'
 import { CaptchaError, consumeAltchaToken } from '$lib/captcha.svelte'
-import { api, ValidationError } from '$lib/fastapi-client'
+import { api, StreamTimeoutError, ValidationError, type ApiError } from '$lib/fastapi-client'
 import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
@@ -44,7 +45,6 @@ export type Bot = 'a' | 'b'
 // Comparison overrides
 export type UserMessage = UserMessageRead
 export interface AssistantMessage extends LLMMessageCreate {
-  generation_id: string
   content: string
 }
 export type AnyMessage = UserMessage | AssistantMessage
@@ -114,20 +114,25 @@ export interface RevealData {
 
 // DATA
 
-export const modeInfos: ModeInfos[] = (
-  [
-    { value: 'random', icon: 'i-ri-dice-line' },
-    { value: 'custom', icon: 'i-ri-search-line' },
-    { value: 'small-models', icon: 'i-ri-leaf-line' },
-    { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
-  ] as const
-).map((item) => ({
-  ...item,
-  title: m[`modes.${item.value}.title`](),
-  label: m[`modes.${item.value}.label`](),
-  alt_label: m[`modes.${item.value}.altLabel`](),
-  description: m[`modes.${item.value}.description`]()
-}))
+const MODES = [
+  { value: 'random', icon: 'i-ri-dice-line' },
+  { value: 'custom', icon: 'i-ri-search-line' },
+  { value: 'small-models', icon: 'i-ri-leaf-line' },
+  { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
+] as const
+
+// Resolved on each call rather than at module load: the module is evaluated
+// once per server, before any request sets a locale, so a constant would carry
+// the base locale to every visitor.
+export function getModeInfos(): ModeInfos[] {
+  return MODES.map((item) => ({
+    ...item,
+    title: m[`modes.${item.value}.title`](),
+    label: m[`modes.${item.value}.label`](),
+    alt_label: m[`modes.${item.value}.altLabel`](),
+    description: m[`modes.${item.value}.description`]()
+  }))
+}
 
 // COMPARISON LOGIC
 
@@ -156,12 +161,32 @@ function parseAPITurn(turn: APIComparisonTurn): ComparisonTurn {
   }
 }
 
-function parseAPIComparison(comparison: APIComparison): Comparison {
-  return {
+export function parseAPIComparison(
+  comparison: APIComparison,
+  recoverInterrupted = false
+): Comparison {
+  const parsed: Comparison = {
     ...comparison,
     error: comparison.error?.message,
     turns: comparison.turns.map(parseAPITurn)
   }
+
+  // Data loaded by a fresh page is not attached to the old SSE request. Any
+  // incomplete turn therefore cannot make further progress and must not be
+  // presented as if it were still generating forever. This includes turns where
+  // only one side answered: parseAPITurn calls those 'complete', but the missing
+  // side would otherwise stay pending with no stream to fill it.
+  const interruptedTurn = recoverInterrupted
+    ? parsed.turns.findLast((turn) => turn.a.status === 'pending' || turn.b.status === 'pending')
+    : undefined
+  if (interruptedTurn) {
+    parsed.error ??= 'provider_error'
+    interruptedTurn.status = 'error'
+    if (interruptedTurn.a.status === 'pending') interruptedTurn.a.status = 'error'
+    if (interruptedTurn.b.status === 'pending') interruptedTurn.b.status = 'error'
+  }
+
+  return parsed
 }
 
 export function parseAPIRevealData(data: APIRevealData): RevealData {
@@ -176,9 +201,15 @@ export function parseAPIRevealData(data: APIRevealData): RevealData {
   }
 }
 
-export async function queryComparisons(_fetch: typeof fetch = fetch) {
+/**
+ * `recoverInterrupted` is only safe on a fresh page load: it rewrites any
+ * still-pending turn as interrupted. Passing it on an in-session refresh (e.g.
+ * after sign-in) would clobber a comparison that is actively streaming in this
+ * tab.
+ */
+export async function queryComparisons(_fetch: typeof fetch = fetch, recoverInterrupted = false) {
   const data = await api.request<APIComparison[]>('/arena/comparison/list', { fetch: _fetch })
-  return data.map((c) => parseAPIComparison(c))
+  return data.map((c) => parseAPIComparison(c, recoverInterrupted))
 }
 
 export function initComparisonsContext(data: ComparisonsCtx) {
@@ -215,7 +246,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     return turn.status
   })
 
-  async function ask(url: string, body: any): Promise<boolean> {
+  async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
     promptError = undefined
     promptWarnings = undefined
@@ -233,7 +264,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (event.type === 'warning') {
           warned = true
           warnedRequest = { url, body: { ...body, warning_token: event.warning_token } }
-          promptWarnings = event.warnings.map((warning) => warning.message)
+          promptWarnings = event.warnings.map((warning) => promptCheckMessage(warning.message))
           break
         } else if (event.type === 'init') {
           const id = event.comparison.id.toString()
@@ -278,9 +309,15 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } catch (err) {
       if (err instanceof ValidationError) {
-        promptError = err.errors ? err.errors[0].msg : err.message
+        const detail = err.errors ? err.errors[0].msg : err.message
+        promptError = promptCheckMessage(arenaErrorMessage(detail))
       } else if (err instanceof CaptchaError) {
-        promptError = 'Vérification anti-robot indisponible, veuillez réessayer.'
+        promptError = arenaErrorMessage('captcha_unavailable')
+      } else if (err instanceof StreamTimeoutError && comparison) {
+        comparison.error = 'timeout'
+        if (turn) turn.status = 'error'
+      } else if (isArenaErrorKey((err as ApiError).detail)) {
+        promptError = arenaErrorMessage((err as ApiError).detail as string)
       } else {
         throw err
       }
@@ -375,7 +412,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     async reveal() {
       if (!comparison) throw new InternalError('No comparison to reveal.')
-      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`)
+      const revealData = await api.request<APIRevealData>(`/arena/reveal/${comparisonId_}`, {
+        method: 'POST'
+      })
 
       comparison.reveal_data = revealData
     }

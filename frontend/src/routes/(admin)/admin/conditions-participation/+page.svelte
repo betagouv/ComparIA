@@ -2,7 +2,7 @@
   import { resolve } from '$app/paths'
   import LegalPresentationPreview from '$components/admin/LegalPresentationPreview.svelte'
   import { Button, Textarea } from '$components/dsfr'
-  import PageLayout from '$components/PageLayout.svelte'
+  import { PageLayout } from '$components/layout'
   import { api } from '$lib/fastapi-client'
   import type { LegalPresentation } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'

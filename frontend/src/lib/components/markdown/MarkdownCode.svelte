@@ -36,7 +36,7 @@
   let el = $state<HTMLElement>()
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
-  const marked = create_marked({ header_links, line_breaks })
+  const marked = $derived(create_marked({ header_links, line_breaks }))
 
   function escapeTags(content: string, tagsToEscape: string[] | boolean): string {
     if (tagsToEscape === true) {
@@ -97,7 +97,8 @@
         mermaid.initialize({
           startOnLoad: false,
           theme: theme_mode === 'dark' ? 'dark' : 'default',
-          securityLevel: 'antiscript'
+          // Diagram source comes from the model, so it is treated as untrusted.
+          securityLevel: 'strict'
         })
         await mermaid.run({
           nodes: Array.from(mermaidDivs).map((node) => node as HTMLElement)
@@ -287,6 +288,8 @@
   span :global(pre) {
     overflow-x: auto;
     max-width: 100%;
+    /* Quick fix to avoid way too light base color on code block */
+    color: unset;
   }
 
   /* CUSTOM */

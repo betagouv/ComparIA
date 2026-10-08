@@ -1,20 +1,20 @@
 <script lang="ts">
-  import AILogo from '$components/AILogo.svelte'
   import Dropdown from '$components/Dropdown.svelte'
   import { Badge, Button, Icon } from '$components/dsfr'
   import InfoCard from '$components/InfoCard.svelte'
+  import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import MiniCard from './MiniCard.svelte'
   import type { RevealModelData } from '$lib/chatService.svelte'
   import { buildConsumptionSummary, formatLocalizedNumber } from '$lib/consumptionSummary'
   import { buildCostComparison } from '$lib/costComparison'
-  import { formatUsageCostFromEuro } from '$lib/currency'
+  import { formatUsageCostFromUsd } from '$lib/currency'
   import { buildEnergyEquivalences } from '$lib/energyEquivalences'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { ENERGY_CLASS_COLORS, getModelCards, getModelsContext } from '$lib/models'
-  import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import { buildUsageConsumption, USAGE_PROFILES, type UsageProfileId } from '$lib/usageProfiles'
+  import { propsToAttrs, sanitize } from '$lib/utils/commons'
+  import MiniCard from './MiniCard.svelte'
 
   let {
     data,
@@ -131,7 +131,7 @@
     (otherModel.price_in / 1_000_000) * otherUsageData.inputTokens +
       (otherModel.price_out / 1_000_000) * otherUsageData.outputTokens
   )
-  const formattedCost = $derived(formatUsageCostFromEuro(cost, commons.currency, getLocale()))
+  const formattedCost = $derived(formatUsageCostFromUsd(cost, commons.currency, getLocale()))
   const costComparison = $derived(buildCostComparison(cost, otherCost))
   const energyComparison = $derived(
     buildCostComparison(usageData.energyMwh, otherUsageData.energyMwh)
@@ -245,7 +245,13 @@
       class="fr-h6 mb-4! text-dark-grey! gap-2 flex items-start"
       style="min-height: {Math.max(40, modelTitleHeight)}px"
     >
-      <AILogo logo={model.lab.logo} size="lg" alt={model.lab.name} />
+      <AILogo
+        logo={model.lab.logo}
+        customLogoId={model.lab.has_custom_logo ? model.lab.id : undefined}
+        customLogoVersion={model.lab.logo_version}
+        size="lg"
+        alt={model.lab.name}
+      />
       <div bind:this={modelTitle} class="min-w-0 flex-1">
         <span class="font-normal">{model.lab.name}/</span>{model.name}
       </div>
@@ -335,7 +341,7 @@
       <p class="text-xxs! text-grey mb-3! -mt-2!">{m['reveal.impacts.usage.assumption']()}</p>
     {/if}
     <div class="gap-4 flex flex-col">
-      <div class="gap-2 2xl:grid-cols-3 xl:grid-cols-2 md:grid-cols-1 sm:grid-cols-2 grid">
+      <div class="gap-2 xl:grid-cols-3 md:grid-cols-1 sm:grid-cols-2 grid">
         {#each consoCards as card (card.id)}
           <InfoCard
             {...card}

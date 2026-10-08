@@ -5,8 +5,10 @@ from .auth import (
     ConsentLog,
     LegalDocument,
     LoginCode,
+    TotpChallenge,
     User,
     UserPublic,
+    UserTotp,
 )
 from .comparison import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -17,8 +19,10 @@ from .comparison import (
     ComparisonPublic,
     ComparisonRead,
     ComparisonUnarchiveUpdate,
+    ErrorCode,
     ErrorDetails,
 )
+from .exchange_rate import ExchangeRate
 from .messages import *
 from .prompt_check import (
     PromptCheck,

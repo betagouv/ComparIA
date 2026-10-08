@@ -1,5 +1,6 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
+import type { PageData, PageProps } from './$types'
 import Page from './+page.svelte'
 import ConversationActivityChart from './ConversationActivityChart.svelte'
 
@@ -24,15 +25,35 @@ describe('statistics page', () => {
           votes_count: 4321,
           models_count: 31,
           activity: [{ date: '2026-01-01', prompts: 42, conversations: 21 }]
-        }
-      } as never
-    })
+        } satisfies PageData['statistics']
+      }
+    } as PageProps)
 
     expect(getByRole('heading', { level: 1, name: 'Statistiques de la plateforme' })).toBeTruthy()
     expect(getByRole('heading', { level: 3, name: 'Activité de la plateforme' })).toBeTruthy()
     expect(
       [...container.querySelectorAll('.metric-value')].map((item) => item.textContent?.trim())
     ).toEqual([12345, 6789, 4321, 31].map((value) => new Intl.NumberFormat('fr').format(value)))
+  })
+
+  it('identifies the selected period for assistive technologies', () => {
+    const { getByRole } = render(Page, {
+      data: {
+        statistics: {
+          period: '30d',
+          granularity: 'day',
+          range_start: '2025-12-03',
+          range_end: '2026-01-01',
+          prompts_count: 0,
+          conversations_count: 0,
+          votes_count: 0,
+          models_count: 0,
+          activity: [] as PageData['statistics']['activity']
+        } satisfies PageData['statistics']
+      }
+    } as PageProps)
+
+    expect(getByRole('link', { name: '30 jours' })).toHaveAttribute('aria-current', 'page')
   })
 
   it('clips weekly labels to the selected period boundaries', () => {

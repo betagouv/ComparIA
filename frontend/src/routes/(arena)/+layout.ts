@@ -8,7 +8,7 @@ export const load: LayoutLoad = async ({ data, fetch }) => {
 
   return {
     ...data,
-    comparisons: await queryComparisons(fetch),
+    comparisons: await queryComparisons(fetch, true),
     // An instance with no tools configured simply shows no picker.
     tools: await api.request<ToolPublic[]>('/arena/tools').catch(() => [] as ToolPublic[])
   }

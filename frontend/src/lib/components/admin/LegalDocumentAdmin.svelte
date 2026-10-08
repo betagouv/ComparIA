@@ -1,17 +1,23 @@
 <script lang="ts">
-  import { resolve } from '$app/paths'
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
-  import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import { MarkdownCode as Markdown } from '$components/markdown'
+  import { tryGetAuthContext } from '$lib/authContext.svelte'
   import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import type { AdminLegalDocument, PublishLegalDocumentBody } from '$lib/generated/admin'
+  import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
   let { kind }: { kind: AdminLegalDocument['kind'] } = $props()
 
-  const localeOptions = [{ value: 'fr', label: 'Français' }]
+  // The locales the instance serves, so a document can be published in each.
+  const auth = tryGetAuthContext()
+  const localeOptions = getLocales(auth?.config.enabled_locales).map((item) => ({
+    value: item.code,
+    label: item.long
+  }))
   let loading = $state(true)
   let publishing = $state(false)
   let editorOpen = $state(false)
@@ -19,7 +25,7 @@
   let documents = $state<AdminLegalDocument[]>([])
   let activeDocument = $state<AdminLegalDocument | null>(null)
   let version = $state('')
-  let locale = $state('fr')
+  let locale = $state(auth?.config.default_locale ?? 'fr')
   let content = $state('')
   let effectiveAt = $state('')
   let confirmed = $state(false)
@@ -28,7 +34,7 @@
     kind === 'terms'
       ? {
           endpoint: '/admin/legal/terms',
-          publicPage: resolve(TERMS_PATH),
+          publicPage: TERMS_PATH,
           title: m['admin.legal.terms.title'](),
           contentLabel: m['admin.legal.terms.contentLabel'](),
           draftTitle: m['admin.legal.terms.draftTitle'](),
@@ -36,7 +42,7 @@
         }
       : {
           endpoint: '/admin/legal/privacy-policy',
-          publicPage: resolve(PRIVACY_POLICY_PATH),
+          publicPage: PRIVACY_POLICY_PATH,
           title: m['admin.legal.privacy.title'](),
           contentLabel: m['admin.legal.privacy.contentLabel'](),
           draftTitle: m['admin.legal.privacy.draftTitle'](),
@@ -65,9 +71,9 @@
     try {
       documents = await api.request<AdminLegalDocument[]>(copy.endpoint)
       try {
-        activeDocument = await api.request<AdminLegalDocument>(
-          `${copy.endpoint}/current?locale=${encodeURIComponent(locale)}`
-        )
+        activeDocument = await api.request<AdminLegalDocument>(`${copy.endpoint}/current`, {
+          searchParams: { locale }
+        })
       } catch {
         activeDocument = null
       }

@@ -9,7 +9,7 @@
   let timer = $state<number>()
 
   onMount(() => {
-    timer = setTimeout(() => onClose(), duration)
+    timer = setTimeout(() => onClose(), duration) as unknown as number
   })
 
   onDestroy(() => {

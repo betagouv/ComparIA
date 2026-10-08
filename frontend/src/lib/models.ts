@@ -1,7 +1,8 @@
-import { formatCurrencyFromEuro } from '$lib/currency'
+import { formatCurrencyFromUsd } from '$lib/currency'
 import type {
   APILLMData,
   DatasetData,
+  Link,
   LLMList,
   PersonalRankingRow,
   PreferencesData
@@ -9,9 +10,11 @@ import type {
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
+import { toShortDate } from '$lib/utils/data'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
+import { validExternalUrl } from './routing'
 import { styleControl } from './styleControl.svelte'
 import { RANK_CLASS_COUNT } from './theme'
 
@@ -26,17 +29,21 @@ export const ENERGY_CLASS_COLORS: Record<EnergyClasses, string> = {
   E: '--orange-terre-battue-main-645',
   F: '--red-marianne-main-472'
 }
-export const MODALITIES = (
-  [
-    { id: 'text', icon: 'i-ri-file-text-line' },
-    { id: 'image', icon: 'i-ri-image-upload-line' },
-    { id: 'audio', icon: 'i-ri-volume-up-line' },
-    { id: 'video', icon: 'i-ri-video-line' }
-  ] as const
-).map((item) => ({
-  ...item,
-  title: m[`models.cards.modalities.types.${item.id}`]()
-}))
+const MODALITIES = [
+  { id: 'text', icon: 'i-ri-file-text-line' },
+  { id: 'image', icon: 'i-ri-image-upload-line' },
+  { id: 'audio', icon: 'i-ri-volume-up-line' },
+  { id: 'video', icon: 'i-ri-video-line' }
+] as const
+
+// See getModeInfos in chatService: a module-level constant would be translated
+// once, in the base locale.
+export function getModalities() {
+  return MODALITIES.map((item) => ({
+    ...item,
+    title: m[`models.cards.modalities.types.${item.id}`]()
+  }))
+}
 export const SOVEREIGNTY_FIELDS = [
   'reuse',
   'commercial_use',
@@ -56,6 +63,8 @@ export type Commons = {
   // apart — see `rankClassSpans`.
   rankClasses: Record<RankClass, Record<'min' | 'max', number>>
   currency: LLMList['currency']
+  // For the card copy that names the instance.
+  platformName: string
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -157,14 +166,14 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       contents: [
         {
           content: m['models.cards.price.price_count']({
-            count: formatCurrencyFromEuro(model.price_in, commons.currency, getLocale()),
+            count: formatCurrencyFromUsd(model.price_in, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_in']()
         },
         {
           content: m['models.cards.price.price_count']({
-            count: formatCurrencyFromEuro(model.price_out, commons.currency, getLocale()),
+            count: formatCurrencyFromUsd(model.price_out, commons.currency, getLocale()),
             midProps
           }),
           subContent: m['models.cards.price.price_out']()
@@ -211,7 +220,7 @@ export function getModelCards(model: BotModel, size: ModelCardSize, commons: Com
       icon: 'i-ri-trophy-line',
       iconClass: 'text-yellow',
       title: m[`models.cards.rank.title${size !== 'md' ? '_short' : ''}`](),
-      tooltip: m['models.cards.rank.tooltip'](),
+      tooltip: m['models.cards.rank.tooltip']({ platformName: commons.platformName }),
       content: model.data
         ? rankClassLabel(commons.rankClasses[model.data.rankClass])
         : m['words.NA'](),
@@ -239,7 +248,38 @@ export function getLicenceBadge(licenseType: APILLMData['license']['kind']) {
   }[licenseType]
 }
 
+function utcCalendarDate(value: string | Date): Date {
+  if (value instanceof Date) {
+    return new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()))
+  }
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day))
+}
+
+/** Whether a release is between its release day and one calendar month later, inclusive. */
+export function isModelNew(releaseDate: string | Date, now = new Date()): boolean {
+  const release = utcCalendarDate(releaseDate)
+  const today = utcCalendarDate(now)
+  if (release > today) return false
+
+  const year = release.getUTCFullYear()
+  const month = release.getUTCMonth()
+  const day = release.getUTCDate()
+  const targetMonth = month + 1
+  const lastDayOfTargetMonth = new Date(Date.UTC(year, targetMonth + 1, 0)).getUTCDate()
+  const expires = new Date(Date.UTC(year, targetMonth, Math.min(day, lastDayOfTargetMonth)))
+  return today <= expires
+}
+
 export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank) {
+  function checkLinks(links: Link[] = []) {
+    const checkedLinks = links.flatMap(({ url, text }) => {
+      const href = validExternalUrl(url)
+      return href ? [{ href, text }] : []
+    })
+    return checkedLinks.length ? checkedLinks : undefined
+  }
+
   const locale = getLocale()
   if (model.public_training_code && model.public_training_data && model.public_weights) {
     model.license.kind = 'open-source'
@@ -248,11 +288,9 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
   const release_date = new Date(model.release_date)
 
   return {
-    ...model,
-    id: model.id!,
+    ...(model as Required<APILLMData>),
     release_date,
-    // FIXME use created_at date instead?
-    new: Math.floor((new Date() - release_date) / (1000 * 60 * 60 * 24)) < 60,
+    new: isModelNew(release_date),
     consumption: Math.round(model.wh_per_million_token), // Wh/1000000 = mWh/1000
     sovereignty_score: SOVEREIGNTY_FIELDS.reduce((score, v) => {
       const obj = v === 'commercial_use' || v === 'reuse' ? model.license : model
@@ -262,22 +300,14 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       license: { ...getLicenceBadge(licenseType), id: `llm-license-${model.id}` },
       release: {
         variant: 'brown' as const,
-        text: m['models.release']({
-          date: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
-        })
+        text: m['models.release']({ date: toShortDate(release_date, locale) })
       } as const,
-      release_short: {
-        variant: '' as const,
-        text: release_date.toLocaleString(locale, { year: 'numeric', month: 'numeric' })
-      } as const,
+      release_short: { variant: '' as const, text: toShortDate(release_date, locale) } as const,
       knowledge: model.knowledge_cutoff
         ? ({
             variant: 'brown' as const,
             text: m['models.knowledge.badge']({
-              date: new Date(model.knowledge_cutoff).toLocaleString(locale, {
-                year: 'numeric',
-                month: 'numeric'
-              })
+              date: toShortDate(new Date(model.knowledge_cutoff), locale)
             }),
             tooltip: m['models.knowledge.tooltip']()
           } as const)
@@ -304,7 +334,8 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
       }
     },
     search: [model.human_id, model.name, model.lab.name].join(' '),
-    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null
+    data: revisedRankData ? { ...model.data!, ...revisedRankData } : null,
+    links: checkLinks(model.links)
   }
 }
 
@@ -373,7 +404,7 @@ export function rankClassSpans(models: ModelRevisedRank[]): Commons['rankClasses
   return spans
 }
 
-export function setModelsContext(data: LLMList) {
+export function setModelsContext(data: LLMList, platformName: string) {
   const rankedModels = data.models
     .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
     .sort((a, b) => a.data!.rank - b.data!.rank)
@@ -399,7 +430,8 @@ export function setModelsContext(data: LLMList) {
     commons: {
       modelsCount,
       currency: data.currency,
-      rankClasses
+      rankClasses,
+      platformName
     }
   })
 }
@@ -418,13 +450,7 @@ export function getModelsWithDataContext() {
     ...data,
     models: (models.filter((llm) => !!llm.data) as BotModelWithData[])
       .sort((a, b) => a.data.rank - b.data.rank)
-      .map((m, i) => ({
-        ...m,
-        data: {
-          ...m.data,
-          rank: i + 1
-        }
-      }))
+      .map((llm, i) => ({ ...llm, data: { ...llm.data, rank: i + 1 } }))
   }
 }
 
@@ -439,9 +465,9 @@ export function getModelsWithDataContext() {
 export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[] {
   const enabled = styleControl.enabled
   const sorted = models
-    .map((m) => {
-      const active = enabled || !m.data.uncontrolled ? m.data : m.data.uncontrolled
-      return { ...m, data: { ...m.data, ...active, uncontrolled: m.data.uncontrolled } }
+    .map((llm) => {
+      const active = enabled || !llm.data.uncontrolled ? llm.data : llm.data.uncontrolled
+      return { ...llm, data: { ...llm.data, ...active, uncontrolled: llm.data.uncontrolled } }
     })
     // Sort on the active score, not on `rank`: models the plain fit dropped
     // keep their style-controlled rank, so the two numbering schemes interleave
@@ -455,9 +481,9 @@ export function applyStyleControl(models: BotModelWithData[]): BotModelWithData[
   // the one case where a model's class legitimately moves.
   const classes = assignRankClasses(sorted.map(({ data }) => data))
 
-  return sorted.map((m, i) => ({
-    ...m,
-    data: { ...m.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
+  return sorted.map((llm, i) => ({
+    ...llm,
+    data: { ...llm.data, rank: i + 1, rankClass: classes[i].toString() as RankClass }
   }))
 }
 

@@ -20,6 +20,7 @@ export interface ComparisonPublic {
   system_msg_b?: string | null;
 }
 export interface ErrorDetails {
+  code?: ("timeout" | "context_too_long" | "empty_response" | "provider_error") | null;
   message: string;
   pos?: ("a" | "b") | null;
   is_timeout?: boolean;
@@ -65,6 +66,21 @@ export interface LinkupSearchTextResult {
   favicon?: string;
   [k: string]: unknown;
 }
+export interface LLMMessageCreate {
+  id?: string;
+  role?: "assistant";
+  created_at?: string | null;
+  responded_at?: string | null;
+  updated_at?: string | null;
+  content?: string;
+  reasoning_content?: string | null;
+  web_search_results?: LinkupSearchTextResult[] | null;
+  agent_trace?:
+    (AgentTraceReasoning | AgentTraceIntermediateContent | AgentTraceToolCall | AgentTraceToolResult)[] | null;
+  agent_stop_reason?:
+    ("completed" | "deadline" | "call_limit" | "round_limit" | "context_exceeded" | "repeat_limit") | null;
+  [k: string]: unknown;
+}
 export interface AgentTraceReasoning {
   type?: "reasoning";
   content: string;
@@ -108,26 +124,6 @@ export interface ToolSource {
   url?: string | null;
   content?: string;
   favicon?: string | null;
-  [k: string]: unknown;
-}
-export type AgentTraceEvent =
-  | AgentTraceReasoning
-  | AgentTraceIntermediateContent
-  | AgentTraceToolCall
-  | AgentTraceToolResult;
-export interface LLMMessageCreate {
-  id?: string;
-  role?: "assistant";
-  created_at?: string | null;
-  responded_at?: string | null;
-  updated_at?: string | null;
-  content?: string;
-  reasoning_content?: string | null;
-  generation_id?: string | null;
-  tokens?: number | null;
-  is_cached?: boolean;
-  web_search_results?: LinkupSearchTextResult[] | null;
-  agent_trace?: AgentTraceEvent[] | null;
   [k: string]: unknown;
 }
 export interface RevealData {
@@ -176,11 +172,11 @@ export interface APILLMData {
   /**
    * Complete identifier used for API calls.
    */
-  api_model_id: string | null;
+  api_model_id?: string | null;
   /**
    * The LLM's endpoint information, create it first if not already available
    */
-  endpoint_id: string | null;
+  endpoint_id?: string | null;
   /**
    * Apply rate limits (usually for high API costs LLMs).
    */
@@ -225,31 +221,31 @@ export interface APILLMData {
   /**
    * Active parameters in billions (only for MoE LLMs).
    */
-  active_params: number | null;
+  active_params?: number | null;
   /**
    * Size of its context window in tokens.
    */
-  context_tokens: number | null;
+  context_tokens?: number | null;
   /**
    * Quantization scheme applied (q4, q8, or None for full precision).
    */
-  quantization: ("q4" | "q8") | null;
+  quantization?: ("q4" | "q8") | null;
   /**
    * What kind of media the LLM can have in input.
    */
   inputs: ("text" | "image" | "audio" | "video")[];
   /**
-   * Price per million input tokens in $.
+   * Price per million input tokens in USD.
    */
   price_in: number;
   /**
-   * Price per million output tokens in $.
+   * Price per million output tokens in USD.
    */
   price_out: number;
   /**
    * System message to add in llm call if specified
    */
-  system_prompt: string | null;
+  system_prompt?: string | null;
   /**
    * List of links to display in LLM card.
    */
@@ -290,11 +286,13 @@ export interface LLMLabPublic {
   /**
    * An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.
    */
-  logo: string;
+  logo: string | null;
   /**
    * A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.
    */
   origin_country: string;
+  has_custom_logo?: boolean;
+  logo_version?: string | null;
   [k: string]: unknown;
 }
 /**
@@ -377,7 +375,7 @@ export interface PreferencesData {
 }
 export interface CurrencyInfo {
   code: string;
-  rate_from_eur: number;
+  rate_from_usd: number;
   date: string | null;
   source: "base" | "frankfurter" | "manual";
   [k: string]: unknown;

@@ -1,4 +1,5 @@
 import { api } from '$lib/fastapi-client'
+import type { PageLoad } from './$types'
 
 export type StatisticsPeriod = '7d' | '30d' | '90d' | 'all'
 export type StatisticsSummary = {
@@ -13,13 +14,14 @@ export type StatisticsSummary = {
   activity: Array<{ date: string; prompts: number; conversations: number }>
 }
 
-export async function load({ fetch, url }) {
+export const load: PageLoad = async ({ fetch, url }) => {
   const requestedPeriod = url.searchParams.get('period')
   const period: StatisticsPeriod = ['7d', '30d', '90d', 'all'].includes(requestedPeriod ?? '')
     ? (requestedPeriod as StatisticsPeriod)
     : '30d'
-  const statistics = await api.request<StatisticsSummary>(`/statistics/summary?period=${period}`, {
-    fetch
+  const statistics = await api.request<StatisticsSummary>('/statistics/summary', {
+    fetch,
+    searchParams: { period }
   })
   return { statistics }
 }

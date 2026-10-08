@@ -1,7 +1,7 @@
 <script module lang="ts">
   export type FormFieldsetItemProps = {
     subProps: AnyFormItemProps[]
-  } & BaseFormFieldProps<'fieldset-item', any>
+  } & BaseFormFieldProps<'fieldset-item'>
 </script>
 
 <script lang="ts">
@@ -9,7 +9,7 @@
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import { FormFieldset } from '.'
 
-  let { value = $bindable(), subProps, ...props }: FormFieldsetItemProps = $props()
+  let { value = $bindable(), subProps, ...props }: FormFieldsetItemProps & { value: any } = $props()
 </script>
 
 <FormFieldset {...props} component="fieldset">

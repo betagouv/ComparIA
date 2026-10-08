@@ -42,8 +42,7 @@ const terms = {
 
 function servesTerms({ accepted = false, consentFails = false } = {}) {
   mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-    if (path === '/auth/invite/invite-token')
-      return Promise.resolve({ valid: true, email: 'personne@example.test' })
+    if (path === '/auth/invite/invite-token') return Promise.resolve({ valid: true })
     if (consentFails) return Promise.reject(new Error('offline'))
     if (path.startsWith('/settings/legal/terms')) return Promise.resolve(terms)
     if (path === '/auth/consent/anonymous' && options?.method === 'POST')
@@ -75,6 +74,7 @@ const acceptButton = (container: HTMLElement) =>
 describe('invite consent', () => {
   beforeEach(() => {
     resetConsent()
+    mocks.goto.mockClear()
     servesTerms()
   })
 
@@ -134,6 +134,23 @@ describe('invite consent', () => {
 
     await fireEvent.click(container.querySelector<HTMLInputElement>('#invite-consent')!)
     expect(acceptButton(container).disabled).toBe(false)
+  })
+
+  it('hands an admin with an authenticator over to the sign-in form at that step', async () => {
+    servesTerms({ accepted: true })
+    const base = mocks.request.getMockImplementation()!
+    mocks.request.mockImplementation((path: string, options?: RequestInit) =>
+      path === '/auth/invite/accept'
+        ? Promise.resolve({ success: true, totp_required: true })
+        : base(path, options)
+    )
+    const { container } = render(InvitePage)
+    await waitFor(() => expect(acceptButton(container).disabled).toBe(false))
+
+    await fireEvent.click(acceptButton(container))
+
+    await waitFor(() => expect(mocks.goto).toHaveBeenCalledWith('/login?step=totp'))
+    expect(paths()).not.toContain('/auth/me')
   })
 
   it('shows the terms and privacy links next to the checkbox', async () => {

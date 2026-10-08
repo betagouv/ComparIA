@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
   import {
     getModelsWithDataContext,
@@ -10,6 +11,8 @@
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
+
+  const platformName = getPlatformName()
 
   const { lastUpdateDate, models: data } = getModelsWithDataContext()
 
@@ -29,13 +32,10 @@
 
   function formatModelData(data: BotModelWithData[], key: WinKey) {
     return data
-      .filter((m) => !!m.data[key])
+      .filter((llm) => !!llm.data[key])
       .slice(0, 10)
       .sort((a, b) => b.data[key]! - a.data[key]!)
-      .map((m) => ({
-        x: m.id,
-        y: m.data[key]!
-      }))
+      .map((llm) => ({ x: llm.id, y: llm.data[key]! }))
   }
 
   const modelsData = $derived({
@@ -58,9 +58,9 @@
     const csvData = [
       csvCols.map((col) => col.label).join(','),
       ...data
-        .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
-        .map((m) =>
-          csvCols.map((col) => (col.key == 'id' ? m[col.key] : m.data[col.key])).join(',')
+        .sort((a, b) => sortIfDefined(a.data, b.data, 'mean_win_prob'))
+        .map((llm) =>
+          csvCols.map((col) => (col.key == 'id' ? llm[col.key] : llm.data[col.key])).join(',')
         )
     ].join('\n')
 
@@ -70,7 +70,7 @@
 
 <div id="ranking-methodo">
   <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.methodo.title']()}</h2>
-  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.methodo.desc.1']()}</p>
+  <p class="mb-4! text-dark-grey text-[14px]!">{m['ranking.methodo.desc.1']({ platformName })}</p>
   <p class="text-dark-grey text-[14px]!">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
@@ -195,7 +195,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -234,7 +234,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -262,9 +262,7 @@
 
     <ul class="mt-6! m-0! p-0! max-w-[640px] list-none!">
       {#each ['both_good', 'both_bad', 'idk'] as const as choice (choice)}
-        <li
-          class="not-last:mb-3 pb-3 p-0! not-last:border-b not-last:border-[--border-default-grey]"
-        >
+        <li class="not-last:mb-3 pb-3 p-0!">
           <span class="text-[14px]"
             >{@html sanitize(m[`ranking.methodo.personal.choices.${choice}`]())}</span
           >

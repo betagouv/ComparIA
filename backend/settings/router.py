@@ -65,7 +65,7 @@ async def public_terms(
     request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
 ):
     document = await _active_document("terms", locale)
-    presentation = await get_legal_presentation()
+    presentation = await get_legal_presentation(locale)
     # The presentation is part of the payload, so editing it must invalidate
     # the cached response even though the document itself is unchanged.
     headers = _cache_headers(document.content_hash, presentation.model_dump_json())

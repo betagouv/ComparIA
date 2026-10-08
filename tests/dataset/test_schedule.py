@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-from backend.publishing import next_run_at  # noqa: E402
+from utils.dataset.schedule import next_run_at, previous_run_at  # noqa: E402
 
 
 def utc(text: str) -> datetime:
@@ -48,3 +48,36 @@ def test_the_next_run_is_always_ahead():
         ):
             now = utc(moment)
             assert next_run_at(frequency, now) > now
+
+
+def test_the_previous_run_is_the_latest_occurrence_not_after_now():
+    assert previous_run_at("off", utc("2026-08-04T12:00:00")) is None
+    assert previous_run_at("daily", utc("2026-08-04T12:00:00")) == utc(
+        "2026-08-04T03:00:00"
+    )
+    assert previous_run_at("daily", utc("2026-08-04T01:00:00")) == utc(
+        "2026-08-03T03:00:00"
+    )
+    assert previous_run_at("weekly", utc("2026-08-04T12:00:00")) == utc(
+        "2026-08-03T03:00:00"
+    )
+    assert previous_run_at("weekly", utc("2026-08-03T02:00:00")) == utc(
+        "2026-07-27T03:00:00"
+    )
+    assert previous_run_at("monthly", utc("2026-08-04T12:00:00")) == utc(
+        "2026-08-01T03:00:00"
+    )
+    assert previous_run_at("monthly", utc("2026-01-01T02:00:00")) == utc(
+        "2025-12-01T03:00:00"
+    )
+
+
+def test_an_occurrence_is_its_own_previous_run():
+    for frequency in ("daily", "weekly", "monthly"):
+        for moment in ("2026-08-04T12:00:00", "2026-12-31T23:59:00"):
+            occurrence = next_run_at(frequency, utc(moment))
+            assert previous_run_at(frequency, occurrence) == occurrence
+            assert (
+                previous_run_at(frequency, next_run_at(frequency, occurrence))
+                != occurrence
+            )

@@ -1,14 +1,19 @@
 <script module lang="ts">
   export type FormSelectProps = {
     options: Option<string | null>[]
-  } & BaseFormFieldProps<'select', string | null>
+  } & BaseFormFieldProps<'select'>
 </script>
 
 <script lang="ts">
   import type { BaseFormFieldProps, Option } from '$lib/utils/form'
   import { FormField } from '.'
 
-  let { value = $bindable(), disabled, options, ...props }: FormSelectProps = $props()
+  let {
+    value = $bindable(),
+    disabled,
+    options,
+    ...props
+  }: FormSelectProps & { value: string | null } = $props()
 </script>
 
 <FormField {...props} component="select">

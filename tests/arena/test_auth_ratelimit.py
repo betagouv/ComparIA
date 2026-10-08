@@ -2,8 +2,9 @@
 Unit tests for the email-login rate limits (no network, no real Redis, no DB).
 
 Covers the 600-kids-behind-one-IP property (per-email request cap is isolated
-per email, never shared across a NAT), the verify brute-force limiter, and the
-fact that the throttle answers before the consent gate.
+per email, never shared across a NAT), the verify brute-force limiter, the fact
+that the throttle answers before the consent gate, and that a client cannot pick
+the IP it is counted under.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_auth_ratelimit.py
@@ -24,6 +25,7 @@ from fastapi.testclient import TestClient
 
 import backend.auth.router as auth_router
 import utils.database.models  # noqa: F401 needed before importing backend.auth.router
+from backend.auth.services import LoginResult
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
 
@@ -53,12 +55,19 @@ async def _fake_request_login_code(email):
     return "123456"
 
 
-async def _fake_send_login_code(email, code):
+async def _fake_send_login_code(email, code, **_colors):
     pass
 
 
 async def _fake_get_app_settings():
-    return SimpleNamespace(auth_domain_allowlist=None)
+    return SimpleNamespace(
+        auth_methods=["email_code"],
+        auth_domain_allowlist=None,
+        platform_name="Compar:IA",
+        primary_color_light="#6464F3",
+        secondary_color_light="#FF9575",
+        default_locale="fr",
+    )
 
 
 async def _fake_current_acceptance(**kwargs):
@@ -67,6 +76,17 @@ async def _fake_current_acceptance(**kwargs):
 
 async def _fake_missing_acceptance(**kwargs):
     return False
+
+
+@contextlib.contextmanager
+def trusted_proxies(count):
+    """Run the block as if the app sat behind `count` reverse proxies."""
+    original = settings.COMPARIA_TRUSTED_PROXY_COUNT
+    settings.COMPARIA_TRUSTED_PROXY_COUNT = count
+    try:
+        yield
+    finally:
+        settings.COMPARIA_TRUSTED_PROXY_COUNT = original
 
 
 @contextlib.contextmanager
@@ -208,7 +228,7 @@ def test_successful_verify_clears_fail_counter():
 
     async def wrong_then_right(**kwargs):
         calls["n"] += 1
-        return None if calls["n"] == 1 else "sometoken"
+        return None if calls["n"] == 1 else LoginResult("session", "sometoken")
 
     with fake_router(verify_login_code=wrong_then_right) as (client, fake):
         r = client.post(
@@ -265,16 +285,21 @@ def test_verify_lockout_is_scoped_per_ip():
     async def always_wrong(**kwargs):
         return None
 
-    with fake_router(verify_login_code=always_wrong) as (client, _fake):
+    with (
+        fake_router(verify_login_code=always_wrong) as (client, _fake),
+        trusted_proxies(1),
+    ):
         # An attacker who knows a victim's email burns all attempts from its IP.
         for _ in range(settings.AUTH_VERIFY_MAX_ATTEMPTS):
             client.post(
                 "/auth/email/verify",
                 json={"email": "victim@school.fr", "code": "000000"},
+                headers={"x-forwarded-for": "198.51.100.4"},
             )
         r = client.post(
             "/auth/email/verify",
             json={"email": "victim@school.fr", "code": "000000"},
+            headers={"x-forwarded-for": "198.51.100.4"},
         )
         assert r.status_code == 429  # attacker's own IP is locked
 
@@ -287,6 +312,87 @@ def test_verify_lockout_is_scoped_per_ip():
         assert r.status_code == 400
 
 
+def test_forwarded_for_is_ignored_without_trusted_proxies():
+    """Untrusted, the header is a free choice of rate limit bucket, which is the
+    same as no rate limit at all."""
+
+    async def always_wrong(**kwargs):
+        return None
+
+    with (
+        fake_router(verify_login_code=always_wrong) as (client, fake),
+        trusted_proxies(0),
+    ):
+        for _ in range(settings.AUTH_VERIFY_MAX_ATTEMPTS):
+            client.post(
+                "/auth/email/verify",
+                json={"email": "victim@school.fr", "code": "000000"},
+            )
+
+        r = client.post(
+            "/auth/email/verify",
+            json={"email": "victim@school.fr", "code": "000000"},
+            headers={"x-forwarded-for": "203.0.113.7"},
+        )
+        assert r.status_code == 429
+
+        spoofed = REDIS_AUTH_VERIFY_FAIL.format(
+            ip="203.0.113.7", email=auth_router._hash("victim@school.fr")
+        )
+        assert spoofed not in fake.store
+
+
+def test_per_email_verify_cap_trips_whatever_the_ip():
+    """Each IP gets its own bucket, so an attacker with a pool of addresses only
+    meets the per-email ceiling."""
+
+    async def always_wrong(**kwargs):
+        return None
+
+    with (
+        fake_router(verify_login_code=always_wrong) as (client, _fake),
+        trusted_proxies(1),
+    ):
+        for n in range(settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL):
+            r = client.post(
+                "/auth/email/verify",
+                json={"email": "victim@school.fr", "code": "000000"},
+                headers={"x-forwarded-for": f"203.0.113.{n + 1}"},
+            )
+            assert r.status_code == 400
+
+        r = client.post(
+            "/auth/email/verify",
+            json={"email": "victim@school.fr", "code": "000000"},
+            headers={"x-forwarded-for": "198.51.100.9"},
+        )
+        assert r.status_code == 429
+
+
+def test_verify_refuses_a_cross_site_origin():
+    """Login CSRF: a third-party page must not be able to drop its own session
+    cookie in a visitor's browser."""
+
+    async def always_right(**kwargs):
+        return LoginResult("session", "sometoken")
+
+    with fake_router(verify_login_code=always_right) as (client, _fake):
+        r = client.post(
+            "/auth/email/verify",
+            json={"email": "student1@school.fr", "code": "000000"},
+            headers={"origin": "https://attacker.example"},
+        )
+        assert r.status_code == 403
+        assert "auth_session" not in r.cookies
+
+        r = client.post(
+            "/auth/email/verify",
+            json={"email": "student1@school.fr", "code": "000000"},
+            headers={"origin": "http://testserver"},
+        )
+        assert r.status_code == 200
+
+
 def run():
     test_per_email_request_cap_is_isolated_per_email()
     test_per_ip_request_cap_uses_configured_ceiling()
@@ -296,6 +402,9 @@ def run():
     test_successful_verify_clears_fail_counter()
     test_new_code_request_resets_verify_counter()
     test_verify_lockout_is_scoped_per_ip()
+    test_forwarded_for_is_ignored_without_trusted_proxies()
+    test_per_email_verify_cap_trips_whatever_the_ip()
+    test_verify_refuses_a_cross_site_origin()
     print("All auth rate limit cases passed.")
 
 

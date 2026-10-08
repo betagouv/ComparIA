@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { Link, Modal } from '$components/dsfr'
-  import Badge from '$components/dsfr/Badge.svelte'
-  import Icon from '$components/dsfr/Icon.svelte'
+  import { Badge, Icon, Link, Modal } from '$components/dsfr'
+  import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
+
+  const platformName = getPlatformName()
 
   const voteReasons = (
     [
@@ -28,7 +29,7 @@
     <div class="md:flex-row gap-4 md:gap-15 flex flex-col">
       <div class="md:max-w-[350px]">
         <h2 id="fr-modal-title-modal-vote" class="text-2xl! mb-7!">{m['home.vote.title']()}</h2>
-        <p class="text-sm! lh-relaxed!">{m['vote.importantDesc']()}</p>
+        <p class="text-sm! lh-relaxed!">{m['vote.importantDesc']({ platformName })}</p>
       </div>
       <div class="gap-5 mb-10 md:mb-0 flex flex-col">
         {#each voteReasons as reason, index (index)}
@@ -46,13 +47,14 @@
       </div>
     </div>
     <div class="gap-5 flex items-center">
+      <!-- FIXME keep link to main Compar:IA instance? -->
       <Link
         text={m['actions.discover']()}
         title={m['a11y.externalLink']({ text: m['actions.discover']() })}
         icon="external-link-line"
         iconPos="right"
         button
-        href="/product/comparator"
+        href="https://comparia.beta.gouv.fr/product/comparator"
         target="_blank"
       />
       <Link

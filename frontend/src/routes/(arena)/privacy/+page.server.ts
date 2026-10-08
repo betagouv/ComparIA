@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/private'
 import { api } from '$lib/fastapi-client'
 import type { PublicLegalDocument } from '$lib/generated/backend'
 import { getLocale } from '$lib/i18n/runtime'
@@ -5,18 +6,23 @@ import { logger } from '$lib/logger.server'
 import type { PageServerLoad } from './$types'
 
 export const load: PageServerLoad = async ({ fetch }) => {
+  // Only known at runtime, like in hooks.server.ts. Without it no audience is
+  // measured, so there is nothing to opt out of.
+  const matomoUrl = env.MATOMO_URL || null
+
   try {
     return {
-      privacyPolicy: await api.request<PublicLegalDocument>(
-        `/settings/legal/privacy-policy?locale=${getLocale()}`,
-        { fetch }
-      )
+      privacyPolicy: await api.request<PublicLegalDocument>('/settings/legal/privacy-policy', {
+        fetch,
+        searchParams: { locale: getLocale() }
+      }),
+      matomoUrl
     }
   } catch (error) {
     // Nothing published yet, or the backend is down: the page falls back to the
     // policy shipped with the frontend, but this is still logged so a backend
     // outage doesn't go unnoticed.
     logger.warn('Failed to load published privacy policy', { error: `${error}` })
-    return { privacyPolicy: null }
+    return { privacyPolicy: null, matomoUrl }
   }
 }

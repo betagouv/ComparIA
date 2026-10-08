@@ -1,10 +1,10 @@
 <script module lang="ts">
-  import type { BaseFormFieldProps } from '$lib/utils/form'
+  import type { BaseFormFieldProps, FormItemSnippetProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
   export type FormFieldsetProps = {
-    formItem: Snippet<[{ 'aria-describedby': string; id: string; required?: boolean }]>
-  } & Omit<BaseFormFieldProps<'fieldset', any>, 'value'>
+    formItem: Snippet<[FormItemSnippetProps]>
+  } & BaseFormFieldProps<'fieldset'>
 </script>
 
 <script lang="ts">
@@ -31,13 +31,18 @@
     {/if}
   </legend>
 
-  {@render formItem?.({ 'aria-describedby': '', id, required })}
+  {@render formItem?.({
+    'aria-describedby': '',
+    'aria-invalid': error ? 'true' : undefined,
+    id,
+    required
+  })}
 
-  {#if error}
-    <div class="fr-messages-group" id={messagesId} aria-live="polite">
+  <div class="fr-messages-group" id={messagesId} aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </fieldset>
 
 <style lang="postcss">

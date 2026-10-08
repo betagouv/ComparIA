@@ -1,6 +1,8 @@
+import type { PersonalRankingRow } from '$lib/generated/backend'
+import type { Commons } from '$lib/models'
 import { render } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { Commons } from '$lib/models'
+import type { PageProps } from './$types'
 import Page from './+page.svelte'
 
 const auth = vi.hoisted(() => ({ user: null as { email: string } | null, config: {} }))
@@ -43,8 +45,8 @@ describe('ranking page, personal view without data', () => {
 
   it('blurs the real table behind a sign-in prompt when signed out', () => {
     const { container, getByRole } = render(Page, {
-      data: { view: 'personal', personal: null } as never
-    })
+      data: { view: 'personal', personal: null }
+    } as PageProps)
 
     const preview = container.querySelector('#ranking-table-preview')
     expect(preview).toBeTruthy()
@@ -57,8 +59,8 @@ describe('ranking page, personal view without data', () => {
   it('offers to start a comparison instead of an empty table when signed in with no votes', () => {
     auth.user = { email: 'personne@example.org' }
     const { container, getByRole, queryByRole } = render(Page, {
-      data: { view: 'personal', personal: { rows: [], votes_count: 0 } } as never
-    })
+      data: { view: 'personal', personal: { rows: [] as PersonalRankingRow[], votes_count: 0 } }
+    } as PageProps)
 
     expect(container.querySelector('#personal-ranking-table')).toBeNull()
     expect(container.querySelector('#ranking-table-preview')).toBeNull()

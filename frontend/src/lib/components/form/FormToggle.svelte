@@ -1,7 +1,7 @@
 <script module lang="ts">
   export type FormToggleProps = {
     checkKind?: 'truth' | 'active'
-  } & BaseFormFieldProps<'toggle', boolean>
+  } & BaseFormFieldProps<'toggle'>
 </script>
 
 <script lang="ts">
@@ -17,7 +17,7 @@
     hidden,
     errors,
     checkKind = 'truth'
-  }: FormToggleProps = $props()
+  }: FormToggleProps & { value: boolean } = $props()
 
   const messagesId = $derived(`${id}-messages`)
   const hintId = $derived(`${id}-hint`)
@@ -34,6 +34,7 @@
     {disabled}
     class="fr-toggle__input"
     aria-describedby="{hintId} {messagesId}"
+    aria-invalid={error ? 'true' : undefined}
   />
 
   <label
@@ -49,16 +50,26 @@
     <span id={hintId} class="fr-hint-text">{help}</span>
   {/if}
 
-  {#if error}
-    <div class="fr-messages-group" id={messagesId} aria-live="polite">
+  <div class="fr-messages-group" id={messagesId} aria-live="polite">
+    {#if error}
       <p class="fr-message fr-message--error">{error}</p>
-    </div>
-  {/if}
+    {/if}
+  </div>
 </div>
 
 <style lang="postcss">
-  input[type='checkbox'] {
+  .fr-toggle {
     --border-action-high-blue-france: var(--blue-france-main-525);
     --text-active-blue-france: var(--blue-france-main-525);
+
+    input[type='checkbox']:checked ~ .fr-toggle__label::after {
+      --data-uri-svg: var(--brand-toggle-check);
+    }
+    label::before {
+      --data-uri-svg: var(--brand-toggle-track);
+    }
+    input[type='checkbox']:checked ~ .fr-toggle__label::before {
+      --data-uri-svg: var(--brand-toggle-track-checked);
+    }
   }
 </style>

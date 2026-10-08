@@ -122,7 +122,7 @@
     </RadioGroupCard>
 
     {#if selected}
-      <div class="mt-4 md:mt-5 text-center">
+      <div class="mt-4 md:mt-5 -mb-20 pb-5 text-center">
         <Button
           icon="shuffle"
           variant="secondary"

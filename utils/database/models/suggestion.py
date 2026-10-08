@@ -65,6 +65,8 @@ class SuggestionCategory(SQLModel, table=True):
     icon: str = Field(max_length=100)
     tooltip: str | None = Field(default=None, max_length=4_000)
     display_order: int = Field(default=0, ge=0)
+    archived_at: OptionalDatetime = Field(default=None, index=True)
+    archived_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
     suggestions: list["PromptSuggestion"] = Relationship(back_populates="category")
 
@@ -145,4 +147,6 @@ class AdminSuggestionCategory(SQLModel):
     icon: str
     tooltip: str | None = None
     display_order: int
-    suggestion_count: int
+    archived: bool = False
+    suggestion_count: int = 0
+    available_suggestion_count: int = 0

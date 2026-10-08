@@ -2,7 +2,7 @@ import type { AdminSuggestion, AdminSuggestionCategory } from '$lib/generated/ad
 
 export type SuggestionStatus = AdminSuggestion['status']
 
-export type SuggestionCategory = AdminSuggestionCategory
+export type SuggestionCategory = Required<AdminSuggestionCategory>
 export type PromptSuggestion = AdminSuggestion
 
 export interface SuggestionsPage {

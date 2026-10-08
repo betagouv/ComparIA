@@ -1,0 +1,59 @@
+{{- if .Values.cronjobs.purgeRetention.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "comparia.fullname" . }}-purge-retention
+  labels:
+    {{- include "comparia.labels" . | nindent 4 }}
+    app.kubernetes.io/component: purge-retention
+spec:
+  schedule: {{ .Values.cronjobs.purgeRetention.schedule | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 10800
+      template:
+        metadata:
+          labels:
+            {{- include "comparia.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: purge-retention
+        spec:
+          restartPolicy: Never
+          {{- with .Values.image.pullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          containers:
+            - name: purge-retention
+              image: {{ include "comparia.backendImage" . | quote }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              {{- $periods := .Values.cronjobs.purgeRetention }}
+              command:
+                - ./comparia-cli
+                - db
+                - purge-retention
+                - --ip-months
+                - {{ $periods.ipMonths | int | quote }}
+                - --comparison-months
+                - {{ $periods.comparisonMonths | int | quote }}
+                - --session-months
+                - {{ $periods.sessionMonths | int | quote }}
+                - --prompt-check-months
+                - {{ $periods.promptCheckMonths | int | quote }}
+                - --consent-years
+                - {{ $periods.consentYears | int | quote }}
+                - --pii-days
+                - {{ $periods.piiDays | int | quote }}
+                - --cohort-days
+                - {{ $periods.cohortDays | int | quote }}
+                - --apply
+              envFrom:
+                - secretRef:
+                    name: {{ include "comparia.secretName" . }}
+              env:
+                {{- include "comparia.backendEnv" . | nindent 16 }}
+              resources:
+                {{- toYaml .Values.resources.cronjobs | nindent 16 }}
+{{- end }}
