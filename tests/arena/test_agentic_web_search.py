@@ -1220,6 +1220,7 @@ def _spy_tool(name: str, run) -> tools.ToolSpec:
             },
         },
         run=run,
+        tool="spy",
     )
 
 
@@ -1289,6 +1290,10 @@ async def _test_calls_in_one_round_run_concurrently():
 
     assert peak == 3, f"expected three overlapping calls, saw {peak}"
     assert message.content == "Done."
+    # Each call records which tool row it came from, for the usage counts.
+    assert {
+        event.tool for event in message.agent_trace or [] if event.type == "tool_call"
+    } == {"spy"}
 
 
 def test_time_budget_stops_tool_use_and_is_recorded():

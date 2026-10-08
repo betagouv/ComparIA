@@ -381,6 +381,7 @@ async def litellm_stream_iter(
                     tool_call_id=tool_call_id,
                     name=tool_name,
                     label=called.display_label() if called else tool_name,
+                    tool=called.tool if called else "",
                     arguments_json=arguments_json,
                     arguments=parsed_arguments,
                 )

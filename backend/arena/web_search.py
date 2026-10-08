@@ -237,6 +237,7 @@ def web_search_tool_spec(row: "Tool | None" = None) -> ToolSpec | None:
         name=WEB_SEARCH_TOOL_NAME,
         schema=_schema_for(config),
         run=partial(execute_web_search, config=config),
+        tool=WEB_SEARCH_TOOL_NAME,
     )
 
 

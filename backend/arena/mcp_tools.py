@@ -238,7 +238,13 @@ async def resolve_mcp_tools(row: "Tool") -> list[ToolSpec]:
             if not name or (allowed is not None and name not in allowed):
                 continue
             specs.append(
-                ToolSpec(name=name, schema=schema, run=_run(row, name), label=row.label)
+                ToolSpec(
+                    name=name,
+                    schema=schema,
+                    run=_run(row, name),
+                    label=row.label,
+                    tool=row.key,
+                )
             )
     except Exception as e:
         # Losing a server costs the turn one toolset; letting it throw costs the

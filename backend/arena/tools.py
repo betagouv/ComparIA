@@ -61,6 +61,8 @@ class ToolSpec:
     # Shown to visitors. One MCP row exposes several functions under a single
     # label, so this cannot be derived from the name.
     label: str = ""
+    # Key of the tool row this came from, so calls can be counted per tool.
+    tool: str = ""
 
     def display_label(self) -> str:
         return self.label or self.name

@@ -265,6 +265,7 @@ async def _test_a_successful_call_records_what_came_back():
         specs = await tools.resolve_tools([DATAGOUV.key])
         result = await specs[0].run("{}")
 
+    assert specs[0].tool == DATAGOUV.key
     assert result.status == "success"
     assert [(source.name, source.content) for source in result.results] == [
         (DATAGOUV.label, "Trois jeux de données correspondent.")

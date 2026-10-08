@@ -28,6 +28,9 @@ class AgentTraceToolCall(BaseModel):
     # Readable name of the tool the visitor selected. One MCP row exposes
     # several functions, so the interface cannot derive it from `name`.
     label: str = ""
+    # Key of the tool row. Labels can be renamed; this is what usage counts
+    # are kept by. Empty on calls recorded before it existed.
+    tool: str = ""
     arguments_json: str
     arguments: dict[str, Any] | None = None
 
