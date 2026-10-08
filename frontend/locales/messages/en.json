@@ -610,6 +610,33 @@
             "title": "Prompt suggestions",
             "validation": "Enter a suggestion and choose a category."
         },
+        "tools": {
+            "secretSet": "Credential set",
+            "secretUnset": "No credential",
+            "secretHintBuiltin": "The provider's API key. Leave empty to keep the stored key; with none stored, the server's (LINKUP_API_KEY) is used.",
+            "secretHintMcp": "A token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Leave empty to keep the stored one.",
+            "remove": "Remove the credential",
+            "removeConfirm": "Confirm removal",
+            "removed": "Credential removed.",
+            "test": "Test the tool",
+            "testing": "Testing…",
+            "testHint": "The test uses the saved configuration: save your changes first.",
+            "testOk": "The tool answers.",
+            "testOkFunctions": "The server answers and offers {count} functions.",
+            "testFailed": "The test failed",
+            "functionsLegend": "Functions offered to models",
+            "functionsHint": "None ticked: every function is offered, including ones the server adds later. Tick some to offer only those.",
+            "functionsUntested": "Test the tool to list the server's functions.",
+            "errors": {
+                "no_credential": "No key: neither on the tool nor on the server.",
+                "no_url": "Fill in the MCP server address.",
+                "invalid_credential": "The provider refuses the credential.",
+                "no_credit": "The provider account has run out of credit.",
+                "unreachable": "The server does not answer or returns an error.",
+                "timeout": "The server took too long to answer.",
+                "unknown_builtin": "No built-in tool has this key."
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Add a tag",

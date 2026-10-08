@@ -610,6 +610,33 @@
             "title": "Suggestions de prompts",
             "validation": "Saisissez une suggestion et choisissez une catégorie."
         },
+        "tools": {
+            "secretSet": "Identifiant enregistré",
+            "secretUnset": "Aucun identifiant",
+            "secretHintBuiltin": "La clé API du fournisseur. Laissez vide pour garder la clé enregistrée ; sans clé enregistrée, celle du serveur (LINKUP_API_KEY) sert.",
+            "secretHintMcp": "Un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Laissez vide pour garder celui enregistré.",
+            "remove": "Retirer l'identifiant",
+            "removeConfirm": "Confirmer le retrait",
+            "removed": "Identifiant retiré.",
+            "test": "Tester l'outil",
+            "testing": "Test en cours…",
+            "testHint": "Le test utilise la configuration enregistrée : enregistrez d'abord vos changements.",
+            "testOk": "L'outil répond.",
+            "testOkFunctions": "Le serveur répond et propose {count} fonctions.",
+            "testFailed": "Le test a échoué",
+            "functionsLegend": "Fonctions proposées aux modèles",
+            "functionsHint": "Aucune case cochée : toutes les fonctions sont proposées, y compris celles que le serveur ajoutera plus tard. Cochez-en pour ne proposer que celles-là.",
+            "functionsUntested": "Testez l'outil pour lister les fonctions du serveur.",
+            "errors": {
+                "no_credential": "Aucune clé : ni sur l'outil, ni sur le serveur.",
+                "no_url": "Renseignez l'adresse du serveur MCP.",
+                "invalid_credential": "Le fournisseur refuse l'identifiant.",
+                "no_credit": "Le compte du fournisseur n'a plus de crédit.",
+                "unreachable": "Le serveur ne répond pas ou renvoie une erreur.",
+                "timeout": "Le serveur a mis trop de temps à répondre.",
+                "unknown_builtin": "Aucun outil intégré ne porte cette clé."
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
@@ -1372,6 +1399,57 @@
             },
             "updated_at": {
                 "label": "Updated At"
+            }
+        },
+        "tool_upsert": {
+            "id": {
+                "label": "Id"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            },
+            "key": {
+                "label": "Key",
+                "help": "Stable identifier. For a built-in tool, the registry key (e.g. 'web_search')."
+            },
+            "label": {
+                "label": "Label",
+                "help": "Name shown to visitors, in French."
+            },
+            "description": {
+                "label": "Description",
+                "help": "One line shown to visitors, in French."
+            },
+            "kind": {
+                "label": "Kind",
+                "help": "How the tool is carried out."
+            },
+            "url": {
+                "label": "Url",
+                "help": "For an MCP tool, the server address."
+            },
+            "allowed_functions": {
+                "label": "Allowed Functions",
+                "help": "For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists."
+            },
+            "allowed_domains": {
+                "label": "Allowed Domains",
+                "help": "For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web."
+            },
+            "blocked_domains": {
+                "label": "Blocked Domains",
+                "help": "For web search, sites results never come from. Cannot be combined with allowed domains."
+            },
+            "enabled": {
+                "label": "Enabled",
+                "help": "Disabled tools are never offered to a model nor shown to a visitor."
+            },
+            "secret": {
+                "label": "Credential",
+                "help": "For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again."
             }
         }
     },

@@ -18,6 +18,7 @@
       ...tool,
       kind: tool.kind ?? 'builtin',
       enabled: tool.enabled ?? false,
+      has_secret: tool.has_secret ?? false,
       updated_at: new Date(tool.updated_at!),
       created_at: new Date(tool.created_at!),
       id: tool.id!,
@@ -30,6 +31,7 @@
     { id: 'key', label: 'Key', orderable: true },
     { id: 'kind', label: 'Kind', orderable: true },
     { id: 'enabled', label: 'Enabled', orderable: true },
+    { id: 'has_secret', label: 'Credential', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true }
   ] satisfies TableCol<DataKey>[]
   type ColKey = (typeof cols)[number]['id']
@@ -61,6 +63,8 @@
       <a href={resolve(`${baseRoute}/${tool.id}`)}>{tool[col.id]}</a>
     {:else if col.id === 'enabled'}
       {tool.enabled ? m['words.activated']() : m['words.deactivated']()}
+    {:else if col.id === 'has_secret'}
+      {tool.has_secret ? m['admin.tools.secretSet']() : m['admin.tools.secretUnset']()}
     {:else if col.id === 'updated_at'}
       <span class="fr-text--sm text-[--text-mention-grey]">
         {toRelativeTime(tool[col.id], locale)}
