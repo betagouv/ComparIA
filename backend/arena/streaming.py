@@ -15,13 +15,13 @@ from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
-from backend.arena.tools import ToolSpec, resolve_tools
 from backend.arena.conversation import (
     AnyMessageRead,
     SystemMessageRead,
     bot_response_async,
 )
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
+from backend.arena.tools import ToolSpec, resolve_tools
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
 from backend.llms.data import get_llms_data, pick_replacement_model

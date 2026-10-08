@@ -28,6 +28,7 @@ from utils.database.models.suggestion import (
     SuggestionCategoryCreate,
     SuggestionCreate,
 )
+from utils.database.models.tool import ToolAdmin, ToolUpsert
 from utils.database.models.vote_tag import (
     AdminVoteTag,
     AdminVoteTagsResponse,
@@ -36,6 +37,3 @@ from utils.database.models.vote_tag import (
     VoteTagOrder,
     VoteTagUpdate,
 )
-from utils.database.models.auth import UserPublic
-from utils.database.models.llms import LLMData, LLMEndpoint, LLMLab, LLMLicense
-from utils.database.models.tool import ToolAdmin, ToolUpsert

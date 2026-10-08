@@ -13,10 +13,9 @@ from pydantic import ValidationError
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.arena import mcp_tools, tools, web_search
+from tests.arena.test_mcp_tools import SERVER_SCHEMAS, FakeRedis, _listing, _with_redis
 from utils.database.models import Tool, ToolUpsert
 from utils.secrets import encrypt_secret
-
-from tests.arena.test_mcp_tools import SERVER_SCHEMAS, FakeRedis, _listing, _with_redis
 
 
 def _web_search_row(**fields) -> Tool:
@@ -145,14 +144,20 @@ def test_the_server_is_sent_the_decrypted_credential():
 
 def test_an_mcp_row_without_an_address_cannot_run():
     assert tools.can_run(Tool(key="m", label="M", kind="mcp")) is False
-    assert tools.can_run(Tool(key="m", label="M", kind="mcp", url="https://x.fr")) is True
+    assert (
+        tools.can_run(Tool(key="m", label="M", kind="mcp", url="https://x.fr")) is True
+    )
 
 
 def test_domains_are_normalised_from_what_an_admin_pastes():
     body = ToolUpsert(
         key="web_search",
         label="Recherche web",
-        allowed_domains=["https://www.Service-Public.fr/particuliers", " ", "service-public.fr"],
+        allowed_domains=[
+            "https://www.Service-Public.fr/particuliers",
+            " ",
+            "service-public.fr",
+        ],
     )
 
     assert body.allowed_domains == ["service-public.fr"]
@@ -170,14 +175,18 @@ def test_allowed_and_blocked_domains_cannot_both_be_set():
 
 def test_a_domain_that_is_not_one_is_refused():
     with pytest.raises(ValidationError, match="not a domain"):
-        ToolUpsert(key="web_search", label="Recherche web", blocked_domains=["localhost"])
+        ToolUpsert(
+            key="web_search", label="Recherche web", blocked_domains=["localhost"]
+        )
 
 
 def test_blank_function_names_are_dropped():
     body = ToolUpsert(key="m", label="M", kind="mcp", allowed_functions=[" ", "a "])
 
     assert body.allowed_functions == ["a"]
-    assert ToolUpsert(key="m", label="M", allowed_functions=[""]).allowed_functions is None
+    assert (
+        ToolUpsert(key="m", label="M", allowed_functions=[""]).allowed_functions is None
+    )
 
 
 def test_the_picker_leaves_out_tools_that_cannot_run():

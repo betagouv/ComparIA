@@ -1567,11 +1567,15 @@ async def _test_identical_repeated_calls_are_refused_and_marked():
         nonlocal call_number
         call_number += 1
         if call_number > 1:
-            return AsyncChunkStream([_chunk(
-                    response_id="r",
-                    delta={"role": "assistant", "content": "Answer."},
-                    finish_reason="stop",
-                )])
+            return AsyncChunkStream(
+                [
+                    _chunk(
+                        response_id="r",
+                        delta={"role": "assistant", "content": "Answer."},
+                        finish_reason="stop",
+                    )
+                ]
+            )
         # One round asking for the same search five times.
         return AsyncChunkStream(
             [
@@ -1590,7 +1594,7 @@ async def _test_identical_repeated_calls_are_refused_and_marked():
                                 },
                             }
                             for index in range(5)
-                        ]
+                        ],
                     },
                     finish_reason="tool_calls",
                 )

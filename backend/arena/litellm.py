@@ -403,7 +403,9 @@ async def litellm_stream_iter(
             times_seen = seen_calls.get(key, 0)
             seen_calls[key] = times_seen + 1
             if index >= allowed:
-                pending.append(_refuse_tool_call("The tool call limit has been reached."))
+                pending.append(
+                    _refuse_tool_call("The tool call limit has been reached.")
+                )
             elif times_seen >= MAX_IDENTICAL_TOOL_CALLS:
                 # The exact same work was already done this response; running it
                 # again cannot teach the model anything new.
