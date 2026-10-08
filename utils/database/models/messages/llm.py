@@ -3,6 +3,7 @@ from typing import Annotated, Any, Literal
 
 from linkup import LinkupSearchTextResult
 from pydantic import BaseModel, ConfigDict
+from sqlalchemy import Index, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
@@ -116,6 +117,15 @@ class LLMMessageFinal(LLMMessageBase):
 
 class LLMMessage(LLMMessageFinal, table=True):
     __tablename__ = "llm_message"
+    # The admin tools list counts calls over recent days. Only messages with
+    # a trace hold any, so the index covers those alone and stays small.
+    __table_args__ = (
+        Index(
+            "ix_llm_message_traced_created_at",
+            "created_at",
+            postgresql_where=text("jsonb_typeof(agent_trace) = 'array'"),
+        ),
+    )
 
 
 class LLMMessageCreate(LLMMessageBase):
