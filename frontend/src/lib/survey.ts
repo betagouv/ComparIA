@@ -51,12 +51,7 @@ export function answersToForm(answers: MySurveyAnswer[], questions: PublicSurvey
   return fromEntries(
     questions.map((q) => {
       const answer = answers.find((answer) => answer.question_id === q.id)
-      const value = answer
-        ? q.input_type === 'select'
-          ? answer.selected_keys[0]
-          : answer.selected_keys
-        : null
-      return [q.id, value]
+      return [q.id, answer?.value ?? null]
     })
   )
 }
@@ -74,7 +69,7 @@ export function profileQuestions(
   const withHeldOptions = (question: PublicSurveyQuestion, answer?: MySurveyAnswer) => {
     const held = (answer?.options ?? []).filter(
       (option) =>
-        answer!.selected_keys.includes(option.key) &&
+        answer!.value.includes(option.key) &&
         !question.options.some(({ key }) => key === option.key)
     )
     return held.length ? { ...question, options: [...question.options, ...held] } : question
@@ -120,16 +115,13 @@ export function formToAnswers(
   questions: PublicSurveyQuestion[],
   filterEmpty = false
 ) {
-  const answers = questions.map((field) => {
-    const option_keys = form[field.id] ?? []
-    return {
-      question_id: field.id,
-      option_keys: Array.isArray(option_keys) ? option_keys : option_keys ? [option_keys] : []
-    }
-  })
+  const answers = questions.map((field) => ({
+    question_id: field.id,
+    value: form[field.id]
+  }))
 
   if (filterEmpty) {
-    return answers.filter((answer) => answer.option_keys.length > 0)
+    return answers.filter((answer) => answer.value && answer.value.length > 0)
   }
   return answers
 }
