@@ -36,3 +36,7 @@ class ToolDraft(BaseModel):
     key: str = ""
     url: str | None = None
     secret: str | None = None
+
+
+class ToolSwitch(BaseModel):
+    enabled: bool

@@ -4,11 +4,12 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException
 from sqlmodel import select
 
-from backend.admin.tools.models import ToolDraft, ToolTestResult
+from backend.admin.tools.models import ToolDraft, ToolSwitch, ToolTestResult
 from backend.admin.tools.services import (
     check_draft,
     check_tool,
     clear_tool_secret,
+    set_tool_enabled,
     to_admin,
     upsert_tool,
 )
@@ -40,6 +41,17 @@ async def get_schemas():
 async def upsert(body: ToolUpsert) -> ToolAdmin:
     async with get_session() as session:
         return to_admin(await upsert_tool(body, session))
+
+
+@router.patch("/tool/{tool_id}")
+async def switch(tool_id: UUID, body: ToolSwitch) -> ToolAdmin:
+    # Only the switch: the list page has no credential or allowlist to send
+    # back, and a full upsert from it would have to.
+    async with get_session() as session:
+        row = await set_tool_enabled(tool_id, body.enabled, session)
+        if not row:
+            raise HTTPException(status_code=404, detail="tool_not_found")
+        return to_admin(row)
 
 
 @router.delete("/tool/{tool_id}/secret")

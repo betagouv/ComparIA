@@ -221,6 +221,28 @@ def test_web_search_test_tells_a_bad_key_from_a_good_one(database, monkeypatch):
     database(scenario)
 
 
+def test_the_list_switches_a_tool_on_and_off_and_nothing_else(database):
+    async def scenario():
+        async with client() as api:
+            saved = await save(
+                api,
+                MCP | {"secret": "token", "allowed_functions": ["search_datasets"]},
+            )
+            on = await api.patch(f"/tools/tool/{saved['id']}", json={"enabled": True})
+            missing = await api.patch(
+                f"/tools/tool/{uuid.uuid4()}", json={"enabled": True}
+            )
+
+        assert on.json()["enabled"] is True
+        assert missing.status_code == 404
+        row = await stored(saved["id"])
+        assert row.enabled is True
+        assert decrypt_secret(row.secret_encrypted) == "token"
+        assert row.allowed_functions == ["search_datasets"]
+
+    database(scenario)
+
+
 def test_a_tool_is_tested_before_it_is_saved(database, monkeypatch):
     seen = {}
 

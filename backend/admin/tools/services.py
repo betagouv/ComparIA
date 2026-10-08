@@ -155,3 +155,16 @@ async def check_draft(draft: ToolDraft) -> ToolTestResult:
         secret_encrypted=encrypt_secret(secret) if secret else None,
     )
     return await check_tool(row, remember=False)
+
+
+async def set_tool_enabled(
+    tool_id: UUID, enabled: bool, session: AsyncSession
+) -> Tool | None:
+    row = await session.get(Tool, tool_id)
+    if not row:
+        return None
+    row.enabled = enabled
+    session.add(row)
+    await session.commit()
+    await session.refresh(row)
+    return row
