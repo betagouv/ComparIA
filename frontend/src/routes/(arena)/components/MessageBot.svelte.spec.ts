@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/svelte'
+import { fireEvent, render, screen } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import MessageBot from './MessageBot.svelte'
 import type { ComponentProps } from 'svelte'
@@ -103,9 +103,9 @@ describe('MessageBot', () => {
     )
 
     const preamble = screen.getByText('I will verify this first.')
-    const firstTool = screen.getByText('Recherche web')
+    const firstTool = screen.getByRole('button', { name: /Recherche web/ })
     const middle = screen.getByText('I found a lead and will verify it.')
-    const secondTool = screen.getByText('Jurisprudence')
+    const secondTool = screen.getByRole('button', { name: /Jurisprudence/ })
     const answer = screen.getByText('Answer informed by the search.')
 
     expect(preamble.compareDocumentPosition(firstTool) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
@@ -120,7 +120,6 @@ describe('MessageBot', () => {
     expect(secondTool.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     )
-    expect(screen.getAllByText(/current information/)).toHaveLength(2)
   })
 
   it('does not add a redundant status when a model does not use an offered tool', () => {
@@ -138,7 +137,60 @@ describe('MessageBot', () => {
     expect(screen.queryByText('Aucun outil utilisé')).toBeNull()
   })
 
-  it('shows reasoning in the same compact expandable design as tool activity', () => {
+  it('keeps reasoning and tool calls that follow each other in one row of chips', () => {
+    const { container } = render(
+      MessageBot,
+      props({
+        role: 'assistant',
+        generation_id: 'generation-a',
+        content: 'Final answer.',
+        agent_trace: [
+          { type: 'reasoning', content: 'I should look it up.' },
+          {
+            type: 'tool_call',
+            tool_call_id: 'call-1',
+            name: 'search_docs',
+            label: 'Documentation SvelteKit',
+            arguments_json: '{"query":"load"}',
+            arguments: { query: 'load' }
+          },
+          { type: 'reasoning', content: 'That answers it.' }
+        ]
+      })
+    )
+
+    expect(container.querySelectorAll('.agent-activity__panel')).toHaveLength(1)
+    expect(
+      screen.getAllByRole('button', { expanded: false }).map((chip) => chip.textContent?.trim())
+    ).toEqual(['Réflexion', 'Documentation SvelteKit'])
+  })
+
+  it('shows the live step instead of the loading line while the model works', () => {
+    const message = {
+      role: 'assistant',
+      generation_id: 'generation-a',
+      content: '',
+      agent_trace: [
+        {
+          type: 'tool_call',
+          tool_call_id: 'call-1',
+          name: 'search_docs',
+          label: 'Documentation SvelteKit',
+          arguments_json: '{"query":"load"}',
+          arguments: { query: 'load' }
+        }
+      ]
+    }
+    const { container } = render(MessageBot, {
+      ...props(message),
+      turnSide: { ...turnSide(message), status: 'generating' }
+    } as unknown as ComponentProps<typeof MessageBot>)
+
+    expect(container.querySelector('.agent-activity__live')).toBeTruthy()
+    expect(container.querySelector('[role="status"]')).toBeNull()
+  })
+
+  it('shows reasoning as a chip like the tools', async () => {
     const { container } = render(
       MessageBot,
       props({
@@ -154,10 +206,8 @@ describe('MessageBot', () => {
       })
     )
 
-    expect(screen.getByText('Raisonnement terminé')).toBeTruthy()
-    expect(container.querySelector('details.reasoning-activity.w-full')).toBeTruthy()
-    expect(container.querySelector('details.reasoning-activity > summary')).toBeTruthy()
-    expect(container.querySelector('.reasoning-activity-content')).toBeTruthy()
+    await fireEvent.click(screen.getByRole('button', { name: 'Réflexion' }))
+    expect(screen.getByText('I should verify this carefully.')).toBeTruthy()
     expect(container.querySelector('.fr-accordion')).toBeNull()
   })
 })
