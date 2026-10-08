@@ -178,3 +178,29 @@ def test_blank_function_names_are_dropped():
 
     assert body.allowed_functions == ["a"]
     assert ToolUpsert(key="m", label="M", allowed_functions=[""]).allowed_functions is None
+
+
+def test_the_picker_leaves_out_tools_that_cannot_run():
+    asyncio.run(_test_the_picker_leaves_out_tools_that_cannot_run())
+
+
+async def _test_the_picker_leaves_out_tools_that_cannot_run():
+    """Picked, such a tool would be dropped from the turn without a word."""
+    from backend.arena import router
+
+    rows = [
+        _web_search_row(),
+        Tool(key="datagouv", label="Données", kind="mcp", url="https://x.fr/mcp"),
+        Tool(key="half_done", label="Pas fini", kind="mcp"),
+    ]
+
+    async def get_enabled_tools() -> list[Tool]:
+        return rows
+
+    with (
+        patch.object(router, "get_enabled_tools", get_enabled_tools),
+        patch.object(web_search.settings, "LINKUP_API_KEY", None),
+    ):
+        offered = await router.get_tools()
+
+    assert [tool.key for tool in offered] == ["datagouv"]
