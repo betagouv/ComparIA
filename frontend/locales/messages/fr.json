@@ -1021,6 +1021,17 @@
             "results": "{count} résultats",
             "running": "Recherche en cours…",
             "sources": "{count} source(s)"
+        },
+        "activity": {
+            "calling": "Consulte",
+            "failed": "L'outil n'a pas répondu",
+            "output": "Réponse de {tool}",
+            "reading": "Lit les résultats",
+            "reasoning": "Réflexion",
+            "searching": "Cherche sur le web",
+            "source": "1 source",
+            "sources": "{count} sources",
+            "thinking": "Réfléchit"
         }
     },
     "closeModal": "Fermer la fenêtre modale",

@@ -1021,6 +1021,17 @@
             "technicalDetails": "Show technical details",
             "toolCall": "Tool call",
             "toolResult": "Tool response"
+        },
+        "activity": {
+            "calling": "Consulting",
+            "failed": "The tool did not answer",
+            "output": "Answer from {tool}",
+            "reading": "Reading the results",
+            "reasoning": "Reasoning",
+            "searching": "Searching the web",
+            "source": "1 source",
+            "sources": "{count} sources",
+            "thinking": "Thinking"
         }
     },
     "closeModal": "Close the popup",
