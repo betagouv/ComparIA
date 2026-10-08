@@ -34,8 +34,9 @@ def upgrade() -> None:
     )
     op.create_index("ix_tool_key", "tool", ["key"], unique=True)
 
-    # Web search already existed in code; it becomes the first configured row so
-    # that upgrading an instance does not silently take it away.
+    # Web search already existed in code; it becomes the first configured row.
+    # It starts switched off: tools send queries written from visitor prompts
+    # to outside services, so an admin turns each one on deliberately.
     op.bulk_insert(
         tool,
         [
@@ -47,7 +48,7 @@ def upgrade() -> None:
                 "label": "Recherche web",
                 "description": "Chercher des informations récentes sur le web.",
                 "kind": "builtin",
-                "enabled": True,
+                "enabled": False,
             }
         ],
     )
