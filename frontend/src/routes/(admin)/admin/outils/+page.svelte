@@ -1,42 +1,61 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Table, Toggle } from '$components/dsfr'
+  import { Button, Table, Toggle } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
-  import { sortRows, toRelativeTime, toSearchString } from '$lib/utils/data'
+  import { sortRows, toSearchString } from '$lib/utils/data'
 
   import type { PageProps } from './$types'
+  import type { ToolHealth } from './+page'
 
   let { data }: PageProps = $props()
-  const locale = getLocale()
   const baseRoute = '/admin/outils' as const
 
+  const healthLabels = {
+    no_credential: m['admin.tools.list.health.no_credential'],
+    no_url: m['admin.tools.list.health.no_url'],
+    invalid_credential: m['admin.tools.list.health.invalid_credential'],
+    no_credit: m['admin.tools.list.health.no_credit'],
+    unreachable: m['admin.tools.list.health.unreachable'],
+    timeout: m['admin.tools.list.health.timeout'],
+    unknown_builtin: m['admin.tools.list.health.unknown_builtin']
+  }
+  const healthDetails = {
+    no_credential: m['admin.tools.errors.no_credential'],
+    no_url: m['admin.tools.errors.no_url'],
+    invalid_credential: m['admin.tools.errors.invalid_credential'],
+    no_credit: m['admin.tools.errors.no_credit'],
+    unreachable: m['admin.tools.errors.unreachable'],
+    timeout: m['admin.tools.errors.timeout'],
+    unknown_builtin: m['admin.tools.errors.unknown_builtin']
+  }
+
   const tools = $derived(
-    data.tools.map((tool) => ({
-      ...tool,
-      address: tool.kind === 'mcp' ? (tool.url ?? '') : m['admin.tools.list.builtin'](),
-      functions: tool.allowed_functions?.length ?? 0,
-      enabled: tool.enabled ?? false,
-      has_secret: tool.has_secret ?? false,
-      updated_at: new Date(tool.updated_at!),
-      created_at: new Date(tool.created_at!),
-      id: tool.id!,
-      search: toSearchString([tool.label, tool.key, tool.url ?? '', tool.description ?? ''])
-    }))
+    data.tools.map((tool) => {
+      const usage = data.usage.find((u) => u.id === tool.id)
+      return {
+        ...tool,
+        id: tool.id!,
+        address: tool.kind === 'mcp' ? (tool.url ?? '') : m['admin.tools.list.builtin'](),
+        calls: usage?.calls ?? 0,
+        failures: usage?.failures ?? 0,
+        // The column needs a key; its cells come from the health check.
+        health: 0,
+        enabled: tool.enabled ?? false,
+        search: toSearchString([tool.label, tool.key, tool.url ?? '', tool.description ?? ''])
+      }
+    })
   )
   type DataKey = keyof (typeof tools)[number]
   const cols = [
     { id: 'label', label: m['admin.tools.list.label'](), orderable: true },
-    { id: 'enabled', label: m['admin.tools.list.enabled'](), orderable: true },
-    { id: 'address', label: m['admin.tools.list.address'](), orderable: true },
-    { id: 'functions', label: m['admin.tools.list.functions'](), orderable: true },
-    { id: 'has_secret', label: m['admin.tools.list.secret'](), orderable: true },
-    { id: 'updated_at', label: m['admin.tools.list.updated'](), kind: 'date', orderable: true }
+    { id: 'health', label: m['admin.tools.list.health.title']() },
+    { id: 'calls', label: m['admin.tools.list.calls'](), kind: 'number', orderable: true },
+    { id: 'enabled', label: m['admin.tools.list.enabled'](), orderable: true }
   ] satisfies TableCol<DataKey>[]
   type ColKey = (typeof cols)[number]['id']
 
@@ -47,6 +66,23 @@
   const sortedRows = $derived(
     sortRows(tools, cols, { col: orderingCol, method: orderingMethod, search })
   )
+
+  // A recheck replaces what the page loaded with; until then, the load's.
+  let rechecked = $state<Promise<ToolHealth[]>>()
+  const health = $derived(rechecked ?? data.health)
+  let rechecking = $state(false)
+
+  async function recheck() {
+    rechecking = true
+    rechecked = api.request<ToolHealth[]>('/admin/tools/health', {
+      searchParams: { refresh: 'true' }
+    })
+    try {
+      await rechecked
+    } finally {
+      rechecking = false
+    }
+  }
 
   // What the switch shows while its request is out, so it moves on click.
   let pending = $state<Record<string, boolean>>({})
@@ -86,32 +122,63 @@
   rows={sortedRows}
 >
   {#snippet headerLeft()}
-    <Link
-      button
-      icon="add-line"
-      text={m['admin.tools.list.add']()}
-      href={resolve(`${baseRoute}/create`)}
-    />
+    <div class="gap-2 flex flex-wrap">
+      <Link
+        button
+        icon="add-line"
+        text={m['admin.tools.list.add']()}
+        href={resolve(`${baseRoute}/create`)}
+      />
+      <Button
+        variant="secondary"
+        icon="refresh-line"
+        text={rechecking ? m['admin.tools.list.rechecking']() : m['admin.tools.list.recheck']()}
+        disabled={rechecking}
+        onclick={recheck}
+      />
+    </div>
   {/snippet}
 
   {#snippet cell(tool, col)}
     {#if col.id === 'label'}
       <a href={resolve(`${baseRoute}/${tool.id}`)} class="font-bold">{tool.label}</a>
-      {#if tool.description}
-        <span class="fr-text--xs mb-0! block text-[--text-mention-grey]">{tool.description}</span>
+      <span class="fr-text--xs mb-0! block break-all text-[--text-mention-grey]">
+        {tool.address}
+      </span>
+    {:else if col.id === 'health'}
+      {#await health}
+        <span class="gap-2 fr-text--sm mb-0! inline-flex items-center text-[--text-mention-grey]">
+          <span class="health-dot checking" aria-hidden="true"></span>
+          {m['admin.tools.list.health.checking']()}
+        </span>
+      {:then list}
+        {@const result = list.find((h) => h.id === tool.id)}
+        {#if result?.ok}
+          <span class="gap-2 fr-text--sm mb-0! inline-flex items-center">
+            <span class="health-dot ok" aria-hidden="true"></span>
+            {m['admin.tools.list.health.ok']()}
+          </span>
+        {:else if result?.error}
+          <span
+            class="gap-2 fr-text--sm mb-0! inline-flex items-center"
+            title={healthDetails[result.error]()}
+          >
+            <span class="health-dot error" aria-hidden="true"></span>
+            {healthLabels[result.error]()}
+          </span>
+        {/if}
+      {:catch}
+        <span class="fr-text--sm mb-0! text-[--text-mention-grey]">
+          {m['admin.tools.list.health.unknown']()}
+        </span>
+      {/await}
+    {:else if col.id === 'calls'}
+      <span class="font-bold">{tool.calls}</span>
+      {#if tool.failures}
+        <span class="fr-text--xs mb-0! block text-[--text-default-error]">
+          {m['admin.tools.list.failures']({ count: tool.failures })}
+        </span>
       {/if}
-    {:else if col.id === 'address'}
-      <span class="fr-text--sm break-all">{tool.address}</span>
-    {:else if col.id === 'functions'}
-      {#if tool.kind !== 'mcp'}
-        <span class="text-[--text-mention-grey]">-</span>
-      {:else if tool.functions}
-        {m['admin.tools.list.someFunctions']({ count: tool.functions })}
-      {:else}
-        {m['admin.tools.list.allFunctions']()}
-      {/if}
-    {:else if col.id === 'has_secret'}
-      {tool.has_secret ? m['admin.tools.secretSet']() : m['admin.tools.secretUnset']()}
     {:else if col.id === 'enabled'}
       <Toggle
         id="tool-enabled-{tool.id}"
@@ -120,10 +187,40 @@
       >
         <span class="fr-sr-only">{m['admin.tools.list.switch']({ label: tool.label })}</span>
       </Toggle>
-    {:else if col.id === 'updated_at'}
-      <span class="fr-text--sm text-[--text-mention-grey]">
-        {toRelativeTime(tool[col.id], locale)}
-      </span>
     {/if}
   {/snippet}
 </Table>
+
+<style>
+  .health-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .health-dot.ok {
+    background-color: var(--success-425-625);
+  }
+
+  .health-dot.error {
+    background-color: var(--error-425-625);
+  }
+
+  .health-dot.checking {
+    background-color: var(--background-contrast-grey);
+    animation: health-pulse 1s ease-in-out infinite alternate;
+  }
+
+  @keyframes health-pulse {
+    to {
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .health-dot.checking {
+      animation: none;
+    }
+  }
+</style>

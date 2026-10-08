@@ -691,18 +691,29 @@
             "list": {
                 "intro": "Les outils activés sont proposés aux visiteurs avant chaque comparaison. Désactivez-en un pour le retirer tout de suite, sans perdre sa configuration.",
                 "add": "Ajouter un serveur MCP",
+                "recheck": "Revérifier",
+                "rechecking": "Vérification…",
                 "label": "Outil",
-                "address": "Adresse",
-                "functions": "Fonctions",
-                "secret": "Identifiant",
+                "calls": "Utilisations (30 j)",
+                "failures": "dont {count} en échec",
                 "enabled": "Activé",
-                "updated": "Modifié",
                 "builtin": "Intégré",
-                "allFunctions": "Toutes",
-                "someFunctions": "{count} choisies",
                 "switch": "Activer {label}",
                 "switchedOn": "« {label} » est proposé aux visiteurs.",
-                "switchedOff": "« {label} » n'est plus proposé aux visiteurs."
+                "switchedOff": "« {label} » n'est plus proposé aux visiteurs.",
+                "health": {
+                    "title": "État",
+                    "checking": "Vérification…",
+                    "ok": "Répond",
+                    "unknown": "Inconnu",
+                    "no_credential": "Aucune clé",
+                    "no_url": "Aucune adresse",
+                    "invalid_credential": "Identifiant refusé",
+                    "no_credit": "Plus de crédit",
+                    "unreachable": "Ne répond pas",
+                    "timeout": "Trop lent",
+                    "unknown_builtin": "Outil inconnu"
+                }
             }
         },
         "voteTags": {

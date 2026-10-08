@@ -691,18 +691,29 @@
             "list": {
                 "intro": "Switched-on tools are offered to visitors before each comparison. Switch one off to withdraw it at once, without losing its settings.",
                 "add": "Add an MCP server",
+                "recheck": "Check again",
+                "rechecking": "Checking…",
                 "label": "Tool",
-                "address": "Address",
-                "functions": "Functions",
-                "secret": "Credential",
+                "calls": "Uses (30 days)",
+                "failures": "{count} failed",
                 "enabled": "On",
-                "updated": "Updated",
                 "builtin": "Built in",
-                "allFunctions": "All",
-                "someFunctions": "{count} chosen",
                 "switch": "Switch on {label}",
                 "switchedOn": "'{label}' is offered to visitors.",
-                "switchedOff": "'{label}' is no longer offered to visitors."
+                "switchedOff": "'{label}' is no longer offered to visitors.",
+                "health": {
+                    "title": "Status",
+                    "checking": "Checking…",
+                    "ok": "Answers",
+                    "unknown": "Unknown",
+                    "no_credential": "No key",
+                    "no_url": "No address",
+                    "invalid_credential": "Credential refused",
+                    "no_credit": "Out of credit",
+                    "unreachable": "Not answering",
+                    "timeout": "Too slow",
+                    "unknown_builtin": "Unknown tool"
+                }
             }
         },
         "voteTags": {
