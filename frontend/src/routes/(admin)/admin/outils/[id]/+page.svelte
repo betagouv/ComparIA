@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation'
+  import { invalidate } from '$app/navigation'
   import { page } from '$app/state'
   import { Alert, Button, Checkbox } from '$components/dsfr'
   import { FormInput, type FormInputProps } from '$components/form'
@@ -47,7 +47,7 @@
       method: 'put',
       // Reloaded rather than patched: the credential typed in is dropped
       // from the form, and whether one is now set comes from the server.
-      onSuccess: () => invalidateAll()
+      onSuccess: () => invalidate('admin:tools')
     })
   )
 
@@ -95,7 +95,7 @@
     try {
       await api.request(`/admin/tools/tool/${id}/secret`, { method: 'delete' })
       confirmingRemoval = false
-      await invalidateAll()
+      await invalidate('admin:tools')
       useToast(m['admin.tools.removed'](), 5000, 'success')
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto, invalidateAll } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import ToolCard from '$components/ToolCard.svelte'
   import { Alert, Button, Checkbox, Input, Textarea, Toggle } from '$components/dsfr'
@@ -120,7 +120,7 @@
         body: JSON.stringify(body)
       })
       useToast(m['admin.tools.wizard.review.created']({ label: body.label }), 5000, 'success')
-      await invalidateAll()
+      await invalidate('admin:tools')
       await goto(resolve('/admin/outils'))
     } catch (error) {
       saveErrors =

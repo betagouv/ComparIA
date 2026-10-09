@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invalidateAll } from '$app/navigation'
+  import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { Button, Table, Toggle } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
@@ -94,7 +94,7 @@
         method: 'PATCH',
         body: JSON.stringify({ enabled })
       })
-      await invalidateAll()
+      await invalidate('admin:tools')
       useToast(
         enabled
           ? m['admin.tools.list.switchedOn']({ label: tool.label })
