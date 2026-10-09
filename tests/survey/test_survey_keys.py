@@ -14,16 +14,24 @@ DB-free. Runnable either way:
 
 import os
 import sys
+import uuid
 from pathlib import Path
 
 import pytest
+from pydantic_core import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-from backend.survey.services import _key, _validate_answer_value  # noqa: E402
+from backend.survey.services import _key, _validate_answers  # noqa: E402
+from utils.database.models.survey import (  # noqa: E402
+    SurveyQuestion,
+    SurveyQuestionAnswer,
+)
+
+QUESTION_ID = uuid.uuid4()
 
 
 def test_accents_and_spaces_become_a_plain_slug():
@@ -58,23 +66,50 @@ def test_the_key_fits_the_column():
     assert len(_key("mot " * 60)) <= 100
 
 
-def test_select_accepts_at_most_one_key():
-    _validate_answer_value("select", None)
-    _validate_answer_value("select", [])
-    _validate_answer_value("select", "a")
-
-    with pytest.raises(ValueError):
-        _validate_answer_value("select", ["a", "b"])
+def get_payload(value):
+    return [SurveyQuestionAnswer(question_id=QUESTION_ID, value=value)]
 
 
-def test_checkbox_group_accepts_any_number_of_keys():
-    _validate_answer_value("checkbox_group", None)
-    _validate_answer_value("checkbox_group", [])
-    _validate_answer_value("checkbox_group", ["a"])
-    _validate_answer_value("checkbox_group", ["a", "b", "c"])
+def test_select_question():
+    question = SurveyQuestion(
+        id=QUESTION_ID,
+        key="age",
+        input_type="select",
+        labels={"fr": "Âge"},
+        options=[
+            {"key": "18_24", "labels": {"fr": "18-24"}},
+            {"key": "25_34", "labels": {"fr": "25-34"}},
+            {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
+        ],
+    )
 
-    with pytest.raises(ValueError):
-        _validate_answer_value("checkbox_group", "a")
+    _validate_answers([question], get_payload(None), {})
+    _validate_answers([question], get_payload([]), {})
+    _validate_answers([question], get_payload("18_24"), {})
+
+    with pytest.raises(ValidationError):
+        _validate_answers([question], get_payload(["a", "b"]), {})
+
+
+def test_checkbox_group_question():
+    question = SurveyQuestion(
+        id=QUESTION_ID,
+        key="age",
+        input_type="checkbox_group",
+        labels={"fr": "Âge"},
+        options=[
+            {"key": "18_24", "labels": {"fr": "18-24"}},
+            {"key": "25_34", "labels": {"fr": "25-34"}},
+            {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
+        ],
+    )
+    _validate_answers([question], get_payload(None), {})
+    _validate_answers([question], get_payload([]), {})
+    _validate_answers([question], get_payload(["25_34"]), {})
+    _validate_answers([question], get_payload(["25_34", "18_24"]), {})
+
+    with pytest.raises(ValidationError):
+        _validate_answers([question], get_payload("18_24"), {})
 
 
 if __name__ == "__main__":

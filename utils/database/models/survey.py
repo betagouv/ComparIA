@@ -65,10 +65,8 @@ class SurveyQuestionBase(BaseDBModel):
     # question keeps its identity across edits, so rewording 'Gender' into
     # 'Gender identity' does not start a new column in the dataset.
     key: Annotated[str, Field(max_length=100, unique=True, index=True)]
-    # Whether an unanswered question blocks account creation. Only the signup
-    # moment reads it: the after-vote popup is dismissible by design, so a
-    # question asked in both places blocks the form and not the popup.
-    required: bool = Field(default=True)
+    # Whether an unanswered question blocks account creation.
+    required: bool = Field(default=False)
     input_type: Annotated[SurveyInputType, Field(sa_type=String)]
     # Per-locale question text, {'fr': "Quelle est votre tranche d'age ?"}.
     labels: Annotated[dict[str, str], Field(sa_type=JSONB)]
@@ -82,8 +80,6 @@ class SurveyQuestionBase(BaseDBModel):
     # what keeps 'this column means two things after March' visible in the data
     # rather than invisible.
     revision: int = Field(default=1, ge=1)
-    # One rank across every question, not one per moment: a question can sit
-    # in both moments, and each moment shows its own subset in this order.
     display_order: int = Field(default=0, ge=0)
     archived_at: OptionalDatetime = Field(default=None, index=True)
     archived_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
@@ -168,8 +164,6 @@ class PublicSurveyOption(SQLModel):
 class PublicSurveyQuestion(SQLModel):
     id: uuid.UUID
     key: str
-    # The moments are not sent: the caller asked for one, and the form only
-    # needs to know whether it may be submitted without an answer.
     required: bool
     input_type: SurveyInputType
     label: str
@@ -185,7 +179,7 @@ class SurveyQuestionAnswer(SQLModel):
     question_id: uuid.UUID
     # One key for 'select', any number for 'checkbox_group'. An empty list
     # clears the answer, which is how the profile page removes one.
-    value: SurveyAnswerValue
+    value: SurveyAnswerValue | None
 
 
 class SurveyAnswerSubmit(SQLModel):
