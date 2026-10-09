@@ -1007,12 +1007,14 @@
             "sources": "{count} source(s)"
         },
         "activity": {
+            "allSources": "All sources ({count})",
             "calling": "Consulting",
+            "collapse": "Show less",
             "failed": "The tool did not answer",
-            "output": "Answer from {tool}",
             "reading": "Reading the results",
             "reasoning": "Reasoning",
             "searching": "Searching the web",
+            "showAll": "Show all",
             "source": "1 source",
             "sources": "{count} sources",
             "thinking": "Thinking"
