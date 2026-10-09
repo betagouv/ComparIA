@@ -198,6 +198,7 @@ async def _test_model_can_search_then_stream_final_answer():
         name="Example",
         url="https://example.com/news",
         content="Fresh information",
+        favicon="",
     )
 
     async def fake_search(query: str, _config=None, raise_on_error: bool = False):
@@ -310,6 +311,7 @@ async def _test_reasoning_only_tool_round_is_retried_for_a_final_answer():
         name="Profile",
         url="https://example.com/profile",
         content="A public profile.",
+        favicon="",
     )
 
     async def fake_search(_query: str, _config=None, raise_on_error: bool = False):
@@ -907,6 +909,7 @@ def test_search_results_are_safe_and_bounded():
                 "javascript:alert(1)" if index == 0 else f"https://example.com/{index}"
             ),
             content="x" * (web_search.WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH + 10),
+            favicon="",
         )
         for index in range(web_search.WEB_SEARCH_MAX_RESULTS_PER_CALL + 3)
     ]
@@ -1090,6 +1093,7 @@ async def _test_web_search_sources_reach_their_own_column():
         name="Example",
         url="https://example.com/news",
         content="Fresh information",
+        favicon="",
     )
 
     async def fake_stream_iter(*, msg, **kwargs):
@@ -1154,6 +1158,7 @@ def test_search_results_are_json_native_at_persistence_boundary():
         name="Example",
         url="https://example.com/news",
         content="Fresh information",
+        favicon="",
     )
     now = datetime.now()
     db_message = _llm_message_for_persistence(

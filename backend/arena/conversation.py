@@ -102,6 +102,7 @@ def _mirror_web_search_results(llm_msg: LLMMessageCreate) -> None:
             name=source.name,
             url=source.url or "",
             content=source.content,
+            favicon=source.favicon or "",
         )
         for event in llm_msg.agent_trace or []
         if event.type == "tool_result" and event.name == WEB_SEARCH_TOOL_NAME
