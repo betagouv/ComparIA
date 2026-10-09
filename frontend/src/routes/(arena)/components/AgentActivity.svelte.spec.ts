@@ -81,7 +81,7 @@ describe('AgentActivity', () => {
     )
   })
 
-  it('shows one chip per tool once the model is done', () => {
+  it('lists the steps in order once the model is done', () => {
     render(AgentActivity, {
       props: {
         id: 'a',
@@ -104,6 +104,27 @@ describe('AgentActivity', () => {
     expect(chips.every((chip) => chip.getAttribute('aria-expanded') === 'false')).toBe(true)
   })
 
+  it('keeps a tool called again later as its own step', () => {
+    render(AgentActivity, {
+      props: {
+        id: 'a',
+        steps: [
+          tool(searchCall, searchResult),
+          tool(docsCall, docsResult),
+          tool(
+            { ...searchCall, tool_call_id: 'call-3' },
+            { ...searchResult, tool_call_id: 'call-3' }
+          )
+        ],
+        active: false
+      }
+    })
+
+    expect(
+      screen.getAllByRole('button').map((chip) => chip.textContent!.replace(/\s+/g, ' ').trim())
+    ).toEqual(['Recherche web 1 1 source', 'Documentation SvelteKit', 'Recherche web 1 1 source'])
+  })
+
   it('opens what a tool found when its chip is pressed', async () => {
     const { container } = render(AgentActivity, {
       props: {
@@ -113,26 +134,28 @@ describe('AgentActivity', () => {
       }
     })
 
-    const panel = container.querySelector<HTMLElement>('#a-panel')!
-    expect(panel.hidden).toBe(true)
+    const searchPanel = container.querySelector<HTMLElement>('#a-panel-0')!
+    const docsPanel = container.querySelector<HTMLElement>('#a-panel-1')!
+    expect(searchPanel.hidden).toBe(true)
+    expect(docsPanel.hidden).toBe(true)
 
     const docs = screen.getByRole('button', { name: /Documentation SvelteKit/ })
     await fireEvent.click(docs)
     expect(docs.getAttribute('aria-expanded')).toBe('true')
-    expect(panel.hidden).toBe(false)
+    expect(docsPanel.hidden).toBe(false)
     expect(screen.getByText('search_docs')).toBeTruthy()
     expect(screen.getByText(/invalidateAll is deprecated/)).toBeTruthy()
     expect(screen.getByRole('link', { name: 'https://svelte.dev/docs/kit/load' })).toBeTruthy()
-    expect(screen.queryByRole('link', { name: 'DVF Nantes' })).toBeNull()
 
     await fireEvent.click(screen.getByRole('button', { name: /Recherche web/ }))
     expect(docs.getAttribute('aria-expanded')).toBe('false')
-    expect(screen.getByRole('link', { name: 'DVF Nantes' })).toBeTruthy()
+    expect(docsPanel.hidden).toBe(true)
+    expect(searchPanel.hidden).toBe(false)
     // Web search has one function, so naming it again adds nothing.
     expect(screen.queryByText('web_search')).toBeNull()
 
     await fireEvent.click(screen.getByRole('button', { name: /Recherche web/ }))
-    expect(panel.hidden).toBe(true)
+    expect(searchPanel.hidden).toBe(true)
   })
 
   it('hides technical detail from visitors', async () => {

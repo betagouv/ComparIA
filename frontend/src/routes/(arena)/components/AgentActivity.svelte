@@ -11,7 +11,6 @@
     type ActivityStep,
     type WebSource
   } from './toolActivity'
-  import { SvelteMap } from 'svelte/reactivity'
 
   export type AgentActivityProps = {
     id: string
@@ -23,8 +22,8 @@
 
   let { id, steps, active }: AgentActivityProps = $props()
 
-  type Chip = {
-    key: string
+  type Row = {
+    kind: string
     label: string
     icon: string
     steps: ActivityStep[]
@@ -39,38 +38,40 @@
     return isWebSearch(call) ? 'i-ri-global-line' : 'i-ri-tools-line'
   }
 
-  // One chip per tool, however many times the model called it: which tools a
-  // model reached for is what visitors compare at a glance.
-  const chips = $derived.by(() => {
-    const chips = new SvelteMap<string, Chip>()
+  // One row per step, in the order the model took them. Calls to the same
+  // tool in a row share one, so three searches in a row read as one search.
+  const rows = $derived.by(() => {
+    const rows: Row[] = []
     for (const step of steps) {
-      const key =
+      const kind =
         step.type === 'tool' ? `tool:${step.call.tool || toolName(step.call)}` : 'reasoning'
-      const chip = chips.get(key) ?? {
-        key,
+      const last = rows.at(-1)
+      if (last?.kind === kind) {
+        last.steps.push(step)
+        continue
+      }
+      rows.push({
+        kind,
         label: step.type === 'tool' ? toolName(step.call) : m['chatbot.activity.reasoning'](),
         icon: step.type === 'tool' ? toolIcon(step.call) : 'i-ri-brain-2-line',
-        steps: [],
+        steps: [step],
         sources: []
-      }
-      chip.steps.push(step)
-      chips.set(key, chip)
+      })
     }
-    for (const chip of chips.values()) {
-      const results = chip.steps.flatMap((step) =>
+    for (const row of rows) {
+      const results = row.steps.flatMap((step) =>
         step.type === 'tool' && step.result ? [step.result] : []
       )
-      chip.sources = webSources(results)
-      const calls = chip.steps.filter((step) => step.type === 'tool')
+      row.sources = webSources(results)
+      const calls = row.steps.filter((step) => step.type === 'tool')
       if (calls.length && calls.every((step) => step.result?.status === 'error')) {
-        chip.icon = 'i-ri-error-warning-line'
+        row.icon = 'i-ri-error-warning-line'
       }
     }
-    return [...chips.values()]
+    return rows
   })
 
-  let openKey = $state<string | null>(null)
-  const openChip = $derived(chips.find((chip) => chip.key === openKey) ?? null)
+  let openIndex = $state<number | null>(null)
 
   // While it works, one line says what the model is doing now, as ChatGPT
   // does, with the tool's name in it.
@@ -107,116 +108,114 @@
     {#if live.name}<strong>{live.name}</strong>{/if}
   </p>
 {:else}
-  <div class="my-3">
-    <ul class="m-0! gap-1.5 p-0! flex list-none! flex-wrap">
-      {#each chips as chip (chip.key)}
-        {@const icons = favicons(chip.sources)}
-        <li class="p-0!">
-          <button
-            type="button"
-            class="agent-activity__chip gap-1.5 px-2.5 text-sm font-medium flex items-center rounded-full"
-            aria-expanded={openKey === chip.key}
-            aria-controls="{id}-panel"
-            onclick={() => (openKey = openKey === chip.key ? null : chip.key)}
-          >
-            <Icon icon={chip.icon} size="xs" class="agent-activity__icon" />
-            {chip.label}
-            {#if chip.sources.length > 0}
-              {#if icons.length > 0}
-                <span class="agent-activity__favicons flex" aria-hidden="true">
-                  {#each icons as favicon (favicon)}
-                    <img src={favicon} alt="" loading="lazy" onerror={hideBrokenImage} />
-                  {/each}
-                </span>
-              {/if}
-              <span aria-hidden="true">{chip.sources.length}</span>
-              <span class="fr-sr-only">
-                {chip.sources.length === 1
-                  ? m['chatbot.activity.source']()
-                  : m['chatbot.activity.sources']({ count: chip.sources.length })}
+  <ol class="agent-activity__steps my-3! p-0! flex list-none! flex-col items-start">
+    {#each rows as row, rowIndex (rowIndex)}
+      {@const icons = favicons(row.sources)}
+      <li class="p-0! flex w-full flex-col items-start">
+        <button
+          type="button"
+          class="agent-activity__chip gap-1.5 px-2.5 text-sm font-medium flex items-center rounded-full"
+          aria-expanded={openIndex === rowIndex}
+          aria-controls="{id}-panel-{rowIndex}"
+          onclick={() => (openIndex = openIndex === rowIndex ? null : rowIndex)}
+        >
+          <Icon icon={row.icon} size="xs" class="agent-activity__icon" />
+          {row.label}
+          {#if row.sources.length > 0}
+            {#if icons.length > 0}
+              <span class="agent-activity__favicons flex" aria-hidden="true">
+                {#each icons as favicon (favicon)}
+                  <img src={favicon} alt="" loading="lazy" onerror={hideBrokenImage} />
+                {/each}
               </span>
             {/if}
-          </button>
-        </li>
-      {/each}
-    </ul>
+            <span aria-hidden="true">{row.sources.length}</span>
+            <span class="fr-sr-only">
+              {row.sources.length === 1
+                ? m['chatbot.activity.source']()
+                : m['chatbot.activity.sources']({ count: row.sources.length })}
+            </span>
+          {/if}
+        </button>
 
-    <div
-      id="{id}-panel"
-      class="agent-activity__panel mt-2 gap-3 px-3 py-2.5 text-sm rounded-lg flex flex-col"
-      hidden={!openChip}
-    >
-      {#each openChip?.steps ?? [] as step, index (index)}
-        {#if step.type === 'reasoning'}
-          <p class="mb-0! whitespace-pre-line text-[--text-mention-grey]">{step.content}</p>
-        {:else}
-          {@const request = toolRequest(step.call)}
-          {@const sources = step.result ? webSources([step.result]) : []}
-          {@const text = step.result && !sources.length ? toolResultText(step.result) : null}
-          <div>
-            {#if request || !isWebSearch(step.call)}
-              <p class="gap-x-2 mb-1! flex flex-wrap items-baseline text-[--text-mention-grey]">
-                {#if request}<span class="break-words">«&nbsp;{request}&nbsp;»</span>{/if}
-                {#if !isWebSearch(step.call)}<code class="text-xs">{step.call.name}</code>{/if}
-              </p>
-            {/if}
-            {#if sources.length > 0}
-              <ul class="m-0! gap-1 p-0! flex list-none! flex-col">
-                {#each sources as source (source.url)}
-                  <li class="gap-2 p-0! flex items-start">
-                    {#if source.favicon}
-                      <img
-                        src={source.favicon}
-                        alt=""
-                        aria-hidden="true"
-                        loading="lazy"
-                        onerror={hideBrokenImage}
-                        class="mt-1 h-[14px] w-[14px] shrink-0"
-                      />
-                    {/if}
-                    <Link
-                      href={source.url}
-                      text={source.name}
-                      class="text-sm!"
-                      style="--underline-img: none"
-                    />
-                  </li>
-                {/each}
-              </ul>
-            {:else if text}
-              <!-- Raw tool output can run to pages. A short box that scrolls
-                   keeps it from pushing the answer out of view. -->
-              <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-              <p
-                class="agent-activity__output mb-0! text-xs break-words whitespace-pre-line"
-                tabindex="0"
-                aria-label={m['chatbot.activity.output']({ tool: toolName(step.call) })}
-              >
-                {#each linkify(text) as segment, segmentIndex (segmentIndex)}
-                  {#if segment.url}
-                    <Link
-                      href={segment.url}
-                      text={segment.text}
-                      class="text-xs!"
-                      style="--underline-img: none"
-                    />
-                  {:else}
-                    {segment.text}
-                  {/if}
-                {/each}
-              </p>
+        <div
+          id="{id}-panel-{rowIndex}"
+          class="agent-activity__panel mt-1.5 gap-3 px-3 py-2.5 text-sm rounded-lg flex w-full flex-col"
+          hidden={openIndex !== rowIndex}
+        >
+          {#each row.steps as step, index (index)}
+            {#if step.type === 'reasoning'}
+              <p class="mb-0! whitespace-pre-line text-[--text-mention-grey]">{step.content}</p>
             {:else}
-              <p class="mb-0! text-xs text-[--text-mention-grey]">
-                {step.result?.status === 'error'
-                  ? m['chatbot.activity.failed']()
-                  : m['chatbot.tools.noResult']()}
-              </p>
+              {@const request = toolRequest(step.call)}
+              {@const sources = step.result ? webSources([step.result]) : []}
+              {@const text = step.result && !sources.length ? toolResultText(step.result) : null}
+              <div>
+                {#if request || !isWebSearch(step.call)}
+                  <p class="gap-x-2 mb-1! flex flex-wrap items-baseline text-[--text-mention-grey]">
+                    {#if request}<span class="break-words">«&nbsp;{request}&nbsp;»</span>{/if}
+                    {#if !isWebSearch(step.call)}<code class="text-xs">{step.call.name}</code>{/if}
+                  </p>
+                {/if}
+                {#if sources.length > 0}
+                  <ul class="m-0! gap-1 p-0! flex list-none! flex-col">
+                    {#each sources as source (source.url)}
+                      <li class="gap-2 p-0! flex items-start">
+                        {#if source.favicon}
+                          <img
+                            src={source.favicon}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            onerror={hideBrokenImage}
+                            class="mt-1 h-[14px] w-[14px] shrink-0"
+                          />
+                        {/if}
+                        <Link
+                          href={source.url}
+                          text={source.name}
+                          class="text-sm!"
+                          style="--underline-img: none"
+                        />
+                      </li>
+                    {/each}
+                  </ul>
+                {:else if text}
+                  <!-- Raw tool output can run to pages. A short box that scrolls
+                   keeps it from pushing the answer out of view. -->
+                  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+                  <p
+                    class="agent-activity__output mb-0! text-xs break-words whitespace-pre-line"
+                    tabindex="0"
+                    aria-label={m['chatbot.activity.output']({ tool: toolName(step.call) })}
+                  >
+                    {#each linkify(text) as segment, segmentIndex (segmentIndex)}
+                      {#if segment.url}
+                        <Link
+                          href={segment.url}
+                          text={segment.text}
+                          class="text-xs!"
+                          style="--underline-img: none"
+                        />
+                      {:else}
+                        {segment.text}
+                      {/if}
+                    {/each}
+                  </p>
+                {:else}
+                  <p class="mb-0! text-xs text-[--text-mention-grey]">
+                    {step.result?.status === 'error'
+                      ? m['chatbot.activity.failed']()
+                      : m['chatbot.tools.noResult']()}
+                  </p>
+                {/if}
+              </div>
             {/if}
-          </div>
-        {/if}
-      {/each}
-    </div>
-  </div>
+          {/each}
+        </div>
+      </li>
+    {/each}
+  </ol>
 {/if}
 
 <style>
@@ -250,6 +249,16 @@
     to {
       background-position: 0% 0;
     }
+  }
+
+  /* A short line joins each step to the next, so they read as a sequence. */
+  .agent-activity__steps > li + li::before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 0.5rem;
+    margin-inline-start: 1rem;
+    background: var(--border-default-grey);
   }
 
   .agent-activity__chip {

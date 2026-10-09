@@ -136,7 +136,7 @@ describe('MessageBot', () => {
     expect(screen.queryByText('Aucun outil utilisé')).toBeNull()
   })
 
-  it('keeps reasoning and tool calls that follow each other in one row of chips', () => {
+  it('keeps reasoning and tool calls that follow each other in one list of steps', () => {
     const { container } = render(
       MessageBot,
       props({
@@ -158,10 +158,10 @@ describe('MessageBot', () => {
       })
     )
 
-    expect(container.querySelectorAll('.agent-activity__panel')).toHaveLength(1)
+    expect(container.querySelectorAll('.agent-activity__steps')).toHaveLength(1)
     expect(
       screen.getAllByRole('button', { expanded: false }).map((chip) => chip.textContent?.trim())
-    ).toEqual(['Réflexion', 'Documentation SvelteKit'])
+    ).toEqual(['Réflexion', 'Documentation SvelteKit', 'Réflexion'])
   })
 
   it('shows the live step instead of the loading line while the model works', () => {
