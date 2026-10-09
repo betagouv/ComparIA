@@ -207,81 +207,80 @@
               </span>
             {/if}
             <Icon
-              icon={open ? 'i-ri-arrow-down-s-line' : 'i-ri-arrow-right-s-line'}
+              icon="i-ri-arrow-right-s-line"
               size="sm"
               class="agent-activity__chevron ms-auto"
             />
           </button>
 
-          <div
-            id="{id}-panel-{rowIndex}"
-            class="agent-activity__panel gap-3 pt-1.5 pb-1 flex flex-col"
-            hidden={!open}
-          >
-            {#each row.steps as step, index (index)}
-              {@const key = `${rowIndex}-${index}`}
-              {#if step.type === 'reasoning'}
-                <div>{@render longText(key, step.content)}</div>
-              {:else}
-                {@const sources = step.result ? webSources([step.result]) : []}
-                {@const text = step.result && !sources.length ? toolResultText(step.result) : null}
-                {@const request = row.request ? null : toolRequest(step.call)}
-                {@const shown = expanded.has(key) ? sources : sources.slice(0, SOURCE_LIMIT)}
-                <div>
-                  {#if request}
-                    <p class="mb-1! text-sm break-words text-[--text-mention-grey]">
-                      «&nbsp;{request}&nbsp;»
-                    </p>
-                  {/if}
-                  {#if sources.length > 0}
-                    <ul class="m-0! p-0! flex list-none! flex-col">
-                      {#each shown as source (source.url)}
-                        <li class="p-0!">
-                          <Link
-                            href={source.url}
-                            text={source.name}
-                            hideExternalIcon
-                            class="agent-activity__source gap-2 py-1! text-sm! flex! w-full items-center"
-                          >
-                            {#if source.favicon}
-                              <img
-                                src={source.favicon}
-                                alt=""
-                                aria-hidden="true"
-                                loading="lazy"
-                                onerror={hideBrokenImage}
-                                class="h-[14px] w-[14px] shrink-0"
-                              />
-                            {/if}
-                            <span class="agent-activity__source-name">{source.name}</span>
-                            <span class="agent-activity__site text-xs">{site(source.url)}</span>
-                          </Link>
-                        </li>
-                      {/each}
-                    </ul>
-                    {#if sources.length > SOURCE_LIMIT}
-                      <button
-                        type="button"
-                        class="agent-activity__more text-sm font-medium"
-                        onclick={() => toggle(key)}
-                      >
-                        {expanded.has(key)
-                          ? m['chatbot.activity.collapse']()
-                          : m['chatbot.activity.allSources']({ count: sources.length })}
-                      </button>
+          <div id="{id}-panel-{rowIndex}" class="agent-activity__panel" hidden={!open}>
+            <div class="agent-activity__panel-body gap-3 pt-1.5 pb-1 flex flex-col">
+              {#each row.steps as step, index (index)}
+                {@const key = `${rowIndex}-${index}`}
+                {#if step.type === 'reasoning'}
+                  <div>{@render longText(key, step.content)}</div>
+                {:else}
+                  {@const sources = step.result ? webSources([step.result]) : []}
+                  {@const text =
+                    step.result && !sources.length ? toolResultText(step.result) : null}
+                  {@const request = row.request ? null : toolRequest(step.call)}
+                  {@const shown = expanded.has(key) ? sources : sources.slice(0, SOURCE_LIMIT)}
+                  <div>
+                    {#if request}
+                      <p class="mb-1! text-sm break-words text-[--text-mention-grey]">
+                        «&nbsp;{request}&nbsp;»
+                      </p>
                     {/if}
-                  {:else if text}
-                    {@render longText(key, text)}
-                  {:else}
-                    <p class="mb-0! text-sm text-[--text-mention-grey]">
-                      {step.result?.status === 'error'
-                        ? m['chatbot.activity.failed']()
-                        : m['chatbot.tools.noResult']()}
-                    </p>
-                  {/if}
-                </div>
-              {/if}
-            {/each}
+                    {#if sources.length > 0}
+                      <ul class="m-0! p-0! flex list-none! flex-col">
+                        {#each shown as source (source.url)}
+                          <li class="p-0!">
+                            <Link
+                              href={source.url}
+                              text={source.name}
+                              hideExternalIcon
+                              class="agent-activity__source gap-2 py-1! text-sm! flex! w-full items-center"
+                            >
+                              {#if source.favicon}
+                                <img
+                                  src={source.favicon}
+                                  alt=""
+                                  aria-hidden="true"
+                                  loading="lazy"
+                                  onerror={hideBrokenImage}
+                                  class="h-[14px] w-[14px] shrink-0"
+                                />
+                              {/if}
+                              <span class="agent-activity__source-name">{source.name}</span>
+                              <span class="agent-activity__site text-xs">{site(source.url)}</span>
+                            </Link>
+                          </li>
+                        {/each}
+                      </ul>
+                      {#if sources.length > SOURCE_LIMIT}
+                        <button
+                          type="button"
+                          class="agent-activity__more text-sm font-medium"
+                          onclick={() => toggle(key)}
+                        >
+                          {expanded.has(key)
+                            ? m['chatbot.activity.collapse']()
+                            : m['chatbot.activity.allSources']({ count: sources.length })}
+                        </button>
+                      {/if}
+                    {:else if text}
+                      {@render longText(key, text)}
+                    {:else}
+                      <p class="mb-0! text-sm text-[--text-mention-grey]">
+                        {step.result?.status === 'error'
+                          ? m['chatbot.activity.failed']()
+                          : m['chatbot.tools.noResult']()}
+                      </p>
+                    {/if}
+                  </div>
+                {/if}
+              {/each}
+            </div>
           </div>
         </div>
       </li>
@@ -374,6 +373,45 @@
   .agent-activity__head :global(.agent-activity__chevron) {
     flex-shrink: 0;
     color: var(--text-mention-grey);
+    transition: transform 0.15s ease;
+  }
+
+  .agent-activity__head[aria-expanded='true'] :global(.agent-activity__chevron) {
+    transform: rotate(90deg);
+  }
+
+  /* The panel unfolds and folds back rather than appearing at once. Its
+     rows go from 0fr to 1fr, which follows the content's height; `hidden`
+     only takes effect once folded, through allow-discrete. */
+  .agent-activity__panel {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition:
+      grid-template-rows 0.2s ease-out,
+      opacity 0.2s ease-out,
+      display 0.2s allow-discrete;
+  }
+
+  .agent-activity__panel[hidden] {
+    display: none;
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+
+  @starting-style {
+    .agent-activity__panel:not([hidden]) {
+      grid-template-rows: 0fr;
+      opacity: 0;
+    }
+  }
+
+  /* Room for focus rings, which the folding would otherwise cut off. */
+  .agent-activity__panel-body {
+    min-height: 0;
+    overflow: hidden;
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
   }
 
   .agent-activity__request {
@@ -400,7 +438,7 @@
     margin-inline-start: -4px;
   }
 
-  .agent-activity__panel > :global(* + *) {
+  .agent-activity__panel-body > :global(* + *) {
     padding-top: 0.75rem;
     border-top: 1px solid var(--border-default-grey);
   }
@@ -469,6 +507,11 @@
 
     .agent-activity__live strong {
       color: var(--text-default-grey);
+    }
+
+    .agent-activity__panel,
+    .agent-activity__head :global(.agent-activity__chevron) {
+      transition: none;
     }
   }
 </style>
