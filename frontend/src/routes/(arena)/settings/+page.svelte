@@ -189,18 +189,18 @@
             </section>
           {/if}
 
-          {#if auth.user}
-            <div class="mt-8 gap-6 lg:flex-row flex flex-col">
-              <section class="basis-1/2">
-                <SurveyFormSignup
-                  id="survey"
-                  title={m['survey.profile.title']()}
-                  questions={profileQuestions(survey.questions, survey.answers)}
-                  answers={survey.answers}
-                  onSuccess={() => useToast(m['survey.profile.saved'](), 4000)}
-                />
-              </section>
+          <div class="mt-8 gap-6 lg:flex-row flex flex-col">
+            <section class="basis-1/2">
+              <SurveyFormSignup
+                id="survey"
+                title={m['survey.profile.title']()}
+                questions={profileQuestions(survey.questions, survey.answers)}
+                answers={survey.answers}
+                onSuccess={() => useToast(m['survey.profile.saved'](), 4000)}
+              />
+            </section>
 
+            {#if auth.user}
               <section class="basis-1/2" aria-labelledby="export-title">
                 <h2 id="export-title" class="fr-h4">{m['auth.settings.export.title']()}</h2>
                 <p class="fr-text--sm text-grey max-w-[800px]">
@@ -221,8 +221,8 @@
                   {/if}
                 </div>
               </section>
-            </div>
-          {/if}
+            {/if}
+          </div>
         {:else}
           <section aria-labelledby="links-title">
             <h2 id="links-title" class="fr-h4">{m['auth.settings.links.title']()}</h2>
