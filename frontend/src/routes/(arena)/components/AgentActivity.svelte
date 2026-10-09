@@ -31,6 +31,8 @@
     sources: WebSource[]
     /** What the model asked, when the row holds a single call. */
     request: string | null
+    /** How many calls the row holds, when there are several. */
+    calls: string | null
   }
 
   const SOURCE_LIMIT = 5
@@ -61,7 +63,8 @@
         icon: step.type === 'tool' ? toolIcon(step.call) : 'i-ri-brain-2-line',
         steps: [step],
         sources: [],
-        request: null
+        request: null,
+        calls: null
       })
     }
     for (const row of rows) {
@@ -74,6 +77,11 @@
         row.icon = 'i-ri-error-warning-line'
       }
       if (calls.length === 1) row.request = toolRequest(calls[0].call)
+      if (calls.length > 1) {
+        row.calls = isWebSearch(calls[0].call)
+          ? m['chatbot.activity.searches']({ count: calls.length })
+          : m['chatbot.activity.calls']({ count: calls.length })
+      }
     }
     return rows
   })
@@ -178,6 +186,8 @@
             <span class="font-medium shrink-0">{row.label}</span>
             {#if row.request}
               <span class="agent-activity__request">«&nbsp;{row.request}&nbsp;»</span>
+            {:else if row.calls}
+              <span class="agent-activity__request">{row.calls}</span>
             {/if}
             {#if row.sources.length > 0}
               <span class="agent-activity__count gap-1 flex shrink-0 items-center">

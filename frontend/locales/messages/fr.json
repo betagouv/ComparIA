@@ -1009,10 +1009,12 @@
         "activity": {
             "allSources": "Toutes les sources ({count})",
             "calling": "Consulte",
+            "calls": "{count} appels",
             "collapse": "Réduire",
             "failed": "L'outil n'a pas répondu",
             "reading": "Lit les résultats",
             "reasoning": "Réflexion",
+            "searches": "{count} recherches",
             "searching": "Cherche sur le web",
             "showAll": "Tout afficher",
             "source": "1 source",

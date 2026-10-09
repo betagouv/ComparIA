@@ -99,7 +99,8 @@ describe('AgentActivity', () => {
     expect(chips.map((chip) => chip.textContent!.replace(/\s+/g, ' ').trim())).toEqual([
       'Réflexion',
       'Recherche web « prix immobilier Nantes » 1 1 source',
-      'Documentation SvelteKit'
+      // Two calls in a row share a line that counts them.
+      'Documentation SvelteKit 2 appels'
     ])
     expect(chips.every((chip) => chip.getAttribute('aria-expanded') === 'false')).toBe(true)
   })
