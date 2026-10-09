@@ -98,7 +98,7 @@ describe('AgentActivity', () => {
     const chips = screen.getAllByRole('button')
     expect(chips.map((chip) => chip.textContent!.replace(/\s+/g, ' ').trim())).toEqual([
       'Réflexion',
-      'Recherche web 1 1 source',
+      'Recherche web « prix immobilier Nantes » 1 1 source',
       'Documentation SvelteKit'
     ])
     expect(chips.every((chip) => chip.getAttribute('aria-expanded') === 'false')).toBe(true)
@@ -122,7 +122,11 @@ describe('AgentActivity', () => {
 
     expect(
       screen.getAllByRole('button').map((chip) => chip.textContent!.replace(/\s+/g, ' ').trim())
-    ).toEqual(['Recherche web 1 1 source', 'Documentation SvelteKit', 'Recherche web 1 1 source'])
+    ).toEqual([
+      'Recherche web « prix immobilier Nantes » 1 1 source',
+      'Documentation SvelteKit « invalidateAll »',
+      'Recherche web « prix immobilier Nantes » 1 1 source'
+    ])
   })
 
   it('opens what a tool found when its chip is pressed', async () => {
@@ -143,7 +147,9 @@ describe('AgentActivity', () => {
     await fireEvent.click(docs)
     expect(docs.getAttribute('aria-expanded')).toBe('true')
     expect(docsPanel.hidden).toBe(false)
-    expect(screen.getByText('search_docs')).toBeTruthy()
+    // The step names what the model asked for, not the function.
+    expect(docs.textContent).toMatch(/«\sinvalidateAll\s»/)
+    expect(screen.queryByText('search_docs')).toBeNull()
     expect(screen.getByText(/invalidateAll is deprecated/)).toBeTruthy()
     expect(screen.getByRole('link', { name: 'https://svelte.dev/docs/kit/load' })).toBeTruthy()
 
@@ -151,11 +157,43 @@ describe('AgentActivity', () => {
     expect(docs.getAttribute('aria-expanded')).toBe('false')
     expect(docsPanel.hidden).toBe(true)
     expect(searchPanel.hidden).toBe(false)
-    // Web search has one function, so naming it again adds nothing.
     expect(screen.queryByText('web_search')).toBeNull()
 
     await fireEvent.click(screen.getByRole('button', { name: /Recherche web/ }))
     expect(searchPanel.hidden).toBe(true)
+  })
+
+  it('shows the first sources and the rest on request', async () => {
+    const results = Array.from({ length: 7 }, (_, index) => ({
+      name: `Source ${index + 1}`,
+      url: `https://example.com/${index + 1}`,
+      favicon: null,
+      content: ''
+    }))
+    render(AgentActivity, {
+      props: { id: 'a', steps: [tool(searchCall, { ...searchResult, results })], active: false }
+    })
+    await fireEvent.click(screen.getByRole('button'))
+
+    expect(screen.getAllByRole('link')).toHaveLength(5)
+    expect(screen.getByRole('link', { name: /Source 1/ }).textContent).toContain('example.com')
+    await fireEvent.click(screen.getByRole('button', { name: 'Toutes les sources (7)' }))
+    expect(screen.getAllByRole('link')).toHaveLength(7)
+    await fireEvent.click(screen.getByRole('button', { name: 'Réduire' }))
+    expect(screen.getAllByRole('link')).toHaveLength(5)
+  })
+
+  it('cuts a long tool answer until asked for all of it', async () => {
+    const content = Array.from({ length: 12 }, (_, index) => `Ligne ${index + 1}`).join('\n')
+    const { container } = render(AgentActivity, {
+      props: { id: 'a', steps: [tool(docsCall, { ...docsResult, content })], active: false }
+    })
+    await fireEvent.click(screen.getByRole('button'))
+
+    const text = container.querySelector('.agent-activity__text')!
+    expect(text.classList.contains('agent-activity__text--cut')).toBe(true)
+    await fireEvent.click(screen.getByRole('button', { name: 'Tout afficher' }))
+    expect(text.classList.contains('agent-activity__text--cut')).toBe(false)
   })
 
   it('hides technical detail from visitors', async () => {
@@ -178,7 +216,7 @@ describe('AgentActivity', () => {
       }
     })
 
-    expect(container.querySelector('button .i-ri-error-warning-line')).toBeTruthy()
+    expect(container.querySelector('.agent-activity__dot .i-ri-error-warning-line')).toBeTruthy()
     await fireEvent.click(screen.getByRole('button'))
     expect(screen.getByText("L'outil n'a pas répondu")).toBeTruthy()
   })

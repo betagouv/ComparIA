@@ -160,8 +160,10 @@ describe('MessageBot', () => {
 
     expect(container.querySelectorAll('.agent-activity__steps')).toHaveLength(1)
     expect(
-      screen.getAllByRole('button', { expanded: false }).map((chip) => chip.textContent?.trim())
-    ).toEqual(['Réflexion', 'Documentation SvelteKit', 'Réflexion'])
+      screen
+        .getAllByRole('button', { expanded: false })
+        .map((step) => step.textContent!.replace(/\s+/g, ' ').trim())
+    ).toEqual(['Réflexion', 'Documentation SvelteKit « load »', 'Réflexion'])
   })
 
   it('shows the live step instead of the loading line while the model works', () => {

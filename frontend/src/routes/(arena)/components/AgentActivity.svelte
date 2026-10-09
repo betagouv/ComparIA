@@ -2,6 +2,7 @@
   import { Icon, Link } from '$components/dsfr'
   import type { AgentTraceToolCall } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
+  import { SvelteSet } from 'svelte/reactivity'
   import {
     isWebSearch,
     linkify,
@@ -28,7 +29,11 @@
     icon: string
     steps: ActivityStep[]
     sources: WebSource[]
+    /** What the model asked, when the row holds a single call. */
+    request: string | null
   }
+
+  const SOURCE_LIMIT = 5
 
   function toolName(call: AgentTraceToolCall) {
     return call.label || call.name
@@ -55,7 +60,8 @@
         label: step.type === 'tool' ? toolName(step.call) : m['chatbot.activity.reasoning'](),
         icon: step.type === 'tool' ? toolIcon(step.call) : 'i-ri-brain-2-line',
         steps: [step],
-        sources: []
+        sources: [],
+        request: null
       })
     }
     for (const row of rows) {
@@ -67,11 +73,14 @@
       if (calls.length && calls.every((step) => step.result?.status === 'error')) {
         row.icon = 'i-ri-error-warning-line'
       }
+      if (calls.length === 1) row.request = toolRequest(calls[0].call)
     }
     return rows
   })
 
   let openIndex = $state<number | null>(null)
+  // Long lists and answers the visitor chose to see in full.
+  const expanded = new SvelteSet<string>()
 
   // While it works, one line says what the model is doing now, as ChatGPT
   // does, with the tool's name in it.
@@ -96,11 +105,51 @@
     ].slice(0, 3)
   }
 
+  function site(url: string) {
+    return new URL(url).hostname.replace(/^www\./, '')
+  }
+
+  function isLong(text: string) {
+    return text.length > 400 || text.split('\n').length > 6
+  }
+
+  function toggle(key: string) {
+    if (expanded.has(key)) expanded.delete(key)
+    else expanded.add(key)
+  }
+
   function hideBrokenImage(event: Event) {
     const image = event.currentTarget
     if (image instanceof HTMLImageElement) image.hidden = true
   }
 </script>
+
+{#snippet longText(key: string, text: string)}
+  {@const full = expanded.has(key) || !isLong(text)}
+  <p
+    class={[
+      'agent-activity__text mb-0! text-sm break-words whitespace-pre-line',
+      { 'agent-activity__text--cut': !full }
+    ]}
+  >
+    {#each linkify(text) as segment, segmentIndex (segmentIndex)}
+      {#if segment.url}
+        <Link href={segment.url} text={segment.text} class="text-sm!" />
+      {:else}
+        {segment.text}
+      {/if}
+    {/each}
+  </p>
+  {#if isLong(text)}
+    <button
+      type="button"
+      class="agent-activity__more text-sm font-medium"
+      onclick={() => toggle(key)}
+    >
+      {full ? m['chatbot.activity.collapse']() : m['chatbot.activity.showAll']()}
+    </button>
+  {/if}
+{/snippet}
 
 {#if active}
   <p class="agent-activity__live my-3! text-sm" aria-live="polite">
@@ -108,110 +157,122 @@
     {#if live.name}<strong>{live.name}</strong>{/if}
   </p>
 {:else}
-  <ol class="agent-activity__steps my-3! p-0! flex list-none! flex-col items-start">
+  <ol class="agent-activity__steps my-3! p-0! list-none!">
     {#each rows as row, rowIndex (rowIndex)}
+      {@const open = openIndex === rowIndex}
       {@const icons = favicons(row.sources)}
-      <li class="p-0! flex w-full flex-col items-start">
-        <button
-          type="button"
-          class="agent-activity__chip gap-1.5 px-2.5 text-sm font-medium flex items-center rounded-full"
-          aria-expanded={openIndex === rowIndex}
-          aria-controls="{id}-panel-{rowIndex}"
-          onclick={() => (openIndex = openIndex === rowIndex ? null : rowIndex)}
-        >
-          <Icon icon={row.icon} size="xs" class="agent-activity__icon" />
-          {row.label}
-          {#if row.sources.length > 0}
-            {#if icons.length > 0}
-              <span class="agent-activity__favicons flex" aria-hidden="true">
-                {#each icons as favicon (favicon)}
-                  <img src={favicon} alt="" loading="lazy" onerror={hideBrokenImage} />
-                {/each}
+      <!-- Each step is a line, its icon on the thread that joins them, with
+           what the model asked beside the tool name. -->
+      <li class="agent-activity__step p-0! relative">
+        <span class="agent-activity__dot flex items-center justify-center rounded-full">
+          <Icon icon={row.icon} size="xs" />
+        </span>
+        <div>
+          <button
+            type="button"
+            class="agent-activity__head gap-2 text-sm flex w-full items-center text-left"
+            aria-expanded={open}
+            aria-controls="{id}-panel-{rowIndex}"
+            onclick={() => (openIndex = open ? null : rowIndex)}
+          >
+            <span class="font-medium shrink-0">{row.label}</span>
+            {#if row.request}
+              <span class="agent-activity__request">«&nbsp;{row.request}&nbsp;»</span>
+            {/if}
+            {#if row.sources.length > 0}
+              <span class="agent-activity__count gap-1 flex shrink-0 items-center">
+                {#if icons.length > 0}
+                  <span class="agent-activity__favicons flex" aria-hidden="true">
+                    {#each icons as favicon (favicon)}
+                      <img src={favicon} alt="" loading="lazy" onerror={hideBrokenImage} />
+                    {/each}
+                  </span>
+                {/if}
+                <span aria-hidden="true">{row.sources.length}</span>
+                <span class="fr-sr-only">
+                  {row.sources.length === 1
+                    ? m['chatbot.activity.source']()
+                    : m['chatbot.activity.sources']({ count: row.sources.length })}
+                </span>
               </span>
             {/if}
-            <span aria-hidden="true">{row.sources.length}</span>
-            <span class="fr-sr-only">
-              {row.sources.length === 1
-                ? m['chatbot.activity.source']()
-                : m['chatbot.activity.sources']({ count: row.sources.length })}
-            </span>
-          {/if}
-        </button>
+            <Icon
+              icon={open ? 'i-ri-arrow-down-s-line' : 'i-ri-arrow-right-s-line'}
+              size="sm"
+              class="agent-activity__chevron ms-auto"
+            />
+          </button>
 
-        <div
-          id="{id}-panel-{rowIndex}"
-          class="agent-activity__panel mt-1.5 gap-3 px-3 py-2.5 text-sm rounded-lg flex w-full flex-col"
-          hidden={openIndex !== rowIndex}
-        >
-          {#each row.steps as step, index (index)}
-            {#if step.type === 'reasoning'}
-              <p class="mb-0! whitespace-pre-line text-[--text-mention-grey]">{step.content}</p>
-            {:else}
-              {@const request = toolRequest(step.call)}
-              {@const sources = step.result ? webSources([step.result]) : []}
-              {@const text = step.result && !sources.length ? toolResultText(step.result) : null}
-              <div>
-                {#if request || !isWebSearch(step.call)}
-                  <p class="gap-x-2 mb-1! flex flex-wrap items-baseline text-[--text-mention-grey]">
-                    {#if request}<span class="break-words">«&nbsp;{request}&nbsp;»</span>{/if}
-                    {#if !isWebSearch(step.call)}<code class="text-xs">{step.call.name}</code>{/if}
-                  </p>
-                {/if}
-                {#if sources.length > 0}
-                  <ul class="m-0! gap-1 p-0! flex list-none! flex-col">
-                    {#each sources as source (source.url)}
-                      <li class="gap-2 p-0! flex items-start">
-                        {#if source.favicon}
-                          <img
-                            src={source.favicon}
-                            alt=""
-                            aria-hidden="true"
-                            loading="lazy"
-                            onerror={hideBrokenImage}
-                            class="mt-1 h-[14px] w-[14px] shrink-0"
-                          />
-                        {/if}
-                        <Link
-                          href={source.url}
-                          text={source.name}
-                          class="text-sm!"
-                          style="--underline-img: none"
-                        />
-                      </li>
-                    {/each}
-                  </ul>
-                {:else if text}
-                  <!-- Raw tool output can run to pages. A short box that scrolls
-                   keeps it from pushing the answer out of view. -->
-                  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-                  <p
-                    class="agent-activity__output mb-0! text-xs break-words whitespace-pre-line"
-                    tabindex="0"
-                    aria-label={m['chatbot.activity.output']({ tool: toolName(step.call) })}
-                  >
-                    {#each linkify(text) as segment, segmentIndex (segmentIndex)}
-                      {#if segment.url}
-                        <Link
-                          href={segment.url}
-                          text={segment.text}
-                          class="text-xs!"
-                          style="--underline-img: none"
-                        />
-                      {:else}
-                        {segment.text}
-                      {/if}
-                    {/each}
-                  </p>
-                {:else}
-                  <p class="mb-0! text-xs text-[--text-mention-grey]">
-                    {step.result?.status === 'error'
-                      ? m['chatbot.activity.failed']()
-                      : m['chatbot.tools.noResult']()}
-                  </p>
-                {/if}
-              </div>
-            {/if}
-          {/each}
+          <div
+            id="{id}-panel-{rowIndex}"
+            class="agent-activity__panel gap-3 pt-1.5 pb-1 flex flex-col"
+            hidden={!open}
+          >
+            {#each row.steps as step, index (index)}
+              {@const key = `${rowIndex}-${index}`}
+              {#if step.type === 'reasoning'}
+                <div>{@render longText(key, step.content)}</div>
+              {:else}
+                {@const sources = step.result ? webSources([step.result]) : []}
+                {@const text = step.result && !sources.length ? toolResultText(step.result) : null}
+                {@const request = row.request ? null : toolRequest(step.call)}
+                {@const shown = expanded.has(key) ? sources : sources.slice(0, SOURCE_LIMIT)}
+                <div>
+                  {#if request}
+                    <p class="mb-1! text-sm break-words text-[--text-mention-grey]">
+                      «&nbsp;{request}&nbsp;»
+                    </p>
+                  {/if}
+                  {#if sources.length > 0}
+                    <ul class="m-0! p-0! flex list-none! flex-col">
+                      {#each shown as source (source.url)}
+                        <li class="p-0!">
+                          <Link
+                            href={source.url}
+                            text={source.name}
+                            hideExternalIcon
+                            class="agent-activity__source gap-2 py-1! text-sm! flex! w-full items-center"
+                          >
+                            {#if source.favicon}
+                              <img
+                                src={source.favicon}
+                                alt=""
+                                aria-hidden="true"
+                                loading="lazy"
+                                onerror={hideBrokenImage}
+                                class="h-[14px] w-[14px] shrink-0"
+                              />
+                            {/if}
+                            <span class="agent-activity__source-name">{source.name}</span>
+                            <span class="agent-activity__site text-xs">{site(source.url)}</span>
+                          </Link>
+                        </li>
+                      {/each}
+                    </ul>
+                    {#if sources.length > SOURCE_LIMIT}
+                      <button
+                        type="button"
+                        class="agent-activity__more text-sm font-medium"
+                        onclick={() => toggle(key)}
+                      >
+                        {expanded.has(key)
+                          ? m['chatbot.activity.collapse']()
+                          : m['chatbot.activity.allSources']({ count: sources.length })}
+                      </button>
+                    {/if}
+                  {:else if text}
+                    {@render longText(key, text)}
+                  {:else}
+                    <p class="mb-0! text-sm text-[--text-mention-grey]">
+                      {step.result?.status === 'error'
+                        ? m['chatbot.activity.failed']()
+                        : m['chatbot.tools.noResult']()}
+                    </p>
+                  {/if}
+                </div>
+              {/if}
+            {/each}
+          </div>
         </div>
       </li>
     {/each}
@@ -251,38 +312,70 @@
     }
   }
 
-  /* A short line joins each step to the next, so they read as a sequence. */
-  .agent-activity__steps > li + li::before {
+  .agent-activity__step {
+    padding-inline-start: 2rem !important;
+    padding-bottom: 0.625rem !important;
+    list-style: none;
+  }
+
+  .agent-activity__step::marker {
+    content: none;
+  }
+
+  /* The thread: a line from each icon down to the next one. */
+  .agent-activity__step:not(:last-child)::before {
     content: '';
-    display: block;
+    position: absolute;
+    top: 1.625rem;
+    bottom: 0.125rem;
+    left: calc(0.75rem - 0.5px);
     width: 1px;
-    height: 0.5rem;
-    margin-inline-start: 1rem;
     background: var(--border-default-grey);
   }
 
-  .agent-activity__chip {
-    --chip-background: var(--background-alt-grey);
-    height: 1.75rem;
-    color: var(--text-default-grey);
-    background: var(--chip-background);
-  }
-
-  .agent-activity__chip:hover {
-    --chip-background: var(--background-alt-grey-hover);
-  }
-
-  .agent-activity__chip[aria-expanded='true'] {
-    --chip-background: var(--background-action-low-blue-france);
-    box-shadow: inset 0 0 0 1px var(--border-action-high-blue-france);
-  }
-
-  .agent-activity__chip :global(.agent-activity__icon) {
+  .agent-activity__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.5rem;
+    height: 1.5rem;
     color: var(--text-action-high-blue-france);
+    background: var(--background-action-low-blue-france);
   }
 
-  .agent-activity__chip :global(.i-ri-error-warning-line) {
+  .agent-activity__dot:has(:global(.i-ri-error-warning-line)) {
     color: var(--text-default-error);
+    background: var(--background-contrast-error);
+  }
+
+  .agent-activity__head {
+    min-height: 1.5rem;
+    color: var(--text-default-grey);
+  }
+
+  .agent-activity__head:hover {
+    background: none;
+  }
+
+  .agent-activity__head:hover > .font-medium {
+    text-decoration: underline;
+  }
+
+  .agent-activity__head :global(.agent-activity__chevron) {
+    flex-shrink: 0;
+    color: var(--text-mention-grey);
+  }
+
+  .agent-activity__request {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-mention-grey);
+  }
+
+  .agent-activity__count {
+    color: var(--text-mention-grey);
   }
 
   .agent-activity__favicons img {
@@ -290,15 +383,11 @@
     height: 14px;
     border-radius: 50%;
     background: var(--background-default-grey);
-    box-shadow: 0 0 0 2px var(--chip-background);
+    box-shadow: 0 0 0 2px var(--background-default-grey);
   }
 
   .agent-activity__favicons img + img {
     margin-inline-start: -4px;
-  }
-
-  .agent-activity__panel {
-    background: var(--background-alt-grey);
   }
 
   .agent-activity__panel > :global(* + *) {
@@ -306,10 +395,59 @@
     border-top: 1px solid var(--border-default-grey);
   }
 
-  .agent-activity__output {
-    max-height: 10rem;
-    overflow-y: auto;
+  .agent-activity__text {
+    color: var(--text-default-grey);
+  }
+
+  /* A long answer shows its first lines and fades out above the button that
+     shows the rest. */
+  .agent-activity__text--cut {
+    max-height: 9rem;
+    overflow: hidden;
+    mask-image: linear-gradient(#000 55%, transparent);
+  }
+
+  .agent-activity__more {
+    margin-top: 0.25rem;
+    color: var(--text-action-high-blue-france);
+  }
+
+  .agent-activity__more:hover {
+    text-decoration: underline;
+  }
+
+  .agent-activity__panel :global(.agent-activity__source) {
+    min-width: 0;
+    color: var(--text-default-grey);
+    --underline-img: none;
+  }
+
+  .agent-activity__panel :global(.agent-activity__source:hover > .agent-activity__source-name) {
+    text-decoration: underline;
+  }
+
+  .agent-activity__source-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agent-activity__site {
+    flex-shrink: 0;
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     color: var(--text-mention-grey);
+  }
+
+  /* On a phone the title needs the whole line. */
+  @media (max-width: 36em) {
+    .agent-activity__site {
+      display: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
