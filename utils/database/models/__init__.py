@@ -58,7 +58,6 @@ from .survey import (
     MAX_QUESTION_PROMPTS,
     MAX_QUESTIONS_PER_PROMPT,
     SURVEY_INPUT_TYPES,
-    SURVEY_TRIGGERS,
     AdminSurveyOption,
     AdminSurveyQuestion,
     AdminSurveyResponse,
@@ -81,7 +80,6 @@ from .survey import (
     SurveyQuestionCreate,
     SurveyQuestionOrder,
     SurveyQuestionUpdate,
-    SurveyTrigger,
 )
 from .turn import (
     Turn,

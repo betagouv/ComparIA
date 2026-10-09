@@ -7,11 +7,10 @@
 
   const modalId = 'fr-modal-survey-signup'
   const survey = getSurveyContext()
-  const opened = $derived(survey.show && survey.kind === 'signup')
+  const opened = $derived(survey.show)
 
   function resetState() {
     survey.show = false
-    survey.kind = null
     invalidate('survey:signup')
   }
 </script>
@@ -29,8 +28,8 @@
     id="form-{modalId}"
     title={m['survey.required.title']()}
     description={m['survey.required.description']()}
-    questions={survey.signupQuestions}
-    answers={survey.signupAnswers}
+    questions={survey.questions}
+    answers={survey.answers}
     class="mt-5"
     onSuccess={resetState}
   />

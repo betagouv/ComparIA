@@ -38,12 +38,11 @@
   const surveyNotAnswered = auth.user?.questionsAnswered === false
   let showSurveyModal = $state<SurveyCtx>({
     show: surveyNotAnswered,
-    kind: surveyNotAnswered ? 'signup' : null,
-    get signupQuestions() {
-      return data.survey.signupQuestions
+    get questions() {
+      return data.survey.questions
     },
-    get signupAnswers() {
-      return data.survey.signupAnswers
+    get answers() {
+      return data.survey.answers
     }
   })
   setSurveyContext(showSurveyModal)
@@ -68,7 +67,6 @@
   function handleError(_event: PromiseRejectionEvent) {
     if (_event.reason instanceof UnansweredQuestionsError) {
       showSurveyModal.show = true
-      showSurveyModal.kind = 'signup'
       return
     }
     // FIXME display error page on some error? display custom text in toast?

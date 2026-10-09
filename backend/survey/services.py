@@ -33,7 +33,6 @@ from utils.database.models.survey import (
     SurveyQuestionCreate,
     SurveyQuestionOrder,
     SurveyQuestionUpdate,
-    SurveyTrigger,
 )
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
@@ -161,14 +160,12 @@ async def _all_questions() -> list[SurveyQuestion]:
         return list(result.all())
 
 
-async def _live_for(trigger: SurveyTrigger) -> list[SurveyQuestion]:
-    """Live questions asked at this moment, in display order. A question can
-    name both moments, so it appears in both lists."""
+async def _askable_questions() -> list[SurveyQuestion]:
     return sorted(
         (
             question
             for question in await _all_questions()
-            if trigger in question.triggers and question.archived_at is None
+            if question.archived_at is None
         ),
         key=lambda question: question.display_order,
     )
@@ -208,7 +205,7 @@ def _to_public(
 
 
 async def list_questions(
-    session: AsyncSession, trigger: SurveyTrigger, locale: str
+    session: AsyncSession, locale: str
 ) -> list[PublicSurveyQuestion]:
     """
     Every live question for a moment, unconditional on who is asking. The
@@ -218,13 +215,12 @@ async def list_questions(
     default_locale = await _default_locale()
     return [
         _to_public(question, locale, default_locale)
-        for question in await _live_for(trigger)
+        for question in await _askable_questions()
     ]
 
 
 async def questions_to_prompt(
     session: AsyncSession,
-    trigger: SurveyTrigger,
     locale: str,
     user_id: uuid.UUID | None,
     anonymous_user_hash: str | None,
@@ -235,7 +231,7 @@ async def questions_to_prompt(
     """
     _require_respondent(user_id, anonymous_user_hash)
 
-    candidates = await _live_for(trigger)
+    candidates = await _askable_questions()
     if not candidates:
         return []
 
@@ -483,7 +479,7 @@ async def signup_questions_answered(
     free on the common path where nothing is configured.
     """
     signup_ids = [
-        question.id for question in await _live_for("signup") if question.required
+        question.id for question in await _askable_questions() if question.required
     ]
     # The overwhelmingly common case is an instance with no required signup
     # questions at all, and it costs nothing: the question list is cached, so
@@ -739,7 +735,6 @@ async def admin_list(session: AsyncSession) -> AdminSurveyResponse:
             AdminSurveyQuestion(
                 id=question.id,
                 key=question.key,
-                triggers=question.triggers,
                 required=question.required,
                 input_type=question.input_type,
                 labels=question.labels,
@@ -794,7 +789,6 @@ async def create_question(
 
     question = SurveyQuestion(
         key=key,
-        triggers=list(payload.triggers),
         required=payload.required,
         input_type=payload.input_type,
         labels=dict(payload.labels),
@@ -881,7 +875,6 @@ async def update_question(
     question.published = payload.published
     # Neither of these changes what an answer means, so neither bumps the
     # revision: the same wording asked in one more place is the same column.
-    question.triggers = list(payload.triggers)
     question.required = payload.required
     if label_changed or live_set_changed:
         question.revision += 1

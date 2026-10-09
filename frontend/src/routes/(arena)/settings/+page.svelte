@@ -195,8 +195,8 @@
                 <SurveyFormSignup
                   id="survey"
                   title={m['survey.profile.title']()}
-                  questions={profileQuestions(survey.signupQuestions, survey.signupAnswers)}
-                  answers={survey.signupAnswers}
+                  questions={profileQuestions(survey.questions, survey.answers)}
+                  answers={survey.answers}
                   onSuccess={() => useToast(m['survey.profile.saved'](), 4000)}
                 />
               </section>

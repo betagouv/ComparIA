@@ -90,7 +90,6 @@ export interface AdminSurveyOption {
 export interface AdminSurveyQuestion {
   id: string;
   key: string;
-  triggers: ("signup" | "after_vote")[];
   required: boolean;
   input_type: "select" | "checkbox_group";
   labels: {
@@ -489,7 +488,6 @@ export interface SurveyQuestionArchiveUpdate {
   archived: boolean;
 }
 export interface SurveyQuestionCreate {
-  triggers: ("signup" | "after_vote")[];
   required?: boolean;
   input_type: "select" | "checkbox_group";
   labels: {
@@ -507,7 +505,6 @@ export interface SurveyQuestionOrder {
   ids: string[];
 }
 export interface SurveyQuestionUpdate {
-  triggers: ("signup" | "after_vote")[];
   required: boolean;
   labels: {
     [k: string]: string;
