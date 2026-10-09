@@ -41,7 +41,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.tools import can_run, get_enabled_tools
+from backend.arena.tools import get_offered_tools, keep_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import MAX_TURNS_PER_COMPARISON
@@ -206,18 +206,8 @@ async def get_challenge() -> dict:
 
 @router.get("/tools")
 async def get_tools() -> list[ToolPublic]:
-    """
-    Tools a visitor may offer to the models on this instance.
-
-    A switched-on tool that is missing its credential or address is left
-    out: picked, it would be quietly dropped from the turn, and the visitor
-    would read the answer as the model choosing not to use it.
-    """
-    return [
-        ToolPublic.model_validate(tool)
-        for tool in await get_enabled_tools()
-        if can_run(tool)
-    ]
+    """Tools a visitor may offer to the models on this instance."""
+    return [ToolPublic.model_validate(tool) for tool in await get_offered_tools()]
 
 
 @router.post(
@@ -266,9 +256,10 @@ async def add_first_text(
     # who read the logs are not the audience the user wrote for. What is left is
     # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, tools={args.tools})",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, {len(args.tools)} tools)",
         extra={"request": request},
     )
+    enabled_tools = await keep_offered_tools(args.tools)
 
     check = await run_checks(
         args.prompt_value, "prompt_value", request, args.warning_token
@@ -295,7 +286,7 @@ async def add_first_text(
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
-            enabled_tools=args.tools,
+            enabled_tools=enabled_tools,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
         )

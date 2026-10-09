@@ -207,9 +207,31 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
         return rows
 
     with (
-        patch.object(router, "get_enabled_tools", get_enabled_tools),
+        patch.object(tools, "get_enabled_tools", get_enabled_tools),
         patch.object(web_search.settings, "LINKUP_API_KEY", None),
     ):
         offered = await router.get_tools()
 
     assert [tool.key for tool in offered] == ["datagouv"]
+
+
+def test_a_comparison_keeps_only_tools_on_offer():
+    asyncio.run(_test_a_comparison_keeps_only_tools_on_offer())
+
+
+async def _test_a_comparison_keeps_only_tools_on_offer():
+    """The keys come from the request and are published with the dataset."""
+    rows = [
+        Tool(key="datagouv", label="Données", kind="mcp", url="https://x.fr/mcp"),
+        Tool(key="half_done", label="Pas fini", kind="mcp"),
+    ]
+
+    async def get_enabled_tools() -> list[Tool]:
+        return rows
+
+    with patch.object(tools, "get_enabled_tools", get_enabled_tools):
+        kept = await tools.keep_offered_tools(
+            ["datagouv", "half_done", "made_up", "datagouv"]
+        )
+
+    assert kept == ["datagouv"]

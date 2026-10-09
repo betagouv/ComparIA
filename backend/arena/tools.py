@@ -165,6 +165,30 @@ async def get_enabled_tools() -> list["Tool"]:
         return list(rows.all())
 
 
+async def get_offered_tools() -> list["Tool"]:
+    """
+    Tools a visitor may pick: switched on and able to run.
+
+    A switched-on tool missing its credential or address is left out: picked,
+    it would be quietly dropped from the turn, and the visitor would read the
+    answer as the model choosing not to use it.
+    """
+    return [tool for tool in await get_enabled_tools() if can_run(tool)]
+
+
+async def keep_offered_tools(keys: list[str]) -> list[str]:
+    """
+    The keys a visitor sent that name a tool on offer, each once.
+
+    They are stored on the comparison and published with the dataset, so
+    nothing else the request carries may get through.
+    """
+    if not keys:
+        return []
+    offered = {tool.key for tool in await get_offered_tools()}
+    return [key for key in dict.fromkeys(keys) if key in offered]
+
+
 def _first_of_each_name(specs: Iterable[ToolSpec]) -> list[ToolSpec]:
     """
     Keep one specification per name.
