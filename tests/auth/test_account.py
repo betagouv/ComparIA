@@ -14,6 +14,8 @@ from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
@@ -277,7 +279,18 @@ def export_of(user, comparison, consents=(), model_names=()):
         return asyncio.run(auth_export.build_account_export(user))
 
 
-def test_export_carries_the_conversations_and_the_consent_history():
+@pytest.fixture
+def mock_survey(monkeypatch: pytest.MonkeyPatch):
+    import backend.survey.services as survey_module
+
+    async def empty(*args, **kwargs):
+        return []
+
+    monkeypatch.setattr(survey_module, "_all_answers", empty)
+    monkeypatch.setattr(survey_module, "_all_questions", empty)
+
+
+def test_export_carries_the_conversations_and_the_consent_history(mock_survey):
     user = User(email="personne@example.org")
     comparison = comparison_of(user.id)
     comparison.turns = [turn_of(comparison.id)]
@@ -307,7 +320,7 @@ def test_export_carries_the_conversations_and_the_consent_history():
     assert turn.keyword_annotations_a == ["utile"]
 
 
-def test_export_names_the_models_only_once_the_comparison_is_revealed():
+def test_export_names_the_models_only_once_the_comparison_is_revealed(mock_survey):
     user = User(email="personne@example.org")
     comparison = comparison_of(user.id)
     names = [(comparison.llm_id_a, "modele-a"), (comparison.llm_id_b, "modele-b")]

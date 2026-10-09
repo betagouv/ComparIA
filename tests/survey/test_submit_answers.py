@@ -15,7 +15,11 @@ import asyncio
 import os
 import sys
 import uuid
+from contextlib import contextmanager
 from pathlib import Path
+
+import pytest
+from pydantic_core import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -24,11 +28,9 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 os.environ.setdefault("ALTCHA_HMAC_KEY", "test")
 
 import utils.database.models  # noqa: E402,F401 needed before importing the services
-from backend.survey.services import (  # noqa: E402
-    SurveyOptionUnknownError,
-    submit_answers,
-)
+from backend.survey.services import submit_answers  # noqa: E402
 from utils.database.models.survey import (  # noqa: E402
+    SurveyAnswer,
     SurveyAnswerSubmit,
     SurveyQuestion,
     SurveyQuestionAnswer,
@@ -37,40 +39,50 @@ from utils.database.models.survey import (  # noqa: E402
 QUESTION_ID = uuid.uuid4()
 
 
-class FakeResult:
-    def __init__(self, rows):
-        self.rows = rows
-
-    def one_or_none(self):
-        return self.rows if self.rows else None
-
-
 class FakeSession:
-    def __init__(self, held_keys):
-        self.held_keys = held_keys
+    def __init__(self):
         self.added = []
-
-    async def get(self, _model, _id):
-        return SurveyQuestion(
-            id=QUESTION_ID,
-            key="age",
-            input_type="select",
-            labels={"fr": "Âge"},
-            options=[
-                {"key": "18_24", "labels": {"fr": "18-24"}},
-                {"key": "25_34", "labels": {"fr": "25-34"}},
-                {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
-            ],
-        )
-
-    async def exec(self, _statement):
-        return FakeResult(self.held_keys)
 
     async def execute(self, _statement):
         pass
 
     def add(self, value):
         self.added.append(value)
+
+
+@contextmanager
+def mock_db(monkeypatch: pytest.MonkeyPatch, answer=None):
+    import backend.survey.services as survey_module
+
+    async def answers(*args, **kwargs):
+        if answer:
+            return [
+                SurveyAnswer(
+                    question_id=QUESTION_ID,
+                    value=answer,
+                )
+            ]
+        return []
+
+    async def questions(*args, **kwargs):
+        return [
+            SurveyQuestion(
+                id=QUESTION_ID,
+                key="age",
+                input_type="select",
+                labels={"fr": "Âge"},
+                options=[
+                    {"key": "18_24", "labels": {"fr": "18-24"}},
+                    {"key": "25_34", "labels": {"fr": "25-34"}},
+                    {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
+                ],
+            )
+        ]
+
+    monkeypatch.setattr(survey_module, "_all_answers", answers)
+    monkeypatch.setattr(survey_module, "_all_questions", questions)
+
+    yield
 
 
 def _submit(session, value):
@@ -80,24 +92,26 @@ def _submit(session, value):
     asyncio.run(submit_answers(session, payload, uuid.uuid4(), None, "v1"))
 
 
-def test_a_live_option_is_accepted():
-    session = FakeSession([])
-    _submit(session, "25_34")
-    assert [answer.value for answer in session.added] == ["25_34"]
+def test_a_live_option_is_accepted(monkeypatch: pytest.MonkeyPatch):
+    with mock_db(monkeypatch):
+        session = FakeSession()
+        _submit(session, "25_34")
+        assert [answer.value for answer in session.added] == ["25_34"]
 
 
-def test_an_archived_option_the_respondent_holds_can_be_kept():
-    session = FakeSession(["under_25"])
-    _submit(session, "under_25")
-    assert [answer.value for answer in session.added] == ["under_25"]
+def test_an_archived_option_the_respondent_holds_can_be_kept(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    with mock_db(monkeypatch, "under_25"):
+        session = FakeSession()
+        _submit(session, "under_25")
+        assert [answer.value for answer in session.added] == ["under_25"]
 
 
-def test_an_archived_option_cannot_be_newly_chosen():
-    try:
-        _submit(FakeSession([]), "under_25")
-    except SurveyOptionUnknownError:
-        return
-    raise AssertionError("an archived option was accepted from someone not holding it")
+def test_an_archived_option_cannot_be_newly_chosen(monkeypatch: pytest.MonkeyPatch):
+    with mock_db(monkeypatch):
+        with pytest.raises(ValidationError):
+            _submit(FakeSession(), "under_25")
 
 
 if __name__ == "__main__":
