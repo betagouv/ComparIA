@@ -9,6 +9,7 @@ import type { AuthCtx, AuthUser } from '$lib/authContext.svelte'
 // it are not made to import this module's API client and navigation helpers.
 export {
   getAuthContext,
+  isAdmin,
   setAuthContext,
   tryGetAuthContext,
   type AuthConfig,

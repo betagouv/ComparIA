@@ -177,6 +177,7 @@
             "promptChecks": "Checks",
             "publishing": "Publishing",
             "suggestions": "Suggestions",
+            "tools": "Tools",
             "users": "Users",
             "voteTags": "Vote tags"
         },
@@ -609,6 +610,112 @@
             "title": "Prompt suggestions",
             "validation": "Enter a suggestion and choose a category."
         },
+        "tools": {
+            "secretSet": "Credential set",
+            "secretUnset": "No credential",
+            "secretHintBuiltin": "The provider's API key. Leave empty to keep the stored key; with none stored, the server's (LINKUP_API_KEY) is used.",
+            "secretHintMcp": "A token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Leave empty to keep the stored one.",
+            "remove": "Remove the credential",
+            "removeConfirm": "Confirm removal",
+            "removed": "Credential removed.",
+            "test": "Test the tool",
+            "testing": "Testing…",
+            "testHint": "The test uses the saved configuration: save your changes first.",
+            "testOk": "The tool answers.",
+            "testOkFunctions": "The server answers and offers {count} functions.",
+            "testFailed": "The test failed",
+            "functionsLegend": "Functions offered to models",
+            "functionsHint": "None ticked: every function is offered, including ones the server adds later. Tick some to offer only those.",
+            "functionsUntested": "Test the tool to list the server's functions.",
+            "errors": {
+                "no_credential": "No key: neither on the tool nor on the server.",
+                "no_url": "Fill in the MCP server address.",
+                "invalid_credential": "The provider refuses the credential.",
+                "no_credit": "The provider account has run out of credit.",
+                "unreachable": "The server does not answer or returns an error.",
+                "timeout": "The server took too long to answer.",
+                "unknown_builtin": "No built-in tool has this key."
+            },
+            "wizard": {
+                "progress": "Steps to add a tool",
+                "stepState": "Step {current} of {total}",
+                "next": "Continue",
+                "steps": {
+                    "connect": "Connect",
+                    "limit": "Limit",
+                    "present": "Present",
+                    "review": "Create"
+                },
+                "connect": {
+                    "title": "Connect to the MCP server",
+                    "hint": "An MCP server gives models new functions: searching data, reading documentation. Enter its address and test the connection. Nothing is saved before the last step.",
+                    "url": "Server address",
+                    "urlHint": "The MCP server's HTTP address, often ending in /mcp.",
+                    "secret": "Credential (optional)",
+                    "secretHint": "Leave empty if the server is public. Otherwise, a token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. It is encrypted and never shown again.",
+                    "test": "Test the connection",
+                    "mustTest": "Test the connection to continue."
+                },
+                "limit": {
+                    "title": "Choose the functions",
+                    "hint": "Models only see ticked functions. Leaving them all ticked also offers the ones the server adds later.",
+                    "all": "Tick all",
+                    "none": "Untick all",
+                    "needOne": "Tick at least one function.",
+                    "count": "{count} of {total}"
+                },
+                "present": {
+                    "title": "Present the tool to visitors",
+                    "hint": "Visitors see this name and sentence when they pick their tools, before a comparison.",
+                    "label": "Name",
+                    "key": "Technical key: {key}",
+                    "description": "Description",
+                    "descriptionHint": "One sentence saying what the tool lets models do.",
+                    "preview": "What visitors see"
+                },
+                "review": {
+                    "title": "Check and create",
+                    "secret": "Credential",
+                    "functions": "Functions",
+                    "allFunctions": "All ({count}), and those added later",
+                    "noDescription": "None",
+                    "edit": "Edit",
+                    "enable": "Offer to visitors now",
+                    "enableHint": "Otherwise the tool is created switched off, and you switch it on later from the list.",
+                    "create": "Create the tool",
+                    "creating": "Creating…",
+                    "created": "'{label}' is added.",
+                    "failed": "The tool was not created"
+                }
+            },
+            "list": {
+                "intro": "Switched-on tools are offered to visitors before each comparison. Switch one off to withdraw it at once, without losing its settings.",
+                "add": "Add an MCP server",
+                "recheck": "Check again",
+                "rechecking": "Checking…",
+                "label": "Tool",
+                "calls": "Uses (30 days)",
+                "failures": "{count} failed",
+                "enabled": "On",
+                "builtin": "Built in",
+                "switch": "Switch on {label}",
+                "switchedOn": "'{label}' is offered to visitors.",
+                "switchedOff": "'{label}' is no longer offered to visitors.",
+                "health": {
+                    "title": "Status",
+                    "checking": "Checking…",
+                    "ok": "Answers",
+                    "unknown": "Unknown",
+                    "no_credential": "No key",
+                    "no_url": "No address",
+                    "invalid_credential": "Credential refused",
+                    "no_credit": "Out of credit",
+                    "unreachable": "Not answering",
+                    "timeout": "Too slow",
+                    "unknown_builtin": "Unknown tool"
+                }
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Add a tag",
@@ -679,8 +786,18 @@
         "webSearch": {
             "disabled": "Web search disabled",
             "enabled": "Web search enabled",
-            "label": "Web search",
-            "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
+            "help": "Each model decides whether running a search would be useful.",
+            "label": "Allow web search",
+            "tooltip": "Allow the models to search for information online and cite more recent sources. <strong>Each model independently chooses whether to use this tool</strong> based on your message.<br>If you do not allow it, the models answer only from what they learned during training and cannot verify information online."
+        },
+        "tools": {
+            "clear": "Clear all",
+            "contract": "Once enabled, the selected tools are offered to both compared models, which remain free to use them or not.",
+            "count": "{count} tools",
+            "label": "Tools",
+            "legend": "Tools",
+            "locked": "Tools are fixed for the whole conversation.",
+            "none": "No tool"
         }
     },
     "arene": {
@@ -878,6 +995,31 @@
         "revealButton": "Finish and discover the models",
         "webSearch": {
             "label": "Associated Web search results."
+        },
+        "tools": {
+            "done": "Done",
+            "fixed": "Tools fixed for this conversation: {tools}",
+            "noResult": "No result",
+            "none": "No tool used",
+            "result": "1 result",
+            "results": "{count} results",
+            "running": "Searching…",
+            "sources": "{count} source(s)"
+        },
+        "activity": {
+            "allSources": "All sources ({count})",
+            "calling": "Consulting",
+            "calls": "{count} calls",
+            "collapse": "Show less",
+            "failed": "The tool did not answer",
+            "reading": "Reading the results",
+            "reasoning": "Reasoning",
+            "searches": "{count} searches",
+            "searching": "Searching the web",
+            "showAll": "Show all",
+            "source": "1 source",
+            "sources": "{count} sources",
+            "thinking": "Thinking"
         }
     },
     "closeModal": "Close the popup",

@@ -1,11 +1,20 @@
 {
-    "arenaHome": {
+    "chatbot": {
+        "tools": {
+            "done": "Acabat",
+            "fixed": "Aisinas fixadas per aquesta conversa : {tools}",
+            "noResult": "Cap de resultat",
+            "none": "Cap d'aisina pas utilizada",
+            "running": "Recèrca en cors…",
+            "sources": "{count} font(s)"
+        },
         "title": "Cossí vos pòdi ajudar uèi ?",
         "webSearch": {
-            "label": "Recèrca web",
+            "label": "Autorizar la recèrca web",
             "enabled": "Recèrca web activada",
             "disabled": "Recèrca web desactivada",
-            "tooltip": "Activatz la recèrca web per permetre als modèls d'utilizar de fonts en linha e de citar d'informacions mai recentas.<br><strong>Sens la recèrca web</strong>, los modèls respondon en se basant sus çò qu'an aprés pendent lor formacion (lors donadas d'entrenament). Pòdon pas verificar las informacions en linha ; doncas, los faches fòrça recents o fòrça especifics pòdon èsser incomplets."
+            "help": "Cada modèl decidís el meteis se far una recèrca es util.",
+            "tooltip": "Autorizatz los modèls a cercar d’informacions en linha e a citar de fonts mai recentas. <strong>Cadun decidís liurament s’utiliza o non aquel aisina</strong> segon vòstre messatge.<br>Se l’autorizatz pas, los modèls respondon sonque a partir de çò qu’an aprés pendent lor formacion e pòdon pas verificar d’informacions en linha."
         },
         "modelSelection": "Seleccion dels modèls",
         "prompt": {

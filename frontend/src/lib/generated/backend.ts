@@ -9,6 +9,7 @@ export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
   custom_models_selection: string[] | null;
+  enabled_tools: string[];
   error: ErrorDetails | null;
   turns: TurnPublic[];
   revealed: boolean;
@@ -62,7 +63,7 @@ export interface LinkupSearchTextResult {
   name: string;
   url: string;
   content: string;
-  favicon: string;
+  favicon?: string;
   [k: string]: unknown;
 }
 export interface LLMMessageCreate {
@@ -73,6 +74,57 @@ export interface LLMMessageCreate {
   updated_at?: string | null;
   content?: string;
   reasoning_content?: string | null;
+  web_search_results?: LinkupSearchTextResult[] | null;
+  agent_trace?:
+    (AgentTraceReasoning | AgentTraceIntermediateContent | AgentTraceToolCall | AgentTraceToolResult)[] | null;
+  agent_stop_reason?:
+    ("completed" | "deadline" | "call_limit" | "round_limit" | "context_exceeded" | "repeat_limit") | null;
+  [k: string]: unknown;
+}
+export interface AgentTraceReasoning {
+  type?: "reasoning";
+  content: string;
+  [k: string]: unknown;
+}
+export interface AgentTraceIntermediateContent {
+  type?: "intermediate_content";
+  content: string;
+  [k: string]: unknown;
+}
+export interface AgentTraceToolCall {
+  type?: "tool_call";
+  tool_call_id: string;
+  name: string;
+  label?: string;
+  tool?: string;
+  arguments_json: string;
+  arguments?: {
+    [k: string]: unknown;
+  } | null;
+  [k: string]: unknown;
+}
+export interface AgentTraceToolResult {
+  type?: "tool_result";
+  tool_call_id: string;
+  name: string;
+  status: "success" | "empty" | "error";
+  duration_ms: number;
+  content: string;
+  results?: ToolSource[];
+  [k: string]: unknown;
+}
+/**
+ * One piece of evidence a tool handed back.
+ *
+ * Deliberately not Linkup's shape: an MCP server returns text with no address,
+ * and the trace has to hold both. Reads back the rows written before this
+ * existed, whose extra Linkup fields are simply ignored.
+ */
+export interface ToolSource {
+  name?: string;
+  url?: string | null;
+  content?: string;
+  favicon?: string | null;
   [k: string]: unknown;
 }
 export interface RevealData {
@@ -374,4 +426,16 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+}
+/**
+ * What a visitor is told about a tool.
+ *
+ * Deliberately not derived from ToolBase: the arena serves this without
+ * authentication, and inheriting would hand out the server address and its
+ * credentials the moment either is added to the row.
+ */
+export interface ToolPublic {
+  key: string;
+  label: string;
+  description?: string | null;
 }

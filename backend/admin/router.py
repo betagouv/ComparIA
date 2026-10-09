@@ -26,6 +26,7 @@ from backend.admin.services import (
     update_user,
 )
 from backend.admin.suggestions import router as admin_suggestions_router
+from backend.admin.tools import admin_tools_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
     moderate,
@@ -112,6 +113,7 @@ router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
+router.include_router(admin_tools_router)
 
 
 class UsersPage(BaseModel):

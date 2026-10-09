@@ -26,7 +26,7 @@ export interface APIModeAndPromptData {
   prompt_value: string
   mode: Mode
   custom_models_selection: string[]
-  web_search: boolean
+  tools: string[]
 }
 
 export type ModeInfos = {
@@ -382,7 +382,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         prompt_value: args.prompt_value,
         mode: args.mode,
         custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
-        web_search: args.web_search,
+        tools: args.tools,
         cohorts
       })
     },

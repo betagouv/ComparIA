@@ -51,6 +51,10 @@ export function tryGetAuthContext(): AuthCtx | null {
   }
 }
 
+export function isAdmin(): boolean {
+  return tryGetAuthContext()?.user?.role === 'admin'
+}
+
 export function setAuthContext(data: AuthCtx) {
   const auth = $state(data)
   baseSetAuthContext(auth)

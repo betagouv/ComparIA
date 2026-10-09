@@ -28,6 +28,7 @@ from utils.database.models.suggestion import (
     SuggestionCategoryCreate,
     SuggestionCreate,
 )
+from utils.database.models.tool import ToolAdmin, ToolUpsert
 from utils.database.models.vote_tag import (
     AdminVoteTag,
     AdminVoteTagsResponse,

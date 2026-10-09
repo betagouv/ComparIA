@@ -6,6 +6,7 @@
   let {
     id,
     titleId,
+    class: className,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
     headerClass,
@@ -24,7 +25,7 @@
 <dialog
   aria-labelledby={titleId}
   {id}
-  class="fr-modal"
+  class={['fr-modal', className]}
   onblur={() => onClose?.()}
   onkeydown={(e) => {
     if (e.key === 'Escape') onClose?.()

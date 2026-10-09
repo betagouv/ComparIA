@@ -20,6 +20,7 @@ def _comparison(llm_id_a, llm_id_b):
         "id": uuid.uuid4(),
         "mode": "random",
         "custom_models_selection": None,
+        "enabled_tools": [],
         "error": None,
         "revealed": True,
         "llm_id_a": llm_id_a,

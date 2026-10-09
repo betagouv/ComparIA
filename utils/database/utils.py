@@ -157,7 +157,7 @@ def parse_full_conversation(
         raw_user_msg = cast(
             RawUserMessage,
             turn.user_msg.model_dump(
-                include={"role", "content"}, context={"merge_web_search": True}
+                include={"role", "content"}, context={"merge_sources": True}
             ),
         )
         conversation.append(raw_user_msg)

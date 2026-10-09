@@ -448,6 +448,97 @@ export interface SuggestionCreate {
   category_id: string;
   text: string;
 }
+/**
+ * What the admin panel is allowed to see: whether a credential is set,
+ * never the credential.
+ */
+export interface ToolAdmin {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+  has_secret?: boolean;
+}
+export interface ToolUpsert {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+  /**
+   * For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again.
+   */
+  secret?: string | null;
+}
 export interface UpdateLegalPresentationBody {
   presentation: LegalPresentation;
 }

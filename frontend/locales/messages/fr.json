@@ -177,6 +177,7 @@
             "promptChecks": "Vérifications",
             "publishing": "Jeux de données",
             "suggestions": "Suggestions",
+            "tools": "Outils",
             "users": "Utilisateurs",
             "voteTags": "Étiquettes de vote"
         },
@@ -609,6 +610,112 @@
             "title": "Suggestions de prompts",
             "validation": "Saisissez une suggestion et choisissez une catégorie."
         },
+        "tools": {
+            "secretSet": "Identifiant enregistré",
+            "secretUnset": "Aucun identifiant",
+            "secretHintBuiltin": "La clé API du fournisseur. Laissez vide pour garder la clé enregistrée ; sans clé enregistrée, celle du serveur (LINKUP_API_KEY) sert.",
+            "secretHintMcp": "Un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Laissez vide pour garder celui enregistré.",
+            "remove": "Retirer l'identifiant",
+            "removeConfirm": "Confirmer le retrait",
+            "removed": "Identifiant retiré.",
+            "test": "Tester l'outil",
+            "testing": "Test en cours…",
+            "testHint": "Le test utilise la configuration enregistrée : enregistrez d'abord vos changements.",
+            "testOk": "L'outil répond.",
+            "testOkFunctions": "Le serveur répond et propose {count} fonctions.",
+            "testFailed": "Le test a échoué",
+            "functionsLegend": "Fonctions proposées aux modèles",
+            "functionsHint": "Aucune case cochée : toutes les fonctions sont proposées, y compris celles que le serveur ajoutera plus tard. Cochez-en pour ne proposer que celles-là.",
+            "functionsUntested": "Testez l'outil pour lister les fonctions du serveur.",
+            "errors": {
+                "no_credential": "Aucune clé : ni sur l'outil, ni sur le serveur.",
+                "no_url": "Renseignez l'adresse du serveur MCP.",
+                "invalid_credential": "Le fournisseur refuse l'identifiant.",
+                "no_credit": "Le compte du fournisseur n'a plus de crédit.",
+                "unreachable": "Le serveur ne répond pas ou renvoie une erreur.",
+                "timeout": "Le serveur a mis trop de temps à répondre.",
+                "unknown_builtin": "Aucun outil intégré ne porte cette clé."
+            },
+            "wizard": {
+                "progress": "Étapes de l'ajout",
+                "stepState": "Étape {current} sur {total}",
+                "next": "Continuer",
+                "steps": {
+                    "connect": "Connecter",
+                    "limit": "Limiter",
+                    "present": "Présenter",
+                    "review": "Créer"
+                },
+                "connect": {
+                    "title": "Se connecter au serveur MCP",
+                    "hint": "Un serveur MCP donne aux modèles de nouvelles fonctions : chercher dans des données, lire une documentation. Indiquez son adresse et testez la connexion. Rien n'est enregistré avant la dernière étape.",
+                    "url": "Adresse du serveur",
+                    "urlHint": "L'adresse HTTP du serveur MCP, souvent terminée par /mcp.",
+                    "secret": "Identifiant (facultatif)",
+                    "secretHint": "Laissez vide si le serveur est public. Sinon, un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Il est chiffré et ne s'affiche plus ensuite.",
+                    "test": "Tester la connexion",
+                    "mustTest": "Testez la connexion pour continuer."
+                },
+                "limit": {
+                    "title": "Choisir les fonctions",
+                    "hint": "Les modèles ne voient que les fonctions cochées. Tout laisser coché propose aussi celles que le serveur ajoutera plus tard.",
+                    "all": "Tout cocher",
+                    "none": "Tout décocher",
+                    "needOne": "Cochez au moins une fonction.",
+                    "count": "{count} sur {total}"
+                },
+                "present": {
+                    "title": "Présenter l'outil aux visiteurs",
+                    "hint": "Ce nom et cette phrase apparaissent quand un visiteur choisit ses outils, avant une comparaison.",
+                    "label": "Nom",
+                    "key": "Identifiant technique : {key}",
+                    "description": "Description",
+                    "descriptionHint": "Une phrase qui dit ce que l'outil permet de faire.",
+                    "preview": "Ce que voit le visiteur"
+                },
+                "review": {
+                    "title": "Vérifier et créer",
+                    "secret": "Identifiant",
+                    "functions": "Fonctions",
+                    "allFunctions": "Toutes ({count}), et celles ajoutées plus tard",
+                    "noDescription": "Aucune",
+                    "edit": "Modifier",
+                    "enable": "Proposer aux visiteurs dès maintenant",
+                    "enableHint": "Sinon, l'outil est créé désactivé et vous l'activez plus tard depuis la liste.",
+                    "create": "Créer l'outil",
+                    "creating": "Création…",
+                    "created": "« {label} » est ajouté.",
+                    "failed": "L'outil n'a pas été créé"
+                }
+            },
+            "list": {
+                "intro": "Les outils activés sont proposés aux visiteurs avant chaque comparaison. Désactivez-en un pour le retirer tout de suite, sans perdre sa configuration.",
+                "add": "Ajouter un serveur MCP",
+                "recheck": "Revérifier",
+                "rechecking": "Vérification…",
+                "label": "Outil",
+                "calls": "Utilisations (30 j)",
+                "failures": "dont {count} en échec",
+                "enabled": "Activé",
+                "builtin": "Intégré",
+                "switch": "Activer {label}",
+                "switchedOn": "« {label} » est proposé aux visiteurs.",
+                "switchedOff": "« {label} » n'est plus proposé aux visiteurs.",
+                "health": {
+                    "title": "État",
+                    "checking": "Vérification…",
+                    "ok": "Répond",
+                    "unknown": "Inconnu",
+                    "no_credential": "Aucune clé",
+                    "no_url": "Aucune adresse",
+                    "invalid_credential": "Identifiant refusé",
+                    "no_credit": "Plus de crédit",
+                    "unreachable": "Ne répond pas",
+                    "timeout": "Trop lent",
+                    "unknown_builtin": "Outil inconnu"
+                }
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
@@ -679,8 +786,18 @@
         "webSearch": {
             "disabled": "Recherche web désactivée",
             "enabled": "Recherche web activée",
-            "label": "Recherche web",
-            "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
+            "help": "Chaque modèle décide lui-même s’il est utile de lancer une recherche.",
+            "label": "Autoriser la recherche web",
+            "tooltip": "Autorisez les modèles à rechercher des informations en ligne et à citer des sources plus récentes. <strong>Chaque modèle choisit librement d’utiliser ou non cet outil</strong> selon votre message.<br>Si vous ne l’autorisez pas, les modèles répondent uniquement à partir de ce qu’ils ont appris pendant leur entraînement et ne peuvent pas vérifier d’informations en ligne."
+        },
+        "tools": {
+            "clear": "Tout désélectionner",
+            "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
+            "count": "{count} outils",
+            "label": "Outils",
+            "legend": "Outils",
+            "locked": "Les outils sont fixés pour toute la conversation.",
+            "none": "Aucun outil"
         }
     },
     "arene": {
@@ -878,6 +995,31 @@
         "revealButton": "Terminer et découvrir les modèles",
         "webSearch": {
             "label": "Résultats de recherche Web associés."
+        },
+        "tools": {
+            "done": "Terminé",
+            "fixed": "Outils fixés pour cette conversation : {tools}",
+            "noResult": "Aucun résultat",
+            "none": "Aucun outil utilisé",
+            "result": "1 résultat",
+            "results": "{count} résultats",
+            "running": "Recherche en cours…",
+            "sources": "{count} source(s)"
+        },
+        "activity": {
+            "allSources": "Toutes les sources ({count})",
+            "calling": "Consulte",
+            "calls": "{count} appels",
+            "collapse": "Réduire",
+            "failed": "L'outil n'a pas répondu",
+            "reading": "Lit les résultats",
+            "reasoning": "Réflexion",
+            "searches": "{count} recherches",
+            "searching": "Cherche sur le web",
+            "showAll": "Tout afficher",
+            "source": "1 source",
+            "sources": "{count} sources",
+            "thinking": "Réfléchit"
         }
     },
     "closeModal": "Fermer la fenêtre modale",
@@ -1336,6 +1478,57 @@
             },
             "updated_at": {
                 "label": "Updated At"
+            }
+        },
+        "tool_upsert": {
+            "id": {
+                "label": "Id"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            },
+            "key": {
+                "label": "Key",
+                "help": "Stable identifier. For a built-in tool, the registry key (e.g. 'web_search')."
+            },
+            "label": {
+                "label": "Label",
+                "help": "Name shown to visitors, in French."
+            },
+            "description": {
+                "label": "Description",
+                "help": "One line shown to visitors, in French."
+            },
+            "kind": {
+                "label": "Kind",
+                "help": "How the tool is carried out."
+            },
+            "url": {
+                "label": "Url",
+                "help": "For an MCP tool, the server address."
+            },
+            "allowed_functions": {
+                "label": "Allowed Functions",
+                "help": "For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists."
+            },
+            "allowed_domains": {
+                "label": "Allowed Domains",
+                "help": "For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web."
+            },
+            "blocked_domains": {
+                "label": "Blocked Domains",
+                "help": "For web search, sites results never come from. Cannot be combined with allowed domains."
+            },
+            "enabled": {
+                "label": "Enabled",
+                "help": "Disabled tools are never offered to a model nor shown to a visitor."
+            },
+            "secret": {
+                "label": "Credential",
+                "help": "For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again."
             }
         }
     },

@@ -119,11 +119,32 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # revalidate_instances="never"): no stripping, no constraint checks. The
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
-    return {
+    response = {
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }
+    if msg.agent_trace:
+        # agent_trace is the JSONB column's raw decoded value (list of plain
+        # dicts, not AgentTraceEvent instances).
+        queries = [
+            {"name": event["name"], "arguments": event["arguments_json"]}
+            for event in msg.agent_trace
+            if event.get("type") == "tool_call"
+        ]
+        sources = [
+            source
+            for event in msg.agent_trace
+            if event.get("type") == "tool_result"
+            for source in event.get("results") or []
+        ]
+        if queries:
+            response["tool_queries"] = queries
+        if sources:
+            response["tool_sources"] = sources
+    if msg.agent_stop_reason:
+        response["agent_stop_reason"] = msg.agent_stop_reason
+    return response
 
 
 async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
@@ -210,6 +231,7 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     base_meta = DatasetComparisonBaseMetadata.model_validate(comp).model_dump()
     comp_meta = {
         **base_meta,
+        "available_tools": list(comp.enabled_tools or []),
         "total_tokens_a": _total(turns_metadata, "tokens_a"),
         "total_tokens_b": _total(turns_metadata, "tokens_b"),
         "total_conso_a": _total(turns_metadata, "conso_a"),
@@ -254,7 +276,22 @@ def _reference_rows() -> list[dict]:
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
     user = {"role": "user", "content": "x", "user_content": "x"}
-    assistant = {"content": "x", "reasoning_content": "x", "role": "assistant"}
+    assistant = {
+        "content": "x",
+        "reasoning_content": "x",
+        "role": "assistant",
+        "tool_queries": [{"name": "x", "arguments": "x"}],
+        "tool_sources": [
+            {
+                "type": "text",
+                "name": "x",
+                "url": "https://x",
+                "content": "x",
+                "favicon": "x",
+            }
+        ],
+        "agent_stop_reason": "completed",
+    }
     system = {"role": "system", "content": "x"}
     return [
         {
@@ -286,6 +323,7 @@ def _reference_rows() -> list[dict]:
                 "languages": ["x"],
                 "short_summary": "x",
                 "participation_terms_version": LEGACY_PARTICIPATION_TERMS_VERSION,
+                "available_tools": ["x"],
                 "total_tokens_a": 1,
                 "total_tokens_b": 1,
                 "total_conso_a": 1.0,
