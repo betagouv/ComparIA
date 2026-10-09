@@ -2,8 +2,9 @@ import re
 import unicodedata
 import uuid
 from datetime import timedelta
-from typing import Any
+from typing import Annotated, Any, Literal
 
+from pydantic import BeforeValidator, ConfigDict, create_model
 from sqlalchemy import String, cast
 from sqlalchemy import delete as sa_delete
 from sqlalchemy import func, true
@@ -30,6 +31,7 @@ from utils.database.models.survey import (
     SurveyOptionWrite,
     SurveyPromptLog,
     SurveyQuestion,
+    SurveyQuestionAnswer,
     SurveyQuestionCreate,
     SurveyQuestionOrder,
     SurveyQuestionUpdate,
@@ -169,6 +171,22 @@ async def _askable_questions() -> list[SurveyQuestion]:
         ),
         key=lambda question: question.display_order,
     )
+
+
+async def _all_answers(
+    user_id: uuid.UUID | None, anonymous_user_hash: str | None
+) -> list[SurveyAnswer]:
+    """Get all survey answers from user or anonymous."""
+    _require_respondent(user_id, anonymous_user_hash)
+
+    async with get_session() as session:
+        return (
+            await session.exec(
+                select(SurveyAnswer).where(
+                    _respondent_clause(SurveyAnswer, user_id, anonymous_user_hash)
+                )
+            )
+        ).all()
 
 
 def _to_public(
@@ -345,6 +363,64 @@ async def record_shown(
         session.add(log)
 
 
+def _validate_answers(
+    questions: list[SurveyQuestion],
+    answers: list[SurveyQuestionAnswer],
+    previous_answers: dict[uuid.UUID, SurveyAnswerValue],
+    ignore_required: bool = False,
+):
+    """
+    Validate survey answers against a dynamic pydantic model.
+    """
+    parse_nonish = BeforeValidator(lambda v: None if v is None or not len(v) else v)
+
+    def get_question_type(question: SurveyQuestion):
+        if question.input_type in ("select", "checkbox_group"):
+            previous_answer = previous_answers.get(question.id, [])
+            if question.input_type == "select" and previous_answer:
+                previous_answer = [previous_answer]
+
+            # Dynamic literal to properly check answer is an accepted value
+            base_type = Literal[
+                tuple(
+                    [
+                        option.key
+                        for option in (
+                            SurveyOption.model_validate(raw) for raw in question.options
+                        )
+                        # Special case:
+                        # An option archived since it was chosen stops being offered, but the
+                        # person who holds it can keep it: saving the profile page untouched
+                        # sends it straight back, and that must not fail or drop the answer.
+                        if not option.archived or option.key in previous_answer
+                    ]
+                )
+            ]
+            if question.input_type == "checkbox_group":
+                return list[base_type]
+            return base_type
+        else:
+            raise NotImplementedError(
+                f"Unknow survey question 'input_type': '{question.input_type}'."
+            )
+
+    def get_annotation(question: SurveyQuestion):
+        required = not ignore_required and question.required
+        type_ = get_question_type(question)
+        if not required:
+            type_ = type_ | None
+        type_ = Annotated[type_, parse_nonish]
+        return type_ if required else (type_, None)
+
+    SurveyModel = create_model(
+        "SurveyModel",
+        **{str(question.id): get_annotation(question) for question in questions},
+        __config__=ConfigDict(extra="forbid"),
+    )
+
+    return SurveyModel(**{str(answer.question_id): answer.value for answer in answers})
+
+
 async def submit_answers(
     session: AsyncSession,
     payload: SurveyAnswerSubmit,
@@ -356,54 +432,36 @@ async def submit_answers(
     Replace semantics: each question's answer fully replaces whatever this
     respondent answered before, including clearing it with an empty list.
     """
-    _require_respondent(user_id, anonymous_user_hash)
-
     now = utc_now()
-    for answer in payload.answers:
-        question = await session.get(SurveyQuestion, answer.question_id)
-        if question is None or question.archived_at is not None:
-            raise SurveyQuestionNotFoundError()
+    question_ids = set([answer.question_id for answer in payload.answers])
+    previous_answers = {
+        answer.question_id: answer.value
+        for answer in await _all_answers(user_id, anonymous_user_hash)
+        if answer.question_id in question_ids
+    }
+    questions = [
+        question
+        for question in await _all_questions()
+        if question.archived_at is None and question.id in question_ids
+    ]
 
-        value = _validate_answer_value(question.input_type, answer.value)
+    answers = _validate_answers(
+        questions, payload.answers, previous_answers, ignore_required=user_id is None
+    )
 
-        live_keys = {
-            option.key
-            for option in (SurveyOption.model_validate(raw) for raw in question.options)
-            if not option.archived
-        }
-        # An option archived since it was chosen stops being offered, but the
-        # person who holds it can keep it: saving the profile page untouched
-        # sends it straight back, and that must not fail or drop the answer.
-        current_value = (
-            await session.exec(
-                select(SurveyAnswer.value)
-                .where(SurveyAnswer.question_id == answer.question_id)
-                .where(_respondent_clause(SurveyAnswer, user_id, anonymous_user_hash))
-            )
-        ).one_or_none()
-        held_keys = (
-            set(current_value if isinstance(current_value, list) else [current_value])
-            if current_value
-            else set()
-        )
-        unknown = (
-            (set(value if isinstance(value, list) else [value]) - live_keys - held_keys)
-            if value
-            else None
-        )
-        if unknown:
-            raise SurveyOptionUnknownError(", ".join(sorted(unknown)))
+    for question in questions:
+        value = getattr(answers, str(question.id))
 
         await session.execute(
             sa_delete(SurveyAnswer)
-            .where(SurveyAnswer.question_id == answer.question_id)
+            .where(SurveyAnswer.question_id == question.id)
             .where(_respondent_clause(SurveyAnswer, user_id, anonymous_user_hash))
         )
 
         if value:
             session.add(
                 SurveyAnswer(
-                    question_id=answer.question_id,
+                    question_id=question.id,
                     value=value,
                     user_id=user_id,
                     anonymous_user_hash=anonymous_user_hash,
@@ -423,15 +481,7 @@ async def my_answers(
     """What the profile page and the personal-data export show: every question
     this respondent has answered, options included so an option archived since
     the answer was given still resolves to a label."""
-    _require_respondent(user_id, anonymous_user_hash)
-
-    rows = (
-        await session.exec(
-            select(SurveyAnswer).where(
-                _respondent_clause(SurveyAnswer, user_id, anonymous_user_hash)
-            )
-        )
-    ).all()
+    rows = await _all_answers(user_id, anonymous_user_hash)
     if not rows:
         return []
 
