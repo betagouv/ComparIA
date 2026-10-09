@@ -47,8 +47,8 @@ vi.mock('$lib/survey', async (importOriginal) => {
   return {
     ...actual,
     getSurveyContext: () => ({
-      signupQuestions: [],
-      signupAnswers: []
+      questions: [],
+      answers: []
     })
   }
 })

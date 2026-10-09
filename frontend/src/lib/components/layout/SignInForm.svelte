@@ -141,7 +141,7 @@
     }
     await invalidate('survey:signup')
     // Ask questions if any and user didn't yet answered it
-    if (survey.signupQuestions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
+    if (survey.questions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
       step = 'questions'
     } else {
       firstSignIn = false
@@ -399,8 +399,8 @@
       id="signin-survey"
       title={m['survey.signup.title']()}
       description={m['survey.signup.description']()}
-      questions={survey.signupQuestions}
-      answers={survey.signupAnswers}
+      questions={survey.questions}
+      answers={survey.answers}
       onSuccess={onLoginCompleted}
     />
   {/if}

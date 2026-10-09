@@ -7,7 +7,6 @@
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getSurveyContext } from '$lib/survey'
   import { setVoteTagsContext } from '$lib/voteTags'
   import type { LayoutProps } from './$types'
 
@@ -16,8 +15,6 @@
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
   const auth = getAuthContext()
-  const survey = getSurveyContext()
-  survey.voteQuestions = data.surveyVoteQuestions
 
   let mainEl: HTMLElement | undefined = $state()
   let routeAnnouncement = $state('')
