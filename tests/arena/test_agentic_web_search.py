@@ -608,6 +608,8 @@ async def _test_unrelated_bad_request_is_not_swallowed():
             raised = True
 
     assert raised
+    # Failing without tools too, the error was never about them.
+    assert redis.store == {}
 
 
 async def _test_disabled_search_does_not_expose_tools():

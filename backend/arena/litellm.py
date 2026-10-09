@@ -209,6 +209,7 @@ async def litellm_stream_iter(
     # so they are refused and the model is told to answer from what it has.
     seen_calls: dict[tuple[str, str], int] = {}
     tools_were_offered = tools_available
+    refused_tools = False
     sheds = 0
     # Set the first time we refuse to offer tools again, so that "the model was
     # done" and "we stopped it" stay distinguishable.
@@ -306,7 +307,7 @@ async def litellm_stream_iter(
                 endpoint.model,
                 extra={"request": request},
             )
-            remember_tool_rejection(endpoint.model)
+            refused_tools = True
             tools_available = False
             # This model never really had the choice, so no stop reason is
             # recorded: the interface would otherwise present a refusal by the
@@ -315,6 +316,13 @@ async def litellm_stream_iter(
             msg.content = content_before_call
             msg.reasoning_content = reasoning_before_call
             continue
+
+        # Only now is the refusal known to be about tools: the same request
+        # without them went through. Remembered any earlier, one unrelated 400
+        # would keep tools away from this model for a day.
+        if refused_tools:
+            remember_tool_rejection(endpoint.model)
+            refused_tools = False
 
         built_response = litellm.stream_chunk_builder(chunks, messages=api_messages)
         if built_response is None or not built_response.choices:
