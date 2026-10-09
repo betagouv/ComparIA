@@ -75,14 +75,34 @@
       : -1
   )
 
+  // Opening a step keeps the box at the height it had: what opens pushes the
+  // answer down inside it, rather than stretching both answers. A new width
+  // reflows the text and a vote adds the comment form, so either lets the box
+  // fit its content again.
+  let box: HTMLElement
+  let kept = $state<{ height: number; prefKind: typeof prefKind } | null>(null)
+  const boxHeight = $derived(
+    kept && kept.prefKind === prefKind && !generating ? `${kept.height}px` : undefined
+  )
+
+  function keepBoxHeight() {
+    if (!generating && !boxHeight) {
+      kept = { height: box.getBoundingClientRect().height, prefKind }
+    }
+  }
+
   let annotations = $derived({
     keyword_annotations: turnSide.keyword_annotations,
     custom_annotation: turnSide.custom_annotation
   })
 </script>
 
+<svelte:window onresize={() => (kept = null)} />
+
 <div class="md:w-full md:min-w-0 md:flex-1 flex w-[80vw] flex-col">
   <div
+    bind:this={box}
+    style:height={boxHeight}
     class={[
       'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
       {
@@ -115,6 +135,7 @@
             id="{id}-activity-{index}"
             steps={block.steps}
             active={index === activeBlock}
+            onopen={keepBoxHeight}
           />
         {/if}
       {/each}

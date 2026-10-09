@@ -19,9 +19,11 @@
     steps: ActivityStep[]
     /** True while the model is still on these steps. */
     active: boolean
+    /** Called as a step opens, before the page grows. */
+    onopen?: () => void
   }
 
-  let { id, steps, active }: AgentActivityProps = $props()
+  let { id, steps, active, onopen }: AgentActivityProps = $props()
 
   type Row = {
     kind: string
@@ -181,7 +183,10 @@
             class="agent-activity__head gap-2 text-sm flex w-full items-center text-left"
             aria-expanded={open}
             aria-controls="{id}-panel-{rowIndex}"
-            onclick={() => (openIndex = open ? null : rowIndex)}
+            onclick={() => {
+              if (!open) onopen?.()
+              openIndex = open ? null : rowIndex
+            }}
           >
             <span class="font-medium shrink-0">{row.label}</span>
             {#if row.request}
