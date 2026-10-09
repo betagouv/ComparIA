@@ -3,7 +3,6 @@
   import {
     Badge,
     Button,
-    CheckboxGroup,
     Icon,
     Input,
     Modal,
@@ -30,7 +29,6 @@
 
   let { data }: { data: PageData } = $props()
 
-  type SurveyTrigger = AdminSurveyQuestion['triggers'][number]
   type SurveyInputType = AdminSurveyQuestion['input_type']
 
   const auth = getAuthContext()
@@ -56,12 +54,10 @@
   // moments, so it has one rank and each moment shows its own subset of it.
   const rows = $derived(optimistic ?? data.survey.questions)
 
-  const triggers: SurveyTrigger[] = ['signup', 'after_vote']
-
   const cols = [
     { id: 'order', label: m['survey.admin.colOrder']() },
     { id: 'label', label: m['survey.admin.colLabel']() },
-    { id: 'trigger', label: m['survey.admin.colTrigger']() },
+    { id: 'required', label: m['survey.admin.colRequired']() },
     { id: 'respondents', label: m['survey.admin.colRespondents']() },
     { id: 'status', label: m['survey.admin.colStatus']() },
     { id: 'actions', label: m['survey.admin.colActions']() }
@@ -73,7 +69,6 @@
   let questionToDelete = $state<AdminSurveyQuestion>()
   let deleteConflict = $state(false)
 
-  let formTriggers = $state<SurveyTrigger[]>(['signup'])
   let formRequired = $state(true)
   let formInputType = $state<SurveyInputType>('select')
   let formLabels = $state<Record<string, string>>({})
@@ -116,7 +111,6 @@
 
   function openAdd() {
     editing = undefined
-    formTriggers = ['signup']
     formRequired = true
     formInputType = 'select'
     formLabels = {}
@@ -128,7 +122,6 @@
 
   function openEdit(question: AdminSurveyQuestion) {
     editing = question
-    formTriggers = [...question.triggers]
     formRequired = question.required
     formInputType = question.input_type
     formLabels = { ...question.labels }
@@ -224,14 +217,6 @@
       formError = m['survey.admin.optionsError']()
       return
     }
-    if (!formTriggers.length) {
-      formError = m['survey.admin.triggersError']()
-      return
-    }
-
-    // Meaningless off the signup form, and leaving a stale true behind would
-    // start blocking sign-in the day the question is moved back onto it.
-    const required = formTriggers.includes('signup') && formRequired
 
     const target = editing
     const done = await run(
@@ -240,8 +225,7 @@
           ? api.request(`/admin/survey/${target.id}`, {
               method: 'PUT',
               body: JSON.stringify({
-                triggers: formTriggers,
-                required,
+                required: formRequired,
                 labels,
                 options,
                 published: formPublished
@@ -250,8 +234,7 @@
           : api.request('/admin/survey', {
               method: 'POST',
               body: JSON.stringify({
-                triggers: formTriggers,
-                required,
+                required: formRequired,
                 input_type: formInputType,
                 labels,
                 options,
@@ -350,7 +333,6 @@
         api.request(`/admin/survey/${question.id}`, {
           method: 'PUT',
           body: JSON.stringify({
-            triggers: question.triggers,
             required: question.required,
             labels: question.labels,
             options,
@@ -471,15 +453,12 @@
             })} · {m['survey.admin.revisionN']({ revision: row.revision })}
           </span>
         </span>
-      {:else if col.id === 'trigger'}
-        <span class="gap-1 flex flex-wrap">
-          {#each row.triggers as trigger (trigger)}
-            <Badge size="sm" text={m[`survey.admin.${trigger}`]()} variant="blue-ecume" />
-          {/each}
-          {#if row.triggers.includes('signup') && row.required}
-            <Badge size="sm" text={m['survey.admin.required']()} variant="brown" />
-          {/if}
-        </span>
+      {:else if col.id === 'required'}
+        {#if row.required}
+          <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
+        {:else}
+          <span class="sr-only">{m['words.no']()}</span>
+        {/if}
       {:else if col.id === 'respondents'}
         <span class="fr-text--sm text-grey">{row.respondent_count}</span>
       {:else if col.id === 'status'}
@@ -620,33 +599,21 @@
   </h2>
 
   <form onsubmit={submit}>
-    <!-- Editable even on an existing question: moving it to another moment,
-         or adding one, changes nothing about the answers already given.
-         input_type would, so it stays frozen after creation. -->
-    <CheckboxGroup
-      id="survey-question-triggers"
-      bind:value={formTriggers}
-      legend={m['survey.admin.triggersLabel']()}
-      options={triggers.map((value) => ({ value, label: m[`survey.admin.${value}`]() }))}
-    />
-
-    {#if formTriggers.includes('signup')}
-      <div class="mb-4 gap-1 flex items-start">
-        <Toggle
-          id="survey-question-required"
-          bind:value={formRequired}
-          label={m['survey.admin.required']()}
-        />
-        <Tooltip
-          id="survey-required-help"
-          size="sm"
-          class="mt-1"
-          label={m['survey.admin.required']()}
-        >
-          {m['survey.admin.requiredHelp']()}
-        </Tooltip>
-      </div>
-    {/if}
+    <div class="mb-4 gap-1 flex items-start">
+      <Toggle
+        id="survey-question-required"
+        bind:value={formRequired}
+        label={m['survey.admin.required']()}
+      />
+      <Tooltip
+        id="survey-required-help"
+        size="sm"
+        class="mt-1"
+        label={m['survey.admin.required']()}
+      >
+        {m['survey.admin.requiredHelp']()}
+      </Tooltip>
+    </div>
 
     {#if !editing}
       <Select

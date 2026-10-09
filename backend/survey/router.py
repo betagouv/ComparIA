@@ -9,7 +9,6 @@ from backend.survey.services import (
     SurveyQuestionNotFoundError,
     list_questions,
     my_answers,
-    questions_to_prompt,
     record_shown,
     submit_answers,
 )
@@ -19,7 +18,6 @@ from utils.database.models.survey import (
     PublicSurveyQuestionsResponse,
     SurveyAnswerSubmit,
     SurveyDismiss,
-    SurveyTrigger,
 )
 from utils.database.session import get_session
 
@@ -39,19 +37,12 @@ def _respondent(
 
 @router.get("/questions", response_model=PublicSurveyQuestionsResponse)
 async def get_questions(
-    trigger: SurveyTrigger,
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
     locale: str = Query(default="fr"),
 ) -> PublicSurveyQuestionsResponse:
     async with get_session() as session:
-        if trigger == "after_vote":
-            user_id, anon_hash = _respondent(user, anonymous_user_hash)
-            questions = await questions_to_prompt(
-                session, trigger, locale, user_id, anon_hash
-            )
-        else:
-            questions = await list_questions(session, trigger, locale)
+        questions = await list_questions(session, locale)
     return PublicSurveyQuestionsResponse(questions=questions)
 
 

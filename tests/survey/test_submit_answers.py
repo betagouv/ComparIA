@@ -54,7 +54,6 @@ class FakeSession:
         return SurveyQuestion(
             id=QUESTION_ID,
             key="age",
-            triggers=["signup"],
             input_type="select",
             labels={"fr": "Âge"},
             options=[

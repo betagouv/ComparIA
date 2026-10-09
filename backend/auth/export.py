@@ -198,6 +198,6 @@ async def build_account_export(user: User) -> AccountDataExport:
         survey_answers=[
             _survey_answer(answer, answered_ats[answer.question_id])
             for answer in survey_answers
-            if answer.selected_keys and answer.question_id in answered_ats
+            if answer.value and answer.question_id in answered_ats
         ],
     )
