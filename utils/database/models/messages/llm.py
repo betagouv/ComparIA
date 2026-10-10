@@ -21,6 +21,8 @@ class LLMMessageBase(SQLModel):
     generation_id: str | None = None
     tokens: int | None = None
     is_cached: bool = False
+    # The user pressed stop before the model finished: the content is partial.
+    interrupted: bool = False
 
 
 class LLMMessageFinal(LLMMessageBase):

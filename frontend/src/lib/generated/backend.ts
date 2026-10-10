@@ -73,6 +73,7 @@ export interface LLMMessageCreate {
   updated_at?: string | null;
   content?: string;
   reasoning_content?: string | null;
+  interrupted?: boolean;
   [k: string]: unknown;
 }
 export interface RevealData {

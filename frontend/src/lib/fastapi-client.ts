@@ -71,8 +71,20 @@ export interface SSEWarningEvent {
   warning_token: string
 }
 
+/** Last event of a stream the user stopped: the turn with its partial answers. */
+export interface SSEInterruptedEvent {
+  type: 'interrupted'
+  turn: APIComparisonTurn
+}
+
 export type SSEEvent =
-  SSEInitEvent | SSEUpdateEvent | SSECompleteEvent | SSEChunkEvent | SSEErrorEvent | SSEWarningEvent
+  | SSEInitEvent
+  | SSEUpdateEvent
+  | SSECompleteEvent
+  | SSEChunkEvent
+  | SSEErrorEvent
+  | SSEWarningEvent
+  | SSEInterruptedEvent
 
 export class InternalError extends Error {
   constructor(message: string) {

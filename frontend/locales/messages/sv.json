@@ -51,6 +51,9 @@
         }
     },
     "chatbot": {
+        "announce": {
+            "interrupted": "Genereringen har stoppats"
+        },
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
         "conversation": "Konversation",
         "errors": {
@@ -65,12 +68,16 @@
                 "title": "Konversationen är för lång för en av modellerna."
             }
         },
+        "interrupted": {
+            "notice": "Genereringen har stoppats. Du kan rösta på dessa ofullständiga svar eller försöka igen."
+        },
         "loading": "Läser in svar",
         "reasoning": {
             "finished": "Resonemang avslutat",
             "inProgress": "Resonemang pågår…"
         },
         "revealButton": "Visa vilka modeller som användes",
+        "stop": "Stoppa genereringen",
         "webSearch": {
             "label": "Tillhörande webbsökresultat."
         }
