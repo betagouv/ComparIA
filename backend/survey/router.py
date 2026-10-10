@@ -8,14 +8,14 @@ from backend.survey.services import (
     SurveyOptionUnknownError,
     SurveyQuestionNotFoundError,
     list_questions,
+    list_unanswered_questions_ids,
     my_answers,
     record_shown,
     submit_answers,
 )
 from utils.database.models.auth import User
 from utils.database.models.survey import (
-    MySurveyAnswersResponse,
-    PublicSurveyQuestionsResponse,
+    PublicSurveyResponse,
     SurveyAnswerSubmit,
     SurveyDismiss,
 )
@@ -35,15 +35,20 @@ def _respondent(
     return None, anonymous_user_hash
 
 
-@router.get("/questions", response_model=PublicSurveyQuestionsResponse)
+@router.get("/", response_model=PublicSurveyResponse)
 async def get_questions(
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
     locale: str = Query(default="fr"),
-) -> PublicSurveyQuestionsResponse:
-    async with get_session() as session:
-        questions = await list_questions(session, locale)
-    return PublicSurveyQuestionsResponse(questions=questions)
+) -> PublicSurveyResponse:
+    user_id, anon_hash = _respondent(user, anonymous_user_hash)
+    questions = await list_questions(locale)
+    never_answered_ids = await list_unanswered_questions_ids(locale, user_id, anon_hash)
+    answers = await my_answers(locale, user_id, anon_hash)
+
+    return PublicSurveyResponse(
+        questions=questions, never_answered_ids=never_answered_ids, answers=answers
+    )
 
 
 @router.post("/answers", status_code=status.HTTP_204_NO_CONTENT)
@@ -89,15 +94,3 @@ async def dismiss(
     async with get_session() as session:
         await record_shown(session, payload.question_ids, user_id, anon_hash)
         await session.commit()
-
-
-@router.get("/me", response_model=MySurveyAnswersResponse)
-async def get_my_answers(
-    user: OptionalUser,
-    anonymous_user_hash: RequiredAnomymous,
-    locale: str = Query(default="fr"),
-) -> MySurveyAnswersResponse:
-    user_id, anon_hash = _respondent(user, anonymous_user_hash)
-    async with get_session() as session:
-        answers = await my_answers(session, locale, user_id, anon_hash)
-    return MySurveyAnswersResponse(answers=answers)

@@ -175,9 +175,7 @@ async def build_account_export(user: User) -> AccountDataExport:
         # their current session locale, so it always resolves labels in the
         # instance's default language, same as the legal documents it also
         # exports the acceptance of.
-        survey_answers = await my_answers(
-            session, DEFAULT_LEGAL_LANGUAGE, user.id, None
-        )
+        survey_answers = await my_answers(DEFAULT_LEGAL_LANGUAGE, user.id, None)
 
     return AccountDataExport(
         exported_at=utc_now(),

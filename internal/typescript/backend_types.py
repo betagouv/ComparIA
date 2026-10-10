@@ -4,10 +4,9 @@ from backend.settings.router import PublicLegalDocument
 from utils.database.models import ComparisonPublic
 from utils.database.models.survey import (
     MySurveyAnswer,
-    MySurveyAnswersResponse,
     PublicSurveyOption,
     PublicSurveyQuestion,
-    PublicSurveyQuestionsResponse,
+    PublicSurveyResponse,
     SurveyAnswerSubmit,
     SurveyDismiss,
     SurveyQuestionAnswer,
