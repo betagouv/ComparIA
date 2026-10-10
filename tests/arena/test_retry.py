@@ -46,14 +46,27 @@ def patched(module, **attributes):
 def comparison(answered: bool, error=None):
     answer = object() if answered else None
     turn = SimpleNamespace(
-        id=uuid4(), user_msg=object(), llm_msg_a=answer, llm_msg_b=answer
+        id=uuid4(),
+        user_msg=SimpleNamespace(content="Bonjour"),
+        llm_msg_a=answer,
+        llm_msg_b=answer,
     )
-    return SimpleNamespace(id=uuid4(), turns=[turn], error=error, mode="random")
+    return SimpleNamespace(
+        id=uuid4(),
+        turns=[turn],
+        error=error,
+        mode="random",
+        llm_id_a="a",
+        llm_id_b="b",
+    )
 
 
 def retry(target):
     async def nothing(*_args, **_kwargs):
         return None
+
+    async def get_llms_data():
+        return SimpleNamespace(pricey_models=[])
 
     request = Request(
         {
@@ -72,6 +85,8 @@ def retry(target):
             arena_router,
             update_comparison_error=nothing,
             store_comparison_metadata=lambda *_args, **_kwargs: None,
+            get_llms_data=get_llms_data,
+            charge_budget=lambda *_args: None,
         ),
     ):
         body = arena_models.RetryBody(altcha_token="valid")
