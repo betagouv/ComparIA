@@ -22,6 +22,7 @@ from backend.arena.session import (
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
 )
 from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
+from backend.utils.user import ip_bucket
 
 
 class FakeRedis:
@@ -164,6 +165,27 @@ def test_a_cheap_message_does_not_spend_the_pricey_budget():
         assert session.is_ratelimited("sess-a", "1.1.1.1") is False
 
 
+def test_one_ipv6_subscriber_shares_one_budget():
+    """An IPv6 connection usually owns a whole /64, so changing the last bits
+    of the address must not buy a fresh budget."""
+    with fake_redis():
+        session.increment_input_chars(
+            "sess-a",
+            "2001:db8:1:2::1",
+            RATELIMIT_PRICEY_MODELS_INPUT_PER_IP + 1,
+            pricey=True,
+        )
+        assert session.is_ratelimited("sess-b", "2001:db8:1:2:ffff::9") is True
+        assert session.is_ratelimited("sess-b", "2001:db8:1:3::1") is False
+
+
+def test_ip_bucket():
+    assert ip_bucket("1.2.3.4") == "1.2.3.4"
+    assert ip_bucket("2001:db8:1:2:3:4:5:6") == "2001:db8:1:2::/64"
+    assert ip_bucket("::ffff:1.2.3.4") == "1.2.3.4"
+    assert ip_bucket("") == ""
+
+
 def test_unknown_key_not_limited():
     with fake_redis():
         assert session.is_ratelimited("never-seen", "9.9.9.9") is False
@@ -234,6 +256,8 @@ def run():
     test_dropping_the_cookie_does_not_reset_the_budget()
     test_cheap_models_are_counted_too()
     test_a_cheap_message_does_not_spend_the_pricey_budget()
+    test_one_ipv6_subscriber_shares_one_budget()
+    test_ip_bucket()
     test_unknown_key_not_limited()
     test_a_message_goes_through_while_the_budget_was_not_spent_before_it()
     test_requests_at_the_edge_cannot_all_pass()

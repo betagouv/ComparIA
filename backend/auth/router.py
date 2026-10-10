@@ -74,7 +74,7 @@ from backend.auth.totp import (
 from backend.config import settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
-from backend.utils.user import get_ip
+from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
@@ -371,7 +371,7 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
 
     try:
         client = get_redis_client()
-        key = REDIS_AUTH_EMAIL_REQ.format(ip=ip)
+        key = REDIS_AUTH_EMAIL_REQ.format(ip=ip_bucket(ip))
         count = client.incr(key)
         if count == 1:
             client.expire(key, 3600)
@@ -451,7 +451,7 @@ async def email_verify(
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     email_hash = _hash(body.email)
-    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=email_hash)
+    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip_bucket(ip), email=email_hash)
     # Same counter, keyed on the email alone: "*" is not a possible host, so the
     # two buckets never collide. Bounds guessing spread over many source IPs.
     email_fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip="*", email=email_hash)
@@ -737,7 +737,7 @@ async def oidc_login(
 
     try:
         client = get_redis_client()
-        key = REDIS_AUTH_OIDC_REQ.format(ip=get_ip(request))
+        key = REDIS_AUTH_OIDC_REQ.format(ip=ip_bucket(get_ip(request)))
         count = client.incr(key)
         if count == 1:
             client.expire(key, 3600)

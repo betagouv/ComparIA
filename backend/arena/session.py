@@ -18,6 +18,7 @@ from backend.config import (
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
 )
+from backend.utils.user import ip_bucket
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
@@ -112,9 +113,9 @@ def _budgets(key: str, ip: str, pricey: bool = True) -> list[tuple[str, int]]:
     budgets = (
         # Rate limit is 2x the configured limit for pricey models
         ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
-        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
+        ("pricey_ip", ip_bucket(ip), RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
         ("all", key, RATELIMIT_ALL_MODELS_INPUT),
-        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+        ("all_ip", ip_bucket(ip), RATELIMIT_ALL_MODELS_INPUT_PER_IP),
     )
     return [
         (_budget_key(pool, identity), limit)
@@ -202,8 +203,9 @@ def increment_blocked_prompts(ip: str) -> None:
     """
     try:
         client = get_redis_client()
-        client.incr(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
-        client.expire(REDIS_BLOCKED_COUNT_KEY.format(ip=ip), 3600)
+        key = REDIS_BLOCKED_COUNT_KEY.format(ip=ip_bucket(ip))
+        client.incr(key)
+        client.expire(key, 3600)
     except Exception as e:
         logger.error(f"[SESSION] Error incrementing blocked count: {e}")
 
@@ -215,7 +217,7 @@ def is_block_cooldown(ip: str) -> bool:
     """
     try:
         client = get_redis_client()
-        counter = client.get(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
+        counter = client.get(REDIS_BLOCKED_COUNT_KEY.format(ip=ip_bucket(ip)))
         assert not isinstance(counter, Awaitable)
         return bool(counter and int(counter) >= RATELIMIT_BLOCKED_PROMPTS_PER_HOUR)
     except Exception as e:
