@@ -438,7 +438,10 @@ async def add_text(
     return create_sse_response(event_stream())
 
 
-@router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
+@router.post(
+    "/retry/{comparison_id}",
+    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+)
 async def retry(
     comparison: ComparisonAnno,
     args: RetryBody,
@@ -466,7 +469,11 @@ async def retry(
 
     turn = comparison.turns[-1]
 
-    if turn.user_msg is None:
+    # Only a turn that failed or never finished can be run again. Otherwise one
+    # prompt that passed the check could be answered again and again, with no
+    # captcha and no check in the way.
+    finished = turn.llm_msg_a is not None and turn.llm_msg_b is not None
+    if turn.user_msg is None or (finished and not comparison.error):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="retry_unavailable",
