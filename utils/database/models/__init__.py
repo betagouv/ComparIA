@@ -56,7 +56,6 @@ from .suggestion import (
 )
 from .survey import (
     MAX_QUESTION_PROMPTS,
-    MAX_QUESTIONS_PER_PROMPT,
     SURVEY_INPUT_TYPES,
     AdminSurveyOption,
     AdminSurveyQuestion,
@@ -68,7 +67,6 @@ from .survey import (
     SurveyAnswer,
     SurveyAnswerSubmit,
     SurveyAnswerValue,
-    SurveyDismiss,
     SurveyInputType,
     SurveyOption,
     SurveyOptionWrite,

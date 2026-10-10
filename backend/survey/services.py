@@ -2,7 +2,7 @@ import re
 import unicodedata
 import uuid
 from datetime import timedelta
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BeforeValidator, ConfigDict, create_model
 from sqlalchemy import String, cast
@@ -14,9 +14,7 @@ from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from utils.database.models.survey import (
-    MAX_DISMISS_IDS,
     MAX_QUESTION_PROMPTS,
-    MAX_QUESTIONS_PER_PROMPT,
     AdminSurveyOption,
     AdminSurveyQuestion,
     AdminSurveyResponse,
@@ -26,7 +24,6 @@ from utils.database.models.survey import (
     SurveyAnswer,
     SurveyAnswerSubmit,
     SurveyAnswerValue,
-    SurveyInputType,
     SurveyOption,
     SurveyOptionWrite,
     SurveyPromptLog,
@@ -121,31 +118,6 @@ def _respondent_clause(
     if user_id is not None:
         return col(model.user_id) == user_id
     return col(model.anonymous_user_hash) == anonymous_user_hash
-
-
-def _validate_answer_value(
-    input_type: SurveyInputType, value: Any
-) -> SurveyAnswerValue | None:
-    """
-    Validate an answer value depending on input_type.
-    Also normalize nonish values to None.
-    """
-    if value is None or not len(value):
-        return None
-    if input_type == "select":
-        if not isinstance(value, str):
-            raise ValueError("a 'select' question only accepts a string")
-        return value
-    if input_type == "checkbox_group":
-        if not isinstance(value, list) or not all(
-            (v and isinstance(v, str) and len(v) for v in value)
-        ):
-            raise ValueError(
-                "a 'checkbox_group' question only accepts a list of string"
-            )
-        return value
-
-    raise ValueError("Unknown survey question 'input_type'")
 
 
 @redis_cache(REDIS_SURVEY_KEY)
@@ -289,132 +261,6 @@ async def list_unanswered_questions_ids(
         never_answered_ids.add(question.id)
 
     return list(never_answered_ids)
-
-
-async def questions_to_prompt(
-    session: AsyncSession,
-    locale: str,
-    user_id: uuid.UUID | None,
-    anonymous_user_hash: str | None,
-) -> list[PublicSurveyQuestion]:
-    """
-    What the after-vote popup should actually show this respondent: live
-    questions they have not answered, not over-shown, not shown too recently.
-    """
-    _require_respondent(user_id, anonymous_user_hash)
-
-    candidates = await _askable_questions()
-    if not candidates:
-        return []
-
-    question_ids = [question.id for question in candidates]
-
-    answered_ids = set(
-        (
-            await session.exec(
-                select(SurveyAnswer.question_id)
-                .where(col(SurveyAnswer.question_id).in_(question_ids))
-                .where(_respondent_clause(SurveyAnswer, user_id, anonymous_user_hash))
-                .distinct()
-            )
-        ).all()
-    )
-
-    logs = {
-        log.question_id: log
-        for log in (
-            await session.exec(
-                select(SurveyPromptLog)
-                .where(col(SurveyPromptLog.question_id).in_(question_ids))
-                .where(
-                    _respondent_clause(SurveyPromptLog, user_id, anonymous_user_hash)
-                )
-            )
-        ).all()
-    }
-
-    reask_after_days = (await get_app_settings()).survey_reask_after_days
-    cutoff = utc_now() - timedelta(days=reask_after_days)
-
-    eligible = []
-    for question in candidates:
-        if question.id in answered_ids:
-            continue
-        log = logs.get(question.id)
-        if log is not None:
-            if log.shown_count >= MAX_QUESTION_PROMPTS:
-                continue
-            if log.last_shown_at is not None and log.last_shown_at > cutoff:
-                continue
-        eligible.append(question)
-        if len(eligible) >= MAX_QUESTIONS_PER_PROMPT:
-            break
-
-    default_locale = await _default_locale()
-    return [_to_public(question, locale, default_locale) for question in eligible]
-
-
-async def record_shown(
-    session: AsyncSession,
-    question_ids: list[uuid.UUID],
-    user_id: uuid.UUID | None,
-    anonymous_user_hash: str | None,
-) -> None:
-    """
-    Upsert the prompt log for every question just shown. Called both when the
-    popup actually renders, and by `POST /survey/dismiss`: closing the popup
-    and declining it are deliberately the same thing.
-    """
-    _require_respondent(user_id, anonymous_user_hash)
-    if not question_ids:
-        return
-
-    # Dismissing is best-effort: a stale or arbitrary id from the client must
-    # not reach the foreign key and surface as a 500, so anything the question
-    # table does not know about is dropped rather than rejected. The list is
-    # capped first, since only what one popup showed can ever be legitimate.
-    question_ids = question_ids[:MAX_DISMISS_IDS]
-    known_ids = set(
-        (
-            await session.exec(
-                select(SurveyQuestion.id).where(
-                    col(SurveyQuestion.id).in_(question_ids)
-                )
-            )
-        ).all()
-    )
-    question_ids = [qid for qid in question_ids if qid in known_ids]
-    if not question_ids:
-        return
-
-    existing = {
-        log.question_id: log
-        for log in (
-            await session.exec(
-                select(SurveyPromptLog)
-                .where(col(SurveyPromptLog.question_id).in_(question_ids))
-                .where(
-                    _respondent_clause(SurveyPromptLog, user_id, anonymous_user_hash)
-                )
-            )
-        ).all()
-    }
-
-    now = utc_now()
-    for question_id in question_ids:
-        log = existing.get(question_id)
-        if log is None:
-            log = SurveyPromptLog(
-                question_id=question_id,
-                user_id=user_id,
-                anonymous_user_hash=anonymous_user_hash,
-                shown_count=1,
-                last_shown_at=now,
-            )
-        else:
-            log.shown_count += 1
-            log.last_shown_at = now
-        session.add(log)
 
 
 def _validate_answers(
