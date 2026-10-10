@@ -840,7 +840,8 @@
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
                 "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
-                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7.",
+                "unavailable": "Votre message est trop long pour être vérifié en ce moment. Raccourcissez-le ou réessayez dans quelques minutes."
             },
             "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
             "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",

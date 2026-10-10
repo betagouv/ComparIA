@@ -839,7 +839,8 @@
             "prompt_check": {
                 "generic": "Din besked kunne ikke sendes, fordi den strider mod vores vilkår for brug. Omformuler den.",
                 "pii": "Din besked ser ud til at indeholde personoplysninger. Sendte beskeder kan blive offentliggjort i det åbne datasæt.",
-                "self_harm": "Hvis du har det svært eller har selvmordstanker, er du ikke alene. Livslinien kan kontaktes gratis og fortroligt på 70 201 201."
+                "self_harm": "Hvis du har det svært eller har selvmordstanker, er du ikke alene. Livslinien kan kontaktes gratis og fortroligt på 70 201 201.",
+                "unavailable": "Din besked er for lang til at blive kontrolleret lige nu. Gør den kortere, eller prøv igen om et par minutter."
             },
             "rate_limited": "Du har sendt for mange forespørgsler til de dyreste modeller. Prøv igen om et par timer. Mindre modeller kan stadig bruges.",
             "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",

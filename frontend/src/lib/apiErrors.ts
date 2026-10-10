@@ -16,7 +16,8 @@ const ARENA_ERRORS = {
 const PROMPT_CHECK_MESSAGES = {
   generic: () => m['arene.apiErrors.prompt_check.generic'](),
   self_harm: () => m['arene.apiErrors.prompt_check.self_harm'](),
-  pii: () => m['arene.apiErrors.prompt_check.pii']()
+  pii: () => m['arene.apiErrors.prompt_check.pii'](),
+  unavailable: () => m['arene.apiErrors.prompt_check.unavailable']()
 } as const
 
 export type ArenaErrorKey = keyof typeof ARENA_ERRORS
