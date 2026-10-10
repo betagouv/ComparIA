@@ -4,6 +4,8 @@ Altcha proof-of-work CAPTCHA integration.
 Provides challenge generation, solution verification, and replay prevention via Redis.
 """
 
+import base64
+import json
 import logging
 from datetime import datetime, timedelta, timezone
 
@@ -58,8 +60,15 @@ def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
         logger.warning(f"Altcha verification failed: {error}")
         return False, error
 
-    # Replay prevention: check if this payload was already used
-    redis_key = f"{REDIS_ALTCHA_PREFIX}{payload[:64]}"
+    # Replay prevention, keyed on the signed challenge rather than the payload
+    # string. The payload is base64 JSON written by the client, so the same
+    # solution re-encoded with other whitespace or key order is a different
+    # string and would pass as new every time.
+    try:
+        signature = json.loads(base64.b64decode(payload).decode())["signature"]
+    except (ValueError, TypeError, KeyError):
+        return False, "Invalid altcha payload"
+    redis_key = f"{REDIS_ALTCHA_PREFIX}{signature}"
     try:
         client = get_redis_client()
         # SET with NX returns True only if key didn't exist
