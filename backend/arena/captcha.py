@@ -15,7 +15,7 @@ from backend.config import (
     ALTCHA_REPLAY_TTL_SECONDS,
     settings,
 )
-from utils.storage.redis import REDIS_ALTCHA_PREFIX, get_redis_client
+from utils.storage.redis import REDIS_ALTCHA_PREFIX, get_async_redis_client
 
 logger = logging.getLogger("languia")
 
@@ -38,7 +38,7 @@ def generate_challenge() -> dict:
     return challenge.to_dict()
 
 
-def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
+async def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
     """
     Verify an Altcha solution payload with replay prevention.
 
@@ -61,9 +61,9 @@ def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
     # Replay prevention: check if this payload was already used
     redis_key = f"{REDIS_ALTCHA_PREFIX}{payload[:64]}"
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         # SET with NX returns True only if key didn't exist
-        is_new = client.set(redis_key, "1", nx=True, ex=ALTCHA_REPLAY_TTL_SECONDS)
+        is_new = await client.set(redis_key, "1", nx=True, ex=ALTCHA_REPLAY_TTL_SECONDS)
         if not is_new:
             logger.warning("Altcha replay detected")
             return False, "Challenge already used"

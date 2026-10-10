@@ -9,10 +9,15 @@ responses with configurable probability to avoid determinism.
 import json
 import logging
 import random
-from typing import Any, TypedDict, cast
+from typing import TypedDict
 
 from backend.config import settings
-from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client, hash_content
+from utils.storage.redis import (
+    REDIS_LLM_RESPONSES_KEY,
+    get_async_redis_client,
+    hash_content,
+)
+
 
 logger = logging.getLogger("languia")
 
@@ -23,7 +28,7 @@ class CachedResponse(TypedDict):
     output_tokens: int | None
 
 
-def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
+async def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
     """
     Try to get a cached response for this (model, prompt) pair.
 
@@ -38,11 +43,11 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
         return None
 
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         key = REDIS_LLM_RESPONSES_KEY.format(
             model_name=model_name, prompt_hash=hash_content(prompt)
         )
-        data = cast(Any, client.get(key))
+        data = await client.get(key)
         if not data:
             return None
 
@@ -53,7 +58,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
         chosen = random.choice(responses)
 
         # Refresh TTL on hit — popular prompts stay cached as long as they're asked
-        client.expire(key, settings.CACHE_TTL)
+        await client.expire(key, settings.CACHE_TTL)
 
         logger.info(f"[CACHE] Hit for {model_name} (pool size: {len(responses)})")
         return chosen
@@ -63,7 +68,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
         return None
 
 
-def store_cached_response(
+async def store_cached_response(
     model_name: str, prompt: str, response: CachedResponse
 ) -> None:
     """
@@ -76,12 +81,12 @@ def store_cached_response(
         return
 
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         key = REDIS_LLM_RESPONSES_KEY.format(
             model_name=model_name, prompt_hash=hash_content(prompt)
         )
 
-        existing_data = cast(Any, client.get(key))
+        existing_data = await client.get(key)
         responses: list[CachedResponse] = (
             json.loads(existing_data) if existing_data else []
         )
@@ -91,7 +96,7 @@ def store_cached_response(
         if len(responses) > settings.CACHE_MAX_RESPONSES:
             responses = responses[-settings.CACHE_MAX_RESPONSES :]
 
-        client.setex(key, settings.CACHE_TTL, json.dumps(responses))
+        await client.setex(key, settings.CACHE_TTL, json.dumps(responses))
         logger.info(
             f"[CACHE] Stored response for {model_name} (pool size: {len(responses)})"
         )

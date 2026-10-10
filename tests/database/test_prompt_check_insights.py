@@ -28,8 +28,25 @@ from utils.database.models.prompt_check import (
 
 
 class FakeRedis:
+    """A store the sync commands and, through `aio`, the async ones both use."""
+
     def __init__(self):
         self.store: dict[str, str] = {}
+
+    @property
+    def aio(self):
+        redis = self
+
+        class AsyncView:
+            def __getattr__(self, name):
+                method = getattr(redis, name)
+
+                async def call(*args, **kwargs):
+                    return method(*args, **kwargs)
+
+                return call
+
+        return AsyncView()
 
     def get(self, key):
         return self.store.get(key)
@@ -61,7 +78,7 @@ def full_categories(**overrides: dict) -> dict[str, dict]:
 @pytest.fixture
 def redis(monkeypatch: pytest.MonkeyPatch) -> FakeRedis:
     client = FakeRedis()
-    monkeypatch.setattr(checks, "get_redis_client", lambda: client)
+    monkeypatch.setattr(checks, "get_async_redis_client", lambda: client.aio)
     monkeypatch.setattr(admin_router.settings, "MISTRAL_API_KEY", "test-key")
     return client
 

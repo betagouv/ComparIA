@@ -7,7 +7,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Generator, Union, cast
+from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
 
 import litellm
 
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("languia")
 
 
-def litellm_stream_iter(
+async def litellm_stream_iter(
     llm: "LLMDataEnabled",
     messages: list["AnyMessageRead"],
     msg: "LLMMessageCreate",
@@ -39,7 +39,7 @@ def litellm_stream_iter(
     request: Union["Request", None] = None,
     include_reasoning: bool = False,  # FIXME Legacy ?
     enable_reasoning: bool = False,  # FIXME Legacy ?
-) -> Generator["LLMMessageCreate"]:
+) -> AsyncGenerator["LLMMessageCreate"]:
     """
     Stream responses from an LLM API using LiteLLM.
 
@@ -128,7 +128,7 @@ def litellm_stream_iter(
 
     # Make the API call through LiteLLM
     try:
-        response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
+        response: litellm.CustomStreamWrapper = await litellm.acompletion(**kwargs)
     except litellm.ContextWindowExceededError as e:
         logger.error(
             f"context_window_exceeded: {endpoint.model}: {e}",
@@ -140,7 +140,7 @@ def litellm_stream_iter(
     # transforms = [""], route= ""
 
     # Process streaming chunks from the API
-    for chunk in response:
+    async for chunk in response:
         if not msg.responded_at:
             # Store first chunk ts for latency computation
             msg.responded_at = datetime.now()

@@ -351,7 +351,7 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
     _require_email_code(app_settings)
     ip = get_ip(request)
 
-    ok, error = verify_altcha_token(body.altcha_payload)
+    ok, error = await verify_altcha_token(body.altcha_payload)
     if not ok:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error)
 
