@@ -189,6 +189,21 @@ async def _all_answers(
         ).all()
 
 
+async def _all_logs(
+    user_id: uuid.UUID | None,
+    anonymous_user_hash: str | None,
+    question_ids: set[uuid.UUID] | None = None,
+) -> list[SurveyPromptLog]:
+    query = select(SurveyPromptLog).where(
+        _respondent_clause(SurveyPromptLog, user_id, anonymous_user_hash)
+    )
+    if question_ids:
+        query = query.where(col(SurveyPromptLog.question_id).in_(question_ids))
+
+    async with get_session() as session:
+        return (await session.exec(query)).all()
+
+
 def _to_public(
     question: SurveyQuestion,
     locale: str,
@@ -430,7 +445,7 @@ async def submit_answers(
 ) -> None:
     """
     Replace semantics: each question's answer fully replaces whatever this
-    respondent answered before, including clearing it with an empty list.
+    respondent answered before and add a log for not answered questions.
     """
     now = utc_now()
     question_ids = set([answer.question_id for answer in payload.answers])
@@ -444,6 +459,12 @@ async def submit_answers(
         for question in await _all_questions()
         if question.archived_at is None and question.id in question_ids
     ]
+    logs = {
+        log.question_id: log
+        for log in await _all_logs(
+            user_id, anonymous_user_hash, question_ids=question_ids
+        )
+    }
 
     answers = _validate_answers(
         questions, payload.answers, previous_answers, ignore_required=user_id is None
@@ -451,6 +472,7 @@ async def submit_answers(
 
     for question in questions:
         value = getattr(answers, str(question.id))
+        log = logs.get(question.id)
 
         await session.execute(
             sa_delete(SurveyAnswer)
@@ -470,6 +492,26 @@ async def submit_answers(
                     answered_at=now,
                 )
             )
+            if log:
+                # Remove previous not answered log
+                await session.execute(
+                    sa_delete(SurveyPromptLog).where(SurveyPromptLog.id == log.id)
+                )
+        else:
+            # Record that the question has been asked but not answered
+            if log is None:
+                log = SurveyPromptLog(
+                    question_id=question.id,
+                    user_id=user_id,
+                    anonymous_user_hash=anonymous_user_hash,
+                    shown_count=1,
+                    last_shown_at=now,
+                )
+            else:
+                log.shown_count += 1
+                log.last_shown_at = now
+
+            session.add(log)
 
 
 async def my_answers(

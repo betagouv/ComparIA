@@ -54,6 +54,9 @@ class FakeSession:
 def mock_db(monkeypatch: pytest.MonkeyPatch, answer=None):
     import backend.survey.services as survey_module
 
+    async def logs(*args, **kwargs):
+        return []
+
     async def answers(*args, **kwargs):
         if answer:
             return [
@@ -80,6 +83,7 @@ def mock_db(monkeypatch: pytest.MonkeyPatch, answer=None):
         ]
 
     monkeypatch.setattr(survey_module, "_all_answers", answers)
+    monkeypatch.setattr(survey_module, "_all_logs", logs)
     monkeypatch.setattr(survey_module, "_all_questions", questions)
 
     yield
