@@ -413,10 +413,3 @@ export interface SurveyQuestionAnswer {
   question_id: string;
   value: string | string[] | null;
 }
-/**
- * Closing the popup and declining it are the same thing: both count as one
- * of the three showings and neither is a special case worth a column.
- */
-export interface SurveyDismiss {
-  question_ids: string[];
-}

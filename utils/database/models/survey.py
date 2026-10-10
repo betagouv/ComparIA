@@ -21,15 +21,6 @@ SURVEY_INPUT_TYPES: tuple[SurveyInputType, ...] = get_args(SurveyInputType)
 # fourth showing is nagging.
 MAX_QUESTION_PROMPTS = 3
 
-# Questions shown in a single after-vote popup. Past three the popup stops
-# reading as a question and starts reading as a form.
-MAX_QUESTIONS_PER_PROMPT = 3
-
-# How many question ids one dismiss call may name. The client only ever sends
-# what one popup showed; anything longer is a bug or abuse, and the log rows
-# it would create are worthless either way.
-MAX_DISMISS_IDS = 50
-
 # Stands in for "no user" inside the COALESCE of the answer uniqueness index.
 # Shared between the model and its migration so the two cannot drift apart.
 NO_USER_SENTINEL = "00000000-0000-0000-0000-000000000000"
@@ -180,15 +171,6 @@ class SurveyQuestionAnswer(SQLModel):
 
 class SurveyAnswerSubmit(SQLModel):
     answers: list[SurveyQuestionAnswer]
-
-
-class SurveyDismiss(SQLModel):
-    """
-    Closing the popup and declining it are the same thing: both count as one
-    of the three showings and neither is a special case worth a column.
-    """
-
-    question_ids: list[uuid.UUID]
 
 
 class MySurveyAnswer(SQLModel):

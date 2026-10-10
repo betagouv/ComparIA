@@ -10,15 +10,10 @@ from backend.survey.services import (
     list_questions,
     list_unanswered_questions_ids,
     my_answers,
-    record_shown,
     submit_answers,
 )
 from utils.database.models.auth import User
-from utils.database.models.survey import (
-    PublicSurveyResponse,
-    SurveyAnswerSubmit,
-    SurveyDismiss,
-)
+from utils.database.models.survey import PublicSurveyResponse, SurveyAnswerSubmit
 from utils.database.session import get_session
 
 router = APIRouter(prefix="/survey", tags=["survey"])
@@ -79,18 +74,4 @@ async def post_answers(
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
             ) from error
-        await session.commit()
-
-
-@router.post("/dismiss", status_code=status.HTTP_204_NO_CONTENT)
-async def dismiss(
-    payload: SurveyDismiss,
-    user: OptionalUser,
-    anonymous_user_hash: RequiredAnomymous,
-) -> None:
-    """Closing the popup and declining it are the same thing: both count as a
-    showing, recorded exactly like an actual display would be."""
-    user_id, anon_hash = _respondent(user, anonymous_user_hash)
-    async with get_session() as session:
-        await record_shown(session, payload.question_ids, user_id, anon_hash)
         await session.commit()

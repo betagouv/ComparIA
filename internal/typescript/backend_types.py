@@ -8,7 +8,6 @@ from utils.database.models.survey import (
     PublicSurveyQuestion,
     PublicSurveyResponse,
     SurveyAnswerSubmit,
-    SurveyDismiss,
     SurveyQuestionAnswer,
 )
 from utils.database.models.vote_tag import PublicVoteTag, PublicVoteTagsResponse
