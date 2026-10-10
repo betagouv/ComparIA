@@ -171,10 +171,6 @@ class PublicSurveyQuestion(SQLModel):
     options: list[PublicSurveyOption]
 
 
-class PublicSurveyQuestionsResponse(SQLModel):
-    questions: list[PublicSurveyQuestion]
-
-
 class SurveyQuestionAnswer(SQLModel):
     question_id: uuid.UUID
     # One key for 'select', any number for 'checkbox_group'. An empty list
@@ -209,7 +205,9 @@ class MySurveyAnswer(SQLModel):
     archived: bool = False
 
 
-class MySurveyAnswersResponse(SQLModel):
+class PublicSurveyResponse(SQLModel):
+    questions: list[PublicSurveyQuestion]
+    never_answered_ids: list[uuid.UUID]
     answers: list[MySurveyAnswer]
 
 

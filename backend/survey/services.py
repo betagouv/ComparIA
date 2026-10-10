@@ -237,19 +237,58 @@ def _to_public(
 # --- public ----------------------------------------------------------------
 
 
-async def list_questions(
-    session: AsyncSession, locale: str
-) -> list[PublicSurveyQuestion]:
+async def list_questions(locale: str) -> list[PublicSurveyQuestion]:
     """
-    Every live question for a moment, unconditional on who is asking. The
-    signup form uses this: there is no respondent yet to check answered/shown
-    state against.
+    Returns every askable questions.
     """
     default_locale = await _default_locale()
     return [
         _to_public(question, locale, default_locale)
         for question in await _askable_questions()
     ]
+
+
+async def list_unanswered_questions_ids(
+    locale: str,
+    user_id: uuid.UUID | None,
+    anonymous_user_hash: str | None,
+) -> list[uuid.UUID]:
+    """
+    Returns unanswered questions ids so the client can choose which to show depending on
+    context. Those are questions that never have been seen, not over-shown or not shown
+    too recently.
+    """
+    questions = await _askable_questions()
+    questions_logs = {
+        log.question_id: log for log in await _all_logs(user_id, anonymous_user_hash)
+    }
+    async with get_session() as session:
+        answered_ids = set(
+            (
+                await session.exec(
+                    select(SurveyAnswer.question_id).where(
+                        _respondent_clause(SurveyAnswer, user_id, anonymous_user_hash)
+                    )
+                )
+            ).all()
+        )
+
+    reask_after_days = (await get_app_settings()).survey_reask_after_days
+    cutoff = utc_now() - timedelta(days=reask_after_days)
+
+    never_answered_ids = set()
+    for question in questions:
+        if question.id in answered_ids:
+            continue
+        log = questions_logs.get(question.id)
+        if log is not None:
+            if log.shown_count >= MAX_QUESTION_PROMPTS:
+                continue
+            if log.last_shown_at is not None and log.last_shown_at > cutoff:
+                continue
+        never_answered_ids.add(question.id)
+
+    return list(never_answered_ids)
 
 
 async def questions_to_prompt(
@@ -515,7 +554,6 @@ async def submit_answers(
 
 
 async def my_answers(
-    session: AsyncSession,
     locale: str,
     user_id: uuid.UUID | None,
     anonymous_user_hash: str | None,
