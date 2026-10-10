@@ -55,6 +55,24 @@ async def search_web(
         return None
 
 
+def web_search_results_to_dicts(
+    web_search_results: list[LinkupSearchTextResult] | None,
+) -> list[dict[str, str]] | None:
+    """
+    Serialize web search results into structured dicts for dataset export.
+
+    Returns one struct per source (name, url, content), or None when there were
+    no results. Unlike merge_web_search_with_content (which flattens sources into
+    the prompt text the model saw), this keeps the retrieval trace analysable.
+    """
+    if not web_search_results:
+        return None
+    return [
+        {"name": result.name, "url": result.url, "content": result.content}
+        for result in web_search_results
+    ]
+
+
 def merge_web_search_with_content(
     content: str, web_search_results: list[LinkupSearchTextResult]
 ) -> str:

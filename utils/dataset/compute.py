@@ -24,7 +24,10 @@ from uuid import UUID
 from async_lru import alru_cache
 from sqlmodel import col, select
 
-from backend.arena.web_search import merge_web_search_with_content
+from backend.arena.web_search import (
+    merge_web_search_with_content,
+    web_search_results_to_dicts,
+)
 from backend.llms.models import APILLMDataBase
 from backend.vote_tags.services import get_all_vote_tags
 from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION, Comparison
@@ -197,6 +200,11 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
                 "choice": turn.choice,
                 "response_a": response_a,
                 "response_b": response_b,
+                # Structured retrieval trace, kept alongside the search-merged
+                # `content` so sources stay queryable. None when no search ran.
+                "web_search_results": web_search_results_to_dicts(
+                    turn.user_msg.web_search_results
+                ),
             }
         )
 
@@ -262,6 +270,7 @@ def _reference_rows() -> list[dict]:
             "choice": "a_better",
             "response_a": [user, assistant],
             "response_b": [user, assistant],
+            "web_search_results": [{"name": "x", "url": "x", "content": "x"}],
             "turn": 0,
             "comparison_id": "ref",
             "model_a": "x",
