@@ -4,7 +4,12 @@
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import { getCohortContext } from '$lib/stores/cohortStore.svelte'
-  import { answersToForm, formToAnswers, getSurveyContext, questionsToFormItems } from '$lib/survey'
+  import {
+    answersToForm,
+    formToAnswers,
+    getSurveyContext,
+    questionsToFormItems
+  } from '$lib/survey.svelte'
 
   const modalId = 'fr-modal-survey'
   const survey = getSurveyContext()

@@ -3,8 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Alert, Badge, Button, Icon, Input, Link, Modal, Tabs } from '$components/dsfr'
-  import { SeoHead } from '$components/layout'
-  import SurveyFormSignup from '$components/SurveyFormSignup.svelte'
+  import { SeoHead, SurveyForm } from '$components/layout'
   import ThemeSelector from '$components/ThemeSelector.svelte'
   import TotpSetupModal from '$components/TotpSetupModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
@@ -13,7 +12,7 @@
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getSurveyContext, profileQuestions } from '$lib/survey'
+  import { getSurveyContext, profileQuestions } from '$lib/survey.svelte'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const auth = getAuthContext()
@@ -191,7 +190,7 @@
 
           <div class="mt-8 gap-6 lg:flex-row flex flex-col">
             <section class="basis-1/2">
-              <SurveyFormSignup
+              <SurveyForm
                 id="survey"
                 title={m['survey.profile.title']()}
                 questions={profileQuestions(survey.questions, survey.answers)}

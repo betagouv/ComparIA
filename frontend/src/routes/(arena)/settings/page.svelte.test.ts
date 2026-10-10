@@ -43,7 +43,7 @@ vi.mock('$lib/fastapi-client', () => ({
   api: { request: (...args: unknown[]) => request(...args) }
 }))
 vi.mock('$lib/survey', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/survey')>()
+  const actual = await importOriginal<typeof import('$lib/survey.svelte')>()
   return {
     ...actual,
     getSurveyContext: () => ({
