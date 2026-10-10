@@ -1,9 +1,9 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Modal } from '$components/dsfr'
+  import { SurveyForm } from '$components/layout'
   import { m } from '$lib/i18n/messages'
-  import { getSurveyContext } from '$lib/survey'
-  import SurveyFormSignup from './SurveyFormSignup.svelte'
+  import { getSurveyContext } from '$lib/survey.svelte'
 
   const modalId = 'fr-modal-survey-signup'
   const survey = getSurveyContext()
@@ -24,7 +24,7 @@
   sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6"
   onClose={resetState}
 >
-  <SurveyFormSignup
+  <SurveyForm
     id="form-{modalId}"
     title={m['survey.required.title']()}
     description={m['survey.required.description']()}

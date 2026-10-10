@@ -8,7 +8,12 @@
     SurveyQuestionAnswer
   } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { answersToForm, formToAnswers, questionsToFormItems, requiredErrors } from '$lib/survey'
+  import {
+    answersToForm,
+    formToAnswers,
+    questionsToFormItems,
+    requiredErrors
+  } from '$lib/survey.svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {

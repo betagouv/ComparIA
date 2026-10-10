@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Input } from '$components/dsfr'
-  import SurveyFormSignup from '$components/SurveyFormSignup.svelte'
+  import { SurveyForm } from '$components/layout'
   import TotpCodeInput from '$components/TotpCodeInput.svelte'
   import { getAuthContext, type AuthUser } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
@@ -21,7 +21,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { signInMethods } from '$lib/signInMethods'
-  import { getSurveyContext } from '$lib/survey'
+  import { getSurveyContext } from '$lib/survey.svelte'
   import { onMount, tick } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -395,7 +395,7 @@
       {/if}
     </form>
   {:else}
-    <SurveyFormSignup
+    <SurveyForm
       id="signin-survey"
       title={m['survey.signup.title']()}
       description={m['survey.signup.description']()}

@@ -32,7 +32,7 @@ vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
   tryGetAuthContext: () => mocks.authContext
 }))
 vi.mock('$lib/survey', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('$lib/survey')>()),
+  ...(await importOriginal<typeof import('$lib/survey.svelte')>()),
   getSurveyContext: () => ({ questions: [], answers: [] })
 }))
 vi.mock('$lib/captcha.svelte', () => ({ consumeAltchaToken: () => Promise.resolve('token') }))

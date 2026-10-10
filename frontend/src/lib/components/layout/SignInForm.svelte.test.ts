@@ -53,7 +53,7 @@ vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
 }))
 
 vi.mock('$lib/survey', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('$lib/survey')>()
+  const actual = await importOriginal<typeof import('$lib/survey.svelte')>()
   return {
     ...actual,
     getSurveyContext: () => ({

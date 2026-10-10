@@ -1,23 +1,61 @@
 import type { FormCheckboxGroupProps, FormSelectProps } from '$components/form'
 import type {
   MySurveyAnswer,
-  MySurveyAnswersResponse,
   PublicSurveyQuestion,
-  PublicSurveyQuestionsResponse
+  PublicSurveyResponse
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { fromEntries } from '$lib/utils/commons'
 import { createContext } from 'svelte'
+import { getAuthContext } from './authContext.svelte'
 
-export const emptySurveyQuestions: PublicSurveyQuestionsResponse = { questions: [] }
-export const emptySurveyAnswers: MySurveyAnswersResponse = { answers: [] }
+export const emptySurvey: PublicSurveyResponse = {
+  questions: [],
+  answers: [],
+  never_answered_ids: []
+}
 
 export type SurveyCtx = {
   show: boolean
   questions: PublicSurveyQuestion[]
   answers: MySurveyAnswer[]
+  unansweredQuestions?: PublicSurveyQuestion[]
 }
-export const [getSurveyContext, setSurveyContext] = createContext<SurveyCtx>()
+const [getSurveyContext, setSurveyContext] = createContext<SurveyCtx>()
+
+export { getSurveyContext }
+
+export function provideSurveyContext(source: () => PublicSurveyResponse) {
+  const auth = getAuthContext()
+  const data = $derived(source())
+  const unansweredQuestions = $derived.by(() => {
+    if (!data.never_answered_ids.length) return
+    return data.questions.filter((q) => data.never_answered_ids.includes(q.id))
+  })
+  // Show modal at page load if survey not fullfilled
+  let showModal = $state(auth.user?.questionsAnswered === false)
+
+  const state: SurveyCtx = {
+    get show() {
+      return showModal
+    },
+    set show(value: boolean) {
+      showModal = value
+    },
+    get questions() {
+      return data.questions
+    },
+    get unansweredQuestions() {
+      return unansweredQuestions
+    },
+    get answers() {
+      return data.answers
+    }
+  }
+
+  setSurveyContext(state)
+  return state
+}
 
 export function questionsToFormItems(questions: PublicSurveyQuestion[]) {
   return questions.map((q) => {
