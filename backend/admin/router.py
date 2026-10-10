@@ -699,7 +699,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
     scores = read_cached_scores(body.text, check.model)
     if scores is None:
         try:
-            scores = await moderate(body.text, check.model, api_key)
+            scores, _ = await moderate(body.text, check.model, api_key)
         except Exception as e:
             return PromptCheckTryResult(
                 decision="error",

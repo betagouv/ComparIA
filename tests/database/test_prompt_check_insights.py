@@ -78,11 +78,11 @@ def stub_moderate(
 ) -> list[tuple[str, str]]:
     calls: list[tuple[str, str]] = []
 
-    async def moderate(text: str, model: str, api_key: str) -> dict:
+    async def moderate(text: str, model: str, api_key: str) -> tuple[dict, dict]:
         calls.append((text, model))
         if error:
             raise error
-        return scores
+        return scores, {}
 
     monkeypatch.setattr(admin_router, "moderate", moderate)
     return calls

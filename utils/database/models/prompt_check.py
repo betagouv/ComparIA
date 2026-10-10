@@ -210,7 +210,9 @@ class PromptCheckResult(SQLModel, table=True):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def block_message(self) -> str | None:
-        return self.message if self.decision == "blocked" else None
+        """Why the prompt is refused, if it is. An error carries a message
+        only when the prompt was too long to wave through unchecked."""
+        return self.message if self.decision in ("blocked", "error") else None
 
     @computed_field  # type: ignore[prop-decorator]
     @property

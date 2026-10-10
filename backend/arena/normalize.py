@@ -9,6 +9,8 @@ purpose (look-alike letters, leetspeak, spaced-out words) and never reaches a
 model or the dataset.
 """
 
+import base64
+import codecs
 import re
 import unicodedata
 
@@ -66,3 +68,42 @@ def fold(text: str) -> str:
     text = re.sub(r"\S+", lambda m: _fold_word(m.group()), text)
     text = _SPACED.sub(lambda m: re.sub(r"[ .\-_*]", "", m.group()), text)
     return _HORIZONTAL_SPACE.sub(" ", text)
+
+
+_BASE64_BLOB = re.compile(r"[A-Za-z0-9+/_-]{24,}={0,2}")
+_ROT13_HINT = re.compile(r"\brot\s*-?\s*13\b|\bc[ée]sar\b|\bcaesar\b", re.IGNORECASE)
+_REVERSED_HINT = re.compile(
+    r"\bà l'envers\b|\breversed?\b|\bbackwards?\b|\bà rebours\b|\binvers[ée]e?\b",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_text(value: str) -> bool:
+    if len(value) < 8:
+        return False
+    readable = sum(c.isprintable() or c.isspace() for c in value)
+    return readable / len(value) >= 0.95 and any(c.isalpha() for c in value)
+
+
+def decoded_variants(text: str) -> list[str]:
+    """
+    What a model asked to decode part of the prompt would read: every base64
+    blob that decodes to text, and the whole prompt in ROT13 or reversed when
+    it mentions either. One level only; nested encodings are not followed.
+    """
+    variants = []
+    for blob in _BASE64_BLOB.findall(text):
+        standard = blob.translate(str.maketrans("-_", "+/")).rstrip("=")
+        try:
+            decoded = base64.b64decode(
+                standard + "=" * (-len(standard) % 4), validate=True
+            ).decode("utf-8")
+        except ValueError:
+            continue
+        if _looks_like_text(decoded):
+            variants.append(decoded)
+    if _ROT13_HINT.search(text):
+        variants.append(codecs.encode(text, "rot13"))
+    if _REVERSED_HINT.search(text):
+        variants.append(text[::-1])
+    return variants
