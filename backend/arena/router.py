@@ -36,6 +36,7 @@ from backend.arena.session import (
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
+from backend.arena.spam_detection import is_spam
 from backend.arena.streaming import (
     create_sse_response,
     format_sse_event,
@@ -128,11 +129,23 @@ async def run_checks(
     text: str, field: str, request: Request, warning_token: str | None = None
 ) -> PromptCheckResult | None:
     """
-    Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
-    validation error so the frontend renders it under the input) when a category
-    set to `block` refuses the prompt, otherwise returns the verdict, to warn the
-    user about and to persist on the turn.
+    Run the spam patterns and the prompt check on a user message. Raises a 422
+    (shaped like a Pydantic validation error so the frontend renders it under
+    the input) when a pattern matches or a category set to `block` refuses the
+    prompt, otherwise returns the verdict, to warn the user about and to
+    persist on the turn.
     """
+    if is_spam(text):
+        # Counted like a block, so a script probing for a spelling the
+        # patterns miss runs into the cooldown instead of trying forever.
+        increment_blocked_prompts(get_ip(request))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[
+                {"loc": ["body", field], "msg": "spam_detected", "type": "value_error"}
+            ],
+        )
+
     result = await run_prompt_check(text, request, warning_token=warning_token)
     if result and result.decision == "error":
         # The check fails open, so a prompt that times out the moderation API
