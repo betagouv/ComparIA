@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -10,6 +10,7 @@ from backend.arena.captcha import generate_challenge
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
+    drop_flagged_results,
     issue_warning_token,
     run_prompt_check,
 )
@@ -126,7 +127,11 @@ def assert_not_block_cooldown(request: Request) -> None:
 
 
 async def run_checks(
-    text: str, field: str, request: Request, warning_token: str | None = None
+    text: str,
+    field: str,
+    request: Request,
+    warning_token: str | None = None,
+    context: Sequence[str] = (),
 ) -> PromptCheckResult | None:
     """
     Run the spam patterns and the prompt check on a user message. Raises a 422
@@ -146,18 +151,22 @@ async def run_checks(
             ],
         )
 
-    result = await run_prompt_check(text, request, warning_token=warning_token)
-    if result and result.decision == "error":
-        # The check fails open, so a prompt that times out the moderation API
-        # still reaches the models. Left at that, an attacker who can induce
-        # timeouts gets an unchecked arena for free, so a failure spends the
-        # same per-IP budget a block does. Refusing the prompt outright instead
-        # would take the whole arena down every time Mistral hiccups, which is
-        # the worse trade: one connection slowed is better than all of them
-        # stopped.
+    result = await run_prompt_check(
+        text, request, warning_token=warning_token, context=context
+    )
+    if result and (
+        result.decision in ("blocked", "error")
+        # A warning answered with "send anyway" costs the same as a block. A
+        # script reads the warning token off the response and resends, so
+        # without this `warn` would stop no one but people.
+        or (result.decision == "warned" and result.user_proceeded)
+    ):
+        # A short prompt that could not be checked still reaches the models,
+        # since refusing it would take the whole arena down every time Mistral
+        # hiccups. It spends the per-IP budget a block does, so an attacker who
+        # can induce timeouts does not get an unchecked arena for free.
         increment_blocked_prompts(get_ip(request))
     if result and result.block_message:
-        increment_blocked_prompts(get_ip(request))
         result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -307,6 +316,8 @@ async def add_first_text(
     if args.web_search:
         web_search_results = await search_web(args.prompt_value)
         if web_search_results:
+            web_search_results = await drop_flagged_results(web_search_results)
+        if web_search_results:
             logger.info("Web search returned context", extra={"request": request})
 
     # Initialize comparison and save it to db
@@ -409,7 +420,13 @@ async def add_text(
             detail="max_turns_reached",
         )
 
-    check = await run_checks(args.message, "message", request, args.warning_token)
+    check = await run_checks(
+        args.message,
+        "message",
+        request,
+        args.warning_token,
+        context=[turn.user_msg.content for turn in comparison_.turns],
+    )
     if check and check.pending_warning:
         return warning_response(check, args.message)
 
