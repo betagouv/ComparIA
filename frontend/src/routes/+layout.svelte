@@ -17,7 +17,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
-  import { setSurveyContext, type SurveyCtx } from '$lib/survey'
+  import { provideSurveyContext } from '$lib/survey.svelte'
   import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -34,18 +34,7 @@
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
 
-  // Show modal at page load if survey not fullfilled
-  const surveyNotAnswered = auth.user?.questionsAnswered === false
-  let showSurveyModal = $state<SurveyCtx>({
-    show: surveyNotAnswered,
-    get questions() {
-      return data.survey.questions
-    },
-    get answers() {
-      return data.survey.answers
-    }
-  })
-  setSurveyContext(showSurveyModal)
+  const survey = provideSurveyContext(() => data.survey)
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 
@@ -66,7 +55,7 @@
 
   function handleError(_event: PromiseRejectionEvent) {
     if (_event.reason instanceof UnansweredQuestionsError) {
-      showSurveyModal.show = true
+      survey.show = true
       return
     }
     // FIXME display error page on some error? display custom text in toast?

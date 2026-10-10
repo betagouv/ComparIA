@@ -1,5 +1,5 @@
 import type { MySurveyAnswer, PublicSurveyQuestion } from '$lib/generated/backend'
-import { profileQuestions, requiredErrors } from '$lib/survey'
+import { profileQuestions, requiredErrors } from '$lib/survey.svelte'
 import { describe, expect, it } from 'vitest'
 
 const question = (id: string, required = false): PublicSurveyQuestion => ({

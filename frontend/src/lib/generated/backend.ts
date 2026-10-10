@@ -351,9 +351,6 @@ export interface PublicSurveyOption {
   label: string;
   archived?: boolean;
 }
-export interface MySurveyAnswersResponse {
-  answers: MySurveyAnswer[];
-}
 /**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
@@ -399,8 +396,10 @@ export interface PublicSurveyQuestion {
   revision: number;
   options: PublicSurveyOption[];
 }
-export interface PublicSurveyQuestionsResponse {
+export interface PublicSurveyResponse {
   questions: PublicSurveyQuestion[];
+  never_answered_ids: string[];
+  answers: MySurveyAnswer[];
 }
 export interface PublicVoteTag {
   key: string;
@@ -417,7 +416,7 @@ export interface SurveyAnswerSubmit {
 }
 export interface SurveyQuestionAnswer {
   question_id: string;
-  value: string | string[];
+  value: string | string[] | null;
 }
 /**
  * Closing the popup and declining it are the same thing: both count as one

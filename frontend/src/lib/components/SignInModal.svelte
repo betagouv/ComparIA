@@ -9,7 +9,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { signInMethods } from '$lib/signInMethods'
-  import { getSurveyContext } from '$lib/survey'
+  import { getSurveyContext } from '$lib/survey.svelte'
   import SSOSignIn from './SSOSignIn.svelte'
 
   const auth = getAuthContext()
@@ -46,7 +46,6 @@
     useToast(m['auth.success'](), 4000)
     if (auth.user && !auth.user.questionsAnswered) {
       survey.show = true
-      survey.kind = 'signup'
     }
   }
 </script>
