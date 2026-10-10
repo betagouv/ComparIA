@@ -2,7 +2,7 @@
 Spam detection module for ComparIA.
 
 Loads spam patterns from spam_patterns.json and provides is_spam() function
-for use in dataset export filtering.
+for the arena routes and for dataset export filtering.
 """
 
 import json
@@ -11,13 +11,11 @@ import re
 from pathlib import Path
 from typing import Optional
 
+from backend.arena.normalize import drop_invisible, fold
+
 logger = logging.getLogger("languia")
 
 _compiled_patterns: Optional[list[re.Pattern]] = None
-
-# Zero-width and invisible characters used by bots to evade regex matching
-# (e.g. inserting U+200D between letters of 'say' so 'say ok' patterns miss).
-_INVISIBLE_CHARS = re.compile("[​-‏‪-‮⁠-⁯﻿]")
 
 
 def _load_spam_patterns() -> list[re.Pattern]:
@@ -81,5 +79,10 @@ def is_spam(prompt: str) -> bool:
     if _compiled_patterns is None:
         _compiled_patterns = _load_spam_patterns()
 
-    normalized = _INVISIBLE_CHARS.sub("", prompt)
-    return any(pattern.search(normalized) for pattern in _compiled_patterns)
+    # The folded spelling catches look-alike letters, full-width forms and
+    # spaced-out words, but it also rewrites digits, so patterns that rely on
+    # them (hex prefixes) still look at the text with only invisibles removed.
+    candidates = (drop_invisible(prompt), fold(prompt))
+    return any(
+        pattern.search(text) for pattern in _compiled_patterns for text in candidates
+    )
