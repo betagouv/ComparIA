@@ -71,7 +71,7 @@ from backend.auth.totp import (
     start_totp_setup,
     verify_totp_challenge,
 )
-from backend.config import settings
+from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.utils.user import get_ip, ip_bucket
@@ -80,6 +80,7 @@ from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
+    REDIS_ANONYMOUS_CONSENT_REQ,
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
     REDIS_AUTH_OIDC_REQ,
@@ -1101,8 +1102,23 @@ async def consent_status(user: RequiredUser) -> dict:
 
 @router.post("/consent/anonymous", status_code=status.HTTP_204_NO_CONTENT)
 async def accept_anonymous_consent(
-    body: ConsentBody, anonymous_user_hash: RequiredAnomymous
+    body: ConsentBody, anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
+    try:
+        client = get_redis_client()
+        key = REDIS_ANONYMOUS_CONSENT_REQ.format(ip=ip_bucket(get_ip(request)))
+        count = client.incr(key)
+        if count == 1:
+            client.expire(key, 3600)
+        if count > RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="rate_limited"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
     document = await _validated_terms(body.consent)
     await record_anonymous_consent(
         anonymous_user_hash, document, body.consent.accepted_at

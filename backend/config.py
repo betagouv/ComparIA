@@ -270,11 +270,18 @@ RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
-# probing). Counts only blocks in a rolling window; once an IP crosses the
+# probing). Counts blocks, spam pattern hits, warnings sent anyway and checks
+# that failed, in a rolling window; once an IP crosses the
 # threshold it is cooled down for the rest of the window WITHOUT calling the
 # moderation API (protects the quota). Kept generous because gov users share NAT
 # IPs (hospitals, ministries) and must not be locked out.
 RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
+
+# Each anonymous session gets its own input budget, and a new session costs only
+# a consent. Without a cap here, a script would clear its cookie and accept the
+# terms again whenever the session budget ran out. Set for a school or a
+# ministry where hundreds of people share one IP.
+RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR = 300
 
 # Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
