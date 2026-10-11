@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { teleport } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import type { ClassValue, HTMLDialogAttributes } from 'svelte/elements'
   import { Button } from '.'
@@ -10,6 +11,7 @@
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
     headerClass,
+    teleport: doTeleport,
     onClose,
     children
   }: {
@@ -19,6 +21,7 @@
     sizeClass?: string
     contentClass?: ClassValue
     headerClass?: ClassValue
+    teleport?: boolean
     onClose?: () => void
   } & HTMLDialogAttributes = $props()
 
@@ -54,6 +57,7 @@
   class="fr-modal"
   data-fr-concealing-backdrop={(!locked).toString()}
   {...dsfrEvents}
+  {@attach doTeleport && teleport('modals')}
 >
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">

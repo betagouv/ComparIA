@@ -68,6 +68,7 @@
     event.preventDefault()
     onSubmit()
   }}
+  novalidate
   aria-describedby="errors-{id}"
 >
   <h2 id="{id}-title" class="text-2xl!">
