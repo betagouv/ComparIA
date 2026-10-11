@@ -78,4 +78,5 @@
 
 {@render children()}
 
+<div id="modals"></div>
 <div id="tooltips"></div>
