@@ -45,7 +45,7 @@
     updateComparisonsContext(comparisons)
     useToast(m['auth.success'](), 4000)
     if (auth.user && !auth.user.questionsAnswered) {
-      survey.show = true
+      survey.showRequiredSurvey = true
     }
   }
 </script>
