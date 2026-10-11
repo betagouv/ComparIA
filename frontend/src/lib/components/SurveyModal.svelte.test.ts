@@ -11,12 +11,15 @@ vi.mock('$lib/fastapi-client', () => ({
   api: { request: mocks.request }
 }))
 
-vi.mock('$lib/survey', async (importOriginal) => {
+vi.mock('$lib/survey.svelte', async (importOriginal) => {
   const actual = await importOriginal<typeof import('$lib/survey.svelte')>()
   return {
     ...actual,
     getSurveyContext: () => ({
-      questions: mocks.questions
+      questions: mocks.questions,
+      unansweredQuestions: mocks.questions,
+      answers: [],
+      showSurveyCard: true
     }),
     hasShownSurveyThisSession: () => false,
     markSurveyShownThisSession: vi.fn()
@@ -39,17 +42,14 @@ const question = (id: string) => ({
 const callsTo = (path: string) => mocks.request.mock.calls.filter(([called]) => called === path)
 const bodyOf = (call: unknown[]) => JSON.parse((call[1] as RequestInit).body as string)
 
-async function openModal() {
-  const result = render(SurveyModal)
-  const buttonOpen = result.container.querySelector('button')!
-  await fireEvent.click(buttonOpen)
-  return result
-}
-
 describe('SurveyModal recording', () => {
   beforeEach(() => {
     mocks.questions = [question('q1'), question('q2')]
     mocks.request.mockResolvedValue(undefined)
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { disclose: vi.fn(), conceal: vi.fn() } })
+    })
   })
 
   afterEach(() => {
@@ -57,7 +57,7 @@ describe('SurveyModal recording', () => {
   })
 
   it('keeps the popup open with an error notice when submit fails, then retries', async () => {
-    const { container } = await openModal()
+    const { container } = render(SurveyModal)
 
     mocks.request.mockImplementation(() => Promise.reject(new Error('offline')))
 
@@ -86,7 +86,7 @@ describe('SurveyModal answers', () => {
   })
 
   it('sends what was answered even when a signup-required question is left blank', async () => {
-    const { container } = await openModal()
+    const { container } = render(SurveyModal)
 
     expect(container.querySelector('#q1')?.hasAttribute('required')).toBe(false)
     await fireEvent.change(container.querySelector<HTMLSelectElement>('#q2')!, {
@@ -99,7 +99,10 @@ describe('SurveyModal answers', () => {
 
     await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
     expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
-      answers: [{ question_id: 'q2', value: 'q2-a' }]
+      answers: [
+        { question_id: 'q1', value: null },
+        { question_id: 'q2', value: 'q2-a' }
+      ]
     })
   }, 10000)
 })

@@ -31,7 +31,7 @@ vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
   getPlatformName: () => 'Compar:IA',
   tryGetAuthContext: () => mocks.authContext
 }))
-vi.mock('$lib/survey', async (importOriginal) => ({
+vi.mock('$lib/survey.svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/survey.svelte')>()),
   getSurveyContext: () => ({ questions: [], answers: [] })
 }))

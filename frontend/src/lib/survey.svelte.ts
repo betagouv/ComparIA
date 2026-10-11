@@ -1,4 +1,5 @@
 import type { FormCheckboxGroupProps, FormSelectProps } from '$components/form'
+import { getAuthContext } from '$lib/authContext.svelte'
 import type {
   MySurveyAnswer,
   PublicSurveyQuestion,
@@ -6,8 +7,8 @@ import type {
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { fromEntries } from '$lib/utils/commons'
+import type { AnyFormItemProps } from '$lib/utils/form'
 import { createContext } from 'svelte'
-import { getAuthContext } from './authContext.svelte'
 
 export const emptySurvey: PublicSurveyResponse = {
   questions: [],
@@ -19,7 +20,8 @@ export type SurveyCtx = {
   show: boolean
   questions: PublicSurveyQuestion[]
   answers: MySurveyAnswer[]
-  unansweredQuestions?: PublicSurveyQuestion[]
+  hasNeverAnsweredQuestions: boolean
+  unansweredQuestions: PublicSurveyQuestion[]
 }
 const [getSurveyContext, setSurveyContext] = createContext<SurveyCtx>()
 
@@ -28,9 +30,12 @@ export { getSurveyContext }
 export function provideSurveyContext(source: () => PublicSurveyResponse) {
   const auth = getAuthContext()
   const data = $derived(source())
+  const hasNeverAnsweredQuestions = $derived(!!data.never_answered_ids.length)
   const unansweredQuestions = $derived.by(() => {
-    if (!data.never_answered_ids.length) return
-    return data.questions.filter((q) => data.never_answered_ids.includes(q.id))
+    return data.questions.filter((q) => {
+      if(data.never_answered_ids.includes(q.id)) return true
+      return !data.answers.find((answer) => answer.question_id === q.id)
+    })
   })
   // Show modal at page load if survey not fullfilled
   let showModal = $state(auth.user?.questionsAnswered === false)
@@ -45,6 +50,9 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
     get questions() {
       return data.questions
     },
+    get hasNeverAnsweredQuestions() {
+      return hasNeverAnsweredQuestions
+    },
     get unansweredQuestions() {
       return unansweredQuestions
     },
@@ -57,12 +65,12 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
   return state
 }
 
-export function questionsToFormItems(questions: PublicSurveyQuestion[]) {
+export function questionsToFormItems(questions: PublicSurveyQuestion[], ignoreRequired: boolean = false) {
   return questions.map((q) => {
     const field = {
       id: q.id,
       label: q.label,
-      required: q.required,
+      required: ignoreRequired ? false : q.required,
       options: q.options.map(({ label, key }) => ({ value: key, label }))
     }
 
@@ -133,7 +141,7 @@ export function profileQuestions(
 /** One error per required question left blank, keyed like the form. */
 export function requiredErrors(
   form: Record<string, string | string[] | null>,
-  questions: PublicSurveyQuestion[]
+  questions: AnyFormItemProps[]
 ): Record<string, string> {
   return fromEntries(
     questions
@@ -146,18 +154,3 @@ export function requiredErrors(
   )
 }
 
-export function formToAnswers(
-  form: Record<string, string | string[] | null>,
-  questions: PublicSurveyQuestion[],
-  filterEmpty = false
-) {
-  const answers = questions.map((field) => ({
-    question_id: field.id,
-    value: form[field.id]
-  }))
-
-  if (filterEmpty) {
-    return answers.filter((answer) => answer.value && answer.value.length > 0)
-  }
-  return answers
-}

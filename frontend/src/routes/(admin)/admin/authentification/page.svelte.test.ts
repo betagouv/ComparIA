@@ -20,6 +20,7 @@ const base: AppSettingsPublic = {
   auth_access_policy: 'anonymous_first',
   auth_domain_allowlist: [],
   auth_methods: ['email_code'],
+  survey_reask_after_days: 999,
   votes_objective: 300000,
   platform_name: 'Compar:IA',
   primary_color_light: '#6464F3',
