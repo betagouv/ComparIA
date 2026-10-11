@@ -30,9 +30,9 @@
 
 <FormFieldset {...props} {disabled} component="fieldset">
   {#snippet formItem()}
-    <div class="w-full">
+    <div class="mx-2 w-full">
       {#each value ?? [] as _v, i (i)}
-        <div class="fr-fieldset__element gap-3 flex w-full!">
+        <div class="fr-fieldset__element cg-border! p-4! gap-3 flex w-full!">
           <div class="w-full">
             <AnyFormItem
               {...subProps}
@@ -47,15 +47,17 @@
           <Button
             text="delete"
             icon="delete-line"
+            variant="tertiary-no-outline"
+            size="sm"
             iconOnly
             {disabled}
             onclick={() => onDelete(i)}
-            class={subIsFieldsetItem ? 'self-center!' : 'self-end!'}
+            class="self-start!"
           />
         </div>
       {/each}
     </div>
-    <Button text="add" icon="add-line" iconOnly {disabled} onclick={onAdd} />
+    <Button text="add" icon="add-line" iconOnly {disabled} class="ms-2" onclick={onAdd} />
   {/snippet}
 </FormFieldset>
 

@@ -25,7 +25,7 @@
 <FormFieldset {...props} component="fieldset">
   {#snippet formItem({ id })}
     {#each options as opt (opt.value)}
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-fieldset__element--inline">
         <FormField id={`${id}-${opt.value}`} label={opt.label} component="checkbox">
           {#snippet formItem({ id })}
             <input
