@@ -107,6 +107,7 @@
     {:else}
       <div class="-mt-12">
         <SignInForm
+          bind:step
           {onSuccess}
           onLegalNavigate={closeModal}
           titleId="fr-modal-title-signin"
