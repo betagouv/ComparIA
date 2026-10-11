@@ -42,7 +42,7 @@ vi.mock('$lib/chatService.svelte', () => ({ getComparisonsContext: () => [] }))
 vi.mock('$lib/fastapi-client', () => ({
   api: { request: (...args: unknown[]) => request(...args) }
 }))
-vi.mock('$lib/survey', async (importOriginal) => {
+vi.mock('$lib/survey.svelte', async (importOriginal) => {
   const actual = await importOriginal<typeof import('$lib/survey.svelte')>()
   return {
     ...actual,

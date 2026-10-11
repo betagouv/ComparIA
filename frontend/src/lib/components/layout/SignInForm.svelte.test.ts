@@ -52,13 +52,14 @@ vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
   getLocale: () => getTestLocale()
 }))
 
-vi.mock('$lib/survey', async (importOriginal) => {
+vi.mock('$lib/survey.svelte', async (importOriginal) => {
   const actual = await importOriginal<typeof import('$lib/survey.svelte')>()
   return {
     ...actual,
     getSurveyContext: () => ({
       questions: mocks.questions,
-      answers: mocks.answers
+      answers: mocks.answers,
+      unansweredQuestions: mocks.questions
     })
   }
 })

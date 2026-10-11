@@ -2,7 +2,7 @@
   import { afterNavigate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { NavBar } from '$components/layout'
-  import SurveyModalSignup from '$components/SurveyModalSignup.svelte'
+  import SurveyModalRequired from '$components/SurveyModalRequired.svelte'
   import { getAuthContext, userAllowed } from '$lib/auth.svelte.js'
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
@@ -73,7 +73,7 @@
 
 <SignInModal />
 
-<SurveyModalSignup />
+<SurveyModalRequired />
 
 <style>
   /* No ring when script parks focus here after a navigation, but a real one

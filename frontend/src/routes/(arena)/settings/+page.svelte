@@ -12,12 +12,10 @@
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getSurveyContext, profileQuestions } from '$lib/survey.svelte'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
-  const survey = getSurveyContext()
   const tabs = [
     { id: 'account', label: m['auth.settings.tabAccount']() },
     { id: 'about', label: m['auth.settings.tabAbout']() }
@@ -193,8 +191,7 @@
               <SurveyForm
                 id="survey"
                 title={m['survey.profile.title']()}
-                questions={profileQuestions(survey.questions, survey.answers)}
-                answers={survey.answers}
+                dismissible={!auth.user}
                 onSuccess={() => useToast(m['survey.profile.saved'](), 4000)}
               />
             </section>
