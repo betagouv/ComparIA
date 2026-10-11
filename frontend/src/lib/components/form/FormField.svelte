@@ -18,22 +18,32 @@
     id,
     required
   })
+  const formItemFirst = $derived(component === 'checkbox')
 </script>
 
-<div class={[`fr-${component}-group`, { [`fr-${component}-group--error`]: !!error, hidden }]}>
-  {#if component === 'checkbox'}
+<div
+  class={[
+    `fr-${component}-group`,
+    {
+      [`fr-${component}-group--error`]: !!error,
+      hidden,
+      [`fr-${component}-group--sm`]: formItemFirst
+    }
+  ]}
+>
+  {#if formItemFirst}
     {@render formItem?.(props_)}
   {/if}
 
   <label class="fr-label" for={id}>
-    {label}
+    <span class={{ 'font-bold': !formItemFirst }}>{label}</span>
     {#if required}<span class="text-error">*</span>{/if}
     {#if help}
       <span class="fr-hint-text">{help}</span>
     {/if}
   </label>
 
-  {#if component !== 'checkbox'}
+  {#if !formItemFirst}
     {@render formItem?.(props_)}
   {/if}
 
