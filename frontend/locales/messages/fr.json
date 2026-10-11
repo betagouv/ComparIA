@@ -2191,6 +2191,12 @@
             "submitFailed": "L’envoi a échoué. Vos réponses n’ont pas été enregistrées, vous pouvez réessayer.",
             "title": "Quelques questions pour mieux vous connaître"
         },
+        "card": {
+            "cta": "Répondre à {count} questions",
+            "desc": "Aidez-nous à mieux vous comprendre en répondant à quelques questions anonymes.",
+            "optional": "Facultatif · ~30 sec",
+            "title": "Sondage {platformName}"
+        },
         "profile": {
             "clear": "Effacer cette réponse",
             "description": "Ces réponses sont facultatives. Vous pouvez les modifier ou les effacer à tout moment.",

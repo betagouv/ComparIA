@@ -9,12 +9,14 @@
   const survey = getSurveyContext()
 
   function resetState() {
-    survey.show = false
+    survey.showRequiredSurvey = false
     invalidate('survey:signup')
   }
 </script>
 
-<button class="hidden" data-fr-opened={survey.show} aria-controls={modalId}>Hidden</button>
+<button class="hidden" data-fr-opened={survey.showRequiredSurvey} aria-controls={modalId}>
+  Hidden
+</button>
 
 <Modal
   id={modalId}

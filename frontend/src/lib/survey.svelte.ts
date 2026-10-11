@@ -6,6 +6,7 @@ import type {
   PublicSurveyResponse
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
+import { getCohortContext } from '$lib/stores/cohortStore.svelte'
 import { fromEntries } from '$lib/utils/commons'
 import type { AnyFormItemProps } from '$lib/utils/form'
 import { createContext } from 'svelte'
@@ -17,7 +18,8 @@ export const emptySurvey: PublicSurveyResponse = {
 }
 
 export type SurveyCtx = {
-  show: boolean
+  showRequiredSurvey: boolean
+  showSurveyCard: boolean
   questions: PublicSurveyQuestion[]
   answers: MySurveyAnswer[]
   hasNeverAnsweredQuestions: boolean
@@ -29,23 +31,30 @@ export { getSurveyContext }
 
 export function provideSurveyContext(source: () => PublicSurveyResponse) {
   const auth = getAuthContext()
+  const cohorts = getCohortContext()
   const data = $derived(source())
   const hasNeverAnsweredQuestions = $derived(!!data.never_answered_ids.length)
   const unansweredQuestions = $derived.by(() => {
     return data.questions.filter((q) => {
-      if(data.never_answered_ids.includes(q.id)) return true
+      if (data.never_answered_ids.includes(q.id)) return true
       return !data.answers.find((answer) => answer.question_id === q.id)
     })
   })
   // Show modal at page load if survey not fullfilled
-  let showModal = $state(auth.user?.questionsAnswered === false)
+  let showRequiredSurvey = $state(auth.user?.questionsAnswered === false)
+  // Whether there is anything to ask and whether this visitor has already been offered the popup.
+  // FIXME hardcoded: do not show survey for 'pix' cohorts
+  const showSurveyCard = $derived(cohorts !== 'pix' && !!hasNeverAnsweredQuestions)
 
   const state: SurveyCtx = {
-    get show() {
-      return showModal
+    get showRequiredSurvey() {
+      return showRequiredSurvey
     },
-    set show(value: boolean) {
-      showModal = value
+    set showRequiredSurvey(value: boolean) {
+      showRequiredSurvey = value
+    },
+    get showSurveyCard() {
+      return showSurveyCard
     },
     get questions() {
       return data.questions
@@ -65,7 +74,10 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
   return state
 }
 
-export function questionsToFormItems(questions: PublicSurveyQuestion[], ignoreRequired: boolean = false) {
+export function questionsToFormItems(
+  questions: PublicSurveyQuestion[],
+  ignoreRequired: boolean = false
+) {
   return questions.map((q) => {
     const field = {
       id: q.id,
@@ -153,4 +165,3 @@ export function requiredErrors(
       .map((q) => [q.id, m['survey.question.required']()])
   )
 }
-

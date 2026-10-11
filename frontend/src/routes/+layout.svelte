@@ -55,7 +55,7 @@
 
   function handleError(_event: PromiseRejectionEvent) {
     if (_event.reason instanceof UnansweredQuestionsError) {
-      survey.show = true
+      survey.showRequiredSurvey = true
       return
     }
     // FIXME display error page on some error? display custom text in toast?
