@@ -133,13 +133,14 @@
 
   async function signedIn() {
     const data = await api.request<{ user: AuthUser | null }>('/auth/me')
-    auth.user = data.user
     // Before the questions, not after: the sign-in has already happened, and
     // closing the form on the questions must not lose the merge asked for.
     if (mergeComparisons) {
       await api.request('/arena/comparison/merge', { method: 'POST' })
     }
     await invalidate('survey:signup')
+    // Delay a bit the context change to avoid modal closing itself
+    auth.user = data.user
     // Ask questions if any and user didn't yet answered it
     if (survey.questions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
       step = 'questions'
