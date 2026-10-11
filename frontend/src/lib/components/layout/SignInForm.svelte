@@ -400,8 +400,7 @@
       id="signin-survey"
       title={m['survey.signup.title']()}
       description={m['survey.signup.description']()}
-      questions={survey.questions}
-      answers={survey.answers}
+      onlyUnanswered
       onSuccess={onLoginCompleted}
     />
   {/if}

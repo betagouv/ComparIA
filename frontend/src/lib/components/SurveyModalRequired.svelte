@@ -7,7 +7,6 @@
 
   const modalId = 'fr-modal-survey-signup'
   const survey = getSurveyContext()
-  const opened = $derived(survey.show)
 
   function resetState() {
     survey.show = false
@@ -15,7 +14,7 @@
   }
 </script>
 
-<button class="hidden" data-fr-opened={opened} aria-controls={modalId}>Hidden</button>
+<button class="hidden" data-fr-opened={survey.show} aria-controls={modalId}>Hidden</button>
 
 <Modal
   id={modalId}
@@ -28,8 +27,7 @@
     id="form-{modalId}"
     title={m['survey.required.title']()}
     description={m['survey.required.description']()}
-    questions={survey.questions}
-    answers={survey.answers}
+    onlyUnanswered
     class="mt-5"
     onSuccess={resetState}
   />

@@ -1,5 +1,5 @@
 import type { MySurveyAnswer, PublicSurveyQuestion } from '$lib/generated/backend'
-import { profileQuestions, requiredErrors } from '$lib/survey.svelte'
+import { profileQuestions, questionsToFormItems, requiredErrors } from '$lib/survey.svelte'
 import { describe, expect, it } from 'vitest'
 
 const question = (id: string, required = false): PublicSurveyQuestion => ({
@@ -53,7 +53,11 @@ describe('profileQuestions', () => {
 
 describe('requiredErrors', () => {
   it('flags required questions left blank, whatever their shape', () => {
-    const questions = [question('select', true), question('group', true), question('optional')]
+    const questions = questionsToFormItems([
+      question('select', true),
+      question('group', true),
+      question('optional')
+    ])
 
     expect(
       Object.keys(requiredErrors({ select: null, group: [], optional: null }, questions))

@@ -11,6 +11,7 @@
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
+  import SurveyModal from '$components/SurveyModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
@@ -204,6 +205,8 @@
 
     {#if !isAdmin}
       <History {expanded} />
+
+      <SurveyModal />
     {/if}
 
     <div class="mt-auto">
