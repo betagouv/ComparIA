@@ -20,7 +20,21 @@ from backend.config import (
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
 
-class AddFirstTextBody(BaseModel):
+class CaptchaBody(BaseModel):
+    """A request that calls the models, so it must carry a solved captcha."""
+
+    altcha_token: str
+
+    @field_validator("altcha_token")
+    @classmethod
+    def check_altcha(cls, v: str) -> str:
+        ok, error = verify_altcha_token(v)
+        if not ok:
+            raise ValueError("captcha_failed")
+        return v
+
+
+class AddFirstTextBody(CaptchaBody):
     """Request body for add_first_text endpoint."""
 
     prompt_value: str = PromptField
@@ -28,7 +42,6 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: CustomModelsSelection = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
-    altcha_token: str
     web_search: bool = False
     # One-time server proof returned with a warning for this exact prompt.
     warning_token: str | None = None
@@ -57,20 +70,11 @@ class AddFirstTextBody(BaseModel):
             raise ValueError("spam_detected")
         return self
 
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
 
-
-class AddTextBody(BaseModel):
+class AddTextBody(CaptchaBody):
     """Request body for add_text endpoint."""
 
     message: str = PromptField
-    altcha_token: str
     warning_token: str | None = None
 
     @model_validator(mode="after")
@@ -79,25 +83,7 @@ class AddTextBody(BaseModel):
             raise ValueError("spam_detected")
         return self
 
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
 
-
-class RetryBody(BaseModel):
+class RetryBody(CaptchaBody):
     """Request body for retry endpoint. A retry calls both models again, so it
     takes the same proof of work as a new message."""
-
-    altcha_token: str
-
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
