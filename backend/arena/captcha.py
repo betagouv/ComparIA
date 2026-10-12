@@ -7,6 +7,7 @@ Provides challenge generation, solution verification, and replay prevention via 
 import base64
 import json
 import logging
+import urllib.parse
 from datetime import datetime, timedelta, timezone
 
 from altcha import Challenge, ChallengeOptions, create_challenge, verify_solution
@@ -22,19 +23,22 @@ from utils.storage.redis import REDIS_ALTCHA_PREFIX, get_redis_client
 logger = logging.getLogger("languia")
 
 
-def generate_challenge() -> dict:
+def generate_challenge(max_number: int = ALTCHA_MAX_NUMBER) -> dict:
     """
-    Generate a new Altcha PoW challenge.
+    Generate a new Altcha PoW challenge. The work grows with `max_number`, which
+    is also written into the salt so the server can read it back on the
+    solution.
 
     Returns:
         dict with algorithm, challenge, maxNumber, salt, signature
     """
     options = ChallengeOptions(
         algorithm="SHA-256",
-        max_number=ALTCHA_MAX_NUMBER,
+        max_number=max_number,
         hmac_key=settings.ALTCHA_HMAC_KEY,
         expires=datetime.now(timezone.utc)
         + timedelta(seconds=ALTCHA_CHALLENGE_EXPIRY_SECONDS),
+        params={"max": str(max_number)},
     )
     challenge: Challenge = create_challenge(options)
     return challenge.to_dict()
@@ -84,3 +88,17 @@ def verify_altcha_token(payload: str) -> tuple[bool, str | None]:
         return False, "Replay check unavailable"
 
     return True, None
+
+
+def solved_max_number(payload: str) -> int:
+    """
+    The `max_number` of the challenge a payload solves, 0 when it carries none.
+    It travels in the salt, which the signature covers, so a client cannot
+    lower it without the solution failing verification.
+    """
+    try:
+        salt = json.loads(base64.b64decode(payload).decode())["salt"]
+        query = urllib.parse.parse_qs(salt.partition("?")[2])
+        return int(query["max"][0])
+    except (ValueError, TypeError, KeyError, IndexError):
+        return 0
