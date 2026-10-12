@@ -4,7 +4,7 @@
 
   export type FormFieldProps = {
     formItem: Snippet<[FormItemSnippetProps]>
-  } & BaseFormFieldProps<'input' | 'select' | 'checkbox'>
+  } & BaseFormFieldProps<'input' | 'select' | 'checkbox' | 'radio'>
 </script>
 
 <script lang="ts">
@@ -18,7 +18,7 @@
     id,
     required
   })
-  const formItemFirst = $derived(component === 'checkbox')
+  const formItemFirst = $derived(['radio', 'checkbox'].includes(component))
 </script>
 
 <div
