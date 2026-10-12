@@ -1,7 +1,17 @@
 import { describe, expect, it, vi } from 'vitest'
-import { getComparison, parseAPIComparison, type APIComparison } from './chatService.svelte'
+import {
+  getComparison,
+  parseAPIComparison,
+  type APIComparison,
+  type Comparison
+} from './chatService.svelte'
+import { ValidationError } from './fastapi-client'
 
 const streamed = vi.hoisted(() => [] as { url: string; body: Record<string, unknown> }[])
+const arena = vi.hoisted(() => ({
+  comparisons: [] as unknown[],
+  refusal: undefined as Error | undefined
+}))
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
 vi.mock('$lib/captcha.svelte', () => ({
@@ -12,13 +22,14 @@ vi.mock('$lib/fastapi-client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/fastapi-client')>()),
   api: {
     async *stream(url: string, body: Record<string, unknown>) {
+      if (arena.refusal) throw arena.refusal
       streamed.push({ url, body })
     }
   }
 }))
 vi.mock('svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('svelte')>()),
-  createContext: () => [() => [], () => undefined]
+  createContext: () => [() => arena.comparisons, () => undefined]
 }))
 
 describe('parseAPIComparison', () => {
@@ -69,5 +80,30 @@ describe('retry', () => {
     expect(streamed).toEqual([
       { url: '/arena/retry/comparison-id', body: { altcha_token: 'solved-token' } }
     ])
+  })
+
+  it('keeps the Retry button when the retry is refused before it starts', async () => {
+    const comparison = {
+      id: 'failed-id',
+      error: 'provider_error',
+      turns: [{ id: 'turn-id', status: 'error', a: {}, b: {} }]
+    } as unknown as Comparison
+    arena.comparisons = [comparison]
+    arena.refusal = Object.assign(new ValidationError('rate_limited'), {
+      status: 429,
+      detail: 'rate_limited'
+    })
+
+    const chat = getComparison('failed-id')
+    const sent = await chat.retry()
+
+    arena.refusal = undefined
+    arena.comparisons = []
+    expect(sent).toBe(false)
+    expect(chat.promptError).toBeTruthy()
+    // The Retry button shows while the turn is in error and the comparison
+    // still says why.
+    expect(comparison.error).toBe('provider_error')
+    expect(comparison.turns[0].status).toBe('error')
   })
 })
