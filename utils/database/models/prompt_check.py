@@ -166,10 +166,13 @@ class PromptCheckPublic(SQLModel):
 
 
 class PromptCheckStatus(PromptCheckPublic):
-    """The configuration plus how the check is faring. It fails open, so one
-    that has stopped working looks exactly like one that finds nothing."""
+    """The configuration plus how the check is faring, since a broken check
+    either refuses every message or, while Mistral counts as down, lets them
+    all through unchecked."""
 
     consecutive_failures: int = 0
+    # Mistral refused the key: every message is refused until it is fixed.
+    key_rejected: bool = False
     healthy: bool = True
     # Warnings put in front of someone. The turns only record the people who
     # sent anyway, so this is what that number is measured against.

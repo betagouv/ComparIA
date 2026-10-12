@@ -96,6 +96,7 @@ from utils.database.prompt_checks import (
     get_prompt_check,
     get_prompt_check_stats,
     get_warnings_shown,
+    is_key_rejected,
     update_prompt_check,
 )
 from utils.database.session import get_session
@@ -606,6 +607,7 @@ async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
     failures = get_consecutive_failures()
+    key_rejected = is_key_rejected()
     return PromptCheckStatus(
         enabled=row.enabled,
         has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
@@ -614,7 +616,8 @@ def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
         consecutive_failures=failures,
-        healthy=failures < UNHEALTHY_AFTER_FAILURES,
+        key_rejected=key_rejected,
+        healthy=failures < UNHEALTHY_AFTER_FAILURES and not key_rejected,
         warnings_shown=get_warnings_shown(),
     )
 

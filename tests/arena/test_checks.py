@@ -497,6 +497,33 @@ def test_being_rate_limited_does_not_pause_the_check():
     assert not redis.exists(checks.REDIS_CHECK_PAUSED_KEY)
 
 
+def test_a_rejected_key_refuses_every_prompt_and_never_pauses():
+    """A wrong key is ours to fix, not an outage. Pausing would let every
+    message through unchecked until someone noticed."""
+    redis = FakeRedis()
+    failing_streak(redis, checks.OUTAGE_AFTER_FAILURES - 1)
+    for status in (401, 403):
+        result, fake = run(
+            config(criminal=(0.5, "block")), statuses=[status], redis=redis
+        )
+        assert len(fake.requests) == 1
+        assert result.decision == "error"
+        assert result.block_message == checks.UNAVAILABLE_MESSAGE
+    assert not redis.exists(checks.REDIS_CHECK_PAUSED_KEY)
+    assert (
+        redis.store[checks.REDIS_CHECK_FAILURES_KEY] == checks.OUTAGE_AFTER_FAILURES - 1
+    )
+    assert redis.exists(checks.REDIS_CHECK_KEY_REJECTED_KEY)
+
+
+def test_a_working_call_clears_the_rejected_key():
+    redis = FakeRedis()
+    redis.set(checks.REDIS_CHECK_KEY_REJECTED_KEY, "1")
+    result, _ = run(config(criminal=(0.5, "block")), {"criminal": 0.9}, redis=redis)
+    assert result.decision == "blocked"
+    assert not redis.exists(checks.REDIS_CHECK_KEY_REJECTED_KEY)
+
+
 def test_a_short_prompt_that_cannot_be_checked_is_refused_too():
     result, fake = run(config(criminal=(0.5, "block")), statuses=[503, 503])
     assert len(fake.requests) == 2

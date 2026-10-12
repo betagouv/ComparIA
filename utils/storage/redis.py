@@ -69,6 +69,11 @@ REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
 # Set while Mistral counts as down: the check is skipped until it expires.
 REDIS_CHECK_PAUSED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_paused"
+# Set when Mistral refuses our key, cleared by the next call that works or by a
+# new key from the admin panel.
+REDIS_CHECK_KEY_REJECTED_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_key_rejected"
+)
 # Warnings a session sent anyway, in a rolling hour.
 REDIS_SENT_WARNINGS_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_sent_warnings:{{session}}"

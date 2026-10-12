@@ -21,7 +21,9 @@ When Mistral is down (OUTAGE_AFTER_FAILURES failures in a row), the check pauses
 for OUTAGE_PAUSE_SECONDS and every prompt goes through as `skipped`, charged to
 no one. While it is up, nothing reaches the models unchecked: a prompt whose
 check fails is refused, and so are web search results. Being rate limited does
-not count toward the pause, so the check cannot be switched off by flooding us.
+not count toward the pause, so the check cannot be switched off by flooding us,
+and neither does Mistral refusing our key, which refuses every prompt until the
+key is fixed.
 Failures are logged at error level, sent to Sentry, and counted in Redis so the
 admin panel shows a check that has stopped working.
 """
@@ -48,6 +50,7 @@ from utils.database.prompt_checks import get_prompt_check
 from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
+    REDIS_CHECK_KEY_REJECTED_KEY,
     REDIS_CHECK_PAUSED_KEY,
     REDIS_CHECK_SCORES_KEY,
     REDIS_CHECK_WARNING_TOKEN_KEY,
@@ -85,6 +88,9 @@ CONTEXT_TURNS: Final[int] = 4
 # to switch the check off.
 OUTAGE_AFTER_FAILURES: Final[int] = 5
 OUTAGE_PAUSE_SECONDS: Final[int] = 60
+# Mistral refusing our key is not an outage either: it is ours to fix, and
+# pausing would let every message through unchecked until someone noticed.
+KEY_REJECTED_STATUS = frozenset({401, 403})
 
 _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
 
@@ -288,6 +294,7 @@ def _count_failure(failed: bool) -> bool:
         client = get_redis_client()
         if not failed:
             client.delete(REDIS_CHECK_FAILURES_KEY)
+            client.delete(REDIS_CHECK_KEY_REJECTED_KEY)
             return False
         count = int(client.incr(REDIS_CHECK_FAILURES_KEY))
         if count < OUTAGE_AFTER_FAILURES:
@@ -303,6 +310,15 @@ def _count_failure(failed: bool) -> bool:
     except Exception as e:
         logger.error(f"[CHECKS] Error updating failure count: {e}")
         return False
+
+
+def _mark_key_rejected() -> None:
+    """Flag the key for the admin panel. Read back by
+    `utils.database.prompt_checks.is_key_rejected`."""
+    try:
+        get_redis_client().set(REDIS_CHECK_KEY_REJECTED_KEY, "1")
+    except Exception as e:
+        logger.error(f"[CHECKS] Error flagging the rejected key: {e}")
 
 
 def is_paused() -> bool:
@@ -456,10 +472,12 @@ async def run_prompt_check(
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})
             if settings.SENTRY_DSN:
                 sentry_sdk.capture_exception(e)
-            rate_limited = (
-                isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429
+            status_code = (
+                e.response.status_code if isinstance(e, httpx.HTTPStatusError) else None
             )
-            if not rate_limited and _count_failure(failed=True):
+            if status_code in KEY_REJECTED_STATUS:
+                _mark_key_rejected()
+            elif status_code != 429 and _count_failure(failed=True):
                 return PromptCheckResult(
                     decision="skipped", model=check.model, latency_ms=latency_ms
                 )

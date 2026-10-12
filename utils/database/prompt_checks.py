@@ -14,6 +14,7 @@ from utils.database.models.prompt_check import (
 from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
+    REDIS_CHECK_KEY_REJECTED_KEY,
     REDIS_CHECK_WARNINGS_KEY,
     REDIS_PROMPT_CHECK_KEY,
     get_redis_client,
@@ -24,7 +25,8 @@ from utils.storage.redis import (
 logger = logging.getLogger("comparia.db")
 
 # Consecutive failures after which the admin panel calls the check unhealthy.
-# It fails open, so nothing else makes an outage visible.
+# Past a few more, Mistral counts as down and messages go through unchecked, so
+# the panel has to say so.
 UNHEALTHY_AFTER_FAILURES = 3
 
 # Used before the migration has run and when there is no database at all, so
@@ -62,6 +64,13 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
         await session.refresh(row)
 
     invalidate_cache(REDIS_PROMPT_CHECK_KEY)
+    if "api_key" in patch:
+        # The flag describes the old key. Left set, the panel would keep
+        # calling the new one rejected until a visitor's message proved it.
+        try:
+            get_redis_client().delete(REDIS_CHECK_KEY_REJECTED_KEY)
+        except Exception as e:
+            logger.warning(f"[PROMPT CHECK] Cannot clear the rejected key flag: {e}")
     return row
 
 
@@ -90,6 +99,10 @@ def get_warnings_shown() -> int:
 
 def get_consecutive_failures() -> int:
     return _read_counter(REDIS_CHECK_FAILURES_KEY, "consecutive failures")
+
+
+def is_key_rejected() -> bool:
+    return _read_counter(REDIS_CHECK_KEY_REJECTED_KEY, "rejected key flag") > 0
 
 
 # Every decision a check can reach, so a quiet week still reports each bucket
