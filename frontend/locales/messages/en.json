@@ -404,7 +404,9 @@
             "health": {
                 "failures": "{count} failures in a row",
                 "unhealthy": "The check no longer answers",
-                "unhealthyHint": "Calls to the moderation API are failing. The check lets every message through, which looks exactly like a check that finds nothing. Look at the Mistral key and the server logs."
+                "unhealthyHint": "Calls to the moderation API are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
+                "keyRejected": "Mistral refuses the key",
+                "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid Mistral key below."
             },
             "model": {
                 "label": "Moderation model"

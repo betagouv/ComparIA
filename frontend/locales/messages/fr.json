@@ -404,7 +404,9 @@
             "health": {
                 "failures": "{count} échecs consécutifs",
                 "unhealthy": "La vérification ne répond plus",
-                "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
+                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
+                "keyRejected": "Mistral refuse la clé",
+                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous."
             },
             "model": {
                 "label": "Modèle de modération"

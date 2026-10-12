@@ -403,7 +403,9 @@
             "health": {
                 "failures": "{count} fejl i træk",
                 "unhealthy": "Tjekket svarer ikke længere",
-                "unhealthyHint": "Kald til moderations-API'en fejler. Tjekket lader alle beskeder passere, hvilket ligner et tjek, der ikke finder noget. Kontrollér Mistral-nøglen og serverloggene."
+                "unhealthyHint": "Kald til moderations-API'en fejler. Beskeder afvises, så længe den ikke svarer, og efter nogle flere fejl går de igennem uden tjek et minut ad gangen. Kontrollér serverloggene.",
+                "keyRejected": "Mistral afviser nøglen",
+                "keyRejectedHint": "Alle beskeder afvises, indtil nøglen er rettet. Indsæt en gyldig Mistral-nøgle nedenfor."
             },
             "model": {
                 "label": "Moderationsmodel"

@@ -339,7 +339,11 @@
 >
   <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
-      {#if data.check.healthy === false}
+      {#if data.check.key_rejected}
+        <Alert variant="error" title={m['admin.promptChecks.health.keyRejected']()} class="mb-6">
+          <p>{m['admin.promptChecks.health.keyRejectedHint']()}</p>
+        </Alert>
+      {:else if data.check.healthy === false}
         <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-6">
           <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
           <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>
