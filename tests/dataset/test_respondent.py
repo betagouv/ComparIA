@@ -53,6 +53,17 @@ def _one_turn_comparison():
     )
 
 
+def test_a_checkbox_answer_publishes_as_one_sorted_list():
+    rows = [
+        ("age", "select", None, "h1", "25_34"),
+        ("job", "checkbox_group", None, "h1", ["student", "dev"]),
+    ]
+
+    folded = compute.fold_survey_answers(rows)
+
+    assert folded == {"anon:h1": {"age": "25_34", "job": ["dev", "student"]}}
+
+
 def test_rare_profiles_are_withheld():
     common = {"age": "25_34", "job": ["dev", "student"]}
     same_options_other_order = {"age": "25_34", "job": ["student", "dev"]}
@@ -132,6 +143,7 @@ def test_respondent_dict_ignores_other_respondents_answers():
 
 
 if __name__ == "__main__":
+    test_a_checkbox_answer_publishes_as_one_sorted_list()
     test_rare_profiles_are_withheld()
     test_a_withheld_profile_exports_as_an_empty_object()
     test_respondent_dict_only_has_published_questions_for_signed_in_user()
