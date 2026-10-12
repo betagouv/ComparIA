@@ -356,6 +356,7 @@
                     "error": "The check did not answer",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
+                    "skipped": "Not checked, Mistral down",
                     "warned": "Warned"
                 },
                 "decisionLegend": "Result",
@@ -427,6 +428,7 @@
                     "error": "Failed",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
+                    "skipped": "Not checked (Mistral down)",
                     "warned": "Warned"
                 },
                 "proceeded": "{count} sent anyway",

@@ -356,6 +356,7 @@
                     "error": "La vérification n'a pas répondu",
                     "logged": "Surveillé",
                     "pass": "Passé sans rien",
+                    "skipped": "Pas vérifié, Mistral en panne",
                     "warned": "Prévenu"
                 },
                 "decisionLegend": "Résultat",
@@ -427,6 +428,7 @@
                     "error": "En échec",
                     "logged": "Surveillés",
                     "pass": "Passés sans rien",
+                    "skipped": "Non vérifiés (Mistral en panne)",
                     "warned": "Prévenus"
                 },
                 "proceeded": "{count} envoyés quand même",

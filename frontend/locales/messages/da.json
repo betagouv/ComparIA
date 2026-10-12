@@ -355,6 +355,7 @@
                     "error": "Kontrollen svarede ikke",
                     "logged": "Overvåget",
                     "pass": "Bestået uden handling",
+                    "skipped": "Ikke kontrolleret, Mistral nede",
                     "warned": "Advaret"
                 },
                 "decisionLegend": "Resultat",
@@ -426,6 +427,7 @@
                     "error": "Fejl",
                     "logged": "Overvåget",
                     "pass": "Godkendt uden handling",
+                    "skipped": "Ikke kontrolleret (Mistral nede)",
                     "warned": "Advarsler"
                 },
                 "proceeded": "{count} sendt alligevel",
