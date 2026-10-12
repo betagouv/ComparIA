@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Link, Table, Toggle } from '$components/dsfr'
+  import { Table, Toggle } from '$components/dsfr'
+  import DownloadDataButton from './DownloadDataButton.svelte'
   import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
@@ -138,15 +139,7 @@
         {m['ranking.table.lastUpdate']({ date: lastUpdateDate! })}
       </p>
 
-      <Link
-        href="#"
-        download="true"
-        text={m['actions.downloadData']()}
-        icon="download-line"
-        iconPos="right"
-        class="text-grey! bg-none! text-[14px]! no-underline!"
-        onclick={() => onDownloadData()}
-      />
+      <DownloadDataButton class="text-grey!" onclick={onDownloadData} />
     </div>
   {/snippet}
 

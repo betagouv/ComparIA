@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Badge, Link, Table } from '$components/dsfr'
+  import { Badge, Table } from '$components/dsfr'
+  import DownloadDataButton from './DownloadDataButton.svelte'
   import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
@@ -187,15 +188,7 @@
     </div>
 
     <div class="fr-table__detail mb-0!">
-      <Link
-        href="#"
-        download="true"
-        text={m['actions.downloadData']()}
-        icon="download-line"
-        iconPos="right"
-        class="bg-none! text-[14px]! no-underline!"
-        onclick={() => onDownloadData()}
-      />
+      <DownloadDataButton onclick={onDownloadData} />
     </div>
   {/snippet}
 
