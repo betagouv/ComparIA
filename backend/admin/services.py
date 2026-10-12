@@ -166,8 +166,11 @@ async def create_user(data: UserUpsert) -> UserPublic:
             raise EmailAlreadyExistsError()
 
         if existing:
-            # Revived, with a fresh inactivity clock: the months before the
-            # deletion must not count against the new account.
+            # Revived with nothing it held before, and with a fresh inactivity
+            # clock: the months before the deletion must not count against
+            # the new account.
+            await revoke_user_access(session, existing.id)
+            await drop_user_totp(session, existing.id)
             existing.deleted_at = None
             existing.last_seen_at = datetime.now()
             existing.inactivity_warned_at = None

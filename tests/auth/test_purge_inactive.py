@@ -316,6 +316,9 @@ class RevivalSession:
     def add(self, value):
         self.added.append(value)
 
+    async def execute(self, _statement):
+        pass
+
     async def delete(self, _value):
         pass
 

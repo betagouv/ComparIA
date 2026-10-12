@@ -414,20 +414,23 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
         )
 
     code = await request_login_code(body.email)
-    try:
-        await send_login_code(
-            body.email,
-            code,
-            platform_name=app_settings.platform_name,
-            primary_color=app_settings.primary_color_light,
-            secondary_color=app_settings.secondary_color_light,
-            locale=body.locale or app_settings.default_locale,
-        )
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Failed to send login code, please try again later.",
-        )
+    # A deleted account gets no email, but the same answer as any other
+    # address, so the reply does not tell who once had an account.
+    if code is not None:
+        try:
+            await send_login_code(
+                body.email,
+                code,
+                platform_name=app_settings.platform_name,
+                primary_color=app_settings.primary_color_light,
+                secondary_color=app_settings.secondary_color_light,
+                locale=body.locale or app_settings.default_locale,
+            )
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Failed to send login code, please try again later.",
+            )
 
     # A fresh code resets the verify attempt counter so a locked-out user can
     # retry. The per-email request cap above still bounds total guesses.
