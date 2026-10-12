@@ -7,6 +7,7 @@ handling streaming responses, token counting, and message tracking.
 
 import asyncio
 import logging
+from contextlib import aclosing
 from datetime import datetime
 from typing import AsyncGenerator, Literal
 
@@ -142,10 +143,11 @@ async def bot_response_async(
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
-        # Yield complete chat only if there's content to display in current message
-        if llm_msg.content or llm_msg.reasoning_content:
-            yield llm_msg
+    async with aclosing(stream_iter):
+        async for llm_msg in stream_iter:
+            # Yield complete chat only if there's content to display in current message
+            if llm_msg.content or llm_msg.reasoning_content:
+                yield llm_msg
 
     duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()
     logger.debug(

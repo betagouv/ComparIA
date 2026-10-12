@@ -7,7 +7,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Generator, Union, cast
+from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
 
 import litellm
 
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("languia")
 
 
-def litellm_stream_iter(
+async def litellm_stream_iter(
     llm: "LLMDataEnabled",
     messages: list["AnyMessageRead"],
     msg: "LLMMessageCreate",
@@ -39,9 +39,12 @@ def litellm_stream_iter(
     request: Union["Request", None] = None,
     include_reasoning: bool = False,  # FIXME Legacy ?
     enable_reasoning: bool = False,  # FIXME Legacy ?
-) -> Generator["LLMMessageCreate"]:
+) -> AsyncGenerator["LLMMessageCreate"]:
     """
     Stream responses from an LLM API using LiteLLM.
+
+    Every read from the provider is awaited, so a slow model only slows the
+    comparison it answers and the event loop keeps serving everyone else.
 
     This function handles unified API calls to various LLM providers through LiteLLM,
     manages streaming responses, and processes tokens and metadata.
@@ -128,7 +131,9 @@ def litellm_stream_iter(
 
     # Make the API call through LiteLLM
     try:
-        response: Generator[litellm.ModelResponse] = litellm.completion(**kwargs)
+        response = cast(
+            litellm.CustomStreamWrapper, await litellm.acompletion(**kwargs)
+        )
     except litellm.ContextWindowExceededError as e:
         logger.error(
             f"context_window_exceeded: {endpoint.model}: {e}",
@@ -140,52 +145,57 @@ def litellm_stream_iter(
     # transforms = [""], route= ""
 
     # Process streaming chunks from the API
-    for chunk in response:
-        if not msg.responded_at:
-            # Store first chunk ts for latency computation
-            msg.responded_at = datetime.now()
-        # Extract generation ID for tracking/debugging
-        if not msg.generation_id and chunk.id:
-            msg.generation_id = chunk.id
-            logger.debug(
-                f"Response stream started for '{endpoint.model}' with generation_id='{chunk.id}'",
-                extra={"request": request},
-            )
-        # Extract token count from streaming completion (if available)
-        if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            msg.tokens = chunk.usage.completion_tokens
-            logger.debug(
-                f"reported output tokens for api {endpoint.base_url} and model {endpoint.model}: {msg.tokens}",
-                extra={"request": request},
-            )
-        # Process content chunks
-        if len(chunk.choices) > 0:
-            choice = cast(litellm.types.utils.StreamingChoices, chunk.choices[0])
-
-            # Accumulate text and reasoning across chunks
-            if delta := choice.get("delta"):
-                # Get the text content of this chunk
-                if content := choice.delta.get("content"):
-                    msg.content += content
-                # Get reasoning content (for reasoning models)
-                if reasoning := delta.get("reasoning_content") or delta.get(
-                    "reasoning"
-                ):
-                    msg.reasoning_content += reasoning
-
-            # Check for generation completion signal
-            if choice.finish_reason == "stop":
-                break
-            elif choice.finish_reason == "length":
-                # Output truncated at max_tokens limit — response is still valid
-                logger.warning(
-                    "output_truncated_at_max_tokens: " + str(chunk),
+    # Closing the stream frees the provider connection, whether the answer
+    # ended, stopped early, or the visitor left and the task was cancelled.
+    try:
+        async for chunk in response:
+            if not msg.responded_at:
+                # Store first chunk ts for latency computation
+                msg.responded_at = datetime.now()
+            # Extract generation ID for tracking/debugging
+            if not msg.generation_id and chunk.id:
+                msg.generation_id = chunk.id
+                logger.debug(
+                    f"Response stream started for '{endpoint.model}' with generation_id='{chunk.id}'",
                     extra={"request": request},
                 )
-                break
+            # Extract token count from streaming completion (if available)
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+                msg.tokens = chunk.usage.completion_tokens
+                logger.debug(
+                    f"reported output tokens for api {endpoint.base_url} and model {endpoint.model}: {msg.tokens}",
+                    extra={"request": request},
+                )
+            # Process content chunks
+            if len(chunk.choices) > 0:
+                choice = cast(litellm.types.utils.StreamingChoices, chunk.choices[0])
 
-            # Yield partial results for streaming to frontend
-            yield msg
+                # Accumulate text and reasoning across chunks
+                if delta := choice.get("delta"):
+                    # Get the text content of this chunk
+                    if content := choice.delta.get("content"):
+                        msg.content += content
+                    # Get reasoning content (for reasoning models)
+                    if reasoning := delta.get("reasoning_content") or delta.get(
+                        "reasoning"
+                    ):
+                        msg.reasoning_content += reasoning
+
+                # Check for generation completion signal
+                if choice.finish_reason == "stop":
+                    break
+                elif choice.finish_reason == "length":
+                    # Output truncated at max_tokens limit — response is still valid
+                    logger.warning(
+                        "output_truncated_at_max_tokens: " + str(chunk),
+                        extra={"request": request},
+                    )
+                    break
+
+                # Yield partial results for streaming to frontend
+                yield msg
+    finally:
+        await response.aclose()
 
     # Store last update ts for duration computation
     msg.updated_at = datetime.now()
