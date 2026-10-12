@@ -843,8 +843,9 @@
                 "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
                 "pii": "Your message seems to contain personal data. Messages you send may be published in the open dataset.",
                 "self_harm": "If you are going through a hard time or having suicidal thoughts, you are not alone. Free, confidential help is available around the clock: find your local helpline at findahelpline.com.",
-                "unavailable": "Your message is too long to be checked right now. Shorten it or try again in a few minutes."
+                "unavailable": "Your message could not be checked. Please try again in a few minutes."
             },
+            "prompt_too_long": "Your message is longer than 20,000 characters. Please shorten it.",
             "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
             "retry_unavailable": "Retrying is not possible, please reload the page.",
             "spam_detected": "This message format is not allowed. Please write in natural language."

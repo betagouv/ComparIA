@@ -10,6 +10,7 @@ const ARENA_ERRORS = {
   retry_unavailable: () => m['arene.apiErrors.retry_unavailable'](),
   captcha_failed: () => m['arene.apiErrors.captcha_failed'](),
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),
+  prompt_too_long: () => m['arene.apiErrors.prompt_too_long'](),
   spam_detected: () => m['arene.apiErrors.spam_detected']()
 } as const
 
