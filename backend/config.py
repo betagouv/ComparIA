@@ -291,8 +291,10 @@ RATELIMIT_SENT_WARNINGS_PER_HOUR = 15
 # ministry where hundreds of people share one IP.
 RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR = 300
 
-# Character limit for blind mode (comparison without model names)
-BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+# Longest message a user can send, about five pages. Mistral checks a message
+# in windows of 2,000 characters, so this keeps every check to one quick
+# request, and a check that cannot finish refuses the message.
+BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 20_000
 
 # Every turn resends the whole transcript to both models, so an endless
 # conversation costs more on each message. Cap it.

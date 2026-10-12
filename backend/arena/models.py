@@ -16,7 +16,16 @@ from backend.config import (
 )
 
 # Request/Response models for FastAPI endpoints
-PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+PromptField = Field(min_length=1)
+
+
+def check_message(v: str) -> str:
+    """Refuse a message over the length limit, hidden characters included, then
+    drop the hidden ones. The key, unlike Pydantic's own sentence, is one the
+    frontend can translate."""
+    if len(v) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+        raise ValueError("prompt_too_long")
+    return strip_hidden(v)
 
 
 class CaptchaBody(BaseModel):
@@ -63,8 +72,8 @@ class AddFirstTextBody(CaptchaBody):
 
     @field_validator("prompt_value")
     @classmethod
-    def drop_hidden_text(cls, v: str) -> str:
-        return strip_hidden(v)
+    def check_prompt(cls, v: str) -> str:
+        return check_message(v)
 
 
 class AddTextBody(CaptchaBody):
@@ -75,8 +84,8 @@ class AddTextBody(CaptchaBody):
 
     @field_validator("message")
     @classmethod
-    def drop_hidden_text(cls, v: str) -> str:
-        return strip_hidden(v)
+    def check_text(cls, v: str) -> str:
+        return check_message(v)
 
 
 class RetryBody(CaptchaBody):
