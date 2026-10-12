@@ -589,6 +589,13 @@
                     "updated": "Logo updated"
                 },
                 "platformName": "Platform name",
+                "ranking": {
+                    "title": "Leaderboard",
+                    "minVotes": "Minimum votes",
+                    "minVotesHelp": "A model is ranked only once it has this many votes. Applied at the next ranking update, within the hour.",
+                    "maxRankSpread": "Maximum rank spread",
+                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks."
+                },
                 "votesObjective": "Votes objective"
             },
             "loading": "Loading...",

@@ -16,6 +16,8 @@
   let uploadingLogo = $state(false)
 
   let votesObjective = $state('')
+  let rankingMinVotes = $state('')
+  let rankingMaxRankSpread = $state('')
   let platformName = $state('')
   let hasCustomLogo = $state(false)
   let primaryColorLight = $state('')
@@ -25,6 +27,8 @@
   let homepageUrl = $state('')
   let loadedValues = $state({
     votesObjective: '',
+    rankingMinVotes: '',
+    rankingMaxRankSpread: '',
     platformName: '',
     primaryColorLight: '',
     primaryColorDark: '',
@@ -47,6 +51,8 @@
     try {
       const data = await api.request<AppSettingsPublic>('/admin/settings')
       votesObjective = String(data.votes_objective)
+      rankingMinVotes = String(data.ranking_min_votes)
+      rankingMaxRankSpread = String(data.ranking_max_rank_spread)
       platformName = data.platform_name
       hasCustomLogo = data.has_custom_logo
       primaryColorLight = data.primary_color_light
@@ -54,7 +60,13 @@
       secondaryColorLight = data.secondary_color_light
       secondaryColorDark = data.secondary_color_dark
       homepageUrl = data.homepage_url ?? ''
-      loadedValues = { ...currentValues(), votesObjective, platformName }
+      loadedValues = {
+        ...currentValues(),
+        votesObjective,
+        rankingMinVotes,
+        rankingMaxRankSpread,
+        platformName
+      }
     } finally {
       loading = false
     }
@@ -106,6 +118,8 @@
 
   function discardChanges() {
     votesObjective = loadedValues.votesObjective
+    rankingMinVotes = loadedValues.rankingMinVotes
+    rankingMaxRankSpread = loadedValues.rankingMaxRankSpread
     platformName = loadedValues.platformName
     primaryColorLight = loadedValues.primaryColorLight
     primaryColorDark = loadedValues.primaryColorDark
@@ -122,6 +136,8 @@
     try {
       const patch: AppSettingsPatch = {
         votes_objective: Number(votesObjective),
+        ranking_min_votes: Number(rankingMinVotes),
+        ranking_max_rank_spread: Number(rankingMaxRankSpread),
         platform_name: platformName,
         primary_color_light: primaryColorLight.toUpperCase(),
         primary_color_dark: primaryColorDark.toUpperCase(),
@@ -135,13 +151,21 @@
       })
       votesObjective = String(saved.votes_objective)
       votes.objective = saved.votes_objective
+      rankingMinVotes = String(saved.ranking_min_votes)
+      rankingMaxRankSpread = String(saved.ranking_max_rank_spread)
       platformName = saved.platform_name
       primaryColorLight = saved.primary_color_light
       primaryColorDark = saved.primary_color_dark
       secondaryColorLight = saved.secondary_color_light
       secondaryColorDark = saved.secondary_color_dark
       homepageUrl = saved.homepage_url ?? ''
-      loadedValues = { ...currentValues(), votesObjective, platformName }
+      loadedValues = {
+        ...currentValues(),
+        votesObjective,
+        rankingMinVotes,
+        rankingMaxRankSpread,
+        platformName
+      }
       Object.assign(auth.config, {
         platform_name: saved.platform_name,
         primary_color_light: saved.primary_color_light,
@@ -310,6 +334,25 @@
         bind:value={votesObjective}
         groupClass="mt-4!"
       />
+      <fieldset class="mt-8! p-0 border-0">
+        <legend class="fr-h4">{m['admin.settings.customization.ranking.title']()}</legend>
+        <Input
+          id="settings-ranking-min-votes"
+          type="number"
+          min="0"
+          label={m['admin.settings.customization.ranking.minVotes']()}
+          help={m['admin.settings.customization.ranking.minVotesHelp']()}
+          bind:value={rankingMinVotes}
+        />
+        <Input
+          id="settings-ranking-max-rank-spread"
+          type="number"
+          min="0"
+          label={m['admin.settings.customization.ranking.maxRankSpread']()}
+          help={m['admin.settings.customization.ranking.maxRankSpreadHelp']()}
+          bind:value={rankingMaxRankSpread}
+        />
+      </fieldset>
       <div class="gap-3 mt-4! flex flex-wrap">
         <Button
           type="submit"

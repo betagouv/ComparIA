@@ -588,6 +588,13 @@
                     "updated": "Logo opdateret"
                 },
                 "platformName": "Platformens navn",
+                "ranking": {
+                    "title": "Rangliste",
+                    "minVotes": "Minimum antal stemmer",
+                    "minVotesHelp": "En model rangeres først, når den har dette antal stemmer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
+                    "maxRankSpread": "Maksimal rangspredning",
+                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer."
+                },
                 "votesObjective": "Stemmemål"
             },
             "loading": "Indlæser...",

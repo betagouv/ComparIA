@@ -589,6 +589,13 @@
                     "updated": "Logo mis à jour"
                 },
                 "platformName": "Nom de la plateforme",
+                "ranking": {
+                    "title": "Classement",
+                    "minVotes": "Nombre minimum de votes",
+                    "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
+                    "maxRankSpread": "Écart de rang maximum",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs."
+                },
                 "votesObjective": "Objectif de votes"
             },
             "loading": "Chargement...",
