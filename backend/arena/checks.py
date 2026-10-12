@@ -14,14 +14,17 @@ overlapping windows, scored again in a folded spelling (look-alike letters,
 leetspeak, invisible characters) and with any encoded part decoded, and a
 category takes its highest score over all of them. On a follow-up, the end of
 the previous user messages joined to the start of the new one is scored too,
-so a request split across turns is seen whole.
+so a request split across turns is seen whole. That reading can only ask the
+user to confirm, never refuse.
 
-Fails open for short prompts: if Mistral errors or times out twice, the prompt
-proceeds. Fail-open is NOT fail-silent: failures are logged at error level, sent
-to Sentry, and counted in Redis so the admin panel can show a check that has
-quietly stopped working. They also spend the caller's per-IP block budget (see
-`run_checks` in the router). Long prompts fail closed, since length is the
-cheap way to make the check time out.
+When Mistral is down (OUTAGE_AFTER_FAILURES failures in a row), the check pauses
+for OUTAGE_PAUSE_SECONDS and every prompt goes through as `skipped`, charged to
+no one. While it is up, a failed check means something about this prompt: a
+short one goes through but spends the caller's per-IP block budget (see
+`run_checks` in the router), a long one is refused, since length is the cheap
+way to make the check time out. Failures are logged at error level, sent to
+Sentry, and counted in Redis so the admin panel shows a check that has stopped
+working.
 """
 
 import asyncio
@@ -29,7 +32,7 @@ import json
 import logging
 import secrets
 import time
-from typing import TYPE_CHECKING, Final, Sequence
+from typing import TYPE_CHECKING, Final, NamedTuple, Sequence
 
 import httpx
 import sentry_sdk
@@ -37,11 +40,16 @@ import sentry_sdk
 from backend.arena.normalize import decoded_variants, fold
 from backend.config import settings
 from utils.database.encrypted import UnreadableRow, UnreadableSecret
-from utils.database.models.prompt_check import PromptCheck, PromptCheckResult
+from utils.database.models.prompt_check import (
+    PromptCheck,
+    PromptCheckResult,
+    strongest_action,
+)
 from utils.database.prompt_checks import get_prompt_check
 from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
+    REDIS_CHECK_PAUSED_KEY,
     REDIS_CHECK_SCORES_KEY,
     REDIS_CHECK_WARNING_TOKEN_KEY,
     REDIS_CHECK_WARNINGS_KEY,
@@ -76,6 +84,13 @@ CONTEXT_TURNS: Final[int] = 4
 # How much of each web search result is read before it goes to the models.
 WEB_RESULT_CHARS: Final[int] = 4 * CHUNK_CHARS
 
+# Failures in a row after which Mistral counts as down, and how long the check
+# then pauses before trying again. Being rate limited (429) is not counted:
+# our own traffic causes it, an attacker's included, and it must not be a way
+# to switch the check off.
+OUTAGE_AFTER_FAILURES: Final[int] = 5
+OUTAGE_PAUSE_SECONDS: Final[int] = 60
+
 _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
 
 # Keys, not sentences: the frontend picks the wording for the visitor's
@@ -109,13 +124,27 @@ def moderation_inputs(text: str) -> list[str]:
     return list(dict.fromkeys(c for spelling in spellings for c in chunks(spelling)))
 
 
-def context_inputs(text: str, context: Sequence[str]) -> list[str]:
-    """The end of the earlier user messages joined to the start of this one."""
+def context_inputs(text: str, context: Sequence[str]) -> tuple[list[str], list[str]]:
+    """
+    The end of the earlier user messages joined to the start of this one, and
+    that same end alone, to tell what the new message added.
+    """
     earlier = [message for message in context[-CONTEXT_TURNS:] if message]
     if not earlier:
-        return []
-    joined = "\n\n".join(earlier)[-CHUNK_CHARS:] + "\n\n" + text[:CHUNK_CHARS]
-    return moderation_inputs(joined)
+        return [], []
+    tail = "\n\n".join(earlier)[-CHUNK_CHARS:]
+    joined = tail + "\n\n" + text[:CHUNK_CHARS]
+    return moderation_inputs(joined), moderation_inputs(tail)
+
+
+class Scores(NamedTuple):
+    """Highest score per category: for the prompt alone, for the prompt read
+    after the earlier messages, and for the earlier messages alone. The last
+    two stay empty on a first message."""
+
+    own: dict[str, float]
+    joined: dict[str, float] = {}
+    earlier: dict[str, float] = {}
 
 
 def highest(scores: Sequence[dict[str, float]]) -> dict[str, float]:
@@ -184,34 +213,37 @@ async def moderate(
     model: str,
     api_key: str | UnreadableSecret,
     context: Sequence[str] = (),
-) -> tuple[dict[str, float], dict[str, float]]:
-    """
-    Score a prompt: the highest each category reaches over every window and
-    spelling of it, and separately over the windows that join it to the
-    earlier user messages in `context`.
-    """
+) -> Scores:
+    """Score a prompt over every window and spelling of it, and, given the
+    earlier user messages in `context`, read together with them."""
     own = moderation_inputs(text)
-    joined = context_inputs(text, context)
-    scores = await moderate_many(own + joined, model, api_key)
-    return highest(scores[: len(own)]), highest(scores[len(own) :])
+    joined, earlier = context_inputs(text, context)
+    scores = await moderate_many(own + joined + earlier, model, api_key)
+    split = len(own) + len(joined)
+    return Scores(
+        highest(scores[: len(own)]),
+        highest(scores[len(own) : split]),
+        highest(scores[split:]),
+    )
 
 
-def with_context(
-    check: PromptCheck, scores: dict[str, float], context_scores: dict[str, float]
-) -> dict[str, float]:
+def context_hits(check: PromptCheck, scores: Scores) -> dict[str, str]:
     """
-    Fold the scores of the earlier turns into the categories set to `block`.
+    Categories set to `block` that the new message pushes over their threshold
+    once read after the earlier ones, each mapped to `warn`.
 
-    Only there: an earlier message the user was warned about and sent anyway
-    would otherwise raise the same warning on every later turn.
+    A warning, not a block: two harmless messages can read worse side by side,
+    and a person can say so. The earlier messages alone must stay under the
+    threshold, so an exchange already let through does not warn again on every
+    later turn.
     """
-    merged = dict(scores)
-    for category, config in check.categories.items():
-        if config["action"] == "block":
-            merged[category] = max(
-                merged.get(category, 0.0), context_scores.get(category, 0.0)
-            )
-    return merged
+    return {
+        category: "warn"
+        for category, config in check.categories.items()
+        if config["action"] == "block"
+        and scores.joined.get(category, 0.0) >= config["threshold"]
+        and scores.earlier.get(category, 0.0) < config["threshold"]
+    }
 
 
 def _message_for(categories: set[str]) -> str:
@@ -222,13 +254,13 @@ def _message_for(categories: set[str]) -> str:
     return GENERIC_MESSAGE
 
 
-def verdict(
-    check: PromptCheck, scores: dict[str, float], latency_ms: int
-) -> PromptCheckResult:
+def verdict(check: PromptCheck, scores: Scores, latency_ms: int) -> PromptCheckResult:
     """Scores plus a configuration to a decision. Writes nothing, so the admin
     dry run gets the same answer the arena would give without the side effects."""
-    triggered = check.triggered(scores)
-    action = check.action_for(scores)
+    triggered = check.triggered(scores.own)
+    for category, action in context_hits(check, scores).items():
+        triggered.setdefault(category, action)
+    action = strongest_action(triggered.values())
     decision = _DECISIONS[action]
     # Only the categories asking for the strongest action explain the decision,
     # so a category merely logged never picks the message.
@@ -241,25 +273,49 @@ def verdict(
         # Every category, not just the ones that triggered. Prompts that hide in
         # a never-acted-on category are the known weakness of this classifier,
         # and dropping those scores would make them invisible.
-        scores=dict(scores),
+        scores=dict(scores.own),
         triggered=triggered,
         message=(_message_for(deciding) if decision in ("blocked", "warned") else None),
     )
 
 
-def _count_failure(failed: bool) -> None:
-    """Track consecutive moderation failures so a dark check stays visible.
+def _count_failure(failed: bool) -> bool:
+    """
+    Track consecutive moderation failures so a dark check stays visible, and
+    pause the check once there are enough of them to call Mistral down.
 
     Read back by `utils.database.prompt_checks.get_consecutive_failures`.
+
+    Returns:
+        bool: True when Mistral counts as down
     """
     try:
         client = get_redis_client()
-        if failed:
-            client.incr(REDIS_CHECK_FAILURES_KEY)
-        else:
+        if not failed:
             client.delete(REDIS_CHECK_FAILURES_KEY)
+            return False
+        count = int(client.incr(REDIS_CHECK_FAILURES_KEY))
+        if count < OUTAGE_AFTER_FAILURES:
+            return False
+        # Once the pause runs out the streak is still there, so the first
+        # failure after it pauses again; one success clears both.
+        if client.set(REDIS_CHECK_PAUSED_KEY, "1", nx=True, ex=OUTAGE_PAUSE_SECONDS):
+            logger.error(
+                f"[CHECKS] Mistral failed {count} times in a row, prompt check "
+                f"paused for {OUTAGE_PAUSE_SECONDS}s"
+            )
+        return True
     except Exception as e:
         logger.error(f"[CHECKS] Error updating failure count: {e}")
+        return False
+
+
+def is_paused() -> bool:
+    try:
+        return bool(get_redis_client().exists(REDIS_CHECK_PAUSED_KEY))
+    except Exception as e:
+        logger.error(f"[CHECKS] Error reading the pause: {e}")
+        return False
 
 
 def count_warning_shown() -> None:
@@ -284,7 +340,7 @@ def _scores_cache_key(text: str, model: str, context: Sequence[str]) -> str:
 
 def read_cached_scores(
     text: str, model: str, context: Sequence[str] = ()
-) -> dict[str, float] | None:
+) -> Scores | None:
     """Scores already computed for this exact prompt and context, if any."""
     try:
         raw = get_redis_client().get(_scores_cache_key(text, model, context))
@@ -296,8 +352,15 @@ def read_cached_scores(
         return None
 
     try:
-        return {category: float(v) for category, v in json.loads(str(raw)).items()}
-    except (TypeError, ValueError) as e:
+        data = json.loads(str(raw))
+        parts = data if "own" in data else {"own": data}
+        return Scores(
+            **{
+                part: {category: float(v) for category, v in values.items()}
+                for part, values in parts.items()
+            }
+        )
+    except (TypeError, ValueError, AttributeError) as e:
         logger.warning(f"[CHECKS] Error decoding cached scores: {e}")
         return None
 
@@ -305,14 +368,14 @@ def read_cached_scores(
 def write_cached_scores(
     text: str,
     model: str,
-    scores: dict[str, float],
+    scores: Scores,
     context: Sequence[str] = (),
 ) -> None:
     try:
         get_redis_client().setex(
             _scores_cache_key(text, model, context),
             SCORES_TTL,
-            json.dumps(scores),
+            json.dumps(scores._asdict()),
         )
     except Exception as e:
         logger.warning(f"[CHECKS] Error caching scores: {e}")
@@ -382,6 +445,9 @@ async def run_prompt_check(
     if not api_key:
         return None
 
+    if is_paused():
+        return PromptCheckResult(decision="skipped", model=check.model, latency_ms=0)
+
     started = time.monotonic()
     cached = read_cached_scores(text, check.model, context)
 
@@ -389,13 +455,19 @@ async def run_prompt_check(
         scores, latency_ms = cached, 0
     else:
         try:
-            own, joined = await moderate(text, check.model, api_key, context)
+            scores = await moderate(text, check.model, api_key, context)
         except Exception as e:
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})
             if settings.SENTRY_DSN:
                 sentry_sdk.capture_exception(e)
-            _count_failure(failed=True)
+            rate_limited = (
+                isinstance(e, httpx.HTTPStatusError) and e.response.status_code == 429
+            )
+            if not rate_limited and _count_failure(failed=True):
+                return PromptCheckResult(
+                    decision="skipped", model=check.model, latency_ms=latency_ms
+                )
             return PromptCheckResult(
                 decision="error",
                 model=check.model,
@@ -405,7 +477,6 @@ async def run_prompt_check(
                 ),
             )
 
-        scores = with_context(check, own, joined)
         latency_ms = int((time.monotonic() - started) * 1000)
         _count_failure(failed=False)
 
@@ -436,7 +507,7 @@ async def drop_flagged_results(
     """
     check = await get_prompt_check()
     api_key = check.api_key or settings.MISTRAL_API_KEY
-    if not check.should_run or not api_key:
+    if not check.should_run or not api_key or is_paused():
         return results
 
     per_result = [

@@ -65,6 +65,12 @@ REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 # the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.
 REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
+# Set while Mistral counts as down: the check is skipped until it expires.
+REDIS_CHECK_PAUSED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_paused"
+# Warnings a session sent anyway, in a rolling hour.
+REDIS_SENT_WARNINGS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_sent_warnings:{{session}}"
+)
 # Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
 REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"

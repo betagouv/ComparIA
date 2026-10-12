@@ -10,7 +10,7 @@ See .scratch/prompt-checks/spec.md for the benchmark behind the seeded values.
 """
 
 import uuid
-from typing import Annotated, Literal
+from typing import Annotated, Iterable, Literal
 
 from pydantic import computed_field, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
@@ -76,6 +76,10 @@ DEFAULT_CATEGORIES: dict[str, dict] = {
 }
 
 
+def strongest_action(actions: Iterable[str]) -> str:
+    return max(actions, key=lambda a: _ACTION_RANK[a], default="off")
+
+
 def validate_categories(value: object) -> dict[str, dict]:
     if not isinstance(value, dict):
         raise ValueError("Categories must be an object")
@@ -137,8 +141,7 @@ class PromptCheck(SQLModel, table=True):
 
     def action_for(self, scores: dict[str, float]) -> str:
         """The strongest action any triggered category asks for."""
-        actions = self.triggered(scores).values()
-        return max(actions, key=lambda a: _ACTION_RANK[a], default="off")
+        return strongest_action(self.triggered(scores).values())
 
     @property
     def should_run(self) -> bool:
@@ -199,7 +202,7 @@ class PromptCheckResult(SQLModel, table=True):
     created_at: AutoDatetime
     turn_id: uuid.UUID | None = Field(default=None, foreign_key="turn.id", unique=True)
 
-    decision: str  # pass | logged | warned | blocked | error
+    decision: str  # pass | logged | warned | blocked | error | skipped
     model: str
     latency_ms: int
     scores: Annotated[dict[str, float], Field(sa_type=JSONB)] = {}

@@ -95,7 +95,7 @@ def get_consecutive_failures() -> int:
 # Every decision a check can reach, so a quiet week still reports each bucket
 # instead of dropping the ones at zero. Mirrors PromptCheckResult.decision in
 # backend/arena/checks.py, which cannot be imported here: it imports this module.
-DECISIONS = ("pass", "logged", "warned", "blocked", "error")
+DECISIONS = ("pass", "logged", "warned", "blocked", "error", "skipped")
 
 STATS_PERIODS = {
     "7d": (7, "day"),

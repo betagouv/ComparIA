@@ -78,11 +78,11 @@ def stub_moderate(
 ) -> list[tuple[str, str]]:
     calls: list[tuple[str, str]] = []
 
-    async def moderate(text: str, model: str, api_key: str) -> tuple[dict, dict]:
+    async def moderate(text: str, model: str, api_key: str) -> checks.Scores:
         calls.append((text, model))
         if error:
             raise error
-        return scores, {}
+        return checks.Scores(scores)
 
     monkeypatch.setattr(admin_router, "moderate", moderate)
     return calls
@@ -298,10 +298,25 @@ def test_stats_returns_historical_total_period_counts_and_timeline(
             "warned": 30,
             "blocked": 4,
             "error": 0,
+            "skipped": 0,
         },
         "by_category": {
-            "pii": {"pass": 0, "logged": 0, "warned": 22, "blocked": 0, "error": 0},
-            "criminal": {"pass": 0, "logged": 0, "warned": 0, "blocked": 8, "error": 0},
+            "pii": {
+                "pass": 0,
+                "logged": 0,
+                "warned": 22,
+                "blocked": 0,
+                "error": 0,
+                "skipped": 0,
+            },
+            "criminal": {
+                "pass": 0,
+                "logged": 0,
+                "warned": 0,
+                "blocked": 8,
+                "error": 0,
+                "skipped": 0,
+            },
         },
         "timeline": [
             {
@@ -312,6 +327,7 @@ def test_stats_returns_historical_total_period_counts_and_timeline(
                     "warned": 3,
                     "blocked": 1,
                     "error": 0,
+                    "skipped": 0,
                 },
             }
         ],
