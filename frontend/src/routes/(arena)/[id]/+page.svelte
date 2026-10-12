@@ -14,9 +14,10 @@
 
   // Any path the arena doesn't own lands here too (e.g. /arene), so an id with
   // no comparison behind it goes back to the arena instead of rendering a chat.
+  // The query is kept so links like /arene?vs=… still preselect their models.
   $effect(() => {
     if (!comparator.comparison) {
-      goto(resolve('/'), { replaceState: true })
+      goto(resolve(`/${page.url.search}`), { replaceState: true })
     }
   })
 
