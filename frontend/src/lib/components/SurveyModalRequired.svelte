@@ -14,23 +14,25 @@
   }
 </script>
 
-<button class="hidden" data-fr-opened={survey.showRequiredSurvey} aria-controls={modalId}>
-  Hidden
-</button>
+{#if survey.showRequiredSurvey}
+  <button class="hidden" data-fr-opened={survey.showRequiredSurvey} aria-controls={modalId}>
+    Hidden
+  </button>
 
-<Modal
-  id={modalId}
-  locked
-  titleId="form-{modalId}-title"
-  sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6"
-  onClose={resetState}
->
-  <SurveyForm
-    id="form-{modalId}"
-    title={m['survey.required.title']()}
-    description={m['survey.required.description']()}
-    onlyUnanswered
-    class="mt-5"
-    onSuccess={resetState}
-  />
-</Modal>
+  <Modal
+    id={modalId}
+    locked
+    titleId="form-{modalId}-title"
+    sizeClass="fr-col-12 fr-col-md-8 fr-col-lg-6"
+    onClose={resetState}
+  >
+    <SurveyForm
+      id="form-{modalId}"
+      title={m['survey.required.title']()}
+      description={m['survey.required.description']()}
+      onlyUnanswered
+      class="mt-5"
+      onSuccess={resetState}
+    />
+  </Modal>
+{/if}
