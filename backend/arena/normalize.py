@@ -71,7 +71,7 @@ def fold(text: str) -> str:
 
 
 _BASE64_BLOB = re.compile(r"[A-Za-z0-9+/_-]{24,}={0,2}")
-_ROT13_HINT = re.compile(r"\brot\s*-?\s*13\b|\bc[ée]sar\b|\bcaesar\b", re.IGNORECASE)
+_ROT13_HINT = re.compile(r"\brot[\s-]*13\b|\bc[ée]sar\b|\bcaesar\b", re.IGNORECASE)
 _REVERSED_HINT = re.compile(
     r"\bà l'envers\b|\breversed?\b|\bbackwards?\b|\bà rebours\b|\binvers[ée]e?\b",
     re.IGNORECASE,
