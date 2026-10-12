@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Annotated, AsyncGenerator
 from uuid import UUID
@@ -630,8 +631,10 @@ async def reveal(
     await set_comparison_revealed(comparison.id)
     llms_data = await get_llms_data()
 
-    # Return computed reveal data with environmental impact
-    return get_reveal_data(comparison, llms_data)
+    # Return computed reveal data with environmental impact. Counting the
+    # tokens of a long conversation takes seconds, so it runs off the event
+    # loop; the comparison is plain data by now, with no session behind it.
+    return await asyncio.to_thread(get_reveal_data, comparison, llms_data)
 
 
 @router.get("/comparison/list")
