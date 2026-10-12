@@ -21,6 +21,7 @@ vi.mock('$lib/captcha.svelte', () => ({
 vi.mock('$lib/fastapi-client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/fastapi-client')>()),
   api: {
+    // eslint-disable-next-line require-yield
     async *stream(url: string, body: Record<string, unknown>) {
       if (arena.refusal) throw arena.refusal
       streamed.push({ url, body })
