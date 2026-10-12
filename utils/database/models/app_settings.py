@@ -21,6 +21,8 @@ SECONDARY_COLOR_DARK_DEFAULT = "#FFCC00"
 
 _HEX_COLOR_LENGTH = 7
 _HOMEPAGE_URL_MAX_LENGTH = 2_048
+# Largest value a Postgres INTEGER column holds; past it the update fails.
+_INT_MAX = 2_147_483_647
 
 
 def _normalize_hex_color(value: object) -> str:
@@ -246,8 +248,8 @@ class AppSettingsPatch(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
     auth_domain_allowlist: list[str] | None = None
     votes_objective: int | None = None
-    ranking_min_votes: int | None = Field(default=None, ge=0)
-    ranking_max_rank_spread: int | None = Field(default=None, ge=0)
+    ranking_min_votes: int | None = Field(default=None, ge=0, le=_INT_MAX)
+    ranking_max_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
@@ -309,6 +311,13 @@ class AppSettingsPatch(SQLModel):
             ZoneInfo(value)
         except (ZoneInfoNotFoundError, ValueError):
             raise ValueError(f"Unknown time zone: {value}")
+        return value
+
+    @field_validator("ranking_min_votes", "ranking_max_rank_spread", mode="before")
+    @classmethod
+    def ranking_threshold_not_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("Leaderboard thresholds cannot be null")
         return value
 
     @field_validator(
