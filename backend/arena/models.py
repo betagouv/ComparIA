@@ -2,9 +2,10 @@
 Data validation models using Pydantic.
 """
 
+from typing import Self
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.spam_detection import is_spam
@@ -48,12 +49,13 @@ class AddFirstTextBody(BaseModel):
             UUID(llm_id)
         return v
 
-    @field_validator("prompt_value")
-    @classmethod
-    def check_spam(cls, v: str) -> str:
-        if is_spam(v):
+    # A model validator only runs once every field is valid, so a request
+    # whose captcha fails never reaches the spam patterns.
+    @model_validator(mode="after")
+    def check_spam(self) -> Self:
+        if is_spam(self.prompt_value):
             raise ValueError("spam_detected")
-        return v
+        return self
 
     @field_validator("altcha_token")
     @classmethod
@@ -71,12 +73,11 @@ class AddTextBody(BaseModel):
     altcha_token: str
     warning_token: str | None = None
 
-    @field_validator("message")
-    @classmethod
-    def check_spam(cls, v: str) -> str:
-        if is_spam(v):
+    @model_validator(mode="after")
+    def check_spam(self) -> Self:
+        if is_spam(self.message):
             raise ValueError("spam_detected")
-        return v
+        return self
 
     @field_validator("altcha_token")
     @classmethod
