@@ -405,8 +405,9 @@ export function rankClassSpans(models: ModelRevisedRank[]): Commons['rankClasses
 }
 
 export function setModelsContext(data: LLMList, platformName: string) {
+  const spread = data.max_rank_spread
   const rankedModels = data.models
-    .filter(({ data }) => !!data && data.trust_range[0] <= 30 && data.trust_range[1] <= 30)
+    .filter(({ data }) => !!data && data.trust_range[0] <= spread && data.trust_range[1] <= spread)
     .sort((a, b) => a.data!.rank - b.data!.rank)
     .map((llm, i) => ({ id: llm.id, rank: i + 1, data: llm.data! }))
 
