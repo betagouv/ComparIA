@@ -32,7 +32,7 @@
   // all mean the same thing: the questions were shown and left blank. Sending
   // them blank is what counts the showing, so the re-ask delay and the cap on
   // showings apply to people who decline, not only to people who answer.
-  // A signed-in account cannot leave a required question blank; the locked
+  // A signed-in account cannot leave a required question blank; the required
   // popup asks for those.
   async function onClose() {
     if (submitted) {
