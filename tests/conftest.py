@@ -120,6 +120,14 @@ def database(postgres_uri, monkeypatch):
         postgres_uri.replace("postgresql://", "postgresql+psycopg://")
     )
     with engine.begin() as connection:
+        # A connection the previous scenario left open, idle in a transaction,
+        # would hold the lock the truncate below waits for.
+        connection.execute(
+            text(
+                "SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+                "WHERE datname = current_database() AND pid <> pg_backend_pid()"
+            )
+        )
         tables = ", ".join(
             f'"{table.name}"' for table in SQLModel.metadata.sorted_tables
         )
@@ -138,3 +146,142 @@ def database(postgres_uri, monkeypatch):
         return asyncio.run(wrapped())
 
     return run
+
+
+@pytest.fixture
+def fake_redis(monkeypatch):
+    """An in-memory Redis behind both the sync and the async client."""
+    from tests.support import fake_redis as fake
+
+    store = fake.install(monkeypatch)
+    yield store
+    fake.uninstall()
+
+
+@pytest.fixture
+def fake_provider():
+    """A local model provider speaking the OpenAI streaming protocol."""
+    from tests.support.fake_provider import FakeProvider
+
+    provider = FakeProvider().start()
+    yield provider
+    provider.stop()
+
+
+class Arena:
+    """The arena HTTP API of the real app, with its models on a fake provider."""
+
+    def __init__(self, client, provider, redis):
+        self.client = client
+        self.provider = provider
+        self.redis = redis
+
+    def ask(self, prompt: str = "Bonjour, explique la photosynthese", **body):
+        """Post a first message and read the whole event stream it answers with."""
+        response = self.client.post(
+            "/api/arena/add_first_text",
+            json={"prompt_value": prompt, "cohorts": "", "altcha_token": "ok", **body},
+        )
+        assert response.status_code == 200, response.text
+        return parse_events(response.text)
+
+
+def parse_events(text: str) -> list[dict]:
+    import json
+
+    return [
+        json.loads(block[len("data: ") :])
+        for block in text.split("\n\n")
+        if block.startswith("data: ")
+    ]
+
+
+@pytest.fixture
+def arena(database, fake_redis, fake_provider, monkeypatch):
+    """
+    The real app on a throwaway Postgres, two enabled models answering through
+    the fake provider. What is not under test is out: the captcha and the
+    prompt check, which would call the outside world.
+    """
+    import contextlib
+    from datetime import date
+
+    from fastapi.testclient import TestClient
+
+    import backend.arena.router as arena_router
+    from backend.config import settings
+    from backend.main import app
+    from utils.database import session
+    from utils.database import settings as app_settings
+    from utils.database.models.llms import (
+        LLMData,
+        LLMEndpoint,
+        LLMLab,
+        LLMLicense,
+    )
+
+    # A developer's .env must not decide what the tests run against.
+    monkeypatch.setattr(settings, "ADMIN_EMAILS", [])
+    monkeypatch.setattr(app_settings._DEFAULTS, "auth_access_policy", "anonymous_first")
+
+    async def no_check(_text, _field, _request, _warning_token=None):
+        return None
+
+    async def solved(_token):
+        return True, None
+
+    monkeypatch.setattr(arena_router, "verify_altcha_token", solved)
+    monkeypatch.setattr(arena_router, "run_checks", no_check)
+
+    async def seed():
+        async with session.get_session() as db:
+            lab = LLMLab(name="Lab", logo=None, origin_country="FR")
+            licence = LLMLicense(
+                kind="open-source", name="MIT", reuse=True, commercial_use=True
+            )
+            endpoint = LLMEndpoint(
+                name="fake",
+                api_type="openai",
+                api_base=fake_provider.base_url,
+                api_key="test-key",
+            )
+            db.add_all([lab, licence, endpoint])
+            await db.flush()
+            for name in ("alpha", "beta"):
+                db.add(
+                    LLMData(
+                        status="enabled",
+                        name=name,
+                        human_id=name,
+                        api_model_id=name,
+                        endpoint_id=endpoint.id,
+                        rate_limited=False,
+                        lab_id=lab.id,
+                        release_date=date(2025, 1, 1),
+                        knowledge_cutoff=None,
+                        license_id=licence.id,
+                        public_weights=True,
+                        public_training_data=False,
+                        public_training_code=False,
+                        eu_hostable=True,
+                        arch="dense",
+                        params=7.0,
+                        active_params=None,
+                        context_tokens=8192,
+                        quantization=None,
+                        inputs=["text"],
+                        price_in=0.1,
+                        price_out=0.2,
+                        system_prompt=None,
+                    )
+                )
+            await db.commit()
+
+    database(seed)
+
+    with TestClient(app) as client:
+        yield Arena(client, fake_provider, fake_redis)
+        engine = session._engine
+        if engine is not None:
+            client.portal.call(engine.dispose)
+            session._engine = None

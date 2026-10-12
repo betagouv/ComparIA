@@ -21,9 +21,28 @@ from backend.config import settings
 from utils.database.models.prompt_check import DEFAULT_CATEGORIES, PromptCheck
 
 
+class AsyncView:
+    """The same store seen through the asynchronous client the arena uses."""
+
+    def __init__(self, redis):
+        self._redis = redis
+
+    def __getattr__(self, name):
+        method = getattr(self._redis, name)
+
+        async def call(*args, **kwargs):
+            return method(*args, **kwargs)
+
+        return call
+
+
 class FakeRedis:
     def __init__(self):
         self.store: dict[str, int] = {}
+
+    @property
+    def aio(self):
+        return AsyncView(self)
 
     def incr(self, key):
         self.store[key] = self.store.get(key, 0) + 1
@@ -65,7 +84,7 @@ def arena(check, scores=None, error=None, redis=None):
     redis = redis if redis is not None else FakeRedis()
     orig_client = checks.httpx.AsyncClient
     orig_load = checks.get_prompt_check
-    orig_redis = checks.get_redis_client
+    orig_redis = checks.get_async_redis_client
     orig_key = settings.MISTRAL_API_KEY
 
     async def get_prompt_check():
@@ -75,14 +94,14 @@ def arena(check, scores=None, error=None, redis=None):
         transport=httpx.MockTransport(fake.handler), **kwargs
     )
     checks.get_prompt_check = get_prompt_check
-    checks.get_redis_client = lambda: redis
+    checks.get_async_redis_client = lambda: redis.aio
     settings.MISTRAL_API_KEY = "test-key"
     try:
         yield fake
     finally:
         checks.httpx.AsyncClient = orig_client
         checks.get_prompt_check = orig_load
-        checks.get_redis_client = orig_redis
+        checks.get_async_redis_client = orig_redis
         settings.MISTRAL_API_KEY = orig_key
 
 
@@ -199,17 +218,18 @@ def test_error_fails_open():
 
 def test_failure_streak_counts_then_resets():
     redis = FakeRedis()
-    orig_runner, orig_reader = checks.get_redis_client, prompt_checks.get_redis_client
-    checks.get_redis_client = lambda: redis
+    orig_runner = checks.get_async_redis_client
+    orig_reader = prompt_checks.get_redis_client
+    checks.get_async_redis_client = lambda: redis.aio
     prompt_checks.get_redis_client = lambda: redis
     try:
-        checks._count_failure(failed=True)
-        checks._count_failure(failed=True)
+        asyncio.run(checks._count_failure(failed=True))
+        asyncio.run(checks._count_failure(failed=True))
         assert prompt_checks.get_consecutive_failures() == 2
-        checks._count_failure(failed=False)
+        asyncio.run(checks._count_failure(failed=False))
         assert prompt_checks.get_consecutive_failures() == 0
     finally:
-        checks.get_redis_client = orig_runner
+        checks.get_async_redis_client = orig_runner
         prompt_checks.get_redis_client = orig_reader
 
 
@@ -321,16 +341,17 @@ def test_a_passing_prompt_is_not_cached():
 
 def test_warnings_shown_are_counted():
     redis = FakeRedis()
-    orig_runner, orig_reader = checks.get_redis_client, prompt_checks.get_redis_client
-    checks.get_redis_client = lambda: redis
+    orig_runner = checks.get_async_redis_client
+    orig_reader = prompt_checks.get_redis_client
+    checks.get_async_redis_client = lambda: redis.aio
     prompt_checks.get_redis_client = lambda: redis
     try:
         assert prompt_checks.get_warnings_shown() == 0
-        checks.count_warning_shown()
-        checks.count_warning_shown()
+        asyncio.run(checks.count_warning_shown())
+        asyncio.run(checks.count_warning_shown())
         assert prompt_checks.get_warnings_shown() == 2
     finally:
-        checks.get_redis_client = orig_runner
+        checks.get_async_redis_client = orig_runner
         prompt_checks.get_redis_client = orig_reader
 
 

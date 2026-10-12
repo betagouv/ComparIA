@@ -61,7 +61,7 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
         await session.commit()
         await session.refresh(row)
 
-    invalidate_cache(REDIS_PROMPT_CHECK_KEY)
+    await invalidate_cache(REDIS_PROMPT_CHECK_KEY)
     return row
 
 

@@ -30,6 +30,10 @@ import utils.database.models  # noqa: E402,F401 needed before importing the rout
 from backend.config import MAX_TURNS_PER_COMPARISON  # noqa: E402
 
 
+async def solved(_token):
+    return True, None
+
+
 @contextlib.contextmanager
 def patched(module, **attributes):
     originals = {name: getattr(module, name) for name in attributes}
@@ -72,13 +76,13 @@ def send_follow_up(comparison):
 
 
 def test_a_conversation_below_the_cap_goes_through():
-    with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
+    with patched(arena_router, verify_altcha_token=solved):
         response = send_follow_up(comparison_with(MAX_TURNS_PER_COMPARISON - 1))
     assert response.status_code == 200
 
 
 def test_a_conversation_at_the_cap_is_refused():
-    with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
+    with patched(arena_router, verify_altcha_token=solved):
         try:
             send_follow_up(comparison_with(MAX_TURNS_PER_COMPARISON))
         except HTTPException as error:
@@ -92,7 +96,7 @@ def test_a_conversation_at_the_cap_is_refused():
 def test_the_cap_is_not_a_ceiling_that_can_be_stepped_over():
     """A transcript already past the cap (an older row, a raised then lowered
     setting) must not be allowed to keep growing."""
-    with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
+    with patched(arena_router, verify_altcha_token=solved):
         try:
             send_follow_up(comparison_with(MAX_TURNS_PER_COMPARISON + 5))
         except HTTPException as error:

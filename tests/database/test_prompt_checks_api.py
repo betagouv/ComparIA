@@ -70,9 +70,11 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
 @pytest.fixture
 def invalidations(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     calls: list[str] = []
-    monkeypatch.setattr(
-        prompt_checks_module, "invalidate_cache", lambda key: calls.append(key)
-    )
+
+    async def record(key: str) -> None:
+        calls.append(key)
+
+    monkeypatch.setattr(prompt_checks_module, "invalidate_cache", record)
     return calls
 
 

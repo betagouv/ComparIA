@@ -54,6 +54,10 @@ class FakeSession:
         return FakeResult([])
 
 
+async def solved(_token):
+    return True, None
+
+
 @contextlib.contextmanager
 def patched(module, **attributes):
     originals = {name: getattr(module, name) for name in attributes}
@@ -88,7 +92,7 @@ def arena(active_document):
         # The response streams the models, which is not what these tests check.
         raise HTTPException(status_code=503, detail="stop here")
 
-    with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
+    with patched(arena_router, verify_altcha_token=solved):
         with patched(
             auth_services,
             get_session=contextlib.asynccontextmanager(get_session),

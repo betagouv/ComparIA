@@ -59,8 +59,10 @@ BASE_TIME = datetime(2026, 1, 1, 12, 0, 0)
 TRUNCATE = "TRUNCATE prompt_suggestion, suggestion_category, auth_user CASCADE"
 
 
-def _clear_public_suggestions_cache() -> None:
-    suggestion_services.invalidate_cache(suggestion_services.REDIS_SUGGESTIONS_KEY)
+async def _clear_public_suggestions_cache() -> None:
+    await suggestion_services.invalidate_cache(
+        suggestion_services.REDIS_SUGGESTIONS_KEY
+    )
 
 
 def _async_url(url: str) -> str:
@@ -90,14 +92,14 @@ def _run(scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
         try:
             async with engine.begin() as connection:
                 await connection.execute(text(TRUNCATE))
-            _clear_public_suggestions_cache()
+            await _clear_public_suggestions_cache()
             async with session_scope() as session:
                 return await scenario(session)
         finally:
             suggestion_services.get_session = original_get_session  # type: ignore[assignment]
             async with engine.begin() as connection:
                 await connection.execute(text(TRUNCATE))
-            _clear_public_suggestions_cache()
+            await _clear_public_suggestions_cache()
             await engine.dispose()
 
     return asyncio.run(main())
@@ -261,7 +263,7 @@ def test_public_suggestions_are_served_from_the_cache_until_invalidated() -> Non
         await session.commit()
 
         assert len((await list_public_suggestions("fr")).categories) == 2
-        _clear_public_suggestions_cache()
+        await _clear_public_suggestions_cache()
         assert (await list_public_suggestions("fr")).categories == []
 
     _run(scenario)

@@ -231,7 +231,7 @@ async def create_vote_tag(data: VoteTagCreate) -> AdminVoteTag:
         except IntegrityError as error:
             await session.rollback()
             raise VoteTagAlreadyExistsError() from error
-        invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        await invalidate_cache(REDIS_VOTE_TAGS_KEY)
         await session.refresh(tag)
         return _to_admin_tag(tag, 0)
 
@@ -253,7 +253,7 @@ async def update_vote_tag(tag_id: uuid.UUID, data: VoteTagUpdate) -> AdminVoteTa
         tag.updated_at = datetime.now()
         session.add(tag)
         await session.commit()
-        invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        await invalidate_cache(REDIS_VOTE_TAGS_KEY)
         await session.refresh(tag)
         return _to_admin_tag(tag, await _count_usage(session, tag.key))
 
@@ -272,7 +272,7 @@ async def set_vote_tag_archived(
         tag.updated_at = now
         session.add(tag)
         await session.commit()
-        invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        await invalidate_cache(REDIS_VOTE_TAGS_KEY)
         await session.refresh(tag)
         return _to_admin_tag(tag, await _count_usage(session, tag.key))
 
@@ -295,7 +295,7 @@ async def delete_vote_tag(tag_id: uuid.UUID, *, updated_by: uuid.UUID) -> None:
 
         await session.delete(tag)
         await session.commit()
-        invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        await invalidate_cache(REDIS_VOTE_TAGS_KEY)
 
 
 async def reorder_vote_tags(
@@ -319,6 +319,6 @@ async def reorder_vote_tags(
             row.display_order = position
             session.add(row)
         await session.commit()
-        invalidate_cache(REDIS_VOTE_TAGS_KEY)
+        await invalidate_cache(REDIS_VOTE_TAGS_KEY)
 
     return await list_admin_vote_tags()

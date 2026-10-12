@@ -618,6 +618,10 @@ def test_archive_category_passes_admin_and_archive_state(monkeypatch):
     }
 
 
+async def _async_noop(_key: str) -> str:
+    return ""
+
+
 def test_archive_category_service_preserves_individual_suggestion_status(monkeypatch):
     category = SimpleNamespace(
         id=_category().id,
@@ -666,7 +670,7 @@ def test_archive_category_service_preserves_individual_suggestion_status(monkeyp
         yield session
 
     monkeypatch.setattr(suggestion_services, "get_session", fake_get_session)
-    monkeypatch.setattr(suggestion_services, "invalidate_cache", lambda key: None)
+    monkeypatch.setattr(suggestion_services, "invalidate_cache", _async_noop)
     admin_id = uuid.UUID("00000000-0000-0000-0000-000000000003")
 
     result = asyncio.run(

@@ -33,7 +33,7 @@ from utils.storage.redis import (
     REDIS_CHECK_SCORES_KEY,
     REDIS_CHECK_WARNING_TOKEN_KEY,
     REDIS_CHECK_WARNINGS_KEY,
-    get_redis_client,
+    get_async_redis_client,
     hash_content,
 )
 
@@ -118,22 +118,22 @@ def verdict(
     )
 
 
-def _count_failure(failed: bool) -> None:
+async def _count_failure(failed: bool) -> None:
     """Track consecutive moderation failures so a dark check stays visible.
 
     Read back by `utils.database.prompt_checks.get_consecutive_failures`.
     """
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         if failed:
-            client.incr(REDIS_CHECK_FAILURES_KEY)
+            await client.incr(REDIS_CHECK_FAILURES_KEY)
         else:
-            client.delete(REDIS_CHECK_FAILURES_KEY)
+            await client.delete(REDIS_CHECK_FAILURES_KEY)
     except Exception as e:
         logger.error(f"[CHECKS] Error updating failure count: {e}")
 
 
-def count_warning_shown() -> None:
+async def count_warning_shown() -> None:
     """Count one warning put in front of a user.
 
     Read back by `utils.database.prompt_checks.get_warnings_shown`. The turns
@@ -141,7 +141,7 @@ def count_warning_shown() -> None:
     that number is measured against.
     """
     try:
-        get_redis_client().incr(REDIS_CHECK_WARNINGS_KEY)
+        await get_async_redis_client().incr(REDIS_CHECK_WARNINGS_KEY)
     except Exception as e:
         logger.error(f"[CHECKS] Error counting warning: {e}")
 
@@ -152,10 +152,10 @@ def _scores_cache_key(text: str, model: str) -> str:
     )
 
 
-def read_cached_scores(text: str, model: str) -> dict[str, float] | None:
+async def read_cached_scores(text: str, model: str) -> dict[str, float] | None:
     """Scores already computed for this exact prompt, if any."""
     try:
-        raw = get_redis_client().get(_scores_cache_key(text, model))
+        raw = await get_async_redis_client().get(_scores_cache_key(text, model))
     except Exception as e:
         logger.warning(f"[CHECKS] Error reading cached scores: {e}")
         return None
@@ -170,9 +170,9 @@ def read_cached_scores(text: str, model: str) -> dict[str, float] | None:
         return None
 
 
-def write_cached_scores(text: str, model: str, scores: dict[str, float]) -> None:
+async def write_cached_scores(text: str, model: str, scores: dict[str, float]) -> None:
     try:
-        get_redis_client().setex(
+        await get_async_redis_client().setex(
             _scores_cache_key(text, model),
             SCORES_TTL,
             json.dumps(scores),
@@ -181,10 +181,10 @@ def write_cached_scores(text: str, model: str, scores: dict[str, float]) -> None
         logger.warning(f"[CHECKS] Error caching scores: {e}")
 
 
-def issue_warning_token(text: str, model: str) -> str:
+async def issue_warning_token(text: str, model: str) -> str:
     """Return a short-lived, one-time proof that this prompt was warned."""
     token = secrets.token_urlsafe(32)
-    get_redis_client().setex(
+    await get_async_redis_client().setex(
         REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token),
         SCORES_TTL,
         json.dumps({"prompt_hash": hash_content(text), "model": model}),
@@ -192,14 +192,14 @@ def issue_warning_token(text: str, model: str) -> str:
     return token
 
 
-def consume_warning_token(text: str, model: str, token: str | None) -> bool:
+async def consume_warning_token(text: str, model: str, token: str | None) -> bool:
     """Accept an acknowledgement only after a matching server warning."""
     if not token:
         return False
     key = REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token)
     try:
-        client = get_redis_client()
-        expected = client.getdel(key)
+        client = get_async_redis_client()
+        expected = await client.getdel(key)
     except Exception as e:
         logger.warning(f"[CHECKS] Error consuming warning token: {e}")
         return False
@@ -240,7 +240,7 @@ async def run_prompt_check(
         return None
 
     started = time.monotonic()
-    cached = read_cached_scores(text, check.model)
+    cached = await read_cached_scores(text, check.model)
 
     if cached is not None:
         scores, latency_ms = cached, 0
@@ -252,20 +252,20 @@ async def run_prompt_check(
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})
             if settings.SENTRY_DSN:
                 sentry_sdk.capture_exception(e)
-            _count_failure(failed=True)
+            await _count_failure(failed=True)
             return PromptCheckResult(
                 decision="error", model=check.model, latency_ms=latency_ms
             )
 
         latency_ms = int((time.monotonic() - started) * 1000)
-        _count_failure(failed=False)
+        await _count_failure(failed=False)
 
-    acknowledged = consume_warning_token(text, check.model, warning_token)
+    acknowledged = await consume_warning_token(text, check.model, warning_token)
     result = verdict(check, scores, latency_ms)
 
     if result.decision == "warned":
         if cached is None:
-            write_cached_scores(text, check.model, scores)
+            await write_cached_scores(text, check.model, scores)
         result.user_proceeded = acknowledged
 
     logger.info(

@@ -100,7 +100,7 @@ async def upsert_llm(body: LLMDataUpsert) -> LLMData:
     async with get_session() as session:
         db_llm = await upsert_llm_data(body, session)
         await session.refresh(db_llm)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return db_llm
 
 
@@ -112,7 +112,7 @@ async def upsert_endpoint(body: LLMEndpointUpsert) -> LLMEndpointPublic:
         # Commit expires the attributes, and the instance detaches when the
         # session closes, so refresh and build the payload here.
         await session.refresh(endpoint)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_endpoint_public(endpoint)
 
 
@@ -122,7 +122,7 @@ async def delete_endpoint_api_key(endpoint_id: UUID) -> LLMEndpointPublic:
         endpoint = await clear_llm_endpoint_api_key(endpoint_id, session)
         if not endpoint:
             raise HTTPException(status_code=404, detail="endpoint_not_found")
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_endpoint_public(endpoint)
 
 
@@ -131,7 +131,7 @@ async def delete_endpoint_api_key(endpoint_id: UUID) -> LLMEndpointPublic:
 async def upsert_lab(body: LLMLabUpsert):
     async with get_session() as session:
         db_lab = await upsert_llm_lab(body, session)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         await session.refresh(db_lab)
         return _to_lab_public(db_lab)
 
@@ -148,7 +148,7 @@ async def upload_lab_logo(lab_id: UUID, file: UploadFile):
         session.add(lab)
         await session.commit()
         await session.refresh(lab)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_lab_public(lab)
 
 
@@ -163,7 +163,7 @@ async def delete_lab_logo(lab_id: UUID):
         session.add(lab)
         await session.commit()
         await session.refresh(lab)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return _to_lab_public(lab)
 
 
@@ -173,5 +173,5 @@ async def upsert_license(body: LLMLicenseUpsert) -> LLMLicense:
     async with get_session() as session:
         db_license = await upsert_llm_license(body, session)
         await session.refresh(db_license)
-        invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
+        await invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return db_license

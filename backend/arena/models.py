@@ -6,7 +6,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
 
-from backend.arena.captcha import verify_altcha_token
 from backend.arena.spam_detection import is_spam
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -27,6 +26,8 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: CustomModelsSelection = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
+    # Checked by `assert_captcha` in the route: it needs Redis, which a
+    # validator cannot await.
     altcha_token: str
     web_search: bool = False
     # One-time server proof returned with a warning for this exact prompt.
@@ -55,20 +56,12 @@ class AddFirstTextBody(BaseModel):
             raise ValueError("spam_detected")
         return v
 
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
-
 
 class AddTextBody(BaseModel):
     """Request body for add_text endpoint."""
 
     message: str = PromptField
-    altcha_token: str
+    altcha_token: str  # see AddFirstTextBody
     warning_token: str | None = None
 
     @field_validator("message")
@@ -76,12 +69,4 @@ class AddTextBody(BaseModel):
     def check_spam(cls, v: str) -> str:
         if is_spam(v):
             raise ValueError("spam_detected")
-        return v
-
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
         return v

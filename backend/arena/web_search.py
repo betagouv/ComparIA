@@ -4,12 +4,16 @@ Web search function and cache utils.
 
 import json
 import logging
-from typing import Any, cast
+from typing import Any
 
 from linkup import LinkupClient, LinkupSearchResults, LinkupSearchTextResult
 
 from backend.config import WEB_SEARCH_INTRO, settings
-from utils.storage.redis import REDIS_WEB_SEARCH_KEY, get_redis_client, hash_content
+from utils.storage.redis import (
+    REDIS_WEB_SEARCH_KEY,
+    get_async_redis_client,
+    hash_content,
+)
 
 logger = logging.getLogger("languia")
 
@@ -27,7 +31,7 @@ async def search_web(
         return None
 
     if use_cache:
-        if cached_results := get_cached_web_search(content):
+        if cached_results := await get_cached_web_search(content):
             return cached_results
 
     try:
@@ -46,7 +50,7 @@ async def search_web(
         ]
 
         if use_cache:
-            store_cached_search_results(content, results)
+            await store_cached_search_results(content, results)
 
         return results
 
@@ -72,7 +76,7 @@ def merge_web_search_with_content(
     )
 
 
-def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
+async def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
     """
     Try to get a cached web search results for this prompt.
     """
@@ -80,9 +84,9 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
         return None
 
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         key = REDIS_WEB_SEARCH_KEY.format(prompt_hash=hash_content(prompt))
-        data = cast(Any, client.get(key))
+        data = await client.get(key)
         if not data:
             return None
 
@@ -98,7 +102,7 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
         return None
 
 
-def store_cached_search_results(
+async def store_cached_search_results(
     prompt: str, web_search_results: list[LinkupSearchTextResult]
 ) -> None:
     """
@@ -108,10 +112,10 @@ def store_cached_search_results(
         return
 
     try:
-        client = get_redis_client()
+        client = get_async_redis_client()
         key = REDIS_WEB_SEARCH_KEY.format(prompt_hash=hash_content(prompt))
 
-        client.setex(
+        await client.setex(
             key,
             settings.CACHE_TTL,
             json.dumps([result.model_dump() for result in web_search_results]),
