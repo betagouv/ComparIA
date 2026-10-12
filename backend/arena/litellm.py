@@ -11,6 +11,11 @@ from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
 
 import litellm
 
+# litellm imports the provider client lazily, several hundred modules, on the
+# first call. Loaded here, at startup, it no longer freezes the event loop
+# for every visitor during a worker's first comparison.
+import openai.resources  # noqa: F401
+
 from backend.config import (
     GLOBAL_TIMEOUT,
     ORDBOGEN_GLOBAL_TIMEOUT,
