@@ -17,6 +17,7 @@ import numpy as np
 from backend.llms.models import DatasetData, PreferencesData, RankingVariant
 from backend.vote_tags.services import get_active_vote_tags, get_all_vote_tag_signs
 from utils.database.models.vote_tag import VoteTagSign
+from utils.database.settings import get_app_settings
 from utils.ranking.bradley_terry import Battle, bootstrap_confidence_intervals
 from utils.ranking.queries import fetch_votes
 from utils.ranking.style_control import (
@@ -192,6 +193,7 @@ def _compute_ranking(
     signs: dict[str, VoteTagSign],
     *,
     with_ratio: bool,
+    min_votes: int = 0,
 ) -> RankingResult:
     """Compute ranking and preferences for a single group of votes/reactions."""
     all_battles, style_a, style_b = _votes_to_battles(votes)
@@ -222,8 +224,20 @@ def _compute_ranking(
         match_counts[b] += 1
         win_counts[winner] += 1
 
-    controlled = _variant_table(ci_controlled, match_counts, win_counts)
-    plain = _variant_table(ci_plain, match_counts, win_counts)
+    # Models under the vote minimum stay in the fit, so their battles still
+    # inform their opponents' scores, but are left out of the table: their wide
+    # intervals would otherwise widen every other model's rank bounds.
+    eligible = {m for m, n in match_counts.items() if n >= min_votes}
+    controlled = _variant_table(
+        {m: v for m, v in ci_controlled.items() if m in eligible},
+        match_counts,
+        win_counts,
+    )
+    plain = _variant_table(
+        {m: v for m, v in ci_plain.items() if m in eligible},
+        match_counts,
+        win_counts,
+    )
 
     rankings: dict[UUID, DatasetData] = {}
     for model, fields in controlled.items():
@@ -267,9 +281,15 @@ async def compute_ranking() -> RankingResult | None:
     # rather than reported as zero.
     active_signs = {tag.sign for tag in await get_active_vote_tags()}
     with_ratio = {"positive", "negative"} <= active_signs
+    app_settings = await get_app_settings()
 
     try:
-        ranking = _compute_ranking(all_votes, signs, with_ratio=with_ratio)
+        ranking = _compute_ranking(
+            all_votes,
+            signs,
+            with_ratio=with_ratio,
+            min_votes=app_settings.ranking_min_votes,
+        )
         elapsed = time.time() - start
         logger.info(f"[Ranking] Updated ranking in {elapsed:.1f}s")
 
