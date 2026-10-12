@@ -175,7 +175,7 @@ def test_one_ipv6_subscriber_shares_one_budget():
     """An IPv6 connection usually owns a whole /64, so changing the last bits
     of the address must not buy a fresh budget."""
     with fake_redis():
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a",
             "2001:db8:1:2::1",
             RATELIMIT_PRICEY_MODELS_INPUT_PER_IP + 1,

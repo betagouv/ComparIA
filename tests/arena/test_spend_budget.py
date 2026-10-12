@@ -111,7 +111,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             pricey_models=[PRICEY],
         )
 
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return SimpleNamespace(pending_warning=False)
 
     async def save_prompt_check_result(check):
