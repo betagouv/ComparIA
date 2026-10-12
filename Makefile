@@ -70,6 +70,10 @@ db-seed-admins: ## Promote ADMIN_EMAILS users to admin role (requires COMPARIA_D
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db seed-admins
 
+db-seed-activity: ## Fill a debug database with fake conversations (usage: make db-seed-activity COUNT=500000, requires COMPARIA_DB_URI and LANGUIA_DEBUG=true)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db seed-activity --count $(or $(COUNT),1000)
+
 db-reset-totp: ## Forget an admin's authenticator app and sign them out (usage: make db-reset-totp EMAIL=admin@example.org, requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	@if [ -z "$(EMAIL)" ]; then echo "Error: EMAIL is not set"; exit 1; fi

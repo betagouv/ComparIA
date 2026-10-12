@@ -5,6 +5,168 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface ActivityConversation {
+  id: string;
+  created_at: string;
+  mode: string;
+  cohorts: string | null;
+  revealed: boolean;
+  revealed_at: string | null;
+  model_a: ActivityLLM | null;
+  model_b: ActivityLLM | null;
+  system_msg_a: string | null;
+  system_msg_b: string | null;
+  llm_analyzed: boolean;
+  short_summary: string | null;
+  keywords: string[];
+  categories: string[];
+  languages: string[];
+  contains_pii: boolean;
+  contains_spam: boolean;
+  archived: boolean;
+  archived_reason:
+    | (
+        | "corrupted_no_model"
+        | "corrupted_against_self"
+        | "corrupted_no_response"
+        | "corrupted_response_all_none"
+        | "corrupted_response_last_none"
+        | "corrupted_response_some_none"
+        | "corrupted_response_all_empty"
+        | "corrupted_response_last_empty"
+        | "corrupted_response_some_empty"
+        | "corrupted_model_stream"
+        | "corrupted_not_equal_length"
+        | "spam"
+        | "pii"
+        | "unknown_llm"
+        | "blacklist_grok"
+        | "unknown"
+      )
+    | null;
+  error: ErrorDetails | null;
+  turns: ActivityTurn[];
+}
+export interface ActivityLLM {
+  id: string;
+  name: string;
+  human_id: string;
+  [k: string]: unknown;
+}
+export interface ErrorDetails {
+  code?: ("timeout" | "context_too_long" | "empty_response" | "provider_error") | null;
+  message: string;
+  pos?: ("a" | "b") | null;
+  is_timeout?: boolean;
+  [k: string]: unknown;
+}
+export interface ActivityTurn {
+  id: string;
+  created_at: string;
+  prompt: string;
+  web_search_results:
+    | {
+        [k: string]: unknown;
+      }[]
+    | null;
+  answer_a: ActivityAnswer | null;
+  answer_b: ActivityAnswer | null;
+  choice: ("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null;
+  voted_at: string | null;
+  tags_a: string[];
+  tags_b: string[];
+  comment_a: string | null;
+  comment_b: string | null;
+  prompt_check: ActivityPromptCheck | null;
+  [k: string]: unknown;
+}
+export interface ActivityAnswer {
+  content: string;
+  reasoning_content: string | null;
+  tokens: number | null;
+  duration_ms: number | null;
+  [k: string]: unknown;
+}
+export interface ActivityPromptCheck {
+  decision: string;
+  model: string;
+  triggered: {
+    [k: string]: string;
+  };
+  user_proceeded: boolean;
+  [k: string]: unknown;
+}
+export interface ActivityConversationsPage {
+  items: ActivityConversationRow[];
+  next_cursor: string | null;
+  total: number | null;
+  total_capped: boolean;
+}
+export interface ActivityConversationRow {
+  id: string;
+  created_at: string;
+  mode: string;
+  cohorts: string | null;
+  model_a: ActivityLLM | null;
+  model_b: ActivityLLM | null;
+  first_prompt: string;
+  turns: number;
+  choices: (("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null)[];
+  tags_a: string[];
+  tags_b: string[];
+  has_comment: boolean;
+  comment: string | null;
+  revealed: boolean;
+  categories: string[];
+  llm_analyzed: boolean;
+  contains_pii: boolean;
+  contains_spam: boolean;
+  archived: boolean;
+  has_error: boolean;
+  [k: string]: unknown;
+}
+export interface ActivityFilterOptions {
+  llms: ActivityLLM[];
+  cohorts: string[];
+  categories: string[];
+}
+export interface ActivityOverview {
+  range_start: string | null;
+  range_end: string;
+  bucket: "hour" | "day" | "week" | "month";
+  totals: ActivityTotals;
+  activity: ActivityPoint[];
+  choices: {
+    [k: string]: number;
+  };
+  modes: {
+    [k: string]: number;
+  };
+  computed_at: string;
+}
+export interface ActivityTotals {
+  conversations: number;
+  prompts: number;
+  votes: number;
+  idk: number;
+  comments: number;
+  tagged: number;
+  voted_conversations: number;
+  revealed_conversations: number;
+  errored_conversations: number;
+  [k: string]: unknown;
+}
+export interface ActivityPoint {
+  date: string;
+  conversations: number;
+  prompts: number;
+  votes: number;
+  partial?: boolean;
+  projected_conversations?: number | null;
+  projected_prompts?: number | null;
+  projected_votes?: number | null;
+  [k: string]: unknown;
+}
 export interface AdminLegalDocument {
   id: string;
   kind: "terms" | "privacy_policy";

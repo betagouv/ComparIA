@@ -11,7 +11,14 @@ export type StatisticsSummary = {
   conversations_count: number
   votes_count: number
   models_count: number
-  activity: Array<{ date: string; prompts: number; conversations: number }>
+  activity: Array<{
+    date: string
+    prompts: number
+    conversations: number
+    partial: boolean
+    projected_prompts: number | null
+    projected_conversations: number | null
+  }>
 }
 
 export const load: PageLoad = async ({ fetch, url }) => {

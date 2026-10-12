@@ -17,3 +17,4 @@ from .purge_retention import purge_retention
 from .reencrypt_secrets import reencrypt_secrets
 from .reset_totp import reset_totp
 from .seed import seed_admins
+from .seed_activity import seed_activity
