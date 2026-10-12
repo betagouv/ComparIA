@@ -102,6 +102,7 @@ export interface LLMList {
   style_coefficients: {
     [k: string]: number;
   } | null;
+  max_rank_spread: number;
   currency: CurrencyInfo;
 }
 /**
