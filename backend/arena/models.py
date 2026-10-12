@@ -85,3 +85,18 @@ class AddTextBody(BaseModel):
         if not ok:
             raise ValueError("captcha_failed")
         return v
+
+
+class RetryBody(BaseModel):
+    """Request body for retry endpoint. A retry calls both models again, so it
+    takes the same proof of work as a new message."""
+
+    altcha_token: str
+
+    @field_validator("altcha_token")
+    @classmethod
+    def check_altcha(cls, v: str) -> str:
+        ok, error = verify_altcha_token(v)
+        if not ok:
+            raise ValueError("captcha_failed")
+        return v

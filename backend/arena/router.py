@@ -12,7 +12,7 @@ from backend.arena.checks import (
     issue_warning_token,
     run_prompt_check,
 )
-from backend.arena.models import AddFirstTextBody, AddTextBody
+from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -425,6 +425,7 @@ async def add_text(
 @router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
 async def retry(
     comparison: ComparisonAnno,
+    args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
@@ -436,6 +437,7 @@ async def retry(
 
     Args:
         comparison: linked Comparison
+        args: Request body with the captcha solution
         request: FastAPI request for logging
 
     Returns:
