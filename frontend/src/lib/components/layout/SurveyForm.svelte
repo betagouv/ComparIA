@@ -42,6 +42,12 @@
   let errors = $state<Record<string, string>>({})
   let failed = $state(false)
 
+  function sameValue(a: string | string[] | null, b: string | string[] | null) {
+    const normalize = (value: string | string[] | null) =>
+      Array.isArray(value) ? (value.length ? [...value].sort().join('\n') : null) : value || null
+    return normalize(a) === normalize(b)
+  }
+
   async function onBeforeSubmit() {
     failed = false
     // Checked here rather than left to the browser: a group of checkboxes has
@@ -50,12 +56,22 @@
     errors = requiredErrors(form, items)
     if (Object.keys(errors).length) return false
 
-    // Blank questions are sent too: a nullish value is how an answer is cleared,
-    // and on a question never answered it changes nothing.
-    const updatedAnswers = questions.map((field) => ({
-      question_id: field.id,
-      value: form[field.id]
-    }))
+    // The backend counts a blank question as one showing of it. In the popup
+    // that is the point: every question was put to the person. On the profile
+    // page it is not, so only the questions the person changed are sent, and
+    // a blank one there means an answer cleared.
+    const saved = answersToForm(survey.answers, questions)
+    const updatedAnswers = questions
+      .filter((field) => onlyUnanswered || !sameValue(form[field.id], saved[field.id]))
+      .map((field) => ({
+        question_id: field.id,
+        value: form[field.id]
+      }))
+
+    if (!updatedAnswers.length) {
+      onSuccess?.(updatedAnswers)
+      return
+    }
 
     try {
       await api.request('/survey/answers', {
