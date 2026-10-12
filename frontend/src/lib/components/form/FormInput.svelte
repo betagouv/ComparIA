@@ -5,6 +5,7 @@
     step?: HTMLInputElement['step']
     // Id of a <datalist> suggesting values without limiting the field to them.
     list?: string
+    maxlength?: HTMLInputElement['maxLength']
   } & BaseFormFieldProps<'input'>
 </script>
 
