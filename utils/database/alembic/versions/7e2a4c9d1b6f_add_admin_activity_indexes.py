@@ -1,7 +1,7 @@
 """add_admin_activity_indexes
 
 Revision ID: 7e2a4c9d1b6f
-Revises: 5c8bd69940b5
+Revises: c3e7a9b2d4f6
 Create Date: 2026-10-05 00:00:00.000000
 
 """
@@ -14,7 +14,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "7e2a4c9d1b6f"
-down_revision: Union[str, Sequence[str], None] = "5c8bd69940b5"
+down_revision: Union[str, Sequence[str], None] = "c3e7a9b2d4f6"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
