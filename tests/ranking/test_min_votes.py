@@ -56,13 +56,22 @@ def test_minimum_leaves_out_models_below_it():
     assert sorted(r.rank for r in result.rankings.values()) == [1, 2, 3]
     assert all(r.rank_p97_5 <= 3 for r in result.rankings.values())
     # Uncontrolled view is filtered the same way.
-    assert all(r.uncontrolled is not None for r in result.rankings.values())
+    assert sorted(r.uncontrolled.rank for r in result.rankings.values()) == [1, 2, 3]
+    assert all(r.uncontrolled.rank_p97_5 <= 3 for r in result.rankings.values())
 
 
 def test_models_below_minimum_still_count_in_the_fit():
     """RARE's battles stay in the fit, so their opponents' vote counts include them."""
     result = _compute_ranking(_votes(), {}, with_ratio=False, min_votes=50)
     assert result.rankings[WEAK].n_match == 400 + 3
+    # Same fit as with no minimum, so the point scores do not move.
+    unfiltered = _compute_ranking(_votes(), {}, with_ratio=False)
+    for model in (STRONG, MEDIUM, WEAK):
+        assert result.rankings[model].elo == unfiltered.rankings[model].elo
+        assert (
+            result.rankings[model].uncontrolled.elo
+            == unfiltered.rankings[model].uncontrolled.elo
+        )
 
 
 if __name__ == "__main__":
