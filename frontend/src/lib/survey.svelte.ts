@@ -48,7 +48,9 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
   let showRequiredSurvey = $state(auth.user?.questionsAnswered === false)
   // Whether there is anything to ask and whether this visitor has already been offered the popup.
   // FIXME hardcoded: do not show survey for 'pix' cohorts
-  const showSurveyCard = $derived(cohorts !== 'pix' && !!hasNeverAnsweredQuestions)
+  const showSurveyCard = $derived(
+    !cohorts?.split(',').includes('pix') && !!hasNeverAnsweredQuestions
+  )
 
   const state: SurveyCtx = {
     get showRequiredSurvey() {
