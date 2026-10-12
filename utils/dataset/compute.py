@@ -174,7 +174,7 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     grouped by respondent (see `_respondent_key`). Loaded once (cached) for
     the whole export rather than queried per turn or per comparison: the
     export streams millions of turns, but the answer table itself is small
-    (one row per option per question per respondent), so one join beats a
+    (one row per question per respondent), so one join beats a
     query per row.
 
     Unpublished and archived questions are filtered out here, at the source:
@@ -209,9 +209,10 @@ def fold_survey_answers(rows) -> dict[str, RespondentAnswers]:
         if respondent is None:
             continue
         per_respondent = answers.setdefault(respondent, {})
+        # A checkbox answer is already the list of chosen options, one row per
+        # question. Sorted so the same choices always publish the same way.
         if input_type == "checkbox_group":
-            per_respondent.setdefault(question_key, [])  # type: ignore[assignment]
-            per_respondent[question_key].append(value)  # type: ignore[union-attr]
+            per_respondent[question_key] = sorted(value)
         else:
             per_respondent[question_key] = value
     return answers
