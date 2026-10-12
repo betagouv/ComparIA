@@ -29,9 +29,9 @@ from backend.arena.services import (
 from backend.arena.session import (
     ComparisonMetadata,
     increment_blocked_prompts,
-    increment_input_chars,
     is_block_cooldown,
     is_ratelimited,
+    reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
 )
@@ -88,12 +88,30 @@ def assert_not_rate_limited(
         )
 
 
-def _is_pricey(comparison: ComparisonRead, llms_data: LLMsData) -> bool:
-    """Whether either side of this comparison is an expensive model."""
-    return any(
-        llm_id in llms_data.pricey_models
-        for llm_id in (comparison.llm_id_a, comparison.llm_id_b)
-    )
+def charge_budget(
+    text: str,
+    llm_ids: tuple[UUID, UUID],
+    llms_data: LLMsData,
+    anonymous_user_hash: str,
+    request: Request,
+) -> None:
+    """
+    Spend the message's characters against the session and IP budgets before
+    any model is called. The charge used to wait for a full, error-free answer,
+    so a client that hung up halfway, or sent many requests at once, never paid.
+    No refund when a model then fails: an error a client can provoke would buy
+    whatever the models had already written.
+    """
+    pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
+    if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
+        logger.error(
+            "Too much text submitted to the models for anonymous session",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
 
 
 def assert_not_block_cooldown(request: Request) -> None:
@@ -257,7 +275,6 @@ async def add_first_text(
     )
     if check and check.pending_warning:
         return warning_response(check, args.prompt_value)
-    check = (await save_prompt_check_result(check)) if check else None
 
     # Select LLMs
     llms_data = await get_llms_data()
@@ -266,6 +283,11 @@ async def add_first_text(
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
+
+    charge_budget(
+        args.prompt_value, (llm_a_id, llm_b_id), llms_data, anonymous_user_hash, request
+    )
+    check = (await save_prompt_check_result(check)) if check else None
 
     web_search_results = None
     if args.web_search:
@@ -323,13 +345,6 @@ async def add_first_text(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.prompt_value),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
@@ -383,6 +398,14 @@ async def add_text(
     check = await run_checks(args.message, "message", request, args.warning_token)
     if check and check.pending_warning:
         return warning_response(check, args.message)
+
+    charge_budget(
+        args.message,
+        (comparison_.llm_id_a, comparison_.llm_id_b),
+        await get_llms_data(),
+        anonymous_user_hash,
+        request,
+    )
     check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
@@ -407,14 +430,6 @@ async def add_text(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.message),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
@@ -472,6 +487,14 @@ async def retry(
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
+    charge_budget(
+        turn.user_msg.content,
+        (comparison.llm_id_a, comparison.llm_id_b),
+        await get_llms_data(),
+        anonymous_user_hash,
+        request,
+    )
+
     await update_comparison_error(comparison, None)
 
     store_comparison_metadata(comparison.id, is_streaming=True)
@@ -493,14 +516,6 @@ async def retry(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(turn.user_msg.content),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)

@@ -97,32 +97,87 @@ def _budget_key(pool: str, identity: str) -> str:
     return REDIS_USER_CHAR_COUNT.format(key=f"{pool}:{identity}")
 
 
-def increment_input_chars(key: str, ip: str, input_chars: int, pricey: bool) -> None:
+# Counters expire 2 hours after the last message they let through.
+BUDGET_TTL_SECONDS = 3600 * 2
+
+
+def _budgets(key: str, ip: str, pricey: bool = True) -> list[tuple[str, int]]:
     """
-    Track input character count for rate limiting.
+    The Redis counter and limit of each budget a message spends.
 
     Every message counts against the whole-pool budgets; only messages sent to
     an expensive model also count against the pricey ones. Each budget is
     counted twice, once per anonymous session and once per IP.
+    """
+    budgets = (
+        # Rate limit is 2x the configured limit for pricey models
+        ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
+        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
+        ("all", key, RATELIMIT_ALL_MODELS_INPUT),
+        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+    )
+    return [
+        (_budget_key(pool, identity), limit)
+        for pool, identity, limit in budgets
+        if pricey or not pool.startswith("pricey")
+    ]
+
+
+def reserve_input_chars(key: str, ip: str, input_chars: int, pricey: bool) -> bool:
+    """
+    Charge a message's characters before any model sees it, or refuse it.
+
+    The charge comes first and the check reads the total it returns, so
+    requests sent at once each count the others, and a client that hangs up
+    halfway through the answer has already paid. A message goes through when
+    every budget it spends was within its limit before it: the rule the
+    counters always had, so the last message can overshoot by its own length.
+
+    A refused message gets its characters back. It never reached a model, and
+    left counted it would go on eating the budgets that were not spent yet,
+    such as the IP one a whole school can share.
 
     Args:
         key: anonymous session hash
         ip: caller IP
-        input_chars: Number of input characters to add to the counters
-        pricey: whether an expensive model answered this message
+        input_chars: Number of input characters the message spends
+        pricey: whether an expensive model will answer this message
+
+    Returns:
+        bool: True if the message was charged and may go to the models
     """
     client = get_redis_client()
-    pools = ["all", "all_ip"] + (["pricey", "pricey_ip"] if pricey else [])
-    for pool in pools:
-        redis_key = _budget_key(pool, ip if pool.endswith("_ip") else key)
-        client.incrby(redis_key, input_chars)
-        # Set counter to expire in 2 hours (3600 * 2 seconds)
-        client.expire(redis_key, 3600 * 2)
+    budgets = _budgets(key, ip, pricey)
+
+    pipe = client.pipeline()
+    for redis_key, _limit in budgets:
+        # A counter gets its expiry in the same step that creates it. Left to a
+        # later call, a Redis error in between would leave a counter that never
+        # expires, and an IP locked out for good.
+        pipe.set(redis_key, 0, ex=BUDGET_TTL_SECONDS, nx=True)
+        pipe.incrby(redis_key, input_chars)
+    totals: list[int] = pipe.execute()[1::2]
+
+    allowed = all(
+        total - input_chars <= limit for total, (_, limit) in zip(totals, budgets)
+    )
+    pipe = client.pipeline()
+    for redis_key, _limit in budgets:
+        # A refused message leaves the window where it was.
+        if allowed:
+            pipe.expire(redis_key, BUDGET_TTL_SECONDS)
+        else:
+            pipe.decrby(redis_key, input_chars)
+    pipe.execute()
+    return allowed
 
 
 def is_ratelimited(key: str, ip: str) -> bool:
     """
     Check whether this session or its IP has spent any of its four budgets.
+
+    Only a cheap early answer: it charges nothing, so the routes still go
+    through `reserve_input_chars` before calling a model.
 
     Args:
         key: anonymous session hash
@@ -132,15 +187,8 @@ def is_ratelimited(key: str, ip: str) -> bool:
         bool: True if any budget is exhausted
     """
     client = get_redis_client()
-    budgets = (
-        # Rate limit is 2x the configured limit for pricey models
-        ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
-        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
-        ("all", key, RATELIMIT_ALL_MODELS_INPUT),
-        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
-    )
-    for pool, identity, limit in budgets:
-        counter = client.get(_budget_key(pool, identity))
+    for redis_key, limit in _budgets(key, ip):
+        counter = client.get(redis_key)
         assert not isinstance(counter, Awaitable)
         if counter and int(counter) > limit:
             return True
