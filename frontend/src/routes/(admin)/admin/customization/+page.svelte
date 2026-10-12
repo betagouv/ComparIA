@@ -340,6 +340,7 @@
           id="settings-ranking-min-votes"
           type="number"
           min="0"
+          required
           label={m['admin.settings.customization.ranking.minVotes']()}
           help={m['admin.settings.customization.ranking.minVotesHelp']()}
           bind:value={rankingMinVotes}
@@ -348,6 +349,7 @@
           id="settings-ranking-max-rank-spread"
           type="number"
           min="0"
+          required
           label={m['admin.settings.customization.ranking.maxRankSpread']()}
           help={m['admin.settings.customization.ranking.maxRankSpreadHelp']()}
           bind:value={rankingMaxRankSpread}
