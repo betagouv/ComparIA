@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from backend.arena.captcha import generate_challenge
+from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
@@ -30,14 +30,17 @@ from backend.arena.services import (
 )
 from backend.arena.session import (
     ComparisonMetadata,
+    clear_unvoted,
     increment_blocked_prompts,
     increment_sent_warnings,
+    increment_unvoted,
     is_block_cooldown,
     is_ratelimited,
     is_warning_cooldown,
     reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
+    unvoted_comparisons,
 )
 from backend.arena.spam_detection import is_spam
 from backend.arena.streaming import (
@@ -48,7 +51,12 @@ from backend.arena.streaming import (
 from backend.arena.web_search import search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
-from backend.config import MAX_TURNS_PER_COMPARISON
+from backend.config import (
+    ALTCHA_HARD_MAX_NUMBER,
+    ALTCHA_MAX_NUMBER,
+    ALTCHA_UNVOTED_COMPARISONS,
+    MAX_TURNS_PER_COMPARISON,
+)
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
@@ -128,6 +136,29 @@ def assert_not_block_cooldown(
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="block_cooldown",
+        )
+
+
+def assert_captcha_paid(token: str, session: str) -> None:
+    """
+    Refuse an easy captcha from a session that has to solve hard ones. One
+    comparison of slack over `get_challenge`: the browser fetches its next
+    challenge while the comparison that crosses the line is being created, so
+    that challenge may still be an easy one.
+    """
+    if (
+        unvoted_comparisons(session) > ALTCHA_UNVOTED_COMPARISONS
+        and solved_max_number(token) < ALTCHA_HARD_MAX_NUMBER
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[
+                {
+                    "loc": ["body", "altcha_token"],
+                    "msg": "captcha_failed",
+                    "type": "value_error",
+                }
+            ],
         )
 
 
@@ -244,9 +275,12 @@ ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
 
 @router.get("/challenge")
-async def get_challenge() -> dict:
-    """Generate a new Altcha proof-of-work challenge."""
-    return generate_challenge()
+async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
+    """Generate a new Altcha proof-of-work challenge, a harder one for a session
+    that keeps starting comparisons without voting."""
+    if unvoted_comparisons(anonymous_user_hash) >= ALTCHA_UNVOTED_COMPARISONS:
+        return generate_challenge(ALTCHA_HARD_MAX_NUMBER)
+    return generate_challenge(ALTCHA_MAX_NUMBER)
 
 
 @router.post(
@@ -299,6 +333,7 @@ async def add_first_text(
         extra={"request": request},
     )
 
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
         args.prompt_value,
         "prompt_value",
@@ -349,6 +384,10 @@ async def add_first_text(
         f"Saved partial Comparison with id '{comparison.id}'",
         extra={"request": request},
     )
+    # Only new comparisons count. Someone deep in one conversation is using the
+    # arena; someone opening comparison after comparison and never voting is
+    # more likely using the models for free.
+    increment_unvoted(anonymous_user_hash)
 
     # Stream responses
     async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
@@ -430,6 +469,7 @@ async def add_text(
             detail="max_turns_reached",
         )
 
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
         args.message,
         "message",
@@ -507,6 +547,7 @@ async def retry(
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(f"'/retry' on comparison '{comparison.id}'", extra={"request": request})
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
 
     turn = comparison.turns[-1]
 
@@ -576,6 +617,7 @@ async def retry(
 async def vote(
     comparison: ComparisonAnno,
     vote: TurnVoteChoice | TurnVoteAnnotate,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> None:
     """
@@ -638,6 +680,8 @@ async def vote(
             ) from error
 
     await update_turn_vote(turn.id, vote)
+    if isinstance(vote, TurnVoteChoice):
+        clear_unvoted(anonymous_user_hash)
 
 
 @router.post("/reveal/{comparison_id}")

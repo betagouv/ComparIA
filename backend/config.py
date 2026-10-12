@@ -320,5 +320,13 @@ ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-e
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
 ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 
+# A session that keeps starting comparisons and never votes is using the arena
+# as a free model API. After this many comparisons in a row without a vote, its
+# challenges take ten times the work, until it votes again. The browser solves
+# the next challenge while the user reads the answers and types, so a person
+# rarely waits for it; a script sending at once pays the full cost every time.
+ALTCHA_UNVOTED_COMPARISONS = 5
+ALTCHA_HARD_MAX_NUMBER = ALTCHA_MAX_NUMBER * 10
+
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"

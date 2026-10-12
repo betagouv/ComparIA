@@ -30,6 +30,8 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
+# Comparisons a session started since its last vote.
+REDIS_UNVOTED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}unvoted:{{session}}"
 REDIS_AUTH_EMAIL_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_email_req:{{ip}}"
 REDIS_AUTH_OIDC_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_oidc_req:{{ip}}"
 REDIS_ANONYMOUS_CONSENT_REQ: Final[str] = (

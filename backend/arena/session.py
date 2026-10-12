@@ -24,6 +24,7 @@ from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
     REDIS_SENT_WARNINGS_KEY,
+    REDIS_UNVOTED_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
@@ -248,3 +249,31 @@ def is_warning_cooldown(session: str) -> bool:
     except Exception as e:
         logger.error(f"[SESSION] Error checking sent warnings: {e}")
         return False
+
+
+def increment_unvoted(session: str) -> None:
+    """Count a comparison a session started, until it votes. Fails open."""
+    try:
+        client = get_redis_client()
+        key = REDIS_UNVOTED_KEY.format(session=session)
+        client.incr(key)
+        client.expire(key, 86400)
+    except Exception as e:
+        logger.error(f"[SESSION] Error incrementing unvoted comparisons: {e}")
+
+
+def clear_unvoted(session: str) -> None:
+    try:
+        get_redis_client().delete(REDIS_UNVOTED_KEY.format(session=session))
+    except Exception as e:
+        logger.error(f"[SESSION] Error clearing unvoted comparisons: {e}")
+
+
+def unvoted_comparisons(session: str) -> int:
+    try:
+        counter = get_redis_client().get(REDIS_UNVOTED_KEY.format(session=session))
+        assert not isinstance(counter, Awaitable)
+        return int(counter) if counter else 0
+    except Exception as e:
+        logger.error(f"[SESSION] Error reading unvoted comparisons: {e}")
+        return 0
