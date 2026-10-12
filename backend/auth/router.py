@@ -547,8 +547,9 @@ _TOTP_ENROL_FAIL_TTL = 3600
 
 
 def _totp_enrol_guard(user_id: UUID) -> None:
-    """Wrong codes while enrolling are bounded per account. Fail-open like the
-    other Redis counters: a Redis outage must not lock admins out."""
+    """Refuse once the account is out of attempts, without spending one. For
+    a request that will not check a code. Fail-open like the other Redis
+    counters: a Redis outage must not lock admins out."""
     try:
         count = get_redis_client().get(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
         if count and int(count) >= _TOTP_ENROL_MAX_FAILS:
@@ -564,14 +565,35 @@ def _totp_enrol_guard(user_id: UUID) -> None:
         )
 
 
-def _totp_enrol_failed(user_id: UUID) -> None:
+def _totp_enrol_attempt(user_id: UUID) -> None:
+    """Spend one of the account's attempts before a code is checked, so codes
+    sent all at once cannot all be checked before the first wrong one counts.
+    A right code clears the count afterwards."""
     try:
-        client = get_redis_client()
         key = REDIS_AUTH_TOTP_FAIL.format(user=user_id)
-        if client.incr(key) == 1:
-            client.expire(key, _TOTP_ENROL_FAIL_TTL)
+        if (
+            _count_attempt(get_redis_client(), key, _TOTP_ENROL_FAIL_TTL)
+            > _TOTP_ENROL_MAX_FAILS
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, try again later.",
+            )
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not counted: {e}")
+        logger.warning(
+            f"[AUTH] Redis enrolment guard unavailable, letting through: {e}"
+        )
+
+
+def _totp_enrol_refund(user_id: UUID) -> None:
+    """Give the attempt back when no code was checked after all: a missing or
+    unreadable secret is not the admin's doing."""
+    try:
+        get_redis_client().decr(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+    except Exception as e:
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not refunded: {e}")
 
 
 def _totp_enrol_passed(user_id: UUID) -> None:
@@ -595,7 +617,10 @@ async def totp_setup(
     body: TotpSetupBody, user: RequiredUser, response: Response
 ) -> TotpSetupResponse:
     _require_admin_role(user)
-    _totp_enrol_guard(user.id)
+    if body.code:
+        _totp_enrol_attempt(user.id)
+    else:
+        _totp_enrol_guard(user.id)
     app_settings = await get_app_settings()
     try:
         setup = await start_totp_setup(user, body.code, app_settings.platform_name)
@@ -605,12 +630,13 @@ async def totp_setup(
             detail="totp_code_required",
         )
     except InvalidTotpCodeError:
-        _totp_enrol_failed(user.id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
     except SecretUnreadableError:
+        if body.code:
+            _totp_enrol_refund(user.id)
         raise TotpSecretUnreadableError()
     if body.code:
         _totp_enrol_passed(user.id)
@@ -626,23 +652,24 @@ async def totp_confirm(
     body: TotpCodeBody, user: RequiredUser, request: Request
 ) -> None:
     _require_admin_role(user)
-    _totp_enrol_guard(user.id)
+    _totp_enrol_attempt(user.id)
     try:
         await confirm_totp_setup(
             user, body.code, request.cookies.get(SESSION_COOKIE) or ""
         )
     except TotpSetupMissingError:
+        _totp_enrol_refund(user.id)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="No authenticator waiting to be confirmed, start again.",
         )
     except InvalidTotpCodeError:
-        _totp_enrol_failed(user.id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
     except SecretUnreadableError:
+        _totp_enrol_refund(user.id)
         raise TotpSecretUnreadableError()
     _totp_enrol_passed(user.id)
 
