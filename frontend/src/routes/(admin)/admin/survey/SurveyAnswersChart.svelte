@@ -22,12 +22,17 @@
     }))
   )
   const total = $derived(slices.reduce((sum, slice) => sum + slice.count, 0))
-  const share = (count: number) => (total ? Math.round((count / total) * 100) : 0)
 
   // A single-choice question splits one population into parts of a whole,
   // which is what a doughnut reads well. A checkbox group does not: its
   // options overlap and sum past 100%, so bars are the honest shape there.
   const isSingleChoice = $derived(question.input_type === 'select')
+
+  // A bar reads as the share of people who ticked the option, so it divides
+  // by respondents. Divided by ticks, the bars of a checkbox group would
+  // always add up to 100%, which is what they must not do.
+  const denominator = $derived(isSingleChoice ? total : question.respondent_count)
+  const share = (count: number) => (denominator ? Math.round((count / denominator) * 100) : 0)
 
   const radius = 80
   const circumference = 2 * Math.PI * radius
