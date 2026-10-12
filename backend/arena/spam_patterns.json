@@ -172,7 +172,7 @@
     },
     {
       "name": "yaml_role_list",
-      "regex": "^\\s*-\\s*role\\s*:\\s*[\"'`]?(?:system|assistant|developer)\\b",
+      "regex": "^[^\\S\\n]*-[^\\S\\n]*role[^\\S\\n]*:[^\\S\\n]*[\"'`]?(?:system|assistant|developer)\\b",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Chat messages written as a YAML list: '- role: system'",
       "enabled": true
