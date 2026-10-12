@@ -16,6 +16,7 @@ from utils.database.models.auth import (
     UserPublic,
     UserTotp,
     UserUpsert,
+    normalize_email,
 )
 from utils.database.models.utils import escape_like
 from utils.database.session import get_session
@@ -217,7 +218,11 @@ async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None
             # a demoted admin must not keep being challenged for one.
             await drop_user_totp(session, user.id)
 
-        if user.role != data.role:
+        if normalize_email(user.email) != data.email:
+            # A link or code sent to the old address, say a typo, reached
+            # someone else's mailbox: it must not open the corrected account.
+            await revoke_user_access(session, user.id)
+        elif user.role != data.role:
             # A session must not act under a role it was not opened with. A
             # new admin without an authenticator would otherwise enrol from
             # whatever older session was still around.

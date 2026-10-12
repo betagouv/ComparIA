@@ -492,8 +492,8 @@ async def revoke_user_access(
 ) -> None:
     """Close every way into the account: live sessions, unused email codes
     and unused invite links. For an account that is deleted, revived, has its
-    authenticator reset, or changes role, so that no token from before acts
-    on what the account has become.
+    authenticator reset, or changes role or address, so that no token from
+    before acts on what the account has become.
 
     A role change keeps the invites: the panel only invites plain users, so
     an admin is added by inviting them and then changing the role, and the

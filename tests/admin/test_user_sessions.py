@@ -1,5 +1,5 @@
 """
-A session opened under one role must not act under another.
+A session or link from before a role or address change must not act after it.
 
 Driven through the HTTP API against a throwaway PostgreSQL (skipped where none
 is installed): an account signs in, an admin changes it from the panel, and
@@ -134,5 +134,61 @@ def test_promoting_an_invited_user_keeps_their_invite(database):
                 )
                 assert response.status_code == 200, response.text
                 assert (await signed_in_as(invited))["role"] == "admin"
+
+    database(scenario)
+
+
+def test_correcting_an_invited_address_cancels_the_link_sent_to_the_old_one(
+    database,
+):
+    """The first link went to whoever reads the mistyped address. It must not
+    open the account once the address is put right."""
+
+    async def scenario():
+        boss = User(email="boss@example.org", role="admin")
+        await add_users(boss)
+
+        with instance() as outbox:
+            async with api() as stranger, api(boss) as panel:
+                token = await invite(panel, outbox, "jean@exmaple.org")
+                users = await panel.get("/admin/users")
+                [jean] = [
+                    user
+                    for user in users.json()["items"]
+                    if user["email"] == "jean@exmaple.org"
+                ]
+                response = await panel.put(
+                    f"/admin/users/{jean['id']}",
+                    json={"email": "jean@example.org", "role": "user"},
+                )
+                assert response.status_code == 200, response.text
+
+                response = await stranger.post(
+                    "/auth/invite/accept", json={"token": token}
+                )
+                assert response.status_code != 200, response.text
+                assert await signed_in_as(stranger) is None
+
+    database(scenario)
+
+
+def test_correcting_an_address_closes_the_sessions_opened_with_the_old_one(
+    database,
+):
+    async def scenario():
+        boss = User(email="boss@example.org", role="admin")
+        jean = User(email="jean@exmaple.org")
+        await add_users(boss, jean)
+
+        with instance() as outbox:
+            async with api() as old, api(boss) as panel:
+                await sign_in_with_email_code(old, outbox, jean.email)
+                response = await panel.put(
+                    f"/admin/users/{jean.id}",
+                    json={"email": "jean@example.org", "role": "user"},
+                )
+                assert response.status_code == 200, response.text
+
+                assert await signed_in_as(old) is None
 
     database(scenario)
