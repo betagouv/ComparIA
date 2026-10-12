@@ -106,7 +106,7 @@ async def migrate_votes(
             updates: list[dict] = []
 
             for row in raw_rows:
-                pair_id: str | None = row["conversation_pair_id"]
+                pair_id = row["conversation_pair_id"]
                 occs = pair_occurrences.get(pair_id) if pair_id else None
                 if not pair_id or not occs:
                     skipped += 1

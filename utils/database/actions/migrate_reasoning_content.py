@@ -107,7 +107,7 @@ async def migrate_reasoning_content(
             )
 
             for row in rows:
-                pair_id: str | None = row["conversation_pair_id"]
+                pair_id = row["conversation_pair_id"]
                 if not pair_id or pair_id not in pair_ids_to_process:
                     continue
 
