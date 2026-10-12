@@ -29,7 +29,7 @@ export function isArenaErrorKey(detail: unknown): detail is ArenaErrorKey {
 /** The sentence for a backend `detail`, or the detail itself when unknown. */
 export function arenaErrorMessage(detail: string): string {
   if (isArenaErrorKey(detail)) return ARENA_ERRORS[detail]()
-  // Pydantic prefixes the message of a failed field validator.
+  // Pydantic prefixes the message of a failed validator.
   const stripped = detail.replace(/^Value error, /, '')
   return isArenaErrorKey(stripped) ? ARENA_ERRORS[stripped]() : detail
 }

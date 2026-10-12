@@ -250,6 +250,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     loading = true
     promptError = undefined
     promptWarnings = undefined
+    const previousError = comparison?.error
     if (comparison) {
       comparison.error = undefined
     }
@@ -323,6 +324,11 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     } finally {
       loading = false
+      // Refused before it started (captcha, budget, a model still answering):
+      // nothing changed, so the turn keeps its error and its Retry button.
+      if (!receivedEvent && comparison && !comparison.error) {
+        comparison.error = previousError
+      }
     }
 
     return !warned && !comparison?.error && !promptError

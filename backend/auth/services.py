@@ -65,9 +65,13 @@ async def find_user_by_email(session: "AsyncSession", email: str) -> User | None
     return result.first()
 
 
-async def request_login_code(email: str) -> str:
+async def request_login_code(email: str) -> str | None:
+    """A fresh code for the address, or None when an admin deleted its
+    account: such an account has no way in until an admin brings it back."""
     async with get_session() as session:
         user = await find_user_by_email(session, email)
+        if user and user.deleted_at is not None:
+            return None
         if not user:
             user = User(email=normalize_email(email))
             session.add(user)
@@ -214,7 +218,7 @@ async def verify_login_code(
 ) -> LoginResult | None:
     async with get_session() as session:
         user = await find_user_by_email(session, email)
-        if not user:
+        if not user or user.deleted_at is not None:
             return None
 
         result = await session.exec(
@@ -249,15 +253,20 @@ async def create_invite(email: str, invited_by: uuid.UUID) -> str:
             await session.flush()
         elif user.deleted_at is not None:
             # Email is unique, so re-inviting a deleted user must revive
-            # their existing row rather than leave it permanently dead.
-            # Clear their old auth history too, otherwise a previously
-            # accepted invite or used login code makes list_users report
-            # them as already joined instead of pending on the new invite.
-            # The inactivity clock restarts too, or the purge would count
-            # the months before the deletion against the new invite.
+            # their existing row rather than leave it permanently dead, with
+            # nothing it held before: no session, no authenticator, and the
+            # plain role any invite gives. Their whole auth history goes, not
+            # only what is unused, or a previously accepted invite or used
+            # login code makes list_users report them as already joined
+            # instead of pending on the new invite. The inactivity clock
+            # restarts too, or the purge would count the months before the
+            # deletion against the new invite.
+            await _revoke_user_sessions(session, user.id)
+            await drop_user_totp(session, user.id)
             user.deleted_at = None
             user.last_seen_at = datetime.now()
             user.inactivity_warned_at = None
+            user.role = "user"
             session.add(user)
 
             old_invites = await session.exec(
@@ -469,26 +478,38 @@ async def _revoke_other_user_sessions(
     )
 
 
-async def revoke_user_access(session: "AsyncSession", user_id: uuid.UUID) -> None:
-    """Close every way into the account: live sessions, unused email codes
-    and unused invite links. For an account being deleted or reset, so that
-    a later revival does not bring an old token back to life. Does not commit."""
-    now = datetime.now()
+async def _revoke_user_sessions(session: "AsyncSession", user_id: uuid.UUID) -> None:
+    """Does not commit; caller owns the transaction."""
     await session.execute(
         sa_update(AuthSession)
         .where(AuthSession.user_id == user_id, AuthSession.revoked_at.is_(None))
-        .values(revoked_at=now)
+        .values(revoked_at=datetime.now())
     )
+
+
+async def revoke_user_access(
+    session: "AsyncSession", user_id: uuid.UUID, *, keep_invites: bool = False
+) -> None:
+    """Close every way into the account: live sessions, unused email codes
+    and unused invite links. For an account that is deleted, revived, has its
+    authenticator reset, or changes role or address, so that no token from
+    before acts on what the account has become.
+
+    A role change keeps the invites: the panel only invites plain users, so
+    an admin is added by inviting them and then changing the role, and the
+    link still goes to the right person. Does not commit."""
+    await _revoke_user_sessions(session, user_id)
     await session.execute(
         sa_update(LoginCode)
         .where(LoginCode.user_id == user_id, LoginCode.used_at.is_(None))
-        .values(used_at=now)
+        .values(used_at=datetime.now())
     )
-    await session.execute(
-        sa_delete(InviteToken).where(
-            InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+    if not keep_invites:
+        await session.execute(
+            sa_delete(InviteToken).where(
+                InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+            )
         )
-    )
 
 
 async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:

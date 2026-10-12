@@ -16,6 +16,7 @@ from utils.database.models.auth import (
     UserPublic,
     UserTotp,
     UserUpsert,
+    normalize_email,
 )
 from utils.database.models.utils import escape_like
 from utils.database.session import get_session
@@ -166,8 +167,11 @@ async def create_user(data: UserUpsert) -> UserPublic:
             raise EmailAlreadyExistsError()
 
         if existing:
-            # Revived, with a fresh inactivity clock: the months before the
-            # deletion must not count against the new account.
+            # Revived with nothing it held before, and with a fresh inactivity
+            # clock: the months before the deletion must not count against
+            # the new account.
+            await revoke_user_access(session, existing.id)
+            await drop_user_totp(session, existing.id)
             existing.deleted_at = None
             existing.last_seen_at = datetime.now()
             existing.inactivity_warned_at = None
@@ -213,6 +217,16 @@ async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None
             # A plain user has no way to change or drop an authenticator, so
             # a demoted admin must not keep being challenged for one.
             await drop_user_totp(session, user.id)
+
+        if normalize_email(user.email) != data.email:
+            # A link or code sent to the old address, say a typo, reached
+            # someone else's mailbox: it must not open the corrected account.
+            await revoke_user_access(session, user.id)
+        elif user.role != data.role:
+            # A session must not act under a role it was not opened with. A
+            # new admin without an authenticator would otherwise enrol from
+            # whatever older session was still around.
+            await revoke_user_access(session, user.id, keep_invites=True)
 
         user.sqlmodel_update(data.model_dump(exclude={"id"}))
         session.add(user)

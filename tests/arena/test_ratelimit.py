@@ -25,36 +25,84 @@ from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
 
 
 class FakeRedis:
-    """Minimal string-counter stub matching decode_responses=True behaviour."""
+    """Minimal string-counter stub matching decode_responses=True behaviour.
+    Shared with the other arena budget tests.
 
-    def __init__(self):
+    `pipelines_that_work` makes every pipeline after that many fail, as when
+    Redis drops between two calls."""
+
+    def __init__(self, pipelines_that_work=None):
         self.store: dict[str, int] = {}
+        self.ttl: dict[str, int] = {}
+        self.pipelines_left = pipelines_that_work
+
+    def set(self, key, value, ex=None, nx=False):
+        if nx and key in self.store:
+            return None
+        self.store[key] = int(value)
+        if ex is not None:
+            self.ttl[key] = ex
+        return True
 
     def incrby(self, key, amount):
         self.store[key] = self.store.get(key, 0) + amount
+        return self.store[key]
+
+    def decrby(self, key, amount):
+        return self.incrby(key, -amount)
 
     def expire(self, key, ttl):
-        pass
+        self.ttl[key] = ttl
 
     def get(self, key):
         v = self.store.get(key)
         return None if v is None else str(v)
 
+    def pipeline(self):
+        return FakePipeline(self)
+
+
+class FakePipeline:
+    """Queues calls and runs them in order on `execute`, as MULTI/EXEC does."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.calls = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.calls.append((name, args, kwargs))
+            return self
+
+        return queue
+
+    def execute(self):
+        if self.redis.pipelines_left is not None:
+            if self.redis.pipelines_left == 0:
+                raise ConnectionError("Redis went away")
+            self.redis.pipelines_left -= 1
+        results = [
+            getattr(self.redis, name)(*args, **kwargs)
+            for name, args, kwargs in self.calls
+        ]
+        self.calls = []
+        return results
+
 
 @contextlib.contextmanager
-def fake_redis():
+def fake_redis(fake=None):
     orig = session.get_redis_client
-    fake = FakeRedis()
+    fake = fake or FakeRedis()
     session.get_redis_client = lambda: fake
     try:
-        yield
+        yield fake
     finally:
         session.get_redis_client = orig
 
 
 def test_under_threshold_not_limited():
     with fake_redis():
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a", "1.1.1.1", RATELIMIT_PRICEY_MODELS_INPUT * 2, pricey=True
         )
         # exactly 2x is not over (check is strictly greater-than)
@@ -63,7 +111,7 @@ def test_under_threshold_not_limited():
 
 def test_over_threshold_is_limited():
     with fake_redis():
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a", "1.1.1.1", RATELIMIT_PRICEY_MODELS_INPUT * 2 + 1, pricey=True
         )
         assert session.is_ratelimited("sess-a", "1.1.1.1") is True
@@ -73,7 +121,7 @@ def test_budget_is_per_session_not_shared():
     with fake_redis():
         # One session blows its budget; a second (same IP, different cookie) is
         # clean, as long as the IP backstop is nowhere near spent.
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a", "1.1.1.1", RATELIMIT_PRICEY_MODELS_INPUT * 3, pricey=True
         )
         assert session.is_ratelimited("sess-a", "1.1.1.1") is True
@@ -87,7 +135,7 @@ def test_dropping_the_cookie_does_not_reset_the_budget():
         spent = 0
         n = 0
         while spent <= RATELIMIT_PRICEY_MODELS_INPUT_PER_IP:
-            session.increment_input_chars(
+            session.reserve_input_chars(
                 f"sess-{n}", "1.1.1.1", RATELIMIT_PRICEY_MODELS_INPUT, pricey=True
             )
             spent += RATELIMIT_PRICEY_MODELS_INPUT
@@ -102,7 +150,7 @@ def test_dropping_the_cookie_does_not_reset_the_budget():
 def test_cheap_models_are_counted_too():
     """Only pricey models used to be counted, so everything else was free."""
     with fake_redis():
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a", "1.1.1.1", RATELIMIT_ALL_MODELS_INPUT + 1, pricey=False
         )
         assert session.is_ratelimited("sess-a", "1.1.1.1") is True
@@ -110,7 +158,7 @@ def test_cheap_models_are_counted_too():
 
 def test_a_cheap_message_does_not_spend_the_pricey_budget():
     with fake_redis():
-        session.increment_input_chars(
+        session.reserve_input_chars(
             "sess-a", "1.1.1.1", RATELIMIT_PRICEY_MODELS_INPUT * 3, pricey=False
         )
         assert session.is_ratelimited("sess-a", "1.1.1.1") is False
@@ -121,6 +169,64 @@ def test_unknown_key_not_limited():
         assert session.is_ratelimited("never-seen", "9.9.9.9") is False
 
 
+def test_a_message_goes_through_while_the_budget_was_not_spent_before_it():
+    """The rule the counters always had: the last message may overshoot by its
+    own length, and the next one is refused."""
+    with fake_redis():
+        limit = RATELIMIT_ALL_MODELS_INPUT
+        assert session.reserve_input_chars("sess-a", "1.1.1.1", limit, pricey=False)
+        assert session.reserve_input_chars("sess-a", "1.1.1.1", 10, pricey=False)
+        assert not session.reserve_input_chars("sess-a", "1.1.1.1", 1, pricey=False)
+
+
+def test_requests_at_the_edge_cannot_all_pass():
+    """Each charge reads the total it made, so a burst at the last character of
+    the budget lets exactly one message through."""
+    with fake_redis() as fake:
+        fake.store[session._budget_key("all", "sess-a")] = RATELIMIT_ALL_MODELS_INPUT
+        allowed = [
+            session.reserve_input_chars("sess-a", "1.1.1.1", 100, pricey=False)
+            for _ in range(8)
+        ]
+        assert allowed == [True] + [False] * 7
+
+
+def test_a_refused_message_is_charged_nothing():
+    with fake_redis() as fake:
+        spent = session._budget_key("pricey_ip", "1.1.1.1")
+        fake.store[spent] = RATELIMIT_PRICEY_MODELS_INPUT_PER_IP + 1
+
+        assert not session.reserve_input_chars("sess-a", "1.1.1.1", 500, pricey=True)
+
+        assert {k: v for k, v in fake.store.items() if v} == {
+            spent: RATELIMIT_PRICEY_MODELS_INPUT_PER_IP + 1
+        }
+        # The window of the spent budget does not move on a refusal, but the
+        # empty counters the refusal created still expire.
+        assert spent not in fake.ttl
+        assert all(k in fake.ttl for k in fake.store if k != spent)
+
+
+def test_a_charged_message_restarts_the_window():
+    with fake_redis() as fake:
+        session.reserve_input_chars("sess-a", "1.1.1.1", 10, pricey=True)
+        assert set(fake.ttl) == set(fake.store)
+        assert set(fake.ttl.values()) == {session.BUDGET_TTL_SECONDS}
+
+
+def test_a_counter_expires_even_when_redis_drops_mid_charge():
+    """A counter used to get its expiry in a second call. Had Redis failed
+    between the two, the IP counters would never expire and that IP would stay
+    locked out."""
+    with fake_redis(FakeRedis(pipelines_that_work=1)) as fake:
+        try:
+            session.reserve_input_chars("sess-a", "1.1.1.1", 10, pricey=True)
+        except ConnectionError:
+            pass
+        assert len(fake.store) == 4
+        assert set(fake.ttl) == set(fake.store)
+
+
 def run():
     test_under_threshold_not_limited()
     test_over_threshold_is_limited()
@@ -129,6 +235,11 @@ def run():
     test_cheap_models_are_counted_too()
     test_a_cheap_message_does_not_spend_the_pricey_budget()
     test_unknown_key_not_limited()
+    test_a_message_goes_through_while_the_budget_was_not_spent_before_it()
+    test_requests_at_the_edge_cannot_all_pass()
+    test_a_refused_message_is_charged_nothing()
+    test_a_charged_message_restarts_the_window()
+    test_a_counter_expires_even_when_redis_drops_mid_charge()
     print("All rate limit cases passed.")
 
 

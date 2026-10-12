@@ -88,6 +88,9 @@ def arena(active_document):
         # The response streams the models, which is not what these tests check.
         raise HTTPException(status_code=503, detail="stop here")
 
+    def charge_budget(*_args):
+        return None
+
     with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
         with patched(
             auth_services,
@@ -99,6 +102,7 @@ def arena(active_document):
                 run_checks=run_checks,
                 get_llms_data=get_llms_data,
                 create_comparison=create_comparison,
+                charge_budget=charge_budget,
             ):
                 yield created
 

@@ -2,9 +2,10 @@
 Data validation models using Pydantic.
 """
 
+from typing import Self
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.spam_detection import is_spam
@@ -19,7 +20,21 @@ from backend.config import (
 PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
 
 
-class AddFirstTextBody(BaseModel):
+class CaptchaBody(BaseModel):
+    """A request that calls the models, so it must carry a solved captcha."""
+
+    altcha_token: str
+
+    @field_validator("altcha_token")
+    @classmethod
+    def check_altcha(cls, v: str) -> str:
+        ok, error = verify_altcha_token(v)
+        if not ok:
+            raise ValueError("captcha_failed")
+        return v
+
+
+class AddFirstTextBody(CaptchaBody):
     """Request body for add_first_text endpoint."""
 
     prompt_value: str = PromptField
@@ -27,7 +42,6 @@ class AddFirstTextBody(BaseModel):
     custom_models_selection: CustomModelsSelection = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
-    altcha_token: str
     web_search: bool = False
     # One-time server proof returned with a warning for this exact prompt.
     warning_token: str | None = None
@@ -48,40 +62,28 @@ class AddFirstTextBody(BaseModel):
             UUID(llm_id)
         return v
 
-    @field_validator("prompt_value")
-    @classmethod
-    def check_spam(cls, v: str) -> str:
-        if is_spam(v):
+    # A model validator only runs once every field is valid, so a request
+    # whose captcha fails never reaches the spam patterns.
+    @model_validator(mode="after")
+    def check_spam(self) -> Self:
+        if is_spam(self.prompt_value):
             raise ValueError("spam_detected")
-        return v
-
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
+        return self
 
 
-class AddTextBody(BaseModel):
+class AddTextBody(CaptchaBody):
     """Request body for add_text endpoint."""
 
     message: str = PromptField
-    altcha_token: str
     warning_token: str | None = None
 
-    @field_validator("message")
-    @classmethod
-    def check_spam(cls, v: str) -> str:
-        if is_spam(v):
+    @model_validator(mode="after")
+    def check_spam(self) -> Self:
+        if is_spam(self.message):
             raise ValueError("spam_detected")
-        return v
+        return self
 
-    @field_validator("altcha_token")
-    @classmethod
-    def check_altcha(cls, v: str) -> str:
-        ok, error = verify_altcha_token(v)
-        if not ok:
-            raise ValueError("captcha_failed")
-        return v
+
+class RetryBody(CaptchaBody):
+    """Request body for retry endpoint. A retry calls both models again, so it
+    takes the same proof of work as a new message."""

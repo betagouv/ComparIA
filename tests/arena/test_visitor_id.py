@@ -56,6 +56,9 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
         created.append(comparison)
         raise HTTPException(status_code=503, detail="stop here")
 
+    def charge_budget(*_args):
+        return None
+
     request = Request(
         {
             "type": "http",
@@ -80,6 +83,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             run_checks=run_checks,
             get_llms_data=get_llms_data,
             create_comparison=create_comparison,
+            charge_budget=charge_budget,
         ):
             try:
                 asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))

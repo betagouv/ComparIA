@@ -125,12 +125,35 @@ def active_terms(document):
             yield
 
 
+class FakePipeline:
+    """Queues commands and runs them in one go, as MULTI/EXEC would."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.commands = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.commands.append((name, args, kwargs))
+
+        return queue
+
+    def execute(self):
+        return [getattr(self.redis, n)(*a, **k) for n, a, k in self.commands]
+
+
 class FakeRedis:
     def incr(self, key):
         return 1
 
     def expire(self, key, ttl):
         pass
+
+    def set(self, key, value, ex=None, nx=False):
+        return True
+
+    def pipeline(self, transaction=True):
+        return FakePipeline(self)
 
     def get(self, key):
         return None
