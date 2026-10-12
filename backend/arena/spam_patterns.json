@@ -151,7 +151,7 @@
     },
     {
       "name": "gemma_turn_tokens",
-      "regex": "<\\s*/?\\s*(?:start_of_turn|end_of_turn)\\s*>",
+      "regex": "<\\s*(?:/\\s*)?(?:start_of_turn|end_of_turn)\\s*>",
       "flags": "IGNORECASE",
       "description": "Gemma-style turn markers: <start_of_turn>user, <end_of_turn>",
       "enabled": true
@@ -165,7 +165,7 @@
     },
     {
       "name": "human_assistant_transcript",
-      "regex": "(?:^|\\n)\\s*Human\\s*:[\\s\\S]*?\\n\\s*Assistant\\s*:",
+      "regex": "(?:^|\\n)[^\\S\\n]*Human[^\\S\\n]*:(?:(?!\\n[^\\S\\n]*Human[^\\S\\n]*:)[\\s\\S]){0,4000}?\\n[^\\S\\n]*Assistant[^\\S\\n]*:",
       "flags": "IGNORECASE",
       "description": "Anthropic-style transcript: a 'Human:' line followed later by an 'Assistant:' line",
       "enabled": true
