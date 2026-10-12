@@ -138,6 +138,12 @@ class AppSettings(SQLModel, table=True):
     auth_access_policy: str = Field(default="anonymous_first")
     auth_domain_allowlist: Annotated[list[str], Field(sa_type=JSONB)] = []
     votes_objective: int = Field(default=300_000)
+    # Leaderboard thresholds. A model needs this many decisive votes to be
+    # ranked at all, and is shown only if its rank could move by at most
+    # ranking_max_rank_spread places either way. Small instances relax them to
+    # show something while votes come in.
+    ranking_min_votes: int = Field(default=0)
+    ranking_max_rank_spread: int = Field(default=30)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     informational_legal_pages: Annotated[dict, Field(sa_type=JSONB)] = (
@@ -203,6 +209,8 @@ class AppSettingsPublic(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"]
     auth_domain_allowlist: list[str]
     votes_objective: int
+    ranking_min_votes: int
+    ranking_max_rank_spread: int
     platform_name: str
     primary_color_light: str
     primary_color_dark: str
@@ -238,6 +246,8 @@ class AppSettingsPatch(SQLModel):
     auth_access_policy: Literal["anonymous_first", "sign_in_required"] | None = None
     auth_domain_allowlist: list[str] | None = None
     votes_objective: int | None = None
+    ranking_min_votes: int | None = Field(default=None, ge=0)
+    ranking_max_rank_spread: int | None = Field(default=None, ge=0)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
