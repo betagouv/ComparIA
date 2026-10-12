@@ -43,13 +43,14 @@ def patched(module, **attributes):
 
 
 def comparison_with(turn_count: int):
+    turn = SimpleNamespace(user_msg=SimpleNamespace(content="Bonjour"))
     return SimpleNamespace(
-        id=uuid4(), turns=[object()] * turn_count, llm_id_a=uuid4(), llm_id_b=uuid4()
+        id=uuid4(), turns=[turn] * turn_count, llm_id_a=uuid4(), llm_id_b=uuid4()
     )
 
 
 def send_follow_up(comparison):
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
     def charge_budget(*_args):

@@ -2,13 +2,12 @@
 Data validation models using Pydantic.
 """
 
-from typing import Self
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
-from backend.arena.spam_detection import is_spam
+from backend.arena.normalize import strip_hidden
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     DEFAULT_SELECTION_MODE,
@@ -17,7 +16,16 @@ from backend.config import (
 )
 
 # Request/Response models for FastAPI endpoints
-PromptField = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
+PromptField = Field(min_length=1)
+
+
+def check_message(v: str) -> str:
+    """Refuse a message over the length limit, hidden characters included, then
+    drop the hidden ones. The key, unlike Pydantic's own sentence, is one the
+    frontend can translate."""
+    if len(v) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+        raise ValueError("prompt_too_long")
+    return strip_hidden(v)
 
 
 class CaptchaBody(BaseModel):
@@ -62,13 +70,10 @@ class AddFirstTextBody(CaptchaBody):
             UUID(llm_id)
         return v
 
-    # A model validator only runs once every field is valid, so a request
-    # whose captcha fails never reaches the spam patterns.
-    @model_validator(mode="after")
-    def check_spam(self) -> Self:
-        if is_spam(self.prompt_value):
-            raise ValueError("spam_detected")
-        return self
+    @field_validator("prompt_value")
+    @classmethod
+    def check_prompt(cls, v: str) -> str:
+        return check_message(v)
 
 
 class AddTextBody(CaptchaBody):
@@ -77,11 +82,10 @@ class AddTextBody(CaptchaBody):
     message: str = PromptField
     warning_token: str | None = None
 
-    @model_validator(mode="after")
-    def check_spam(self) -> Self:
-        if is_spam(self.message):
-            raise ValueError("spam_detected")
-        return self
+    @field_validator("message")
+    @classmethod
+    def check_text(cls, v: str) -> str:
+        return check_message(v)
 
 
 class RetryBody(CaptchaBody):

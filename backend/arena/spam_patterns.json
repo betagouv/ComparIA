@@ -4,16 +4,16 @@
   "patterns": [
     {
       "name": "xml_chat_tags",
-      "regex": "<\\s*(?:/\\s*)?(?:conversation|user|assistant|system)\\s*>",
+      "regex": "<\\s*(?:/\\s*)?(?:conversation|user|assistant|system|human|developer)\\s*>",
       "flags": "IGNORECASE",
-      "description": "XML-style chat role tags: <user>, </assistant>, <system>, <conversation>, etc.",
+      "description": "XML-style chat role tags: <user>, </assistant>, <system>, <human>, <developer>, <conversation>, etc.",
       "enabled": true
     },
     {
       "name": "json_role_injection",
-      "regex": "[\"']role[\"']\\s*:\\s*[\"'](?:system|user|assistant)[\"']",
+      "regex": "[\"'`“”‘’]role[\"'`“”‘’]\\s*:\\s*[\"'`“”‘’](?:system|user|assistant|developer)[\"'`“”‘’]",
       "flags": "IGNORECASE",
-      "description": "JSON role objects with single or double quotes: {\"role\":\"system\",...} or {'role':'system',...}",
+      "description": "JSON role objects with any quote style, including backticks and curly quotes: {\"role\":\"system\",...}, {`role`: `developer`}",
       "enabled": true
     },
     {
@@ -140,6 +140,48 @@
       "regex": "冥_RESPONSE_START_",
       "flags": "",
       "description": "Literal jailbreak control token '冥_RESPONSE_START_' observed in roleplay injection payloads.",
+      "enabled": true
+    },
+    {
+      "name": "generic_special_tokens",
+      "regex": "<\\|[a-z_]{2,30}\\|>",
+      "flags": "IGNORECASE",
+      "description": "Any special token in the <|name|> shape, which covers chat formats not listed in chatml_tokens (<|begin_of_text|>, <|start|>, <|channel|>, <|message|>...)",
+      "enabled": true
+    },
+    {
+      "name": "gemma_turn_tokens",
+      "regex": "<\\s*(?:/\\s*)?(?:start_of_turn|end_of_turn)\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Gemma-style turn markers: <start_of_turn>user, <end_of_turn>",
+      "enabled": true
+    },
+    {
+      "name": "mistral_control_tokens",
+      "regex": "\\[/?(?:SYSTEM_PROMPT|AVAILABLE_TOOLS|TOOL_CALLS|TOOL_RESULTS)\\]",
+      "flags": "",
+      "description": "Mistral control tokens: [SYSTEM_PROMPT], [AVAILABLE_TOOLS], [TOOL_CALLS]",
+      "enabled": true
+    },
+    {
+      "name": "human_assistant_transcript",
+      "regex": "(?:^|\\n)[^\\S\\n]*Human[^\\S\\n]*:(?:(?!\\n[^\\S\\n]*Human[^\\S\\n]*:)[\\s\\S]){0,4000}?\\n[^\\S\\n]*Assistant[^\\S\\n]*:",
+      "flags": "IGNORECASE",
+      "description": "Anthropic-style transcript: a 'Human:' line followed later by an 'Assistant:' line",
+      "enabled": true
+    },
+    {
+      "name": "yaml_role_list",
+      "regex": "^[^\\S\\n]*-[^\\S\\n]*role[^\\S\\n]*:[^\\S\\n]*[\"'`]?(?:system|assistant|developer)\\b",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Chat messages written as a YAML list: '- role: system'",
+      "enabled": true
+    },
+    {
+      "name": "canned_reply_probe",
+      "regex": "^\\s*(?:please\\s+)?(?:say|reply|respond|answer)(?:[\\s\\W]+(?:with|only))*[\\s\\W]+[\"'`]?(?:ok|okay|hi|hello|yes|pong)[\"'`]?(?:[\\s\\W]+please)?[\\s.!?]*$",
+      "flags": "IGNORECASE",
+      "description": "Whole-message probes asking for a fixed one-word reply: 'say OK please', 'reply with ok', 'respond only with \"pong\"'",
       "enabled": true
     }
   ]

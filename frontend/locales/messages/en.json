@@ -356,6 +356,7 @@
                     "error": "The check did not answer",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
+                    "skipped": "Not checked, Mistral down",
                     "warned": "Warned"
                 },
                 "decisionLegend": "Result",
@@ -403,7 +404,9 @@
             "health": {
                 "failures": "{count} failures in a row",
                 "unhealthy": "The check no longer answers",
-                "unhealthyHint": "Calls to the moderation API are failing. The check lets every message through, which looks exactly like a check that finds nothing. Look at the Mistral key and the server logs."
+                "unhealthyHint": "Calls to the moderation API are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
+                "keyRejected": "Mistral refuses the key",
+                "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid Mistral key below."
             },
             "model": {
                 "label": "Moderation model"
@@ -427,6 +430,7 @@
                     "error": "Failed",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
+                    "skipped": "Not checked (Mistral down)",
                     "warned": "Warned"
                 },
                 "proceeded": "{count} sent anyway",
@@ -840,8 +844,10 @@
             "prompt_check": {
                 "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
                 "pii": "Your message seems to contain personal data. Messages you send may be published in the open dataset.",
-                "self_harm": "If you are going through a hard time or having suicidal thoughts, you are not alone. Free, confidential help is available around the clock: find your local helpline at findahelpline.com."
+                "self_harm": "If you are going through a hard time or having suicidal thoughts, you are not alone. Free, confidential help is available around the clock: find your local helpline at findahelpline.com.",
+                "unavailable": "Your message could not be checked. Please try again in a few minutes."
             },
+            "prompt_too_long": "Your message is longer than 20,000 characters. Please shorten it.",
             "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
             "retry_unavailable": "Retrying is not possible, please reload the page.",
             "spam_detected": "This message format is not allowed. Please write in natural language."

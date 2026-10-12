@@ -30,8 +30,13 @@ REDIS_LLM_RESPONSES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
+# Comparisons a session started since its last vote.
+REDIS_UNVOTED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}unvoted:{{session}}"
 REDIS_AUTH_EMAIL_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_email_req:{{ip}}"
 REDIS_AUTH_OIDC_REQ: Final[str] = f"{REDIS_INSTANCE_PREFIX}auth_oidc_req:{{ip}}"
+REDIS_ANONYMOUS_CONSENT_REQ: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}anonymous_consent_req:{{ip}}"
+)
 REDIS_AUTH_EMAIL_REQ_EMAIL: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}auth_email_req_email:{{email}}"
 )
@@ -62,6 +67,17 @@ REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 # the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.
 REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
+# Set while Mistral counts as down: the check is skipped until it expires.
+REDIS_CHECK_PAUSED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_paused"
+# Set when Mistral refuses our key, cleared by the next call that works or by a
+# new key from the admin panel.
+REDIS_CHECK_KEY_REJECTED_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_key_rejected"
+)
+# Warnings a session sent anyway, in a rolling hour.
+REDIS_SENT_WARNINGS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_sent_warnings:{{session}}"
+)
 # Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
 REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"

@@ -55,7 +55,8 @@
     logged: 'var(--info-425-625)',
     warned: 'var(--yellow-tournesol-main-731)',
     blocked: 'var(--error-425-625)',
-    error: 'var(--purple-glycine-main-494)'
+    error: 'var(--purple-glycine-main-494)',
+    skipped: 'var(--grey-425-625)'
   }
 
   const actionOrder: Action[] = ['off', 'log', 'warn', 'block']
@@ -90,14 +91,16 @@
     logged: m['admin.promptChecks.bench.decision.logged'](),
     warned: m['admin.promptChecks.bench.decision.warned'](),
     blocked: m['admin.promptChecks.bench.decision.blocked'](),
-    error: m['admin.promptChecks.bench.decision.error']()
+    error: m['admin.promptChecks.bench.decision.error'](),
+    skipped: m['admin.promptChecks.bench.decision.skipped']()
   }
   const statsDecisionLabels: Record<PromptCheckDecision, string> = {
     pass: m['admin.promptChecks.stats.decision.pass'](),
     logged: m['admin.promptChecks.stats.decision.logged'](),
     warned: m['admin.promptChecks.stats.decision.warned'](),
     blocked: m['admin.promptChecks.stats.decision.blocked'](),
-    error: m['admin.promptChecks.stats.decision.error']()
+    error: m['admin.promptChecks.stats.decision.error'](),
+    skipped: m['admin.promptChecks.stats.decision.skipped']()
   }
 
   // svelte-ignore state_referenced_locally
@@ -143,7 +146,14 @@
   const modelChanged = $derived(draft.model.trim() !== data.check.model)
   const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
 
-  const decisionOrder: PromptCheckDecision[] = ['pass', 'logged', 'warned', 'blocked', 'error']
+  const decisionOrder: PromptCheckDecision[] = [
+    'pass',
+    'logged',
+    'warned',
+    'blocked',
+    'error',
+    'skipped'
+  ]
   type StatsPeriod = PromptCheckStats['period']
   // svelte-ignore state_referenced_locally
   let stats = $state<PromptCheckStats | null>(data.stats ?? null)
@@ -329,7 +339,11 @@
 >
   <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
-      {#if data.check.healthy === false}
+      {#if data.check.key_rejected}
+        <Alert variant="error" title={m['admin.promptChecks.health.keyRejected']()} class="mb-6">
+          <p>{m['admin.promptChecks.health.keyRejectedHint']()}</p>
+        </Alert>
+      {:else if data.check.healthy === false}
         <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-6">
           <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
           <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>

@@ -10,13 +10,15 @@ const ARENA_ERRORS = {
   retry_unavailable: () => m['arene.apiErrors.retry_unavailable'](),
   captcha_failed: () => m['arene.apiErrors.captcha_failed'](),
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),
+  prompt_too_long: () => m['arene.apiErrors.prompt_too_long'](),
   spam_detected: () => m['arene.apiErrors.spam_detected']()
 } as const
 
 const PROMPT_CHECK_MESSAGES = {
   generic: () => m['arene.apiErrors.prompt_check.generic'](),
   self_harm: () => m['arene.apiErrors.prompt_check.self_harm'](),
-  pii: () => m['arene.apiErrors.prompt_check.pii']()
+  pii: () => m['arene.apiErrors.prompt_check.pii'](),
+  unavailable: () => m['arene.apiErrors.prompt_check.unavailable']()
 } as const
 
 export type ArenaErrorKey = keyof typeof ARENA_ERRORS

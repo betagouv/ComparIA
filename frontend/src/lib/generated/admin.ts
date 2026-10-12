@@ -547,8 +547,9 @@ export interface PromptCheckPatch {
   } | null;
 }
 /**
- * The configuration plus how the check is faring. It fails open, so one
- * that has stopped working looks exactly like one that finds nothing.
+ * The configuration plus how the check is faring, since a broken check
+ * either refuses every message or, while Mistral counts as down, lets them
+ * all through unchecked.
  */
 export interface PromptCheckStatus {
   enabled: boolean;
@@ -562,6 +563,7 @@ export interface PromptCheckStatus {
   updated_at: string;
   updated_by?: string | null;
   consecutive_failures?: number;
+  key_rejected?: boolean;
   healthy?: boolean;
   warnings_shown?: number;
 }

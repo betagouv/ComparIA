@@ -252,6 +252,15 @@ describe('admin prompt check page', () => {
     expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
   })
 
+  it('names a rejected key instead of the generic failure', () => {
+    const { getByText, queryByText } = renderPage(
+      check({ healthy: false, key_rejected: true, consecutive_failures: 0 })
+    )
+
+    expect(getByText('Mistral refuse la clé')).toBeInTheDocument()
+    expect(queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
+  })
+
   it('runs the bench against the on-screen rules, not the stored ones', async () => {
     const { api } = await import('$lib/fastapi-client')
     vi.mocked(api.request).mockReset()

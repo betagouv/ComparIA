@@ -17,10 +17,14 @@ from backend.config import (
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
+    RATELIMIT_SENT_WARNINGS_PER_HOUR,
 )
+from backend.utils.user import ip_bucket
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
+    REDIS_SENT_WARNINGS_KEY,
+    REDIS_UNVOTED_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
@@ -112,9 +116,9 @@ def _budgets(key: str, ip: str, pricey: bool = True) -> list[tuple[str, int]]:
     budgets = (
         # Rate limit is 2x the configured limit for pricey models
         ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
-        ("pricey_ip", ip, RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
+        ("pricey_ip", ip_bucket(ip), RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
         ("all", key, RATELIMIT_ALL_MODELS_INPUT),
-        ("all_ip", ip, RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+        ("all_ip", ip_bucket(ip), RATELIMIT_ALL_MODELS_INPUT_PER_IP),
     )
     return [
         (_budget_key(pool, identity), limit)
@@ -202,8 +206,9 @@ def increment_blocked_prompts(ip: str) -> None:
     """
     try:
         client = get_redis_client()
-        client.incr(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
-        client.expire(REDIS_BLOCKED_COUNT_KEY.format(ip=ip), 3600)
+        key = REDIS_BLOCKED_COUNT_KEY.format(ip=ip_bucket(ip))
+        client.incr(key)
+        client.expire(key, 3600)
     except Exception as e:
         logger.error(f"[SESSION] Error incrementing blocked count: {e}")
 
@@ -215,9 +220,60 @@ def is_block_cooldown(ip: str) -> bool:
     """
     try:
         client = get_redis_client()
-        counter = client.get(REDIS_BLOCKED_COUNT_KEY.format(ip=ip))
+        counter = client.get(REDIS_BLOCKED_COUNT_KEY.format(ip=ip_bucket(ip)))
         assert not isinstance(counter, Awaitable)
         return bool(counter and int(counter) >= RATELIMIT_BLOCKED_PROMPTS_PER_HOUR)
     except Exception as e:
         logger.error(f"[SESSION] Error checking block cooldown: {e}")
         return False
+
+
+def increment_sent_warnings(session: str) -> None:
+    """Count a warning a session answered with "send anyway", in a rolling
+    hour. Fails open like the block count."""
+    try:
+        client = get_redis_client()
+        key = REDIS_SENT_WARNINGS_KEY.format(session=session)
+        client.incr(key)
+        client.expire(key, 3600)
+    except Exception as e:
+        logger.error(f"[SESSION] Error incrementing sent warnings: {e}")
+
+
+def is_warning_cooldown(session: str) -> bool:
+    try:
+        client = get_redis_client()
+        counter = client.get(REDIS_SENT_WARNINGS_KEY.format(session=session))
+        assert not isinstance(counter, Awaitable)
+        return bool(counter and int(counter) >= RATELIMIT_SENT_WARNINGS_PER_HOUR)
+    except Exception as e:
+        logger.error(f"[SESSION] Error checking sent warnings: {e}")
+        return False
+
+
+def increment_unvoted(session: str) -> None:
+    """Count a comparison a session started, until it votes. Fails open."""
+    try:
+        client = get_redis_client()
+        key = REDIS_UNVOTED_KEY.format(session=session)
+        client.incr(key)
+        client.expire(key, 86400)
+    except Exception as e:
+        logger.error(f"[SESSION] Error incrementing unvoted comparisons: {e}")
+
+
+def clear_unvoted(session: str) -> None:
+    try:
+        get_redis_client().delete(REDIS_UNVOTED_KEY.format(session=session))
+    except Exception as e:
+        logger.error(f"[SESSION] Error clearing unvoted comparisons: {e}")
+
+
+def unvoted_comparisons(session: str) -> int:
+    try:
+        counter = get_redis_client().get(REDIS_UNVOTED_KEY.format(session=session))
+        assert not isinstance(counter, Awaitable)
+        return int(counter) if counter else 0
+    except Exception as e:
+        logger.error(f"[SESSION] Error reading unvoted comparisons: {e}")
+        return 0

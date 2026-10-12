@@ -356,6 +356,7 @@
                     "error": "La vérification n'a pas répondu",
                     "logged": "Surveillé",
                     "pass": "Passé sans rien",
+                    "skipped": "Pas vérifié, Mistral en panne",
                     "warned": "Prévenu"
                 },
                 "decisionLegend": "Résultat",
@@ -403,7 +404,9 @@
             "health": {
                 "failures": "{count} échecs consécutifs",
                 "unhealthy": "La vérification ne répond plus",
-                "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
+                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
+                "keyRejected": "Mistral refuse la clé",
+                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous."
             },
             "model": {
                 "label": "Modèle de modération"
@@ -427,6 +430,7 @@
                     "error": "En échec",
                     "logged": "Surveillés",
                     "pass": "Passés sans rien",
+                    "skipped": "Non vérifiés (Mistral en panne)",
                     "warned": "Prévenus"
                 },
                 "proceeded": "{count} envoyés quand même",
@@ -840,8 +844,10 @@
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
                 "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
-                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7.",
+                "unavailable": "Votre message n'a pas pu être vérifié. Veuillez réessayer dans quelques minutes."
             },
+            "prompt_too_long": "Votre message dépasse 20 000 caractères. Veuillez le raccourcir.",
             "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
             "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
             "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."

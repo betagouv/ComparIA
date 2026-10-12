@@ -63,6 +63,7 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
 
     monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
     monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda: 0)
+    monkeypatch.setattr(admin_router, "is_key_rejected", lambda: False)
     monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 0)
     return session
 
@@ -138,6 +139,22 @@ def test_a_working_check_reads_as_healthy(
     assert status.consecutive_failures == 0
 
 
+def test_a_rejected_key_reads_as_unhealthy(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    async def get_prompt_check():
+        return seeded_row()
+
+    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(admin_router, "is_key_rejected", lambda: True)
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    assert status.key_rejected is True
+    assert status.healthy is False
+    assert status.consecutive_failures == 0
+
+
 def test_missing_failure_key_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
     class Client:
         def get(self, key):
@@ -200,3 +217,33 @@ def test_write_invalidates_the_cache(db: FakeSession, invalidations: list[str]) 
 
     assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECK_KEY]
     assert db.committed
+
+
+class FlagClient:
+    def __init__(self):
+        self.deleted: list[str] = []
+
+    def delete(self, key):
+        self.deleted.append(key)
+
+
+def test_a_new_key_clears_the_rejected_flag(
+    db: FakeSession, invalidations: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = FlagClient()
+    monkeypatch.setattr(prompt_checks_module, "get_redis_client", lambda: client)
+
+    patch_check(PromptCheckPatch(api_key="a-new-key"))
+
+    assert client.deleted == [prompt_checks_module.REDIS_CHECK_KEY_REJECTED_KEY]
+
+
+def test_other_changes_leave_the_rejected_flag(
+    db: FakeSession, invalidations: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = FlagClient()
+    monkeypatch.setattr(prompt_checks_module, "get_redis_client", lambda: client)
+
+    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+
+    assert client.deleted == []

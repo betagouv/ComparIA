@@ -46,7 +46,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
     async def get_current_terms_acceptance_version(**_ids):
         return "2026.07"
 
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
     async def get_llms_data():
