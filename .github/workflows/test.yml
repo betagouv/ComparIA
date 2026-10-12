@@ -32,6 +32,14 @@ jobs:
           uv run --locked --group dev black --check backend utils tests internal
           uv run --locked --group dev isort --check-only backend utils tests internal
 
+      # mypy as a whole does not pass yet, so only fail on a name defined twice,
+      # which is what a bad merge or rebase leaves behind.
+      - name: Check for names defined twice
+        run: |
+          uv run --locked --group dev mypy . > mypy.txt || true
+          grep -qE '^(Found [0-9]+ errors?|Success)' mypy.txt || { cat mypy.txt; exit 1; }
+          if grep '\[no-redef\]' mypy.txt; then exit 1; fi
+
       - name: Run backend tests
         run: uv run --locked --group dev --group data pytest tests -q
 
