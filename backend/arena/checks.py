@@ -19,12 +19,11 @@ user to confirm, never refuse.
 
 When Mistral is down (OUTAGE_AFTER_FAILURES failures in a row), the check pauses
 for OUTAGE_PAUSE_SECONDS and every prompt goes through as `skipped`, charged to
-no one. While it is up, a failed check means something about this prompt: a
-short one goes through but spends the caller's per-IP block budget (see
-`run_checks` in the router), a long one is refused, since length is the cheap
-way to make the check time out. Failures are logged at error level, sent to
-Sentry, and counted in Redis so the admin panel shows a check that has stopped
-working.
+no one. While it is up, nothing reaches the models unchecked: a prompt whose
+check fails is refused, and so are web search results. Being rate limited does
+not count toward the pause, so the check cannot be switched off by flooding us.
+Failures are logged at error level, sent to Sentry, and counted in Redis so the
+admin panel shows a check that has stopped working.
 """
 
 import asyncio
@@ -77,8 +76,6 @@ CHUNK_CHARS: Final[int] = 2_000
 CHUNK_OVERLAP: Final[int] = 400
 # Mistral takes a list of inputs per request; batches go out in parallel.
 INPUTS_PER_REQUEST: Final[int] = 16
-# A prompt longer than one window that could not be checked is refused.
-FAIL_CLOSED_ABOVE_CHARS: Final[int] = CHUNK_CHARS
 # How many earlier user messages a follow-up is scored with.
 CONTEXT_TURNS: Final[int] = 4
 
@@ -470,9 +467,7 @@ async def run_prompt_check(
                 decision="error",
                 model=check.model,
                 latency_ms=latency_ms,
-                message=(
-                    UNAVAILABLE_MESSAGE if len(text) > FAIL_CLOSED_ABOVE_CHARS else None
-                ),
+                message=UNAVAILABLE_MESSAGE,
             )
 
         latency_ms = int((time.monotonic() - started) * 1000)
@@ -502,8 +497,8 @@ async def drop_flagged_results(
     Their text goes to the models next to the prompt, so a page written to
     instruct the model is a prompt injection the user never had to type. They
     arrive already cut by `keep_search_results`, so all the models will read is
-    scored. Fails open: on error the results are kept, since the prompt itself
-    was checked.
+    scored. If they cannot be scored they are all dropped and the prompt goes
+    without them; they are kept unchecked only while Mistral counts as down.
     """
     check = await get_prompt_check()
     api_key = check.api_key or settings.MISTRAL_API_KEY
@@ -516,8 +511,8 @@ async def drop_flagged_results(
             [i for inputs in per_result for i in inputs], check.model, api_key
         )
     except Exception as e:
-        logger.error(f"[CHECKS] Web search results not checked: {e}")
-        return results
+        logger.error(f"[CHECKS] Web search results not checked, dropped: {e}")
+        return []
 
     kept = []
     start = 0

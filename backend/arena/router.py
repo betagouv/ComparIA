@@ -191,11 +191,9 @@ async def run_checks(
     result = await run_prompt_check(
         text, request, warning_token=warning_token, context=context
     )
-    if result and result.decision in ("blocked", "error"):
-        # A short prompt that could not be checked while Mistral was up still
-        # reaches the models, but spends the per-IP budget a block does, so an
-        # attacker who can induce failures does not get an unchecked arena for
-        # free. A check skipped because Mistral is down costs nothing.
+    if result and result.decision == "blocked":
+        # A prompt that could not be checked is refused below but not charged:
+        # the failure is ours, and it gets an attacker nothing.
         increment_blocked_prompts(get_ip(request))
     if result and result.decision == "warned" and result.user_proceeded:
         # A script reads the warning token off the response and resends, so

@@ -272,11 +272,11 @@ RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
-# probing). Counts blocks, spam pattern hits and checks that failed while
-# Mistral was up, in a rolling window; once an IP crosses the
-# threshold it is cooled down for the rest of the window WITHOUT calling the
-# moderation API (protects the quota). Kept generous because gov users share NAT
-# IPs (hospitals, ministries) and must not be locked out.
+# probing). Counts blocks and spam pattern hits in a rolling window; once an
+# IP crosses the threshold it is cooled down for the rest of the window
+# WITHOUT calling the moderation API (protects the quota). Kept generous
+# because gov users share NAT IPs (hospitals, ministries) and must not be
+# locked out.
 RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
 # Warnings one session may answer with "send anyway" in an hour. Counted per

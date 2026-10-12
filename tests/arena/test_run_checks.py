@@ -137,21 +137,16 @@ def test_showing_a_warning_is_not_charged():
     assert charged == []
 
 
-def test_a_long_prompt_that_could_not_be_checked_is_refused_and_charged_once():
+def test_a_prompt_that_could_not_be_checked_is_refused_but_not_charged():
+    """The failure is ours: a school must not cool down because Mistral was
+    slow."""
     unchecked = PromptCheckResult(
         decision="error", model="m", latency_ms=2500, message="unavailable"
     )
     outcome, charged = check("bonjour", unchecked)
     assert isinstance(outcome, HTTPException)
     assert outcome.detail[0]["msg"] == "unavailable"
-    assert charged == ["10.0.0.1"]
-
-
-def test_a_short_prompt_that_could_not_be_checked_goes_through_charged():
-    unchecked = PromptCheckResult(decision="error", model="m", latency_ms=2500)
-    outcome, charged = check("bonjour", unchecked)
-    assert outcome is unchecked
-    assert charged == ["10.0.0.1"]
+    assert charged == []
 
 
 def test_hidden_tag_characters_never_reach_the_models():
@@ -168,7 +163,6 @@ if __name__ == "__main__":
     test_sending_a_warned_prompt_anyway_is_charged_to_the_session()
     test_a_check_skipped_while_mistral_is_down_is_not_charged()
     test_showing_a_warning_is_not_charged()
-    test_a_long_prompt_that_could_not_be_checked_is_refused_and_charged_once()
-    test_a_short_prompt_that_could_not_be_checked_goes_through_charged()
+    test_a_prompt_that_could_not_be_checked_is_refused_but_not_charged()
     test_hidden_tag_characters_never_reach_the_models()
     print("Run checks cases passed.")

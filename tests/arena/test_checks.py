@@ -226,11 +226,12 @@ def test_warn_does_not_block():
     assert result.model_dump()["decision"] == "warned"
 
 
-def test_error_fails_open():
+def test_a_prompt_that_cannot_be_checked_is_refused():
+    """While Mistral is up, nothing reaches the models unchecked."""
     result, _ = run(
         config(criminal=(0.5, "block")), error=httpx.TimeoutException("too slow")
     )
-    assert result.block_message is None
+    assert result.block_message == checks.UNAVAILABLE_MESSAGE
     record = result.model_dump()
     assert record["decision"] == "error"
     assert record["scores"] == {}
@@ -496,11 +497,11 @@ def test_being_rate_limited_does_not_pause_the_check():
     assert not redis.exists(checks.REDIS_CHECK_PAUSED_KEY)
 
 
-def test_a_short_prompt_that_cannot_be_checked_goes_through():
+def test_a_short_prompt_that_cannot_be_checked_is_refused_too():
     result, fake = run(config(criminal=(0.5, "block")), statuses=[503, 503])
     assert len(fake.requests) == 2
     assert result.decision == "error"
-    assert result.block_message is None
+    assert result.block_message == checks.UNAVAILABLE_MESSAGE
 
 
 def test_a_long_prompt_that_cannot_be_checked_is_refused():
@@ -594,8 +595,8 @@ def test_web_results_are_kept_while_the_check_is_paused():
     assert fake.requests == []
 
 
-def test_web_results_are_kept_when_they_cannot_be_checked():
+def test_web_results_are_dropped_when_they_cannot_be_checked():
     pages = [SimpleNamespace(url="https://a.example", content="Paris")]
     with arena(config(jailbreaking=(0.5, "block")), error=httpx.ReadTimeout("slow")):
         kept = asyncio.run(checks.drop_flagged_results(pages))
-    assert kept == pages
+    assert kept == []
