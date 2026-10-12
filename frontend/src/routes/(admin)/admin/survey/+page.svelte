@@ -212,6 +212,21 @@
       return
     }
 
+    // The form only shows the locales the instance serves today. Labels in a
+    // locale switched off since are kept as they were: dropping them would
+    // lose the translation and count as a change of wording.
+    const served = new Set<string>(orderedLocales.map(({ code }) => code))
+    const unserved = (stored: Record<string, string> | undefined) =>
+      Object.fromEntries(Object.entries(stored ?? {}).filter(([code]) => !served.has(code)))
+    const keptLabels = { ...unserved(editing?.labels), ...labels }
+    const keptOptions = options.map((option) => ({
+      ...option,
+      labels: {
+        ...unserved(editing?.options.find(({ key }) => key && key === option.key)?.labels),
+        ...option.labels
+      }
+    }))
+
     const target = editing
     const done = await run(
       () =>
@@ -220,8 +235,8 @@
               method: 'PUT',
               body: JSON.stringify({
                 required: formRequired,
-                labels,
-                options,
+                labels: keptLabels,
+                options: keptOptions,
                 published: formPublished
               } satisfies SurveyQuestionUpdate)
             })
