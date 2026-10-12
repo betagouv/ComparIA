@@ -1,7 +1,7 @@
 """add_ranking_thresholds
 
 Revision ID: c4e8a2f1b9d3
-Revises: a3d6f1c9e842
+Revises: 7e2a4c9d1b6f
 Create Date: 2026-10-12 00:00:00.000000
 
 """
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'c4e8a2f1b9d3'
-down_revision: Union[str, Sequence[str], None] = 'a3d6f1c9e842'
+down_revision: Union[str, Sequence[str], None] = '7e2a4c9d1b6f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
