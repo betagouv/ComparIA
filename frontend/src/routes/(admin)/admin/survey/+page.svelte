@@ -29,9 +29,11 @@
   // The default locale mints the published key, so its field comes first and
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
-  const defaultLocale = $derived(data.defaultLocale)
+  const defaultLocale = $derived(auth.config.default_locale)
+  // Copied before sorting: getLocales can hand back the shared list of every
+  // locale, which the language switcher reads too.
   const orderedLocales = $derived(
-    getLocales(auth.config.enabled_locales).sort(
+    [...getLocales(auth.config.enabled_locales)].sort(
       (left, right) => Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
     )
   )
