@@ -164,9 +164,12 @@ async def bot_response_async(
             f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
         )
 
-    # Fallback: count tokens locally if API didn't provide them
+    # Fallback: count tokens locally if API didn't provide them. Off the event
+    # loop: a long answer takes a while to count, and some tokenizers are
+    # downloaded the first time they are needed.
     if not llm_msg.tokens:
-        llm_msg.tokens = token_counter(
+        llm_msg.tokens = await asyncio.to_thread(
+            token_counter,
             text=[llm_msg.reasoning_content, llm_msg.content],
             model=llm.human_id,
         )
