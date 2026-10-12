@@ -272,7 +272,7 @@ async def stream_comparison_messages(
                             )
                         ):
                             if new_llm_id := await pick_replacement_model(
-                                comparison, e.pos
+                                comparison, e.pos, charged=True
                             ):
                                 await update_comparison_llm_id(
                                     comparison, e.pos, new_llm_id

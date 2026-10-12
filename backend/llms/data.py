@@ -286,9 +286,15 @@ async def get_llms_list() -> LLMList:
 
 
 async def pick_replacement_model(
-    comparison: "ComparisonRead", pos: "BotPos"
+    comparison: "ComparisonRead", pos: "BotPos", charged: bool = False
 ) -> str | None:
-    """Pick a replacement model from the appropriate pool, excluding both current models."""
+    """
+    Pick a replacement model from the appropriate pool, excluding both current models.
+
+    `charged` says the turn already paid its character budgets for the current
+    pair. If neither model is pricey, the turn skipped the pricey budget, so
+    no pricey model may take over.
+    """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
@@ -304,6 +310,10 @@ async def pick_replacement_model(
         )
     else:
         pool = models.random_models
+
+    pricey = models.pricey_models
+    if charged and failing not in pricey and other not in pricey:
+        pool = [llm_id for llm_id in pool if llm_id not in pricey]
 
     try:
         return models.pick_one(pool, excluded=excluded)
