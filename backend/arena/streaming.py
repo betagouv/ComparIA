@@ -4,9 +4,11 @@ Server-Sent Events (SSE) streaming support for arena comparisons.
 Handles real-time streaming of model responses to the frontend using SSE protocol.
 """
 
+import asyncio
 import json
 import logging
 import traceback
+from contextlib import aclosing
 from typing import Any, AsyncGenerator, Literal, TypedDict
 
 import litellm
@@ -149,10 +151,11 @@ async def stream_llm_response(
 
     try:
         # Stream responses from bot_response_async generator
-        async for llm_msg in bot_response_async(
-            pos, llm, turn, turn_index, messages, request
-        ):
-            yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
+        async with aclosing(
+            bot_response_async(pos, llm, turn, turn_index, messages, request)
+        ) as llm_msgs:
+            async for llm_msg in llm_msgs:
+                yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
 
         yield {"type": "complete", "pos": pos}
 
@@ -210,8 +213,6 @@ async def stream_comparison_messages(
     Yields:
         AnySSEEvent
     """
-    import asyncio
-
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
 
@@ -232,73 +233,76 @@ async def stream_comparison_messages(
         complete: dict[BotPos, bool] = {"a": False, "b": False}
         # Track timeout swap attempts (max one per position)
         retried: dict[BotPos, bool] = {"a": False, "b": False}
+        # The read in flight for each model. It is kept until it lands rather
+        # than cancelled when the other model answers first: cancelling it
+        # would end that model's stream mid-answer.
+        reads: dict[BotPos, asyncio.Task[AnySSEEventMsg]] = {}
 
-        # Consume both generators in parallel
-        while not (complete["a"] and complete["b"]):
-            # Collect pending tasks
-            tasks = [
-                asyncio.create_task(anext(generators[pos]))
-                for pos in BOT_POS
-                if not complete[pos]
-            ]
-
-            if not tasks:
-                break
-
-            # Wait for next chunk from either model
-            completed, pending = await asyncio.wait(
-                tasks, return_when=asyncio.FIRST_COMPLETED
-            )
-
-            # Cancel pending tasks to avoid concurrent anext() on the same generator
-            for task in pending:
-                task.cancel()
-
-            # Process completed chunks
-            for task in completed:
-                try:
-                    event = task.result()
-                except ChatError as e:
-                    # On first-turn timeout, swap the model if it wasn't user-selected
-                    failing_llm_id = getattr(comparison, f"llm_id_{e.pos}")
-                    if (
-                        e.is_timeout
-                        and turn_index == 0
-                        and not retried[e.pos]
-                        and not _is_model_user_selected(
-                            failing_llm_id,
-                            comparison.mode,
-                            comparison.custom_models_selection,
-                        )
-                    ):
-                        if new_llm_id := await pick_replacement_model(
-                            comparison, e.pos
-                        ):
-                            await update_comparison_llm_id(
-                                comparison, e.pos, new_llm_id
-                            )
-                            logger.warning(
-                                f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
-                            )
-                            generators[e.pos] = stream_llm_response(
-                                e.pos,
-                                llms_data[new_llm_id],
-                                turn,
-                                turn_index,
-                                _get_messages(comparison, e.pos),
-                                request,
-                            )
-                            retried[e.pos] = True
-                            yield {"type": "swap", "pos": e.pos}
-                            continue
-                        # No replacement available, fall through to raise
-                    raise
-
+        try:
+            # Consume both generators in parallel
+            while not (complete["a"] and complete["b"]):
                 for pos in BOT_POS:
+                    if not complete[pos] and pos not in reads:
+                        reads[pos] = asyncio.create_task(anext(generators[pos]))
+
+                if not reads:
+                    break
+
+                # Wait for next chunk from either model
+                await asyncio.wait(reads.values(), return_when=asyncio.FIRST_COMPLETED)
+
+                # Process completed chunks
+                for pos in [
+                    pos for pos in BOT_POS if pos in reads and reads[pos].done()
+                ]:
+                    task = reads.pop(pos)
+                    try:
+                        event = task.result()
+                    except ChatError as e:
+                        # On first-turn timeout, swap the model if it wasn't user-selected
+                        failing_llm_id = getattr(comparison, f"llm_id_{e.pos}")
+                        if (
+                            e.is_timeout
+                            and turn_index == 0
+                            and not retried[e.pos]
+                            and not _is_model_user_selected(
+                                failing_llm_id,
+                                comparison.mode,
+                                comparison.custom_models_selection,
+                            )
+                        ):
+                            if new_llm_id := await pick_replacement_model(
+                                comparison, e.pos
+                            ):
+                                await update_comparison_llm_id(
+                                    comparison, e.pos, new_llm_id
+                                )
+                                logger.warning(
+                                    f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
+                                )
+                                generators[e.pos] = stream_llm_response(
+                                    e.pos,
+                                    llms_data[new_llm_id],
+                                    turn,
+                                    turn_index,
+                                    _get_messages(comparison, e.pos),
+                                    request,
+                                )
+                                retried[e.pos] = True
+                                yield {"type": "swap", "pos": e.pos}
+                                continue
+                            # No replacement available, fall through to raise
+                        raise
+
                     if event["type"] == "complete":
                         complete[event["pos"]] = True
 
-                yield event
+                    yield event
+        finally:
+            # Whether the turn ended, failed, or the visitor left: stop what
+            # is still reading and close both streams, which closes the
+            # provider connections behind them.
+            await _close_streams(reads, generators)
 
         # Signal completion
         yield {"type": "complete"}
@@ -326,6 +330,38 @@ async def stream_comparison_messages(
             f"[STREAMING] Error in stream_comparison_messages: {e}", exc_info=True
         )
         yield {"type": "error", "error": "provider_error"}
+
+
+async def _close_streams(
+    reads: dict[BotPos, asyncio.Task[AnySSEEventMsg]],
+    generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]],
+) -> None:
+    """
+    Stop the reads in flight, then close every stream.
+
+    A stream cannot be closed while a read is running in it, so the reads are
+    cancelled and awaited first. The work is shielded: a visitor who leaves
+    mid-turn cancels this task again, and that must not leave a provider
+    connection open.
+    """
+    for task in reads.values():
+        task.cancel()
+
+    async def close() -> None:
+        await asyncio.gather(*reads.values(), return_exceptions=True)
+        await asyncio.gather(
+            *(generator.aclose() for generator in generators.values()),
+            return_exceptions=True,
+        )
+
+    closing = asyncio.create_task(close())
+    # The loop only keeps weak references to tasks; hold this one until done.
+    _closing.add(closing)
+    closing.add_done_callback(_closing.discard)
+    await asyncio.shield(closing)
+
+
+_closing: set[asyncio.Task[None]] = set()
 
 
 def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
