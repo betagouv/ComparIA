@@ -19,6 +19,7 @@ from utils.dataset import publish as publish_module  # noqa: E402
 from utils.dataset.publish import (  # noqa: E402
     LOCAL_NAMES,
     DestinationError,
+    _built_files,
     _hf_repo,
     publish,
 )
@@ -49,6 +50,15 @@ def test_the_raw_dataset_goes_to_its_own_repository():
     config = destination("hf", HF, ["normal"]).parsed_config()
     assert _hf_repo(config, "normal") == "org/comparia"
     assert _hf_repo(config, "raw") == "org/comparia-raw"
+
+
+def test_the_side_files_keep_their_own_name(tmp_path):
+    for name in ("comparisons.parquet", "vote_tags.json", "models.json"):
+        (tmp_path / name).write_text("x")
+
+    files = {name for _, name in _built_files(tmp_path, "normal", "ai-arenaen")}
+
+    assert files == {"ai-arenaen.parquet", "vote_tags.json", "models.json"}
 
 
 def record(sent: list, kind: str):

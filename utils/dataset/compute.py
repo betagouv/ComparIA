@@ -37,6 +37,7 @@ from .export import StreamingDatasetExporter
 from .models import (
     DatasetComparisonBaseMetadata,
     DatasetComparisonExtraMetadata,
+    DatasetLLM,
     Datasets,
 )
 from .publish import LOCAL_NAMES
@@ -63,6 +64,25 @@ async def get_llms_data() -> dict[UUID, APILLMDataBase]:
     except Exception as e:
         logger.error(f"Error loading LLMs data: {e}")
         raise
+
+
+@alru_cache
+async def get_all_llms_data() -> dict[UUID, DatasetLLM]:
+    """
+    Every LLM, whatever its status, to name and describe the models the
+    published comparisons point at.
+    """
+    async with get_session() as session:
+        llms = (await session.exec(select(LLMData))).all()
+    return {llm.id: DatasetLLM.model_validate(llm) for llm in llms}
+
+
+@alru_cache
+async def get_llms_human_ids() -> dict[str, str]:
+    # Datasets carry the readable id, the uuid means nothing outside our db.
+    return {
+        str(llm_id): llm.human_id for llm_id, llm in (await get_all_llms_data()).items()
+    }
 
 
 async def count_dataset_rows(datasets: list[Datasets]):
@@ -141,6 +161,10 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     llms = await get_llms_data()
     llm_a = llms.get(comp.llm_id_a)  # .get() tolerates empty/unknown llm_id
     llm_b = llms.get(comp.llm_id_b)
+    # Legacy empty ids and unknown llms are kept as they are.
+    human_ids = await get_llms_human_ids()
+    model_a = human_ids.get(str(comp.llm_id_a), str(comp.llm_id_a))
+    model_b = human_ids.get(str(comp.llm_id_b), str(comp.llm_id_b))
 
     # A side's full conversation opens with its system prompt (when present),
     # then alternates user / assistant for every turn.
@@ -208,6 +232,10 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     # ErrorDetails). The totals are appended in DatasetComparisonMetadata field
     # order so the merged dict matches the old model_dump output exactly.
     base_meta = DatasetComparisonBaseMetadata.model_validate(comp).model_dump()
+    if selection := base_meta["custom_models_selection"]:
+        base_meta["custom_models_selection"] = tuple(
+            human_ids.get(llm_id, llm_id) for llm_id in selection
+        )
     comp_meta = {
         **base_meta,
         "total_tokens_a": _total(turns_metadata, "tokens_a"),
@@ -232,8 +260,8 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
             **row,
             "turn": idx,
             "comparison_id": comparison_id,
-            "model_a": str(comp.llm_id_a),
-            "model_b": str(comp.llm_id_b),
+            "model_a": model_a,
+            "model_b": model_b,
             "timestamp": comp.created_at,
             "full_conversation_a": full_conversation_a,
             "full_conversation_b": full_conversation_b,
@@ -506,6 +534,63 @@ async def write_vote_tags_vocabulary(export_dir: Path) -> None:
     logger.info(f"Wrote {len(tags)} vote tags to {export_dir / VOTE_TAGS_FILENAME}")
 
 
+MODELS_FILENAME = "models.json"
+
+# Internal plumbing, meaningless outside our db or our providers, and the
+# precise energy figure, an estimate we only publish as its class.
+_MODELS_EXCLUDE: dict = {
+    "wh_per_million_token": True,
+    "created_at": True,
+    "updated_at": True,
+    "api_model_id": True,
+    "endpoint_id": True,
+    "rate_limited": True,
+    "lab_id": True,
+    "license_id": True,
+    "lab": {
+        "id",
+        "created_at",
+        "updated_at",
+        "logo",
+        "has_custom_logo",
+        "logo_version",
+    },
+    "license": {"id", "created_at", "updated_at"},
+}
+
+# Labs don't disclose these for proprietary models, ours are estimates.
+_PROPRIETARY_UNKNOWN = ("params", "active_params", "size_class", "required_ram")
+
+
+def _model_metadata(llm: DatasetLLM) -> dict:
+    data = llm.model_dump(mode="json", exclude=_MODELS_EXCLUDE)
+    if llm.license.kind == "proprietary":
+        data.update(dict.fromkeys(_PROPRIETARY_UNKNOWN))
+    return data
+
+
+async def write_models_metadata(export_dir: Path) -> None:
+    """
+    Describe the models that 'model_a|b' refer to, by their `human_id`.
+
+    The `id` stays in the file so rows published while the dataset carried
+    uuids can still be joined. Archived and disabled models stay too: rows
+    already published still carry them.
+    """
+    llms = sorted((await get_all_llms_data()).values(), key=lambda llm: llm.human_id)
+    export_dir.mkdir(parents=True, exist_ok=True)
+    (export_dir / MODELS_FILENAME).write_text(
+        json.dumps(
+            [_model_metadata(llm) for llm in llms],
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    logger.info(f"Wrote {len(llms)} models to {export_dir / MODELS_FILENAME}")
+
+
 async def process_datasets(
     datasets: list[Datasets],
     export_base_path: Path,
@@ -536,6 +621,7 @@ async def process_datasets(
         normal_export_dir = export_base_path / normal_name
         _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
         await write_vote_tags_vocabulary(normal_export_dir)
+        await write_models_metadata(normal_export_dir)
         return {"normal": normal_export_dir}
 
     if use_cache:
@@ -549,4 +635,5 @@ async def process_datasets(
     built = {dataset: export_base_path / LOCAL_NAMES[dataset] for dataset in exporters}
     for export_dir in built.values():
         await write_vote_tags_vocabulary(export_dir)
+        await write_models_metadata(export_dir)
     return built
