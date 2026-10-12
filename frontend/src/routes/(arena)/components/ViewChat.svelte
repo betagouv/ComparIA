@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
-  import { resolve } from '$app/paths'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
@@ -17,15 +15,6 @@
   } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
-
-  // A comparison that isn't in the store sends us back to the arena. The
-  // redirect only lands on the next tick, so everything below has to survive
-  // a render with no comparison rather than throw on the way out.
-  $effect(() => {
-    if (!comparator.comparison) {
-      goto(resolve('/'))
-    }
-  })
 
   let prompt = $state('')
   let voteReminder = $state(false)
