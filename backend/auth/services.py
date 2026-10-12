@@ -487,21 +487,29 @@ async def _revoke_user_sessions(session: "AsyncSession", user_id: uuid.UUID) -> 
     )
 
 
-async def revoke_user_access(session: "AsyncSession", user_id: uuid.UUID) -> None:
+async def revoke_user_access(
+    session: "AsyncSession", user_id: uuid.UUID, *, keep_invites: bool = False
+) -> None:
     """Close every way into the account: live sessions, unused email codes
-    and unused invite links. For an account being deleted or reset, so that
-    a later revival does not bring an old token back to life. Does not commit."""
+    and unused invite links. For an account that is deleted, revived, has its
+    authenticator reset, or changes role, so that no token from before acts
+    on what the account has become.
+
+    A role change keeps the invites: the panel only invites plain users, so
+    an admin is added by inviting them and then changing the role, and the
+    link still goes to the right person. Does not commit."""
     await _revoke_user_sessions(session, user_id)
     await session.execute(
         sa_update(LoginCode)
         .where(LoginCode.user_id == user_id, LoginCode.used_at.is_(None))
         .values(used_at=datetime.now())
     )
-    await session.execute(
-        sa_delete(InviteToken).where(
-            InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+    if not keep_invites:
+        await session.execute(
+            sa_delete(InviteToken).where(
+                InviteToken.user_id == user_id, InviteToken.used_at.is_(None)
+            )
         )
-    )
 
 
 async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:

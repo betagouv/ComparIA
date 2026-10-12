@@ -217,6 +217,12 @@ async def update_user(user_id: uuid.UUID, data: UserUpsert) -> UserPublic | None
             # a demoted admin must not keep being challenged for one.
             await drop_user_totp(session, user.id)
 
+        if user.role != data.role:
+            # A session must not act under a role it was not opened with. A
+            # new admin without an authenticator would otherwise enrol from
+            # whatever older session was still around.
+            await revoke_user_access(session, user.id, keep_invites=True)
+
         user.sqlmodel_update(data.model_dump(exclude={"id"}))
         session.add(user)
         await session.commit()

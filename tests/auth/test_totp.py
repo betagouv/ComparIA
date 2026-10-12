@@ -1477,7 +1477,7 @@ def test_the_cli_reset_is_wired_into_comparia_cli():
     assert "reset-totp" in cli_db
 
 
-def test_demoting_an_admin_forgets_their_authenticator():
+def test_demoting_an_admin_forgets_their_authenticator_and_sessions():
     import backend.admin.services as admin_services
     from utils.database.models.auth import UserUpsert
 
@@ -1506,6 +1506,10 @@ def test_demoting_an_admin_forgets_their_authenticator():
         "auth_totp",
         "auth_totp_challenge",
     }
+    [sessions] = updates_on(session.statements, "auth_session")
+    assert sessions["revoked_at"] is not None
+    [codes] = updates_on(session.statements, "auth_login_code")
+    assert codes["used_at"] is not None
 
 
 def test_deleting_an_admin_closes_every_way_back_in():
