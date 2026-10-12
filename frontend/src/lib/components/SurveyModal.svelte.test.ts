@@ -153,7 +153,7 @@ describe('SurveyModal dismissal', () => {
     })
   })
 
-  it('leaves the required questions of a signed-in account to the locked popup', async () => {
+  it('leaves the required questions of a signed-in account to the required popup', async () => {
     mocks.user = { id: 'u1' }
     const { container } = render(SurveyModal)
 
