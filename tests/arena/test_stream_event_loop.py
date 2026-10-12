@@ -16,6 +16,7 @@ Run with pytest:
 """
 
 import asyncio
+import gc
 import json
 import os
 import sys
@@ -448,3 +449,69 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
     assert events[-1] == {"type": "complete"}
     assert not errors
     assert closed == {"steady", "stuck", "spare"}
+
+
+@pytest.mark.parametrize("hangs_up", ["waiting_on_models", "with_unsent_chunks"])
+def test_a_visitor_who_hangs_up_mid_response_closes_everything(monkeypatch, hangs_up):
+    """
+    Through Starlette's own response, as a server speaking ASGI 2.3 drives it.
+    A visitor who stops reading fills the write buffer, so when they then hang
+    up, the cancel lands inside `send()` rather than in the stream, and
+    Starlette alone would leave the stream open until garbage collection.
+    """
+    closed: set[str] = set()
+    fake_models(monkeypatch, {"fast": 0.01, "slow": 3600}, closed)
+    comparison = comparison_between("fast", "slow")
+    is_streaming = True
+
+    async def event_stream():
+        # The routes' stream: the turn is marked done in a `finally`.
+        nonlocal is_streaming
+        try:
+            async for event in streaming.stream_comparison_messages(
+                comparison, comparison.turns[0]
+            ):
+                yield streaming.format_sse_event(event)
+        finally:
+            is_streaming = False
+
+    async def scenario():
+        gone = asyncio.Event()
+        bodies = 0
+
+        async def receive():
+            await gone.wait()
+            return {"type": "http.disconnect"}
+
+        async def send(message):
+            nonlocal bodies
+            if message["type"] != "http.response.body":
+                return
+            bodies += 1
+            # Three chunks and "complete": the quick model is done.
+            if bodies == 4:
+                if hangs_up == "with_unsent_chunks":
+                    gone.set()
+                    await asyncio.sleep(3600)
+                else:
+                    asyncio.get_running_loop().call_later(0.05, gone.set)
+
+        response = streaming.create_sse_response(event_stream())
+        scope = {"type": "http", "asgi": {"spec_version": "2.3"}}
+        gc.disable()
+        try:
+            await asyncio.wait_for(response(scope, receive, send), timeout=3)
+            await asyncio.sleep(0.05)
+            leftover = {
+                t for t in asyncio.all_tasks() if t is not asyncio.current_task()
+            }
+            # Read while `response` still holds the stream, so that no garbage
+            # collection can have closed it on Starlette's behalf.
+            return set(closed), is_streaming, leftover
+        finally:
+            gc.enable()
+
+    closed_in_time, still_streaming, leftover = asyncio.run(scenario())
+    assert closed_in_time == {"fast", "slow"}
+    assert not still_streaming
+    assert not leftover

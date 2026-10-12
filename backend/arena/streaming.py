@@ -16,6 +16,7 @@ import sentry_sdk
 from fastapi import Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
+from starlette.types import Receive, Scope, Send
 
 from backend.arena.conversation import (
     AnyMessageRead,
@@ -389,6 +390,24 @@ def _is_model_user_selected(
     return str(model_name) in custom_selection
 
 
+class _ClosingStreamingResponse(StreamingResponse):
+    """
+    A StreamingResponse that always closes its stream when it is done.
+
+    When a visitor stops reading, then hangs up, the cancel lands in `send()`,
+    outside the stream, and Starlette leaves the stream suspended until garbage
+    collection. Meanwhile the slow model's provider connection stays open and
+    the comparison stays marked as streaming.
+    """
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            if aclose := getattr(self.body_iterator, "aclose", None):
+                await asyncio.shield(asyncio.ensure_future(aclose()))
+
+
 def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:
     """
     Create a FastAPI StreamingResponse configured for Server-Sent Events.
@@ -399,7 +418,7 @@ def create_sse_response(generator: AsyncGenerator[str]) -> StreamingResponse:
     Returns:
         StreamingResponse configured with proper SSE headers
     """
-    return StreamingResponse(
+    return _ClosingStreamingResponse(
         generator,
         media_type="text/event-stream",
         headers={
