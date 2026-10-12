@@ -10,6 +10,7 @@ Run with pytest, or directly:
     uv run python tests/arena/test_auth_ratelimit.py
 """
 
+import asyncio
 import contextlib
 import os
 import sys
@@ -20,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
+import httpx
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -28,6 +30,23 @@ import utils.database.models  # noqa: F401 needed before importing backend.auth.
 from backend.auth.services import LoginResult
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings
 from utils.storage.redis import REDIS_AUTH_EMAIL_REQ, REDIS_AUTH_VERIFY_FAIL
+
+
+class FakePipeline:
+    """Queues commands and runs them in one go, as MULTI/EXEC would."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.commands = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.commands.append((name, args, kwargs))
+
+        return queue
+
+    def execute(self):
+        return [getattr(self.redis, n)(*a, **k) for n, a, k in self.commands]
 
 
 class FakeRedis:
@@ -42,6 +61,15 @@ class FakeRedis:
 
     def expire(self, key, ttl):
         pass
+
+    def set(self, key, value, ex=None, nx=False):
+        if nx and key in self.store:
+            return None
+        self.store[key] = int(value)
+        return True
+
+    def pipeline(self, transaction=True):
+        return FakePipeline(self)
 
     def get(self, key):
         v = self.store.get(key)
@@ -393,6 +421,82 @@ def test_verify_refuses_a_cross_site_origin():
         assert r.status_code == 200
 
 
+def _verify_burst(app, codes, forwarded_for=None):
+    """Send every guess at once, the way a script would, and wait for all."""
+
+    async def burst():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            cookies={ANONYMOUS_SESSION_COOKIE: "anonymous-test-token"},
+        ) as client:
+            return await asyncio.gather(
+                *(
+                    client.post(
+                        "/auth/email/verify",
+                        json={"email": "victim@school.fr", "code": code},
+                        headers=(
+                            {"x-forwarded-for": forwarded_for(n)}
+                            if forwarded_for
+                            else {}
+                        ),
+                    )
+                    for n, code in enumerate(codes)
+                )
+            )
+
+    return asyncio.run(burst())
+
+
+def _slow_checker(evaluated, right_code=None):
+    async def verify(**kwargs):
+        evaluated.append(kwargs["code"])
+        # The database round trip, where the other requests get their turn.
+        await asyncio.sleep(0.01)
+        if kwargs["code"] == right_code:
+            return LoginResult("session", "sometoken")
+        return None
+
+    return verify
+
+
+def test_parallel_wrong_codes_from_one_ip_stop_at_the_cap():
+    """Guesses sent all at once must meet the same cap as guesses sent one by
+    one: a burst cannot slip in between the check and the count."""
+    evaluated = []
+    with fake_router(verify_login_code=_slow_checker(evaluated)) as (client, _fake):
+        codes = [f"{n:06d}" for n in range(60)]
+        responses = _verify_burst(client.app, codes)
+
+    cap = settings.AUTH_VERIFY_MAX_ATTEMPTS
+    assert len(evaluated) == cap
+    statuses = sorted(r.status_code for r in responses)
+    assert statuses.count(400) == len(evaluated)
+    assert statuses.count(429) == len(codes) - len(evaluated)
+
+
+def test_parallel_wrong_codes_from_many_ips_stop_at_the_email_cap():
+    evaluated = []
+    with (
+        fake_router(verify_login_code=_slow_checker(evaluated, "123456")) as (
+            client,
+            _fake,
+        ),
+        trusted_proxies(1),
+    ):
+        codes = [f"{n:06d}" for n in range(60)]
+        _verify_burst(client.app, codes, forwarded_for=lambda n: f"203.0.113.{n + 1}")
+        assert len(evaluated) == settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL
+
+        # The right code, once the cap is spent, is refused without a look.
+        seen = len(evaluated)
+        (r,) = _verify_burst(client.app, ["123456"], lambda _n: "198.51.100.9")
+        assert r.status_code == 429
+        assert len(evaluated) == seen
+        assert "auth_session" not in r.cookies
+
+
 def run():
     test_per_email_request_cap_is_isolated_per_email()
     test_per_ip_request_cap_uses_configured_ceiling()
@@ -405,6 +509,8 @@ def run():
     test_forwarded_for_is_ignored_without_trusted_proxies()
     test_per_email_verify_cap_trips_whatever_the_ip()
     test_verify_refuses_a_cross_site_origin()
+    test_parallel_wrong_codes_from_one_ip_stop_at_the_cap()
+    test_parallel_wrong_codes_from_many_ips_stop_at_the_email_cap()
     print("All auth rate limit cases passed.")
 
 

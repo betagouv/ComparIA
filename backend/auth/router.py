@@ -6,6 +6,7 @@ from typing import Literal
 from urllib.parse import urlencode
 from uuid import UUID
 
+import redis
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import (
@@ -344,6 +345,19 @@ def _require_email_code(app_settings) -> None:
         )
 
 
+def _count_attempt(client: redis.Redis, key: str, ttl: int) -> int:
+    """Count one attempt and return the total so far. INCR is atomic, so
+    however many requests arrive at once, each sees its own number. The key
+    is created with its expiry in the same transaction: a connection lost
+    between the two would leave a counter that never runs out, and lock the
+    email or the account out for good."""
+    pipe = client.pipeline(transaction=True)
+    pipe.set(key, 0, ex=ttl, nx=True)
+    pipe.incr(key)
+    _created, count = pipe.execute()
+    return count
+
+
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
     _reject_cross_site(request)
@@ -439,23 +453,20 @@ async def email_verify(
     # two buckets never collide. Bounds guessing spread over many source IPs.
     email_fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip="*", email=email_hash)
 
+    # Count every guess before checking it, right or wrong, so guesses sent
+    # all at once cannot all be checked before the first wrong one counts. A
+    # right code clears the count below.
     try:
         client = get_redis_client()
-        fail_count = client.get(fail_key)
-        if fail_count and int(fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many attempts, please request a new code.",
-            )
-        email_fail_count = client.get(email_fail_key)
-        if (
-            email_fail_count
-            and int(email_fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL
+        for key, cap in (
+            (fail_key, settings.AUTH_VERIFY_MAX_ATTEMPTS),
+            (email_fail_key, settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL),
         ):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many attempts, please request a new code.",
-            )
+            if _count_attempt(client, key, 600) > cap:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many attempts, please request a new code.",
+                )
     except HTTPException:
         raise
     except Exception as e:
@@ -469,15 +480,6 @@ async def email_verify(
         anonymous_user_hash=_anonymous_hash(request),
     )
     if not login:
-        try:
-            client = get_redis_client()
-            for key in (fail_key, email_fail_key):
-                fail_count = client.incr(key)
-                if fail_count == 1:
-                    client.expire(key, 600)
-        except Exception as e:
-            logger.error(f"[AUTH] Redis rate limit check failed: {e}")
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired code.",

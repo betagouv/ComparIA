@@ -77,8 +77,9 @@ class Settings(BaseSettings):
     # provider, but a whole class signing in at once must still go through.
     AUTH_OIDC_LOGIN_PER_IP_PER_HOUR: int = 2000
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
-    # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
-    # above only slows one attacker down; this one closes the login code itself.
+    # Ceiling on guesses per email (a right code clears the count), whatever the
+    # source IP. The per-IP counter above only slows one attacker down; this one
+    # closes the login code itself.
     AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
     # Fernet key(s) for secrets stored in the database: the admins'
     # authenticator secrets, the OIDC client secret, the endpoints' API keys,
