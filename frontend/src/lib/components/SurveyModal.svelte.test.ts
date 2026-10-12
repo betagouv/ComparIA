@@ -4,7 +4,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   request: vi.fn(),
-  questions: [] as Array<Record<string, unknown>>
+  questions: [] as Array<Record<string, unknown>>,
+  user: null as Record<string, unknown> | null
+}))
+
+vi.mock('$lib/auth.svelte', () => ({
+  getAuthContext: () => ({
+    get user() {
+      return mocks.user
+    }
+  })
+}))
+
+vi.mock('$app/navigation', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$app/navigation')>()),
+  invalidate: vi.fn()
 }))
 
 vi.mock('$lib/fastapi-client', () => ({
@@ -105,4 +119,63 @@ describe('SurveyModal answers', () => {
       ]
     })
   }, 10000)
+})
+
+describe('SurveyModal dismissal', () => {
+  beforeEach(() => {
+    mocks.questions = [{ ...question('q1'), required: true }, question('q2')]
+    mocks.request.mockResolvedValue(undefined)
+    Object.defineProperty(window, 'dsfr', {
+      configurable: true,
+      value: () => ({ modal: { disclose: vi.fn(), conceal: vi.fn() } })
+    })
+  })
+
+  afterEach(() => {
+    mocks.questions = []
+    mocks.user = null
+  })
+
+  const close = (container: HTMLElement) =>
+    container.querySelector('dialog')!.dispatchEvent(new CustomEvent('dsfr.conceal'))
+
+  it('counts a close without answers as one showing of every question', async () => {
+    const { container } = render(SurveyModal)
+
+    close(container)
+
+    await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
+    expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
+      answers: [
+        { question_id: 'q1', value: null },
+        { question_id: 'q2', value: null }
+      ]
+    })
+  })
+
+  it('leaves the required questions of a signed-in account to the required popup', async () => {
+    mocks.user = { id: 'u1' }
+    const { container } = render(SurveyModal)
+
+    close(container)
+
+    await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
+    expect(bodyOf(callsTo('/survey/answers')[0])).toEqual({
+      answers: [{ question_id: 'q2', value: null }]
+    })
+  })
+
+  it('does not count the close that follows a submit', async () => {
+    const { container } = render(SurveyModal)
+    const submit = [...container.querySelectorAll<HTMLButtonElement>('button')].find(
+      (button) => button.textContent?.trim() === 'Envoyer mes réponses'
+    )!
+    await fireEvent.click(submit)
+    await waitFor(() => expect(callsTo('/survey/answers')).toHaveLength(1))
+
+    close(container)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(callsTo('/survey/answers')).toHaveLength(1)
+  })
 })

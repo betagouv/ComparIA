@@ -29,9 +29,11 @@
   // The default locale mints the published key, so its field comes first and
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
-  const defaultLocale = $derived(data.defaultLocale)
+  const defaultLocale = $derived(auth.config.default_locale)
+  // Copied before sorting: getLocales can hand back the shared list of every
+  // locale, which the language switcher reads too.
   const orderedLocales = $derived(
-    getLocales(auth.config.enabled_locales).sort(
+    [...getLocales(auth.config.enabled_locales)].sort(
       (left, right) => Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
     )
   )
@@ -210,6 +212,21 @@
       return
     }
 
+    // The form only shows the locales the instance serves today. Labels in a
+    // locale switched off since are kept as they were: dropping them would
+    // lose the translation and count as a change of wording.
+    const served = new Set<string>(orderedLocales.map(({ code }) => code))
+    const unserved = (stored: Record<string, string> | undefined) =>
+      Object.fromEntries(Object.entries(stored ?? {}).filter(([code]) => !served.has(code)))
+    const keptLabels = { ...unserved(editing?.labels), ...labels }
+    const keptOptions = options.map((option) => ({
+      ...option,
+      labels: {
+        ...unserved(editing?.options.find(({ key }) => key && key === option.key)?.labels),
+        ...option.labels
+      }
+    }))
+
     const target = editing
     const done = await run(
       () =>
@@ -218,8 +235,8 @@
               method: 'PUT',
               body: JSON.stringify({
                 required: formRequired,
-                labels,
-                options,
+                labels: keptLabels,
+                options: keptOptions,
                 published: formPublished
               } satisfies SurveyQuestionUpdate)
             })

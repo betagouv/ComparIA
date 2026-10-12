@@ -34,17 +34,23 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
   const cohorts = getCohortContext()
   const data = $derived(source())
   const hasNeverAnsweredQuestions = $derived(!!data.never_answered_ids.length)
+  // What the popups ask. The backend leaves out of 'never_answered_ids' an
+  // optional question already shown three times or shown too recently, and
+  // that is what keeps the asking bounded. A required one is asked whatever
+  // its count: the arena holds every write until it has an answer.
   const unansweredQuestions = $derived.by(() => {
     return data.questions.filter((q) => {
-      if (data.never_answered_ids.includes(q.id)) return true
-      return !data.answers.find((answer) => answer.question_id === q.id)
+      if (data.answers.some((answer) => answer.question_id === q.id)) return false
+      return q.required || data.never_answered_ids.includes(q.id)
     })
   })
   // Show modal at page load if survey not fullfilled
   let showRequiredSurvey = $state(auth.user?.questionsAnswered === false)
   // Whether there is anything to ask and whether this visitor has already been offered the popup.
   // FIXME hardcoded: do not show survey for 'pix' cohorts
-  const showSurveyCard = $derived(cohorts !== 'pix' && !!hasNeverAnsweredQuestions)
+  const showSurveyCard = $derived(
+    !cohorts?.split(',').includes('pix') && !!hasNeverAnsweredQuestions
+  )
 
   const state: SurveyCtx = {
     get showRequiredSurvey() {
