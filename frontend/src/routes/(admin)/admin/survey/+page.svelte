@@ -1,16 +1,8 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import {
-    Badge,
-    Button,
-    Icon,
-    Input,
-    Modal,
-    Select,
-    Table,
-    Toggle,
-    Tooltip
-  } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Table, Toggle, Tooltip } from '$components/dsfr'
+  import { FormRadioGroup } from '$components/form'
+  import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
@@ -591,34 +583,66 @@
 <Modal
   id="fr-modal-survey-question"
   titleId="fr-modal-title-survey-question"
-  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
-  contentClass="md:pt-4! mb-6!"
+  contentClass="mb-6!"
+  sizeClass="fr-col-md-10"
 >
-  <h2 id="fr-modal-title-survey-question" class="fr-modal__title">
+  <h2 id="fr-modal-title-survey-question" class="fr-h5 mb-1!">
     {editing ? m['survey.admin.editTitle']() : m['survey.admin.addTitle']()}
   </h2>
 
+  <p class="text-grey text-sm!">{m['survey.admin.addDesc']()}</p>
+
+  <Toggle
+    id="survey-question-required"
+    bind:value={formRequired}
+    label={m['survey.admin.required']()}
+    tooltip={m['survey.admin.requiredHelp']()}
+    hideCheckLabel
+    labelPos="right"
+    groupClass="w-full mb-3"
+  />
+
+  <Toggle
+    id="survey-question-published"
+    bind:value={formPublished}
+    label={m['survey.admin.published']()}
+    tooltip={m['survey.admin.publishedHelp']()}
+    hideCheckLabel
+    labelPos="right"
+    groupClass="w-full mb-5"
+  />
+
   <form onsubmit={submit}>
-    <div class="mb-4 gap-1 flex items-start">
-      <Toggle
-        id="survey-question-required"
-        bind:value={formRequired}
-        label={m['survey.admin.required']()}
+    <div class="px-5 py-4 rounded-lg gap-3 mb-6 flex flex-col bg-[--grey-975-100]">
+      <FormTranslate
+        id="survey-question-labels"
+        bind:value={formLabels}
+        subProps={{
+          component: 'input',
+          type: 'text',
+          id: `survey-question-label`,
+          maxlength: 300,
+          label: m['survey.admin.labelFor']()
+        }}
       />
-      <Tooltip
-        id="survey-required-help"
-        size="sm"
-        class="mt-1"
-        label={m['survey.admin.required']()}
-      >
-        {m['survey.admin.requiredHelp']()}
-      </Tooltip>
+
+      {#if editing || keyPreview}
+        <p class="fr-text--sm text-grey mb-0!">
+          {editing
+            ? m['survey.admin.keyFrozen']({ key: editing.key })
+            : m['survey.admin.keyPreview']({ key: keyPreview })}
+        </p>
+      {/if}
     </div>
 
+    <h3 id="fr-modal-title-survey-question" class="fr-h6 text-primary! mb-2!">
+      {m['survey.admin.optionsTitle']()}
+    </h3>
+
     {#if !editing}
-      <Select
+      <FormRadioGroup
         id="survey-question-input-type"
-        bind:selected={formInputType}
+        bind:value={formInputType}
         label={m['survey.admin.inputTypeLabel']()}
         options={[
           { value: 'select', label: m['survey.admin.inputTypeSelect']() },
@@ -629,25 +653,7 @@
       <p class="fr-text--sm text-grey">{inputTypeLabel(editing)}</p>
     {/if}
 
-    {#each orderedLocales as locale (locale.code)}
-      <Input
-        id="survey-question-label-{locale.code}"
-        value={formLabels[locale.code] ?? ''}
-        oninput={(event) =>
-          (formLabels = { ...formLabels, [locale.code]: event.currentTarget.value })}
-        label={m['survey.admin.labelFor']({ locale: locale.long })}
-        help={locale.code === defaultLocale ? m['survey.admin.labelHelp']() : undefined}
-        maxlength={300}
-      />
-    {/each}
-
-    {#if editing}
-      <p class="fr-text--sm text-grey">{m['survey.admin.keyFrozen']({ key: editing.key })}</p>
-    {:else if keyPreview}
-      <p class="fr-text--sm text-grey">{m['survey.admin.keyPreview']({ key: keyPreview })}</p>
-    {/if}
-
-    <fieldset class="fr-fieldset mt-4 gap-0 flex flex-col">
+    <fieldset class="fr-fieldset mx-0! -mt-4! px-0! gap-0 flex flex-col!">
       <legend class="fr-label mb-2! gap-1 flex items-center">
         {m['survey.admin.optionsLegend']()}
         <Tooltip id="survey-options-help" size="sm" label={m['survey.admin.optionsLegend']()}>
@@ -655,65 +661,49 @@
         </Tooltip>
       </legend>
 
-      {#each formOptions as option, index (option.key ?? `new-${index}`)}
-        <div class="mb-4 rounded-lg p-3 w-full border-1 border-[--border-default-grey]">
-          <div class="mb-2 gap-2 flex items-center justify-between">
-            <span class="fr-text--sm font-bold"
-              >{m['survey.admin.optionN']({ index: index + 1 })}</span
-            >
-            <Button
-              size="sm"
-              variant="tertiary-no-outline"
-              icon="delete-bin-line"
-              iconOnly
-              text={m['survey.admin.removeOption']()}
-              title={m['survey.admin.removeOption']()}
-              disabled={formOptions.length <= 2}
-              onclick={() => removeOption(index)}
+      <div class="gap-8 lg:grid-cols-2 grid w-full">
+        {#each formOptions as option, index (option.key ?? `new-${index}`)}
+          <div class="rounded-lg p-3 pb-5 w-full border-1 border-[--border-default-grey]">
+            <div class="mb-2 gap-2 flex items-center justify-between">
+              <span class="text-sm font-bold"
+                >{m['survey.admin.optionN']({ index: index + 1 })}</span
+              >
+              <Button
+                size="sm"
+                variant="tertiary-no-outline"
+                icon="delete-bin-line"
+                iconOnly
+                text={m['survey.admin.removeOption']()}
+                title={m['survey.admin.removeOption']()}
+                disabled={formOptions.length <= 2}
+                onclick={() => removeOption(index)}
+              />
+            </div>
+
+            <FormTranslate
+              id="translate-survey-option-{index}"
+              bind:value={option.labels}
+              subProps={{
+                component: 'input',
+                type: 'text',
+                id: `survey-option-${index}`,
+                maxlength: 200,
+                label: m['survey.admin.optionLabelFor']()
+              }}
             />
           </div>
-          {#each orderedLocales as locale (locale.code)}
-            <Input
-              id="survey-option-{index}-{locale.code}"
-              value={option.labels[locale.code] ?? ''}
-              oninput={(event) => {
-                formOptions[index] = {
-                  ...formOptions[index],
-                  labels: { ...formOptions[index].labels, [locale.code]: event.currentTarget.value }
-                }
-              }}
-              label={m['survey.admin.optionLabelFor']({ locale: locale.long })}
-              maxlength={200}
-            />
-          {/each}
-        </div>
-      {/each}
+        {/each}
+      </div>
 
       <Button
         variant="secondary"
         size="sm"
         icon="add-line"
-        class="self-start"
+        class="mt-5 self-start"
         text={m['survey.admin.addOption']()}
         onclick={addOption}
       />
     </fieldset>
-
-    <div class="mt-4 gap-1 flex items-start">
-      <Toggle
-        id="survey-question-published"
-        bind:value={formPublished}
-        label={m['survey.admin.published']()}
-      />
-      <Tooltip
-        id="survey-published-help"
-        size="sm"
-        class="mt-1"
-        label={m['survey.admin.published']()}
-      >
-        {m['survey.admin.publishedHelp']()}
-      </Tooltip>
-    </div>
 
     {#if formError}
       <p class="fr-error-text" aria-live="polite">{formError}</p>
