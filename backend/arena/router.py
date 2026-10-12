@@ -48,7 +48,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.web_search import search_web
+from backend.arena.web_search import keep_search_results, search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -360,6 +360,10 @@ async def add_first_text(
     web_search_results = None
     if args.web_search:
         web_search_results = await search_web(args.prompt_value)
+        if web_search_results:
+            web_search_results = keep_search_results(
+                args.prompt_value, web_search_results
+            )
         if web_search_results:
             web_search_results = await drop_flagged_results(web_search_results)
         if web_search_results:

@@ -81,8 +81,6 @@ INPUTS_PER_REQUEST: Final[int] = 16
 FAIL_CLOSED_ABOVE_CHARS: Final[int] = CHUNK_CHARS
 # How many earlier user messages a follow-up is scored with.
 CONTEXT_TURNS: Final[int] = 4
-# How much of each web search result is read before it goes to the models.
-WEB_RESULT_CHARS: Final[int] = 4 * CHUNK_CHARS
 
 # Failures in a row after which Mistral counts as down, and how long the check
 # then pauses before trying again. Being rate limited (429) is not counted:
@@ -502,18 +500,17 @@ async def drop_flagged_results(
     Drop the web search results that would trip a category set to `block`.
 
     Their text goes to the models next to the prompt, so a page written to
-    instruct the model is a prompt injection the user never had to type. Fails
-    open: on error the results are kept, since the prompt itself was checked.
+    instruct the model is a prompt injection the user never had to type. They
+    arrive already cut by `keep_search_results`, so all the models will read is
+    scored. Fails open: on error the results are kept, since the prompt itself
+    was checked.
     """
     check = await get_prompt_check()
     api_key = check.api_key or settings.MISTRAL_API_KEY
     if not check.should_run or not api_key or is_paused():
         return results
 
-    per_result = [
-        moderation_inputs((result.content or "")[:WEB_RESULT_CHARS])
-        for result in results
-    ]
+    per_result = [moderation_inputs(result.content or "") for result in results]
     try:
         scores = await moderate_many(
             [i for inputs in per_result for i in inputs], check.model, api_key
