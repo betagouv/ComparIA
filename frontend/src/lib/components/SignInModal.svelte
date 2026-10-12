@@ -78,6 +78,7 @@
             {#snippet tab(tab)}
               {#if tab.id === 'email'}
                 <SignInForm
+                  bind:step
                   {onSuccess}
                   onLegalNavigate={closeModal}
                   hideHeader
