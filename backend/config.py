@@ -259,9 +259,11 @@ RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 # The per-session budget above is the one that matters, since users behind one
 # shared NAT each get their own. But a client that drops the `anonymous_session`
 # cookie gets a fresh session on every request, so the same budget also runs per
-# IP as a backstop. Twenty times the room, because that IP may be a whole
-# building.
-RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 20
+# IP as a backstop. A hundred times the room, because that IP may be a whole
+# school: at twenty, one class of thirty could spend it before the break. Spam
+# seen in the OpenRouter logs picks the cheapest models, which this pool does
+# not cover.
+RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
 
 # Cheap models are not free either, and only pricey ones used to be counted, so
 # nothing at all stopped someone hammering the rest. Wider still: an ordinary
