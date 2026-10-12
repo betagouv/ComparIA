@@ -34,6 +34,8 @@
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
 
+  // Before the survey context, which reads the cohort to leave pix visitors out.
+  setCohortContext()
   const survey = provideSurveyContext(() => data.survey)
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
@@ -51,7 +53,6 @@
   setVotesContext(data.votes)
   // svelte-ignore state_referenced_locally
   setModelsContext(data.data, getPlatformName())
-  setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
     if (_event.reason instanceof UnansweredQuestionsError) {
