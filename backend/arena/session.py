@@ -17,11 +17,13 @@ from backend.config import (
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
+    RATELIMIT_SENT_WARNINGS_PER_HOUR,
 )
 from backend.utils.user import ip_bucket
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
+    REDIS_SENT_WARNINGS_KEY,
     REDIS_USER_CHAR_COUNT,
     get_redis_client,
 )
@@ -222,4 +224,27 @@ def is_block_cooldown(ip: str) -> bool:
         return bool(counter and int(counter) >= RATELIMIT_BLOCKED_PROMPTS_PER_HOUR)
     except Exception as e:
         logger.error(f"[SESSION] Error checking block cooldown: {e}")
+        return False
+
+
+def increment_sent_warnings(session: str) -> None:
+    """Count a warning a session answered with "send anyway", in a rolling
+    hour. Fails open like the block count."""
+    try:
+        client = get_redis_client()
+        key = REDIS_SENT_WARNINGS_KEY.format(session=session)
+        client.incr(key)
+        client.expire(key, 3600)
+    except Exception as e:
+        logger.error(f"[SESSION] Error incrementing sent warnings: {e}")
+
+
+def is_warning_cooldown(session: str) -> bool:
+    try:
+        client = get_redis_client()
+        counter = client.get(REDIS_SENT_WARNINGS_KEY.format(session=session))
+        assert not isinstance(counter, Awaitable)
+        return bool(counter and int(counter) >= RATELIMIT_SENT_WARNINGS_PER_HOUR)
+    except Exception as e:
+        logger.error(f"[SESSION] Error checking sent warnings: {e}")
         return False

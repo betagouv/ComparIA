@@ -77,7 +77,7 @@ def arena(active_document):
     async def get_active_legal_document(_kind, _language):
         return active_document
 
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
     async def get_llms_data():

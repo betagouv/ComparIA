@@ -21,7 +21,10 @@ from backend.arena.session import (
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
 )
-from backend.config import RATELIMIT_PRICEY_MODELS_INPUT
+from backend.config import (
+    RATELIMIT_PRICEY_MODELS_INPUT,
+    RATELIMIT_SENT_WARNINGS_PER_HOUR,
+)
 from backend.utils.user import ip_bucket
 
 
@@ -58,6 +61,9 @@ class FakeRedis:
     def get(self, key):
         v = self.store.get(key)
         return None if v is None else str(v)
+
+    def incr(self, key):
+        return self.incrby(key, 1)
 
     def pipeline(self):
         return FakePipeline(self)
@@ -179,6 +185,14 @@ def test_one_ipv6_subscriber_shares_one_budget():
         assert session.is_ratelimited("sess-b", "2001:db8:1:3::1") is False
 
 
+def test_warnings_sent_anyway_cool_down_the_session_only():
+    with fake_redis():
+        for _ in range(RATELIMIT_SENT_WARNINGS_PER_HOUR):
+            session.increment_sent_warnings("sess-a")
+        assert session.is_warning_cooldown("sess-a") is True
+        assert session.is_warning_cooldown("sess-b") is False
+
+
 def test_ip_bucket():
     assert ip_bucket("1.2.3.4") == "1.2.3.4"
     assert ip_bucket("2001:db8:1:2:3:4:5:6") == "2001:db8:1:2::/64"
@@ -257,6 +271,7 @@ def run():
     test_cheap_models_are_counted_too()
     test_a_cheap_message_does_not_spend_the_pricey_budget()
     test_one_ipv6_subscriber_shares_one_budget()
+    test_warnings_sent_anyway_cool_down_the_session_only()
     test_ip_bucket()
     test_unknown_key_not_limited()
     test_a_message_goes_through_while_the_budget_was_not_spent_before_it()

@@ -54,7 +54,8 @@ def request():
 
 def check(text, verdict=None, warning_token=None, **kwargs):
     """Run `run_checks` with the moderation call replaced by `verdict`, and
-    return what it raised or returned plus the IPs it charged."""
+    return what it raised or returned plus what it charged: IPs for the block
+    cooldown, sessions for warnings sent anyway."""
     charged: list[str] = []
 
     async def run_prompt_check(*_args, **_kwargs):
@@ -67,12 +68,18 @@ def check(text, verdict=None, warning_token=None, **kwargs):
         arena_router,
         run_prompt_check=run_prompt_check,
         increment_blocked_prompts=charged.append,
+        increment_sent_warnings=lambda session: charged.append(f"session:{session}"),
         save_prompt_check_result=save,
     ):
         try:
             outcome = asyncio.run(
                 arena_router.run_checks(
-                    text, "prompt_value", request(), warning_token, **kwargs
+                    text,
+                    "prompt_value",
+                    request(),
+                    warning_token,
+                    session="sess-a",
+                    **kwargs,
                 )
             )
         except HTTPException as error:
@@ -104,13 +111,22 @@ def test_a_block_is_charged():
     assert charged == ["10.0.0.1"]
 
 
-def test_sending_a_warned_prompt_anyway_is_charged():
+def test_sending_a_warned_prompt_anyway_is_charged_to_the_session():
+    """Not to the IP: on a hospital network, colleagues confirming their own
+    PII warnings must not lock each other out."""
     sent_anyway = PromptCheckResult(
         decision="warned", model="m", latency_ms=1, message="pii", user_proceeded=True
     )
     outcome, charged = check("bonjour", sent_anyway)
     assert outcome is sent_anyway
-    assert charged == ["10.0.0.1"]
+    assert charged == ["session:sess-a"]
+
+
+def test_a_check_skipped_while_mistral_is_down_is_not_charged():
+    skipped = PromptCheckResult(decision="skipped", model="m", latency_ms=0)
+    outcome, charged = check("bonjour", skipped)
+    assert outcome is skipped
+    assert charged == []
 
 
 def test_showing_a_warning_is_not_charged():
@@ -149,7 +165,8 @@ if __name__ == "__main__":
     test_spam_is_refused_and_charged_to_the_ip()
     test_a_clean_prompt_is_not_charged()
     test_a_block_is_charged()
-    test_sending_a_warned_prompt_anyway_is_charged()
+    test_sending_a_warned_prompt_anyway_is_charged_to_the_session()
+    test_a_check_skipped_while_mistral_is_down_is_not_charged()
     test_showing_a_warning_is_not_charged()
     test_a_long_prompt_that_could_not_be_checked_is_refused_and_charged_once()
     test_a_short_prompt_that_could_not_be_checked_goes_through_charged()

@@ -31,8 +31,10 @@ from backend.arena.services import (
 from backend.arena.session import (
     ComparisonMetadata,
     increment_blocked_prompts,
+    increment_sent_warnings,
     is_block_cooldown,
     is_ratelimited,
+    is_warning_cooldown,
     reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
@@ -117,9 +119,12 @@ def charge_budget(
         )
 
 
-def assert_not_block_cooldown(request: Request) -> None:
-    """Cool down IPs that keep tripping the content-safety guardrail."""
-    if is_block_cooldown(get_ip(request)):
+def assert_not_block_cooldown(
+    anonymous_user_hash: RequiredAnomymous, request: Request
+) -> None:
+    """Cool down IPs that keep tripping the prompt check, and sessions that
+    keep sending warned prompts anyway."""
+    if is_block_cooldown(get_ip(request)) or is_warning_cooldown(anonymous_user_hash):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="block_cooldown",
@@ -132,6 +137,7 @@ async def run_checks(
     request: Request,
     warning_token: str | None = None,
     context: Sequence[str] = (),
+    session: str = "",
 ) -> PromptCheckResult | None:
     """
     Run the spam patterns and the prompt check on a user message. Raises a 422
@@ -154,18 +160,18 @@ async def run_checks(
     result = await run_prompt_check(
         text, request, warning_token=warning_token, context=context
     )
-    if result and (
-        result.decision in ("blocked", "error")
-        # A warning answered with "send anyway" costs the same as a block. A
-        # script reads the warning token off the response and resends, so
-        # without this `warn` would stop no one but people.
-        or (result.decision == "warned" and result.user_proceeded)
-    ):
-        # A short prompt that could not be checked still reaches the models,
-        # since refusing it would take the whole arena down every time Mistral
-        # hiccups. It spends the per-IP budget a block does, so an attacker who
-        # can induce timeouts does not get an unchecked arena for free.
+    if result and result.decision in ("blocked", "error"):
+        # A short prompt that could not be checked while Mistral was up still
+        # reaches the models, but spends the per-IP budget a block does, so an
+        # attacker who can induce failures does not get an unchecked arena for
+        # free. A check skipped because Mistral is down costs nothing.
         increment_blocked_prompts(get_ip(request))
+    if result and result.decision == "warned" and result.user_proceeded:
+        # A script reads the warning token off the response and resends, so
+        # without a cost `warn` would stop no one but people. Charged to the
+        # session rather than the IP, so people sharing one IP do not pay for
+        # each other.
+        increment_sent_warnings(session)
     if result and result.block_message:
         result = await save_prompt_check_result(result)
         raise HTTPException(
@@ -294,7 +300,11 @@ async def add_first_text(
     )
 
     check = await run_checks(
-        args.prompt_value, "prompt_value", request, args.warning_token
+        args.prompt_value,
+        "prompt_value",
+        request,
+        args.warning_token,
+        session=anonymous_user_hash,
     )
     if check and check.pending_warning:
         return warning_response(check, args.prompt_value)
@@ -426,6 +436,7 @@ async def add_text(
         request,
         args.warning_token,
         context=[turn.user_msg.content for turn in comparison_.turns],
+        session=anonymous_user_hash,
     )
     if check and check.pending_warning:
         return warning_response(check, args.message)

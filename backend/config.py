@@ -270,12 +270,18 @@ RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
-# probing). Counts blocks, spam pattern hits, warnings sent anyway and checks
-# that failed, in a rolling window; once an IP crosses the
+# probing). Counts blocks, spam pattern hits and checks that failed while
+# Mistral was up, in a rolling window; once an IP crosses the
 # threshold it is cooled down for the rest of the window WITHOUT calling the
 # moderation API (protects the quota). Kept generous because gov users share NAT
 # IPs (hospitals, ministries) and must not be locked out.
 RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
+
+# Warnings one session may answer with "send anyway" in an hour. Counted per
+# session, not per IP like the cooldown above: on a sante instance PII warnings
+# are routine, and a hospital behind one IP must not lock itself out. A script
+# that drops its cookie to start over runs into the consent cap below.
+RATELIMIT_SENT_WARNINGS_PER_HOUR = 15
 
 # Each anonymous session gets its own input budget, and a new session costs only
 # a consent. Without a cap here, a script would clear its cookie and accept the
