@@ -22,7 +22,7 @@ from pathlib import Path
 from uuid import UUID
 
 from async_lru import alru_cache
-from sqlmodel import col, select
+from sqlmodel import and_, col, or_, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
@@ -162,8 +162,37 @@ def _survey_answers_query(publishable_versions: set[str]):
             col(SurveyQuestion.published) == True,
             col(SurveyQuestion.archived_at).is_(None),
             col(SurveyAnswer.terms_version).in_(publishable_versions),
+            _has_published_comparison(),
         )
         .order_by(col(SurveyAnswer.answered_at))
+    )
+
+
+def _has_published_comparison():
+    """
+    Whether the answer's respondent owns at least one comparison the open
+    dataset keeps. The five-respondent rule has to count only people whose
+    profile actually appears in the release: five respondents sharing a
+    profile, of whom one has published conversations, would otherwise let
+    that profile link all of that one person's conversations together.
+
+    Ownership is matched the way `_respondent_key` reads a comparison: by
+    user id when there is one, by anonymous hash otherwise. Written as two
+    IN lists rather than a correlated EXISTS so Postgres scans the
+    comparison table once per list, not once per answer.
+    """
+    published_users = select(Comparison.user_id).where(
+        PUBLISHABLE, col(Comparison.user_id).is_not(None)
+    )
+    published_anonymous = select(Comparison.anonymous_user_hash).where(
+        PUBLISHABLE, col(Comparison.user_id).is_(None)
+    )
+    return or_(
+        col(SurveyAnswer.user_id).in_(published_users),
+        and_(
+            col(SurveyAnswer.user_id).is_(None),
+            col(SurveyAnswer.anonymous_user_hash).in_(published_anonymous),
+        ),
     )
 
 
@@ -184,6 +213,10 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     Answers are also filtered on consent: only those recorded under a terms
     version listed in `publishable_survey_terms_versions` (see that function
     for which versions qualify and why) enter the dataset.
+
+    Only respondents with a comparison in the open dataset are kept (see
+    `_has_published_comparison`), so the raw export carries no answers for
+    the others either.
 
     Answers are stored replace-in-place (see
     utils/database/models/survey.py), so whatever is in the table now IS the
