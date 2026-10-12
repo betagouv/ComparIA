@@ -3,6 +3,7 @@
   generics="Value extends string, Option extends { value: Value, label: string, icon?: string }"
 >
   import type { ClassValue, HTMLFieldsetAttributes } from 'svelte/elements'
+  import Icon from './Icon.svelte'
 
   let {
     id,
@@ -48,8 +49,12 @@
         />
         <label class={['fr-label', labelClass]} for={`${id}-${option.value}`}>
           {#if option.icon}
-            <!-- Decorative: the label already says which view this is. -->
-            <span aria-hidden="true" class="me-2">{option.icon}</span>
+            {#if option.icon.length < 3}
+              <!-- Decorative: the label already says which view this is. -->
+              <span aria-hidden="true" class="me-2">{option.icon}</span>
+            {:else}
+              <Icon size="xs" icon={option.icon} block class="me-2" />
+            {/if}
           {/if}
           {option.label ?? option.value}
         </label>
