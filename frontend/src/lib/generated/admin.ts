@@ -261,6 +261,8 @@ export interface AppSettingsPatch {
   auth_access_policy?: ("anonymous_first" | "sign_in_required") | null;
   auth_domain_allowlist?: string[] | null;
   votes_objective?: number | null;
+  ranking_min_votes?: number | null;
+  ranking_max_rank_spread?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
@@ -285,6 +287,8 @@ export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
   auth_domain_allowlist: string[];
   votes_objective: number;
+  ranking_min_votes: number;
+  ranking_max_rank_spread: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;

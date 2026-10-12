@@ -589,6 +589,13 @@
                     "updated": "Logo updated"
                 },
                 "platformName": "Platform name",
+                "ranking": {
+                    "title": "Leaderboard",
+                    "minVotes": "Minimum votes",
+                    "minVotesHelp": "A model is ranked only once it has this many votes. Applied at the next ranking update, within the hour.",
+                    "maxRankSpread": "Maximum rank spread",
+                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks."
+                },
                 "votesObjective": "Votes objective"
             },
             "loading": "Loading...",
@@ -1925,7 +1932,7 @@
             "title": "How to choose the model classification method?"
         },
         "no_data": "The ranking is currently unavailable or being calculated.",
-        "notEnoughVotes": "No model has enough votes to be ranked yet. A model appears once the uncertainty on its score drops below ±30 points: keep voting!",
+        "notEnoughVotes": "No model has enough votes to be ranked yet. A model appears once its rank is certain enough: keep voting!",
         "personal": {
             "cols": {
                 "battles": "Comparisons",

@@ -422,6 +422,8 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         auth_access_policy=row.auth_access_policy,
         auth_domain_allowlist=row.auth_domain_allowlist,
         votes_objective=row.votes_objective,
+        ranking_min_votes=row.ranking_min_votes,
+        ranking_max_rank_spread=row.ranking_max_rank_spread,
         platform_name=row.platform_name,
         primary_color_light=row.primary_color_light,
         primary_color_dark=row.primary_color_dark,

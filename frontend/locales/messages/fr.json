@@ -589,6 +589,13 @@
                     "updated": "Logo mis à jour"
                 },
                 "platformName": "Nom de la plateforme",
+                "ranking": {
+                    "title": "Classement",
+                    "minVotes": "Nombre minimum de votes",
+                    "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
+                    "maxRankSpread": "Écart de rang maximum",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs."
+                },
                 "votesObjective": "Objectif de votes"
             },
             "loading": "Chargement...",
@@ -1925,7 +1932,7 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
-        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que l’incertitude sur son score descend sous ±30 points : continuez à voter !",
+        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que son rang est assez sûr : continuez à voter !",
         "personal": {
             "cols": {
                 "battles": "Comparaisons",
