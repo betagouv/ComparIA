@@ -2,18 +2,15 @@
 The retention purge against a real PostgreSQL database.
 
 Every rule is one SQL statement run in batches, so a fake session would only
-prove that the statements were sent. These run when COMPARIA_TEST_DB_URI points
-at a throwaway database with the migrations applied:
-
-    createdb comparia_test
-    COMPARIA_DB_URI=postgresql://localhost/comparia_test uv run alembic upgrade head
-    COMPARIA_TEST_DB_URI=postgresql://localhost/comparia_test uv run pytest tests/database/test_retention_db.py
+prove that the statements were sent. These run on the throwaway cluster of the
+`postgres_uri` fixture, and skip where Postgres is not installed.
 
 Each test empties the tables it seeds, on the way in and on the way out.
 """
 
 import asyncio
 import contextlib
+import functools
 import os
 import sys
 import uuid
@@ -22,9 +19,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-TEST_DB_URI = os.environ.get("COMPARIA_TEST_DB_URI", "")
-
-os.environ.setdefault("COMPARIA_DB_URI", TEST_DB_URI or "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
@@ -35,10 +29,9 @@ from sqlmodel.ext.asyncio.session import AsyncSession  # noqa: E402
 import backend.auth.inactivity as inactivity  # noqa: E402
 import utils.database.models  # noqa: E402,F401
 import utils.database.retention as retention  # noqa: E402
+from backend.config import settings  # noqa: E402
 from utils.database.retention import RetentionPeriods, purge_expired_data  # noqa: E402
 from utils.database.session import _async_url  # noqa: E402
-
-pytestmark = pytest.mark.skipif(not TEST_DB_URI, reason="COMPARIA_TEST_DB_URI not set")
 
 NOW = datetime(2026, 9, 15, 12, 0)
 PERIODS = RetentionPeriods()
@@ -55,7 +48,13 @@ def months_ago(months: int, days: int = 0) -> datetime:
     return retention.add_months(NOW, -months) - timedelta(days=days)
 
 
-def run(scenario):
+@pytest.fixture
+def run(postgres_uri, monkeypatch):
+    monkeypatch.setattr(settings, "COMPARIA_DB_URI", postgres_uri)
+    return functools.partial(run_on, postgres_uri)
+
+
+def run_on(uri, scenario):
     """Run `scenario(execute)` with the purge bound to the test database.
 
     `execute` runs one SQL statement in its own transaction and returns the
@@ -63,7 +62,7 @@ def run(scenario):
     """
 
     async def main():
-        engine = create_async_engine(_async_url(TEST_DB_URI))
+        engine = create_async_engine(_async_url(uri))
 
         @contextlib.asynccontextmanager
         async def get_session():
@@ -298,7 +297,7 @@ async def ids(execute, table):
     return {row["id"] for row in await execute(f"SELECT id FROM {table}")}
 
 
-def test_comparisons_lose_the_ip_then_the_identifiers():
+def test_comparisons_lose_the_ip_then_the_identifiers(run):
     async def scenario(execute):
         user_id = await add_user(execute)
         recent, _ = await add_comparison(execute, months_ago(2), user_id)
@@ -337,7 +336,7 @@ def test_comparisons_lose_the_ip_then_the_identifiers():
     run(scenario)
 
 
-def test_the_boundary_day_is_kept():
+def test_the_boundary_day_is_kept(run):
     async def scenario(execute):
         at_ip_cutoff, _ = await add_comparison(execute, months_ago(3))
         at_cutoff, _ = await add_comparison(execute, months_ago(24))
@@ -352,7 +351,7 @@ def test_the_boundary_day_is_kept():
     run(scenario)
 
 
-def test_already_blank_comparisons_are_not_counted():
+def test_already_blank_comparisons_are_not_counted(run):
     async def scenario(execute):
         await add_comparison(
             execute,
@@ -375,7 +374,7 @@ def test_already_blank_comparisons_are_not_counted():
     run(scenario)
 
 
-def test_sessions_codes_and_challenges_go_a_year_after_they_stopped_working():
+def test_sessions_codes_and_challenges_go_a_year_after_they_stopped_working(run):
     async def scenario(execute):
         user_id = await add_user(execute)
         live = await add_session(execute, user_id, NOW + timedelta(days=10))
@@ -440,7 +439,7 @@ def test_sessions_codes_and_challenges_go_a_year_after_they_stopped_working():
     run(scenario)
 
 
-def test_a_live_account_keeps_its_last_session_without_ip_or_browser():
+def test_a_live_account_keeps_its_last_session_without_ip_or_browser(run):
     async def scenario(execute):
         dormant = await add_user(execute)
         older = await add_session(execute, dormant, months_ago(26))
@@ -464,7 +463,7 @@ def test_a_live_account_keeps_its_last_session_without_ip_or_browser():
     run(scenario)
 
 
-def test_a_dormant_account_is_still_warned_after_the_purge():
+def test_a_dormant_account_is_still_warned_after_the_purge(run):
     """purge-inactive erases accounts without any session row unwarned, as
     login codes nobody used. Old sessions going must not make a real account
     look like one."""
@@ -487,7 +486,7 @@ def test_a_dormant_account_is_still_warned_after_the_purge():
     run(scenario)
 
 
-def test_moderation_results_go_after_a_year():
+def test_moderation_results_go_after_a_year(run):
     async def scenario(execute):
         _, turn_id = await add_comparison(execute, months_ago(2))
         kept = await add_prompt_check(execute, months_ago(11), turn_id)
@@ -503,7 +502,7 @@ def test_moderation_results_go_after_a_year():
     run(scenario)
 
 
-def test_consent_proofs_go_five_years_after_the_account_or_session_ended():
+def test_consent_proofs_go_five_years_after_the_account_or_session_ended(run):
     async def scenario(execute):
         live_user = await add_user(execute)
         deleted_long_ago = await add_user(execute, deleted_at=months_ago(61))
@@ -543,7 +542,7 @@ def test_consent_proofs_go_five_years_after_the_account_or_session_ended():
     run(scenario)
 
 
-def test_dry_run_counts_without_changing_anything():
+def test_dry_run_counts_without_changing_anything(run):
     async def scenario(execute):
         user_id = await add_user(execute)
         comparison_id, turn_id = await add_comparison(execute, months_ago(30), user_id)
@@ -565,7 +564,7 @@ def test_dry_run_counts_without_changing_anything():
     run(scenario)
 
 
-def test_runs_in_batches_and_a_second_run_finds_nothing(monkeypatch):
+def test_runs_in_batches_and_a_second_run_finds_nothing(run, monkeypatch):
     monkeypatch.setattr(retention, "BATCH_SIZE", 2)
 
     async def scenario(execute):
@@ -592,7 +591,7 @@ def test_runs_in_batches_and_a_second_run_finds_nothing(monkeypatch):
     run(scenario)
 
 
-def test_each_rule_follows_its_own_period():
+def test_each_rule_follows_its_own_period(run):
     """Every period differs, so a rule reading another rule's period fails."""
     periods = RetentionPeriods(
         ip_months=1,
@@ -644,7 +643,7 @@ async def conversation_counts(execute):
 
 
 def test_conversations_flagged_as_personal_go_30_days_after_the_analysis(
-    monkeypatch,
+    run, monkeypatch
 ):
     monkeypatch.setattr(retention, "CONVERSATION_BATCH_SIZE", 2)
 
@@ -685,7 +684,7 @@ def test_conversations_flagged_as_personal_go_30_days_after_the_analysis(
     run(scenario)
 
 
-def test_partner_cohort_conversations_go_after_30_days():
+def test_partner_cohort_conversations_go_after_30_days(run):
     async def scenario(execute):
         await add_conversation(execute, NOW - timedelta(days=31), cohorts="pix")
         pupil_recent = await add_conversation(
