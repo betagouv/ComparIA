@@ -1,28 +1,37 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
     title,
     variant = 'info',
     small = false,
+    titleEl = $bindable(),
     children,
     ...props
   }: {
-    title: string
+    /** Text, or a snippet when the title holds markup such as a `<time>`. */
+    title: string | Snippet
     variant?: 'info' | 'success' | 'warning' | 'error'
     /** DSFR's small alert: a one-line message rather than a titled block. */
     small?: boolean
+    /** The title of a full alert, focusable from script to move focus there. */
+    titleEl?: HTMLHeadingElement
   } & SvelteHTMLElements['div'] = $props()
 </script>
+
+{#snippet titleText()}
+  {#if typeof title === 'string'}{title}{:else}{@render title()}{/if}
+{/snippet}
 
 <div
   {...props}
   class={[`cl-alert fr-alert fr-alert--${variant}`, { 'fr-alert--sm': small }, props.class]}
 >
   {#if small}
-    <p>{title}</p>
+    <p>{@render titleText()}</p>
   {:else}
-    <h3 class="fr-alert__title">{title}</h3>
+    <h3 class="fr-alert__title" bind:this={titleEl} tabindex="-1">{@render titleText()}</h3>
   {/if}
   {@render children?.()}
 </div>
