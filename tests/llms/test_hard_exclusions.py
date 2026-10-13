@@ -15,13 +15,12 @@ from backend.llms.models import LLMDataEnabled
 
 SMALL = [uuid4(), uuid4()]
 BIG_CHEAP = uuid4()
-BIG_EXPENSIVE = [uuid4(), uuid4()]
-EXPENSIVE = BIG_EXPENSIVE
+EXPENSIVE = [uuid4(), uuid4()]
 # Enough draws that an excluded model would show up if it could.
 DRAWS = 50
 
 
-def llms_data(big=(BIG_CHEAP, *BIG_EXPENSIVE)) -> LLMsData:
+def llms_data(big=(BIG_CHEAP, *EXPENSIVE)) -> LLMsData:
     def llm(llm_id, params):
         return LLMDataEnabled.model_construct(
             id=llm_id,
@@ -72,7 +71,7 @@ def test_no_mode_draws_an_excluded_model(mode):
 
 def test_a_mode_with_every_big_model_excluded_has_nothing_to_draw():
     with pytest.raises(NoModelLeft):
-        drawn("big-vs-small", data=llms_data(big=BIG_EXPENSIVE))
+        drawn("big-vs-small", data=llms_data(big=EXPENSIVE))
 
 
 def test_a_custom_pick_of_an_excluded_model_is_refused_with_its_id():
