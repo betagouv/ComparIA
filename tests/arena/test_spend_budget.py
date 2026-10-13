@@ -317,6 +317,25 @@ def test_a_pricey_model_spends_the_pricey_budget_up_front():
             assert counter(state.redis, "expensive", ME) == 0, route
 
 
+@each_route
+def test_any_spent_allowance_stops_a_message_at_the_gate(route, state):
+    """Today a spent expensive allowance stops every message, cheap pairs
+    included, before the route runs."""
+    for spent in (
+        limits.budget_key("expensive", ME),
+        limits.budget_key("all", NETWORK),
+    ):
+        state.redis.store = {spent: settings.RATELIMIT_ALL_PER_IP + 1}
+        try:
+            gate(route)
+        except HTTPException as error:
+            assert (error.status_code, error.detail) == (429, "rate_limited")
+        else:
+            raise AssertionError(f"{route}: {spent} did not stop the message")
+    state.redis.store = {}
+    gate(route)
+
+
 @contextlib.contextmanager
 def retry_client(captcha_ok=True):
     with arena() as state:
@@ -361,6 +380,7 @@ if __name__ == "__main__":
     test_requests_sent_together_cannot_all_spend_the_last_of_the_budget()
     test_a_refused_message_spends_nothing_and_writes_nothing()
     test_a_pricey_model_spends_the_pricey_budget_up_front()
+    test_any_spent_allowance_stops_a_message_at_the_gate()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
     print("Spend budget cases passed.")
