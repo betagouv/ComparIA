@@ -79,7 +79,7 @@ check_untyped_defs = true
 # `strict = true` would not work in this block: mypy then applies it to every
 # module. warn_redundant_casts, the one strict flag left out, only works globally.
 [[tool.mypy.overrides]]
-module = ["backend.arena.cache"]
+module = ["backend.arena.cache", "backend.arena.limits"]
 disallow_any_generics = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true
