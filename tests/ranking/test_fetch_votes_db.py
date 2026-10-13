@@ -1,17 +1,14 @@
 """
 Which votes the public ranking counts, against a real PostgreSQL database.
-Runs when COMPARIA_TEST_DB_URI points at a throwaway database with the
-migrations applied:
-
-    createdb comparia_test
-    COMPARIA_DB_URI=postgresql://localhost/comparia_test uv run alembic upgrade head
-    COMPARIA_TEST_DB_URI=postgresql://localhost/comparia_test uv run pytest tests/ranking/test_fetch_votes_db.py
+Runs on the throwaway cluster of the `postgres_uri` fixture, and skips where
+Postgres is not installed.
 
 Each test empties the tables it seeds, on the way in and on the way out.
 """
 
 import asyncio
 import contextlib
+import functools
 import os
 import sys
 import uuid
@@ -20,9 +17,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-TEST_DB_URI = os.environ.get("COMPARIA_TEST_DB_URI", "")
-
-os.environ.setdefault("COMPARIA_DB_URI", TEST_DB_URI or "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
@@ -32,9 +26,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession  # noqa: E402
 
 import utils.database.models  # noqa: E402,F401
 import utils.ranking.queries as queries  # noqa: E402
+from backend.config import settings  # noqa: E402
 from utils.database.session import _async_url  # noqa: E402
-
-pytestmark = pytest.mark.skipif(not TEST_DB_URI, reason="COMPARIA_TEST_DB_URI not set")
 
 TRUNCATE = text(
     "TRUNCATE turn, llm_message, comparison, llm_data, llm_lab, llm_license CASCADE"
@@ -42,12 +35,18 @@ TRUNCATE = text(
 LLM_ID = uuid.uuid4()
 
 
-def counted(comparisons: list[dict]) -> list[str]:
+@pytest.fixture
+def counted(postgres_uri, monkeypatch):
+    monkeypatch.setattr(settings, "COMPARIA_DB_URI", postgres_uri)
+    return functools.partial(counted_on, postgres_uri)
+
+
+def counted_on(uri, comparisons: list[dict]) -> list[str]:
     """Seed one voted comparison per dict, run fetch_votes, and return the
     choice of each vote it counted. Each comparison votes its own `choice`."""
 
     async def main():
-        engine = create_async_engine(_async_url(TEST_DB_URI))
+        engine = create_async_engine(_async_url(uri))
 
         @contextlib.asynccontextmanager
         async def get_session():
@@ -125,20 +124,20 @@ async def add_vote(execute, choice, cohorts=None, contains_pii=None, archived=No
     )
 
 
-def test_an_ordinary_vote_counts():
+def test_an_ordinary_vote_counts(counted):
     assert counted([{"choice": "a_better"}, {"choice": "b_better", "cohorts": ""}]) == [
         "a_better",
         "b_better",
     ]
 
 
-def test_a_pix_vote_stays_out_of_the_ranking():
+def test_a_pix_vote_stays_out_of_the_ranking(counted):
     assert counted(
         [{"choice": "a_better"}, {"choice": "b_better", "cohorts": "pix"}]
     ) == ["a_better"]
 
 
-def test_a_vote_flagged_as_personal_stays_out_even_when_not_archived():
+def test_a_vote_flagged_as_personal_stays_out_even_when_not_archived(counted):
     assert counted(
         [
             {"choice": "a_better", "contains_pii": False},
@@ -148,7 +147,7 @@ def test_a_vote_flagged_as_personal_stays_out_even_when_not_archived():
     ) == ["a_better"]
 
 
-def test_an_archived_vote_stays_out():
+def test_an_archived_vote_stays_out(counted):
     assert counted(
         [{"choice": "a_better"}, {"choice": "b_better", "archived": True}]
     ) == ["a_better"]
