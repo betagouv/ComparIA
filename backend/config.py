@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # number: the maintenance command sets the other instance's flag in its own.
     COMPARIA_REDIS_DB: NonNegativeInt = 0
     MOCK_RESPONSE: bool = False
+    # Sets each fake answer to this many characters, so a local run can show
+    # long answers and long transcripts. 0 keeps the one fixed sentence.
+    MOCK_RESPONSE_CHARS: NonNegativeInt = 0
     LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None

@@ -34,6 +34,16 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("languia")
 
+MOCK_ANSWER = "This is a fake response that didn't contact the LLM api."
+
+
+def mock_answer(chars: int) -> str:
+    """The fake answer, repeated or cut to exactly `chars` characters."""
+    if not chars:
+        return MOCK_ANSWER
+    repeats = chars // (len(MOCK_ANSWER) + 1) + 1
+    return " ".join([MOCK_ANSWER] * repeats)[:chars]
+
 
 async def litellm_stream_iter(
     llm: "LLMDataEnabled",
@@ -115,9 +125,7 @@ async def litellm_stream_iter(
     # Use mock response for testing if enabled
     if settings.MOCK_RESPONSE:
         logger.warning(f"MOCK_RESPONSE enabled")
-        kwargs["mock_response"] = (
-            "This is a fake response that didn't contact the LLM api."
-        )
+        kwargs["mock_response"] = mock_answer(settings.MOCK_RESPONSE_CHARS)
 
     # Request token usage reporting (except for Aya which doesn't support it)
     if "c4ai-aya-expanse-32b" not in endpoint.model:

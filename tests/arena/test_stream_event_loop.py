@@ -214,6 +214,27 @@ def test_the_mock_response_still_streams(monkeypatch):
     assert updates[-1].tokens
 
 
+@pytest.mark.parametrize("chars", [20, 2000])
+def test_the_mock_response_has_the_set_length(monkeypatch, chars):
+    monkeypatch.setattr(settings, "MOCK_RESPONSE", True)
+    monkeypatch.setattr(settings, "MOCK_RESPONSE_CHARS", chars)
+    turn: Any = SimpleNamespace()
+    user_msg = UserMessageRead(content="Bonjour ?")
+
+    async def answer() -> LLMMessageCreate | None:
+        final = None
+        async for msg in bot_response_async(
+            "a", llm_at("http://127.0.0.1:9/v1"), turn, 1, [user_msg]
+        ):
+            final = msg.model_copy()
+        return final
+
+    final = asyncio.run(answer())
+    assert final is not None
+    assert len(final.content) == chars
+    assert final.content.startswith("This is a fake")
+
+
 class EndlessStream:
     """Provider stream that sends one chunk, then keeps the visitor waiting."""
 
