@@ -116,21 +116,21 @@ export interface RevealData {
 
 // LIMITS
 
-/**
- * A refusal on an allowance: the person can write again once it lifts.
- *
- * FIXME today a spent expensive allowance stops every message, so it reads as
- * a pause too. Once expensive models step aside instead, that key only refuses
- * a pick and needs its own copy. `model_full_today` is not sent yet.
- */
-export type PauseRefusal = LimitRefusalBody & {
-  detail: 'allowance_spent' | 'expensive_allowance_spent'
-}
+/** A refusal on the whole allowance: the person can write again once it lifts. */
+export type PauseRefusal = LimitRefusalBody & { detail: 'allowance_spent' }
 
 // A window of the allowances: the longest a pause with no known reset can last.
 const PAUSE_FALLBACK_SECONDS = 2 * 60 * 60
 
-function asPauseRefusal(err: unknown): PauseRefusal | undefined {
+/**
+ * A new comparison refused on the expensive allowance: the person picked
+ * expensive models (in `limit.llm_ids`), or chose a mode left with nothing to
+ * draw. Every other model stays open, so this does not pause anyone.
+ * `model_full_today` is not sent yet.
+ */
+export type PickRefusal = LimitRefusalBody & { detail: 'expensive_allowance_spent' }
+
+function asLimitRefusal(err: unknown): PauseRefusal | PickRefusal | undefined {
   const { detail, limit } = err as ApiError
   if (limit && (detail === 'allowance_spent' || detail === 'expensive_allowance_spent')) {
     return { detail, limit }
@@ -257,6 +257,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let promptWarnings = $state<string[]>()
   let pause = $state<PauseRefusal>()
   let pauseLiftsAt = 0
+  let pickRefusal = $state<PickRefusal>()
   let pauseTimer: ReturnType<typeof setTimeout> | undefined
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
@@ -309,6 +310,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     loading = true
     promptError = undefined
     promptWarnings = undefined
+    pickRefusal = undefined
     const previousError = comparison?.error
     if (comparison) {
       comparison.error = undefined
@@ -368,9 +370,11 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (turn) turn.status = 'error'
       }
     } catch (err) {
-      const refusal = asPauseRefusal(err)
-      if (refusal) {
+      const refusal = asLimitRefusal(err)
+      if (refusal?.detail === 'allowance_spent') {
         pauseUntilReset(refusal)
+      } else if (refusal?.detail === 'expensive_allowance_spent') {
+        pickRefusal = refusal
       } else if (err instanceof ValidationError) {
         const detail = err.errors ? err.errors[0].msg : err.message
         promptError = promptCheckMessage(arenaErrorMessage(detail))
@@ -393,7 +397,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     }
 
-    return !warned && !comparison?.error && !promptError && !pause
+    return !warned && !comparison?.error && !promptError && !pause && !pickRefusal
   }
 
   return {
@@ -416,6 +420,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     get pause() {
       watchPause()
       return pause
+    },
+    /** Set when a new comparison asked for models the person may not use yet. */
+    get pickRefusal() {
+      return pickRefusal
     },
     get error() {
       return errorMsg

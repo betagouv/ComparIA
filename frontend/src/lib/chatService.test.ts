@@ -201,4 +201,34 @@ describe('a refusal on an allowance', () => {
     // The reveal stays open after this refusal too.
     expect(chat.canReveal).toBe(true)
   })
+  it('does not pause anyone over a pick of models paused for them', async () => {
+    arena.refusal = Object.assign(new ValidationError('expensive_allowance_spent'), {
+      status: 429,
+      detail: 'expensive_allowance_spent',
+      limit: { ...limit, llm_ids: ['expensive-id'] }
+    })
+
+    const chat = getComparison(undefined)
+    const sent = await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'custom',
+      custom_models_selection: ['expensive-id'],
+      web_search: false
+    })
+
+    arena.refusal = undefined
+    expect(sent).toBe(false)
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal?.limit.llm_ids).toEqual(['expensive-id'])
+
+    // Sending again starts afresh.
+    await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'random',
+      custom_models_selection: [],
+      web_search: false
+    })
+    expect(chat.pickRefusal).toBeUndefined()
+  })
 })
