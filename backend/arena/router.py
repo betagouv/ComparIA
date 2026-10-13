@@ -74,6 +74,7 @@ from backend.config import (
 from backend.errors import LimitReachedError
 from backend.llms.data import (
     LLMsData,
+    NoModelLeft,
     get_llms_data,
     pick_replacement_model,
 )
@@ -148,7 +149,7 @@ def assert_allowance_left(
     """Rate-limit model usage per anonymous session, with the IP as a backstop
     for clients that drop the session cookie. Only the whole allowance stops a
     message here: a spent expensive one keeps expensive models out of new
-    comparisons."""
+    comparisons, see `pick_and_charge`."""
     who = Identity.of(anonymous_user_hash, get_ip(request))
     if spent := read_status(who).spent_in("all"):
         raise refuse(spent, request)
@@ -175,6 +176,51 @@ def charge_budget(
         reserve(who, message_cost(text, llm_ids, llms_data), refusing)
     except AllowanceSpent as error:
         raise refuse(error.spent, request)
+
+
+def pick_and_charge(
+    args: AddFirstTextBody,
+    llms_data: LLMsData,
+    anonymous_user_hash: str,
+    request: Request,
+) -> tuple[tuple[UUID, UUID], bool]:
+    """
+    Draw the two models of a new comparison and charge its first message.
+
+    Once the person's expensive allowance is spent, the draw leaves expensive
+    models out instead of refusing the message: cheap duels go on. A custom
+    pick of an expensive model is refused with its id, as is a mode left with
+    nothing to draw.
+
+    Returns the pair, and whether expensive models were open to this draw.
+    """
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    status = read_status(who)
+
+    def without_expensive(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
+        try:
+            pair = llms_data.pick_two(
+                args.mode,
+                args.custom_models_selection,
+                hard_excluded=llms_data.expensive_models,
+            )
+        except NoModelLeft as error:
+            raise limit_refusal(spent, error.llm_ids)
+        charge_budget(args.prompt_value, pair, llms_data, anonymous_user_hash, request)
+        return pair
+
+    if not status.expensive_available:
+        return without_expensive(status.spent_in("expensive")), False
+
+    pair = llms_data.pick_two(args.mode, args.custom_models_selection)
+    try:
+        reserve(who, message_cost(args.prompt_value, pair, llms_data))
+    except AllowanceSpent as error:
+        if any(allowance.pool == "all" for allowance in error.spent):
+            raise refuse(error.spent, request)
+        # Another message spent the expensive allowance since it was read.
+        return without_expensive(error.spent), False
+    return pair, True
 
 
 def assert_not_block_cooldown(
@@ -394,14 +440,12 @@ async def add_first_text(
 
     # Select LLMs
     llms_data = await get_llms_data()
-    llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+    (llm_a_id, llm_b_id), expensive_available = pick_and_charge(
+        args, llms_data, anonymous_user_hash, request
+    )
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
-    )
-
-    charge_budget(
-        args.prompt_value, (llm_a_id, llm_b_id), llms_data, anonymous_user_hash, request
     )
     check = (await save_prompt_check_result(check)) if check else None
 
@@ -467,7 +511,9 @@ async def add_first_text(
             )
 
             # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
+            async for chunk in stream_comparison_messages(
+                comparison, turn, request, expensive_available
+            ):
                 yield format_sse_event(chunk)
 
             if not comparison.error:
