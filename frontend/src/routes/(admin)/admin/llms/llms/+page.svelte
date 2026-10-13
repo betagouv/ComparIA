@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Badge, Icon, Link, Table } from '$components/dsfr'
+  import { Badge, Link, Table } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -28,7 +28,7 @@
   const cols = [
     { id: 'human_id', label: 'Human ID', orderable: true },
     { id: 'status', label: 'Status', orderable: true },
-    { id: 'rate_limited', label: 'Rate limited', kind: 'boolean', orderable: true },
+    { id: 'cost_weight', label: 'Cost weight', kind: 'number', orderable: true },
     { id: 'release_date', label: 'Release date', kind: 'date', orderable: true },
     { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true },
@@ -76,12 +76,6 @@
         text={status}
         variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
       />
-    {:else if col.id === 'rate_limited'}
-      {#if llm.rate_limited}
-        <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
-      {:else}
-        <span class="sr-only">{m['words.no']()}</span>
-      {/if}
     {:else if col.id === 'release_date'}
       {toShortDate(llm.release_date, locale)}
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
