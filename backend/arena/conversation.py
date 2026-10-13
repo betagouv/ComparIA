@@ -21,6 +21,7 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
+from backend.config import settings
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
@@ -121,8 +122,14 @@ async def bot_response_async(
     )
     # First turns only: follow-ups carry the whole transcript and almost never
     # repeat. A turn with web search results answers another question than the
-    # same prompt without them, so it neither reads nor writes the cache.
-    use_cache = turn_index == 0 and not turn.user_msg.web_search_results
+    # same prompt without them, so it neither reads nor writes the cache. Nor
+    # does a fake answer: on a Redis shared with a real deploy, it would be
+    # served to people for real prompts.
+    use_cache = (
+        turn_index == 0
+        and not turn.user_msg.web_search_results
+        and not settings.MOCK_RESPONSE
+    )
     if use_cache:
         cached = get_cached_response(llm, system_msg, turn.user_msg.content)
         if cached:
