@@ -172,6 +172,8 @@ class Settings(BaseSettings):
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
     CACHE_TTL: int = 172800  # Cache TTL in seconds (default 48h)
     CACHE_MAX_RESPONSES: int = 5  # Max cached responses per (model, prompt) pair
+    # Shorter than the answers: results for a news question go stale fast.
+    WEB_SEARCH_CACHE_TTL: int = 3600
 
     @field_validator("DISPLAY_CURRENCY")
     @classmethod
