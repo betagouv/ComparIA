@@ -5,18 +5,32 @@
   import { onDestroy } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { children, ...props }: SvelteHTMLElements['div'] = $props()
+  let {
+    children,
+    scrolledSide = $bindable('a'),
+    ...props
+  }: SvelteHTMLElements['div'] & { scrolledSide?: Bot } = $props()
 
-  let scrolledSide = $state<Bot>('a')
   let scrollableElem = $state<HTMLDivElement>()
 
-  function doScroll() {
-    const next: Bot = scrolledSide === 'a' ? 'b' : 'a'
+  function scrollToSide(side: Bot) {
     scrollableElem?.scrollTo({
-      left: next === 'b' ? scrollableElem.scrollWidth : 0,
+      left: side === 'b' ? scrollableElem.scrollWidth : 0,
       behavior: 'smooth'
     })
-    scrolledSide = next
+    scrolledSide = side
+  }
+
+  function doScroll() {
+    scrollToSide(scrolledSide === 'a' ? 'b' : 'a')
+  }
+
+  // Keep keyboard focus on screen: show the side holding the focused element
+  function onFocusIn(event: FocusEvent) {
+    if (!scrollableElem || scrollableElem.scrollWidth <= scrollableElem.clientWidth) return
+    const sides = Array.from(scrollableElem.firstElementChild?.children ?? [])
+    const index = sides.findIndex((side) => side.contains(event.target as Node))
+    if (index !== -1) scrollToSide(index === 0 ? 'a' : 'b')
   }
 
   let scrollDebounce: ReturnType<typeof setTimeout> | undefined
@@ -41,23 +55,23 @@
     class="cl-side-switcher-scroller md:overflow-hidden! flex w-full overflow-x-auto"
     bind:this={scrollableElem}
     onscroll={onScroll}
+    onfocusin={onFocusIn}
   >
     {@render children?.()}
   </div>
 
-  {#each ['a', 'b'] as const as pos (pos)}
-    <Button
-      text={m[pos === 'b' ? 'actions.scrollRight' : 'actions.scrollLeft']()}
-      icon={pos === 'b' ? 'arrow-right-line' : 'arrow-left-line'}
-      iconOnly
-      variant="tertiary"
-      class={[
-        'bg-white! md:hidden! absolute top-1/2 inline-flex -translate-y-1/2',
-        { 'hidden!': pos === scrolledSide, 'left-0': pos === 'a', 'right-0': pos === 'b' }
-      ]}
-      onclick={() => doScroll()}
-    />
-  {/each}
+  <!-- One button that flips sides, so keyboard focus stays on it after a click -->
+  <Button
+    text={m[scrolledSide === 'a' ? 'actions.scrollRight' : 'actions.scrollLeft']()}
+    icon={scrolledSide === 'a' ? 'arrow-right-line' : 'arrow-left-line'}
+    iconOnly
+    variant="tertiary"
+    class={[
+      'bg-white! md:hidden! absolute top-1/2 inline-flex -translate-y-1/2',
+      scrolledSide === 'a' ? 'right-0' : 'left-0'
+    ]}
+    onclick={doScroll}
+  />
 </div>
 
 <style>
