@@ -1,10 +1,10 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, AsyncGenerator, Collection, Literal, Sequence
+from typing import Annotated, AsyncGenerator, Collection, Literal, Mapping, Sequence
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge, solved_max_number
@@ -29,8 +29,11 @@ from backend.arena.limits import (
 from backend.arena.models import (
     AddFirstTextBody,
     AddTextBody,
+    ArenaLimits,
     LimitRefusal,
+    PausedLLM,
     RetryBody,
+    SpentAllowance,
 )
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -141,6 +144,43 @@ def limit_refusal(
             resets_in=last.resets_in,
             llm_ids=list(llm_ids),
         ),
+    )
+
+
+def arena_limits(
+    limit_status: LimitStatus,
+    expensive_models: Sequence[UUID],
+    full: Mapping[UUID, datetime] | None = None,
+) -> ArenaLimits:
+    """
+    The limits a person meets before typing. Of the allowances spent in one
+    pool, the one that lifts last is told, as in a refusal.
+
+    `full` holds each model whose daily cap is full and when it lifts. A model
+    paused both ways is listed once, by the pause that lasts longer.
+    """
+    total = None
+    if spent := limit_status.spent_in("all"):
+        last, resets_at = lifts_last(spent)
+        total = SpentAllowance(scope=public_scope(last), resets_at=resets_at)
+
+    expensive_resets_at = None
+    paused: dict[UUID, PausedLLM] = {}
+    if spent := limit_status.spent_in("expensive"):
+        _last, expensive_resets_at = lifts_last(spent)
+        paused = {
+            llm_id: PausedLLM(id=llm_id, until=expensive_resets_at, reason="allowance")
+            for llm_id in expensive_models
+        }
+    for llm_id, until in (full or {}).items():
+        other = paused.get(llm_id)
+        if other is None or other.until is None or until > other.until:
+            paused[llm_id] = PausedLLM(id=llm_id, until=until, reason="full")
+
+    return ArenaLimits(
+        total=total,
+        expensive_resets_at=expensive_resets_at,
+        paused_llms=list(paused.values()),
     )
 
 
@@ -399,6 +439,29 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
     if unvoted_comparisons(anonymous_user_hash) >= ALTCHA_UNVOTED_COMPARISONS:
         return generate_challenge(ALTCHA_HARD_MAX_NUMBER)
     return generate_challenge(ALTCHA_MAX_NUMBER)
+
+
+@router.get("/limits")
+async def get_limits(
+    anonymous_user_hash: RequiredAnomymous, request: Request, response: Response
+) -> ArenaLimits:
+    """Which allowances this person has spent and which models are paused for
+    them, read on page load and after each vote. It changes with every
+    message, so no cache may keep it."""
+    response.headers["Cache-Control"] = "no-store"
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    try:
+        limit_status = read_status(who)
+    except Exception:
+        # Fail open: the message itself is still charged, and refused, by
+        # `reserve`.
+        logger.exception("Could not read the arena limits")
+        limit_status = LimitStatus(())
+
+    expensive_models: list[UUID] = []
+    if not limit_status.expensive_available:
+        expensive_models = (await get_llms_data()).expensive_models
+    return arena_limits(limit_status, expensive_models)
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_block_cooldown)])
