@@ -19,85 +19,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import backend.arena.session as session
 from backend.config import RATELIMIT_SENT_WARNINGS_PER_HOUR, settings
 from backend.utils.user import ip_bucket
-
-
-class FakeRedis:
-    """Minimal string-counter stub matching decode_responses=True behaviour.
-    Shared with the other arena budget tests.
-
-    `pipelines_that_work` makes every pipeline after that many fail, as when
-    Redis drops between two calls."""
-
-    def __init__(self, pipelines_that_work=None):
-        self.store: dict[str, int] = {}
-        self.ttl: dict[str, int] = {}
-        self.pipelines_left = pipelines_that_work
-
-    def set(self, key, value, ex=None, nx=False):
-        if nx and key in self.store:
-            return None
-        self.store[key] = int(value)
-        if ex is not None:
-            self.ttl[key] = ex
-        return True
-
-    def incrby(self, key, amount):
-        self.store[key] = self.store.get(key, 0) + amount
-        return self.store[key]
-
-    def decrby(self, key, amount):
-        return self.incrby(key, -amount)
-
-    def expire(self, key, ttl):
-        self.ttl[key] = ttl
-
-    def get(self, key):
-        v = self.store.get(key)
-        return None if v is None else str(v)
-
-    def incr(self, key):
-        return self.incrby(key, 1)
-
-    def pipeline(self):
-        return FakePipeline(self)
-
-
-class FakePipeline:
-    """Queues calls and runs them in order on `execute`, as MULTI/EXEC does."""
-
-    def __init__(self, redis):
-        self.redis = redis
-        self.calls = []
-
-    def __getattr__(self, name):
-        def queue(*args, **kwargs):
-            self.calls.append((name, args, kwargs))
-            return self
-
-        return queue
-
-    def execute(self):
-        if self.redis.pipelines_left is not None:
-            if self.redis.pipelines_left == 0:
-                raise ConnectionError("Redis went away")
-            self.redis.pipelines_left -= 1
-        results = [
-            getattr(self.redis, name)(*args, **kwargs)
-            for name, args, kwargs in self.calls
-        ]
-        self.calls = []
-        return results
+from tests.arena import fakes
+from tests.arena.fakes import FakeRedis
 
 
 @contextlib.contextmanager
 def fake_redis(fake=None):
-    orig = session.get_redis_client
-    fake = fake or FakeRedis()
-    session.get_redis_client = lambda: fake
-    try:
+    with fakes.fake_redis(session, fake=fake) as fake:
         yield fake
-    finally:
-        session.get_redis_client = orig
 
 
 def test_under_threshold_not_limited():
@@ -246,15 +175,14 @@ def test_a_refused_message_is_charged_nothing():
         }
         # The window of the spent budget does not move on a refusal, but the
         # empty counters the refusal created still expire.
-        assert spent not in fake.ttl
-        assert all(k in fake.ttl for k in fake.store if k != spent)
+        assert fake.ttl(spent) == -1
+        assert all(fake.ttl(k) > 0 for k in fake.store if k != spent)
 
 
 def test_a_charged_message_restarts_the_window():
     with fake_redis() as fake:
         session.reserve_input_chars("sess-a", "1.1.1.1", 10, pricey=True)
-        assert set(fake.ttl) == set(fake.store)
-        assert set(fake.ttl.values()) == {session.BUDGET_TTL_SECONDS}
+        assert {fake.ttl(k) for k in fake.store} == {session.BUDGET_TTL_SECONDS}
 
 
 def test_a_counter_expires_even_when_redis_drops_mid_charge():
@@ -267,7 +195,7 @@ def test_a_counter_expires_even_when_redis_drops_mid_charge():
         except ConnectionError:
             pass
         assert len(fake.store) == 4
-        assert set(fake.ttl) == set(fake.store)
+        assert all(fake.ttl(k) > 0 for k in fake.store)
 
 
 def run():

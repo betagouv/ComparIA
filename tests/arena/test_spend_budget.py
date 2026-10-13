@@ -33,7 +33,7 @@ import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings  # noqa: E402
-from tests.arena.test_ratelimit import FakeRedis  # noqa: E402
+from tests.arena.fakes import FakeRedis  # noqa: E402
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
@@ -297,7 +297,7 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     assert state.provider_calls == 0, route
     # A counter the refused message created holds nothing and must not stay in
     # Redis for ever.
-    assert all(k in state.redis.ttl for k in state.redis.store if k != spent), route
+    assert all(state.redis.ttl(k) > 0 for k in state.redis.store if k != spent), route
 
 
 def test_a_pricey_model_spends_the_pricey_budget_up_front():
