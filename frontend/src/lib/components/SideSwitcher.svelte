@@ -5,9 +5,12 @@
   import { onDestroy } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { children, ...props }: SvelteHTMLElements['div'] = $props()
+  let {
+    children,
+    scrolledSide = $bindable('a'),
+    ...props
+  }: SvelteHTMLElements['div'] & { scrolledSide?: Bot } = $props()
 
-  let scrolledSide = $state<Bot>('a')
   let scrollableElem = $state<HTMLDivElement>()
 
   function scrollToSide(side: Bot) {
