@@ -89,10 +89,10 @@ async def seed_model(execute):
     )
     await execute(
         "INSERT INTO llm_data (id, created_at, updated_at, lab_id, license_id, "
-        "human_id, status, name, rate_limited, release_date, arch, params, inputs, "
+        "human_id, status, name, cost_weight, release_date, arch, params, inputs, "
         "public_weights, public_training_data, public_training_code, eu_hostable, "
         "price_in, price_out, links) VALUES (:id, now(), now(), :lab, :license, "
-        "'model', 'enabled', 'Model', false, :release, 'dense', 1, '[]', true, "
+        "'model', 'enabled', 'Model', 1, :release, 'dense', 1, '[]', true, "
         "false, false, true, 0, 0, '[]')",
         id=LLM_ID,
         lab=lab_id,

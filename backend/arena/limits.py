@@ -132,7 +132,7 @@ def message_cost(
     model is expensive. A cheap pair leaves that pool out, so a spent
     expensive allowance never refuses it."""
     cost: dict[Pool, int] = {"all": len(text)}
-    if any(llm_id in llms_data.pricey_models for llm_id in llm_ids):
+    if any(llm_id in llms_data.expensive_models for llm_id in llm_ids):
         cost["expensive"] = len(text)
     return cost
 

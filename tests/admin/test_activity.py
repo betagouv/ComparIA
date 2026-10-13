@@ -84,11 +84,11 @@ async def add_llms() -> tuple[uuid.UUID, uuid.UUID]:
             await session.execute(
                 text(
                     "INSERT INTO llm_data (id, created_at, updated_at, lab_id,"
-                    " license_id, human_id, status, name, rate_limited,"
+                    " license_id, human_id, status, name, cost_weight,"
                     " release_date, arch, params, inputs, public_weights,"
                     " public_training_data, public_training_code, eu_hostable,"
                     " price_in, price_out, links) VALUES (:id, now(), now(), :lab,"
-                    " :license, :human_id, 'enabled', :name, false, '2025-01-01',"
+                    " :license, :human_id, 'enabled', :name, 1, '2025-01-01',"
                     " 'dense', 7, '[\"text\"]', true, false, false, true, 0, 0,"
                     " '[]')"
                 ),

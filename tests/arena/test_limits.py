@@ -72,7 +72,7 @@ def test_a_message_that_counts_for_nothing_still_meets_a_spent_allowance():
 
 def test_a_cheap_pair_leaves_the_expensive_pool_out():
     cheap, expensive = uuid4(), uuid4()
-    llms_data = SimpleNamespace(pricey_models=[expensive])
+    llms_data = SimpleNamespace(expensive_models=[expensive])
     assert limits.message_cost("abc", (cheap, cheap), llms_data) == {"all": 3}
     assert limits.message_cost("abc", (cheap, expensive), llms_data) == {
         "all": 3,

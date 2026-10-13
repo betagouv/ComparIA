@@ -111,12 +111,16 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def pricey_models(self) -> list[UUID]:
+    def expensive_models(self) -> list[UUID]:
         """
-        Commercial models with higher API costs (e.g., Claude, GPT-4)
-        These have stricter rate limits applied
+        Models that cost more than an ordinary one: they spend people's
+        expensive-model allowance.
         """
-        return [model.id for model in self.enabled.values() if model.rate_limited]
+        return [model.id for model in self.enabled.values() if model.cost_weight > 1]
+
+    def weight(self, llm_id: UUID) -> float:
+        """How many times an ordinary model this one costs."""
+        return self.all[llm_id].cost_weight
 
     def pick_one(self, models: list[UUID], excluded: list[UUID] = []) -> UUID:
         """
@@ -292,8 +296,8 @@ async def pick_replacement_model(
     Pick a replacement model from the appropriate pool, excluding both current models.
 
     `charged` says the turn already paid its character budgets for the current
-    pair. If neither model is pricey, the turn skipped the pricey budget, so
-    no pricey model may take over.
+    pair. If neither model is expensive, the turn skipped the expensive
+    budget, so no expensive model may take over.
     """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
@@ -311,9 +315,9 @@ async def pick_replacement_model(
     else:
         pool = models.random_models
 
-    pricey = models.pricey_models
-    if charged and failing not in pricey and other not in pricey:
-        pool = [llm_id for llm_id in pool if llm_id not in pricey]
+    expensive = models.expensive_models
+    if charged and failing not in expensive and other not in expensive:
+        pool = [llm_id for llm_id in pool if llm_id not in expensive]
 
     try:
         return models.pick_one(pool, excluded=excluded)

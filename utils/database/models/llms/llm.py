@@ -1,9 +1,9 @@
 from datetime import date
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, model_validator
+from pydantic import AfterValidator, field_validator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
@@ -45,8 +45,8 @@ FIELDS = {
     "name": {
         "title": "Readable name",
     },
-    "rate_limited": {
-        "description": "Apply rate limits (usually for high API costs LLMs).",
+    "cost_weight": {
+        "description": "Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.",
     },
     "release_date": {},
     "knowledge_cutoff": {
@@ -116,7 +116,16 @@ class LLMDataBase(BaseDBModel):
         UUID | None,
         Field(default=None, foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"]),
     ]
-    rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
+    cost_weight: Annotated[
+        float,
+        Field(
+            default=1.0,
+            ge=1,
+            le=100,
+            schema_extra={"json_schema_extra": {"optional": True}},
+            **FIELDS["cost_weight"],
+        ),
+    ]
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
     knowledge_cutoff: Annotated[
@@ -188,6 +197,12 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
+    @field_validator("cost_weight", mode="before")
+    @classmethod
+    def ordinary_when_left_empty(cls, value: Any) -> Any:
+        """The admin form sends null for a weight it cleared."""
+        return 1.0 if value is None else value
+
     @model_validator(mode="after")
     def check_active_params_is_defined_if_moe(self):
         """

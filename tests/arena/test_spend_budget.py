@@ -39,7 +39,7 @@ from tests.arena.fakes import FakeRedis  # noqa: E402
 SESSION = "b" * 64
 IP = "10.0.0.1"
 PROMPT = "Bonjour, explique la photosynthese"
-CHEAP, PRICEY = uuid4(), uuid4()
+CHEAP, EXPENSIVE = uuid4(), uuid4()
 ME, NETWORK = f"s:{SESSION}", f"ip:{IP}"
 
 
@@ -106,7 +106,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             await state.in_step.wait()
         return SimpleNamespace(
             pick_two=lambda _mode, _selection: (llm_a, llm_b),
-            pricey_models=[PRICEY],
+            expensive_models=[EXPENSIVE],
         )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
@@ -305,9 +305,9 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     assert all(state.redis.ttl(k) > 0 for k in state.redis.store if k != spent), route
 
 
-def test_a_pricey_model_spends_the_pricey_budget_up_front():
+def test_an_expensive_model_spends_the_expensive_allowance_up_front():
     for route in ROUTES:
-        with arena(llm_ids=(CHEAP, PRICEY)) as state:
+        with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
             start(route, state)
             assert counter(state.redis, "expensive", ME) == len(PROMPT), route
             assert counter(state.redis, "expensive", NETWORK) == len(PROMPT), route
@@ -379,7 +379,7 @@ if __name__ == "__main__":
     test_a_full_answer_is_charged_once()
     test_requests_sent_together_cannot_all_spend_the_last_of_the_budget()
     test_a_refused_message_spends_nothing_and_writes_nothing()
-    test_a_pricey_model_spends_the_pricey_budget_up_front()
+    test_an_expensive_model_spends_the_expensive_allowance_up_front()
     test_any_spent_allowance_stops_a_message_at_the_gate()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()

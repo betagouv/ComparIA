@@ -66,7 +66,7 @@ def retry(target):
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(pricey_models=[])
+        return SimpleNamespace(expensive_models=[])
 
     request = Request(
         {
