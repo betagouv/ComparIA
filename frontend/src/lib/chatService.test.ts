@@ -108,3 +108,57 @@ describe('retry', () => {
     expect(comparison.turns[0].status).toBe('error')
   })
 })
+
+describe('a refusal on an allowance', () => {
+  const limit = {
+    scope: 'network' as const,
+    resets_at: '2026-10-13T13:40:00Z',
+    resets_in: 4210,
+    llm_ids: []
+  }
+
+  it('pauses the send area instead of showing an input error, and leaves the reveal open', async () => {
+    const comparison = {
+      id: 'voted-id',
+      turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+    } as unknown as Comparison
+    arena.comparisons = [comparison]
+    arena.refusal = Object.assign(new ValidationError('allowance_spent'), {
+      status: 429,
+      detail: 'allowance_spent',
+      limit
+    })
+
+    const chat = getComparison('voted-id')
+    const sent = await chat.ask('Encore une question')
+
+    arena.refusal = undefined
+    arena.comparisons = []
+    expect(sent).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pause).toEqual({ detail: 'allowance_spent', limit })
+    expect(chat.canReveal).toBe(true)
+  })
+
+  it('leaves a refusal with no limit to the input error', async () => {
+    const comparison = {
+      id: 'voted-id',
+      turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+    } as unknown as Comparison
+    arena.comparisons = [comparison]
+    arena.refusal = Object.assign(new ValidationError('block_cooldown'), {
+      status: 429,
+      detail: 'block_cooldown'
+    })
+
+    const chat = getComparison('voted-id')
+    await chat.ask('Encore une question')
+
+    arena.refusal = undefined
+    arena.comparisons = []
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeTruthy()
+    // The reveal stays open after this refusal too.
+    expect(chat.canReveal).toBe(true)
+  })
+})

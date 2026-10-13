@@ -7,6 +7,7 @@ import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
   ComparisonPublic,
+  LimitRefusalBody,
   LLMMessageCreate,
   TurnPublic,
   UserMessageRead,
@@ -110,6 +111,27 @@ export interface RevealData {
   selected: Bot | null
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
+}
+
+// LIMITS
+
+/**
+ * A refusal on an allowance: the person can write again once it lifts.
+ *
+ * FIXME today a spent expensive allowance stops every message, so it reads as
+ * a pause too. Once expensive models step aside instead, that key only refuses
+ * a pick and needs its own copy. `model_full_today` is not sent yet.
+ */
+export type PauseRefusal = LimitRefusalBody & {
+  detail: 'allowance_spent' | 'expensive_allowance_spent'
+}
+
+function asPauseRefusal(err: unknown): PauseRefusal | undefined {
+  const { detail, limit } = err as ApiError
+  if (limit && (detail === 'allowance_spent' || detail === 'expensive_allowance_spent')) {
+    return { detail, limit }
+  }
+  return undefined
 }
 
 // DATA
@@ -229,6 +251,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let loading = $state(false)
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
+  let pause = $state<PauseRefusal>()
+  let pauseTimer: ReturnType<typeof setTimeout> | undefined
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
   let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
@@ -245,6 +269,25 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     if (comparison.reveal_data) return 'revealed'
     return turn.status
   })
+
+  // A refusal says nothing about the turns, so it never locks the reveal: only
+  // a turn still answering, a failed one or a missing vote does.
+  const canReveal = $derived(
+    !loading &&
+      !errorMsg &&
+      turn?.status === 'complete' &&
+      !!comparison?.turns.every((turn) => !!turn.choice)
+  )
+
+  function pauseUntilReset(refusal: PauseRefusal) {
+    pause = refusal
+    clearTimeout(pauseTimer)
+    if (refusal.limit.resets_at) {
+      // The send area comes back on its own once the allowance lifts.
+      const delay = Date.parse(refusal.limit.resets_at) - Date.now()
+      pauseTimer = setTimeout(() => (pause = undefined), Math.max(delay, 0))
+    }
+  }
 
   async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
@@ -309,7 +352,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (turn) turn.status = 'error'
       }
     } catch (err) {
-      if (err instanceof ValidationError) {
+      const refusal = asPauseRefusal(err)
+      if (refusal) {
+        pauseUntilReset(refusal)
+      } else if (err instanceof ValidationError) {
         const detail = err.errors ? err.errors[0].msg : err.message
         promptError = promptCheckMessage(arenaErrorMessage(detail))
       } else if (err instanceof CaptchaError) {
@@ -331,7 +377,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
     }
 
-    return !warned && !comparison?.error && !promptError
+    return !warned && !comparison?.error && !promptError && !pause
   }
 
   return {
@@ -346,6 +392,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     get loading() {
       return loading
+    },
+    get canReveal() {
+      return canReveal
+    },
+    /** Set while an allowance is spent, until it lifts. */
+    get pause() {
+      return pause
     },
     get error() {
       return errorMsg
