@@ -91,7 +91,7 @@ def test_a_started_expensive_conversation_stops_on_the_whole_allowance(route):
 
 
 @pytest.mark.parametrize("selection", [[EXPENSIVE], [CHEAP, EXPENSIVE]])
-def test_a_custom_pick_of_an_expensive_model_is_refused_with_its_id(selection):
+def test_a_custom_pick_of_an_expensive_model_is_refused_with_its_id(selection, caplog):
     with arena() as state:
         spend(state.redis, "expensive", NETWORK)
         before = dict(state.redis.store)
@@ -114,6 +114,8 @@ def test_a_custom_pick_of_an_expensive_model_is_refused_with_its_id(selection):
         assert refusal.value.limit.resets_in == limits.WINDOW_SECONDS
         assert {k: v for k, v in state.redis.store.items() if v} == before
         assert state.created == 0
+        # The refusal leaves a trace for whoever looks into a complaint.
+        assert str(EXPENSIVE) in caplog.text
 
 
 def test_a_draw_that_meets_an_allowance_spent_meanwhile_draws_again():

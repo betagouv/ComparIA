@@ -205,6 +205,11 @@ def pick_and_charge(
                 hard_excluded=llms_data.expensive_models,
             )
         except NoModelLeft as error:
+            logger.warning(
+                f"Refused a '{args.mode}' draw on a spent expensive allowance,"
+                f" paused picks: [{error}]",
+                extra={"request": request},
+            )
             raise limit_refusal(spent, error.llm_ids)
         charge_budget(args.prompt_value, pair, llms_data, anonymous_user_hash, request)
         return pair
