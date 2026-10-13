@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, AsyncGenerator, Collection, Sequence
+from typing import Annotated, AsyncGenerator, Collection, Literal, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -106,29 +106,37 @@ router = APIRouter(
 # Dependencies
 
 
+def lifts_last(spent: Sequence[Allowance]) -> tuple[Allowance, datetime | None]:
+    """The spent allowance that lifts last, since that is when the person can
+    go on, and the time it lifts, None when unknown. One with no known reset
+    counts as the last."""
+    last = max(
+        spent,
+        key=lambda allowance: (allowance.resets_in is None, allowance.resets_in or 0),
+    )
+    if last.resets_in is None:
+        return last, None
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    return last, now + timedelta(seconds=last.resets_in)
+
+
+def public_scope(allowance: Allowance) -> Literal["session", "network"]:
+    return "session" if allowance.scope == "session" else "network"
+
+
 def limit_refusal(
     spent: Sequence[Allowance], llm_ids: Sequence[UUID] = ()
 ) -> LimitReachedError:
     """
     What the person is told for these spent allowances: the one that lifts
-    last, since that is when they can go on. One with no known reset counts
-    as the last. `llm_ids` are the models the person picked and may not use
-    until then.
+    last. `llm_ids` are the models the person picked and may not use until
+    then.
     """
-    last = max(
-        spent,
-        key=lambda allowance: (allowance.resets_in is None, allowance.resets_in or 0),
-    )
-    resets_at = (
-        datetime.now(timezone.utc).replace(microsecond=0)
-        + timedelta(seconds=last.resets_in)
-        if last.resets_in is not None
-        else None
-    )
+    last, resets_at = lifts_last(spent)
     return LimitReachedError(
         "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
         LimitRefusal(
-            scope="session" if last.scope == "session" else "network",
+            scope=public_scope(last),
             resets_at=resets_at,
             resets_in=last.resets_in,
             llm_ids=list(llm_ids),
