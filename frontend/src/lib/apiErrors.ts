@@ -3,6 +3,8 @@ import { m } from '$lib/i18n/messages'
 // The keys the arena backend sends as `detail`, see backend/arena/router.py,
 // backend/arena/models.py and backend/arena/checks.py.
 const ARENA_ERRORS = {
+  // No longer sent by the arena, whose limits now carry when they lift (see
+  // `PauseRefusal`). Kept for a release in case an older backend answers.
   rate_limited: () => m['arene.apiErrors.rate_limited'](),
   block_cooldown: () => m['arene.apiErrors.block_cooldown'](),
   comparison_streaming: () => m['arene.apiErrors.comparison_streaming'](),
