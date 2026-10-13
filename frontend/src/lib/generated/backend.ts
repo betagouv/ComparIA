@@ -5,6 +5,37 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+/**
+ * What the arena may do for this person right now, read before they type.
+ *
+ * No counter and no share of an allowance: the person learns that one is
+ * spent and when it lifts, never how much their network sent. Nothing here
+ * depends on a comparison, so it says nothing about a blind pair.
+ */
+export interface ArenaLimits {
+  total: SpentAllowance | null;
+  expensive_resets_at: string | null;
+  paused_llms: PausedLLM[];
+}
+/**
+ * A spent allowance, told by who it is spent for and when it lifts.
+ */
+export interface SpentAllowance {
+  scope: "session" | "network";
+  resets_at: string | null;
+  [k: string]: unknown;
+}
+/**
+ * A model left out of this person's new comparisons until `until`:
+ * "allowance" while their expensive allowance is spent, "full" while the
+ * model's daily cap is.
+ */
+export interface PausedLLM {
+  id: string;
+  until: string | null;
+  reason: "allowance" | "full";
+  [k: string]: unknown;
+}
 export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";

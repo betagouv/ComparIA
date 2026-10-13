@@ -1,4 +1,4 @@
-from backend.arena.models import LimitRefusalBody
+from backend.arena.models import ArenaLimits, LimitRefusalBody
 from backend.llms.data import LLMList
 from backend.ranking.models import PersonalRanking
 from backend.settings.router import PublicLegalDocument
