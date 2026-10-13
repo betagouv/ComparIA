@@ -37,8 +37,11 @@
 </script>
 
 <div {...props} class="min-h-0 relative flex max-w-full">
+  <!-- `relative` makes this the containing block of the cards' absolute
+       children (the sr-only vote chip inputs). Without it they escape the
+       overflow clip and widen the page on phones. -->
   <div
-    class="cl-side-switcher-scroller md:overflow-hidden! flex w-full overflow-x-auto"
+    class="cl-side-switcher-scroller md:overflow-hidden! relative flex w-full overflow-x-auto"
     bind:this={scrollableElem}
     onscroll={onScroll}
   >
