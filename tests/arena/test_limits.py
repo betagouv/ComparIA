@@ -101,6 +101,31 @@ def test_a_window_closes_after_two_quiet_hours():
         assert not limits.read_status(WHO).spent
 
 
+def test_a_refund_never_leaves_a_counter_without_expiry():
+    with fake_redis(limits) as redis:
+        limits.reserve(WHO, {"all": settings.RATELIMIT_ALL_PER_SESSION + 1})
+        pipelines = []
+        charge_then_refund = redis.pipeline
+
+        def pipeline(transaction=True):
+            pipelines.append(transaction)
+            if len(pipelines) == 2:
+                # The counters run out between the charge and the refund.
+                redis.advance(limits.WINDOW_SECONDS)
+            return charge_then_refund(transaction)
+
+        redis.pipeline = pipeline
+        with pytest.raises(AllowanceSpent):
+            limits.reserve(WHO, {"all": 1})
+
+        for identity in WHO.identities:
+            assert redis.ttl(limits.budget_key("all", identity)) == (
+                limits.WINDOW_SECONDS
+            )
+        redis.advance(limits.WINDOW_SECONDS)
+        assert all(a.used == 0 for a in limits.read_status(WHO).allowances)
+
+
 def test_a_reset_forgets_one_identity_only():
     other = Identity.of("sess-b", "2.2.2.2")
     with fake_redis(limits):

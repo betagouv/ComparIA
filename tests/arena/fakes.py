@@ -58,8 +58,8 @@ class FakeRedis:
     def decrby(self, key, amount):
         return self.incrby(key, -amount)
 
-    def expire(self, key, seconds):
-        if not self._live(key):
+    def expire(self, key, seconds, nx=False):
+        if not self._live(key) or (nx and key in self.expires_at):
             return False
         self.expires_at[key] = self.now + seconds
         return True

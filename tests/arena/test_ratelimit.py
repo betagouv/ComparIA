@@ -184,7 +184,7 @@ def test_requests_at_the_edge_cannot_all_pass():
 def test_a_refused_message_is_charged_nothing():
     with fake_redis() as fake:
         spent = limits.budget_key("expensive", "ip:1.1.1.1")
-        fake.store[spent] = settings.RATELIMIT_EXPENSIVE_PER_IP + 1
+        fake.set(spent, settings.RATELIMIT_EXPENSIVE_PER_IP + 1, ex=600)
 
         assert not reserve_input_chars("sess-a", "1.1.1.1", 500, pricey=True)
 
@@ -193,7 +193,7 @@ def test_a_refused_message_is_charged_nothing():
         }
         # The window of the spent budget does not move on a refusal, but the
         # empty counters the refusal created still expire.
-        assert fake.ttl(spent) == -1
+        assert fake.ttl(spent) == 600
         assert all(fake.ttl(k) > 0 for k in fake.store if k != spent)
 
 

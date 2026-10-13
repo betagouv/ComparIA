@@ -216,6 +216,11 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
         # A refused message leaves the window where it was.
         if refused:
             pipe.decrby(key, chars)
+            # Should the counter expire between the charge and the refund,
+            # DECRBY brings it back below zero with no expiry: an allowance
+            # that never resets. NX gives it the window and leaves any other
+            # expiry alone.
+            pipe.expire(key, WINDOW_SECONDS, nx=True)
         else:
             pipe.expire(key, WINDOW_SECONDS)
     pipe.execute()
