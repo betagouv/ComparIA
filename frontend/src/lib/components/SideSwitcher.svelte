@@ -57,19 +57,18 @@
     {@render children?.()}
   </div>
 
-  {#each ['a', 'b'] as const as pos (pos)}
-    <Button
-      text={m[pos === 'b' ? 'actions.scrollRight' : 'actions.scrollLeft']()}
-      icon={pos === 'b' ? 'arrow-right-line' : 'arrow-left-line'}
-      iconOnly
-      variant="tertiary"
-      class={[
-        'bg-white! md:hidden! absolute top-1/2 inline-flex -translate-y-1/2',
-        { 'hidden!': pos === scrolledSide, 'left-0': pos === 'a', 'right-0': pos === 'b' }
-      ]}
-      onclick={() => doScroll()}
-    />
-  {/each}
+  <!-- One button that flips sides, so keyboard focus stays on it after a click -->
+  <Button
+    text={m[scrolledSide === 'a' ? 'actions.scrollRight' : 'actions.scrollLeft']()}
+    icon={scrolledSide === 'a' ? 'arrow-right-line' : 'arrow-left-line'}
+    iconOnly
+    variant="tertiary"
+    class={[
+      'bg-white! md:hidden! absolute top-1/2 inline-flex -translate-y-1/2',
+      scrolledSide === 'a' ? 'right-0' : 'left-0'
+    ]}
+    onclick={doScroll}
+  />
 </div>
 
 <style>
