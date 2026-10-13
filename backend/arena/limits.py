@@ -13,13 +13,10 @@ message before any model sees it.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Literal, Mapping, Sequence, get_args
 from uuid import UUID
 
-from backend.arena.models import LimitRefusal
 from backend.config import settings
-from backend.errors import LimitReachedError
 from backend.utils.user import ip_bucket
 from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
 
@@ -130,28 +127,6 @@ class AllowanceSpent(Exception):
     @property
     def refused(self) -> tuple[tuple[Pool, Scope], ...]:
         return tuple((allowance.pool, allowance.scope) for allowance in self.spent)
-
-
-def refusal(spent: Sequence[Allowance]) -> LimitReachedError:
-    """
-    What the person is told for these spent allowances: the one that lifts
-    last, since that is when they can go on.
-    """
-    last = max(spent, key=lambda allowance: allowance.resets_in or 0)
-    resets_at = (
-        datetime.now(timezone.utc).replace(microsecond=0)
-        + timedelta(seconds=last.resets_in)
-        if last.resets_in is not None
-        else None
-    )
-    return LimitReachedError(
-        "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
-        LimitRefusal(
-            scope="session" if last.scope == "session" else "network",
-            resets_at=resets_at,
-            resets_in=last.resets_in,
-        ),
-    )
 
 
 def message_cost(

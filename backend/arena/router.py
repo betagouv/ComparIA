@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID
 
@@ -15,14 +16,19 @@ from backend.arena.checks import (
     run_prompt_check,
 )
 from backend.arena.limits import (
+    Allowance,
     AllowanceSpent,
     Identity,
     message_cost,
     read_status,
-    refusal,
     reserve,
 )
-from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
+from backend.arena.models import (
+    AddFirstTextBody,
+    AddTextBody,
+    LimitRefusal,
+    RetryBody,
+)
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -63,6 +69,7 @@ from backend.config import (
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
 )
+from backend.errors import LimitReachedError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
@@ -91,6 +98,28 @@ router = APIRouter(
 # Dependencies
 
 
+def limit_refusal(spent: Sequence[Allowance]) -> LimitReachedError:
+    """
+    What the person is told for these spent allowances: the one that lifts
+    last, since that is when they can go on.
+    """
+    last = max(spent, key=lambda allowance: allowance.resets_in or 0)
+    resets_at = (
+        datetime.now(timezone.utc).replace(microsecond=0)
+        + timedelta(seconds=last.resets_in)
+        if last.resets_in is not None
+        else None
+    )
+    return LimitReachedError(
+        "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
+        LimitRefusal(
+            scope="session" if last.scope == "session" else "network",
+            resets_at=resets_at,
+            resets_in=last.resets_in,
+        ),
+    )
+
+
 def assert_not_rate_limited(
     anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
@@ -102,7 +131,7 @@ def assert_not_rate_limited(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
-        raise refusal(spent)
+        raise limit_refusal(spent)
 
 
 def charge_budget(
@@ -127,7 +156,7 @@ def charge_budget(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
-        raise refusal(error.spent)
+        raise limit_refusal(error.spent)
 
 
 def assert_not_block_cooldown(

@@ -17,7 +17,9 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.arena.limits as limits  # noqa: E402
+import backend.arena.router as arena_router  # noqa: E402
 import backend.main as main  # noqa: E402
+import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.arena.limits import Allowance, AllowanceSpent, Identity  # noqa: E402
 from backend.config import settings  # noqa: E402
 from backend.errors import LimitReachedError, limit_reached_handler  # noqa: E402
@@ -41,7 +43,7 @@ def spent(pool, scope, resets_in):
     ],
 )
 def test_each_allowance_has_its_own_key_and_scope(pool, scope, said):
-    error = limits.refusal([spent(pool, scope, 600)])
+    error = arena_router.limit_refusal([spent(pool, scope, 600)])
     assert (error.detail, error.limit.scope) == said
     assert error.status_code == 429
     assert error.limit.llm_ids == []
@@ -49,7 +51,7 @@ def test_each_allowance_has_its_own_key_and_scope(pool, scope, said):
 
 def test_the_limit_that_lifts_last_is_the_one_told():
     """That is when the person can go on."""
-    error = limits.refusal(
+    error = arena_router.limit_refusal(
         [spent("expensive", "session", 600), spent("all", "ip", 4210)]
     )
     assert (error.detail, error.limit.scope) == ("allowance_spent", "network")
@@ -84,7 +86,9 @@ def client_raising(error):
 
 def test_the_body_keeps_detail_a_string_and_puts_the_limit_beside_it():
     """An object `detail` would break every client that reads it as a key."""
-    response = client_raising(limits.refusal([spent("all", "ip", 4210)])).post("/send")
+    response = client_raising(
+        arena_router.limit_refusal([spent("all", "ip", 4210)])
+    ).post("/send")
 
     assert response.status_code == 429
     assert response.headers["Retry-After"] == "4210"
@@ -97,9 +101,9 @@ def test_the_body_keeps_detail_a_string_and_puts_the_limit_beside_it():
 
 
 def test_no_retry_after_when_the_reset_is_unknown():
-    response = client_raising(limits.refusal([spent("all", "session", None)])).post(
-        "/send"
-    )
+    response = client_raising(
+        arena_router.limit_refusal([spent("all", "session", None)])
+    ).post("/send")
 
     assert "Retry-After" not in response.headers
     assert response.json()["limit"]["resets_at"] is None
