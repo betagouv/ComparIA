@@ -3,6 +3,7 @@ from typing import get_args
 
 from pydantic2ts import generate_typescript_defs
 
+from backend.config import MAX_TURNS_PER_COMPARISON
 from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
 from internal.archs import get_archs
 from utils.database.models.llms.constants import LLMArchKind
@@ -47,9 +48,16 @@ def generate_frontend_constants() -> None:
         "MAYBE_ARCHS": [f"maybe-{a}" for a in archs if a != "na"],
     }
 
-    file_lines = [f"export const {k} = {v} as const" for k, v in constants.items()] + [
-        f"export type {to_pascal_case(k)} = (typeof {k})[number]"
-        for k, v in constants.items()
-    ]
+    # Single values, with no union type to go with them.
+    numbers = {"MAX_TURNS_PER_COMPARISON": MAX_TURNS_PER_COMPARISON}
+
+    file_lines = (
+        [f"export const {k} = {v} as const" for k, v in constants.items()]
+        + [
+            f"export type {to_pascal_case(k)} = (typeof {k})[number]"
+            for k, v in constants.items()
+        ]
+        + [f"export const {k} = {v}" for k, v in numbers.items()]
+    )
 
     FRONTEND_CONSTANTS.write_text("\n".join(file_lines) + "\n")
