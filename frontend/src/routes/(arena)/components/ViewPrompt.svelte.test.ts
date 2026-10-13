@@ -2,8 +2,10 @@ import { fireEvent, render } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ViewPrompt from './ViewPrompt.svelte'
 
+const catalog = vi.hoisted(() => ({ models: [] as unknown[] }))
+
 vi.mock('$lib/models', () => ({
-  getModelsContext: () => ({ models: [] })
+  getModelsContext: () => catalog
 }))
 
 vi.mock('$lib/chatService.svelte', () => ({
@@ -27,6 +29,7 @@ const props = {
 
 describe('ViewPrompt', () => {
   beforeEach(() => {
+    catalog.models = []
     const values = new Map<string, string>()
     vi.stubGlobal('localStorage', {
       getItem: (key: string) => values.get(key) ?? null,
@@ -91,5 +94,41 @@ describe('ViewPrompt', () => {
 
     await view.rerender({ ...props, pause: undefined })
     expect(view.getByRole('textbox')).toHaveValue('Ma question')
+  })
+
+  it('takes a refused pick out of the selection and says why, keeping the prompt', async () => {
+    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
+    const pickRefusal = {
+      detail: 'expensive_allowance_spent' as const,
+      limit: {
+        scope: 'session' as const,
+        resets_at: new Date(Date.now() + 3600_000).toISOString(),
+        resets_in: 3600,
+        llm_ids: ['expensive-id']
+      }
+    }
+    const onPrompt = vi.fn(async () => {
+      await view.rerender({ ...props, onPrompt, pickRefusal })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    const title = view.getByRole('heading', { name: 'Nous avons retiré GPT-5 de votre sélection' })
+    expect(title).toHaveFocus()
+    expect(view.getByText(/Il est en pause pour vous et revient à/)).toBeInTheDocument()
+    await vi.waitFor(() =>
+      expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
+    )
+    expect(view.getByRole('textbox')).toHaveValue('Ma question')
+    expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
+    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
   })
 })

@@ -85,6 +85,7 @@
       loading={comparator.loading}
       promptError={comparator.promptError}
       pause={comparator.pause}
+      pickRefusal={comparator.pickRefusal}
       onPrompt={submitInitialPrompt}
       suggestions={data.suggestions.categories}
     />

@@ -8,7 +8,8 @@
   import {
     getModeInfos,
     type APIModeAndPromptData,
-    type PauseRefusal
+    type PauseRefusal,
+    type PickRefusal
   } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
@@ -21,11 +22,13 @@
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
   import PauseNotice from './PauseNotice.svelte'
+  import PickRefusalNotice from './PickRefusalNotice.svelte'
 
   let {
     onPrompt,
     promptError,
     pause,
+    pickRefusal,
     loading,
     suggestions
   }: {
@@ -33,6 +36,8 @@
     promptError?: string
     /** Set while an allowance is spent: the notice takes the place of the form. */
     pause?: PauseRefusal
+    /** Set when the comparison asked for models the person may not use yet. */
+    pickRefusal?: PickRefusal
     loading: boolean
     suggestions: SuggestionCategory[]
   } = $props()
@@ -54,6 +59,11 @@
   let submitting = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
+  const refusedNames = $derived(
+    (pickRefusal?.limit.llm_ids ?? [])
+      .map((id) => models.find((llm) => llm.id === id)?.name)
+      .filter((name): name is string => !!name)
+  )
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
@@ -112,6 +122,12 @@
         prompt_value: prompt,
         web_search: webSearch
       })
+      // Take the refused models out, so sending again starts a comparison.
+      const refused = pickRefusal?.limit.llm_ids
+      if (refused?.length) {
+        modelsSelection.value = modelsSelection.value.filter((id) => !refused.includes(id))
+        if (!modelsSelection.value.length) mode.value = 'random'
+      }
     } finally {
       submitting = false
     }
@@ -231,6 +247,12 @@
               </Tooltip>
             </Toggle>
           </div>
+
+          {#if pickRefusal}
+            <div class="md:col-span-full">
+              <PickRefusalNotice refusal={pickRefusal} names={refusedNames} />
+            </div>
+          {/if}
 
           <Button
             type="submit"
