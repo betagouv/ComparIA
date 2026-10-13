@@ -197,6 +197,7 @@ async def bot_response_async(
             llm,
             system_msg,
             turn.user_msg.content,
+            turn.id,
             CachedResponse(
                 content=llm_msg.content,
                 reasoning=llm_msg.reasoning_content,

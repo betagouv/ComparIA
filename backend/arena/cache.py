@@ -11,10 +11,18 @@ import json
 import logging
 import random
 from typing import Any, TypedDict, cast
+from uuid import UUID
+
+import redis
 
 from backend.config import settings
 from backend.llms.models import LLMDataEnabled
-from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client, hash_content
+from utils.storage.redis import (
+    REDIS_LLM_CACHE_SEEN_KEY,
+    REDIS_LLM_RESPONSES_KEY,
+    get_redis_client,
+    hash_content,
+)
 
 logger = logging.getLogger("languia")
 
@@ -85,11 +93,31 @@ def get_cached_response(
         return None
 
 
+def _seen_in_another_turn(client: redis.Redis, prompt: str, turn_id: UUID) -> bool:
+    """
+    Remember the first turn that sent this prompt. Both answers of that turn,
+    and a retry of it, count as one sighting.
+    """
+    key = REDIS_LLM_CACHE_SEEN_KEY.format(prompt_hash=hash_content(prompt))
+    if client.set(key, str(turn_id), ex=settings.CACHE_TTL, nx=True):
+        return False
+    if cast(Any, client.get(key)) == str(turn_id):
+        return False
+    # Kept as long as the prompt is asked, like the answers it lets in.
+    client.expire(key, settings.CACHE_TTL)
+    return True
+
+
 def store_cached_response(
-    llm: LLMDataEnabled, system_msg: str | None, prompt: str, response: CachedResponse
+    llm: LLMDataEnabled,
+    system_msg: str | None,
+    prompt: str,
+    turn_id: UUID,
+    response: CachedResponse,
 ) -> None:
     """
-    Store a response in the cache for this (model, prompt) pair.
+    Store a response in the cache for this (model, prompt) pair, from the
+    second turn that sends the prompt on.
 
     Appends to existing responses up to CACHE_MAX_RESPONSES, rotating out
     the oldest entry when full.
@@ -99,6 +127,9 @@ def store_cached_response(
 
     try:
         client = get_redis_client()
+        if not _seen_in_another_turn(client, prompt, turn_id):
+            return
+
         key = _responses_key(llm, system_msg, prompt)
 
         existing_data = cast(Any, client.get(key))

@@ -38,6 +38,11 @@ REDIS_RANKING_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}rankings_and_prefs"
 REDIS_LLM_RESPONSES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}llm_cache:{{llm_id}}:{{fingerprint}}:{{prompt_hash}}"
 )
+# The turn that first sent a prompt. An answer is only stored once another turn
+# sends it again: most prompts are never asked twice.
+REDIS_LLM_CACHE_SEEN_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}llm_cache_seen:{{prompt_hash}}"
+)
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 # Comparisons a session started since its last vote.
 REDIS_UNVOTED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}unvoted:{{session}}"
