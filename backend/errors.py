@@ -1,14 +1,12 @@
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
 from utils.database.models import BotPos, ErrorCode
 
-# from enum import StrEnum
-# TODO raise errors with error keys and add i18n on front
-# class Errors(StrEnum):
-#     RATE_LIMITED = "rate_limited"  # "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits."
+if TYPE_CHECKING:
+    from backend.arena.models import LimitKey, LimitRefusal
 
 
 class ContextTooLongError(ValueError):
@@ -119,3 +117,28 @@ class ActivityQueryTimeoutError(HTTPException):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="activity_query_timeout",
         )
+
+
+class LimitReachedError(HTTPException):
+    """A message refused because a limit on model use was reached. The body
+    says which limit and when it lifts, see `limit_reached_handler`."""
+
+    def __init__(self, key: "LimitKey", limit: "LimitRefusal") -> None:
+        headers = (
+            {"Retry-After": str(limit.resets_in)}
+            if limit.resets_in is not None
+            else None
+        )
+        super().__init__(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail=key, headers=headers
+        )
+        self.limit = limit
+
+
+async def limit_reached_handler(request: Request, exc: Exception) -> JSONResponse:
+    assert isinstance(exc, LimitReachedError)
+    return JSONResponse(
+        {"detail": exc.detail, "limit": exc.limit.model_dump(mode="json")},
+        status_code=exc.status_code,
+        headers=exc.headers,
+    )

@@ -2,6 +2,8 @@
 Data validation models using Pydantic.
 """
 
+from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -91,3 +93,27 @@ class AddTextBody(CaptchaBody):
 class RetryBody(CaptchaBody):
     """Request body for retry endpoint. A retry calls both models again, so it
     takes the same proof of work as a new message."""
+
+
+LimitKey = Literal["allowance_spent", "expensive_allowance_spent", "model_full_today"]
+
+
+class LimitRefusal(BaseModel):
+    """What a message refused on a limit carries beside its `detail` key, so
+    the arena can say which limit it met and when it lifts."""
+
+    # "session" is this person, "network" everyone behind their IP, None a
+    # limit that applies to everyone.
+    scope: Literal["session", "network"] | None
+    resets_at: datetime | None
+    resets_in: int | None
+    # The models the refusal is about, when it is about some.
+    llm_ids: list[UUID] = []
+
+
+class LimitRefusalBody(BaseModel):
+    """The body of a 429 on a limit. `detail` stays a string key, as on every
+    other error, so a client that only reads `detail` still works."""
+
+    detail: LimitKey
+    limit: LimitRefusal
