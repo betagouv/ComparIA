@@ -8,12 +8,16 @@ answers. Each pool runs per anonymous session and per IP: the session one is
 the one that matters, since people behind a shared NAT each get their own; the
 IP one catches a client that drops its cookie to start over.
 
+A spent `all` allowance stops every message. A spent `expensive` one only
+keeps expensive models out of new comparisons: the conversations already
+started with one may finish.
+
 Routes call `read_status` for a cheap early answer and `reserve` to charge a
 message before any model sees it.
 """
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal, Mapping, Sequence, get_args
+from typing import TYPE_CHECKING, Collection, Literal, Mapping, Sequence, get_args
 from uuid import UUID
 
 from backend.config import settings
@@ -116,6 +120,14 @@ class LimitStatus:
     def spent(self) -> tuple[Allowance, ...]:
         return tuple(allowance for allowance in self.allowances if allowance.spent)
 
+    def spent_in(self, pool: Pool) -> tuple[Allowance, ...]:
+        return tuple(allowance for allowance in self.spent if allowance.pool == pool)
+
+    @property
+    def expensive_available(self) -> bool:
+        """Whether a new draw may hold an expensive model."""
+        return not self.spent_in("expensive")
+
 
 class AllowanceSpent(Exception):
     """A message refused because an allowance it spends was already spent."""
@@ -169,7 +181,9 @@ def read_status(who: Identity) -> LimitStatus:
     return read_counters(who.identities)
 
 
-def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
+def reserve(
+    who: Identity, cost: Mapping[Pool, int], refusing: Collection[Pool] = POOLS
+) -> None:
     """
     Charge a message before any model sees it, or refuse it.
 
@@ -178,6 +192,12 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
     halfway through the answer has already paid. A message goes through when
     every allowance it spends was within its limit before it, so the last one
     can overshoot by its own size.
+
+    Only the pools in `refusing` may refuse. The others are charged all the
+    same: a conversation started with an expensive model finishes once that
+    allowance is spent, and its turns still count against it. A spent
+    allowance keeps its expiry, so the reset time the person was told stays
+    true while such conversations finish.
 
     A refused message gets its characters back. It never reached a model, and
     left counted it would go on eating the allowances that were not spent yet,
@@ -205,11 +225,13 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
         pipe.incrby(key, chars)
     totals: list[int] = pipe.execute()[1::2]
 
-    refused = [
+    spent = [
         (pool, identity, total - chars)
         for (pool, identity, chars), total in zip(counters, totals)
         if total - chars > _limit(pool, _scope(identity))
     ]
+    refused = [counter for counter in spent if counter[0] in refusing]
+    over = {(pool, identity) for pool, identity, _used in spent}
     pipe = client.pipeline()
     for pool, identity, chars in counters:
         key = budget_key(pool, identity)
@@ -221,7 +243,7 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
             # that never resets. NX gives it the window and leaves any other
             # expiry alone.
             pipe.expire(key, WINDOW_SECONDS, nx=True)
-        else:
+        elif (pool, identity) not in over:
             pipe.expire(key, WINDOW_SECONDS)
     # When each spent allowance lifts, for the refusal to say so.
     for pool, identity, _used in refused:
