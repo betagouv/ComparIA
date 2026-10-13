@@ -12,6 +12,7 @@ import backend.arena.limits as limits
 from backend.arena.limits import AllowanceSpent, Identity
 from backend.config import Settings, settings
 from tests.arena.fakes import fake_redis
+from utils.arena.actions import limits_reset, limits_show
 from utils.storage.redis import REDIS_INSTANCE_PREFIX
 
 WHO = Identity.of("sess-a", "1.1.1.1")
@@ -110,3 +111,19 @@ def test_a_reset_forgets_one_identity_only():
         assert allowance(status, "all", "session").used == 10
         assert allowance(status, "all", "ip").used == 0
         assert allowance(limits.read_status(other), "all", "ip").used == 10
+
+
+def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog):
+    with fake_redis(limits) as redis, caplog.at_level("INFO", "comparia.arena"):
+        redis.set(limits.budget_key("all", WHO.personal), 10)
+        redis.set(limits.budget_key("expensive", WHO.personal), 10, ex=61)
+        limits_show(session="sess-a")
+    assert "s:sess-a all: 10 of 500,000, never resets" in caplog.text
+    assert "s:sess-a expensive: 10 of 100,000, resets in 2 min" in caplog.text
+
+
+def test_the_cli_refuses_a_reset_with_no_one_to_reset(caplog):
+    with fake_redis(limits), pytest.raises(SystemExit) as exit:
+        limits_reset()
+    assert exit.value.code == 1
+    assert "Give --session, --ip or both." in caplog.text
