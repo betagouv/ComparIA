@@ -7,7 +7,7 @@ on:
   pull_request:
   push:
     branches:
-      - next
+      - develop
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
