@@ -119,8 +119,11 @@ async def bot_response_async(
     system_msg = next(
         (msg.content for msg in messages if isinstance(msg, SystemMessageRead)), None
     )
-    # Try cache on first turn only
-    if turn_index == 0:
+    # First turns only: follow-ups carry the whole transcript and almost never
+    # repeat. A turn with web search results answers another question than the
+    # same prompt without them, so it neither reads nor writes the cache.
+    use_cache = turn_index == 0 and not turn.user_msg.web_search_results
+    if use_cache:
         cached = get_cached_response(llm, system_msg, turn.user_msg.content)
         if cached:
             logger.info(
@@ -182,8 +185,7 @@ async def bot_response_async(
     # Final update with complete response and timing data
     yield llm_msg
 
-    # Store successful response in cache (first turn only)
-    if turn_index == 0:
+    if use_cache:
         store_cached_response(
             llm,
             system_msg,
