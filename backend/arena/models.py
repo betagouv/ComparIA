@@ -117,3 +117,36 @@ class LimitRefusalBody(BaseModel):
 
     detail: LimitKey
     limit: LimitRefusal
+
+
+class SpentAllowance(BaseModel):
+    """A spent allowance, told by who it is spent for and when it lifts."""
+
+    scope: Literal["session", "network"]
+    resets_at: datetime | None
+
+
+class PausedLLM(BaseModel):
+    """A model left out of this person's new comparisons until `until`:
+    "allowance" while their expensive allowance is spent, "full" while the
+    model's daily cap is."""
+
+    id: UUID
+    until: datetime | None
+    reason: Literal["allowance", "full"]
+
+
+class ArenaLimits(BaseModel):
+    """
+    What the arena may do for this person right now, read before they type.
+
+    No counter and no share of an allowance: the person learns that one is
+    spent and when it lifts, never how much their network sent. Nothing here
+    depends on a comparison, so it says nothing about a blind pair.
+    """
+
+    # The whole allowance: while spent, no message goes through.
+    total: SpentAllowance | None
+    # The expensive allowance, session or network, the one that lifts last.
+    expensive_resets_at: datetime | None
+    paused_llms: list[PausedLLM]
