@@ -37,6 +37,32 @@ jobs:
       - name: Run backend tests
         run: uv run --locked --group dev --group data pytest tests -q
 
+      # Only the modules held to the strict flags in pyproject.toml. Imports
+      # are followed silently, so the errors elsewhere do not fail this step.
+      - name: Type check the strict modules
+        run: |
+          uv run --locked --group dev python - <<'EOF'
+          import subprocess
+          import sys
+          import tomllib
+
+          with open("pyproject.toml", "rb") as f:
+              blocks = tomllib.load(f)["tool"]["mypy"].get("overrides", [])
+          targets = []
+          for block in blocks:
+              if block.get("disallow_untyped_defs"):
+                  modules = block["module"]
+                  for module in [modules] if isinstance(modules, str) else modules:
+                      if module.endswith(".*"):
+                          targets += ["-p", module[:-2]]
+                      else:
+                          targets += ["-m", module]
+          if not targets:
+              sys.exit("No module is held to the strict flags in pyproject.toml")
+          mypy = [sys.executable, "-m", "mypy", "--follow-imports=silent"]
+          sys.exit(subprocess.call(mypy + targets))
+          EOF
+
   frontend:
     runs-on: ubuntu-latest
 
