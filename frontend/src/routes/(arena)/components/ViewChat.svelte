@@ -29,6 +29,11 @@
       !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
 
+  function onReveal() {
+    if (comparator.canReveal) comparator.reveal()
+    else remindToVote()
+  }
+
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
       const success = await comparator.ask(prompt)
@@ -162,11 +167,11 @@
 
       <Button
         text={m['chatbot.revealButton']()}
-        aria-disabled={!canContinue}
+        aria-disabled={!comparator.canReveal}
         size="sm"
         icon="arrow-up-circle-line"
         class="md:w-fit! lh-none! w-full!"
-        onclick={() => (canContinue ? comparator.reveal() : remindToVote())}
+        onclick={onReveal}
       />
     </div>
   {/if}
