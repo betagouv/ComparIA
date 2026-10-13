@@ -7,6 +7,7 @@ handling streaming responses, token counting, and message tracking.
 
 import asyncio
 import logging
+import random
 from contextlib import aclosing
 from datetime import datetime
 from typing import AsyncGenerator, Literal
@@ -43,43 +44,44 @@ class SystemMessageRead(BaseModel):
 AnyMessageRead = LLMMessageRead | SystemMessageRead | UserMessageRead
 
 
+# A cached answer is sent in about this many chunks, this far apart.
+CACHED_CHUNKS = 15
+CACHED_CHUNK_DELAY = 0.2
+
+
 async def _stream_cached_response(
     pos: BotPos,
     turn: TurnRead,
     cached: CachedResponse,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
-    Simulate streaming from a cached response.
-
-    Chunks the cached content and yields with small delays to mimic
-    real streaming behavior for consistent UX.
+    Stream a cached answer the way a live one arrives: the first chunk a
+    moment after the call starts, then the reasoning and the content a piece
+    at a time. The browser sees each chunk and both timestamps, so a side
+    that arrived whole, or answered in no time, would read as cached.
     """
     llm_msg = LLMMessageCreate(
         created_at=datetime.now(),
-        responded_at=datetime.now(),
-        reasoning_content=cached["reasoning"].strip(),
         generation_id="cached",
         tokens=cached["output_tokens"],
         is_cached=True,
     )
     setattr(turn, f"llm_msg_{pos}", llm_msg)
+    # As long as a provider takes to send its first token.
+    await asyncio.sleep(random.uniform(0.3, 1.5))
+    llm_msg.responded_at = datetime.now()
 
-    # Simulate streaming: emit content in chunks
-    content_len = len(cached["content"])
-    chunk_size = max(20, content_len // 15)  # ~15 chunks
-    emitted = 0
-    while emitted < content_len:
-        emitted = min(emitted + chunk_size, content_len)
-        llm_msg.content = cached["content"][:emitted].strip()
-        if llm_msg.content or llm_msg.reasoning_content:
+    for field, text in (
+        ("reasoning_content", cached["reasoning"].strip()),
+        ("content", cached["content"].strip()),
+    ):
+        chunk_size = max(20, len(text) // CACHED_CHUNKS)
+        for emitted in range(chunk_size, len(text) + chunk_size, chunk_size):
+            setattr(llm_msg, field, text[:emitted])
             yield llm_msg
+            await asyncio.sleep(CACHED_CHUNK_DELAY)
 
-        await asyncio.sleep(0.2)
-
-    # Final yield with complete content and timing
-    llm_msg.content = cached["content"].strip()
     llm_msg.updated_at = datetime.now()
-
     yield llm_msg
 
 
