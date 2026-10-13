@@ -331,9 +331,9 @@ export interface OIDCConnectionTest {
  * Contains basic LLM information and links to licence, lab and endpoint.
  */
 export interface LLMData {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
+  id: string;
+  created_at: string;
+  updated_at: string;
   /**
    * enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.
    */
@@ -346,15 +346,15 @@ export interface LLMData {
   /**
    * Complete identifier used for API calls.
    */
-  api_model_id?: string | null;
+  api_model_id: string | null;
   /**
    * The LLM's endpoint information, create it first if not already available
    */
-  endpoint_id?: string | null;
+  endpoint_id: string | null;
   /**
    * Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.
    */
-  cost_weight?: number;
+  cost_weight: number;
   /**
    * The lab that developed the LLM, create it first if not already available
    */
@@ -363,7 +363,7 @@ export interface LLMData {
   /**
    * Date after which the LLM no longer has knowledge.
    */
-  knowledge_cutoff?: string | null;
+  knowledge_cutoff: string | null;
   /**
    * The LLM's license, create it first if not already available
    */
@@ -395,15 +395,15 @@ export interface LLMData {
   /**
    * Active parameters in billions (only for MoE LLMs).
    */
-  active_params?: number | null;
+  active_params: number | null;
   /**
    * Size of its context window in tokens.
    */
-  context_tokens?: number | null;
+  context_tokens: number | null;
   /**
    * Quantization scheme applied (q4, q8, or None for full precision).
    */
-  quantization?: ("q4" | "q8") | null;
+  quantization: ("q4" | "q8") | null;
   /**
    * What kind of media the LLM can have in input.
    */
@@ -419,11 +419,11 @@ export interface LLMData {
   /**
    * System message to add in llm call if specified
    */
-  system_prompt?: string | null;
+  system_prompt: string | null;
   /**
    * List of links to display in LLM card.
    */
-  links?: Link[];
+  links: Link[];
 }
 export interface Link {
   text: string;

@@ -9,6 +9,7 @@ from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
+from sqlmodel.main import SQLModelConfig
 
 from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
@@ -178,6 +179,9 @@ class LLMData(LLMDataBase, table=True):
     """
 
     __tablename__ = "llm_data"
+    # Every field is in what the API sends back, defaults included, so the
+    # generated type marks them all as present.
+    model_config = SQLModelConfig(json_schema_serialization_defaults_required=True)
 
     lab: LLMLab = Relationship(
         sa_relationship_kwargs={"foreign_keys": "[LLMData.lab_id]", "lazy": "joined"}

@@ -17,10 +17,9 @@
       ...llm,
       votes: data.data.models.find((other) => other.id === llm.id)?.data?.n_match,
       release_date: new Date(llm.release_date),
-      updated_at: new Date(llm.updated_at!),
-      created_at: new Date(llm.created_at!),
-      id: llm.id!,
-      search: toSearchString([llm.human_id, llm.name, llm.id!])
+      updated_at: new Date(llm.updated_at),
+      created_at: new Date(llm.created_at),
+      search: toSearchString([llm.human_id, llm.name, llm.id])
     }))
   )
   type DataKey = keyof Omit<(typeof llms)[number], 'links'>

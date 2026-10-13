@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from utils.database.models.llms.llm import LLMDataUpsert
+from utils.database.models.llms.llm import LLMData, LLMDataUpsert
 from utils.utils import FormJsonSchema
 
 
@@ -129,3 +129,13 @@ def test_a_cost_weight_up_to_a_hundred_is_kept(weight):
 def test_a_cost_weight_above_a_hundred_or_not_finite_is_refused(weight):
     with pytest.raises(ValidationError, match="cost_weight"):
         LLMDataUpsert(**payload(cost_weight=weight))
+
+
+def test_an_llm_read_back_always_carries_its_cost_weight():
+    """
+    The admin list reads the weight of every row, so the type generated from
+    what the API sends must not mark it as possibly missing.
+    """
+    schema = LLMData.model_json_schema(mode="serialization")
+
+    assert "cost_weight" in schema["required"]
