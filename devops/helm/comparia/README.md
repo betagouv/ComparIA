@@ -73,8 +73,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.authAccessPolicy`  | `anonymous_first`   | `anonymous_first` or `sign_in_required`               |
 | `config.logFormat`         | `JSON`              | `JSON` or `RAW`                                       |
 | `config.votesObjective`    | `300000`            | Displayed vote-count target                           |
-| `config.cache.enabled`     | `true`              | LLM response cache                                    |
-| `config.cache.probability` | `0.75`              | Probability of serving a cached response on hit       |
+| `config.cache.probability` | `0.75`              | Probability of serving a cached response on hit; `0` never serves one |
 | `config.cache.ttl`         | `172800`            | Cache TTL in seconds                                  |
 | `config.cache.maxResponses`| `5`                 | Max cached responses per (model, prompt) pair         |
 | `config.sentryDsn`         | `""`                | Left empty, errors are not sent anywhere              |

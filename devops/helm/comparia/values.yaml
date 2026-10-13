@@ -85,7 +85,6 @@ config:
   logFormat: JSON
   votesObjective: 300000
   cache:
-    enabled: true
     probability: 0.75
     ttl: 172800
     maxResponses: 5

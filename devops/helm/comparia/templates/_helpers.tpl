@@ -66,8 +66,6 @@ subset would silently leave it without SMTP or with the default session length.
   value: "/data"
 - name: VOTES_OBJECTIVE
   value: {{ .Values.config.votesObjective | quote }}
-- name: CACHE_ENABLED
-  value: {{ .Values.config.cache.enabled | quote }}
 - name: CACHE_PROBABILITY
   value: {{ .Values.config.cache.probability | quote }}
 - name: CACHE_TTL
