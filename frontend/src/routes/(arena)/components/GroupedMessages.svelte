@@ -1,7 +1,7 @@
 <script lang="ts">
   import Pending from '$components/Pending.svelte'
   import SideSwitcher from '$components/SideSwitcher.svelte'
-  import type { AnyAPIVote, ComparisonTurn, TurnChoice } from '$lib/chatService.svelte'
+  import type { AnyAPIVote, Bot, ComparisonTurn, TurnChoice } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { tick, type Snippet } from 'svelte'
@@ -25,6 +25,8 @@
     children: Snippet<[]> | undefined
   } = $props()
 
+  let shownSide = $state<Bot>('a')
+
   // Voting unmounts the fieldset the focused button lives in, which drops focus
   // to <body>: the next Tab restarts at the top of the document, back through
   // both answers. Hand it to whatever the vote just revealed instead.
@@ -34,6 +36,9 @@
   // too early, always missed, and fell through to the prompt box — stepping
   // over the controls the vote had just revealed. Nothing moves before then
   // anyway, since the button keeping focus lives until the same response.
+  //
+  // On phones only one answer is on screen: take that one's comment box, or the
+  // switcher scrolls away from the answer the user was reading.
   async function onChoice(choice: TurnChoice) {
     try {
       await onVote({ turn_id: turn.id, choice })
@@ -41,7 +46,7 @@
       // Even on a failed vote: the alternative is focus stranded on <body>.
       await tick()
       const next =
-        document.getElementById(`vote-annotate-${turn.id}-a-comment`) ??
+        document.getElementById(`vote-annotate-${turn.id}-${shownSide}-comment`) ??
         document.getElementById('chatbot-prompt')
       next?.focus({ preventScroll: true })
     }
@@ -64,7 +69,7 @@
     {:else if turn.status === 'error' && error}
       <ErrorDisplay {error} class="mt-10" {onRetry} />
     {:else}
-      <SideSwitcher>
+      <SideSwitcher bind:scrolledSide={shownSide}>
         <div class="gap-4 sm:gap-6 md:w-full flex">
           {#if turn.a.llm_msg && turn.b.llm_msg}
             <MessageBot
