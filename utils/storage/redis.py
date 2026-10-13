@@ -32,8 +32,11 @@ REDIS_BUDGET_KEY: Final[str] = (
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
 REDIS_VOTE_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}count"
 REDIS_RANKING_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}rankings_and_prefs"
+# Answers kept for a first turn. The fingerprint changes with the model version,
+# its endpoint and the system prompt sent, so an answer is only served by the
+# model that wrote it.
 REDIS_LLM_RESPONSES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
+    f"{REDIS_INSTANCE_PREFIX}llm_cache:{{llm_id}}:{{fingerprint}}:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 # Comparisons a session started since its last vote.

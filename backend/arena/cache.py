@@ -6,12 +6,14 @@ Stores multiple responses per key to preserve diversity, and serves cached
 responses with configurable probability to avoid determinism.
 """
 
+import hashlib
 import json
 import logging
 import random
 from typing import Any, TypedDict, cast
 
 from backend.config import settings
+from backend.llms.models import LLMDataEnabled
 from utils.storage.redis import REDIS_LLM_RESPONSES_KEY, get_redis_client, hash_content
 
 logger = logging.getLogger("languia")
@@ -23,7 +25,29 @@ class CachedResponse(TypedDict):
     output_tokens: int | None
 
 
-def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
+def model_fingerprint(llm: LLMDataEnabled, system_msg: str | None) -> str:
+    """
+    Changes when an admin points the model at another version, provider or
+    endpoint, or edits its system prompt, so the answers written before stop
+    being served. The system prompt is the one the comparison sends, which
+    can be older than the model's current one.
+    """
+    endpoint = llm.litellm_endpoint
+    identity = json.dumps([endpoint.model, endpoint.base_url, system_msg])
+    return hashlib.sha256(identity.encode()).hexdigest()[:16]
+
+
+def _responses_key(llm: LLMDataEnabled, system_msg: str | None, prompt: str) -> str:
+    return REDIS_LLM_RESPONSES_KEY.format(
+        llm_id=llm.id,
+        fingerprint=model_fingerprint(llm, system_msg),
+        prompt_hash=hash_content(prompt),
+    )
+
+
+def get_cached_response(
+    llm: LLMDataEnabled, system_msg: str | None, prompt: str
+) -> CachedResponse | None:
     """
     Try to get a cached response for this (model, prompt) pair.
 
@@ -39,9 +63,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
 
     try:
         client = get_redis_client()
-        key = REDIS_LLM_RESPONSES_KEY.format(
-            model_name=model_name, prompt_hash=hash_content(prompt)
-        )
+        key = _responses_key(llm, system_msg, prompt)
         data = cast(Any, client.get(key))
         if not data:
             return None
@@ -55,7 +77,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
         # Refresh TTL on hit — popular prompts stay cached as long as they're asked
         client.expire(key, settings.CACHE_TTL)
 
-        logger.info(f"[CACHE] Hit for {model_name} (pool size: {len(responses)})")
+        logger.info(f"[CACHE] Hit for {llm.id} (pool size: {len(responses)})")
         return chosen
 
     except Exception as e:
@@ -64,7 +86,7 @@ def get_cached_response(model_name: str, prompt: str) -> CachedResponse | None:
 
 
 def store_cached_response(
-    model_name: str, prompt: str, response: CachedResponse
+    llm: LLMDataEnabled, system_msg: str | None, prompt: str, response: CachedResponse
 ) -> None:
     """
     Store a response in the cache for this (model, prompt) pair.
@@ -77,9 +99,7 @@ def store_cached_response(
 
     try:
         client = get_redis_client()
-        key = REDIS_LLM_RESPONSES_KEY.format(
-            model_name=model_name, prompt_hash=hash_content(prompt)
-        )
+        key = _responses_key(llm, system_msg, prompt)
 
         existing_data = cast(Any, client.get(key))
         responses: list[CachedResponse] = (
@@ -91,9 +111,9 @@ def store_cached_response(
         if len(responses) > settings.CACHE_MAX_RESPONSES:
             responses = responses[-settings.CACHE_MAX_RESPONSES :]
 
-        client.setex(key, settings.CACHE_TTL, json.dumps(responses))
+        client.set(key, json.dumps(responses), ex=settings.CACHE_TTL)
         logger.info(
-            f"[CACHE] Stored response for {model_name} (pool size: {len(responses)})"
+            f"[CACHE] Stored response for {llm.id} (pool size: {len(responses)})"
         )
 
     except Exception as e:

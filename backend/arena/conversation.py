@@ -114,9 +114,14 @@ async def bot_response_async(
     Raises:
         EmptyResponseError: If the LLM returns empty response
     """
+    # The system prompt this comparison sends, which an admin may have edited
+    # on the model since.
+    system_msg = next(
+        (msg.content for msg in messages if isinstance(msg, SystemMessageRead)), None
+    )
     # Try cache on first turn only
     if turn_index == 0:
-        cached = get_cached_response(llm.id, turn.user_msg.content)
+        cached = get_cached_response(llm, system_msg, turn.user_msg.content)
         if cached:
             logger.info(
                 f"[CACHE] Serving cached response for {llm.id}",
@@ -180,7 +185,8 @@ async def bot_response_async(
     # Store successful response in cache (first turn only)
     if turn_index == 0:
         store_cached_response(
-            llm.id,
+            llm,
+            system_msg,
             turn.user_msg.content,
             CachedResponse(
                 content=llm_msg.content,
