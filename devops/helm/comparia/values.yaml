@@ -88,6 +88,7 @@ config:
     probability: 0.75
     ttl: 172800
     maxResponses: 5
+    webSearchTtl: 3600
   ## -- Left empty, errors are not sent anywhere.
   sentryDsn: ""
   sentryEnvironment: prod

@@ -72,6 +72,8 @@ subset would silently leave it without SMTP or with the default session length.
   value: {{ .Values.config.cache.ttl | quote }}
 - name: CACHE_MAX_RESPONSES
   value: {{ .Values.config.cache.maxResponses | quote }}
+- name: WEB_SEARCH_CACHE_TTL
+  value: {{ .Values.config.cache.webSearchTtl | quote }}
 {{- if .Values.config.sentryDsn }}
 - name: SENTRY_DSN
   value: {{ .Values.config.sentryDsn | quote }}
