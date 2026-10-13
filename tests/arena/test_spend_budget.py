@@ -32,11 +32,7 @@ import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
-from backend.config import (  # noqa: E402
-    ANONYMOUS_SESSION_COOKIE,
-    RATELIMIT_ALL_MODELS_INPUT,
-    RATELIMIT_ALL_MODELS_INPUT_PER_IP,
-)
+from backend.config import ANONYMOUS_SESSION_COOKIE, settings  # noqa: E402
 from tests.arena.test_ratelimit import FakeRedis  # noqa: E402
 
 SESSION = "b" * 64
@@ -254,7 +250,7 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
     both requests are past the gate and inside the route before either one
     charges."""
     state.redis.store[session._budget_key("all", SESSION)] = (
-        RATELIMIT_ALL_MODELS_INPUT - 1
+        settings.RATELIMIT_ALL_PER_SESSION - 1
     )
 
     async def together():
@@ -286,7 +282,7 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     eating the budgets that were not spent yet, such as the IP one a whole
     school can share."""
     spent = session._budget_key("all_ip", IP)
-    state.redis.store[spent] = RATELIMIT_ALL_MODELS_INPUT_PER_IP + 1
+    state.redis.store[spent] = settings.RATELIMIT_ALL_PER_IP + 1
     before = dict(state.redis.store)
 
     try:

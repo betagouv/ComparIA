@@ -12,12 +12,9 @@ from typing import Awaitable
 from pydantic import BaseModel, ValidationError
 
 from backend.config import (
-    RATELIMIT_ALL_MODELS_INPUT,
-    RATELIMIT_ALL_MODELS_INPUT_PER_IP,
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
-    RATELIMIT_PRICEY_MODELS_INPUT,
-    RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
     RATELIMIT_SENT_WARNINGS_PER_HOUR,
+    settings,
 )
 from backend.utils.user import ip_bucket
 from utils.storage.redis import (
@@ -114,11 +111,10 @@ def _budgets(key: str, ip: str, pricey: bool = True) -> list[tuple[str, int]]:
     counted twice, once per anonymous session and once per IP.
     """
     budgets = (
-        # Rate limit is 2x the configured limit for pricey models
-        ("pricey", key, RATELIMIT_PRICEY_MODELS_INPUT * 2),
-        ("pricey_ip", ip_bucket(ip), RATELIMIT_PRICEY_MODELS_INPUT_PER_IP),
-        ("all", key, RATELIMIT_ALL_MODELS_INPUT),
-        ("all_ip", ip_bucket(ip), RATELIMIT_ALL_MODELS_INPUT_PER_IP),
+        ("pricey", key, settings.RATELIMIT_EXPENSIVE_PER_SESSION),
+        ("pricey_ip", ip_bucket(ip), settings.RATELIMIT_EXPENSIVE_PER_IP),
+        ("all", key, settings.RATELIMIT_ALL_PER_SESSION),
+        ("all_ip", ip_bucket(ip), settings.RATELIMIT_ALL_PER_IP),
     )
     return [
         (_budget_key(pool, identity), limit)

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
-from pydantic import NonNegativeInt, field_validator
+from pydantic import NonNegativeInt, PositiveInt, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -147,6 +147,26 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
+    # Model allowances, in characters, over a window that ends 2 hours after
+    # the last message they let through. Settings rather than constants so a
+    # local run can lower them to watch a refusal.
+    #
+    # Counted per anonymous session (the `anonymous_session` cookie hash), not
+    # per IP, so users behind a shared NAT (schools, hospitals) each get their
+    # own. This one covers expensive models (openai models, etc.).
+    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveInt = 100_000
+    # A client that drops the `anonymous_session` cookie gets a fresh session on
+    # every request, so the same allowance also runs per IP as a backstop. Room
+    # for a whole school: at a fifth of this, one class of thirty could spend
+    # it before the break. Spam seen in the OpenRouter logs picks the cheapest
+    # models, which this pool does not cover.
+    RATELIMIT_EXPENSIVE_PER_IP: PositiveInt = 5_000_000
+    # Cheap models are not free either, and only expensive ones used to be
+    # counted, so nothing at all stopped someone hammering the rest. Wider
+    # still: an ordinary session must never meet this.
+    RATELIMIT_ALL_PER_SESSION: PositiveInt = 500_000
+    RATELIMIT_ALL_PER_IP: PositiveInt = 10_000_000
+
     # Response caching
     CACHE_ENABLED: bool = False
     CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
@@ -258,26 +278,6 @@ CustomModelsSelection = tuple[str, ...] | None
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
 BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
-
-# Rate limiting specifically for expensive models (openai models, etc.).
-# Keyed per anonymous session (the `anonymous_session` cookie hash), not per IP,
-# so users behind a shared NAT (schools, hospitals) each get their own budget.
-RATELIMIT_PRICEY_MODELS_INPUT = 50_000
-
-# The per-session budget above is the one that matters, since users behind one
-# shared NAT each get their own. But a client that drops the `anonymous_session`
-# cookie gets a fresh session on every request, so the same budget also runs per
-# IP as a backstop. A hundred times the room, because that IP may be a whole
-# school: at twenty, one class of thirty could spend it before the break. Spam
-# seen in the OpenRouter logs picks the cheapest models, which this pool does
-# not cover.
-RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
-
-# Cheap models are not free either, and only pricey ones used to be counted, so
-# nothing at all stopped someone hammering the rest. Wider still: an ordinary
-# session must never meet this.
-RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
-RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an
