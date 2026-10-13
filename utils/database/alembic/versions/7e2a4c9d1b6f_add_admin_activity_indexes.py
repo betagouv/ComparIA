@@ -22,16 +22,9 @@ logger = logging.getLogger("alembic.runtime.migration")
 
 
 def upgrade() -> None:
+    # ix_turn_comparison_id, which the activity panel also needs, comes from
+    # a3e1f621c626, earlier in the chain.
     with op.get_context().autocommit_block():
-        # Every join from a comparison to its turns. Missing until now: the
-        # arena only ever reached turns through the comparison's relationship.
-        op.create_index(
-            "ix_turn_comparison_id",
-            "turn",
-            ["comparison_id"],
-            unique=False,
-            postgresql_concurrently=True,
-        )
         # The activity list pages on (created_at, id), archived rows included
         # when asked, which the statistics index leaves out.
         op.create_index(
@@ -93,6 +86,5 @@ def downgrade() -> None:
         for name, table in (
             ("ix_comparison_categories", "comparison"),
             ("ix_comparison_created_at_id", "comparison"),
-            ("ix_turn_comparison_id", "turn"),
         ):
             op.drop_index(name, table_name=table, postgresql_concurrently=True)
