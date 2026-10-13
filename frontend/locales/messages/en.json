@@ -1403,6 +1403,10 @@
                 "help": "Size of its context window in tokens.",
                 "label": "Context Tokens"
             },
+            "cost_weight": {
+                "help": "Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.",
+                "label": "Cost Weight"
+            },
             "created_at": {
                 "label": "Created At"
             },
@@ -1471,10 +1475,6 @@
             "quantization": {
                 "help": "Quantization scheme applied (q4, q8, or None for full precision).",
                 "label": "Quantization"
-            },
-            "rate_limited": {
-                "help": "Apply rate limits (usually for high API costs LLMs).",
-                "label": "Rate Limited"
             },
             "release_date": {
                 "label": "Release Date"

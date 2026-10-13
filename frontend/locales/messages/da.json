@@ -1402,6 +1402,10 @@
                 "help": "Størrelsen på kontekstvinduet i tokens.",
                 "label": "Konteksttokens"
             },
+            "cost_weight": {
+                "help": "Omkostning i forhold til en almindelig model. 1 = almindelig, over 1 = dyr. 4 = hvert tegn tæller fire gange i kvoten til dyre modeller.",
+                "label": "Omkostningsvægt"
+            },
             "created_at": {
                 "label": "Oprettet"
             },
@@ -1470,10 +1474,6 @@
             "quantization": {
                 "help": "Anvendt kvantiseringsmetode (q4, q8 eller None for fuld præcision).",
                 "label": "Kvantisering"
-            },
-            "rate_limited": {
-                "help": "Anvend hastighedsbegrænsning (normalt for sprogmodeller med høje API-omkostninger).",
-                "label": "Hastighedsbegrænset"
             },
             "release_date": {
                 "label": "Udgivelsesdato"
