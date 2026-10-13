@@ -19,6 +19,7 @@ from backend.arena.limits import (
     Identity,
     message_cost,
     read_status,
+    refusal,
     reserve,
 )
 from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
@@ -95,15 +96,13 @@ def assert_not_rate_limited(
 ) -> None:
     """Rate-limit model usage per anonymous session, with the IP as a backstop
     for clients that drop the session cookie."""
-    if read_status(Identity.of(anonymous_user_hash, get_ip(request))).spent:
+    spent = read_status(Identity.of(anonymous_user_hash, get_ip(request))).spent
+    if spent:
         logger.error(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="rate_limited",
-        )
+        raise refusal(spent)
 
 
 def charge_budget(
@@ -123,15 +122,12 @@ def charge_budget(
     who = Identity.of(anonymous_user_hash, get_ip(request))
     try:
         reserve(who, message_cost(text, llm_ids, llms_data))
-    except AllowanceSpent:
+    except AllowanceSpent as error:
         logger.error(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
         )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="rate_limited",
-        )
+        raise refusal(error.spent)
 
 
 def assert_not_block_cooldown(

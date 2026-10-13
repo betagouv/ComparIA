@@ -272,9 +272,9 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
 
     refused = [r for r in results if isinstance(r, HTTPException)]
     assert len(refused) == 1, f"{route}: two requests spent one budget"
-    # The shape the frontend already reads for a spent budget.
     assert refused[0].status_code == 429
-    assert refused[0].detail == "rate_limited"
+    assert refused[0].detail == "allowance_spent"
+    assert refused[0].limit.scope == "session"
 
     [first] = [r for r in results if not isinstance(r, HTTPException)]
     read(first)
@@ -321,15 +321,16 @@ def test_an_expensive_model_spends_the_expensive_allowance_up_front():
 def test_any_spent_allowance_stops_a_message_at_the_gate(route, state):
     """Today a spent expensive allowance stops every message, cheap pairs
     included, before the route runs."""
-    for spent in (
-        limits.budget_key("expensive", ME),
-        limits.budget_key("all", NETWORK),
+    for spent, said in (
+        (limits.budget_key("expensive", ME), ("expensive_allowance_spent", "session")),
+        (limits.budget_key("all", NETWORK), ("allowance_spent", "network")),
     ):
         state.redis.store = {spent: settings.RATELIMIT_ALL_PER_IP + 1}
         try:
             gate(route)
         except HTTPException as error:
-            assert (error.status_code, error.detail) == (429, "rate_limited")
+            assert error.status_code == 429
+            assert (error.detail, error.limit.scope) == said, route
         else:
             raise AssertionError(f"{route}: {spent} did not stop the message")
     state.redis.store = {}

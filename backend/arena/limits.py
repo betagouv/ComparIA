@@ -13,10 +13,13 @@ message before any model sees it.
 """
 
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Literal, Mapping, Sequence, get_args
 from uuid import UUID
 
+from backend.arena.models import LimitRefusal
 from backend.config import settings
+from backend.errors import LimitReachedError
 from backend.utils.user import ip_bucket
 from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
 
@@ -120,9 +123,35 @@ class LimitStatus:
 class AllowanceSpent(Exception):
     """A message refused because an allowance it spends was already spent."""
 
-    def __init__(self, refused: Sequence[tuple[Pool, Scope]]) -> None:
-        super().__init__(", ".join(f"{pool} per {scope}" for pool, scope in refused))
-        self.refused = tuple(refused)
+    def __init__(self, spent: Sequence[Allowance]) -> None:
+        super().__init__(", ".join(f"{a.pool} per {a.scope}" for a in spent))
+        self.spent = tuple(spent)
+
+    @property
+    def refused(self) -> tuple[tuple[Pool, Scope], ...]:
+        return tuple((allowance.pool, allowance.scope) for allowance in self.spent)
+
+
+def refusal(spent: Sequence[Allowance]) -> LimitReachedError:
+    """
+    What the person is told for these spent allowances: the one that lifts
+    last, since that is when they can go on.
+    """
+    last = max(spent, key=lambda allowance: allowance.resets_in or 0)
+    resets_at = (
+        datetime.now(timezone.utc).replace(microsecond=0)
+        + timedelta(seconds=last.resets_in)
+        if last.resets_in is not None
+        else None
+    )
+    return LimitReachedError(
+        "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
+        LimitRefusal(
+            scope="session" if last.scope == "session" else "network",
+            resets_at=resets_at,
+            resets_in=last.resets_in,
+        ),
+    )
 
 
 def message_cost(
@@ -184,7 +213,7 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
     such as the IP one a whole school can share.
 
     Raises:
-        AllowanceSpent: with the pool and scope of each allowance that refused
+        AllowanceSpent: with each allowance that refused
     """
     # Every pool in the cost is checked, even at zero characters: a message
     # that counts for nothing must still meet a spent allowance.
@@ -206,7 +235,7 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
     totals: list[int] = pipe.execute()[1::2]
 
     refused = [
-        (pool, _scope(identity))
+        (pool, identity, total - chars)
         for (pool, identity, chars), total in zip(counters, totals)
         if total - chars > _limit(pool, _scope(identity))
     ]
@@ -223,10 +252,27 @@ def reserve(who: Identity, cost: Mapping[Pool, int]) -> None:
             pipe.expire(key, WINDOW_SECONDS, nx=True)
         else:
             pipe.expire(key, WINDOW_SECONDS)
-    pipe.execute()
+    # When each spent allowance lifts, for the refusal to say so.
+    for pool, identity, _used in refused:
+        pipe.ttl(budget_key(pool, identity))
+    replies = pipe.execute()
 
     if refused:
-        raise AllowanceSpent(refused)
+        # Two replies per counter (the refund and its expiry), then the TTLs.
+        ttls = replies[2 * len(counters) :]
+        raise AllowanceSpent(
+            [
+                Allowance(
+                    pool=pool,
+                    scope=_scope(identity),
+                    identity=identity,
+                    used=used,
+                    limit=_limit(pool, _scope(identity)),
+                    resets_in=ttl if ttl >= 0 else None,
+                )
+                for (pool, identity, used), ttl in zip(refused, ttls)
+            ]
+        )
 
 
 def reset_counters(identities: Sequence[str]) -> int:
