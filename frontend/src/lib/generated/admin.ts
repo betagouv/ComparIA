@@ -352,9 +352,9 @@ export interface LLMData {
    */
   endpoint_id?: string | null;
   /**
-   * Apply rate limits (usually for high API costs LLMs).
+   * Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.
    */
-  rate_limited: boolean;
+  cost_weight?: number;
   /**
    * The lab that developed the LLM, create it first if not already available
    */
