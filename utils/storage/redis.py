@@ -1,5 +1,7 @@
 import hashlib
 import logging
+import re
+import unicodedata
 from functools import lru_cache, wraps
 from typing import Callable, Final, ParamSpec, TypeVar
 from uuid import uuid4
@@ -117,9 +119,22 @@ def get_redis_client() -> redis.Redis:
         raise Exception(f"Redis Connection Error: {e}")
 
 
+# Spaces or tabs after the first word of a line. Leading indentation is left
+# alone, so code and YAML indented differently keep their own keys.
+_INNER_BLANKS = re.compile(r"(?<=\S)[ \t]+")
+
+
 def hash_content(content: str) -> str:
-    """Normalize and hash content."""
-    normalized = content.strip().lower()
+    """
+    Hash content so that prompts typed differently but read the same share a
+    key: composed and decomposed accents, case, Windows line ends, runs of
+    spaces inside a line and spaces at its end. Line breaks and indentation
+    are kept, so code, YAML and tables keep their shape. Punctuation is kept
+    too, "Paris ?" and "Paris." can ask different things.
+    """
+    text = unicodedata.normalize("NFC", content).replace("\r\n", "\n")
+    lines = (_INNER_BLANKS.sub(" ", line.rstrip(" \t")) for line in text.split("\n"))
+    normalized = "\n".join(lines).strip().lower()
     return hashlib.sha256(normalized.encode()).hexdigest()[:16]
 
 
