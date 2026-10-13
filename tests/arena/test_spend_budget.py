@@ -28,6 +28,7 @@ from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 
+import backend.arena.limits as limits  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
@@ -39,10 +40,11 @@ SESSION = "b" * 64
 IP = "10.0.0.1"
 PROMPT = "Bonjour, explique la photosynthese"
 CHEAP, PRICEY = uuid4(), uuid4()
+ME, NETWORK = f"s:{SESSION}", f"ip:{IP}"
 
 
 def counter(redis, pool, identity):
-    return redis.store.get(session._budget_key(pool, identity), 0)
+    return int(redis.get(limits.budget_key(pool, identity)) or 0)
 
 
 def make_request(path):
@@ -135,7 +137,10 @@ def arena(llm_ids=(CHEAP, CHEAP)):
         yield {"type": "chunk", "pos": "b"}
         yield {"type": "complete"}
 
-    with patched(session, get_redis_client=lambda: redis):
+    with (
+        patched(limits, get_redis_client=lambda: redis),
+        patched(session, get_redis_client=lambda: redis),
+    ):
         with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
             with patched(
                 arena_router,
@@ -221,8 +226,8 @@ def test_a_message_is_charged_before_the_models_start(route, state):
     response = start(route, state)
 
     assert state.provider_calls == 0
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
-    assert counter(state.redis, "all_ip", IP) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == len(PROMPT), route
+    assert counter(state.redis, "all", NETWORK) == len(PROMPT), route
     assert response.status_code == 200
 
 
@@ -231,8 +236,8 @@ def test_a_client_that_hangs_up_has_still_paid(route, state):
     read(start(route, state), hang_up=True)
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
-    assert counter(state.redis, "all_ip", IP) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == len(PROMPT), route
+    assert counter(state.redis, "all", NETWORK) == len(PROMPT), route
 
 
 @each_route
@@ -240,7 +245,7 @@ def test_a_full_answer_is_charged_once(route, state):
     read(start(route, state))
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == len(PROMPT), route
 
 
 @each_route
@@ -249,7 +254,7 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
     request sent at once passed the gate before any of them was counted. Here
     both requests are past the gate and inside the route before either one
     charges."""
-    state.redis.store[session._budget_key("all", SESSION)] = (
+    state.redis.store[limits.budget_key("all", ME)] = (
         settings.RATELIMIT_ALL_PER_SESSION - 1
     )
 
@@ -281,7 +286,7 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     """Refused, the message never reached a model. Left counted, it would keep
     eating the budgets that were not spent yet, such as the IP one a whole
     school can share."""
-    spent = session._budget_key("all_ip", IP)
+    spent = limits.budget_key("all", NETWORK)
     state.redis.store[spent] = settings.RATELIMIT_ALL_PER_IP + 1
     before = dict(state.redis.store)
 
@@ -304,12 +309,12 @@ def test_a_pricey_model_spends_the_pricey_budget_up_front():
     for route in ROUTES:
         with arena(llm_ids=(CHEAP, PRICEY)) as state:
             start(route, state)
-            assert counter(state.redis, "pricey", SESSION) == len(PROMPT), route
-            assert counter(state.redis, "pricey_ip", IP) == len(PROMPT), route
+            assert counter(state.redis, "expensive", ME) == len(PROMPT), route
+            assert counter(state.redis, "expensive", NETWORK) == len(PROMPT), route
 
         with arena(llm_ids=(CHEAP, CHEAP)) as state:
             start(route, state)
-            assert counter(state.redis, "pricey", SESSION) == 0, route
+            assert counter(state.redis, "expensive", ME) == 0, route
 
 
 @contextlib.contextmanager
@@ -346,7 +351,7 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         response = client.post(f"/arena/retry/{uuid4()}", json={"altcha_token": "ok"})
         assert response.status_code == 200
         assert state.provider_calls == 1
-        assert counter(state.redis, "all_ip", "testclient") == len(PROMPT)
+        assert counter(state.redis, "all", "ip:testclient") == len(PROMPT)
 
 
 if __name__ == "__main__":

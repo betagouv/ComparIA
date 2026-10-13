@@ -22,7 +22,6 @@ REDIS_INSTANCE_PREFIX: Final[str] = (
 
 # Redis keys (all namespaced by the instance prefix)
 REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
-REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{key}}"
 # Characters one session or IP spent from a pool. The name dates from when only
 # expensive models were counted; it stays so a deploy keeps what people spent.
 REDIS_BUDGET_KEY: Final[str] = (

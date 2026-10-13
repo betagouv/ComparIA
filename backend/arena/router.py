@@ -14,6 +14,13 @@ from backend.arena.checks import (
     issue_warning_token,
     run_prompt_check,
 )
+from backend.arena.limits import (
+    AllowanceSpent,
+    Identity,
+    message_cost,
+    read_status,
+    reserve,
+)
 from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -35,9 +42,7 @@ from backend.arena.session import (
     increment_sent_warnings,
     increment_unvoted,
     is_block_cooldown,
-    is_ratelimited,
     is_warning_cooldown,
-    reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
     unvoted_comparisons,
@@ -90,7 +95,7 @@ def assert_not_rate_limited(
 ) -> None:
     """Rate-limit model usage per anonymous session, with the IP as a backstop
     for clients that drop the session cookie."""
-    if is_ratelimited(anonymous_user_hash, get_ip(request)):
+    if read_status(Identity.of(anonymous_user_hash, get_ip(request))).spent:
         logger.error(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
@@ -115,8 +120,10 @@ def charge_budget(
     No refund when a model then fails: an error a client can provoke would buy
     whatever the models had already written.
     """
-    pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
-    if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    try:
+        reserve(who, message_cost(text, llm_ids, llms_data))
+    except AllowanceSpent:
         logger.error(
             "Too much text submitted to the models for anonymous session",
             extra={"request": request},
