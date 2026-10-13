@@ -137,9 +137,6 @@ def get_cached_web_search(prompt: str) -> list[LinkupSearchTextResult] | None:
     """
     Try to get a cached web search results for this prompt.
     """
-    if not settings.CACHE_ENABLED:
-        return None
-
     try:
         client = get_redis_client()
         key = REDIS_WEB_SEARCH_KEY.format(prompt_hash=hash_content(prompt))
@@ -165,9 +162,6 @@ def store_cached_search_results(
     """
     Store web search results in the cache for this prompt.
     """
-    if not settings.CACHE_ENABLED:
-        return
-
     try:
         client = get_redis_client()
         key = REDIS_WEB_SEARCH_KEY.format(prompt_hash=hash_content(prompt))

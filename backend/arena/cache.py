@@ -62,11 +62,8 @@ def get_cached_response(
     Returns a random cached response with CACHE_PROBABILITY chance,
     or None if cache miss or probability check fails.
     """
-    if not settings.CACHE_ENABLED:
-        return None
-
     # Probabilistic check: skip cache with (1 - CACHE_PROBABILITY) chance
-    if random.random() > settings.CACHE_PROBABILITY:
+    if random.random() >= settings.CACHE_PROBABILITY:
         return None
 
     try:
@@ -122,9 +119,6 @@ def store_cached_response(
     Appends to existing responses up to CACHE_MAX_RESPONSES, rotating out
     the oldest entry when full.
     """
-    if not settings.CACHE_ENABLED:
-        return
-
     try:
         client = get_redis_client()
         if not _seen_in_another_turn(client, prompt, turn_id):

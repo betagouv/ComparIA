@@ -83,10 +83,7 @@ def logged():
 
 def test_the_web_search_cache_logs_no_prompt(logged):
     redis = FakeRedis()
-    with (
-        patch.object(web_search.settings, "CACHE_ENABLED", True),
-        patch.object(web_search, "get_redis_client", lambda: redis),
-    ):
+    with patch.object(web_search, "get_redis_client", lambda: redis):
         web_search.store_cached_search_results(PROMPT, [])
         redis.store = {
             key: '[{"name": "n", "url": "u", "content": "c"}]' for key in redis.store
