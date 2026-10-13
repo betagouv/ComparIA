@@ -1,12 +1,12 @@
 """
 Partner programme conversations (Pix pupils) stay out of the analysis and the
-public ranking, against a real PostgreSQL database. These run when
-COMPARIA_TEST_DB_URI points at a throwaway database with the migrations
-applied, as in test_retention_db.py.
+public ranking, against a real PostgreSQL database: the throwaway cluster of
+the `postgres_uri` fixture, as in test_retention_db.py.
 """
 
 import asyncio
 import contextlib
+import functools
 import os
 import sys
 import uuid
@@ -15,9 +15,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-TEST_DB_URI = os.environ.get("COMPARIA_TEST_DB_URI", "")
-
-os.environ.setdefault("COMPARIA_DB_URI", TEST_DB_URI or "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
@@ -27,11 +24,10 @@ from sqlmodel import col, func, select  # noqa: E402
 from sqlmodel.ext.asyncio.session import AsyncSession  # noqa: E402
 
 import utils.ranking.queries as queries  # noqa: E402
+from backend.config import settings  # noqa: E402
 from utils.database.actions.llm_analyze import TO_ANALYZE_CONDITION  # noqa: E402
 from utils.database.models import Comparison  # noqa: E402
 from utils.database.session import _async_url  # noqa: E402
-
-pytestmark = pytest.mark.skipif(not TEST_DB_URI, reason="COMPARIA_TEST_DB_URI not set")
 
 TRUNCATE = text(
     "TRUNCATE prompt_check_result, user_message, turn, comparison, llm_data, "
@@ -40,9 +36,15 @@ TRUNCATE = text(
 NOW = datetime(2026, 10, 5, 12, 0)
 
 
-def run(scenario):
+@pytest.fixture
+def run(postgres_uri, monkeypatch):
+    monkeypatch.setattr(settings, "COMPARIA_DB_URI", postgres_uri)
+    return functools.partial(run_on, postgres_uri)
+
+
+def run_on(uri, scenario):
     async def main():
-        engine = create_async_engine(_async_url(TEST_DB_URI))
+        engine = create_async_engine(_async_url(uri))
 
         @contextlib.asynccontextmanager
         async def get_session():
@@ -118,7 +120,7 @@ async def add_voted_comparison(execute, llm_id, cohorts):
     return comparison_id
 
 
-def test_partner_cohorts_are_not_analysed_nor_ranked():
+def test_partner_cohorts_are_not_analysed_nor_ranked(run):
     async def scenario(execute, get_session):
         llm_id = await add_model(execute)
         for cohorts in (None, "", "pix"):
