@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
-from pydantic import field_validator
+from pydantic import NonNegativeInt, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -17,6 +17,11 @@ class Settings(BaseSettings):
     LANGUIA_DEBUG: bool = False
     COMPARIA_REDIS_HOST: str = "localhost"
     COMPARIA_REDIS_PASSWORD: str | None = None
+    # Lets checkouts that share one local Redis keep their counters and caches
+    # apart. The key prefix cannot do it: it is the instance name, which also
+    # picks the default locale. fr and da share one Redis and must keep the same
+    # number: the maintenance command sets the other instance's flag in its own.
+    COMPARIA_REDIS_DB: NonNegativeInt = 0
     MOCK_RESPONSE: bool = False
     LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
