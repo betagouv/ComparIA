@@ -9,9 +9,11 @@ on:
     branches:
       - develop
 
+# A newer pull request run supersedes the older one. Pushes are never
+# cancelled, so every merge into develop gets its own result.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   backend:
