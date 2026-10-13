@@ -145,8 +145,6 @@ async def stream_llm_response(
         turn_index: Current Turn index
         messages: List of messages to be serialized for llm call
         request: FastAPI Request object for logging
-        expensive_available: Whether an expensive model may stand in for an
-            expensive one that times out
 
     Yields:
         AnySSEEventMsg
