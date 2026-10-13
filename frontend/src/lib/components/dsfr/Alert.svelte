@@ -17,7 +17,7 @@
     small?: boolean
     /** The title of a full alert, focusable from script to move focus there. */
     titleEl?: HTMLHeadingElement
-  } & SvelteHTMLElements['div'] = $props()
+  } & Omit<SvelteHTMLElements['div'], 'title'> = $props()
 </script>
 
 {#snippet titleText()}
