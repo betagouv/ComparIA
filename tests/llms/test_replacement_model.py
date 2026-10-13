@@ -1,10 +1,10 @@
 """
-Which model may take over from one that timed out.
+Which model may take over from one that failed.
 
-The character budgets are charged before the models answer, at the expensive
-rate only when one of the two models is expensive. A first-turn timeout swaps a
-model mid-turn, after that charge, so a cheap pair must not be handed an
-expensive model: the turn would get it without paying the expensive budget.
+Only an expensive model may stand in for an expensive one, and only while the
+person's expensive allowance has room. A cheap side was charged at the cheap
+rate, and a person with no expensive allowance left must not get an expensive
+model through a stand-in.
 """
 
 import asyncio
@@ -37,28 +37,35 @@ def catalog(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(data, "get_llms_data", get_llms_data)
 
 
-def replacements(llm_id_a: str, llm_id_b: str, charged: bool) -> set[str | None]:
+def replacements(
+    llm_id_a: str, llm_id_b: str, expensive_available: bool
+) -> set[str | None]:
     comparison: Any = SimpleNamespace(
         mode="random", llm_id_a=llm_id_a, llm_id_b=llm_id_b
     )
 
     async def draw() -> set[str | None]:
         return {
-            await pick_replacement_model(comparison, "a", charged=charged)
+            await pick_replacement_model(comparison, "a", expensive_available)
             for _ in range(DRAWS)
         }
 
     return asyncio.run(draw())
 
 
-def test_a_cheap_pair_already_charged_gets_no_expensive_model() -> None:
-    assert replacements("cheap-a", "cheap-b", charged=True) == {"cheap-c"}
+def test_a_cheap_side_gets_a_cheap_stand_in() -> None:
+    assert replacements("cheap-a", "expensive-a", expensive_available=True) <= set(
+        CHEAP
+    )
 
 
-def test_a_pair_charged_at_the_expensive_rate_may_get_an_expensive_model() -> None:
-    assert replacements("cheap-a", "expensive-a", charged=True) & set(EXPENSIVE)
+def test_an_expensive_side_may_get_an_expensive_stand_in() -> None:
+    assert replacements("expensive-a", "cheap-a", expensive_available=True) & {
+        "expensive-b"
+    }
 
 
-def test_a_swap_charged_afterwards_keeps_the_whole_pool() -> None:
-    # `/retry` swaps before it charges, so the charge sees the new model.
-    assert replacements("cheap-a", "cheap-b", charged=False) & set(EXPENSIVE)
+def test_an_expensive_side_gets_a_cheap_stand_in_once_the_allowance_is_spent() -> None:
+    assert replacements("expensive-a", "cheap-a", expensive_available=False) <= set(
+        CHEAP
+    )

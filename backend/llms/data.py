@@ -332,14 +332,15 @@ async def get_llms_list() -> LLMList:
 
 
 async def pick_replacement_model(
-    comparison: "ComparisonRead", pos: "BotPos", charged: bool = False
+    comparison: "ComparisonRead", pos: "BotPos", expensive_available: bool = False
 ) -> str | None:
     """
     Pick a replacement model from the appropriate pool, excluding both current models.
 
-    `charged` says the turn already paid its character budgets for the current
-    pair. If neither model is expensive, the turn skipped the expensive
-    budget, so no expensive model may take over.
+    Only an expensive model may stand in for an expensive one, and only while
+    the person's expensive allowance has room (`expensive_available`). A
+    cheap side was charged at the cheap rate, and the person may have no
+    expensive allowance left.
     """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
@@ -358,7 +359,7 @@ async def pick_replacement_model(
         pool = models.random_models
 
     expensive = models.expensive_models
-    if charged and failing not in expensive and other not in expensive:
+    if failing not in expensive or not expensive_available:
         pool = [llm_id for llm_id in pool if llm_id not in expensive]
 
     try:

@@ -145,6 +145,8 @@ async def stream_llm_response(
         turn_index: Current Turn index
         messages: List of messages to be serialized for llm call
         request: FastAPI Request object for logging
+        expensive_available: Whether an expensive model may stand in for an
+            expensive one that times out
 
     Yields:
         AnySSEEventMsg
@@ -199,6 +201,7 @@ async def stream_comparison_messages(
     comparison: ComparisonRead,
     turn: TurnRead,
     request: Any | None = None,
+    expensive_available: bool = False,
 ) -> AsyncGenerator[AnySSEEvent]:
     """
     Stream both LLMs responses in parallel using Server-Sent Events.
@@ -210,6 +213,8 @@ async def stream_comparison_messages(
         comparison: current Comparison
         turn: current Turn
         request: FastAPI Request object for logging
+        expensive_available: Whether an expensive model may stand in for an
+            expensive one that times out
 
     Yields:
         AnySSEEvent
@@ -273,7 +278,7 @@ async def stream_comparison_messages(
                             )
                         ):
                             if new_llm_id := await pick_replacement_model(
-                                comparison, e.pos, charged=True
+                                comparison, e.pos, expensive_available
                             ):
                                 await update_comparison_llm_id(
                                     comparison, e.pos, new_llm_id
