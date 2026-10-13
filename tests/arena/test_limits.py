@@ -140,6 +140,37 @@ def test_a_reset_forgets_one_identity_only():
         assert allowance(limits.read_status(other), "all", "ip").used == 10
 
 
+def test_a_pool_that_may_not_refuse_is_still_charged(monkeypatch):
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 100)
+    with fake_redis(limits):
+        limits.reserve(WHO, {"all": 10, "expensive": 101})
+        with pytest.raises(AllowanceSpent):
+            limits.reserve(WHO, {"all": 10, "expensive": 10})
+        limits.reserve(WHO, {"all": 10, "expensive": 10}, refusing=("all",))
+        status = limits.read_status(WHO)
+
+    assert allowance(status, "expensive", "session").used == 111
+    assert allowance(status, "all", "session").used == 20
+    assert not status.expensive_available
+
+
+def test_a_spent_allowance_keeps_its_reset_time_while_it_is_charged(monkeypatch):
+    """The person was told when the expensive models come back. A conversation
+    that finishes over the spent allowance must not push that time back."""
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 100)
+    with fake_redis(limits) as redis:
+        limits.reserve(WHO, {"all": 101, "expensive": 101})
+        redis.advance(600)
+        limits.reserve(WHO, {"all": 10, "expensive": 10}, refusing=("all",))
+        status = limits.read_status(WHO)
+
+    spent = allowance(status, "expensive", "session")
+    assert spent.resets_in == limits.WINDOW_SECONDS - 600
+    # The allowances with room left start their window again, as before.
+    assert allowance(status, "all", "session").resets_in == limits.WINDOW_SECONDS
+    assert allowance(status, "expensive", "ip").resets_in == limits.WINDOW_SECONDS
+
+
 def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog):
     with fake_redis(limits) as redis, caplog.at_level("INFO", "comparia.arena"):
         redis.set(limits.budget_key("all", WHO.personal), 10)
