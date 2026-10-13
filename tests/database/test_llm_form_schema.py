@@ -102,6 +102,13 @@ def test_an_llm_left_without_a_cost_weight_costs_as_much_as_an_ordinary_one():
     assert llm.cost_weight == 1.0
 
 
+def test_the_cost_weight_is_not_required_in_the_admin_form():
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert schema["properties"]["cost_weight"]["optional"] is True
+    assert "cost_weight" not in schema["required"]
+
+
 def test_a_cost_weight_below_one_is_refused():
     with pytest.raises(ValidationError, match="cost_weight"):
         LLMDataUpsert(**payload(cost_weight=0.5))
