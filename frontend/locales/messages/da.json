@@ -852,6 +852,10 @@
             "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog."
         },
         "limits": {
+            "mode": {
+                "back": "Den kræver modeller, der er sat på pause for dig og kommer tilbage {at}. Vælg en anden tilstand: din besked er gemt.",
+                "title": "Denne tilstand er sat på pause for dig"
+            },
             "pause": {
                 "meanwhile": "Indtil da kan du stemme, se modellerne og se ranglisten.",
                 "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Grænsen gælder alle på netværket, ikke kun dig. Du kan skrive igen {at}.",
@@ -861,6 +865,14 @@
                 "title": "Pause indtil {time}",
                 "titleSoon": "En pause på under to timer",
                 "titleTomorrow": "Pause indtil i morgen, {time}"
+            },
+            "picked": {
+                "backOne": "Den er sat på pause for dig og kommer tilbage {at}.",
+                "backTwo": "De er sat på pause for dig og kommer tilbage {at}.",
+                "resend": "Din besked er gemt: send den igen for at starte sammenligningen.",
+                "title": "Vi har fjernet {models} fra dit valg",
+                "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver 2. time. Alle de andre er stadig åbne.",
+                "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
             },
             "time": {
                 "at": "kl. {time}",

@@ -853,6 +853,10 @@
             "spam_detected": "This message format is not allowed. Please write in natural language."
         },
         "limits": {
+            "mode": {
+                "back": "It needs models that are paused for you and come back {at}. Pick another mode: your message is kept.",
+                "title": "This mode is paused for you"
+            },
             "pause": {
                 "meanwhile": "Until then, you can vote, discover the models and look at the ranking.",
                 "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. This limit covers everyone on the network, not just you. You can write again {at}.",
@@ -862,6 +866,14 @@
                 "title": "Break until {time}",
                 "titleSoon": "A break of under two hours",
                 "titleTomorrow": "Break until tomorrow, {time}"
+            },
+            "picked": {
+                "backOne": "It is paused for you and comes back {at}.",
+                "backTwo": "They are paused for you and come back {at}.",
+                "resend": "Your message is kept: send it again to start the comparison.",
+                "title": "We took {models} out of your selection",
+                "why": "To keep compar:IA free for everyone, each person can send a limited number of messages to these models every 2 hours. All the others stay open.",
+                "whyNetwork": "A lot of messages went from your network (school, office, organisation) to these models. This limit covers everyone on the network, not just you. All the other models stay open."
             },
             "time": {
                 "at": "at {time}",

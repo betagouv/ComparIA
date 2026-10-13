@@ -853,6 +853,10 @@
             "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
         },
         "limits": {
+            "mode": {
+                "back": "Il a besoin de modèles qui sont en pause pour vous et reviennent {at}. Choisissez un autre mode : votre message est gardé.",
+                "title": "Ce mode est en pause pour vous"
+            },
             "pause": {
                 "meanwhile": "En attendant, vous pouvez voter, découvrir les modèles et consulter le classement.",
                 "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures. Cette limite concerne tout le réseau, pas seulement vous. Vous pourrez écrire de nouveau {at}.",
@@ -862,6 +866,14 @@
                 "title": "Pause jusqu'à {time}",
                 "titleSoon": "Pause de moins de deux heures",
                 "titleTomorrow": "Pause jusqu'à demain, {time}"
+            },
+            "picked": {
+                "backOne": "Il est en pause pour vous et revient {at}.",
+                "backTwo": "Ils sont en pause pour vous et reviennent {at}.",
+                "resend": "Votre message est gardé : envoyez-le de nouveau pour lancer la comparaison.",
+                "title": "Nous avons retiré {models} de votre sélection",
+                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les 2 heures. Tous les autres restent ouverts.",
+                "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
             },
             "time": {
                 "at": "à {time}",
