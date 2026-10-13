@@ -24,6 +24,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+from uuid import UUID  # noqa: E402
+
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from starlette.requests import Request  # noqa: E402
@@ -34,6 +36,7 @@ import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings  # noqa: E402
+from backend.llms.data import NoModelLeft  # noqa: E402
 from tests.arena.fakes import FakeRedis  # noqa: E402
 
 SESSION = "b" * 64
@@ -77,10 +80,12 @@ def patched(module, **attributes):
 def arena(llm_ids=(CHEAP, CHEAP)):
     """The arena routes against stubs. `provider_calls` counts every time the
     models are started; `created` every comparison, turn or prompt check
-    written. Set `in_step` to a barrier to hold each request just before it
+    written; `draws` the models each draw had to leave out. Set `in_step` to a barrier to hold each request just before it
     charges until the others get there too."""
     redis = FakeRedis()
-    state = SimpleNamespace(redis=redis, provider_calls=0, created=0, in_step=None)
+    state = SimpleNamespace(
+        redis=redis, provider_calls=0, created=0, in_step=None, draws=[]
+    )
     llm_a, llm_b = llm_ids
 
     def comparison(error=None):
@@ -101,13 +106,19 @@ def arena(llm_ids=(CHEAP, CHEAP)):
 
     state.comparison = comparison
 
+    def pick_two(_mode, selection, hard_excluded=()):
+        state.draws.append(tuple(hard_excluded))
+        if refused := [
+            UUID(llm_id) for llm_id in selection or [] if UUID(llm_id) in hard_excluded
+        ]:
+            raise NoModelLeft(refused)
+        # With models left out, the draw falls on two cheap ones.
+        return (CHEAP, CHEAP) if hard_excluded else (llm_a, llm_b)
+
     async def get_llms_data():
         if state.in_step:
             await state.in_step.wait()
-        return SimpleNamespace(
-            pick_two=lambda _mode, _selection: (llm_a, llm_b),
-            expensive_models=[EXPENSIVE],
-        )
+        return SimpleNamespace(pick_two=pick_two, expensive_models=[EXPENSIVE])
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return SimpleNamespace(pending_warning=False)
@@ -131,7 +142,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def noop(*_args, **_kwargs):
         return None
 
-    async def stream_comparison_messages(_comparison, _turn, _request):
+    async def stream_comparison_messages(*_args):
         state.provider_calls += 1
         yield {"type": "chunk", "pos": "a"}
         yield {"type": "chunk", "pos": "b"}
@@ -163,15 +174,15 @@ def arena(llm_ids=(CHEAP, CHEAP)):
 
 def gate(route):
     """The budget check FastAPI runs before the route."""
-    arena_router.assert_not_rate_limited(SESSION, make_request(f"/arena/{route}"))
+    arena_router.assert_allowance_left(SESSION, make_request(f"/arena/{route}"))
 
 
-async def route_only(route, state):
+async def route_only(route, state, **first_text):
     """The route on its own, which hands back the stream without reading it."""
     request = make_request(f"/arena/{route}")
     if route == "add_first_text":
         body = arena_models.AddFirstTextBody(
-            prompt_value=PROMPT, cohorts="", altcha_token="valid"
+            prompt_value=PROMPT, cohorts="", altcha_token="valid", **first_text
         )
         return await arena_router.add_first_text(body, None, SESSION, request)
     if route == "add_text":
@@ -318,23 +329,26 @@ def test_an_expensive_model_spends_the_expensive_allowance_up_front():
 
 
 @each_route
-def test_any_spent_allowance_stops_a_message_at_the_gate(route, state):
-    """Today a spent expensive allowance stops every message, cheap pairs
-    included, before the route runs."""
-    for spent, said in (
-        (limits.budget_key("expensive", ME), ("expensive_allowance_spent", "session")),
-        (limits.budget_key("all", NETWORK), ("allowance_spent", "network")),
-    ):
-        state.redis.store = {spent: settings.RATELIMIT_ALL_PER_IP + 1}
+def test_only_the_whole_allowance_stops_a_message_at_the_gate(route, state):
+    """A spent expensive allowance used to stop every message, cheap pairs
+    included. It now only keeps expensive models out of new comparisons."""
+    for identity, scope in ((ME, "session"), (NETWORK, "network")):
+        state.redis.store = {
+            limits.budget_key("all", identity): settings.RATELIMIT_ALL_PER_IP + 1
+        }
         try:
             gate(route)
         except HTTPException as error:
             assert error.status_code == 429
-            assert (error.detail, error.limit.scope) == said, route
+            assert (error.detail, error.limit.scope) == ("allowance_spent", scope)
         else:
-            raise AssertionError(f"{route}: {spent} did not stop the message")
-    state.redis.store = {}
-    gate(route)
+            raise AssertionError(f"{route}: a spent allowance let a message by")
+
+    for identity in (ME, NETWORK):
+        state.redis.store = {
+            limits.budget_key("expensive", identity): settings.RATELIMIT_ALL_PER_IP + 1
+        }
+        gate(route)
 
 
 @contextlib.contextmanager
@@ -381,7 +395,7 @@ if __name__ == "__main__":
     test_requests_sent_together_cannot_all_spend_the_last_of_the_budget()
     test_a_refused_message_spends_nothing_and_writes_nothing()
     test_an_expensive_model_spends_the_expensive_allowance_up_front()
-    test_any_spent_allowance_stops_a_message_at_the_gate()
+    test_only_the_whole_allowance_stops_a_message_at_the_gate()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
     print("Spend budget cases passed.")

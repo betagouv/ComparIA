@@ -86,7 +86,8 @@ def retry(target):
             update_comparison_error=nothing,
             store_comparison_metadata=lambda *_args, **_kwargs: None,
             get_llms_data=get_llms_data,
-            charge_budget=lambda *_args: None,
+            charge_budget=lambda *_args, **_kwargs: None,
+            read_status=lambda _who: SimpleNamespace(expensive_available=True),
         ),
     ):
         body = arena_models.RetryBody(altcha_token="valid")

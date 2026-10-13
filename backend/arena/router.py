@@ -16,9 +16,11 @@ from backend.arena.checks import (
     run_prompt_check,
 )
 from backend.arena.limits import (
+    POOLS,
     Allowance,
     AllowanceSpent,
     Identity,
+    Pool,
     message_cost,
     read_status,
     reserve,
@@ -70,7 +72,11 @@ from backend.config import (
     MAX_TURNS_PER_COMPARISON,
 )
 from backend.errors import LimitReachedError
-from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.llms.data import (
+    LLMsData,
+    get_llms_data,
+    pick_replacement_model,
+)
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -98,11 +104,14 @@ router = APIRouter(
 # Dependencies
 
 
-def limit_refusal(spent: Sequence[Allowance]) -> LimitReachedError:
+def limit_refusal(
+    spent: Sequence[Allowance], llm_ids: Sequence[UUID] = ()
+) -> LimitReachedError:
     """
     What the person is told for these spent allowances: the one that lifts
     last, since that is when they can go on. One with no known reset counts
-    as the last.
+    as the last. `llm_ids` are the models the person picked and may not use
+    until then.
     """
     last = max(
         spent,
@@ -120,22 +129,29 @@ def limit_refusal(spent: Sequence[Allowance]) -> LimitReachedError:
             scope="session" if last.scope == "session" else "network",
             resets_at=resets_at,
             resets_in=last.resets_in,
+            llm_ids=list(llm_ids),
         ),
     )
 
 
-def assert_not_rate_limited(
+def refuse(spent: Sequence[Allowance], request: Request) -> LimitReachedError:
+    logger.error(
+        "Too much text submitted to the models for anonymous session",
+        extra={"request": request},
+    )
+    return limit_refusal(spent)
+
+
+def assert_allowance_left(
     anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
     """Rate-limit model usage per anonymous session, with the IP as a backstop
-    for clients that drop the session cookie."""
-    spent = read_status(Identity.of(anonymous_user_hash, get_ip(request))).spent
-    if spent:
-        logger.error(
-            "Too much text submitted to the models for anonymous session",
-            extra={"request": request},
-        )
-        raise limit_refusal(spent)
+    for clients that drop the session cookie. Only the whole allowance stops a
+    message here: a spent expensive one keeps expensive models out of new
+    comparisons."""
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    if spent := read_status(who).spent_in("all"):
+        raise refuse(spent, request)
 
 
 def charge_budget(
@@ -144,23 +160,21 @@ def charge_budget(
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
+    refusing: Sequence[Pool] = POOLS,
 ) -> None:
     """
     Spend the message's characters against the session and IP budgets before
     any model is called. The charge used to wait for a full, error-free answer,
     so a client that hung up halfway, or sent many requests at once, never paid.
     No refund when a model then fails: an error a client can provoke would buy
-    whatever the models had already written.
+    whatever the models had already written. Only the pools in `refusing` may
+    refuse the message, see `reserve`.
     """
     who = Identity.of(anonymous_user_hash, get_ip(request))
     try:
-        reserve(who, message_cost(text, llm_ids, llms_data))
+        reserve(who, message_cost(text, llm_ids, llms_data), refusing)
     except AllowanceSpent as error:
-        logger.error(
-            "Too much text submitted to the models for anonymous session",
-            extra={"request": request},
-        )
-        raise limit_refusal(error.spent)
+        raise refuse(error.spent, request)
 
 
 def assert_not_block_cooldown(
@@ -319,7 +333,7 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
 
 @router.post(
     "/add_first_text",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
 )
 async def add_first_text(
     args: AddFirstTextBody,
@@ -466,7 +480,7 @@ async def add_first_text(
 
 @router.post(
     "/add_text/{comparison_id}",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
 )
 async def add_text(
     comparison_: ComparisonAnno,
@@ -519,12 +533,16 @@ async def add_text(
     if check and check.pending_warning:
         return warning_response(check, args.message)
 
+    # A conversation under way finishes even once the expensive allowance is
+    # spent, and its turns still count against it. Refusing it would tell the
+    # person, before the reveal, that one of the two models is expensive.
     charge_budget(
         args.message,
         (comparison_.llm_id_a, comparison_.llm_id_b),
         await get_llms_data(),
         anonymous_user_hash,
         request,
+        refusing=("all",),
     )
     check = (await save_prompt_check_result(check)) if check else None
 
@@ -559,7 +577,7 @@ async def add_text(
 
 @router.post(
     "/retry/{comparison_id}",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
 )
 async def retry(
     comparison: ComparisonAnno,
@@ -599,6 +617,9 @@ async def retry(
             detail="retry_unavailable",
         )
 
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    expensive_available = read_status(who).expensive_available
+
     # If comparison has not yet trully started
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
@@ -611,16 +632,20 @@ async def retry(
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-            if new_llm_id := await pick_replacement_model(comparison, pos):
+            if new_llm_id := await pick_replacement_model(
+                comparison, pos, expensive_available
+            ):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
+    # Like a follow-up, a retry is part of a conversation under way.
     charge_budget(
         turn.user_msg.content,
         (comparison.llm_id_a, comparison.llm_id_b),
         await get_llms_data(),
         anonymous_user_hash,
         request,
+        refusing=("all",),
     )
 
     await update_comparison_error(comparison, None)
@@ -640,7 +665,9 @@ async def retry(
 
         try:
             # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
+            async for chunk in stream_comparison_messages(
+                comparison, turn, request, expensive_available
+            ):
                 yield format_sse_event(chunk)
 
             if not comparison.error:

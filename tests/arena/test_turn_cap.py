@@ -53,7 +53,7 @@ def send_follow_up(comparison):
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
-    def charge_budget(*_args):
+    def charge_budget(*_args, **_kwargs):
         return None
 
     async def get_llms_data():
