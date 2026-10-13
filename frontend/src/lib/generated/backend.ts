@@ -331,6 +331,25 @@ export interface CurrencyInfo {
   [k: string]: unknown;
 }
 /**
+ * The body of a 429 on a limit. `detail` stays a string key, as on every
+ * other error, so a client that only reads `detail` still works.
+ */
+export interface LimitRefusalBody {
+  detail: "allowance_spent" | "expensive_allowance_spent" | "model_full_today";
+  limit: LimitRefusal;
+}
+/**
+ * What a message refused on a limit carries beside its `detail` key, so
+ * the arena can say which limit it met and when it lifts.
+ */
+export interface LimitRefusal {
+  scope: ("session" | "network") | null;
+  resets_at: string | null;
+  resets_in: number | null;
+  llm_ids?: string[];
+  [k: string]: unknown;
+}
+/**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
  * Rows carry no model metadata beyond the identity: the client joins them on
