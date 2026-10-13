@@ -31,6 +31,7 @@ def upgrade() -> None:
             ["comparison_id"],
             unique=False,
             postgresql_concurrently=True,
+            if_not_exists=True,
         )
         # The activity list pages on (created_at, id), archived rows included
         # when asked, which the statistics index leaves out.
@@ -40,6 +41,7 @@ def upgrade() -> None:
             ["created_at", "id"],
             unique=False,
             postgresql_concurrently=True,
+            if_not_exists=True,
         )
         op.create_index(
             "ix_comparison_categories",
@@ -49,6 +51,7 @@ def upgrade() -> None:
             postgresql_using="gin",
             postgresql_ops={"categories": "jsonb_path_ops"},
             postgresql_concurrently=True,
+            if_not_exists=True,
         )
 
         # Prompt search. pg_trgm ships with Postgres, but a managed database
@@ -77,6 +80,7 @@ def upgrade() -> None:
                 postgresql_using="gin",
                 postgresql_ops={"content": "gin_trgm_ops"},
                 postgresql_concurrently=True,
+                if_not_exists=True,
             )
         else:
             logger.warning(
@@ -95,4 +99,9 @@ def downgrade() -> None:
             ("ix_comparison_created_at_id", "comparison"),
             ("ix_turn_comparison_id", "turn"),
         ):
-            op.drop_index(name, table_name=table, postgresql_concurrently=True)
+            op.drop_index(
+                name,
+                table_name=table,
+                postgresql_concurrently=True,
+                if_exists=True,
+            )
