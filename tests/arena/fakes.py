@@ -47,6 +47,9 @@ class FakeRedis:
             self.expires_at[key] = self.now + ex
         return True
 
+    def setex(self, key, seconds, value):
+        return self.set(key, value, ex=seconds)
+
     def incrby(self, key, amount):
         value = int(self.store[key]) + amount if self._live(key) else amount
         self.store[key] = value
