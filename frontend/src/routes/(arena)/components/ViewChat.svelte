@@ -4,7 +4,7 @@
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
-  import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
 
   let {
     comparisonId,
@@ -139,25 +139,33 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)"
+      class={[
+        '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',
+        // A notice that long must not cover the conversation on a phone.
+        { sticky: !comparator.pause }
+      ]}
     >
-      <TextPrompt
-        id="chatbot-prompt"
-        bind:value={prompt}
-        label={m['chatbot.continuePrompt']()}
-        placeholder={m['chatbot.continuePrompt']()}
-        bind:error={comparator.promptError}
-        hideLabel
-        submitBtn
-        submitDisabled={!canContinue || prompt === ''}
-        size="md"
-        rows={3}
-        maxRows={4}
-        onSubmit={onPromptSubmit}
-        onSubmitBlocked={remindToVote}
-        onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
-        class="mb-0! w-full"
-      />
+      {#if comparator.pause}
+        <PauseNotice refusal={comparator.pause} {onReveal} />
+      {:else}
+        <TextPrompt
+          id="chatbot-prompt"
+          bind:value={prompt}
+          label={m['chatbot.continuePrompt']()}
+          placeholder={m['chatbot.continuePrompt']()}
+          bind:error={comparator.promptError}
+          hideLabel
+          submitBtn
+          submitDisabled={!canContinue || prompt === ''}
+          size="md"
+          rows={3}
+          maxRows={4}
+          onSubmit={onPromptSubmit}
+          onSubmitBlocked={remindToVote}
+          onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
+          class="mb-0! w-full"
+        />
+      {/if}
 
       {#if voteReminder}
         <p role="status" class="fr-message fr-message--info mb-0! text-center">
@@ -165,14 +173,16 @@
         </p>
       {/if}
 
-      <Button
-        text={m['chatbot.revealButton']()}
-        aria-disabled={!comparator.canReveal}
-        size="sm"
-        icon="arrow-up-circle-line"
-        class="md:w-fit! lh-none! w-full!"
-        onclick={onReveal}
-      />
+      {#if !comparator.pause}
+        <Button
+          text={m['chatbot.revealButton']()}
+          aria-disabled={!comparator.canReveal}
+          size="sm"
+          icon="arrow-up-circle-line"
+          class="md:w-fit! lh-none! w-full!"
+          onclick={onReveal}
+        />
+      {/if}
     </div>
   {/if}
 </div>
