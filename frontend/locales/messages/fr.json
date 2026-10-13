@@ -848,9 +848,26 @@
                 "unavailable": "Votre message n'a pas pu être vérifié. Veuillez réessayer dans quelques minutes."
             },
             "prompt_too_long": "Votre message dépasse 20 000 caractères. Veuillez le raccourcir.",
-            "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
+            "rate_limited": "Vous avez envoyé beaucoup de messages ces dernières heures. Veuillez réessayer plus tard.",
             "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
             "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
+        },
+        "limits": {
+            "pause": {
+                "meanwhile": "En attendant, vous pouvez voter, découvrir les modèles et consulter le classement.",
+                "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures. Cette limite concerne tout le réseau, pas seulement vous. Vous pourrez écrire de nouveau {at}.",
+                "ranking": "Voir le classement",
+                "reveal": "Découvrir les modèles",
+                "session": "Vous avez envoyé beaucoup de messages ces deux dernières heures. Vous pourrez en écrire de nouveaux {at}.",
+                "title": "Pause jusqu'à {time}",
+                "titleSoon": "Pause de moins de deux heures",
+                "titleTomorrow": "Pause jusqu'à demain, {time}"
+            },
+            "time": {
+                "at": "à {time}",
+                "tomorrowAt": "demain à {time}",
+                "within": "dans moins de deux heures"
+            }
         },
         "promptWarning": {
             "edit": "Modifier mon message",

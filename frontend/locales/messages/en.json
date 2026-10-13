@@ -848,9 +848,26 @@
                 "unavailable": "Your message could not be checked. Please try again in a few minutes."
             },
             "prompt_too_long": "Your message is longer than 20,000 characters. Please shorten it.",
-            "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
+            "rate_limited": "You have sent a lot of messages in the last few hours. Please try again later.",
             "retry_unavailable": "Retrying is not possible, please reload the page.",
             "spam_detected": "This message format is not allowed. Please write in natural language."
+        },
+        "limits": {
+            "pause": {
+                "meanwhile": "Until then, you can vote, discover the models and look at the ranking.",
+                "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. This limit covers everyone on the network, not just you. You can write again {at}.",
+                "ranking": "See the ranking",
+                "reveal": "Discover the models",
+                "session": "You have sent a lot of messages in the last two hours. You can write new ones {at}.",
+                "title": "Break until {time}",
+                "titleSoon": "A break of under two hours",
+                "titleTomorrow": "Break until tomorrow, {time}"
+            },
+            "time": {
+                "at": "at {time}",
+                "tomorrowAt": "tomorrow at {time}",
+                "within": "within two hours"
+            }
         },
         "promptWarning": {
             "edit": "Edit my message",

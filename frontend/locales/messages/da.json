@@ -847,9 +847,26 @@
                 "unavailable": "Din besked kunne ikke kontrolleres. Prøv igen om et par minutter."
             },
             "prompt_too_long": "Din besked er længere end 20.000 tegn. Gør den kortere.",
-            "rate_limited": "Du har sendt for mange forespørgsler til de dyreste modeller. Prøv igen om et par timer. Mindre modeller kan stadig bruges.",
+            "rate_limited": "Du har sendt mange beskeder de seneste timer. Prøv igen senere.",
             "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",
             "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog."
+        },
+        "limits": {
+            "pause": {
+                "meanwhile": "Indtil da kan du stemme, se modellerne og se ranglisten.",
+                "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Grænsen gælder alle på netværket, ikke kun dig. Du kan skrive igen {at}.",
+                "ranking": "Se ranglisten",
+                "reveal": "Se modellerne",
+                "session": "Du har sendt mange beskeder de seneste to timer. Du kan skrive nye {at}.",
+                "title": "Pause indtil {time}",
+                "titleSoon": "En pause på under to timer",
+                "titleTomorrow": "Pause indtil i morgen, {time}"
+            },
+            "time": {
+                "at": "kl. {time}",
+                "tomorrowAt": "i morgen kl. {time}",
+                "within": "inden for to timer"
+            }
         },
         "promptWarning": {
             "edit": "Rediger min besked",
