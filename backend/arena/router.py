@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Annotated, AsyncGenerator, Sequence
+from typing import Annotated, AsyncGenerator, Collection, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -161,7 +161,7 @@ def charge_budget(
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
-    refusing: Sequence[Pool] = POOLS,
+    refusing: Collection[Pool] = POOLS,
 ) -> None:
     """
     Spend the message's characters against the session and IP budgets before
