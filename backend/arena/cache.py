@@ -13,8 +13,6 @@ import random
 from typing import Any, TypedDict, cast
 from uuid import UUID
 
-import redis
-
 from backend.config import settings
 from backend.llms.models import LLMDataEnabled
 from utils.storage.redis import (
@@ -67,9 +65,13 @@ def get_cached_response(
         return None
 
     try:
-        client = get_redis_client()
         key = _responses_key(llm, system_msg, prompt)
-        data = cast(Any, client.get(key))
+        pipe = get_redis_client().pipeline()
+        pipe.get(key)
+        # Refresh TTL on hit, so popular prompts stay cached as long as they're
+        # asked. On a miss there is no key and this does nothing.
+        pipe.expire(key, settings.CACHE_TTL)
+        data, _ = cast(list[Any], pipe.execute())
         if not data:
             return None
 
@@ -78,31 +80,12 @@ def get_cached_response(
             return None
 
         chosen = random.choice(responses)
-
-        # Refresh TTL on hit — popular prompts stay cached as long as they're asked
-        client.expire(key, settings.CACHE_TTL)
-
         logger.info(f"[CACHE] Hit for {llm.id} (pool size: {len(responses)})")
         return chosen
 
     except Exception as e:
         logger.warning(f"[CACHE] Error reading cache: {e}")
         return None
-
-
-def _seen_in_another_turn(client: redis.Redis, prompt: str, turn_id: UUID) -> bool:
-    """
-    Remember the first turn that sent this prompt. Both answers of that turn,
-    and a retry of it, count as one sighting.
-    """
-    key = REDIS_LLM_CACHE_SEEN_KEY.format(prompt_hash=hash_content(prompt))
-    if client.set(key, str(turn_id), ex=settings.CACHE_TTL, nx=True):
-        return False
-    if cast(Any, client.get(key)) == str(turn_id):
-        return False
-    # Kept as long as the prompt is asked, like the answers it lets in.
-    client.expire(key, settings.CACHE_TTL)
-    return True
 
 
 def store_cached_response(
@@ -121,12 +104,19 @@ def store_cached_response(
     """
     try:
         client = get_redis_client()
-        if not _seen_in_another_turn(client, prompt, turn_id):
-            return
-
+        seen_key = REDIS_LLM_CACHE_SEEN_KEY.format(prompt_hash=hash_content(prompt))
         key = _responses_key(llm, system_msg, prompt)
 
-        existing_data = cast(Any, client.get(key))
+        pipe = client.pipeline()
+        # Remember the first turn that sent this prompt. Both answers of that
+        # turn, and a retry of it, count as one sighting.
+        pipe.set(seen_key, str(turn_id), ex=settings.CACHE_TTL, nx=True)
+        pipe.get(seen_key)
+        pipe.get(key)
+        first_sighting, seen_by, existing_data = cast(list[Any], pipe.execute())
+        if first_sighting or seen_by == str(turn_id):
+            return
+
         responses: list[CachedResponse] = (
             json.loads(existing_data) if existing_data else []
         )
@@ -136,7 +126,11 @@ def store_cached_response(
         if len(responses) > settings.CACHE_MAX_RESPONSES:
             responses = responses[-settings.CACHE_MAX_RESPONSES :]
 
-        client.set(key, json.dumps(responses), ex=settings.CACHE_TTL)
+        pipe = client.pipeline()
+        # Kept as long as the prompt is asked, like the answers it lets in.
+        pipe.expire(seen_key, settings.CACHE_TTL)
+        pipe.set(key, json.dumps(responses), ex=settings.CACHE_TTL)
+        pipe.execute()
         logger.info(
             f"[CACHE] Stored response for {llm.id} (pool size: {len(responses)})"
         )
