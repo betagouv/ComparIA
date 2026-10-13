@@ -872,7 +872,7 @@
                 "backTwo": "Ils sont en pause pour vous et reviennent {at}.",
                 "resend": "Votre message est gardé : envoyez-le de nouveau pour lancer la comparaison.",
                 "title": "Nous avons retiré {models} de votre sélection",
-                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les 2 heures. Tous les autres restent ouverts.",
+                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les deux heures. Tous les autres restent ouverts.",
                 "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
             },
             "time": {

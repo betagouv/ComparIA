@@ -871,7 +871,7 @@
                 "backTwo": "De er sat på pause for dig og kommer tilbage {at}.",
                 "resend": "Din besked er gemt: send den igen for at starte sammenligningen.",
                 "title": "Vi har fjernet {models} fra dit valg",
-                "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver 2. time. Alle de andre er stadig åbne.",
+                "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver anden time. Alle de andre er stadig åbne.",
                 "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
             },
             "time": {
