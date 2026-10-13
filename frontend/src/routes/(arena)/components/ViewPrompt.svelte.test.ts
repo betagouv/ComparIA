@@ -123,7 +123,8 @@ describe('ViewPrompt', () => {
 
     const title = view.getByRole('heading', { name: 'Nous avons retiré GPT-5 de votre sélection' })
     expect(title).toHaveFocus()
-    expect(view.getByText(/Il est en pause pour vous et revient à/)).toBeInTheDocument()
+    const back = view.getByText(/Il est en pause pour vous et revient à/)
+    expect(back.querySelector('time')).toHaveAttribute('datetime', pickRefusal.limit.resets_at)
     await vi.waitFor(() =>
       expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
     )
