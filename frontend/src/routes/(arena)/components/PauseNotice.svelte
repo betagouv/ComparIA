@@ -2,9 +2,9 @@
   import { resolve } from '$app/paths'
   import { Alert, Button, Link } from '$components/dsfr'
   import type { PauseRefusal } from '$lib/chatService.svelte'
-  import { clockTime } from '$lib/clockTime'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
+  import { TIME_SLOT, resetTime } from './resetTime'
+  import TimedText from './TimedText.svelte'
 
   let {
     refusal,
@@ -18,42 +18,31 @@
     failed?: boolean
   } = $props()
 
-  // Stands for the clock time in a sentence, so the time can sit in a <time>.
-  const SLOT = '⁣'
-
-  const resetsAt = $derived(refusal.limit.resets_at)
-  const clock = $derived(resetsAt ? clockTime(new Date(resetsAt), getLocale()) : undefined)
+  const reset = $derived(resetTime(refusal.limit.resets_at))
   const title = $derived(
-    !clock
+    !reset.clock
       ? m['arene.limits.pause.titleSoon']()
-      : m[clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({
-          time: SLOT
+      : m[reset.clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({
+          time: TIME_SLOT
         })
-  )
-  const at = $derived(
-    !clock
-      ? m['arene.limits.time.within']()
-      : m[clock.tomorrow ? 'arene.limits.time.tomorrowAt' : 'arene.limits.time.at']({ time: SLOT })
   )
   const network = $derived(refusal.limit.scope === 'network')
 </script>
 
-{#snippet withTime(text: string)}
-  {@const [before, after] = text.split(SLOT)}
-  {before}{#if after !== undefined}<time datetime={resetsAt}>{clock?.time}</time>{after}{/if}
-{/snippet}
-
 {#snippet titleWithTime()}
-  {@render withTime(title)}
+  <TimedText text={title} {reset} />
 {/snippet}
 
 <!-- The notice takes the place of the text box the person just sent from, so
      without focusTitle focus would fall to the page. -->
 <Alert id="pause-notice" title={titleWithTime} focusTitle class="w-full">
   <p>
-    {@render withTime(
-      m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']({ at })
-    )}
+    <TimedText
+      text={m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']({
+        at: reset.at
+      })}
+      {reset}
+    />
   </p>
   {#if !network && !failed}
     <p>{m['arene.limits.pause.meanwhile']()}</p>
