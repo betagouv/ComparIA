@@ -10,13 +10,24 @@
   let scrolledSide = $state<Bot>('a')
   let scrollableElem = $state<HTMLDivElement>()
 
-  function doScroll() {
-    const next: Bot = scrolledSide === 'a' ? 'b' : 'a'
+  function scrollToSide(side: Bot) {
     scrollableElem?.scrollTo({
-      left: next === 'b' ? scrollableElem.scrollWidth : 0,
+      left: side === 'b' ? scrollableElem.scrollWidth : 0,
       behavior: 'smooth'
     })
-    scrolledSide = next
+    scrolledSide = side
+  }
+
+  function doScroll() {
+    scrollToSide(scrolledSide === 'a' ? 'b' : 'a')
+  }
+
+  // Keep keyboard focus on screen: show the side holding the focused element
+  function onFocusIn(event: FocusEvent) {
+    if (!scrollableElem || scrollableElem.scrollWidth <= scrollableElem.clientWidth) return
+    const sides = Array.from(scrollableElem.firstElementChild?.children ?? [])
+    const index = sides.findIndex((side) => side.contains(event.target as Node))
+    if (index !== -1) scrollToSide(index === 0 ? 'a' : 'b')
   }
 
   let scrollDebounce: ReturnType<typeof setTimeout> | undefined
@@ -41,6 +52,7 @@
     class="cl-side-switcher-scroller md:overflow-hidden! flex w-full overflow-x-auto"
     bind:this={scrollableElem}
     onscroll={onScroll}
+    onfocusin={onFocusIn}
   >
     {@render children?.()}
   </div>
