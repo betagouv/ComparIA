@@ -69,4 +69,27 @@ describe('ViewPrompt', () => {
     expect(view.getByRole('textbox')).toHaveValue('Une question à réessayer')
     expect(view.getByText('Réessayez')).toBeInTheDocument()
   })
+
+  it('puts the network pause notice in place of the form and keeps the typed prompt', async () => {
+    const view = render(ViewPrompt, props)
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+
+    const pause = {
+      detail: 'allowance_spent' as const,
+      limit: {
+        scope: 'network' as const,
+        resets_at: new Date(Date.now() + 3600_000).toISOString(),
+        resets_in: 3600,
+        llm_ids: []
+      }
+    }
+    await view.rerender({ ...props, pause })
+
+    expect(view.queryByRole('textbox')).toBeNull()
+    expect(view.getByText(/pas seulement vous/)).toBeInTheDocument()
+    expect(view.getByRole('link', { name: 'Voir le classement' })).toBeInTheDocument()
+
+    await view.rerender({ ...props, pause: undefined })
+    expect(view.getByRole('textbox')).toHaveValue('Ma question')
+  })
 })

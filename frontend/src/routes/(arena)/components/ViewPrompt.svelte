@@ -5,7 +5,11 @@
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import {
+    getModeInfos,
+    type APIModeAndPromptData,
+    type PauseRefusal
+  } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
@@ -16,15 +20,19 @@
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
+  import PauseNotice from './PauseNotice.svelte'
 
   let {
     onPrompt,
     promptError,
+    pause,
     loading,
     suggestions
   }: {
     onPrompt: (args: APIModeAndPromptData) => void | Promise<void>
     promptError?: string
+    /** Set while an allowance is spent: the notice takes the place of the form. */
+    pause?: PauseRefusal
     loading: boolean
     suggestions: SuggestionCategory[]
   } = $props()
@@ -178,57 +186,63 @@
       <h2 class="fr-h4 mb-0! text-center">
         {m['arenaHome.title']()}
       </h2>
-      <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
-        <div class="md:order-none md:col-span-full order-1">
-          <TextPrompt
-            id="initial-prompt"
-            bind:el={promptEl}
-            bind:value={prompt}
-            label={m['arenaHome.prompt.label']()}
-            placeholder={m['arenaHome.prompt.placeholder']()}
-            bind:error={promptError}
-            disabled={loading}
-            submitDisabled={disabled}
-            hideLabel
-            rows={4}
-            onSubmit={() => onPromptSubmit()}
+      {#if pause}
+        <div class="py-10">
+          <PauseNotice refusal={pause} />
+        </div>
+      {:else}
+        <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
+          <div class="md:order-none md:col-span-full order-1">
+            <TextPrompt
+              id="initial-prompt"
+              bind:el={promptEl}
+              bind:value={prompt}
+              label={m['arenaHome.prompt.label']()}
+              placeholder={m['arenaHome.prompt.placeholder']()}
+              bind:error={promptError}
+              disabled={loading}
+              submitDisabled={disabled}
+              hideLabel
+              rows={4}
+              onSubmit={() => onPromptSubmit()}
+            />
+          </div>
+
+          <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
+            <ModelSelector
+              bind:mode={mode.value}
+              bind:modelsSelection={modelsSelection.value}
+              {models}
+              disabled={loading}
+            />
+            <Toggle
+              id="web-search"
+              bind:value={webSearch}
+              checkedLabel={m['arenaHome.webSearch.enabled']()}
+              uncheckedLabel={m['arenaHome.webSearch.disabled']()}
+              hideCheckLabel
+              labelPos="right"
+              class="font-medium w-full! text-[14px]!"
+              groupClass="grow my-auto"
+            >
+              {m['arenaHome.webSearch.label']()}
+              <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
+                {@html sanitize(m['arenaHome.webSearch.tooltip']())}
+              </Tooltip>
+            </Toggle>
+          </div>
+
+          <Button
+            type="submit"
+            text={m['words.send']()}
+            {disabled}
+            class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
+            onclick={() => onPromptSubmit()}
           />
         </div>
 
-        <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
-          <ModelSelector
-            bind:mode={mode.value}
-            bind:modelsSelection={modelsSelection.value}
-            {models}
-            disabled={loading}
-          />
-          <Toggle
-            id="web-search"
-            bind:value={webSearch}
-            checkedLabel={m['arenaHome.webSearch.enabled']()}
-            uncheckedLabel={m['arenaHome.webSearch.disabled']()}
-            hideCheckLabel
-            labelPos="right"
-            class="font-medium w-full! text-[14px]!"
-            groupClass="grow my-auto"
-          >
-            {m['arenaHome.webSearch.label']()}
-            <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
-              {@html sanitize(m['arenaHome.webSearch.tooltip']())}
-            </Tooltip>
-          </Toggle>
-        </div>
-
-        <Button
-          type="submit"
-          text={m['words.send']()}
-          {disabled}
-          class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
-          onclick={() => onPromptSubmit()}
-        />
-      </div>
-
-      <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
+        <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
+      {/if}
     </div>
   </div>
 {/if}

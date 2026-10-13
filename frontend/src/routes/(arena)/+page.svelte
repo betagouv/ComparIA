@@ -84,6 +84,7 @@
     <ViewPrompt
       loading={comparator.loading}
       promptError={comparator.promptError}
+      pause={comparator.pause}
       onPrompt={submitInitialPrompt}
       suggestions={data.suggestions.categories}
     />
