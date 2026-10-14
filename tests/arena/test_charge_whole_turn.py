@@ -8,6 +8,7 @@ far longer than the question. The expensive allowance now counts each
 expensive model's characters as many times as its cost weight.
 """
 
+import asyncio
 import os
 import sys
 from pathlib import Path
@@ -17,15 +18,38 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
+import litellm  # noqa: E402
+import pytest  # noqa: E402
 from linkup import LinkupSearchTextResult  # noqa: E402
 
 import backend.arena.limits as limits  # noqa: E402
+import backend.arena.router as arena_router  # noqa: E402
+import backend.arena.streaming as streaming  # noqa: E402
 from backend.arena.conversation import SystemMessageRead  # noqa: E402
 from backend.arena.limits import Call, Charge, Identity, turn_cost  # noqa: E402
 from backend.arena.litellm import litellm_messages, sent_chars  # noqa: E402
 from backend.arena.web_search import merge_web_search_with_content  # noqa: E402
+from backend.config import settings  # noqa: E402
 from tests.arena.fakes import FakeRedis, fake_redis  # noqa: E402
-from utils.database.models import LLMMessageRead, UserMessageRead  # noqa: E402
+from tests.arena.test_spend_budget import (  # noqa: E402
+    ANSWER,
+    CHEAP,
+    EXPENSIVE,
+    ME,
+    ROUTES,
+    SENT,
+    WEIGHT,
+    arena,
+    counter,
+    patched,
+    read,
+    start,
+)
+from utils.database.models import (  # noqa: E402
+    LLMMessageCreate,
+    LLMMessageRead,
+    UserMessageRead,
+)
 
 WHO = Identity.of("s" * 64, "10.0.0.1")
 
@@ -201,3 +225,174 @@ def test_settling_never_raises_when_redis_is_down():
         charge.settle({"a": written("x"), "b": written("y")})
 
     assert spent(redis, "all") == 200
+
+
+# Through the routes and the stream.
+
+
+def test_a_follow_up_counts_the_system_prompt_the_transcript_and_the_search():
+    results = [
+        LinkupSearchTextResult(
+            type="text", name="", url="https://a.example", content="x" * 500, favicon=""
+        )
+    ]
+    first = SimpleNamespace(
+        user_msg=UserMessageRead(content=FIRST, web_search_results=results),
+        llm_msg_a=answer("A" * 300, reasoning="r" * 1000),
+        llm_msg_b=answer("B" * 200),
+    )
+    comparison = SimpleNamespace(
+        turns=[first],
+        llm_id_a=CHEAP,
+        llm_id_b=EXPENSIVE,
+        system_msg_a=SYSTEM,
+        system_msg_b=None,
+    )
+
+    sent = arena_router.follow_up_sent(comparison, SECOND)
+
+    first_prompt = len(merge_web_search_with_content(FIRST, results))
+    assert sent == {
+        "a": (CHEAP, len(SYSTEM) + first_prompt + 300 + len(SECOND)),
+        "b": (EXPENSIVE, first_prompt + 200 + len(SECOND)),
+    }
+
+
+def test_a_first_message_counts_each_model_s_system_prompt():
+    llms_data = SimpleNamespace(
+        all={
+            CHEAP: SimpleNamespace(system_prompt=SYSTEM),
+            EXPENSIVE: SimpleNamespace(system_prompt=None),
+        }
+    )
+    assert arena_router.first_turn_sent(FIRST, (CHEAP, EXPENSIVE), llms_data) == {
+        "a": (CHEAP, len(SYSTEM) + len(FIRST)),
+        "b": (EXPENSIVE, len(FIRST)),
+    }
+
+
+def answering(*answers, error=False):
+    """A stream stub: each side writes its answer, then the turn ends, or
+    fails once the first side has written."""
+
+    async def stream_comparison_messages(_comparison, turn, *_args, **_kwargs):
+        for pos, written_answer in zip(("a", "b"), answers):
+            setattr(turn, f"llm_msg_{pos}", written_answer)
+            yield {"type": "chunk", "pos": pos}
+            if error:
+                yield {"type": "error", "pos": pos}
+                return
+        yield {"type": "complete"}
+
+    return stream_comparison_messages
+
+
+@pytest.mark.parametrize("route", ROUTES)
+def test_a_failed_turn_keeps_what_was_written_and_refunds_nothing(route):
+    with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
+        stream = answering(LLMMessageCreate(content="x" * 70), error=True)
+        with patched(arena_router, stream_comparison_messages=stream):
+            read(start(route, state))
+
+        assert counter(state.redis, "all", ME) == 2 * SENT[route] + 70
+        assert counter(state.redis, "expensive", ME) == WEIGHT * SENT[route]
+
+
+@pytest.mark.parametrize("route", ROUTES)
+def test_a_cached_expensive_side_is_free_there_and_counted_on_the_whole(route):
+    with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
+        stream = answering(
+            LLMMessageCreate(content=ANSWER),
+            LLMMessageCreate(content=ANSWER, is_cached=True),
+        )
+        with patched(arena_router, stream_comparison_messages=stream):
+            read(start(route, state))
+
+        assert counter(state.redis, "all", ME) == 2 * (SENT[route] + len(ANSWER))
+        assert counter(state.redis, "expensive", ME) == 0
+
+
+@pytest.mark.parametrize("route", ["add_text", "retry"])
+def test_a_conversation_over_a_spent_allowance_never_moves_its_reset(route):
+    with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
+        key = limits.budget_key("expensive", ME)
+        over = settings.RATELIMIT_EXPENSIVE_PER_SESSION + 1
+        state.redis.set(key, over, ex=600)
+        read(start(route, state))
+
+        assert counter(state.redis, "expensive", ME) == (
+            over + WEIGHT * (SENT[route] + len(ANSWER))
+        )
+        assert state.redis.ttl(key) == 600
+
+
+def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch):
+    weights = {"steady": 1, "stuck": 1, "spare": WEIGHT}
+
+    async def bot_response_async(pos, llm, turn, _turn_index, _messages, _request):
+        msg = LLMMessageCreate()
+        setattr(turn, f"llm_msg_{pos}", msg)
+        for word in ("un", "deux", "trois"):
+            await asyncio.sleep(0.01)
+            msg.content += word
+            yield msg
+            if llm.id == "stuck":
+                raise litellm.Timeout(message="", model="stuck", llm_provider="x")
+
+    async def get_llms_data():
+        return SimpleNamespace(
+            enabled={
+                llm_id: SimpleNamespace(
+                    id=llm_id,
+                    cost_weight=weight,
+                    endpoint=SimpleNamespace(api_type="openai"),
+                )
+                for llm_id, weight in weights.items()
+            }
+        )
+
+    async def pick_replacement_model(*_args):
+        return "spare"
+
+    async def update_comparison_llm_id(comparison, pos, llm_id):
+        setattr(comparison, f"llm_id_{pos}", llm_id)
+        setattr(comparison.turns[-1], f"llm_msg_{pos}", None)
+
+    for name, stub in {
+        "bot_response_async": bot_response_async,
+        "get_llms_data": get_llms_data,
+        "pick_replacement_model": pick_replacement_model,
+        "update_comparison_llm_id": update_comparison_llm_id,
+    }.items():
+        monkeypatch.setattr(streaming, name, stub)
+
+    turn = SimpleNamespace(
+        user_msg=UserMessageRead(content=FIRST), llm_msg_a=None, llm_msg_b=None
+    )
+    comparison = SimpleNamespace(
+        id="comparison",
+        turns=[turn],
+        llm_id_a="steady",
+        llm_id_b="stuck",
+        system_msg_a=None,
+        system_msg_b=None,
+        mode="random",
+        custom_models_selection=None,
+        error=None,
+    )
+
+    async def run():
+        charge = Charge.reserve(WHO, {"a": Call(1, 1), "b": Call(1, 1)})
+        async for _event in streaming.stream_comparison_messages(
+            comparison, turn, charge=charge
+        ):
+            pass
+        charge.settle({"a": turn.llm_msg_a, "b": turn.llm_msg_b})
+
+    with fake_redis(limits) as redis:
+        asyncio.run(run())
+
+    answered = len("undeuxtrois")
+    # Each model was sent the prompt; the stuck one wrote "un" and gave up.
+    assert spent(redis, "all") == 3 * len(FIRST) + answered + len("un") + answered
+    assert spent(redis, "expensive") == WEIGHT * (len(FIRST) + answered)
