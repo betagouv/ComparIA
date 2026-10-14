@@ -44,9 +44,9 @@ describe('ModelSelector', () => {
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
     expect(gpt).toBeEnabled()
     expect(gpt).toHaveAttribute('aria-disabled', 'true')
-    expect(gpt).toHaveAccessibleName(/GPT-5 En pause jusqu'à \d+ h \d+/)
+    expect(gpt).toHaveAccessibleName(/GPT-5 En pause jusqu'à \d+\sh\s\d+/)
     expect(gpt).toHaveAccessibleDescription(
-      /^Vous avez utilisé votre part de ce modèle\. Il revient à \d+ h \d+\.$/
+      /^Vous avez utilisé votre part de ce modèle\. Il revient à \d+\sh\s\d+\.$/
     )
     expect(gpt.closest('label')!.querySelector('time')).toHaveAttribute('datetime', at)
 
@@ -57,7 +57,7 @@ describe('ModelSelector', () => {
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(gemma).not.toHaveAttribute('aria-disabled')
     expect(view.getByText(/Les modèles « En pause » coûtent plus cher/)).toHaveTextContent(
-      /Vous avez utilisé votre part : ils reviennent à \d+ h \d+\./
+      /Vous avez utilisé votre part : ils reviennent à \d+\sh\s\d+\./
     )
     expectNoDanglingAriaRefs(view.container)
   })
@@ -94,7 +94,7 @@ describe('ModelSelector', () => {
     expect(mode).toHaveAttribute('aria-disabled', 'true')
     expect(mode).toHaveAttribute('aria-controls', '')
     expect(mode).toHaveAccessibleDescription(
-      /^Ce mode a besoin de modèles qui sont en pause pour vous\. Il revient à \d+ h \d+\.$/
+      /^Ce mode a besoin de modèles qui sont en pause pour vous\. Il revient à \d+\sh\s\d+\.$/
     )
     expect(view.getByRole('radio', { name: /Frugal/, hidden: true })).not.toHaveAttribute(
       'aria-disabled'

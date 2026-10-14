@@ -200,7 +200,7 @@ describe('ViewPrompt', () => {
     await view.findAllByText(/Nous avons retiré GPT-5/)
     const notice = view.container.querySelector('#pick-paused-notice')!
     expect(notice).toHaveTextContent(
-      /Nous avons retiré GPT-5 de votre sélection : il est en pause pour vous et revient à \d+ h \d+/
+      /Nous avons retiré GPT-5 de votre sélection : il est en pause pour vous et revient à \d+\sh\s\d+/
     )
     expect(notice.querySelector('time')).toHaveAttribute(
       'datetime',
