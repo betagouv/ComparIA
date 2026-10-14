@@ -827,7 +827,8 @@
             "groups": {
                 "all": "All answers",
                 "expensive": "Expensive models",
-                "answer": "Reservation"
+                "answer": "Reservation",
+                "inFlight": "Messages at once"
             },
             "names": {
                 "all_per_session": "Per person",
@@ -835,7 +836,8 @@
                 "expensive_per_session": "Per person",
                 "expensive_per_ip": "Per network",
                 "expected_answer_chars": "Reserved answer length",
-                "expensive_price_out": "Price threshold"
+                "expensive_price_out": "Price threshold",
+                "in_flight_per_network": "Per network"
             },
             "help": {
                 "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
@@ -843,7 +845,8 @@
                 "expensive_per_session": "What the expensive models may cost for one person in two hours, estimated from each model's prices at four characters per token. An answer served from the cache does not count. Once the limit is reached, new conversations go on without the expensive models; the other models stay open.",
                 "expensive_per_ip": "The same limit, in dollars, for a whole network.",
                 "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted.",
-                "expensive_price_out": "A model counts as expensive once its output price, what a million tokens it writes cost, reaches this threshold. A model priced 0 never does. Each model's price is set in its own form."
+                "expensive_price_out": "A model counts as expensive once its output price, what a million tokens it writes cost, reaches this threshold. A model priced 0 never does. Each model's price is set in its own form.",
+                "in_flight_per_network": "How many messages one network may have the models answer at the same time. Past it, the message is refused and the person sends it again a few seconds later. A burst of messages sent at once can then not spend everything before their answers are counted."
             },
             "calibrate": {
                 "button": "Calibrate",
@@ -881,7 +884,29 @@
                 },
                 "none": "No price looks worth checking."
             },
-            "expensiveOne": "At this threshold, one enabled model is expensive: {names}."
+            "expensiveOne": "At this threshold, one enabled model is expensive: {names}.",
+            "unitCount": "{value} messages",
+            "newValueCount": "New value, in messages",
+            "today": {
+                "title": "Today",
+                "intro": "What each model cost since midnight, Paris time, across everyone, estimated from its prices. A model that reaches its cap rests: it leaves new conversations until midnight, the ones under way go on. The cap is set on the model's form.",
+                "caption": "Today's spend per model",
+                "model": "Model",
+                "spent": "Spent",
+                "cap": "Cap",
+                "noCap": "None",
+                "cache": "From the cache",
+                "cacheShare": "{share} of {count}",
+                "noAnswer": "No answer",
+                "resting": "Resting",
+                "proposed": "Proposed",
+                "proposal": "{value}: percentile {percentile} of {days} days, plus half. At most {highest} in one day.",
+                "noProposal": "None",
+                "empty": "No enabled model.",
+                "failed": "Today's spend could not be read.",
+                "capsApplied": "{count} proposed caps will be applied with “Apply”.",
+                "capsAppliedOne": "1 proposed cap will be applied with “Apply”."
+            }
         }
     },
     "arenaHome": {

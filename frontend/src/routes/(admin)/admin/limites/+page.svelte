@@ -13,6 +13,7 @@
     PriceCheck
   } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { TodayUsage } from './components'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { PageProps } from './$types'
@@ -27,10 +28,11 @@
   // Largest value the API takes in dollars.
   const USD_MAX = 1_000_000
 
-  // Characters, dollars, or dollars per million output tokens.
-  type Unit = 'chars' | 'usd' | 'price'
+  // Characters, dollars, dollars per million output tokens, or messages.
+  type Unit = 'chars' | 'usd' | 'price' | 'count'
   function unit(name: Name): Unit {
     if (name === 'expensive_price_out') return 'price'
+    if (name === 'in_flight_per_network') return 'count'
     return name.startsWith('expensive_') ? 'usd' : 'chars'
   }
 
@@ -58,6 +60,10 @@
     {
       title: m['admin.limits.groups.answer'](),
       names: ['expected_answer_chars']
+    },
+    {
+      title: m['admin.limits.groups.inFlight'](),
+      names: ['in_flight_per_network']
     }
   ] satisfies { title: string; names: Name[] }[]
 
@@ -67,7 +73,8 @@
     expensive_per_session: m['admin.limits.names.expensive_per_session'](),
     expensive_per_ip: m['admin.limits.names.expensive_per_ip'](),
     expensive_price_out: m['admin.limits.names.expensive_price_out'](),
-    expected_answer_chars: m['admin.limits.names.expected_answer_chars']()
+    expected_answer_chars: m['admin.limits.names.expected_answer_chars'](),
+    in_flight_per_network: m['admin.limits.names.in_flight_per_network']()
   }
   const helps: Record<Name, string> = {
     all_per_session: m['admin.limits.help.all_per_session'](),
@@ -75,7 +82,8 @@
     expensive_per_session: m['admin.limits.help.expensive_per_session'](),
     expensive_per_ip: m['admin.limits.help.expensive_per_ip'](),
     expensive_price_out: m['admin.limits.help.expensive_price_out'](),
-    expected_answer_chars: m['admin.limits.help.expected_answer_chars']()
+    expected_answer_chars: m['admin.limits.help.expected_answer_chars'](),
+    in_flight_per_network: m['admin.limits.help.in_flight_per_network']()
   }
 
   const byName = $derived(
@@ -107,6 +115,13 @@
     return data.limits.llms.filter((llm) => llm.price_out > 0 && llm.price_out >= threshold)
   })
 
+  // The proposed daily caps that would change a model's cap.
+  const changedCaps = $derived(
+    (calibration?.daily_caps ?? []).filter(
+      (cap) => data.usage?.find((llm) => llm.llm_id === cap.llm_id)?.cap_usd !== cap.value
+    )
+  )
+
   const changed = $derived(
     data.limits.limits
       .map((limit) => limit.name)
@@ -126,6 +141,8 @@
         return dollars.format(value)
       case 'price':
         return m['admin.limits.unitPrice']({ value: dollars.format(value) })
+      case 'count':
+        return m['admin.limits.unitCount']({ value: numbers.format(value) })
       default:
         return m['admin.limits.unit']({ value: numbers.format(value) })
     }
@@ -134,7 +151,8 @@
   const newValueLabels: Record<Unit, string> = {
     chars: m['admin.limits.newValue'](),
     usd: m['admin.limits.newValueUsd'](),
-    price: m['admin.limits.newValuePrice']()
+    price: m['admin.limits.newValuePrice'](),
+    count: m['admin.limits.newValueCount']()
   }
 
   function expensiveText(llms: { name: string }[]) {
@@ -215,14 +233,17 @@
 
   async function apply(event: SubmitEvent) {
     event.preventDefault()
-    if (!changed.length) {
+    if (!changed.length && !changedCaps.length) {
       useToast(m['admin.limits.nothingToApply'](), 4000)
       return
     }
-    await save(
-      Object.fromEntries(changed.map((name) => [name, Number(draft[name])])),
-      m['admin.limits.applied']()
+    const patch: AdminLimitsPatch = Object.fromEntries(
+      changed.map((name) => [name, Number(draft[name])])
     )
+    if (changedCaps.length) {
+      patch.daily_usd_caps = Object.fromEntries(changedCaps.map((cap) => [cap.llm_id, cap.value]))
+    }
+    await save(patch, m['admin.limits.applied']())
   }
 
   function cancel() {
@@ -339,16 +360,16 @@
                 <Input
                   id="limit-{name}"
                   type="number"
-                  inputmode={kind === 'chars' ? 'numeric' : 'decimal'}
+                  inputmode={kind === 'chars' || kind === 'count' ? 'numeric' : 'decimal'}
                   label={newValueLabels[kind]}
                   bind:value={draft[name] as string}
                   min={kind === 'usd'
                     ? 0.01
-                    : name === 'all_per_session' || name === 'all_per_ip'
+                    : kind === 'count' || name === 'all_per_session' || name === 'all_per_ip'
                       ? 1
                       : 0}
-                  max={kind === 'chars' ? INT_MAX : USD_MAX}
-                  step={kind === 'chars' ? '1' : '0.01'}
+                  max={kind === 'chars' || kind === 'count' ? INT_MAX : USD_MAX}
+                  step={kind === 'chars' || kind === 'count' ? '1' : '0.01'}
                   required
                   groupClass="mb-0!"
                 />
@@ -388,6 +409,16 @@
           </div>
         </section>
       {/each}
+
+      <TodayUsage usage={data.usage} proposals={calibration?.daily_caps} />
+
+      {#if changedCaps.length}
+        <p class="fr-text--sm mb-0!" aria-live="polite">
+          {changedCaps.length > 1
+            ? m['admin.limits.today.capsApplied']({ count: String(changedCaps.length) })
+            : m['admin.limits.today.capsAppliedOne']()}
+        </p>
+      {/if}
 
       <div class="gap-3 flex flex-wrap">
         <Button

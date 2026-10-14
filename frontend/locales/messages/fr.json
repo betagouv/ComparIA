@@ -334,7 +334,8 @@
             "groups": {
                 "all": "Toutes les réponses",
                 "answer": "Réservation",
-                "expensive": "Modèles coûteux"
+                "expensive": "Modèles coûteux",
+                "inFlight": "Messages en même temps"
             },
             "help": {
                 "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu'un qui efface ses cookies pour repartir de zéro.",
@@ -342,7 +343,8 @@
                 "expected_answer_chars": "Ce que chaque modèle devrait écrire, compté d'avance à chaque message puis remplacé par la vraie longueur. Sans elle, des messages envoyés tous en même temps passeraient avant que leurs réponses soient comptées.",
                 "expensive_per_ip": "La même limite, en dollars, pour tout un réseau.",
                 "expensive_per_session": "Ce que les modèles coûteux peuvent coûter pour une personne en deux heures, estimé d'après le prix de chaque modèle, à quatre caractères par jeton. Une réponse servie depuis le cache ne compte pas. Une fois la limite atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts.",
-                "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu'il écrit, atteint ce seuil. Un modèle à 0 ne l'est jamais. Le prix de chaque modèle se règle dans sa fiche."
+                "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu'il écrit, atteint ce seuil. Un modèle à 0 ne l'est jamais. Le prix de chaque modèle se règle dans sa fiche.",
+                "in_flight_per_network": "Combien de messages un même réseau peut faire répondre aux modèles en même temps. Au-delà, le message est refusé et la personne le renvoie quelques secondes plus tard. Une rafale de messages envoyés d'un coup ne peut donc pas tout dépenser avant que leurs réponses soient comptées."
             },
             "isDefault": "Par défaut",
             "isStored": "Modifiée",
@@ -352,9 +354,11 @@
                 "expected_answer_chars": "Longueur de réponse réservée",
                 "expensive_per_ip": "Par réseau",
                 "expensive_per_session": "Par personne",
-                "expensive_price_out": "Seuil de prix"
+                "expensive_price_out": "Seuil de prix",
+                "in_flight_per_network": "Par réseau"
             },
             "newValue": "Nouvelle valeur, en caractères",
+            "newValueCount": "Nouvelle valeur, en messages",
             "newValuePrice": "Nouveau seuil, en dollars par million de jetons écrits",
             "newValueUsd": "Nouvelle valeur, en dollars",
             "nothingToApply": "Aucune valeur n'a changé.",
@@ -375,7 +379,28 @@
             "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
             "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",
             "title": "Limites",
+            "today": {
+                "cache": "Depuis le cache",
+                "cacheShare": "{share} de {count}",
+                "cap": "Plafond",
+                "capsApplied": "{count} plafonds proposés seront appliqués avec « Appliquer ».",
+                "capsAppliedOne": "1 plafond proposé sera appliqué avec « Appliquer ».",
+                "caption": "Dépenses du jour par modèle",
+                "empty": "Aucun modèle activé.",
+                "failed": "Les dépenses du jour n'ont pas pu être lues.",
+                "intro": "Ce que chaque modèle a coûté depuis minuit, heure de Paris, tous utilisateurs confondus, estimé d'après ses prix. Un modèle qui atteint son plafond est au repos : il sort des nouvelles conversations jusqu'à minuit, celles en cours continuent. Le plafond se règle dans la fiche du modèle.",
+                "model": "Modèle",
+                "noAnswer": "Aucune réponse",
+                "noCap": "Aucun",
+                "noProposal": "Aucun",
+                "proposal": "{value} : {percentile}e centile de {days} jours, plus la moitié. Au plus {highest} en un jour.",
+                "proposed": "Proposé",
+                "resting": "Au repos",
+                "spent": "Dépensé",
+                "title": "Aujourd'hui"
+            },
             "unit": "{value} caractères",
+            "unitCount": "{value} messages",
             "unitPrice": "{value} par million de jetons écrits",
             "updated": "Dernière modification le {date} par {who}.",
             "updatedUnknown": "Dernière modification le {date}."
