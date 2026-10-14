@@ -488,6 +488,7 @@ async def add_first_text(
             custom_models_selection=args.custom_models_selection,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
+            expensive_paused=not expensive_available,
         )
     )
 

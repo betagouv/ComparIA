@@ -80,12 +80,18 @@ def patched(module, **attributes):
 def arena(llm_ids=(CHEAP, CHEAP)):
     """The arena routes against stubs. `provider_calls` counts every time the
     models are started; `created` every comparison, turn or prompt check
-    written; `draws` the models each draw had to leave out. Set `in_step` to a
+    written; `draws` the models each draw had to leave out; `new_comparisons`
+    what each first message asked to save. Set `in_step` to a
     barrier to hold each request just before it charges until the others get
     there too."""
     redis = FakeRedis()
     state = SimpleNamespace(
-        redis=redis, provider_calls=0, created=0, in_step=None, draws=[]
+        redis=redis,
+        provider_calls=0,
+        created=0,
+        in_step=None,
+        draws=[],
+        new_comparisons=[],
     )
     llm_a, llm_b = llm_ids
 
@@ -131,8 +137,9 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def terms_version(**_kwargs):
         return "2026.07"
 
-    async def create_comparison(_comparison):
+    async def create_comparison(new_comparison):
         state.created += 1
+        state.new_comparisons.append(new_comparison)
         return comparison()
 
     async def add_comparison_turn(comparison_id, _text, *_args, **_kwargs):

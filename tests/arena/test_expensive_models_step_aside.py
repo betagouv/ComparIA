@@ -50,6 +50,8 @@ def test_a_cheap_duel_starts_with_the_expensive_allowance_spent(identity):
         assert state.draws == [(EXPENSIVE,)]
         assert counter(state.redis, "all", ME) == len(PROMPT)
         assert counter(state.redis, "expensive", identity) == SPENT
+        # Recorded, so the ranking can set these duels apart.
+        assert [c.expensive_paused for c in state.new_comparisons] == [True]
 
 
 def test_a_draw_keeps_expensive_models_while_the_allowance_has_room():
@@ -57,6 +59,7 @@ def test_a_draw_keeps_expensive_models_while_the_allowance_has_room():
         start("add_first_text", state)
 
         assert state.draws == [()]
+        assert [c.expensive_paused for c in state.new_comparisons] == [False]
         assert counter(state.redis, "expensive", ME) == len(PROMPT)
 
 
@@ -130,6 +133,7 @@ def test_a_draw_that_meets_an_allowance_spent_meanwhile_draws_again():
 
         assert response.status_code == 200
         assert state.draws == [(), (EXPENSIVE,)]
+        assert [c.expensive_paused for c in state.new_comparisons] == [True]
         assert counter(state.redis, "all", ME) == len(PROMPT)
         assert counter(state.redis, "expensive", ME) == SPENT
 
