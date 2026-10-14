@@ -1,5 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import type { PromptCheckDecision, PromptCheckTimelinePoint } from './types'
 
   let {
@@ -35,7 +36,7 @@
 
   function tickLabel(ratio: number) {
     const value = maxValue * ratio
-    return maxValue <= 2 ? Number(value.toFixed(1)).toLocaleString('fr-FR') : Math.round(value)
+    return maxValue <= 2 ? Number(value.toFixed(1)).toLocaleString(getLocale()) : Math.round(value)
   }
 
   function pathFor(decision: PromptCheckDecision) {
@@ -48,7 +49,7 @@
   }
 
   function shortDate(value: string) {
-    return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(
+    return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short' }).format(
       new Date(`${value}T00:00:00`)
     )
   }
