@@ -374,6 +374,22 @@ export interface OIDCConnectionTest {
   [k: string]: unknown;
 }
 /**
+ * What one enabled model spent today, across everyone, against its
+ * daily cap. The day ends at midnight in Paris.
+ */
+export interface LLMDailyUsage {
+  llm_id: string;
+  name: string;
+  input_chars: number;
+  output_chars: number;
+  estimated_usd: number;
+  cap_usd: number | null;
+  resting: boolean;
+  resets_in: number;
+  answers: number;
+  cached_answers: number;
+}
+/**
  * LLM definition.
  *
  * Contains basic LLM information and links to licence, lab and endpoint.
