@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getComparison,
   parseAPIComparison,
@@ -6,14 +6,29 @@ import {
   type Comparison
 } from './chatService.svelte'
 import { ValidationError } from './fastapi-client'
+import type { ArenaLimits } from './generated/backend'
+import { createLimits, type Limits } from './limits.svelte'
 
 const streamed = vi.hoisted(() => [] as { url: string; body: Record<string, unknown> }[])
 const arena = vi.hoisted(() => ({
   comparisons: [] as unknown[],
-  refusal: undefined as Error | undefined
+  refusal: undefined as Error | undefined,
+  limits: undefined as unknown,
+  // What GET /arena/limits answers next, then an open arena.
+  reads: [] as unknown[],
+  events: [] as unknown[]
 }))
+const open = { total: null, expensive: null, paused_llms: [] }
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
+vi.mock('$app/environment', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$app/environment')>()),
+  browser: true
+}))
+vi.mock('$lib/limits.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/limits.svelte')>()),
+  getLimitsContext: () => arena.limits
+}))
 vi.mock('$lib/captcha.svelte', () => ({
   CaptchaError: class extends Error {},
   consumeAltchaToken: async () => 'solved-token'
@@ -25,6 +40,11 @@ vi.mock('$lib/fastapi-client', async (importOriginal) => ({
     async *stream(url: string, body: Record<string, unknown>) {
       if (arena.refusal) throw arena.refusal
       streamed.push({ url, body })
+      yield* arena.events
+    },
+    async request(url: string) {
+      if (url !== '/arena/limits') throw new Error(`unexpected ${url}`)
+      return arena.reads.shift() ?? open
     }
   }
 }))
@@ -32,6 +52,11 @@ vi.mock('svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('svelte')>()),
   createContext: () => [() => arena.comparisons, () => undefined]
 }))
+
+beforeEach(() => {
+  arena.reads = []
+  arena.limits = createLimits()
+})
 
 describe('parseAPIComparison', () => {
   it('marks a persisted incomplete turn as interrupted after a page reload', () => {
@@ -128,6 +153,7 @@ describe('a refusal on an allowance', () => {
       detail: 'allowance_spent',
       limit
     })
+    arena.reads = [{ ...open, total: limit }]
 
     const chat = getComparison('voted-id')
     const sent = await chat.ask('Encore une question')
@@ -136,8 +162,12 @@ describe('a refusal on an allowance', () => {
     arena.comparisons = []
     expect(sent).toBe(false)
     expect(chat.promptError).toBeUndefined()
-    expect(chat.pause).toEqual({ detail: 'allowance_spent', limit })
+    expect(chat.pause).toMatchObject({
+      detail: 'allowance_spent',
+      limit: { scope: 'network', resets_in: 4210 }
+    })
     expect(chat.canReveal).toBe(true)
+    ;(arena.limits as Limits).destroy()
   })
 
   it.each([
@@ -146,23 +176,58 @@ describe('a refusal on an allowance', () => {
   ])('gives the send area back %s', async (_, resetsIn, liftsAfter) => {
     vi.useFakeTimers()
     arena.comparisons = [{ id: 'voted-id', turns: [] } as unknown as Comparison]
+    // A clock time already past here, as from a server whose clock is ahead.
+    const spent = { ...limit, resets_at: '2000-01-01T00:00:00Z', resets_in: resetsIn }
     arena.refusal = Object.assign(new ValidationError('allowance_spent'), {
       status: 429,
       detail: 'allowance_spent',
-      // A clock time already past here, as from a server whose clock is ahead.
-      limit: { ...limit, resets_at: '2000-01-01T00:00:00Z', resets_in: resetsIn }
+      limit: spent
     })
+    arena.reads = [{ ...open, total: spent }]
 
     const chat = getComparison('voted-id')
     await chat.ask('Encore une question')
+    expect(chat.pauseFromSend).toBe(true)
     arena.refusal = undefined
     arena.comparisons = []
 
-    vi.advanceTimersByTime(liftsAfter * 1000 - 1)
+    await vi.advanceTimersByTimeAsync(liftsAfter * 1000 - 1)
     expect(chat.pause).toBeDefined()
-    vi.advanceTimersByTime(1)
+    await vi.advanceTimersByTimeAsync(1)
     expect(chat.pause).toBeUndefined()
+    ;(arena.limits as Limits).destroy()
     vi.useRealTimers()
+  })
+
+  it('shows a pause already spent before anyone sends, without taking focus', () => {
+    arena.limits = createLimits({
+      ...open,
+      total: { scope: 'session', resets_at: null, resets_in: 600 }
+    } as ArenaLimits)
+
+    const home = getComparison(undefined)
+
+    expect(home.pause?.limit.scope).toBe('session')
+    expect(home.pauseFromSend).toBe(false)
+    ;(arena.limits as Limits).destroy()
+  })
+
+  it('reads the limits again once a turn is through', async () => {
+    arena.comparisons = [
+      {
+        id: 'voted-id',
+        turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+      } as unknown as Comparison
+    ]
+    arena.reads = [{ ...open, total: { scope: 'network', resets_at: null, resets_in: 600 } }]
+    const chat = getComparison('voted-id')
+    arena.events = [{ type: 'complete' }]
+    await chat.ask('Encore une question')
+    arena.events = []
+    arena.comparisons = []
+
+    await vi.waitFor(() => expect(chat.pause?.limit.scope).toBe('network'))
+    ;(arena.limits as Limits).destroy()
   })
 
   it('keeps the reveal shut on a failed comparison', () => {

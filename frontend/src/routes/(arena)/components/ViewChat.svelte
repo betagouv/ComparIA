@@ -5,6 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import { pauseTitle, resetTime, spoken } from './resetTime'
 
   let {
     comparisonId,
@@ -76,6 +77,12 @@
   // longer inside a live region, so this sentence is the only thing spoken.
   // 'pending' is skipped because Pending.svelte already announces it.
   const announcement = $derived.by(() => {
+    // A pause that shows after a turn or a vote takes the text box away
+    // without moving focus, so it is told here. One met on a send takes focus.
+    if (comparator.pause && !comparator.pauseFromSend) {
+      const reset = resetTime(comparator.pause.limit.resets_at)
+      return spoken(pauseTitle(reset), reset)
+    }
     switch (comparator.status) {
       case 'generating':
         return m['chatbot.announce.generating']()
@@ -146,7 +153,12 @@
       ]}
     >
       {#if comparator.pause}
-        <PauseNotice refusal={comparator.pause} {onReveal} failed={!!comparator.error} />
+        <PauseNotice
+          refusal={comparator.pause}
+          {onReveal}
+          failed={!!comparator.error}
+          focusTitle={comparator.pauseFromSend}
+        />
       {:else}
         <TextPrompt
           id="chatbot-prompt"

@@ -28,6 +28,7 @@
     onPrompt,
     promptError,
     pause,
+    pauseFromSend = false,
     pickRefusal,
     loading,
     suggestions
@@ -36,6 +37,8 @@
     promptError?: string
     /** Set while an allowance is spent: the notice takes the place of the form. */
     pause?: PauseRefusal
+    /** The pause met the prompt just sent, so it takes focus. */
+    pauseFromSend?: boolean
     /** Set when the comparison asked for models the person may not use yet. */
     pickRefusal?: PickRefusal
     loading: boolean
@@ -223,7 +226,7 @@
       </h2>
       {#if pause}
         <div class="py-10">
-          <PauseNotice refusal={pause} />
+          <PauseNotice refusal={pause} focusTitle={pauseFromSend} />
         </div>
       {:else}
         <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">

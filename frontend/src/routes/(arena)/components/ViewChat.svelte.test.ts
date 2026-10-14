@@ -11,6 +11,7 @@ const comparator = vi.hoisted(() => ({
   canReveal: true,
   promptError: undefined as string | undefined,
   pause: undefined as unknown,
+  pauseFromSend: false,
   promptWarnings: undefined,
   reveal: vi.fn(),
   ask: vi.fn(),
@@ -52,6 +53,7 @@ describe('ViewChat', () => {
   })
 
   it('puts the pause notice in place of the text box and moves focus to its title', async () => {
+    comparator.pauseFromSend = true
     comparator.pause = {
       detail: 'allowance_spent',
       limit: {
@@ -72,6 +74,19 @@ describe('ViewChat', () => {
 
     await fireEvent.click(view.getByRole('button', { name: 'Découvrir les modèles' }))
     expect(comparator.reveal).toHaveBeenCalled()
+    Object.assign(comparator, { pause: undefined, pauseFromSend: false })
+  })
+
+  it('tells a pause that shows after a turn without moving focus', () => {
+    comparator.pause = {
+      detail: 'allowance_spent',
+      limit: { scope: 'network', resets_at: null, resets_in: null, llm_ids: [] }
+    }
+    const view = render(ViewChat, props)
+
+    const title = view.getByRole('heading', { name: 'Pause de moins de deux heures' })
+    expect(title).not.toHaveFocus()
+    expect(view.getAllByRole('status')[0]).toHaveTextContent('Pause de moins de deux heures')
     comparator.pause = undefined
   })
 

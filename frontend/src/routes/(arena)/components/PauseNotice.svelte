@@ -3,29 +3,26 @@
   import { Alert, Button, Link } from '$components/dsfr'
   import type { PauseRefusal } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { TIME_SLOT, resetTime } from './resetTime'
+  import { pauseTitle, resetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {
     refusal,
     onReveal,
-    failed = false
+    failed = false,
+    focusTitle = false
   }: {
     refusal: PauseRefusal
     /** In a conversation: discover the models. Left out on the home page. */
     onReveal?: () => void
     /** The conversation failed, so there is nothing to vote on or reveal. */
     failed?: boolean
+    /** It takes the place of the text box the person just sent from. */
+    focusTitle?: boolean
   } = $props()
 
   const reset = $derived(resetTime(refusal.limit.resets_at))
-  const title = $derived(
-    !reset.clock
-      ? m['arene.limits.pause.titleSoon']()
-      : m[reset.clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({
-          time: TIME_SLOT
-        })
-  )
+  const title = $derived(pauseTitle(reset))
   const network = $derived(refusal.limit.scope === 'network')
 </script>
 
@@ -33,9 +30,10 @@
   <TimedText text={title} {reset} />
 {/snippet}
 
-<!-- The notice takes the place of the text box the person just sent from, so
-     without focusTitle focus would fall to the page. -->
-<Alert id="pause-notice" title={titleWithTime} focusTitle class="w-full">
+<!-- After a refused send the notice takes the place of the text box the
+     person sent from, so without focusTitle focus would fall to the page. Shown
+     before anyone sends, it is part of the page and leaves focus alone. -->
+<Alert id="pause-notice" title={titleWithTime} {focusTitle} class="w-full">
   <p>
     <TimedText
       text={m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']({

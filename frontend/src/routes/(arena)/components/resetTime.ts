@@ -21,3 +21,16 @@ export function resetTime(resetsAt: string | null | undefined): ResetTime {
       })
   return { datetime: resetsAt, clock, at }
 }
+
+/** "Pause jusqu'à 15 h 40", with TIME_SLOT where the time goes. */
+export function pauseTitle(reset: ResetTime): string {
+  if (!reset.clock) return m['arene.limits.pause.titleSoon']()
+  return m[reset.clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({
+    time: TIME_SLOT
+  })
+}
+
+/** The sentence as a screen reader hears it, the time in place. */
+export function spoken(text: string, reset: ResetTime): string {
+  return text.replace(TIME_SLOT, reset.clock?.time ?? '')
+}
