@@ -33,7 +33,7 @@
     pausedModes?: ReadonlyMap<Mode, string | null>
   } = $props()
 
-  type Pause = { badge: string; reset?: ResetTime; reason: string }
+  type Pause = { chip: string; reset?: ResetTime; reason: string }
 
   // "En pause · 13 h 32" on the card; the reason says the rest.
   function chip(reset: ResetTime): string {
@@ -48,7 +48,7 @@
     if (!llm) return undefined
     if (llm.reason === 'full') {
       return {
-        badge: m['arene.limits.picker.fullBadge'](),
+        chip: m['arene.limits.picker.fullBadge'](),
         reason: m['arene.limits.picker.fullReason']()
       }
     }
@@ -58,14 +58,14 @@
         ? 'arene.limits.picker.pausedReasonNetwork'
         : 'arene.limits.picker.pausedReason'
     ]({ at: reset.at })
-    return { badge: chip(reset), reset, reason: spoken(reason, reset) }
+    return { chip: chip(reset), reset, reason: spoken(reason, reset) }
   }
 
   function modePause(value: Mode): Pause | undefined {
     if (!pausedModes.has(value)) return undefined
     const reset = resetTime(pausedModes.get(value))
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
-    return { badge: chip(reset), reset, reason: spoken(reason, reset) }
+    return { chip: chip(reset), reset, reason: spoken(reason, reset) }
   }
 
   // The line under the help text: how many cards say "En pause", and why.
@@ -191,16 +191,16 @@
   {/if}
 </div>
 
-{#snippet pauseBadge(pause: Pause)}
+{#snippet pauseChip(pause: Pause)}
   <span class="mt-2 block">
     <Badge size="xs" class="cl-pause-chip">
       <Icon icon="i-ri-pause-circle-line" size="xs" block class="me-1" />
       <!-- One flex item, so the space before the time stays. -->
       <span
         >{#if pause.reset}<TimedText
-            text={pause.badge}
+            text={pause.chip}
             reset={pause.reset}
-          />{:else}{pause.badge}{/if}</span
+          />{:else}{pause.chip}{/if}</span
       >
     </Badge>
   </span>
@@ -289,7 +289,7 @@
                           <strong>{opt.label}</strong>&nbsp;: {opt.description}
                         </span>
                         {#if opt.pause}
-                          {@render pauseBadge(opt.pause)}
+                          {@render pauseChip(opt.pause)}
                         {/if}
                       </div>
                     {:else}
@@ -351,7 +351,7 @@
                         {/each}
                       </ul>
                       {#if opt.pause}
-                        {@render pauseBadge(opt.pause)}
+                        {@render pauseChip(opt.pause)}
                       {/if}
                     </label>
                   {/snippet}
