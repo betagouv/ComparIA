@@ -1,5 +1,6 @@
 import uuid
 from copy import deepcopy
+from datetime import datetime
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -190,6 +191,20 @@ class AppSettings(SQLModel, table=True):
     # Outcome of the last "test connection": passed, the reason if not, when,
     # and the fingerprint of the provider config it was run against.
     oidc_connection_test: Annotated[dict | None, Field(sa_type=JSONB)] = None
+    # The model allowances set from /admin/limites, in characters. None keeps
+    # the RATELIMIT_* default from backend/config.py, so a new default still
+    # reaches every instance that never set its own.
+    limit_all_per_session: int | None = None
+    limit_all_per_ip: int | None = None
+    limit_expensive_per_session: int | None = None
+    limit_expensive_per_ip: int | None = None
+    limit_expected_answer_chars: int | None = None
+    # Who last changed an allowance, and when. Kept apart from updated_by,
+    # which every other setting moves too.
+    limits_updated_at: datetime | None = None
+    limits_updated_by: uuid.UUID | None = Field(
+        default=None, foreign_key="auth_user.id"
+    )
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
