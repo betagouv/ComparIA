@@ -56,7 +56,7 @@ async def update_app_settings(patch: dict, updated_by: uuid.UUID) -> AppSettings
 
 
 async def update_limit_settings(
-    changes: dict[str, int | None], updated_by: uuid.UUID
+    changes: dict[str, float | None], updated_by: uuid.UUID
 ) -> AppSettings:
     """Store the model allowances in `changes`, None putting one back on its
     default, and log each change with the admin who made it."""
@@ -85,5 +85,5 @@ async def update_limit_settings(
     return row
 
 
-def _shown(value: int | None) -> str:
+def _shown(value: float | None) -> str:
     return "default" if value is None else f"{value:,}"
