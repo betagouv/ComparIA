@@ -1,0 +1,142 @@
+import { browser } from '$app/environment'
+import { api } from '$lib/fastapi-client'
+import type {
+  ArenaLimits,
+  LimitRefusalBody,
+  PausedLLM,
+  SpentAllowance
+} from '$lib/generated/backend'
+import { createContext } from 'svelte'
+import { SvelteMap } from 'svelte/reactivity'
+
+// A window of the allowances: the longest one with no known reset can last.
+const FALLBACK_SECONDS = 2 * 60 * 60
+// Never read again sooner than this, even when the server says it lifts now.
+const MIN_WAIT_MS = 1000
+
+/**
+ * A spent allowance. `resets_at` is set from the server's countdown on this
+ * browser's clock, so the time shown agrees with the person's own clock even
+ * when it is off from the server's.
+ */
+export interface Spent extends SpentAllowance {
+  /** When to read the limits again, from the countdown or two hours. */
+  liftsAt: number
+}
+
+/** A paused model. An "allowance" one comes back with `expensive`. */
+export type PausedModel = PausedLLM
+
+export type Limits = ReturnType<typeof createLimits>
+
+export const [getLimitsContext, setLimitsContext] = createContext<Limits>()
+
+export async function queryLimits(_fetch: typeof fetch = fetch): Promise<ArenaLimits | null> {
+  try {
+    return await api.request<ArenaLimits>('/arena/limits', { fetch: _fetch })
+  } catch (err) {
+    // The arena works without it: a message is still charged, and refused, by
+    // the server.
+    console.error('Could not read the arena limits', err)
+    return null
+  }
+}
+
+function spent(allowance: SpentAllowance | null, now: number): Spent | undefined {
+  if (!allowance) return undefined
+  const resetsIn = allowance.resets_in
+  return {
+    ...allowance,
+    resets_at: resetsIn === null ? null : new Date(now + resetsIn * 1000).toISOString(),
+    liftsAt: now + (resetsIn ?? FALLBACK_SECONDS) * 1000
+  }
+}
+
+/**
+ * What the arena may do for this person right now: the whole allowance
+ * (`total`), the expensive one, and the models paused for them. Read on page
+ * load, after each turn and refusal, and again when a pause lifts.
+ */
+export function createLimits(initial: ArenaLimits | null = null) {
+  let total = $state<Spent>()
+  let expensive = $state<Spent>()
+  const paused = new SvelteMap<string, PausedModel>()
+  let timer: ReturnType<typeof setTimeout> | undefined
+  // Only the latest read counts: an older one may land after a refusal.
+  let reads = 0
+
+  function apply(data: ArenaLimits) {
+    const now = Date.now()
+    total = spent(data.total, now)
+    expensive = spent(data.expensive, now)
+    paused.clear()
+    for (const llm of data.paused_llms) {
+      paused.set(llm.id, {
+        ...llm,
+        until: llm.reason === 'allowance' ? (expensive?.resets_at ?? null) : llm.until
+      })
+    }
+    arm()
+  }
+
+  function arm() {
+    clearTimeout(timer)
+    if (!browser) return
+    const next = Math.min(total?.liftsAt ?? Infinity, expensive?.liftsAt ?? Infinity)
+    if (next === Infinity) return
+    timer = setTimeout(lift, Math.max(next - Date.now(), MIN_WAIT_MS))
+  }
+
+  async function lift() {
+    if (!(await refresh())) {
+      // The server cannot say: let the person try, a send is refused anyway.
+      const now = Date.now()
+      if (total && total.liftsAt <= now) total = undefined
+      if (expensive && expensive.liftsAt <= now) {
+        expensive = undefined
+        for (const [id, llm] of paused) if (llm.reason === 'allowance') paused.delete(id)
+      }
+      arm()
+    }
+  }
+
+  /** Reads the limits again; false when the server could not tell. */
+  async function refresh(): Promise<boolean> {
+    const read = ++reads
+    const data = await queryLimits()
+    if (read !== reads) return true
+    if (data) apply(data)
+    return !!data
+  }
+
+  if (initial) apply(initial)
+
+  return {
+    /** Set while the whole allowance is spent: no message goes through. */
+    get total() {
+      return total
+    },
+    /** Set while the expensive allowance is spent. Shown in the picker only. */
+    get expensive() {
+      return expensive
+    },
+    /** The models a new comparison may not use yet, by id. */
+    get paused(): ReadonlyMap<string, PausedModel> {
+      return paused
+    },
+    refresh,
+    /** A message was refused on a limit: show it at once, then read the rest. */
+    refused(refusal: LimitRefusalBody) {
+      if (refusal.detail === 'allowance_spent') {
+        reads++
+        const { scope, resets_at, resets_in } = refusal.limit
+        total = spent({ scope: scope ?? 'session', resets_at, resets_in }, Date.now())
+        arm()
+      }
+      void refresh()
+    },
+    destroy() {
+      clearTimeout(timer)
+    }
+  }
+}
