@@ -313,9 +313,10 @@ def answer_chars(answer: Answer | None) -> int:
 class Charge:
     """
     What one turn spends, charged in two steps. `reserve` charges what the
-    models are sent before either is called, and may refuse. `settle` adds,
-    once the turn is over, what they wrote and what they were sent beyond the
-    reservation, such as web search results found after it.
+    models are sent and what each is expected to write before either is
+    called, and may refuse. `settle` brings it to what the turn really cost
+    once it is over: what the models wrote, and what they were sent beyond
+    the reservation, such as web search results found after it.
     """
 
     def __init__(self, who: Identity, calls: Mapping[str, Call]) -> None:
@@ -335,7 +336,9 @@ class Charge:
         refusing: Collection[Pool] = POOLS,
     ) -> "Charge":
         """
-        Charge what each side is sent, see `reserve`.
+        Charge what each side is sent and is expected to write, see
+        `reserve`. Requests sent at once each meet the others' expected
+        answers, so a burst cannot all pass on inputs alone.
 
         Raises:
             AllowanceSpent: with each allowance that refused
@@ -363,9 +366,11 @@ class Charge:
         """
         Charge the turn's answers, however it ended: in full, on an error, or
         with the client gone, in which case what was written so far counts.
-        Nothing comes back on an error: one a client can provoke would buy
-        whatever the models had written. A cached answer gives its side's
-        share of the expensive pool back.
+        The counters end at what the turn cost: an answer shorter than
+        expected gives the rest back, a longer one adds to it. Nothing that
+        was sent or written comes back on an error: one a client can provoke
+        would buy whatever the models had written. A cached answer gives its
+        side's share of the expensive pool back.
 
         It never refuses and never raises: the answers are already out. Nor
         does it move an expiry. SET NX gives a counter that expired meanwhile
@@ -377,23 +382,40 @@ class Charge:
             return
         self.settled = True
         for pos, call in self.calls.items():
-            if answer := answers.get(pos):
-                call.written = answer_chars(answer)
-                call.cached = answer.is_cached
+            answer = answers.get(pos)
+            call.written = answer_chars(answer)
+            call.cached = bool(answer and answer.is_cached)
 
         cost = turn_cost([*self.replaced, *self.calls.values()])
         owed = {
             pool: cost.get(pool, 0) - self.reserved.get(pool, 0)
             for pool in {*cost, *self.reserved}
         }
+        counters = [
+            (budget_key(pool, identity), chars)
+            for pool, chars in owed.items()
+            if chars
+            for identity in self.who.identities
+        ]
         try:
-            pipe = get_redis_client().pipeline()
-            for pool, chars in owed.items():
-                for identity in self.who.identities if chars else ():
-                    key = budget_key(pool, identity)
-                    pipe.set(key, 0, ex=WINDOW_SECONDS, nx=True)
-                    pipe.incrby(key, chars)
-            pipe.execute()
+            client = get_redis_client()
+            pipe = client.pipeline()
+            for key, chars in counters:
+                pipe.set(key, 0, ex=WINDOW_SECONDS, nx=True)
+                pipe.incrby(key, chars)
+            created = pipe.execute()[::2]
+            # A refund on a counter that expired meanwhile would start the
+            # new window below zero, below what the turn cost. The window the
+            # turn was charged to is gone, so the refund goes with it.
+            if undo := [
+                (key, chars)
+                for (key, chars), new in zip(counters, created)
+                if new and chars < 0
+            ]:
+                pipe = client.pipeline()
+                for key, chars in undo:
+                    pipe.decrby(key, chars)
+                pipe.execute()
         except Exception:
             logger.exception("Could not charge what the models wrote")
 
