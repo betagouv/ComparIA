@@ -5,8 +5,11 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import SQLModel, select
 
+from backend.admin.limits import daily_usage
 from backend.admin.logos import read_logo
+from backend.arena.models import LLMDailyUsage
 from backend.config import LAB_LOGO_BOX
+from backend.llms.data import get_llms_data
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
@@ -84,6 +87,13 @@ async def get_data():
     except Exception as e:
         logger.error(f"[DB] Error loading LLMsData: {e}")
         raise
+
+
+@router.get("/usage")
+async def get_usage() -> list[LLMDailyUsage]:
+    """What each enabled model spent today, across everyone, against its daily
+    cap, and how many of its answers came from the cache."""
+    return daily_usage((await get_llms_data()).enabled.values())
 
 
 @router.get("/schemas")

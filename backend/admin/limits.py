@@ -1,4 +1,5 @@
 import uuid
+from typing import Iterable
 
 from fastapi import APIRouter
 
@@ -9,9 +10,11 @@ from backend.arena.models import (
     AdminLimits,
     AdminLimitsPatch,
     LimitsCalibration,
+    LLMDailyUsage,
 )
 from backend.auth.dependencies import RequiredAdmin
 from backend.errors import ActivityQueryTimeoutError
+from backend.llms.models import LLMDataEnabled
 from utils.arena.calibrate import CALIBRATION_DAYS, calibrate, enabled_llms
 from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import User
@@ -19,6 +22,30 @@ from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_limit_settings
 
 router = APIRouter(prefix="/limits", tags=["limits"])
+
+
+def daily_usage(llms: Iterable[LLMDataEnabled]) -> list[LLMDailyUsage]:
+    """What each model spent today against its daily cap, the costliest
+    first. Every model is counted, capped or not."""
+    llms = list(llms)
+    day = limits.Day.at()
+    days = limits.read_model_days([llm.id for llm in llms], day)
+    usage = [
+        LLMDailyUsage(
+            llm_id=llm.id,
+            name=llm.name,
+            input_chars=days[llm.id].sent,
+            output_chars=days[llm.id].written,
+            estimated_usd=days[llm.id].micro_usd / limits.MICRO_USD,
+            cap_usd=llm.daily_usd_cap,
+            resting=limits.is_resting(llm, days[llm.id]),
+            resets_in=day.ends_in(),
+            answers=days[llm.id].answers,
+            cached_answers=days[llm.id].cached,
+        )
+        for llm in llms
+    ]
+    return sorted(usage, key=lambda used: (-used.estimated_usd, used.name))
 
 
 async def _email(user_id: uuid.UUID | None) -> str | None:

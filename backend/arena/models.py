@@ -201,6 +201,26 @@ class AdminLimits(BaseModel):
     calibration_days: int
 
 
+class LLMDailyUsage(BaseModel):
+    """What one enabled model spent today, across everyone, against its
+    daily cap. The day ends at midnight in Paris."""
+
+    llm_id: UUID
+    name: str
+    input_chars: int
+    output_chars: int
+    # Estimated from the model's prices at four characters per token.
+    estimated_usd: float
+    cap_usd: float | None
+    # Out of new draws until the day ends.
+    resting: bool
+    # Seconds until the day ends.
+    resets_in: int
+    # Answers given today, and how many of them came from the cache.
+    answers: int
+    cached_answers: int
+
+
 class AdminLimitsPatch(BaseModel):
     """A field left out stays as it is; null puts it back on its default."""
 
