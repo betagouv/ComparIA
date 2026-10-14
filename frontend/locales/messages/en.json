@@ -319,7 +319,8 @@
             "publishing": "Publishing",
             "suggestions": "Suggestions",
             "users": "Users",
-            "voteTags": "Vote tags"
+            "voteTags": "Vote tags",
+            "limits": "Limits"
         },
         "panelLink": "Admin panel",
         "promptChecks": {
@@ -805,6 +806,61 @@
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
             "title": "Vote tags"
+        },
+        "limits": {
+            "title": "Limits",
+            "subtitle": "What one person, and a whole network, can have the models read and write in two hours. A change reaches the whole arena in less than a minute.",
+            "updated": "Last changed on {date} by {who}.",
+            "updatedUnknown": "Last changed on {date}.",
+            "unit": "{value} characters",
+            "current": "Current value: {value}",
+            "isDefault": "Default",
+            "isStored": "Changed",
+            "newValue": "New value, in characters",
+            "reset": "Back to default ({value})",
+            "resetDone": "Default value restored.",
+            "apply": "Apply",
+            "applying": "Saving…",
+            "applied": "Limits saved.",
+            "cancel": "Cancel",
+            "nothingToApply": "No value has changed.",
+            "groups": {
+                "all": "All answers",
+                "expensive": "Expensive models",
+                "answer": "Reservation"
+            },
+            "names": {
+                "all_per_session": "Per person",
+                "all_per_ip": "Per network",
+                "expensive_per_session": "Per person",
+                "expensive_per_ip": "Per network",
+                "expected_answer_chars": "Reserved answer length"
+            },
+            "help": {
+                "all_per_session": "What one person can have the models read and write in two hours, all models together. Once reached, they wait for the two hours to end before sending another message.",
+                "all_per_ip": "The same limit for a whole network, such as a school or a hospital. It stops someone who clears their cookies to start over.",
+                "expensive_per_session": "The share of expensive models for one person in two hours. Each character counts as many times as the model's cost weight. Once reached, new conversations go on without the expensive models; the other models stay open.",
+                "expensive_per_ip": "The same share of expensive models for a whole network.",
+                "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted."
+            },
+            "calibrate": {
+                "button": "Calibrate",
+                "running": "Calculating…",
+                "hint": "Proposes values from the last 7 days of conversations. Nothing changes until you click “Apply”.",
+                "sample": "Based on {comparisons} conversations and {turns} messages from the last {days} days.",
+                "capped": "Only the latest conversations were read.",
+                "empty": "Not enough conversations in the period to propose values.",
+                "timeout": "The calculation took too long. Try again in a few minutes.",
+                "failed": "The calculation did not finish.",
+                "proposal": "Proposal: {value}",
+                "none": "No proposal: nothing was spent here in the period.",
+                "explain": {
+                    "session": "{percentile}% of people stay under it in two hours, out of {count} periods read.",
+                    "sessionMessages": "{percentile}% of people stay under it in two hours, out of {count} periods read: about {messages} messages before reaching it.",
+                    "network": "Lets through a class of {size} people who each spend as much as {percentile}% of people; {share} of the networks read would have gone past it.",
+                    "answer": "Half of the answers are shorter than {value} characters, out of {count} answers read."
+                }
+            }
         }
     },
     "arenaHome": {
