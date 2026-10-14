@@ -4,7 +4,11 @@ from typing import get_args
 
 from pydantic2ts import generate_typescript_defs
 
-from backend.config import MAX_TURNS_PER_COMPARISON
+from backend.config import (
+    BIG_MODELS_BUCKET_LOWER_LIMIT,
+    MAX_TURNS_PER_COMPARISON,
+    SMALL_MODELS_BUCKET_UPPER_LIMIT,
+)
 from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
 from internal.archs import get_archs
 from utils.database.models.llms.constants import LLMArchKind
@@ -50,7 +54,13 @@ def generate_frontend_constants() -> None:
     }
 
     # Single values, with no union type to go with them.
-    numbers = {"MAX_TURNS_PER_COMPARISON": MAX_TURNS_PER_COMPARISON}
+    numbers = {
+        "MAX_TURNS_PER_COMPARISON": MAX_TURNS_PER_COMPARISON,
+        # The model sizes each mode draws from, so the arena can tell a mode
+        # left with nothing to draw before anyone sends.
+        "SMALL_MODELS_BUCKET_UPPER_LIMIT": SMALL_MODELS_BUCKET_UPPER_LIMIT,
+        "BIG_MODELS_BUCKET_LOWER_LIMIT": BIG_MODELS_BUCKET_LOWER_LIMIT,
+    }
 
     file_lines = (
         [f"export const {k} = {v} as const" for k, v in constants.items()]
