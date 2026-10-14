@@ -78,6 +78,7 @@ from backend.config import (
     ALTCHA_MAX_NUMBER,
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
+    settings,
 )
 from backend.errors import LimitReachedError
 from backend.llms.data import (
@@ -248,8 +249,13 @@ def follow_up_sent(comparison: ComparisonRead, message: str = "") -> Sent:
 
 
 def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
+    """Each side as reserved: what it is sent, and a typical answer."""
     return {
-        pos: Call(llms_data.weight(llm_id), chars)
+        pos: Call(
+            llms_data.weight(llm_id),
+            chars,
+            written=settings.RATELIMIT_EXPECTED_ANSWER_CHARS,
+        )
         for pos, (llm_id, chars) in sent.items()
     }
 

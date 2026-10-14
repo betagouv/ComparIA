@@ -57,6 +57,12 @@ SENT = {
     "add_text": 2 * len(PROMPT),
     "retry": len(PROMPT),
 }
+# What each side is charged before the models start: what it is sent and a
+# typical answer, settled to the real one when the turn ends.
+RESERVED = {
+    route: sent + settings.RATELIMIT_EXPECTED_ANSWER_CHARS
+    for route, sent in SENT.items()
+}
 
 
 def counter(redis, pool, identity):
@@ -269,8 +275,8 @@ def test_a_message_is_charged_before_the_models_start(route, state):
     response = start(route, state)
 
     assert state.provider_calls == 0
-    assert counter(state.redis, "all", ME) == 2 * SENT[route], route
-    assert counter(state.redis, "all", NETWORK) == 2 * SENT[route], route
+    assert counter(state.redis, "all", ME) == 2 * RESERVED[route], route
+    assert counter(state.redis, "all", NETWORK) == 2 * RESERVED[route], route
     assert response.status_code == 200
 
 
@@ -356,7 +362,7 @@ def test_an_expensive_model_spends_the_expensive_allowance_up_front():
     for route in ROUTES:
         with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
             start(route, state)
-            weighted = WEIGHT * SENT[route]
+            weighted = WEIGHT * RESERVED[route]
             assert counter(state.redis, "expensive", ME) == weighted, route
             assert counter(state.redis, "expensive", NETWORK) == weighted, route
 
