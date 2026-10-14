@@ -86,17 +86,18 @@ class Spend:
         self.turns.append((at, cost))
 
     def windows(self, pool: Pool) -> list[int]:
-        """What the counter would have held in each window: every turn that
-        charges the pool keeps it open two more hours."""
+        """What the counter would have held in each window: a window opens
+        with the first turn that charges the pool and closes two hours later,
+        however many turns follow."""
         totals: list[int] = []
-        last: datetime | None = None
+        opened: datetime | None = None
         for at, cost in sorted(self.turns, key=lambda turn: turn[0]):
             if pool not in cost:
                 continue
-            if last is None or at - last >= timedelta(seconds=WINDOW_SECONDS):
+            if opened is None or at - opened >= timedelta(seconds=WINDOW_SECONDS):
                 totals.append(0)
+                opened = at
             totals[-1] += cost[pool]
-            last = at
         return totals
 
     def hours(self, pool: Pool) -> list[int]:

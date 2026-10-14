@@ -105,6 +105,19 @@ def test_a_window_closes_after_two_quiet_hours():
     assert sorted(result.networks["10.0.0.1"].hours("all")) == [one_turn] * 3
 
 
+def test_a_window_closes_two_hours_after_its_first_turn_however_busy():
+    rows = [
+        turn(uuid4(), START + timedelta(minutes=m), "a", None, None)
+        for m in (0, 60, 110, 125, 200)
+    ]
+    one_turn = 10 + 1 + 1
+    # The first window closes at 2:00; the turn at 2:05 opens one to 4:05.
+    assert replay(rows, PRICES).people["s:s1"].windows("all") == [
+        3 * one_turn,
+        2 * one_turn,
+    ]
+
+
 def test_a_signed_in_person_counts_on_their_account():
     user_id = uuid4()
     rows = [
