@@ -30,10 +30,13 @@
     }
   }
 
-  // Caught here first, so an Escape meant for it does not also close a
-  // dialog it sits in.
+  // An Escape meant for it must not also close a dialog it sits in. A DSFR
+  // modal hears the key first, on the document, and leaves it to an open
+  // tooltip: the button says it is one while open.
   function onKeydown(e: KeyboardEvent) {
     if (!open || e.key !== 'Escape') return
+    // A native <dialog> closes on the key's default action.
+    e.preventDefault()
     e.stopPropagation()
     onWindowKeydown(e)
   }
@@ -53,6 +56,7 @@
     class="fr-link fr-text--sm cl-toggletip__button"
     aria-expanded={open}
     aria-controls={id}
+    data-fr-js-tooltip-referent={open ? '' : undefined}
     onclick={() => (open = !open)}
   >
     {label}
