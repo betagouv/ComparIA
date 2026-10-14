@@ -221,8 +221,10 @@ def pick_and_charge(
     try:
         reserve(who, message_cost(args.prompt_value, pair, llms_data))
     except AllowanceSpent as error:
-        if any(allowance.pool == "all" for allowance in error.spent):
-            raise refuse(error.spent, request)
+        if whole := [a for a in error.spent if a.pool == "all"]:
+            # Only the whole allowance is told: the expensive one says to
+            # pick other models, which would not help.
+            raise refuse(whole, request)
         # Another message spent the expensive allowance since it was read.
         return without_expensive(error.spent), False
     return pair, True

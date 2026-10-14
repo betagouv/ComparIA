@@ -134,6 +134,24 @@ def test_a_draw_that_meets_an_allowance_spent_meanwhile_draws_again():
         assert counter(state.redis, "expensive", ME) == SPENT
 
 
+def test_a_draw_that_meets_both_allowances_spent_meanwhile_is_told_the_whole():
+    """The expensive allowance lifting later must not turn the refusal into
+    one that says to pick other models."""
+    with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
+        spend(state.redis, "expensive", ME)
+        state.redis.set(limits.budget_key("all", ME), SPENT, ex=60)
+        stale = SimpleNamespace(expensive_available=True)
+        with (
+            patched(arena_router, read_status=lambda _who: stale),
+            pytest.raises(HTTPException) as refusal,
+        ):
+            asyncio.run(route_only("add_first_text", state))
+
+        assert refusal.value.detail == "allowance_spent"
+        assert refusal.value.limit.resets_in == 60
+        assert state.created == 0
+
+
 def test_a_custom_pick_that_meets_an_allowance_spent_meanwhile_is_refused():
     with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
         spend(state.redis, "expensive", ME)
