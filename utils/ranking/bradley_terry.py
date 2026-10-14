@@ -5,11 +5,23 @@ Computes Elo-like ratings from pairwise comparison data (battles).
 Uses vectorized numpy operations for performance.
 """
 
+from typing import NamedTuple
 from uuid import UUID
 
 import numpy as np
 
 Battle = tuple[UUID, UUID, UUID]
+
+
+class Interval(NamedTuple):
+    """A model's rating with its bootstrap interval."""
+
+    point: float
+    lower: float
+    upper: float
+    # Rating in each bootstrap round, NaN where the model was degenerate. Rounds
+    # line up across models, so ranks can be read off each round.
+    samples: np.ndarray
 
 
 def _index_battles(
@@ -110,7 +122,7 @@ def fit_bradley_terry(
 def bootstrap_confidence_intervals(
     battles: list[Battle],
     n_samples: int = 500,
-) -> dict[UUID, tuple[float, float, float]]:
+) -> dict[UUID, Interval]:
     """
     Compute Bradley-Terry ratings with bootstrap confidence intervals.
 
@@ -128,7 +140,8 @@ def bootstrap_confidence_intervals(
         n_samples: Number of bootstrap samples.
 
     Returns:
-        Dict mapping model name to (point_rating, lower_2.5, upper_97.5).
+        Dict mapping model name to its Interval (point rating, 2.5 and 97.5
+        percentiles, per-round ratings).
     """
     if not battles:
         return {}
@@ -150,6 +163,8 @@ def bootstrap_confidence_intervals(
     uppers = np.nanpercentile(all_elos, 97.5, axis=0)
 
     return {
-        models[i]: (float(point_elo[i]), float(lowers[i]), float(uppers[i]))
+        models[i]: Interval(
+            float(point_elo[i]), float(lowers[i]), float(uppers[i]), all_elos[:, i]
+        )
         for i in range(n_models)
     }
