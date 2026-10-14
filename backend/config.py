@@ -171,6 +171,13 @@ class Settings(BaseSettings):
     # still: an ordinary session must never meet this.
     RATELIMIT_ALL_PER_SESSION: PositiveInt = 500_000
     RATELIMIT_ALL_PER_IP: PositiveInt = 10_000_000
+    # What each model is expected to write, charged with the input before the
+    # call and settled to the real length after it. Requests sent at once are
+    # each checked before the others' answers come back, so without it their
+    # answers would all escape the allowance. 508 is the median answer of the
+    # calibration replay on the local seed (`db seed-activity`); set it from
+    # the production replay's median (`make arena-limits-calibrate`).
+    RATELIMIT_EXPECTED_ANSWER_CHARS: NonNegativeInt = 508
 
     # Response caching
     # Always on. Set the probability to 0 to stop serving cached answers in an
