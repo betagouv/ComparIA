@@ -97,6 +97,10 @@ arena-limits-show: ## Show what a session or an IP spent of the model allowances
 arena-limits-reset: ## Give a session or an IP its model allowances back (usage: make arena-limits-reset SESSION=<hash> IP=<ip>)
 	./comparia-cli arena limits reset $(if $(SESSION),--session "$(SESSION)") $(if $(IP),--ip "$(IP)")
 
+arena-limits-calibrate: ## Replay stored comparisons to see what the model allowances would count, read-only (usage: make arena-limits-calibrate DAYS=30, requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli arena limits calibrate --days $(or $(DAYS),30)
+
 redis: ## Launch Redis using docker compose
 	@$(MAKE) network
 	@echo "Starting Redis..."
