@@ -14,6 +14,10 @@ A spent `all` allowance stops every message. A spent `expensive` one only
 keeps expensive models out of new comparisons: the conversations already
 started with one may finish.
 
+Each model's spend is also counted per Paris calendar day, across everyone,
+in the same two steps. A model whose daily cap is reached rests until
+midnight: new comparisons leave it out, the ones under way finish.
+
 Routes call `read_status` for a cheap early answer, `Charge.reserve` to charge
 what the models are sent before any of them is called, and `Charge.settle` to
 add what they wrote once the turn is over.
@@ -26,14 +30,22 @@ them again at most every `RELOAD_SECONDS`, see `reload_settings`.
 import logging
 import math
 import time
+from collections import defaultdict
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Collection, Iterable, Literal, Mapping, Protocol, Sequence, get_args
+from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from backend.config import settings
 from backend.utils.user import ip_bucket
 from utils.database.models.app_settings import AppSettings
 from utils.database.settings import get_app_settings
-from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
+from utils.storage.redis import (
+    REDIS_BUDGET_KEY,
+    REDIS_MODEL_DAY_KEY,
+    get_redis_client,
+)
 
 logger = logging.getLogger("languia")
 
@@ -269,13 +281,24 @@ class Call:
     expensive: bool = False
     # Served from the answer cache: the provider was not called.
     cached: bool = False
+    # The model, for its daily spend. None when the caller has no id, as in
+    # a replay of a model the database no longer knows.
+    llm_id: UUID | None = None
 
     @classmethod
     def of(cls, llm: Priced, sent: int, written: int = 0) -> "Call":
         """Whether the model is expensive is read once, here, so a threshold
         changed during a turn cannot reserve it one way and settle it the
         other."""
-        return cls(sent, written, llm.price_in, llm.price_out, is_expensive(llm))
+        llm_id = getattr(llm, "id", None)
+        return cls(
+            sent,
+            written,
+            llm.price_in,
+            llm.price_out,
+            is_expensive(llm),
+            llm_id=llm_id if isinstance(llm_id, UUID) else None,
+        )
 
     @property
     def micro_usd(self) -> int:
@@ -306,6 +329,155 @@ def turn_cost(calls: Iterable[Call]) -> dict[Pool, int]:
     if expensive := [call for call in calls if call.expensive]:
         cost["expensive"] = sum(call.micro_usd for call in expensive if not call.cached)
     return cost
+
+
+# A model's day follows the clock of the people using it: it ends at midnight
+# in Paris, not in UTC, which would reset the caps at 1 or 2 in the morning.
+DAY_ZONE = ZoneInfo("Europe/Paris")
+
+
+def now() -> float:
+    """The clock the daily caps read. Tests move it."""
+    return time.time()
+
+
+@dataclass(frozen=True)
+class Day:
+    """A Paris calendar day, as its keys spell it, and when it ends."""
+
+    name: str
+    ends_at: int
+
+    @classmethod
+    def at(cls, moment: float | None = None) -> "Day":
+        local = datetime.fromtimestamp(now() if moment is None else moment, DAY_ZONE)
+        tomorrow = datetime.combine(
+            local.date() + timedelta(days=1), datetime.min.time(), DAY_ZONE
+        )
+        return cls(local.strftime("%Y%m%d"), int(tomorrow.timestamp()))
+
+    @property
+    def ends(self) -> datetime:
+        return datetime.fromtimestamp(self.ends_at, timezone.utc)
+
+    def ends_in(self) -> int:
+        """Seconds until the day ends, on the same clock."""
+        return max(0, math.ceil(self.ends_at - now()))
+
+
+def model_day_key(llm_id: UUID, day: Day) -> str:
+    return REDIS_MODEL_DAY_KEY.format(llm_id=llm_id, day=day.name)
+
+
+# The fields of a model's day: millionths of a dollar, characters sent and
+# written, answers, and the answers served from the cache.
+DayField = Literal["usd", "in", "out", "answers", "cached"]
+
+
+def day_cost(calls: Iterable[Call]) -> dict[UUID, dict[DayField, int]]:
+    """What each model of these calls spends of its day. A cached answer
+    costs nothing: the provider was not called."""
+    cost: dict[UUID, dict[DayField, int]] = defaultdict(dict)
+    for call in calls:
+        if call.llm_id is None or call.cached:
+            continue
+        spent = cost[call.llm_id]
+        spent["usd"] = spent.get("usd", 0) + call.micro_usd
+        spent["in"] = spent.get("in", 0) + call.sent
+        spent["out"] = spent.get("out", 0) + call.written
+    return dict(cost)
+
+
+def count_day(day: Day, changes: Mapping[UUID, Mapping[DayField, int]]) -> None:
+    """
+    Add to each model's day. The expiry goes with each change, in one
+    transaction, so no day is left without one; it is the day's end, an
+    absolute time, so sending it again moves nothing. A change that lands
+    once the day is over, as a turn settled after midnight, removes that
+    day at once.
+    """
+    changes = {
+        llm_id: fields for llm_id, fields in changes.items() if any(fields.values())
+    }
+    if not changes:
+        return
+    pipe = get_redis_client().pipeline()
+    for llm_id, fields in changes.items():
+        key = model_day_key(llm_id, day)
+        for name, amount in fields.items():
+            if amount:
+                pipe.hincrby(key, name, amount)
+        pipe.expireat(key, day.ends_at)
+    pipe.execute()
+
+
+@dataclass(frozen=True)
+class ModelDay:
+    """What one model spent today, across everyone."""
+
+    llm_id: UUID
+    micro_usd: int = 0
+    sent: int = 0
+    written: int = 0
+    answers: int = 0
+    cached: int = 0
+
+
+def read_model_days(
+    llm_ids: Sequence[UUID], day: Day | None = None
+) -> dict[UUID, ModelDay]:
+    """Each model's day, in one round trip."""
+    if not llm_ids:
+        return {}
+    day = day or Day.at()
+    pipe = get_redis_client().pipeline()
+    for llm_id in llm_ids:
+        pipe.hgetall(model_day_key(llm_id, day))
+    replies: list[dict[str, str]] = pipe.execute()
+    return {
+        llm_id: ModelDay(
+            llm_id,
+            micro_usd=int(fields.get("usd", 0)),
+            sent=int(fields.get("in", 0)),
+            written=int(fields.get("out", 0)),
+            answers=int(fields.get("answers", 0)),
+            cached=int(fields.get("cached", 0)),
+        )
+        for llm_id, fields in zip(llm_ids, replies)
+    }
+
+
+class Capped(Protocol):
+    """A model and the most it may cost per day, in US dollars."""
+
+    @property
+    def id(self) -> UUID: ...
+
+    @property
+    def daily_usd_cap(self) -> float | None: ...
+
+
+def is_resting(llm: Capped, spent: ModelDay) -> bool:
+    """Whether the model's day is full: what it spent reached its cap."""
+    if llm.daily_usd_cap is None:
+        return False
+    return spent.micro_usd >= round(llm.daily_usd_cap * MICRO_USD)
+
+
+def resting_models(
+    llms: Iterable[Capped], day: Day | None = None
+) -> dict[UUID, datetime]:
+    """
+    The models whose daily cap is full, each with the moment it lifts. Read
+    before a draw, like the allowances: first messages sent at once may each
+    draw a model that only one of them fills, so a cap can be passed by a few
+    turns, and by the conversations already under way, which finish.
+    Reads nothing while no model has a cap.
+    """
+    day = day or Day.at()
+    capped = [llm for llm in llms if llm.daily_usd_cap is not None]
+    days = read_model_days([llm.id for llm in capped], day)
+    return {llm.id: day.ends for llm in capped if is_resting(llm, days[llm.id])}
 
 
 def read_counters(identities: Sequence[str]) -> LimitStatus:
@@ -476,6 +648,10 @@ class Charge:
         # Models that failed mid-turn and gave their side to a stand-in.
         self.replaced: list[Call] = []
         self.reserved = turn_cost(self.calls.values())
+        # The day the turn counts for, kept so a turn settled after midnight
+        # settles the day it reserved.
+        self.day = Day.at()
+        self.day_reserved = day_cost(self.calls.values())
         self.settled = False
 
     @classmethod
@@ -495,6 +671,13 @@ class Charge:
         """
         charge = cls(who, calls)
         reserve(who, charge.reserved, refusing)
+        try:
+            count_day(charge.day, charge.day_reserved)
+        except Exception:
+            # The allowances are charged. A model's day only decides the
+            # next draws, so it fails open, like reading it.
+            logger.exception("Could not count the models' day")
+            charge.day_reserved = {}
         return charge
 
     def sending(self, pos: str, chars: int) -> None:
@@ -536,6 +719,7 @@ class Charge:
             call.written = answer_chars(answer)
             call.cached = bool(answer and answer.is_cached)
 
+        self._settle_day(answers)
         cost = turn_cost([*self.replaced, *self.calls.values()])
         owed = {
             pool: cost.get(pool, 0) - self.reserved.get(pool, 0)
@@ -568,6 +752,28 @@ class Charge:
                 pipe.execute()
         except Exception:
             logger.exception("Could not charge what the models wrote")
+
+    def _settle_day(self, answers: Mapping[str, Answer | None]) -> None:
+        """Bring each model's day to what the turn cost it, and count the
+        answers it gave, the cached ones too."""
+        cost = day_cost([*self.replaced, *self.calls.values()])
+        changes: dict[UUID, dict[DayField, int]] = {}
+        for llm_id in {*cost, *self.day_reserved}:
+            spent, reserved = cost.get(llm_id, {}), self.day_reserved.get(llm_id, {})
+            changes[llm_id] = {
+                name: spent.get(name, 0) - reserved.get(name, 0)
+                for name in ("usd", "in", "out")
+            }
+        for pos, call in self.calls.items():
+            if call.llm_id is None or answers.get(pos) is None:
+                continue
+            fields = changes.setdefault(call.llm_id, {})
+            fields["answers"] = fields.get("answers", 0) + 1
+            fields["cached"] = fields.get("cached", 0) + int(call.cached)
+        try:
+            count_day(self.day, changes)
+        except Exception:
+            logger.exception("Could not count the models' day")
 
 
 def reset_counters(identities: Sequence[str]) -> int:
