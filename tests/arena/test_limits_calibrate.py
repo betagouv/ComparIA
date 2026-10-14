@@ -113,11 +113,21 @@ def test_a_signed_in_person_counts_on_their_account():
 
 
 def test_cached_answers_on_suggested_prompts_are_counted_apart():
+    suggested = uuid4()
     rows = [
-        turn(uuid4(), START, "a", (10, 0, True), (10, 0, False), suggested=True),
+        turn(suggested, START, "a", (10, 0, True), (10, 0, False), suggested=True),
+        # Only a first turn counts as a suggested prompt.
+        turn(
+            suggested,
+            START + timedelta(minutes=1),
+            "a",
+            (10, 0, True),
+            (10, 0, True),
+            suggested=True,
+        ),
         turn(uuid4(), START, "b", (10, 0, True), (10, 0, True)),
     ]
     result = replay(rows, WEIGHTS)
 
-    assert (result.cached, result.answers) == (3, 4)
+    assert (result.cached, result.answers) == (5, 6)
     assert (result.suggested_cached, result.suggested_answers) == (1, 2)
