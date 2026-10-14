@@ -939,13 +939,17 @@
             },
             "pause": {
                 "meanwhile": "En attendant, vous pouvez voter, découvrir les modèles et consulter le classement.",
-                "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures. Cette limite concerne tout le réseau, pas seulement vous. Vous pourrez écrire de nouveau {at}.",
+                "models": "Découvrir les modèles",
+                "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures : la limite vaut pour tout le réseau.",
                 "ranking": "Voir le classement",
                 "reveal": "Découvrir les modèles",
-                "session": "Vous avez envoyé beaucoup de messages ces deux dernières heures. Vous pourrez en écrire de nouveaux {at}.",
-                "title": "Pause jusqu'à {time}",
+                "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, le classement et les modèles restent ouverts.",
+                "title": "De retour à {time}",
                 "titleSoon": "Pause de moins de deux heures",
-                "titleTomorrow": "Pause jusqu'à demain, {time}"
+                "titleTomorrow": "De retour demain à {time}",
+                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages toutes les deux heures. Vos votes et vos conversations restent enregistrés.",
+                "whyLabel": "Pourquoi cette pause ?",
+                "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."
             },
             "picked": {
                 "backOne": "Il est en pause pour vous et revient {at}.",
@@ -973,6 +977,9 @@
             "time": {
                 "at": "à {time}",
                 "tomorrowAt": "demain à {time}",
+                "until": "jusqu'à {time}",
+                "untilSoon": "pour moins de deux heures",
+                "untilTomorrow": "jusqu'à demain, {time}",
                 "within": "dans moins de deux heures"
             },
             "turns": {

@@ -10,6 +10,8 @@ export interface ResetTime {
   clock?: ReturnType<typeof clockTime>
   /** "à 15 h 40", "demain à 1 h 30", or "dans moins de deux heures" when unknown. */
   at: string
+  /** "jusqu'à 15 h 40", "jusqu'à demain, 1 h 30", or "pour moins de deux heures". */
+  until: string
 }
 
 export function resetTime(resetsAt: string | null | undefined): ResetTime {
@@ -19,10 +21,15 @@ export function resetTime(resetsAt: string | null | undefined): ResetTime {
     : m[clock.tomorrow ? 'arene.limits.time.tomorrowAt' : 'arene.limits.time.at']({
         time: TIME_SLOT
       })
-  return { datetime: resetsAt, clock, at }
+  const until = !clock
+    ? m['arene.limits.time.untilSoon']()
+    : m[clock.tomorrow ? 'arene.limits.time.untilTomorrow' : 'arene.limits.time.until']({
+        time: TIME_SLOT
+      })
+  return { datetime: resetsAt, clock, at, until }
 }
 
-/** "Pause jusqu'à 15 h 40", with TIME_SLOT where the time goes. */
+/** "De retour à 15 h 40", with TIME_SLOT where the time goes. */
 export function pauseTitle(reset: ResetTime): string {
   if (!reset.clock) return m['arene.limits.pause.titleSoon']()
   return m[reset.clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({

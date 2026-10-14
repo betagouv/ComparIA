@@ -860,13 +860,17 @@
             },
             "pause": {
                 "meanwhile": "Indtil da kan du stemme, se modellerne og se ranglisten.",
-                "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Grænsen gælder alle på netværket, ikke kun dig. Du kan skrive igen {at}.",
+                "models": "Se modellerne",
+                "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer: grænsen gælder hele netværket.",
                 "ranking": "Se ranglisten",
                 "reveal": "Se modellerne",
-                "session": "Du har sendt mange beskeder de seneste to timer. Du kan skrive nye {at}.",
-                "title": "Pause indtil {time}",
+                "session": "Du har skrevet meget de seneste to timer. Indtil da er ranglisten og modellerne stadig åbne.",
+                "title": "Tilbage kl. {time}",
                 "titleSoon": "En pause på under to timer",
-                "titleTomorrow": "Pause indtil i morgen, {time}"
+                "titleTomorrow": "Tilbage i morgen kl. {time}",
+                "why": "For at holde compar:IA gratis for alle kan hver person sende et begrænset antal beskeder hver anden time. Dine stemmer og samtaler gemmes.",
+                "whyLabel": "Hvorfor denne pause?",
+                "whyNetwork": "For at holde compar:IA gratis for alle kan hvert netværk sende et begrænset antal beskeder hver anden time. Grænsen gælder alle på netværket, ikke kun dig."
             },
             "picked": {
                 "backOne": "Den er sat på pause for dig og kommer tilbage {at}.",
@@ -894,6 +898,9 @@
             "time": {
                 "at": "kl. {time}",
                 "tomorrowAt": "i morgen kl. {time}",
+                "until": "til {time}",
+                "untilSoon": "i under to timer",
+                "untilTomorrow": "til i morgen kl. {time}",
                 "within": "inden for to timer"
             },
             "turns": {

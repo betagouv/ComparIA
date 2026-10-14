@@ -71,15 +71,34 @@ describe('ViewChat', () => {
     const view = render(ViewChat, props)
 
     expect(view.queryByRole('textbox')).toBeNull()
-    const title = view.getByRole('heading', { name: /^Pause jusqu'à/ })
+    const title = view.getByRole('heading', { name: /^De retour à/ })
     expect(title).toHaveFocus()
     expect(title.querySelector('time')).toHaveAttribute('datetime')
     // Not an input error: nothing red, nothing marked invalid.
     expect(view.container.querySelector('.fr-message--error, [aria-invalid]')).toBeNull()
 
-    await fireEvent.click(view.getByRole('button', { name: 'Découvrir les modèles' }))
+    await fireEvent.click(view.getByRole('button', { name: revealLabel }))
     expect(comparator.reveal).toHaveBeenCalled()
+    expect(view.getByRole('link', { name: 'Voir le classement' })).toHaveAttribute(
+      'href',
+      '/ranking'
+    )
     Object.assign(comparator, { pause: undefined, pauseFromSend: false })
+  })
+
+  it('says why the pause in a toggletip under its buttons', async () => {
+    comparator.pause = {
+      detail: 'allowance_spent',
+      limit: { scope: 'network', resets_at: null, resets_in: null, llm_ids: [] }
+    }
+    const view = render(ViewChat, props)
+    const why = view.getByRole('button', { name: 'Pourquoi cette pause ?' })
+
+    await fireEvent.click(why)
+
+    expect(why).toHaveAttribute('aria-expanded', 'true')
+    expect(document.getElementById('pause-notice-why')).toHaveTextContent(/tout le réseau/)
+    comparator.pause = undefined
   })
 
   it('tells a pause that shows after a turn without moving focus', () => {
@@ -104,8 +123,7 @@ describe('ViewChat', () => {
     const view = render(ViewChat, props)
 
     expect(view.getByRole('link', { name: 'Nouvelle discussion' })).toHaveAttribute('href', '/')
-    expect(view.queryByRole('button', { name: 'Découvrir les modèles' })).toBeNull()
-    expect(view.queryByText(/En attendant/)).toBeNull()
+    expect(view.queryByRole('button', { name: revealLabel })).toBeNull()
     Object.assign(comparator, { pause: undefined, error: undefined, canReveal: true })
   })
 
