@@ -1,6 +1,5 @@
 <script lang="ts">
   import Copy from '$components/Copy.svelte'
-  import { Icon } from '$components/dsfr'
   import { MarkdownCode as Markdown } from '$components/markdown'
   import Pending from '$components/Pending.svelte'
   import type {
@@ -9,9 +8,11 @@
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
+  import type { AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { sanitize } from '$lib/utils/commons'
-  import { VoteAnnotate } from '.'
+  import { AgentActivity, VoteAnnotate } from '.'
+  import { SvelteMap } from 'svelte/reactivity'
+  import type { ActivityStep } from './toolActivity'
 
   export type MessageBotProps = {
     id: string
@@ -31,14 +32,77 @@
 
   const message = $derived(turnSide.llm_msg!)
 
+  const trace = $derived(message.agent_trace ?? [])
+  const generating = $derived(turnSide.status === 'generating')
+
+  // Reasoning and tool calls that follow each other read as one line of
+  // activity; text the model wrote between them stays in the answer.
+  type Block = { type: 'text'; content: string } | { type: 'activity'; steps: ActivityStep[] }
+  const blocks = $derived.by(() => {
+    const results = new SvelteMap<string, AgentTraceToolResult>()
+    for (const event of trace) {
+      if (event.type === 'tool_result') results.set(event.tool_call_id, event)
+    }
+
+    const blocks: Block[] = []
+    const addStep = (step: ActivityStep) => {
+      const last = blocks.at(-1)
+      if (last?.type === 'activity') last.steps.push(step)
+      else blocks.push({ type: 'activity', steps: [step] })
+    }
+    let tracedReasoning = ''
+    for (const event of trace) {
+      if (event.type === 'intermediate_content') {
+        blocks.push({ type: 'text', content: event.content })
+      } else if (event.type === 'reasoning') {
+        tracedReasoning = event.content.trim()
+        addStep({ type: 'reasoning', content: event.content })
+      } else if (event.type === 'tool_call') {
+        addStep({ type: 'tool', call: event, result: results.get(event.tool_call_id) ?? null })
+      }
+    }
+    // Reasoning streams before the trace records it.
+    const liveReasoning = message.reasoning_content?.trim() ?? ''
+    if (liveReasoning && liveReasoning !== tracedReasoning) {
+      addStep({ type: 'reasoning', content: liveReasoning })
+    }
+    return blocks
+  })
+  // The last run of steps is live until the answer starts.
+  const activeBlock = $derived(
+    generating && !message.content.trim() && blocks.at(-1)?.type === 'activity'
+      ? blocks.length - 1
+      : -1
+  )
+
+  // Opening a step keeps the box at the height it had: what opens pushes the
+  // answer down inside it, rather than stretching both answers. A new width
+  // reflows the text and a vote adds the comment form, so either lets the box
+  // fit its content again.
+  let box: HTMLElement
+  let kept = $state<{ height: number; prefKind: typeof prefKind } | null>(null)
+  const boxHeight = $derived(
+    kept && kept.prefKind === prefKind && !generating ? `${kept.height}px` : undefined
+  )
+
+  function keepBoxHeight() {
+    if (!generating && !boxHeight) {
+      kept = { height: box.getBoundingClientRect().height, prefKind }
+    }
+  }
+
   let annotations = $derived({
     keyword_annotations: turnSide.keyword_annotations,
     custom_annotation: turnSide.custom_annotation
   })
 </script>
 
-<div class="md:w-full flex w-[80vw] flex-col">
+<svelte:window onresize={() => (kept = null)} />
+
+<div class="md:w-full md:min-w-0 md:flex-1 flex w-[80vw] flex-col">
   <div
+    bind:this={box}
+    style:height={boxHeight}
     class={[
       'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
       {
@@ -50,7 +114,7 @@
   >
     <div class="px-4 py-2 flex items-center">
       <div class="c-bot-disk-{bot}"></div>
-      <h2 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h2>
+      <h3 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h3>
       <Copy value={message.content} />
     </div>
 
@@ -63,38 +127,24 @@
       role="group"
       aria-label={m[`models.names.${bot}`]()}
     >
-      {#if message.reasoning_content?.trim()}
-        <section class="fr-accordion mb-8 py-2">
-          <div class="fr-highlight ms-0! ps-0!">
-            <h3 class="fr-accordion__title ms-1!">
-              <button
-                type="button"
-                class="fr-accordion__btn text-primary! bg-transparent!"
-                aria-expanded="true"
-                aria-controls="reasoning-{id}"
-              >
-                <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && turnSide.status === 'generating'}
-                  {m['chatbot.reasoning.inProgress']()}
-                {:else}
-                  {m['chatbot.reasoning.finished']()}
-                {/if}
-              </button>
-            </h3>
-            <div id="reasoning-{id}" class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]">
-              <div class="px-5 py-4">
-                {@html sanitize(message.reasoning_content.split('\n').join('<br>'))}
-              </div>
-            </div>
-          </div>
-        </section>
-      {/if}
+      {#each blocks as block, index (index)}
+        {#if block.type === 'text'}
+          <Markdown message={block.content} chatbot />
+        {:else}
+          <AgentActivity
+            id="{id}-activity-{index}"
+            steps={block.steps}
+            active={index === activeBlock}
+            onopen={keepBoxHeight}
+          />
+        {/if}
+      {/each}
 
       <Markdown message={message.content} chatbot />
     </div>
 
     <div class="mt-5">
-      {#if turnSide.status === 'generating'}
+      {#if generating && activeBlock === -1}
         <Pending message={m['chatbot.loading']()} />
       {/if}
     </div>

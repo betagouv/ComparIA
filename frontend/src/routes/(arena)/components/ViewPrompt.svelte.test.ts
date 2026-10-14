@@ -22,7 +22,8 @@ vi.mock('$lib/chatService.svelte', () => ({
 const props = {
   loading: false,
   onPrompt: vi.fn(),
-  suggestions: []
+  suggestions: [],
+  tools: []
 }
 
 describe('ViewPrompt', () => {
