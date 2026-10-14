@@ -341,6 +341,7 @@
                 "label": "Clé API",
                 "placeholder": "Nouvelle clé",
                 "replace": "Remplacer",
+                "replaceLabel": "Remplacer la clé API",
                 "set": "Clé enregistrée",
                 "unset": "Aucune clé enregistrée",
                 "willClear": "En enregistrant, la clé stockée sera effacée et la variable d'environnement reprendra la main."
@@ -422,6 +423,8 @@
                 "title": "Réglages"
             },
             "stats": {
+                "byCategoryAria": "Détections par catégorie",
+                "byCategoryDesc": "Répartition des détections par catégorie et par résultat.",
                 "byCategoryNone": "Aucune catégorie ne s'est déclenchée sur la période.",
                 "byCategoryTitle": "Catégories déclenchées",
                 "byDecisionTitle": "Résultats",
@@ -433,7 +436,21 @@
                     "skipped": "Non vérifiés (Mistral en panne)",
                     "warned": "Prévenus"
                 },
+                "desc": "Suivez les détections et les décisions prises sur la période sélectionnée.",
+                "heading": "Activité des messages",
+                "period": {
+                    "all": "Depuis le début",
+                    "days": "{count} derniers jours",
+                    "year": "12 derniers mois"
+                },
+                "periodLabel": "Période affichée",
                 "proceeded": "{count} envoyés quand même",
+                "timelineAria": "Évolution des messages surveillés, prévenus, refusés et en échec",
+                "timelineCount": "messages vérifiés",
+                "timelineDesc": "Messages surveillés, prévenus, refusés ou en échec sur la période.",
+                "timelineEmpty": "Aucune détection sur cette période.",
+                "timelineLegend": "Légende du graphique",
+                "timelineTitle": "Détections dans le temps",
                 "title": "Activité des {days} derniers jours",
                 "totalLabel": "messages vérifiés sur la période",
                 "unavailable": "Les compteurs ne sont pas disponibles pour le moment.",
