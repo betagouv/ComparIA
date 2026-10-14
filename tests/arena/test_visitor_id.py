@@ -57,7 +57,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
         raise HTTPException(status_code=503, detail="stop here")
 
     def pick_and_charge(*_args):
-        return (uuid4(), uuid4()), True
+        return (uuid4(), uuid4()), True, None
 
     request = Request(
         {

@@ -87,7 +87,10 @@ def retry(target, expensive_available=True, drain=False, **patches):
             update_comparison_error=nothing,
             store_comparison_metadata=lambda *_args, **_kwargs: None,
             get_llms_data=get_llms_data,
-            charge_budget=lambda *_args, **_kwargs: None,
+            follow_up_sent=lambda _comparison: {},
+            charge_turn=lambda *_args, **_kwargs: SimpleNamespace(
+                settle=lambda _answers: None
+            ),
             read_status=lambda _who: SimpleNamespace(
                 expensive_available=expensive_available
             ),
@@ -139,7 +142,9 @@ def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
         swaps.append(expensive_available)
         return "c"
 
-    async def stream_comparison_messages(_comparison, _turn, _request, available):
+    async def stream_comparison_messages(
+        _comparison, _turn, _request, available, _charge
+    ):
         streamed.append(available)
         return
         yield

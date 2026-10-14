@@ -24,6 +24,8 @@ from tests.arena.test_spend_budget import (
     ME,
     NETWORK,
     PROMPT,
+    SENT,
+    WEIGHT,
     arena,
     counter,
     gate,
@@ -48,7 +50,7 @@ def test_a_cheap_duel_starts_with_the_expensive_allowance_spent(identity):
 
         assert response.status_code == 200
         assert state.draws == [(EXPENSIVE,)]
-        assert counter(state.redis, "all", ME) == len(PROMPT)
+        assert counter(state.redis, "all", ME) == 2 * len(PROMPT)
         assert counter(state.redis, "expensive", identity) == SPENT
         # Recorded, so the ranking can set these duels apart.
         assert [c.expensive_paused for c in state.new_comparisons] == [True]
@@ -60,7 +62,7 @@ def test_a_draw_keeps_expensive_models_while_the_allowance_has_room():
 
         assert state.draws == [()]
         assert [c.expensive_paused for c in state.new_comparisons] == [False]
-        assert counter(state.redis, "expensive", ME) == len(PROMPT)
+        assert counter(state.redis, "expensive", ME) == WEIGHT * len(PROMPT)
 
 
 @pytest.mark.parametrize("route", ["add_text", "retry"])
@@ -75,7 +77,7 @@ def test_a_started_expensive_conversation_goes_on_while_the_whole_allowance_has_
 
         assert response.status_code == 200
         # Its turns still count, and the reset time already told stays put.
-        assert counter(state.redis, "expensive", ME) == SPENT + len(PROMPT)
+        assert counter(state.redis, "expensive", ME) == SPENT + WEIGHT * SENT[route]
         assert state.redis.ttl(limits.budget_key("expensive", ME)) == (
             limits.WINDOW_SECONDS - 600
         )
@@ -134,7 +136,7 @@ def test_a_draw_that_meets_an_allowance_spent_meanwhile_draws_again():
         assert response.status_code == 200
         assert state.draws == [(), (EXPENSIVE,)]
         assert [c.expensive_paused for c in state.new_comparisons] == [True]
-        assert counter(state.redis, "all", ME) == len(PROMPT)
+        assert counter(state.redis, "all", ME) == 2 * len(PROMPT)
         assert counter(state.redis, "expensive", ME) == SPENT
 
 

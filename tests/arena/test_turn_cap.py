@@ -53,8 +53,8 @@ def send_follow_up(comparison):
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
-    def charge_budget(*_args, **_kwargs):
-        return None
+    def charge_turn(*_args, **_kwargs):
+        return SimpleNamespace(settle=lambda _answers: None)
 
     async def get_llms_data():
         return None
@@ -77,7 +77,8 @@ def send_follow_up(comparison):
     with patched(
         arena_router,
         run_checks=run_checks,
-        charge_budget=charge_budget,
+        follow_up_sent=lambda *_args: {},
+        charge_turn=charge_turn,
         get_llms_data=get_llms_data,
     ):
         # The body of the response streams the models, which these tests never

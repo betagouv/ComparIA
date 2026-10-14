@@ -89,7 +89,7 @@ def arena(active_document):
         raise HTTPException(status_code=503, detail="stop here")
 
     def pick_and_charge(*_args):
-        return (uuid4(), uuid4()), True
+        return (uuid4(), uuid4()), True, None
 
     with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
         with patched(

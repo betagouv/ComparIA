@@ -20,13 +20,15 @@ from backend.arena.limits import (
     POOLS,
     Allowance,
     AllowanceSpent,
+    Answer,
+    Call,
+    Charge,
     Identity,
     LimitStatus,
     Pool,
-    message_cost,
     read_status,
-    reserve,
 )
+from backend.arena.litellm import sent_chars
 from backend.arena.models import (
     AddFirstTextBody,
     AddTextBody,
@@ -65,6 +67,7 @@ from backend.arena.spam_detection import is_spam
 from backend.arena.streaming import (
     create_sse_response,
     format_sse_event,
+    get_messages,
     stream_comparison_messages,
 )
 from backend.arena.web_search import keep_search_results, search_web
@@ -90,10 +93,13 @@ from backend.vote_tags.services import (
     check_vote_tags,
 )
 from utils.database.models import (
+    BOT_POS,
+    BotPos,
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
     TurnPublic,
+    TurnRead,
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
@@ -217,25 +223,61 @@ def assert_allowance_left(
 AllowanceLeft = Annotated[LimitStatus, Depends(assert_allowance_left)]
 
 
-def charge_budget(
-    text: str,
-    llm_ids: tuple[UUID, UUID],
+# What each side of a turn is sent: its model and the characters.
+Sent = Mapping[BotPos, tuple[UUID, int]]
+
+
+def first_turn_sent(prompt: str, pair: tuple[UUID, UUID], llms_data: LLMsData) -> Sent:
+    """What each model of a new comparison is sent, before any web search."""
+    return {
+        pos: (llm_id, len(llms_data.all[llm_id].system_prompt or "") + len(prompt))
+        for pos, llm_id in zip(BOT_POS, pair)
+    }
+
+
+def follow_up_sent(comparison: ComparisonRead, message: str = "") -> Sent:
+    """What each model is sent to answer the last turn, or `message` after it:
+    the system prompt, every turn so far and that side's earlier answers."""
+    return {
+        pos: (
+            getattr(comparison, f"llm_id_{pos}"),
+            sent_chars(get_messages(comparison, pos)) + len(message),
+        )
+        for pos in BOT_POS
+    }
+
+
+def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
+    return {
+        pos: Call(llms_data.weight(llm_id), chars)
+        for pos, (llm_id, chars) in sent.items()
+    }
+
+
+def answers(turn: TurnRead | None) -> dict[BotPos, Answer | None]:
+    """What each model wrote this turn, so far if it was cut short."""
+    return {pos: getattr(turn, f"llm_msg_{pos}", None) for pos in BOT_POS}
+
+
+def charge_turn(
+    sent: Sent,
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
     refusing: Collection[Pool] = POOLS,
-) -> None:
+) -> Charge:
     """
-    Spend the message's characters against the session and IP budgets before
-    any model is called. The charge used to wait for a full, error-free answer,
-    so a client that hung up halfway, or sent many requests at once, never paid.
-    No refund when a model then fails: an error a client can provoke would buy
-    whatever the models had already written. Only the pools in `refusing` may
-    refuse the message, see `reserve`.
+    Spend what each model is sent against the session and IP budgets before
+    any model is called; the route settles what they write once the turn is
+    over. The charge used to wait for a full, error-free answer, so a client
+    that hung up halfway, or sent many requests at once, never paid. No refund
+    when a model then fails: an error a client can provoke would buy whatever
+    the models had already written. Only the pools in `refusing` may refuse
+    the message, see `reserve`.
     """
     who = Identity.of(anonymous_user_hash, get_ip(request))
     try:
-        reserve(who, message_cost(text, llm_ids, llms_data), refusing)
+        return Charge.reserve(who, turn_calls(sent, llms_data), refusing)
     except AllowanceSpent as error:
         raise refuse(error.spent, request)
 
@@ -246,7 +288,7 @@ def pick_and_charge(
     anonymous_user_hash: str,
     request: Request,
     limit_status: LimitStatus,
-) -> tuple[tuple[UUID, UUID], bool]:
+) -> tuple[tuple[UUID, UUID], bool, Charge]:
     """
     Draw the two models of a new comparison and charge its first message.
 
@@ -258,11 +300,13 @@ def pick_and_charge(
     `limit_status` is the one read before the route, see
     `assert_allowance_left`.
 
-    Returns the pair, and whether expensive models were open to this draw.
+    Returns the pair, whether expensive models were open to this draw, and
+    the charge to settle once the models have answered.
     """
-    who = Identity.of(anonymous_user_hash, get_ip(request))
 
-    def without_expensive(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
+    def without_expensive(
+        spent: Sequence[Allowance],
+    ) -> tuple[tuple[UUID, UUID], bool, Charge]:
         try:
             pair = llms_data.pick_two(
                 args.mode,
@@ -276,23 +320,24 @@ def pick_and_charge(
                 extra={"request": request},
             )
             raise limit_refusal(spent, error.llm_ids)
-        charge_budget(args.prompt_value, pair, llms_data, anonymous_user_hash, request)
-        return pair
+        sent = first_turn_sent(args.prompt_value, pair, llms_data)
+        return pair, False, charge_turn(sent, llms_data, anonymous_user_hash, request)
 
     if not limit_status.expensive_available:
-        return without_expensive(limit_status.spent_in("expensive")), False
+        return without_expensive(limit_status.spent_in("expensive"))
 
     pair = llms_data.pick_two(args.mode, args.custom_models_selection)
+    who = Identity.of(anonymous_user_hash, get_ip(request))
+    sent = first_turn_sent(args.prompt_value, pair, llms_data)
     try:
-        reserve(who, message_cost(args.prompt_value, pair, llms_data))
+        return pair, True, Charge.reserve(who, turn_calls(sent, llms_data))
     except AllowanceSpent as error:
         if whole := [a for a in error.spent if a.pool == "all"]:
             # Only the whole allowance is told: the expensive one says to
             # pick other models, which would not help.
             raise refuse(whole, request)
         # Another message spent the expensive allowance since it was read.
-        return without_expensive(error.spent), False
-    return pair, True
+        return without_expensive(error.spent)
 
 
 def assert_not_block_cooldown(
@@ -534,7 +579,7 @@ async def add_first_text(
 
     # Select LLMs
     llms_data = await get_llms_data()
-    (llm_a_id, llm_b_id), expensive_available = pick_and_charge(
+    (llm_a_id, llm_b_id), expensive_available, charge = pick_and_charge(
         args, llms_data, anonymous_user_hash, request, allowance
     )
 
@@ -582,39 +627,43 @@ async def add_first_text(
 
     # Stream responses
     async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
-        yield format_sse_event(
-            {
-                "type": "init",
-                "comparison": ComparisonPublic.model_validate(
-                    comparison, context={"llms_data": llms_data}
-                ),
-            }
-        )
-
-        # Add first turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
-            comparison.id,
-            args.prompt_value,
-            web_search_results,
-            prompt_check_result=check,
-        )
-        store_comparison_metadata(comparison.id, is_streaming=True)
-
+        turn: TurnRead | None = None
         try:
             yield format_sse_event(
-                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                {
+                    "type": "init",
+                    "comparison": ComparisonPublic.model_validate(
+                        comparison, context={"llms_data": llms_data}
+                    ),
+                }
             )
 
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(
-                comparison, turn, request, expensive_available
-            ):
-                yield format_sse_event(chunk)
+            # Add first turn and save it to db (to at least save the user prompt)
+            comparison, turn = await add_comparison_turn(
+                comparison.id,
+                args.prompt_value,
+                web_search_results,
+                prompt_check_result=check,
+            )
+            store_comparison_metadata(comparison.id, is_streaming=True)
 
-            if not comparison.error:
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            try:
+                yield format_sse_event(
+                    {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                )
+
+                # Stream both model responses
+                async for chunk in stream_comparison_messages(
+                    comparison, turn, request, expensive_available, charge
+                ):
+                    yield format_sse_event(chunk)
+
+                if not comparison.error:
+                    await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            finally:
+                store_comparison_metadata(comparison.id, is_streaming=False)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream(comparison))
 
@@ -677,9 +726,8 @@ async def add_text(
     # A conversation under way finishes even once the expensive allowance is
     # spent, and its turns still count against it. Refusing it would tell the
     # person, before the reveal, that one of the two models is expensive.
-    charge_budget(
-        args.message,
-        (comparison_.llm_id_a, comparison_.llm_id_b),
+    charge = charge_turn(
+        follow_up_sent(comparison_, args.message),
         await get_llms_data(),
         anonymous_user_hash,
         request,
@@ -691,27 +739,33 @@ async def add_text(
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
-        # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
-            comparison_.id,
-            args.message,
-            prompt_check_result=check,
-        )
-        store_comparison_metadata(comparison.id, is_streaming=True)
-
+        turn: TurnRead | None = None
         try:
-            yield format_sse_event(
-                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            # Add new turn and save it to db (to at least save the user prompt)
+            comparison, turn = await add_comparison_turn(
+                comparison_.id,
+                args.message,
+                prompt_check_result=check,
             )
+            store_comparison_metadata(comparison.id, is_streaming=True)
 
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
+            try:
+                yield format_sse_event(
+                    {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                )
 
-            if not comparison.error:
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+                # Stream both model responses
+                async for chunk in stream_comparison_messages(
+                    comparison, turn, request, charge=charge
+                ):
+                    yield format_sse_event(chunk)
+
+                if not comparison.error:
+                    await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            finally:
+                store_comparison_metadata(comparison.id, is_streaming=False)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream())
 
@@ -779,10 +833,10 @@ async def retry(
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
-    # Like a follow-up, a retry is part of a conversation under way.
-    charge_budget(
-        turn.user_msg.content,
-        (comparison.llm_id_a, comparison.llm_id_b),
+    # Like a follow-up, a retry is part of a conversation under way. It is
+    # sent the whole input again, and the provider billed the failed attempt.
+    charge = charge_turn(
+        follow_up_sent(comparison),
         await get_llms_data(),
         anonymous_user_hash,
         request,
@@ -807,7 +861,7 @@ async def retry(
         try:
             # Stream both model responses
             async for chunk in stream_comparison_messages(
-                comparison, turn, request, expensive_available
+                comparison, turn, request, expensive_available, charge
             ):
                 yield format_sse_event(chunk)
 
@@ -815,6 +869,7 @@ async def retry(
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream(comparison))
 

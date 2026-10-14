@@ -3,9 +3,6 @@ The limits module on its own: where the allowances come from, what a status
 reads back, and the operator's reset (no network, no real Redis).
 """
 
-from types import SimpleNamespace
-from uuid import uuid4
-
 import pytest
 
 import backend.arena.limits as limits
@@ -73,13 +70,9 @@ def test_a_message_that_counts_for_nothing_still_meets_a_spent_allowance():
 
 
 def test_a_cheap_pair_leaves_the_expensive_pool_out():
-    cheap, expensive = uuid4(), uuid4()
-    llms_data = SimpleNamespace(expensive_models=[expensive])
-    assert limits.message_cost("abc", (cheap, cheap), llms_data) == {"all": 3}
-    assert limits.message_cost("abc", (cheap, expensive), llms_data) == {
-        "all": 3,
-        "expensive": 3,
-    }
+    cheap, expensive = limits.Call(1, 3), limits.Call(4, 3)
+    assert limits.turn_cost([cheap, cheap]) == {"all": 6}
+    assert limits.turn_cost([cheap, expensive]) == {"all": 6, "expensive": 12}
 
 
 def test_a_status_counts_down_to_the_reset():

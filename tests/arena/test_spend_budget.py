@@ -5,7 +5,8 @@ DB, no real Redis).
 The budgets used to be charged once both answers had streamed in full and
 without error. A visitor who closed the connection halfway, or sent many
 requests at once, got the models' answers and was never charged. Every route
-that calls the models now pays before it starts them.
+that calls the models now pays for what they are sent before it starts them,
+and for what they wrote once the turn is over, however it ended.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_spend_budget.py
@@ -38,12 +39,24 @@ import utils.database.models  # noqa: E402,F401 needed before importing the rout
 from backend.config import ANONYMOUS_SESSION_COOKIE, settings  # noqa: E402
 from backend.llms.data import NoModelLeft  # noqa: E402
 from tests.arena.fakes import FakeRedis  # noqa: E402
+from utils.database.models import LLMMessageCreate, UserMessageRead  # noqa: E402
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
 PROMPT = "Bonjour, explique la photosynthese"
 CHEAP, EXPENSIVE = uuid4(), uuid4()
+WEIGHT = 4
 ME, NETWORK = f"s:{SESSION}", f"ip:{IP}"
+# What each model writes, all at once.
+ANSWER = "La photosynthese transforme la lumiere en sucres. " * 4
+
+# What each side is sent: the prompt, and for a follow-up the turn before it
+# too. Nothing else, since the models here have no system prompt.
+SENT = {
+    "add_first_text": len(PROMPT),
+    "add_text": 2 * len(PROMPT),
+    "retry": len(PROMPT),
+}
 
 
 def counter(redis, pool, identity):
@@ -98,7 +111,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     def comparison(error=None):
         turn = SimpleNamespace(
             id=uuid4(),
-            user_msg=SimpleNamespace(content=PROMPT),
+            user_msg=UserMessageRead(content=PROMPT),
             llm_msg_a=None,
             llm_msg_b=None,
         )
@@ -109,6 +122,8 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             mode="random",
             llm_id_a=llm_a,
             llm_id_b=llm_b,
+            system_msg_a=None,
+            system_msg_b=None,
         )
 
     state.comparison = comparison
@@ -125,7 +140,12 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def get_llms_data():
         if state.in_step:
             await state.in_step.wait()
-        return SimpleNamespace(pick_two=pick_two, expensive_models=[EXPENSIVE])
+        return SimpleNamespace(
+            pick_two=pick_two,
+            expensive_models=[EXPENSIVE],
+            weight=lambda llm_id: WEIGHT if llm_id == EXPENSIVE else 1,
+            all={llm_id: SimpleNamespace(system_prompt=None) for llm_id in llm_ids},
+        )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return SimpleNamespace(pending_warning=False)
@@ -150,10 +170,11 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def noop(*_args, **_kwargs):
         return None
 
-    async def stream_comparison_messages(*_args):
+    async def stream_comparison_messages(_comparison, turn, *_args, **_kwargs):
         state.provider_calls += 1
-        yield {"type": "chunk", "pos": "a"}
-        yield {"type": "chunk", "pos": "b"}
+        for pos in ("a", "b"):
+            setattr(turn, f"llm_msg_{pos}", LLMMessageCreate(content=ANSWER))
+            yield {"type": "chunk", "pos": pos}
         yield {"type": "complete"}
 
     with (
@@ -248,18 +269,21 @@ def test_a_message_is_charged_before_the_models_start(route, state):
     response = start(route, state)
 
     assert state.provider_calls == 0
-    assert counter(state.redis, "all", ME) == len(PROMPT), route
-    assert counter(state.redis, "all", NETWORK) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == 2 * SENT[route], route
+    assert counter(state.redis, "all", NETWORK) == 2 * SENT[route], route
     assert response.status_code == 200
 
 
 @each_route
 def test_a_client_that_hangs_up_has_still_paid(route, state):
+    """What was written before the client left counts too: the provider
+    billed it."""
     read(start(route, state), hang_up=True)
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", ME) == len(PROMPT), route
-    assert counter(state.redis, "all", NETWORK) == len(PROMPT), route
+    paid = 2 * SENT[route] + len(ANSWER)
+    assert counter(state.redis, "all", ME) == paid, route
+    assert counter(state.redis, "all", NETWORK) == paid, route
 
 
 @each_route
@@ -267,7 +291,7 @@ def test_a_full_answer_is_charged_once(route, state):
     read(start(route, state))
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", ME) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == 2 * (SENT[route] + len(ANSWER)), route
 
 
 @each_route
@@ -328,11 +352,13 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
 
 
 def test_an_expensive_model_spends_the_expensive_allowance_up_front():
+    """Its side only, each character as many times as its weight."""
     for route in ROUTES:
         with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
             start(route, state)
-            assert counter(state.redis, "expensive", ME) == len(PROMPT), route
-            assert counter(state.redis, "expensive", NETWORK) == len(PROMPT), route
+            weighted = WEIGHT * SENT[route]
+            assert counter(state.redis, "expensive", ME) == weighted, route
+            assert counter(state.redis, "expensive", NETWORK) == weighted, route
 
         with arena(llm_ids=(CHEAP, CHEAP)) as state:
             start(route, state)
@@ -396,7 +422,9 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         response = client.post(f"/arena/retry/{uuid4()}", json={"altcha_token": "ok"})
         assert response.status_code == 200
         assert state.provider_calls == 1
-        assert counter(state.redis, "all", "ip:testclient") == len(PROMPT)
+        assert counter(state.redis, "all", "ip:testclient") == 2 * (
+            SENT["retry"] + len(ANSWER)
+        )
 
 
 if __name__ == "__main__":

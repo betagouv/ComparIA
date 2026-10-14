@@ -21,24 +21,11 @@ add what they wrote once the turn is over.
 import logging
 import math
 from dataclasses import dataclass
-from typing import (
-    TYPE_CHECKING,
-    Collection,
-    Iterable,
-    Literal,
-    Mapping,
-    Protocol,
-    Sequence,
-    get_args,
-)
-from uuid import UUID
+from typing import Collection, Iterable, Literal, Mapping, Protocol, Sequence, get_args
 
 from backend.config import settings
 from backend.utils.user import ip_bucket
 from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
-
-if TYPE_CHECKING:
-    from backend.llms.data import LLMsData
 
 logger = logging.getLogger("languia")
 
@@ -181,18 +168,6 @@ def turn_cost(calls: Iterable[Call]) -> dict[Pool, int]:
             for call in expensive
             if not call.cached
         )
-    return cost
-
-
-def message_cost(
-    text: str, llm_ids: tuple[UUID, UUID], llms_data: "LLMsData"
-) -> dict[Pool, int]:
-    """A message costs its length, on the expensive pool too when either
-    model is expensive. A cheap pair leaves that pool out, so a spent
-    expensive allowance never refuses it."""
-    cost: dict[Pool, int] = {"all": len(text)}
-    if any(llm_id in llms_data.expensive_models for llm_id in llm_ids):
-        cost["expensive"] = len(text)
     return cost
 
 
