@@ -202,7 +202,7 @@
         class="shrink-0"
       />
       <p id="limits-calibrate-hint" class="fr-text--sm mb-0!">
-        {m['admin.limits.calibrate.hint']()}
+        {m['admin.limits.calibrate.hint']({ days: String(data.limits.calibration_days) })}
       </p>
     </section>
 

@@ -179,6 +179,8 @@ class AdminLimits(BaseModel):
     # The last change to any limit, and the admin who made it.
     updated_at: datetime | None
     updated_by: str | None
+    # How far back "Calibrer" reads.
+    calibration_days: int
 
 
 class AdminLimitsPatch(BaseModel):

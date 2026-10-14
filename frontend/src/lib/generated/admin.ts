@@ -185,6 +185,7 @@ export interface AdminLimits {
   limits: AdminLimit[];
   updated_at: string | null;
   updated_by: string | null;
+  calibration_days: number;
 }
 export interface AdminLimit {
   name: "all_per_session" | "all_per_ip" | "expensive_per_session" | "expensive_per_ip" | "expected_answer_chars";

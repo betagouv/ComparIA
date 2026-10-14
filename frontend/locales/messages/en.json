@@ -846,7 +846,7 @@
             "calibrate": {
                 "button": "Calibrate",
                 "running": "Calculating…",
-                "hint": "Proposes values from the last 7 days of conversations. Nothing changes until you click “Apply”.",
+                "hint": "Proposes values from the last {days} days of conversations. Nothing changes until you click “Apply”.",
                 "sample": "Based on {comparisons} conversations and {turns} messages from the last {days} days.",
                 "capped": "Only the latest conversations were read.",
                 "empty": "Not enough conversations in the period to propose values.",

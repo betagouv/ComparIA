@@ -12,7 +12,7 @@ from backend.arena.models import (
 )
 from backend.auth.dependencies import RequiredAdmin
 from backend.errors import ActivityQueryTimeoutError
-from utils.arena.calibrate import calibrate
+from utils.arena.calibrate import CALIBRATION_DAYS, calibrate
 from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import User
 from utils.database.session import get_session
@@ -43,6 +43,7 @@ async def _to_admin_limits(row: AppSettings) -> AdminLimits:
         ],
         updated_at=row.limits_updated_at,
         updated_by=await _email(row.limits_updated_by),
+        calibration_days=CALIBRATION_DAYS,
     )
 
 

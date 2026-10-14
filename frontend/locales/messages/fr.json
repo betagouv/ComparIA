@@ -319,7 +319,7 @@
                     "sessionMessages": "{percentile} % des personnes restent en dessous en deux heures, sur {count} périodes lues : environ {messages} messages avant de l'atteindre."
                 },
                 "failed": "Le calcul n'a pas abouti.",
-                "hint": "Propose des valeurs à partir des conversations des 7 derniers jours. Rien ne change avant « Appliquer ».",
+                "hint": "Propose des valeurs à partir des conversations des {days} derniers jours. Rien ne change avant « Appliquer ».",
                 "none": "Pas de proposition : rien n'a été dépensé ici sur la période.",
                 "proposal": "Proposition : {value}",
                 "running": "Calcul en cours…",
