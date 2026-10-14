@@ -36,6 +36,7 @@ def public(revealed: bool) -> ComparisonPublic:
                 "id": uuid4(),
                 "mode": "random",
                 "custom_models_selection": None,
+                "enabled_tools": [],
                 "error": None,
                 "turns": [],
                 "revealed": revealed,
