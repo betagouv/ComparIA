@@ -1540,6 +1540,10 @@
             "created_at": {
                 "label": "Created At"
             },
+            "daily_usd_cap": {
+                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
+                "label": "Daily cap (USD)"
+            },
             "endpoint_id": {
                 "help": "The LLM's endpoint information, create it first if not already available",
                 "label": "Endpoint"

@@ -1461,6 +1461,10 @@
             "created_at": {
                 "label": "Oprettet"
             },
+            "daily_usd_cap": {
+                "help": "Højst hvad denne model må koste om dagen for alle brugere, anslået. Når loftet er nået, kommer modellen ikke med i nye lodtrækninger før midnat, Paris-tid. Tom: intet loft.",
+                "label": "Dagligt loft (USD)"
+            },
             "endpoint_id": {
                 "help": "Oplysninger om sprogmodellens slutpunkt. Opret det først, hvis det ikke allerede findes.",
                 "label": "Slutpunkt"

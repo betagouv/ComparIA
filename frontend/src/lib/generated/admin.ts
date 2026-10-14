@@ -461,6 +461,10 @@ export interface LLMData {
    */
   price_out: number;
   /**
+   * Coût estimé au plus par jour, tous utilisateurs confondus. Une fois atteint, le modèle sort des nouveaux tirages jusqu'à minuit, heure de Paris. Vide : pas de plafond.
+   */
+  daily_usd_cap: number | null;
+  /**
    * System message to add in llm call if specified
    */
   system_prompt: string | null;
