@@ -55,6 +55,8 @@ vi.mock('svelte', async (importOriginal) => ({
 beforeEach(() => {
   arena.reads = []
   arena.limits = createLimits()
+  // askFirst reads the cohorts, and Node has no sessionStorage before 25.
+  vi.stubGlobal('sessionStorage', { getItem: () => '' })
 })
 
 describe('parseAPIComparison', () => {
