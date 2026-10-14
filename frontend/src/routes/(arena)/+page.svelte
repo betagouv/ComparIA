@@ -86,6 +86,7 @@
       promptError={comparator.promptError}
       onPrompt={submitInitialPrompt}
       suggestions={data.suggestions.categories}
+      tools={data.tools}
     />
   {:else}
     <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />

@@ -4,6 +4,7 @@ from utils.database.models.llms import (
     LLMLabUpsert,
     LLMLicenseUpsert,
 )
+from utils.database.models.tool import ToolUpsert
 from utils.utils import (
     FRONTEND_MAIN_I18N_FILE,
     FormJsonSchema,
@@ -43,6 +44,7 @@ def generate_admin_schemas_i18n():
         "license_upsert": LLMLicenseUpsert,
         "lab_upsert": LLMLabUpsert,
         "llm_upsert": LLMDataUpsert,
+        "tool_upsert": ToolUpsert,
     }
     schemas = {
         k: model.model_json_schema(schema_generator=FormJsonSchema)

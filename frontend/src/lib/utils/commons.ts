@@ -1,3 +1,4 @@
+import type { ExternalHref } from '$lib/routing'
 import sanitizeHtml from 'sanitize-html'
 
 export const noop = () => {}
@@ -131,4 +132,14 @@ export function omit<T extends Record<Key, unknown>, K extends keyof T>(
   }
 
   return out as Omit<T, K>
+}
+
+/** Only http(s) sources are ever rendered as links: they come from third parties. */
+export function isSafeWebSource(url: string): url is ExternalHref {
+  try {
+    const protocol = new URL(url).protocol
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
 }
