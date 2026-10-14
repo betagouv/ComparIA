@@ -1,0 +1,120 @@
+"""
+Tests for the slug a survey question/option gets on creation, and for the
+select-vs-checkbox shape check on an answer.
+
+The key is what an answer stores and what the dataset publishes, and it never
+changes afterwards, so getting it from the label is worth pinning down. The
+shape check is what stops a 'select' question, which the frontend renders as
+radios, from silently accepting more than one option.
+
+DB-free. Runnable either way:
+    uv run python tests/survey/test_survey_keys.py
+    pytest tests/survey/test_survey_keys.py
+"""
+
+import os
+import sys
+import uuid
+from pathlib import Path
+
+import pytest
+from pydantic_core import ValidationError
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
+os.environ.setdefault("LOG_FORMAT", "JSON")
+
+from backend.survey.services import _key, _validate_answers  # noqa: E402
+from utils.database.models.survey import (  # noqa: E402
+    SurveyQuestion,
+    SurveyQuestionAnswer,
+)
+
+QUESTION_ID = uuid.uuid4()
+
+
+def test_accents_and_spaces_become_a_plain_slug():
+    assert _key("Tranche d'âge") == "tranche_d_age"
+    assert _key("Trop lente à répondre") == "trop_lente_a_repondre"
+    assert _key("Réponse  très   claire") == "reponse_tres_claire"
+
+
+def test_a_typographic_apostrophe_separates_words_like_a_straight_one():
+    # French copy uses ’, and the admin form's preview treats it as a
+    # separator: the stored key has to match what the admin was shown.
+    assert _key("Tranche d’âge") == _key("Tranche d'âge") == "tranche_d_age"
+    assert (
+        _key("Pour quels usages utilisez-vous l’IA ?")
+        == "pour_quels_usages_utilisez_vous_l_ia"
+    )
+
+
+def test_punctuation_collapses_and_never_hangs_off_the_ends():
+    assert _key("  Femme / non-binaire  ") == "femme_non_binaire"
+    assert _key("A/B testing") == "a_b_testing"
+    assert _key("--edge--") == "edge"
+
+
+def test_a_label_with_nothing_to_slug_gives_an_empty_key():
+    # The service turns this into a 422 rather than storing a blank key.
+    for label in ("!!!", "???", "   ", "…"):
+        assert _key(label) == ""
+
+
+def test_the_key_fits_the_column():
+    assert len(_key("mot " * 60)) <= 100
+
+
+def get_payload(value):
+    return [SurveyQuestionAnswer(question_id=QUESTION_ID, value=value)]
+
+
+def test_select_question():
+    question = SurveyQuestion(
+        id=QUESTION_ID,
+        key="age",
+        input_type="select",
+        labels={"fr": "Âge"},
+        options=[
+            {"key": "18_24", "labels": {"fr": "18-24"}},
+            {"key": "25_34", "labels": {"fr": "25-34"}},
+            {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
+        ],
+    )
+
+    _validate_answers([question], get_payload(None), {})
+    _validate_answers([question], get_payload([]), {})
+    _validate_answers([question], get_payload("18_24"), {})
+
+    with pytest.raises(ValidationError):
+        _validate_answers([question], get_payload(["a", "b"]), {})
+
+
+def test_checkbox_group_question():
+    question = SurveyQuestion(
+        id=QUESTION_ID,
+        key="age",
+        input_type="checkbox_group",
+        labels={"fr": "Âge"},
+        options=[
+            {"key": "18_24", "labels": {"fr": "18-24"}},
+            {"key": "25_34", "labels": {"fr": "25-34"}},
+            {"key": "under_25", "labels": {"fr": "-25"}, "archived": True},
+        ],
+    )
+    _validate_answers([question], get_payload(None), {})
+    _validate_answers([question], get_payload([]), {})
+    _validate_answers([question], get_payload(["25_34"]), {})
+    _validate_answers([question], get_payload(["25_34", "18_24"]), {})
+
+    with pytest.raises(ValidationError):
+        _validate_answers([question], get_payload("18_24"), {})
+
+
+if __name__ == "__main__":
+    for name, test in sorted(globals().items()):
+        if name.startswith("test_") and callable(test):
+            test()
+            print(f"ok  {name}")
+    print("all good")

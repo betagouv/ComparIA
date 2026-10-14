@@ -20,14 +20,18 @@ const { authWallHandle, handleFetch } = await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
-function eventWith(cookie?: string) {
+function eventWith(cookie?: string, anonymousSession?: string) {
   const deleted: string[] = []
+  const jar: Record<string, string | undefined> = {
+    auth_session: cookie,
+    anonymous_session: anonymousSession
+  }
   return {
     deleted,
     event: {
       url: new URL('http://arene.test/statistics'),
       cookies: {
-        get: () => cookie,
+        get: (name: string) => jar[name],
         delete: (name: string) => deleted.push(name)
       },
       fetch
@@ -114,6 +118,21 @@ describe('server-side API requests', () => {
     } as never)
 
     expect(await response.text()).toBe('auth_session=real-session')
+  })
+
+  it('forwards the anonymous session so a signed-out visitor keeps their identity', async () => {
+    const backendFetch = vi.fn(
+      async (request: Request) => new Response(request.headers.get('cookie'))
+    )
+    const request = new Request('http://localhost:8001/api/survey/questions')
+
+    const response = await handleFetch({
+      event: eventWith(undefined, 'anon-token').event,
+      request,
+      fetch: backendFetch
+    } as never)
+
+    expect(await response.text()).toBe('anonymous_session=anon-token')
   })
 
   it('does not leak the auth session to unrelated origins', async () => {

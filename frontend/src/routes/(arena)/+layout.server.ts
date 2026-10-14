@@ -26,5 +26,9 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
     loadInformationalPages(fetch)
   ])
 
-  return { suggestions, voteTags: voteTags.tags, informationalPages }
+  return {
+    suggestions,
+    voteTags: voteTags.tags,
+    informationalPages
+  }
 }

@@ -241,6 +241,33 @@ export interface AdminSuggestionCategory {
   suggestion_count?: number;
   available_suggestion_count?: number;
 }
+export interface AdminSurveyOption {
+  key: string;
+  labels: {
+    [k: string]: string;
+  };
+  archived: boolean;
+  answer_count: number;
+}
+export interface AdminSurveyQuestion {
+  id: string;
+  key: string;
+  required: boolean;
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: AdminSurveyOption[];
+  published: boolean;
+  revision: number;
+  display_order: number;
+  archived: boolean;
+  respondent_count: number;
+}
+export interface AdminSurveyResponse {
+  questions: AdminSurveyQuestion[];
+  total_respondents: number;
+}
 export interface AdminVoteTag {
   id: string;
   key: string;
@@ -263,6 +290,7 @@ export interface AppSettingsPatch {
   votes_objective?: number | null;
   ranking_min_votes?: number | null;
   ranking_max_rank_spread?: number | null;
+  survey_reask_after_days?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
@@ -289,6 +317,7 @@ export interface AppSettingsPublic {
   votes_objective: number;
   ranking_min_votes: number;
   ranking_max_rank_spread: number;
+  survey_reask_after_days: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;
@@ -615,6 +644,41 @@ export interface SuggestionCategoryCreate {
 export interface SuggestionCreate {
   category_id: string;
   text: string;
+}
+export interface SurveyOptionWrite {
+  key?: string | null;
+  labels: {
+    [k: string]: string;
+  };
+  archived?: boolean;
+}
+export interface SurveyQuestionArchiveUpdate {
+  archived: boolean;
+}
+export interface SurveyQuestionCreate {
+  required?: boolean;
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published?: boolean;
+}
+/**
+ * The whole order, written in one request, as the vote tags do: one round
+ * trip per drag, and the gaps archiving leaves in 'display_order' get
+ * rewritten away.
+ */
+export interface SurveyQuestionOrder {
+  ids: string[];
+}
+export interface SurveyQuestionUpdate {
+  required: boolean;
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published: boolean;
 }
 export interface UpdateLegalPresentationBody {
   presentation: LegalPresentation;

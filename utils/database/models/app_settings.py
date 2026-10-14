@@ -146,6 +146,11 @@ class AppSettings(SQLModel, table=True):
     # show something while votes come in.
     ranking_min_votes: int = Field(default=0)
     ranking_max_rank_spread: int = Field(default=30)
+    # How long a dismissed or unanswered after_vote question stays quiet before
+    # it may be shown again. Instance-tunable rather than a constant: an
+    # instance running a short campaign wants a shorter gap than one running
+    # for a year.
+    survey_reask_after_days: int = Field(default=7)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     informational_legal_pages: Annotated[dict, Field(sa_type=JSONB)] = (
@@ -213,6 +218,7 @@ class AppSettingsPublic(SQLModel):
     votes_objective: int
     ranking_min_votes: int
     ranking_max_rank_spread: int
+    survey_reask_after_days: int
     platform_name: str
     primary_color_light: str
     primary_color_dark: str
@@ -250,6 +256,7 @@ class AppSettingsPatch(SQLModel):
     votes_objective: int | None = None
     ranking_min_votes: int | None = Field(default=None, ge=0, le=_INT_MAX)
     ranking_max_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
+    survey_reask_after_days: int | None = Field(default=None, ge=0, le=365)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None

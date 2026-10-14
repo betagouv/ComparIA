@@ -4,6 +4,7 @@ import type {
   FormFieldsetItemProps,
   FormFieldsetListProps,
   FormInputProps,
+  FormRadioGroupProps,
   FormSelectProps,
   FormToggleProps
 } from '$components/form'
@@ -27,9 +28,11 @@ export type AnyFormItemComponent =
   | 'toggle'
   | 'checkbox'
   | 'checkbox-group'
+  | 'radio'
   | 'fieldset'
   | 'fieldset-item'
   | 'fieldset-list'
+  | 'translate' // FIXME To fully integrate
 
 export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
   id: string
@@ -50,6 +53,7 @@ export type AnyFormItemProps =
   | FormToggleProps
   | FormCheckboxProps
   | FormCheckboxGroupProps
+  | FormRadioGroupProps
   | FormFieldsetItemProps
   | FormFieldsetListProps
 

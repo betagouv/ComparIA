@@ -94,6 +94,7 @@ def test_an_edit_that_keeps_the_role_keeps_the_session(database):
                     "email": jean.email,
                     "role": "user",
                     "totp_enabled": False,
+                    "questionsAnswered": True,
                 }
 
     database(scenario)

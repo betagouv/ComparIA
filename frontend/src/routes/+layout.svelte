@@ -7,11 +7,17 @@
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
-  import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'
+  import {
+    TOTP_SETUP_PATH,
+    UnansweredQuestionsError,
+    UnauthorizedError,
+    isTotpSetupRequired
+  } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
+  import { provideSurveyContext } from '$lib/survey.svelte'
   import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
@@ -28,6 +34,10 @@
   const auth = setAuthContext(data.auth)
   let brandThemeStyle = $derived(createBrandThemeStyle(auth.config))
 
+  // Before the survey context, which reads the cohort to leave pix visitors out.
+  setCohortContext()
+  const survey = provideSurveyContext(() => data.survey)
+
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 
   onMount(() => {
@@ -43,9 +53,12 @@
   setVotesContext(data.votes)
   // svelte-ignore state_referenced_locally
   setModelsContext(data.data, getPlatformName())
-  setCohortContext()
 
   function handleError(_event: PromiseRejectionEvent) {
+    if (_event.reason instanceof UnansweredQuestionsError) {
+      survey.showRequiredSurvey = true
+      return
+    }
     // FIXME display error page on some error? display custom text in toast?
     useToast('Unexpected error', 10000, 'error')
     if (isTotpSetupRequired(_event.reason)) {
@@ -66,4 +79,5 @@
 
 {@render children()}
 
+<div id="modals"></div>
 <div id="tooltips"></div>

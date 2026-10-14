@@ -49,6 +49,7 @@ def _settings_row(**overrides):
         votes_objective=300_000,
         ranking_min_votes=0,
         ranking_max_rank_spread=30,
+        survey_reask_after_days=7,
         platform_name="Test",
         primary_color_light="#000091",
         primary_color_dark="#8585F6",

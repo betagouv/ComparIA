@@ -152,6 +152,7 @@
               </div>
               <Checkbox
                 bind:checked={acceptTos}
+                required
                 id="tos-modal"
                 label={checkboxLabel}
                 links={legalLinks()}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ResolvedPathname } from '$app/types'
+  import { m } from '$lib/i18n/messages'
   import { validUrl, type ExternalHref } from '$lib/routing'
   import { sanitize } from '$lib/utils/commons'
   import type { SvelteHTMLElements } from 'svelte/elements'
@@ -12,6 +13,7 @@
     checked = $bindable(),
     label,
     help,
+    required,
     links,
     linksClass,
     onLinkClick,
@@ -23,6 +25,7 @@
     checked: boolean
     label: string
     help?: string
+    required?: boolean
     links?: CheckboxLink[]
     linksClass?: string
     onLinkClick?: (event: MouseEvent) => void
@@ -56,12 +59,15 @@
   />
   <label {...props} class={['fr-label text-sm! mb-4 block!', props.class]} for={id}>
     {@html sanitize(label)}
+    {#if required}
+      <strong>({m['words.required']()})</strong>
+    {/if}
     {#if help}
       <p id="{id}-help" class="fr-message">{help}</p>
     {/if}
   </label>
   {#if safeLinks}
-    <div id="{id}-links" class="ms-8 mb-3 gap-x-3 gap-y-1 flex flex-wrap">
+    <div id="{id}-links" class="ms-6 mb-3 -mt-3 flex flex-col items-start">
       {#each safeLinks as link (link.href)}
         <Link
           href={link.href}

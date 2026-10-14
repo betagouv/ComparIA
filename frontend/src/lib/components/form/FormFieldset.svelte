@@ -18,12 +18,9 @@
 <fieldset
   id="fieldset-{id}"
   aria-labelledby={`${legendId} ${messagesId}`}
-  class={['fr-fieldset cg-border! p-4!', { 'fr-fieldset--error': !!error, 'hidden!': hidden }]}
+  class={['fr-fieldset', { 'fr-fieldset--error': !!error, 'hidden!': hidden }]}
 >
-  <legend
-    class="fr-fieldset__legend--regular fr-fieldset__legend pb-0! px-2! w-auto!"
-    id={legendId}
-  >
+  <legend class="fr-fieldset__legend pb-2! fr-fieldset__legend w-auto!" id={legendId}>
     {label}
     {#if required}<span class="text-error">*</span>{/if}
     {#if help}
