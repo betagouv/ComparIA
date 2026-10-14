@@ -30,6 +30,14 @@
     }
   }
 
+  // Caught here first, so an Escape meant for it does not also close a
+  // dialog it sits in.
+  function onKeydown(e: KeyboardEvent) {
+    if (!open || e.key !== 'Escape') return
+    e.stopPropagation()
+    onWindowKeydown(e)
+  }
+
   function onWindowClick(e: MouseEvent) {
     if (open && !wrapper?.contains(e.target as Node)) open = false
   }
@@ -37,7 +45,8 @@
 
 <svelte:window onkeydown={onWindowKeydown} onclick={onWindowClick} />
 
-<span bind:this={wrapper} class={['cl-toggletip', className]}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<span bind:this={wrapper} class={['cl-toggletip', className]} onkeydown={onKeydown}>
   <button
     bind:this={button}
     type="button"

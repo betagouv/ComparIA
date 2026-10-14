@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import Toggletip from './Toggletip.svelte'
 
 const props = {
@@ -37,6 +37,20 @@ describe('Toggletip', () => {
     expect(button).toHaveAttribute('aria-expanded', 'false')
     expect(button).toHaveFocus()
     expect(view.getByRole('status')).toBeEmptyDOMElement()
+  })
+
+  it('keeps an Escape meant for it from closing a dialog around it', async () => {
+    const view = render(Toggletip, props)
+    const button = view.getByRole('button', { name: 'Pourquoi ?' })
+    const dialog = vi.fn()
+    document.addEventListener('keydown', dialog)
+    await fireEvent.click(button)
+
+    await fireEvent.keyDown(button, { key: 'Escape' })
+
+    expect(button).toHaveAttribute('aria-expanded', 'false')
+    expect(dialog).not.toHaveBeenCalled()
+    document.removeEventListener('keydown', dialog)
   })
 
   it('closes on a click elsewhere', async () => {
