@@ -221,19 +221,27 @@ class LLMsData(BaseModel):
         if mode == "big-vs-small":
             # Compare large models against small models
             model_a_id = self.pick_one(
-                self.big_models, unavailable_models, hard_excluded
+                self.big_models,
+                excluded=unavailable_models,
+                hard_excluded=hard_excluded,
             )
             model_b_id = self.pick_one(
-                self.small_models, unavailable_models, hard_excluded
+                self.small_models,
+                excluded=unavailable_models,
+                hard_excluded=hard_excluded,
             )
 
         elif mode == "small-models":
             # Compare two small models
             model_a_id = self.pick_one(
-                self.small_models, unavailable_models, hard_excluded
+                self.small_models,
+                excluded=unavailable_models,
+                hard_excluded=hard_excluded,
             )
             model_b_id = self.pick_one(
-                self.small_models, [*unavailable_models, model_a_id], hard_excluded
+                self.small_models,
+                excluded=[*unavailable_models, model_a_id],
+                hard_excluded=hard_excluded,
             )
 
         elif mode == "custom" and custom_selection and len(custom_selection) > 0:
@@ -267,8 +275,8 @@ class LLMsData(BaseModel):
                 model_a_id = custom_selection[0]
                 model_b_id = self.pick_one(
                     self.random_models,
-                    [*unavailable_models, model_a_id],
-                    hard_excluded,
+                    excluded=[*unavailable_models, model_a_id],
+                    hard_excluded=hard_excluded,
                 )
             elif len(custom_selection) == 2:
                 # Two models chosen by user
@@ -278,10 +286,14 @@ class LLMsData(BaseModel):
         else:
             # Default to random mode
             model_a_id = self.pick_one(
-                self.random_models, unavailable_models, hard_excluded
+                self.random_models,
+                excluded=unavailable_models,
+                hard_excluded=hard_excluded,
             )
             model_b_id = self.pick_one(
-                self.random_models, [*unavailable_models, model_a_id], hard_excluded
+                self.random_models,
+                excluded=[*unavailable_models, model_a_id],
+                hard_excluded=hard_excluded,
             )
 
         # Randomly swap models to avoid position bias
