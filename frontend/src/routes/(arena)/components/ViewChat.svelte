@@ -1,12 +1,13 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Alert, Button, Icon, Link, Tooltip } from '$components/dsfr'
+  import { Button, Icon, Link, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
   import { MAX_TURNS_PER_COMPARISON } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import LimitCard from './LimitCard.svelte'
   import { pauseTitle, resetTime, spoken } from './resetTime'
 
   let {
@@ -183,31 +184,32 @@
       ]}
     >
       {#if full}
-        <Alert
+        <LimitCard
           id="turns-full-notice"
-          title={m['arene.limits.turns.fullTitle']()}
+          icon="i-ri-chat-check-line"
+          text={m['arene.limits.turns.full']({ max: MAX_TURNS_PER_COMPARISON })}
           focusTitle={sendAreaFocused}
-          class="w-full"
         >
-          <p>{m['arene.limits.turns.full']({ max: MAX_TURNS_PER_COMPARISON })}</p>
-          <div class="mt-4 gap-3 md:flex-row flex flex-col">
+          {#snippet title()}
+            {m['arene.limits.turns.fullTitle']()}
+          {/snippet}
+          {#snippet actions()}
             <Button
-              text={m['arene.limits.pause.reveal']()}
+              text={m['chatbot.revealButton']()}
               size="sm"
-              class="md:w-fit! w-full!"
+              class="w-full!"
               onclick={onReveal}
             />
             <Link
               button
               variant="secondary"
               size="sm"
-              icon="edit-line"
               href={resolve('/')}
               text={m['header.chatbot.newDiscussion']()}
-              class="md:w-fit! w-full!"
+              class="w-full!"
             />
-          </div>
-        </Alert>
+          {/snippet}
+        </LimitCard>
       {:else if comparator.pause}
         <PauseNotice
           refusal={comparator.pause}

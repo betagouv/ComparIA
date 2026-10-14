@@ -940,7 +940,6 @@
                 "models": "Discover the models",
                 "network": "A lot of messages came from your network (school, office, organisation) in the last two hours: the limit covers the whole network.",
                 "ranking": "See the ranking",
-                "reveal": "Discover the models",
                 "session": "You have written a lot in the last two hours. Until then, the ranking and the models stay open.",
                 "title": "Back at {time}",
                 "titleSoon": "A break of under two hours",
@@ -980,8 +979,8 @@
                 "within": "within two hours"
             },
             "turns": {
-                "full": "A conversation holds up to {max} messages. Discover the models, then start a new one to keep going.",
-                "fullTitle": "This conversation is full",
+                "full": "A conversation holds up to {max} messages: discover the models, then start a new one.",
+                "fullTitle": "Conversation full",
                 "last": "Last message possible in this conversation.",
                 "left": "{count} more messages possible in this conversation."
             },

@@ -940,7 +940,6 @@
                 "models": "Découvrir les modèles",
                 "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures : la limite vaut pour tout le réseau.",
                 "ranking": "Voir le classement",
-                "reveal": "Découvrir les modèles",
                 "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, le classement et les modèles restent ouverts.",
                 "title": "De retour à {time}",
                 "titleSoon": "Pause de moins de deux heures",
@@ -980,8 +979,8 @@
                 "within": "dans moins de deux heures"
             },
             "turns": {
-                "full": "Une conversation compte au plus {max} messages. Découvrez les modèles, puis commencez-en une nouvelle pour continuer.",
-                "fullTitle": "Cette conversation est complète",
+                "full": "Une conversation compte au plus {max} messages : découvrez les modèles, puis commencez-en une nouvelle.",
+                "fullTitle": "Conversation complète",
                 "last": "Dernier message possible dans cette conversation.",
                 "left": "Encore {count} messages possibles dans cette conversation."
             },

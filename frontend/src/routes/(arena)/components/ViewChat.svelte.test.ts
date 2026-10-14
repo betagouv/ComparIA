@@ -177,13 +177,15 @@ describe('ViewChat', () => {
       const view = render(ViewChat, props)
 
       expect(view.container.querySelector('#chatbot-prompt')).toBeNull()
-      expect(
-        view.getByRole('heading', { name: 'Cette conversation est complète' })
-      ).not.toHaveFocus()
+      // Shown on load, not after a send from here: focus stays put.
+      expect(view.getByRole('heading', { name: 'Conversation complète' })).not.toHaveFocus()
       expect(view.getByText(/au plus 20 messages/)).toBeInTheDocument()
+      expect(view.container.querySelector('.fr-alert')).toBeNull()
       expect(view.getByRole('link', { name: 'Nouvelle discussion' })).toHaveAttribute('href', '/')
-      expect(view.queryByRole('button', { name: revealLabel })).toBeNull()
-      await fireEvent.click(view.getByRole('button', { name: 'Découvrir les modèles' }))
+      // The card's own reveal button, not a second one under it.
+      const reveal = view.getAllByRole('button', { name: revealLabel })
+      expect(reveal).toHaveLength(1)
+      await fireEvent.click(reveal[0])
       expect(comparator.reveal).toHaveBeenCalled()
       comparator.comparison = comparison
     })

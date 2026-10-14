@@ -861,7 +861,6 @@
                 "models": "Se modellerne",
                 "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer: grænsen gælder hele netværket.",
                 "ranking": "Se ranglisten",
-                "reveal": "Se modellerne",
                 "session": "Du har skrevet meget de seneste to timer. Indtil da er ranglisten og modellerne stadig åbne.",
                 "title": "Tilbage kl. {time}",
                 "titleSoon": "En pause på under to timer",
@@ -901,8 +900,8 @@
                 "within": "inden for to timer"
             },
             "turns": {
-                "full": "En samtale rummer højst {max} beskeder. Se modellerne, og start så en ny for at fortsætte.",
-                "fullTitle": "Denne samtale er fuld",
+                "full": "En samtale rummer højst {max} beskeder: se modellerne, og start så en ny.",
+                "fullTitle": "Samtalen er fuld",
                 "last": "Sidste mulige besked i denne samtale.",
                 "left": "{count} beskeder mere er mulige i denne samtale."
             },
