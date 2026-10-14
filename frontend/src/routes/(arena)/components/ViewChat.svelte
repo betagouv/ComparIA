@@ -146,7 +146,7 @@
       ]}
     >
       {#if comparator.pause}
-        <PauseNotice refusal={comparator.pause} {onReveal} />
+        <PauseNotice refusal={comparator.pause} {onReveal} failed={!!comparator.error} />
       {:else}
         <TextPrompt
           id="chatbot-prompt"

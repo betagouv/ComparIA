@@ -74,4 +74,18 @@ describe('ViewChat', () => {
     expect(comparator.reveal).toHaveBeenCalled()
     comparator.pause = undefined
   })
+
+  it('offers a new discussion, not the reveal, when the paused conversation failed', () => {
+    comparator.pause = {
+      detail: 'allowance_spent',
+      limit: { scope: 'session', resets_at: null, resets_in: null, llm_ids: [] }
+    }
+    Object.assign(comparator, { error: 'provider_error', canReveal: false })
+    const view = render(ViewChat, props)
+
+    expect(view.getByRole('link', { name: 'Nouvelle discussion' })).toHaveAttribute('href', '/')
+    expect(view.queryByRole('button', { name: 'Découvrir les modèles' })).toBeNull()
+    expect(view.queryByText(/En attendant/)).toBeNull()
+    Object.assign(comparator, { pause: undefined, error: undefined, canReveal: true })
+  })
 })

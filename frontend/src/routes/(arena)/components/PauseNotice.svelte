@@ -8,11 +8,14 @@
 
   let {
     refusal,
-    onReveal
+    onReveal,
+    failed = false
   }: {
     refusal: PauseRefusal
     /** In a conversation: discover the models. Left out on the home page. */
     onReveal?: () => void
+    /** The conversation failed, so there is nothing to vote on or reveal. */
+    failed?: boolean
   } = $props()
 
   // Stands for the clock time in a sentence, so the time can sit in a <time>.
@@ -52,12 +55,21 @@
       m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']({ at })
     )}
   </p>
-  {#if !network}
+  {#if !network && !failed}
     <p>{m['arene.limits.pause.meanwhile']()}</p>
   {/if}
 
   <div class="mt-4 gap-3 md:flex-row flex flex-col">
-    {#if onReveal}
+    {#if failed}
+      <Link
+        button
+        size="sm"
+        icon="edit-line"
+        href={resolve('/')}
+        text={m['header.chatbot.newDiscussion']()}
+        class="md:w-fit! w-full!"
+      />
+    {:else if onReveal}
       <Button
         text={m['arene.limits.pause.reveal']()}
         size="sm"
