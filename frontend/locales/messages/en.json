@@ -834,14 +834,16 @@
                 "all_per_ip": "Per network",
                 "expensive_per_session": "Per person",
                 "expensive_per_ip": "Per network",
-                "expected_answer_chars": "Reserved answer length"
+                "expected_answer_chars": "Reserved answer length",
+                "expensive_price_out": "Price threshold"
             },
             "help": {
                 "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
                 "all_per_ip": "The same limit for a whole network, such as a school or a hospital. It stops someone who clears their cookies to start over.",
-                "expensive_per_session": "The share of expensive models for one person in two hours. Each character counts as many times as the model's cost weight. Once reached, new conversations go on without the expensive models; the other models stay open.",
-                "expensive_per_ip": "The same share of expensive models for a whole network.",
-                "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted."
+                "expensive_per_session": "What the expensive models may cost for one person in two hours, estimated from each model's prices at four characters per token. An answer served from the cache does not count. Once the limit is reached, new conversations go on without the expensive models; the other models stay open.",
+                "expensive_per_ip": "The same limit, in dollars, for a whole network.",
+                "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted.",
+                "expensive_price_out": "A model counts as expensive once its output price, what a million tokens it writes cost, reaches this threshold. A model priced 0 never does. Each model's price is set in its own form."
             },
             "calibrate": {
                 "button": "Calibrate",
@@ -860,6 +862,24 @@
                     "network": "Lets through a class of {size} people who each spend as much as {percentile}% of people; {share} of the networks read would have gone past it.",
                     "answer": "Half of the answers are shorter than {value} characters, out of {count} answers read."
                 }
+            },
+            "newValueUsd": "New value, in dollars",
+            "newValuePrice": "New threshold, in dollars per million output tokens",
+            "unitPrice": "{value} per million output tokens",
+            "expensiveList": "At this threshold, {count} enabled models are expensive: {names}.",
+            "expensiveNone": "At this threshold, no enabled model is expensive.",
+            "thresholdKept": "The calibration proposes no threshold: it stays the one you chose.",
+            "prices": {
+                "title": "Prices to check",
+                "intro": "What the expensive models count comes from these prices. Check them in each model's form.",
+                "line": "{name}: {in} input, {out} output per million tokens.",
+                "issues": {
+                    "free": "Priced 0: never expensive, it counts nothing.",
+                    "free_input": "Input priced 0.",
+                    "output_below_input": "Output cheaper than input: the two may have been swapped.",
+                    "very_high": "Output above $100: maybe typed in cents."
+                },
+                "none": "No price looks worth checking."
             }
         }
     },

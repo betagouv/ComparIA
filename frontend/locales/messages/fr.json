@@ -328,6 +328,8 @@
             },
             "cancel": "Annuler",
             "current": "Valeur actuelle : {value}",
+            "expensiveList": "À ce seuil, {count} modèles activés sont coûteux : {names}.",
+            "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
             "groups": {
                 "all": "Toutes les réponses",
                 "answer": "Réservation",
@@ -337,8 +339,9 @@
                 "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu'un qui efface ses cookies pour repartir de zéro.",
                 "all_per_session": "Ce qu'une personne peut faire lire et écrire aux modèles en deux heures, tous modèles confondus. Les deux heures partent de son premier message, quoi qu'elle envoie ensuite. Une fois la limite atteinte, elle attend la fin des deux heures pour envoyer un nouveau message.",
                 "expected_answer_chars": "Ce que chaque modèle devrait écrire, compté d'avance à chaque message puis remplacé par la vraie longueur. Sans elle, des messages envoyés tous en même temps passeraient avant que leurs réponses soient comptées.",
-                "expensive_per_ip": "La même part des modèles coûteux pour tout un réseau.",
-                "expensive_per_session": "La part des modèles coûteux pour une personne en deux heures. Chaque caractère y compte autant de fois que le poids de coût du modèle. Une fois atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts."
+                "expensive_per_ip": "La même limite, en dollars, pour tout un réseau.",
+                "expensive_per_session": "Ce que les modèles coûteux peuvent coûter pour une personne en deux heures, estimé d'après le prix de chaque modèle, à quatre caractères par jeton. Une réponse servie depuis le cache ne compte pas. Une fois la limite atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts.",
+                "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu'il écrit, atteint ce seuil. Un modèle à 0 ne l'est jamais. Le prix de chaque modèle se règle dans sa fiche."
             },
             "isDefault": "Par défaut",
             "isStored": "Modifiée",
@@ -347,15 +350,32 @@
                 "all_per_session": "Par personne",
                 "expected_answer_chars": "Longueur de réponse réservée",
                 "expensive_per_ip": "Par réseau",
-                "expensive_per_session": "Par personne"
+                "expensive_per_session": "Par personne",
+                "expensive_price_out": "Seuil de prix"
             },
             "newValue": "Nouvelle valeur, en caractères",
+            "newValuePrice": "Nouveau seuil, en dollars par million de jetons écrits",
+            "newValueUsd": "Nouvelle valeur, en dollars",
             "nothingToApply": "Aucune valeur n'a changé.",
+            "prices": {
+                "intro": "Ce que comptent les modèles coûteux vient de ces prix. Vérifiez-les dans la fiche de chaque modèle.",
+                "issues": {
+                    "free": "Prix à 0 : jamais coûteux, il ne compte rien.",
+                    "free_input": "Prix d'entrée à 0.",
+                    "output_below_input": "Prix de sortie plus bas que le prix d'entrée : les deux sont peut-être inversés.",
+                    "very_high": "Prix de sortie au-dessus de 100 $ : peut-être saisi en centimes."
+                },
+                "line": "{name} : {in} en entrée, {out} en sortie par million de jetons.",
+                "none": "Aucun prix ne semble à vérifier.",
+                "title": "Prix à vérifier"
+            },
             "reset": "Revenir au défaut ({value})",
             "resetDone": "Valeur par défaut rétablie.",
             "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
+            "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",
             "title": "Limites",
             "unit": "{value} caractères",
+            "unitPrice": "{value} par million de jetons écrits",
             "updated": "Dernière modification le {date} par {who}.",
             "updatedUnknown": "Dernière modification le {date}."
         },
