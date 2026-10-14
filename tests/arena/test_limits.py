@@ -26,10 +26,10 @@ def test_an_env_var_sets_an_allowance(monkeypatch):
 
 
 def test_the_allowances_keep_their_numbers():
-    assert settings.RATELIMIT_EXPENSIVE_PER_SESSION == 100_000
-    assert settings.RATELIMIT_EXPENSIVE_PER_IP == 5_000_000
-    assert settings.RATELIMIT_ALL_PER_SESSION == 500_000
-    assert settings.RATELIMIT_ALL_PER_IP == 10_000_000
+    assert settings.RATELIMIT_EXPENSIVE_PER_SESSION == 1_000_000
+    assert settings.RATELIMIT_EXPENSIVE_PER_IP == 50_000_000
+    assert settings.RATELIMIT_ALL_PER_SESSION == 3_000_000
+    assert settings.RATELIMIT_ALL_PER_IP == 60_000_000
 
 
 def test_the_counters_keep_the_keys_they_had_before_the_module():
@@ -169,8 +169,8 @@ def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog):
         redis.set(limits.budget_key("all", WHO.personal), 10)
         redis.set(limits.budget_key("expensive", WHO.personal), 10, ex=61)
         limits_show(session="sess-a")
-    assert "s:sess-a all: 10 of 500,000, never resets" in caplog.text
-    assert "s:sess-a expensive: 10 of 100,000, resets in 2 min" in caplog.text
+    assert "s:sess-a all: 10 of 3,000,000, never resets" in caplog.text
+    assert "s:sess-a expensive: 10 of 1,000,000, resets in 2 min" in caplog.text
 
 
 def test_the_cli_refuses_a_reset_with_no_one_to_reset(caplog):

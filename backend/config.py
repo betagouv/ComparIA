@@ -152,25 +152,25 @@ class Settings(BaseSettings):
     # turn costs the system prompt, the whole transcript, the web search
     # results and both answers. Settings rather than constants so a local run
     # can lower them to watch a refusal.
-    # TODO set them from `comparia-cli arena limits calibrate` on production:
-    # these numbers date from when a message cost only its own length.
+    # Set from the calibration replay (`comparia-cli arena limits calibrate`)
+    # once whole turns are charged, a turn costing 20 to 230 times its own
+    # message.
     #
     # Counted per anonymous session (the `anonymous_session` cookie hash), not
     # per IP, so users behind a shared NAT (schools, hospitals) each get their
     # own. This one covers the expensive models only, each character counted
     # as many times as the model's cost weight.
-    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveInt = 100_000
+    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveInt = 1_000_000
     # A client that drops the `anonymous_session` cookie gets a fresh session on
-    # every request, so the same allowance also runs per IP as a backstop. Room
-    # for a whole school: at a fifth of this, one class of thirty could spend
-    # it before the break. Spam seen in the OpenRouter logs picks the cheapest
-    # models, which this pool does not cover.
-    RATELIMIT_EXPENSIVE_PER_IP: PositiveInt = 5_000_000
+    # every request, so the same allowance also runs per IP as a backstop, with
+    # room for a whole school on one network. Spam seen in the OpenRouter logs
+    # picks the cheapest models, which this pool does not cover.
+    RATELIMIT_EXPENSIVE_PER_IP: PositiveInt = 50_000_000
     # Cheap models are not free either, and only expensive ones used to be
     # counted, so nothing at all stopped someone hammering the rest. Wider
     # still: an ordinary session must never meet this.
-    RATELIMIT_ALL_PER_SESSION: PositiveInt = 500_000
-    RATELIMIT_ALL_PER_IP: PositiveInt = 10_000_000
+    RATELIMIT_ALL_PER_SESSION: PositiveInt = 3_000_000
+    RATELIMIT_ALL_PER_IP: PositiveInt = 60_000_000
     # What each model is expected to write, charged with the input before the
     # call and settled to the real length after it. Requests sent at once are
     # each checked before the others' answers come back, so without it their
