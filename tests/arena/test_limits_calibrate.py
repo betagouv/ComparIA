@@ -216,7 +216,10 @@ def test_the_proposals_come_from_what_people_spent():
     assert (whole.value, whole.sample, whole.percentile) == (2_000, 100, 99)
     # A typical turn costs 1,022: about one message fits.
     assert whole.messages == 1
-    assert proposals["expensive_per_session"].value == 0.01
+    expensive = proposals["expensive_per_session"]
+    assert expensive.value == 0.01
+    # A typical turn costs 1,516 millionths: six fit in a cent.
+    assert expensive.messages == 6
 
     # Room for 35 people spending what 95 in 100 do (1,913).
     network = proposals["all_per_ip"]
@@ -225,6 +228,9 @@ def test_the_proposals_come_from_what_people_spent():
         35,
         0.0,
     )
+    # 35 x 2,852.5 millionths, rounded up to the cent: no network comes near.
+    network = proposals["expensive_per_ip"]
+    assert (network.value, network.over_share) == (0.1, 0.0)
     # The median answer, of 200.
     answer = proposals["expected_answer_chars"]
     assert (answer.value, answer.sample) == (505, 200)
@@ -255,6 +261,8 @@ def test_a_pool_nobody_spent_proposes_nothing():
         (1.0, 0.0, "free"),
         (0.0, 1.0, "free_input"),
         (13.0, 2.6, "output_below_input"),
+        (2.6, 100.0, None),
+        (2.6, 101.0, "very_high"),
         (260.0, 1_300.0, "very_high"),
     ],
 )

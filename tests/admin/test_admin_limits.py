@@ -201,11 +201,14 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
             )
         # Past the week: never read.
         await add_comparison(llms, created_at=NOW - timedelta(days=8))
-        return (
-            await calibrate(max_comparisons=2),
-            await calibrate(),
-            await admin_limits.read_limits(),
-        )
+        capped, whole_week = await calibrate(max_comparisons=2), await calibrate()
+        # An archived model leaves the page.
+        async with session_module.get_session() as session:
+            await session.execute(
+                text("UPDATE llm_data SET status = 'archived' WHERE name = 'Beta'")
+            )
+            await session.commit()
+        return capped, whole_week, await admin_limits.read_limits()
 
     capped, whole_week, page = activity(scenario)
 
@@ -225,7 +228,7 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
         ("Alpha", "free"),
         ("Beta", "free"),
     ]
-    assert [llm.name for llm in page.llms] == ["Alpha", "Beta"]
+    assert [llm.name for llm in page.llms] == ["Alpha"]
 
 
 if __name__ == "__main__":
