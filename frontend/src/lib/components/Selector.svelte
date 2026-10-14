@@ -179,7 +179,6 @@
 
     &:has(input[aria-disabled='true']) {
       cursor: not-allowed;
-      border-style: dashed;
     }
   }
 </style>

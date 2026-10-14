@@ -46,7 +46,7 @@ describe('ModelSelector', () => {
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
     expect(gpt).toBeEnabled()
     expect(gpt).toHaveAttribute('aria-disabled', 'true')
-    expect(gpt).toHaveAccessibleName(/GPT-5 En pause jusqu'à \d+\sh\s\d+/)
+    expect(gpt).toHaveAccessibleName(/GPT-5 En pause · \d+\sh\s\d+/)
     expect(gpt).toHaveAccessibleDescription(
       /^Vous avez utilisé votre part de ce modèle\. Il revient à \d+\sh\s\d+\.$/
     )
@@ -58,9 +58,13 @@ describe('ModelSelector', () => {
 
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(gemma).not.toHaveAttribute('aria-disabled')
-    expect(view.getByText(/Les modèles « En pause » coûtent plus cher/)).toHaveTextContent(
-      /Vous avez utilisé votre part : ils reviennent à \d+\sh\s\d+\./
+    // One model paused for an allowance: the full one is not counted.
+    const hint = view.container.querySelector('#picker-paused-hint')!
+    expect(hint).toHaveTextContent(
+      /^1 modèle en pause pour vous jusqu'à \d+\sh\s\d+\. Pourquoi \?$/
     )
+    await fireEvent.click(view.getByRole('button', { name: 'Pourquoi ?', hidden: true }))
+    expect(hint).toHaveTextContent(/chacun peut envoyer un nombre limité de messages/)
     expectNoDanglingAriaRefs(view.container)
   })
 
@@ -76,7 +80,9 @@ describe('ModelSelector', () => {
   it('tells a network it has used its share', async () => {
     const view = await openModels({ expensive: expensive('network') })
 
-    expect(view.getByText(/Votre réseau .* a utilisé sa part/)).toBeInTheDocument()
+    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
+      /pour votre réseau/
+    )
     expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).toHaveAccessibleDescription(
       /^Votre réseau a utilisé sa part de ce modèle\./
     )

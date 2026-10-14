@@ -8,6 +8,7 @@
   import type { PausedModel, Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
+  import LimitHint from './LimitHint.svelte'
   import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
@@ -34,12 +35,11 @@
 
   type Pause = { badge: string; reset?: ResetTime; reason: string }
 
-  function badge(reset: ResetTime): string {
-    if (!reset.clock) return m['arene.limits.picker.pausedBadgeSoon']()
+  // "En pause · 13 h 32" on the card; the reason says the rest.
+  function chip(reset: ResetTime): string {
+    if (!reset.clock) return m['arene.limits.picker.chipSoon']()
     return m[
-      reset.clock.tomorrow
-        ? 'arene.limits.picker.pausedBadgeTomorrow'
-        : 'arene.limits.picker.pausedBadge'
+      reset.clock.tomorrow ? 'arene.limits.picker.chipTomorrow' : 'arene.limits.picker.chip'
     ]({ time: TIME_SLOT })
   }
 
@@ -58,22 +58,36 @@
         ? 'arene.limits.picker.pausedReasonNetwork'
         : 'arene.limits.picker.pausedReason'
     ]({ at: reset.at })
-    return { badge: badge(reset), reset, reason: spoken(reason, reset) }
+    return { badge: chip(reset), reset, reason: spoken(reason, reset) }
   }
 
   function modePause(value: Mode): Pause | undefined {
     if (!pausedModes.has(value)) return undefined
     const reset = resetTime(pausedModes.get(value))
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
-    return { badge: badge(reset), reset, reason: spoken(reason, reset) }
+    return { badge: chip(reset), reset, reason: spoken(reason, reset) }
   }
 
-  // The line under the help text: why some cards say "En pause".
-  const expensiveReset = $derived(
-    expensive && [...paused.values()].some((llm) => llm.reason === 'allowance')
-      ? resetTime(expensive.resets_at)
-      : undefined
-  )
+  // The line under the help text: how many cards say "En pause", and why.
+  const header = $derived.by(() => {
+    const count = [...paused.values()].filter((llm) => llm.reason === 'allowance').length
+    if (!expensive || !count) return undefined
+    const reset = resetTime(expensive.resets_at)
+    const network = expensive.scope === 'network'
+    const key =
+      count === 1
+        ? network
+          ? 'arene.limits.picker.headerOneNetwork'
+          : 'arene.limits.picker.headerOne'
+        : network
+          ? 'arene.limits.picker.headerManyNetwork'
+          : 'arene.limits.picker.headerMany'
+    return {
+      reset,
+      text: m[key]({ count, until: reset.until }),
+      why: m[network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']()
+    }
+  })
 
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
@@ -179,7 +193,7 @@
 
 {#snippet pauseBadge(pause: Pause)}
   <span class="mt-2 block">
-    <Badge variant="info" size="xs">
+    <Badge size="xs" class="cl-pause-chip">
       <Icon icon="i-ri-pause-circle-line" size="xs" block class="me-1" />
       <!-- One flex item, so the space before the time stays. -->
       <span
@@ -230,25 +244,8 @@
                     <p class="mb-0!">
                       {m['arenaHome.compareModels.help']()}
                     </p>
-                    {#if expensive && expensiveReset}
-                      <p class="fr-text--sm mt-2! mb-0! gap-1 flex">
-                        <Icon
-                          icon="i-ri-pause-circle-line"
-                          size="sm"
-                          block
-                          class="text-primary mt-0.5 shrink-0"
-                        />
-                        <span>
-                          <TimedText
-                            text={m[
-                              expensive.scope === 'network'
-                                ? 'arene.limits.picker.pausedHelpNetwork'
-                                : 'arene.limits.picker.pausedHelp'
-                            ]({ at: expensiveReset.at })}
-                            reset={expensiveReset}
-                          />
-                        </span>
-                      </p>
+                    {#if header}
+                      <LimitHint id="picker-paused-hint" {...header} class="mt-2" />
                     {/if}
                   </div>
 
@@ -284,11 +281,11 @@
                     <Icon
                       icon={opt.icon}
                       block
-                      class={['text-primary me-3', { 'opacity-60': !!opt.pause }]}
+                      class={['text-primary me-3', { 'cl-dimmed': !!opt.pause }]}
                     />
                     {#if opt.value != 'custom'}
                       <div>
-                        <span class={{ 'opacity-60': !!opt.pause }}>
+                        <span>
                           <strong>{opt.label}</strong>&nbsp;: {opt.description}
                         </span>
                         {#if opt.pause}
@@ -327,14 +324,15 @@
 
                     <label {...labelProps}>
                       {@render input(opt)}
-                      <!-- Dimmed, but never by colour alone: the badge says it, with an icon. -->
-                      <div class={['text-dark-grey flex', { 'opacity-60': !!opt.pause }]}>
+                      <!-- The logo and badges fade, the name keeps its contrast, and the
+                           chip says it in words with an icon, not by colour alone. -->
+                      <div class="text-dark-grey flex">
                         <AILogo
                           logo={opt.lab.logo}
                           customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
                           customLogoVersion={opt.lab.logo_version}
                           alt=""
-                          class="me-2"
+                          class={['me-2', { 'cl-dimmed': !!opt.pause }]}
                         />
                         <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
                           >{opt.name}</strong
@@ -343,7 +341,7 @@
                       <ul
                         class={[
                           'fr-badges-group mt-3! md:flex! hidden!',
-                          { 'opacity-60': !!opt.pause }
+                          { 'cl-dimmed': !!opt.pause }
                         ]}
                       >
                         {#each modelBadges as badge, i (i)}
@@ -392,3 +390,16 @@
     </div>
   </div>
 </dialog>
+
+<style>
+  /* Children's classes, so out of this component's scope. */
+  #modal-mode-selection :global(.cl-dimmed) {
+    opacity: 0.5;
+    filter: grayscale(1);
+  }
+
+  #modal-mode-selection :global(.cl-pause-chip) {
+    text-transform: none;
+    font-weight: 500;
+  }
+</style>
