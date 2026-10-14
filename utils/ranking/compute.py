@@ -128,6 +128,22 @@ def _aggregate_preferences(
     return result
 
 
+def _bootstrap_rank_bounds(samples: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    95% rank interval of each model, read from the bootstrap rounds.
+
+    ``samples`` is (n_rounds, n_models). In each round a model's rank is one
+    plus the number of models rated above it. A NaN rating never compares
+    greater, so a model missing from a round does not push anyone down, and
+    gets no rank of its own in that round.
+    """
+    above = (samples[:, None, :] > samples[:, :, None]).sum(axis=2)
+    ranks = np.where(np.isnan(samples), np.nan, above + 1.0)
+    best = np.floor(np.nanpercentile(ranks, 2.5, axis=0)).astype(int)
+    worst = np.ceil(np.nanpercentile(ranks, 97.5, axis=0)).astype(int)
+    return best, worst
+
+
 def _variant_table(
     ci: dict[UUID, Interval],
     match_counts: dict[UUID, int],
@@ -137,7 +153,7 @@ def _variant_table(
     Turn a ``{model: Interval}`` map into per-model ranking fields.
 
     Shared by the style-controlled and plain Bradley-Terry views so both are
-    built identically (rank, CI-overlap rank bounds, mean win probability, win
+    built identically (rank, bootstrap rank bounds, mean win probability, win
     rate); only the input CI differs. Degenerate models (any NaN bound) are
     dropped here. Returns a ``{model: fields}`` dict ready to splat into a
     ``RankingVariant`` / ``DatasetData``.
@@ -150,26 +166,26 @@ def _variant_table(
 
     # Sort by point-estimate Elo descending
     sorted_models = sorted(ci, key=lambda m: -ci[m].point)
-    n_total = len(sorted_models)
+    if not sorted_models:
+        return {}
+
+    # Ranks are counted among the models in this table only, so models left
+    # out (under the vote minimum) do not widen anyone's interval.
+    ranks_best, ranks_worst = _bootstrap_rank_bounds(
+        np.column_stack([ci[m].samples for m in sorted_models])
+    )
 
     table: dict[UUID, dict] = {}
-    for rank, model in enumerate(sorted_models, 1):
+    for i, model in enumerate(sorted_models):
+        rank = i + 1
         elo_point, elo_lower, elo_upper, _ = ci[model]
         n_match = match_counts.get(model, 0)
         wins = win_counts.get(model, 0)
 
-        # Rank bounds via CI overlap:
-        # rank_best = 1 + models whose lower CI > this model's upper CI
-        # rank_worst = N - models whose upper CI < this model's lower CI
-        rank_best = 1
-        rank_worst = n_total
-        for other in sorted_models:
-            if other == model:
-                continue
-            if ci[other].lower > elo_upper:
-                rank_best += 1
-            if elo_lower > ci[other].upper:
-                rank_worst -= 1
+        # The point rank comes from the full-data fit, which can fall just
+        # outside the bootstrap interval when the rounds are skewed.
+        rank_best = min(int(ranks_best[i]), rank)
+        rank_worst = max(int(ranks_worst[i]), rank)
 
         # Mean win probability: P(i beats j) = s_i / (s_i + s_j), averaged
         strength_i = 10 ** ((elo_point - 1000) / 400)
