@@ -183,15 +183,37 @@ export interface AdminLegalDocument {
 }
 export interface AdminLimits {
   limits: AdminLimit[];
+  llms: LLMPrice[];
   updated_at: string | null;
   updated_by: string | null;
   calibration_days: number;
 }
+/**
+ * A limit in its unit: characters for the whole allowances and the
+ * reserved answer, US dollars for the expensive ones, US dollars per million
+ * output tokens for the threshold.
+ */
 export interface AdminLimit {
-  name: "all_per_session" | "all_per_ip" | "expensive_per_session" | "expensive_per_ip" | "expected_answer_chars";
+  name:
+    | "all_per_session"
+    | "all_per_ip"
+    | "expensive_per_session"
+    | "expensive_per_ip"
+    | "expensive_price_out"
+    | "expected_answer_chars";
   value: number;
   default: number;
   stored: boolean;
+  [k: string]: unknown;
+}
+/**
+ * An enabled model and its prices, in US dollars per million tokens.
+ */
+export interface LLMPrice {
+  id: string;
+  name: string;
+  price_in: number;
+  price_out: number;
   [k: string]: unknown;
 }
 /**
@@ -202,6 +224,7 @@ export interface AdminLimitsPatch {
   all_per_ip?: number | null;
   expensive_per_session?: number | null;
   expensive_per_ip?: number | null;
+  expensive_price_out?: number | null;
   expected_answer_chars?: number | null;
 }
 export interface AdminPublishDestination {
@@ -567,18 +590,33 @@ export interface LimitsCalibration {
   turns: number;
   capped: boolean;
   proposals: LimitProposal[];
+  price_checks: PriceCheck[];
 }
 /**
  * A value the calibration proposes, with what the page needs to say why.
  */
 export interface LimitProposal {
-  name: "all_per_session" | "all_per_ip" | "expensive_per_session" | "expensive_per_ip" | "expected_answer_chars";
+  name:
+    | "all_per_session"
+    | "all_per_ip"
+    | "expensive_per_session"
+    | "expensive_per_ip"
+    | "expensive_price_out"
+    | "expected_answer_chars";
   value: number;
   sample: number;
   percentile: number;
   messages?: number | null;
   class_size?: number | null;
   over_share?: number | null;
+  [k: string]: unknown;
+}
+export interface PriceCheck {
+  id: string;
+  name: string;
+  price_in: number;
+  price_out: number;
+  issue: "free" | "free_input" | "output_below_input" | "very_high";
   [k: string]: unknown;
 }
 export interface PromptCheckPatch {
