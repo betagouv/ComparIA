@@ -7,10 +7,11 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 from uuid import uuid4
 
+import pytest
 from linkup import LinkupSearchTextResult
 
 from backend.arena.web_search import merge_web_search_with_content
-from utils.arena.calibrate import replay
+from utils.arena.calibrate import propose, replay, round_up
 
 CHEAP, EXPENSIVE = uuid4(), uuid4()
 WEIGHTS = {CHEAP: 1.0, EXPENSIVE: 4.0}
@@ -140,3 +141,68 @@ def test_a_json_null_in_the_search_results_counts_the_prompt_alone():
     ]
     [spent] = replay(rows, WEIGHTS).conversations
     assert spent["all"] == 10 + 2 * len("Bonjour")
+
+
+@pytest.mark.parametrize(
+    "value, rounded",
+    [(1_234_567, 1_300_000), (508, 510), (99.1, 100), (7, 7), (0, 0)],
+)
+def test_a_proposal_rounds_up_to_two_digits(value, rounded):
+    assert round_up(value) == rounded
+
+
+def hundred_people(**extra):
+    """One turn each, person i's answers 10 x i long, on their own network."""
+    return [
+        turn(
+            uuid4(),
+            START,
+            "x",
+            (10 * i, 0, False),
+            (10 * i, 0, False),
+            session=f"s{i}",
+            ip=f"10.0.{i}.1",
+            **extra,
+        )
+        for i in range(1, 101)
+    ]
+
+
+def test_the_proposals_come_from_what_people_spent():
+    proposals = {p.name: p for p in propose(replay(hundred_people(), WEIGHTS))}
+
+    # Person i spends (10 + 1 + 10i) + (1 + 10i): 32 to 2,012 on the whole
+    # allowance, and 4 x (1 + 10i) on the expensive one, side b only.
+    whole = proposals["all_per_session"]
+    assert (whole.value, whole.sample, whole.percentile) == (2_000, 100, 99)
+    # A typical turn costs 1,022: about one message fits.
+    assert whole.messages == 1
+    assert proposals["expensive_per_session"].value == 4_000
+
+    # Room for 35 people spending what 95 in 100 do (1,913).
+    network = proposals["all_per_ip"]
+    assert (network.value, network.class_size, network.over_share) == (
+        67_000,
+        35,
+        0.0,
+    )
+    # The median answer, of 200.
+    answer = proposals["expected_answer_chars"]
+    assert (answer.value, answer.sample) == (505, 200)
+
+
+def test_a_busy_network_shows_in_the_share_over_the_proposal():
+    rows = hundred_people() + [
+        turn(uuid4(), START, "x", (1_000, 0, False), (1_000, 0, False), ip="10.9.9.9")
+        for _ in range(100)
+    ]
+    proposals = {p.name: p for p in propose(replay(rows, WEIGHTS))}
+    # 101 networks, the busy one far past room for a class.
+    assert proposals["all_per_ip"].over_share == pytest.approx(1 / 101)
+
+
+def test_a_pool_nobody_spent_proposes_nothing():
+    rows = hundred_people(llm_id_b=CHEAP)
+    names = [p.name for p in propose(replay(rows, WEIGHTS))]
+    assert names == ["all_per_session", "all_per_ip", "expected_answer_chars"]
+    assert propose(replay([], WEIGHTS)) == []
