@@ -10,8 +10,16 @@ from uuid import uuid4
 import pytest
 from linkup import LinkupSearchTextResult
 
+from backend.arena.models import LLMPrice
 from backend.arena.web_search import merge_web_search_with_content
-from utils.arena.calibrate import Prices, in_setting_unit, propose, replay, round_up
+from utils.arena.calibrate import (
+    Prices,
+    check_prices,
+    in_setting_unit,
+    propose,
+    replay,
+    round_up,
+)
 
 CHEAP, EXPENSIVE = uuid4(), uuid4()
 # In dollars per million tokens. At four characters a token, each character
@@ -237,3 +245,19 @@ def test_a_pool_nobody_spent_proposes_nothing():
     names = [p.name for p in propose(replay(rows, PRICES))]
     assert names == ["all_per_session", "all_per_ip", "expected_answer_chars"]
     assert propose(replay([], PRICES)) == []
+
+
+@pytest.mark.parametrize(
+    "price_in, price_out, issue",
+    [
+        (2.6, 13.0, None),
+        (0.0, 0.0, "free"),
+        (1.0, 0.0, "free"),
+        (0.0, 1.0, "free_input"),
+        (13.0, 2.6, "output_below_input"),
+        (260.0, 1_300.0, "very_high"),
+    ],
+)
+def test_suspicious_prices_are_flagged(price_in, price_out, issue):
+    llm = LLMPrice(id=uuid4(), name="Model", price_in=price_in, price_out=price_out)
+    assert [check.issue for check in check_prices([llm])] == ([issue] if issue else [])

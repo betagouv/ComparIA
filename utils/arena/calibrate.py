@@ -44,7 +44,13 @@ from backend.arena.limits import (
     setting,
     turn_cost,
 )
-from backend.arena.models import LimitProposal, LimitsCalibration
+from backend.arena.models import (
+    LimitProposal,
+    LimitsCalibration,
+    LLMPrice,
+    PriceCheck,
+    PriceIssue,
+)
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.utils.user import ip_bucket
@@ -67,6 +73,10 @@ PERCENTILES = (50, 90, 95, 99)
 # and cannot crowd the arena out of Postgres.
 CALIBRATION_DAYS = 7
 CALIBRATION_MAX_COMPARISONS = 30_000
+
+# An output price no model sold per million tokens comes near, in dollars.
+# The priciest of the seed is 26.
+VERY_HIGH_PRICE_OUT = 100
 
 # A session allowance that 99 in 100 people's two hours stay under.
 SESSION_PERCENTILE = 99
@@ -384,6 +394,51 @@ def propose(result: Replay) -> list[LimitProposal]:
     return proposals
 
 
+async def enabled_llms(
+    session_factory: Callable[
+        [], AbstractAsyncContextManager[AsyncSession]
+    ] = get_session,
+) -> list[LLMPrice]:
+    """The enabled models and their prices, the priciest first."""
+    query = (
+        select(
+            col(LLMData.id),
+            col(LLMData.name),
+            col(LLMData.price_in),
+            col(LLMData.price_out),
+        )
+        .where(col(LLMData.status) == "enabled")
+        .order_by(col(LLMData.price_out).desc(), col(LLMData.name))
+    )
+    async with session_factory() as session:
+        rows = (await session.execute(query)).all()
+    return [
+        LLMPrice(id=id, name=name, price_in=price_in, price_out=price_out)
+        for id, name, price_in, price_out in rows
+    ]
+
+
+def price_issue(llm: Priced) -> PriceIssue | None:
+    """What looks wrong with a model's prices, if anything."""
+    if llm.price_out <= 0:
+        return "free"
+    if llm.price_in <= 0:
+        return "free_input"
+    if llm.price_out < llm.price_in:
+        return "output_below_input"
+    if llm.price_out > VERY_HIGH_PRICE_OUT:
+        return "very_high"
+    return None
+
+
+def check_prices(llms: Sequence[LLMPrice]) -> list[PriceCheck]:
+    return [
+        PriceCheck(**llm.model_dump(), issue=issue)
+        for llm in llms
+        if (issue := price_issue(llm))
+    ]
+
+
 @asynccontextmanager
 async def _bounded_session() -> AsyncGenerator[AsyncSession, None]:
     try:
@@ -415,6 +470,7 @@ async def calibrate(
         turns=result.turns,
         capped=len(result.conversations) >= max_comparisons,
         proposals=propose(result),
+        price_checks=check_prices(await enabled_llms(_bounded_session)),
     )
 
 
@@ -497,4 +553,9 @@ async def limits_calibrate(*, days: int = 30) -> None:
         logger.info(
             f"Proposed {proposal.name}: {proposal.value:,} "
             f"(now {setting(proposal.name):,})"
+        )
+    for check in check_prices(await enabled_llms()):
+        logger.warning(
+            f"Check the prices of {check.name} ({check.id}): {check.issue}, "
+            f"{check.price_in} in and {check.price_out} out per million tokens"
         )

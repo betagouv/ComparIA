@@ -180,8 +180,20 @@ class AdminLimit(BaseModel):
     stored: bool
 
 
+class LLMPrice(BaseModel):
+    """An enabled model and its prices, in US dollars per million tokens."""
+
+    id: UUID
+    name: str
+    price_in: float
+    price_out: float
+
+
 class AdminLimits(BaseModel):
     limits: list[AdminLimit]
+    # The enabled models, so the page can say which ones a threshold makes
+    # expensive as the admin types it.
+    llms: list[LLMPrice]
     # The last change to any limit, and the admin who made it.
     updated_at: datetime | None
     updated_by: str | None
@@ -227,6 +239,17 @@ class LimitProposal(BaseModel):
     over_share: float | None = None
 
 
+# Why a model's prices are worth a look: priced 0, so never expensive and
+# free on the expensive allowance; input free but not output; output cheaper
+# than input, as when the two were swapped; or an output price no model sold
+# per million tokens comes near, as when cents were typed for dollars.
+PriceIssue = Literal["free", "free_input", "output_below_input", "very_high"]
+
+
+class PriceCheck(LLMPrice):
+    issue: PriceIssue
+
+
 class LimitsCalibration(BaseModel):
     days: int
     comparisons: int
@@ -234,3 +257,6 @@ class LimitsCalibration(BaseModel):
     # The sample stopped at its cap: only the latest comparisons were read.
     capped: bool
     proposals: list[LimitProposal]
+    # Enabled models whose prices an admin should check: the dollars counted
+    # on the expensive allowance come from them.
+    price_checks: list[PriceCheck]

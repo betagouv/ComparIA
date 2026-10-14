@@ -83,6 +83,9 @@ def test_the_limits_need_an_admin(method, path):
     [
         {"all_per_session": 0},
         {"expensive_per_ip": -1},
+        # Less than a cent.
+        {"expensive_per_session": 0.001},
+        {"expensive_price_out": -1},
         {"all_per_ip": 2_147_483_648},
         {"all_per_session": 2.5},
         {"expected_answer_chars": -1},
@@ -112,6 +115,15 @@ def test_only_the_values_sent_change(monkeypatch):
         "updated_by": ADMIN_ID,
     }
     assert AdminLimitsPatch(expected_answer_chars=0).expected_answer_chars == 0
+
+
+def test_the_expensive_limits_take_dollars_and_cents():
+    patch = AdminLimitsPatch(
+        expensive_per_session=0.4, expensive_per_ip=12.75, expensive_price_out=0
+    )
+    assert (patch.expensive_per_session, patch.expensive_per_ip) == (0.4, 12.75)
+    # 0 makes every priced model expensive.
+    assert patch.expensive_price_out == 0
 
 
 def test_a_calibration_past_its_timeout_says_so(monkeypatch):
@@ -189,9 +201,13 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
             )
         # Past the week: never read.
         await add_comparison(llms, created_at=NOW - timedelta(days=8))
-        return await calibrate(max_comparisons=2), await calibrate()
+        return (
+            await calibrate(max_comparisons=2),
+            await calibrate(),
+            await admin_limits.read_limits(),
+        )
 
-    capped, whole_week = activity(scenario)
+    capped, whole_week, page = activity(scenario)
 
     assert (capped.comparisons, capped.capped) == (2, True)
     assert (whole_week.comparisons, whole_week.capped, whole_week.days) == (
@@ -204,6 +220,12 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
         "all_per_ip",
         "expected_answer_chars",
     }
+    # Both test models are priced 0: never expensive, worth a look.
+    assert [(c.name, c.issue) for c in whole_week.price_checks] == [
+        ("Alpha", "free"),
+        ("Beta", "free"),
+    ]
+    assert [llm.name for llm in page.llms] == ["Alpha", "Beta"]
 
 
 if __name__ == "__main__":
