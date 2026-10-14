@@ -1,3 +1,4 @@
+import json
 import re
 from typing import get_args
 
@@ -57,7 +58,7 @@ def generate_frontend_constants() -> None:
             f"export type {to_pascal_case(k)} = (typeof {k})[number]"
             for k, v in constants.items()
         ]
-        + [f"export const {k} = {v}" for k, v in numbers.items()]
+        + [f"export const {k} = {json.dumps(v)}" for k, v in numbers.items()]
     )
 
     FRONTEND_CONSTANTS.write_text("\n".join(file_lines) + "\n")
