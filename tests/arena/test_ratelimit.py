@@ -16,6 +16,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from redis.exceptions import ConnectionError as RedisConnectionError
+
 import backend.arena.limits as limits
 import backend.arena.session as session
 from backend.arena.limits import AllowanceSpent, Identity
@@ -210,7 +212,7 @@ def test_a_counter_expires_even_when_redis_drops_mid_charge():
     with fake_redis(FakeRedis(pipelines_that_work=1)) as fake:
         try:
             reserve_input_chars("sess-a", "1.1.1.1", 10, pricey=True)
-        except ConnectionError:
+        except RedisConnectionError:
             pass
         assert len(fake.store) == 4
         assert all(fake.ttl(k) > 0 for k in fake.store)

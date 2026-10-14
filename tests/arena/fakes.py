@@ -10,6 +10,8 @@ forward to watch a window close, and to make Redis fail between two calls.
 import contextlib
 from datetime import datetime
 
+from redis.exceptions import ConnectionError as RedisConnectionError
+
 
 class FakeRedis:
     """`pipelines_that_work` makes every pipeline after that many fail, as when
@@ -124,7 +126,7 @@ class FakePipeline:
     def execute(self):
         if self.redis.pipelines_left is not None:
             if self.redis.pipelines_left == 0:
-                raise ConnectionError("Redis went away")
+                raise RedisConnectionError("Redis went away")
             self.redis.pipelines_left -= 1
         results = [
             getattr(self.redis, name)(*args, **kwargs)

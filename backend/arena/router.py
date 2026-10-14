@@ -6,6 +6,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
+from redis.exceptions import RedisError
 
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
@@ -452,10 +453,10 @@ async def get_limits(
     who = Identity.of(anonymous_user_hash, get_ip(request))
     try:
         limit_status = read_status(who)
-    except Exception:
+    except RedisError:
         # Fail open: the message itself is still charged, and refused, by
         # `reserve`.
-        logger.exception("Could not read the arena limits")
+        logger.exception("Could not read the arena limits", extra={"request": request})
         limit_status = LimitStatus(())
 
     expensive_models: list[UUID] = []
