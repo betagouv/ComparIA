@@ -31,11 +31,13 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena.limits import (
+    CHAR_SETTINGS,
     MICRO_USD,
     POOL_SETTINGS,
     POOLS,
     WINDOW_SECONDS,
     Call,
+    LimitSetting,
     Pool,
     Priced,
     counted,
@@ -549,10 +551,14 @@ async def limits_calibrate(*, days: int = 30) -> None:
         f"turns of a suggested prompt: "
         f"{share(result.suggested_cached, result.suggested_answers)}"
     )
+
+    def shown(name: LimitSetting, value: float) -> str:
+        return f"{int(value):,}" if name in CHAR_SETTINGS else f"${value:,.2f}"
+
     for proposal in propose(result):
         logger.info(
-            f"Proposed {proposal.name}: {proposal.value:,} "
-            f"(now {setting(proposal.name):,})"
+            f"Proposed {proposal.name}: {shown(proposal.name, proposal.value)} "
+            f"(now {shown(proposal.name, setting(proposal.name))})"
         )
     for check in check_prices(await enabled_llms()):
         logger.warning(
