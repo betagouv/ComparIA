@@ -132,3 +132,11 @@ def test_cached_answers_on_suggested_prompts_are_counted_apart():
 
     assert (result.cached, result.answers) == (5, 6)
     assert (result.suggested_cached, result.suggested_answers) == (1, 2)
+
+
+def test_a_json_null_in_the_search_results_counts_the_prompt_alone():
+    rows = [
+        turn(uuid4(), START, "Bonjour", None, None, searched="Bonjour", web_search=None)
+    ]
+    [spent] = replay(rows, WEIGHTS).conversations
+    assert spent["all"] == 10 + 2 * len("Bonjour")

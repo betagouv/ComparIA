@@ -99,7 +99,9 @@ class Replay:
 
 
 def _prompt_chars(row: Row[Any]) -> int:
-    if row.searched is None:
+    # A JSON null in the column is not an SQL NULL, so the text can come
+    # with no results to merge.
+    if not row.web_search:
         return int(row.prompt_chars)
     results = [LinkupSearchTextResult.model_validate(r) for r in row.web_search]
     return len(merge_web_search_with_content(row.searched, results))
