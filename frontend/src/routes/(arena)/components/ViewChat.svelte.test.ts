@@ -35,6 +35,11 @@ vi.mock('$lib/chatService.svelte', () => ({
   ]
 }))
 
+vi.mock('$lib/voteTags', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/voteTags')>()),
+  getVoteTagsContext: () => []
+}))
+
 const props = { comparisonId: 'comparison-id', runAfterAcceptance: vi.fn() }
 const revealLabel = 'Terminer et découvrir les modèles'
 
@@ -102,5 +107,67 @@ describe('ViewChat', () => {
     expect(view.queryByRole('button', { name: 'Découvrir les modèles' })).toBeNull()
     expect(view.queryByText(/En attendant/)).toBeNull()
     Object.assign(comparator, { pause: undefined, error: undefined, canReveal: true })
+  })
+
+  describe('near the turn cap', () => {
+    // The turns scroll into view as they show, and jsdom has no layout.
+    Element.prototype.scrollIntoView ??= () => {}
+
+    function turns(count: number) {
+      return Array.from({ length: count }, (_, i) => ({
+        id: `turn-${i}`,
+        status: 'complete',
+        choice: 'a_better',
+        user_msg: { content: `Question ${i}` },
+        a: {
+          status: 'complete',
+          llm_msg: { content: 'A' },
+          keyword_annotations: [],
+          custom_annotation: ''
+        },
+        b: {
+          status: 'complete',
+          llm_msg: { content: 'B' },
+          keyword_annotations: [],
+          custom_annotation: ''
+        }
+      }))
+    }
+    const comparison = comparator.comparison
+
+    it.each([
+      [17, null],
+      [18, 'Encore 2 messages possibles dans cette conversation.'],
+      [19, 'Dernier message possible dans cette conversation.']
+    ])('after turn %i says how many are left, under the text box', (count, hint) => {
+      comparator.comparison = { ...comparison, turns: turns(count) as never[] }
+      const view = render(ViewChat, props)
+
+      const box = view.container.querySelector('#chatbot-prompt')
+      if (hint) {
+        expect(box).toHaveAccessibleDescription(hint)
+        // A hint, not an input error.
+        expect(view.container.querySelector('.fr-message--error, [aria-invalid]')).toBeNull()
+      } else {
+        expect(box).toHaveAccessibleDescription('')
+      }
+      comparator.comparison = comparison
+    })
+
+    it('puts the full panel in place of the text box at turn 20', async () => {
+      comparator.comparison = { ...comparison, turns: turns(20) as never[] }
+      const view = render(ViewChat, props)
+
+      expect(view.container.querySelector('#chatbot-prompt')).toBeNull()
+      expect(
+        view.getByRole('heading', { name: 'Cette conversation est complète' })
+      ).not.toHaveFocus()
+      expect(view.getByText(/au plus 20 messages/)).toBeInTheDocument()
+      expect(view.getByRole('link', { name: 'Nouvelle discussion' })).toHaveAttribute('href', '/')
+      expect(view.queryByRole('button', { name: revealLabel })).toBeNull()
+      await fireEvent.click(view.getByRole('button', { name: 'Découvrir les modèles' }))
+      expect(comparator.reveal).toHaveBeenCalled()
+      comparator.comparison = comparison
+    })
   })
 })

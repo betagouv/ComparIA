@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { Button, Icon, Tooltip } from '$components/dsfr'
+  import { resolve } from '$app/paths'
+  import { Alert, Button, Icon, Link, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
+  import { MAX_TURNS_PER_COMPARISON } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
@@ -29,6 +31,16 @@
       comparator.status == 'complete' &&
       !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
+
+  // The server refuses a turn past the cap: say so before anyone types it.
+  const turnsLeft = $derived(MAX_TURNS_PER_COMPARISON - (comparator.comparison?.turns.length ?? 0))
+  const full = $derived(turnsLeft <= 0 && !comparator.loading && comparator.status !== 'generating')
+  // From turn 18, once its vote is in: the person is about to type again.
+  const turnsHint = $derived.by(() => {
+    if (!canContinue || turnsLeft > 2 || turnsLeft <= 0) return undefined
+    if (turnsLeft === 1) return m['arene.limits.turns.last']()
+    return m['arene.limits.turns.left']({ count: turnsLeft })
+  })
 
   function onReveal() {
     if (comparator.canReveal) comparator.reveal()
@@ -87,7 +99,10 @@
       case 'generating':
         return m['chatbot.announce.generating']()
       case 'complete':
-        return m['chatbot.announce.ready']()
+        // The text box goes as the last answer lands: tell why.
+        return full
+          ? `${m['chatbot.announce.ready']()} ${m['arene.limits.turns.fullTitle']()}`
+          : m['chatbot.announce.ready']()
       default:
         return ''
     }
@@ -149,10 +164,31 @@
       class={[
         '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',
         // A notice that long must not cover the conversation on a phone.
-        { sticky: !comparator.pause }
+        { sticky: !comparator.pause && !full }
       ]}
     >
-      {#if comparator.pause}
+      {#if full}
+        <Alert id="turns-full-notice" title={m['arene.limits.turns.fullTitle']()} class="w-full">
+          <p>{m['arene.limits.turns.full']({ max: MAX_TURNS_PER_COMPARISON })}</p>
+          <div class="mt-4 gap-3 md:flex-row flex flex-col">
+            <Button
+              text={m['arene.limits.pause.reveal']()}
+              size="sm"
+              class="md:w-fit! w-full!"
+              onclick={onReveal}
+            />
+            <Link
+              button
+              variant="secondary"
+              size="sm"
+              icon="edit-line"
+              href={resolve('/')}
+              text={m['header.chatbot.newDiscussion']()}
+              class="md:w-fit! w-full!"
+            />
+          </div>
+        </Alert>
+      {:else if comparator.pause}
         <PauseNotice
           refusal={comparator.pause}
           {onReveal}
@@ -166,6 +202,7 @@
           label={m['chatbot.continuePrompt']()}
           placeholder={m['chatbot.continuePrompt']()}
           bind:error={comparator.promptError}
+          hint={turnsHint}
           hideLabel
           submitBtn
           submitDisabled={!canContinue || prompt === ''}
@@ -185,7 +222,7 @@
         </p>
       {/if}
 
-      {#if !comparator.pause}
+      {#if !comparator.pause && !full}
         <Button
           text={m['chatbot.revealButton']()}
           aria-disabled={!comparator.canReveal}

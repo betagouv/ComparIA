@@ -974,6 +974,12 @@
                 "at": "à {time}",
                 "tomorrowAt": "demain à {time}",
                 "within": "dans moins de deux heures"
+            },
+            "turns": {
+                "full": "Une conversation compte au plus {max} messages. Découvrez les modèles, puis commencez-en une nouvelle pour continuer.",
+                "fullTitle": "Cette conversation est complète",
+                "last": "Dernier message possible dans cette conversation.",
+                "left": "Encore {count} messages possibles dans cette conversation."
             }
         },
         "promptWarning": {

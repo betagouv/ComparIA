@@ -895,6 +895,12 @@
                 "at": "kl. {time}",
                 "tomorrowAt": "i morgen kl. {time}",
                 "within": "inden for to timer"
+            },
+            "turns": {
+                "full": "En samtale rummer højst {max} beskeder. Se modellerne, og start så en ny for at fortsætte.",
+                "fullTitle": "Denne samtale er fuld",
+                "last": "Sidste mulige besked i denne samtale.",
+                "left": "{count} beskeder mere er mulige i denne samtale."
             }
         },
         "promptWarning": {
