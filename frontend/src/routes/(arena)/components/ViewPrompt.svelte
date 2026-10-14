@@ -13,15 +13,18 @@
   } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
+  import { getLimitsContext } from '$lib/limits.svelte'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
-  import { onMount, tick } from 'svelte'
+  import { onMount, tick, untrack } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
+  import { pausedModes } from './pausedModes'
   import PauseNotice from './PauseNotice.svelte'
+  import PickPausedNotice, { pickPauseSaid, type PickPause } from './PickPausedNotice.svelte'
   import PickRefusalNotice from './PickRefusalNotice.svelte'
 
   let {
@@ -48,6 +51,7 @@
   let promptEl = $state<HTMLTextAreaElement>()
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
+  const limits = getLimitsContext()
 
   let prompt = $state('')
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
@@ -63,9 +67,20 @@
   // The refusal the person moved on from by changing the mode or the models.
   let dismissedRefusal = $state.raw<PickRefusal>()
   let toRandom = $state(false)
+  // Paused models taken out of a saved or `?vs=` selection, until the person
+  // changes the mode or the models.
+  let trimmed = $state.raw<Extract<PickPause, { kind: 'trimmed' }>>()
 
-  const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
+  const modesPaused = $derived(pausedModes(models, limits.paused))
+  const modePaused = $derived(mode.value !== 'custom' && modesPaused.has(mode.value))
+  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || modePaused)
   const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
+  // Before anyone sends; a refusal, when there is one, already says it all.
+  const pickPause = $derived.by((): PickPause | undefined => {
+    if (shownRefusal) return undefined
+    if (modePaused) return { kind: 'mode', until: modesPaused.get(mode.value) ?? null }
+    return trimmed
+  })
   const refusedNames = $derived(
     (shownRefusal?.limit.llm_ids ?? [])
       .map((id) => models.find((llm) => llm.id === id)?.name)
@@ -73,6 +88,34 @@
   )
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
+
+  // A saved or `?vs=` choice may hold models paused since: take them out, and
+  // say so in custom mode, where the person picked them. Not while sending:
+  // a refused pick tells and takes out its own.
+  $effect(() => {
+    const out = modelsSelection.value.filter((id) => limits.paused.has(id))
+    if (!out.length || submitting) return
+    untrack(() => {
+      modelsSelection.value = modelsSelection.value.filter((id) => !limits.paused.has(id))
+      if (mode.value !== 'custom') return
+      const left = modelsSelection.value.length > 0
+      if (!left) mode.value = 'random'
+      const pauses = out.map((id) => limits.paused.get(id)!)
+      const until = pauses
+        .map((llm) => llm.until)
+        .filter((until): until is string => !!until)
+        .sort()[0]
+      trimmed = {
+        kind: 'trimmed',
+        names: out
+          .map((id) => models.find((llm) => llm.id === id)?.name)
+          .filter((name): name is string => !!name),
+        until: until ?? null,
+        full: pauses.every((llm) => llm.reason === 'full'),
+        toRandom: !left
+      }
+    })
+  })
 
   onMount(() => {
     const vsParam = page.url.searchParams.get('vs')
@@ -148,11 +191,13 @@
   function setMode(value: APIModeAndPromptData['mode']) {
     mode.value = value
     dismissedRefusal = pickRefusal
+    trimmed = undefined
   }
 
   function setModelsSelection(value: string[]) {
     modelsSelection.value = value
     dismissedRefusal = pickRefusal
+    trimmed = undefined
   }
 
   function handlePromptSelected(
@@ -194,8 +239,11 @@
   }
 </script>
 
-<!-- Present before loading starts so assistive technology announces the state change. -->
-<p role="status" class="sr-only">{loading ? m['chatbot.loading']() : ''}</p>
+<!-- Present before loading starts so assistive technology announces the state change.
+     It also tells a selection trimmed once the limits are read, after the page shows. -->
+<p role="status" class="sr-only">
+  {loading ? m['chatbot.loading']() : pickPause ? pickPauseSaid(pickPause) : ''}
+</p>
 
 {#if loading}
   <div id="prompt-area" class="fr-container px-4 py-2 md:px-6 md:py-5">
@@ -252,6 +300,9 @@
               bind:modelsSelection={() => modelsSelection.value, setModelsSelection}
               {models}
               disabled={loading}
+              paused={limits.paused}
+              expensive={limits.expensive}
+              pausedModes={modesPaused}
             />
             <Toggle
               id="web-search"
@@ -282,6 +333,10 @@
           {#if shownRefusal}
             <div class="md:col-span-full md:order-none order-3">
               <PickRefusalNotice refusal={shownRefusal} names={refusedNames} {toRandom} />
+            </div>
+          {:else if pickPause}
+            <div class="md:col-span-full md:order-none order-3">
+              <PickPausedNotice pause={pickPause} />
             </div>
           {/if}
         </div>

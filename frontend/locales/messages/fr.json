@@ -965,7 +965,10 @@
                 "pausedHelp": "Les modèles « En pause » coûtent plus cher à faire tourner. Vous avez utilisé votre part : ils reviennent {at}.",
                 "pausedHelpNetwork": "Les modèles « En pause » coûtent plus cher à faire tourner. Votre réseau (établissement, administration, entreprise) a utilisé sa part : ils reviennent {at}.",
                 "pausedReason": "Vous avez utilisé votre part de ce modèle. Il revient {at}.",
-                "pausedReasonNetwork": "Votre réseau a utilisé sa part de ce modèle. Il revient {at}."
+                "pausedReasonNetwork": "Votre réseau a utilisé sa part de ce modèle. Il revient {at}.",
+                "trimmedFull": "Nous avons retiré {models} de votre sélection : complet aujourd'hui, de retour demain.",
+                "trimmedOne": "Nous avons retiré {models} de votre sélection : il est en pause pour vous et revient {at}.",
+                "trimmedTwo": "Nous avons retiré {models} de votre sélection : ils sont en pause pour vous et reviennent {at}."
             },
             "time": {
                 "at": "à {time}",

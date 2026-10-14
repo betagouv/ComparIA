@@ -965,7 +965,10 @@
                 "pausedHelp": "Models marked “Paused” cost more to run. You have used your share: they come back {at}.",
                 "pausedHelpNetwork": "Models marked “Paused” cost more to run. Your network (school, office, organisation) has used its share: they come back {at}.",
                 "pausedReason": "You have used your share of this model. It comes back {at}.",
-                "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}."
+                "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}.",
+                "trimmedFull": "We took {models} out of your selection: full for today, back tomorrow.",
+                "trimmedOne": "We took {models} out of your selection: it is paused for you and comes back {at}.",
+                "trimmedTwo": "We took {models} out of your selection: they are paused for you and come back {at}."
             },
             "time": {
                 "at": "at {time}",

@@ -886,7 +886,10 @@
                 "pausedHelp": "Modeller markeret “Sat på pause” koster mere at køre. Du har brugt din andel: de kommer tilbage {at}.",
                 "pausedHelpNetwork": "Modeller markeret “Sat på pause” koster mere at køre. Dit netværk (skole, kontor, organisation) har brugt sin andel: de kommer tilbage {at}.",
                 "pausedReason": "Du har brugt din andel af denne model. Den kommer tilbage {at}.",
-                "pausedReasonNetwork": "Dit netværk har brugt sin andel af denne model. Den kommer tilbage {at}."
+                "pausedReasonNetwork": "Dit netværk har brugt sin andel af denne model. Den kommer tilbage {at}.",
+                "trimmedFull": "Vi har fjernet {models} fra dit valg: fuld i dag, tilbage i morgen.",
+                "trimmedOne": "Vi har fjernet {models} fra dit valg: den er sat på pause for dig og kommer tilbage {at}.",
+                "trimmedTwo": "Vi har fjernet {models} fra dit valg: de er sat på pause for dig og kommer tilbage {at}."
             },
             "time": {
                 "at": "kl. {time}",
