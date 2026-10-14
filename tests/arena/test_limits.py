@@ -112,7 +112,7 @@ def test_a_window_closes_after_two_quiet_hours():
         assert not limits.read_status(WHO).spent
 
 
-def test_a_refund_never_leaves_a_counter_without_expiry():
+def test_a_late_refund_leaves_no_counter_without_expiry_or_below_zero():
     with fake_redis(limits) as redis:
         limits.reserve(WHO, {"all": settings.RATELIMIT_ALL_PER_SESSION + 1})
         pipelines = []
@@ -129,6 +129,8 @@ def test_a_refund_never_leaves_a_counter_without_expiry():
         with pytest.raises(AllowanceSpent):
             limits.reserve(WHO, {"all": 1})
 
+        # Nor below zero, which would give the new window more room.
+        assert all(a.used == 0 for a in limits.read_status(WHO).allowances)
         for identity in WHO.identities:
             assert redis.ttl(limits.budget_key("all", identity)) == (
                 limits.WINDOW_SECONDS

@@ -411,7 +411,20 @@ def reserve(
     replies = pipe.execute()
 
     # Two replies per counter (the refund and its expiry), then the TTLs.
+    refunded: list[int] = replies[: 2 * len(counters) : 2]
     ttls = replies[2 * len(counters) :]
+    # A counter that expired meanwhile took the refund below zero, which
+    # would hand the new window more than its allowance. The window the
+    # message was charged to is gone, so the refund goes with it.
+    if below := [
+        (budget_key(pool, identity), total)
+        for (pool, identity, _chars), total in zip(counters, refunded)
+        if total < 0
+    ]:
+        pipe = client.pipeline()
+        for key, total in below:
+            pipe.incrby(key, -total)
+        pipe.execute()
     raise AllowanceSpent(
         [
             Allowance(
