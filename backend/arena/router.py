@@ -23,12 +23,14 @@ from backend.arena.limits import (
     Answer,
     Call,
     Charge,
+    Day,
     Identity,
     LimitStatus,
     Pool,
     expected_answer_chars,
     read_status,
     reload_settings,
+    resting_models,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (
@@ -158,6 +160,47 @@ def limit_refusal(
     )
 
 
+def full_refusal(
+    resting: Mapping[UUID, datetime], llm_ids: Sequence[UUID] = ()
+) -> LimitReachedError:
+    """A new comparison refused on models whose daily cap is full, for
+    everyone: the picked ones in `llm_ids`, or a mode left with nothing to
+    draw. They come back at midnight in Paris."""
+    return LimitReachedError(
+        "model_full_today",
+        LimitRefusal(
+            scope=None,
+            resets_at=min(resting.values(), default=Day.at().ends),
+            resets_in=Day.at().ends_in(),
+            llm_ids=list(llm_ids),
+        ),
+    )
+
+
+def pick_refusal(
+    error: NoModelLeft,
+    resting: Mapping[UUID, datetime],
+    spent: Sequence[Allowance],
+) -> LimitReachedError:
+    """
+    What the person is told when a draw has nothing left, `spent` holding
+    the expensive allowances that left expensive models out, if any. Of a
+    custom pick both full and paused, the limit that lifts last is told,
+    with every model picked: that is when the pick can go through.
+    """
+    full = [llm_id for llm_id in error.llm_ids if llm_id in resting]
+    paused = [llm_id for llm_id in error.llm_ids if llm_id not in resting]
+    if not spent or (error.llm_ids and not paused):
+        return full_refusal(resting, full)
+    if not resting or (error.llm_ids and not full):
+        return limit_refusal(spent, paused)
+    # Both. An allowance with no known end lifts last.
+    lifts = lifts_last(spent)[1]
+    if lifts is None or lifts > min(resting.values()):
+        return limit_refusal(spent, error.llm_ids)
+    return full_refusal(resting, error.llm_ids)
+
+
 def arena_limits(
     limit_status: LimitStatus,
     expensive_models: Sequence[UUID],
@@ -179,8 +222,6 @@ def arena_limits(
             llm_id: PausedLLM(id=llm_id, until=expensive.resets_at, reason="allowance")
             for llm_id in expensive_models
         }
-    # TODO pass `full` from the daily cap per model (feat/model-daily-cap);
-    # until then nothing is ever full.
     for llm_id, until in (full or {}).items():
         other = paused.get(llm_id)
         # An allowance pause with no known end is the longest there is.
@@ -287,20 +328,34 @@ def charge_turn(
         raise refuse(error.spent, request)
 
 
+def read_resting(llms_data: LLMsData, request: Request) -> dict[UUID, datetime]:
+    """The models whose daily cap is full. Fails open: a model's day only
+    decides the next draws, and the allowances still charge every turn."""
+    try:
+        return resting_models(llms_data.enabled.values())
+    except RedisError:
+        logger.exception(
+            "Could not read the models' daily spend", extra={"request": request}
+        )
+        return {}
+
+
 def pick_and_charge(
     args: AddFirstTextBody,
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
     limit_status: LimitStatus,
+    resting: Mapping[UUID, datetime],
 ) -> tuple[tuple[UUID, UUID], bool, Charge]:
     """
     Draw the two models of a new comparison and charge its first message.
 
     Once the person's expensive allowance is spent, the draw leaves expensive
-    models out instead of refusing the message: cheap duels go on. A custom
-    pick of an expensive model is refused with its id, as is a mode left with
-    nothing to draw.
+    models out instead of refusing the message: cheap duels go on. A model
+    whose daily cap is full (in `resting`) is left out of every draw until
+    midnight. A custom pick of such a model is refused with its id, as is a
+    mode left with nothing to draw.
 
     `limit_status` is the one read before the route, see
     `assert_allowance_left`.
@@ -309,29 +364,32 @@ def pick_and_charge(
     the charge to settle once the models have answered.
     """
 
-    def without_expensive(
-        spent: Sequence[Allowance],
-    ) -> tuple[tuple[UUID, UUID], bool, Charge]:
+    def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
+        excluded = [*resting, *(llms_data.expensive_models if spent else [])]
         try:
-            pair = llms_data.pick_two(
-                args.mode,
-                args.custom_models_selection,
-                hard_excluded=llms_data.expensive_models,
+            return llms_data.pick_two(
+                args.mode, args.custom_models_selection, hard_excluded=excluded
             )
         except NoModelLeft as error:
             logger.warning(
-                f"Refused a '{args.mode}' draw on a spent expensive allowance,"
-                f" paused picks: [{error}]",
+                f"Refused a '{args.mode}' draw with {len(resting)} models full"
+                f" today and expensive models {'out' if spent else 'in'},"
+                f" picks left out: [{error}]",
                 extra={"request": request},
             )
-            raise limit_refusal(spent, error.llm_ids)
+            raise pick_refusal(error, resting, spent)
+
+    def without_expensive(
+        spent: Sequence[Allowance],
+    ) -> tuple[tuple[UUID, UUID], bool, Charge]:
+        pair = draw(spent)
         sent = first_turn_sent(args.prompt_value, pair, llms_data)
         return pair, False, charge_turn(sent, llms_data, anonymous_user_hash, request)
 
     if not limit_status.expensive_available:
         return without_expensive(limit_status.spent_in("expensive"))
 
-    pair = llms_data.pick_two(args.mode, args.custom_models_selection)
+    pair = draw(())
     who = Identity.of(anonymous_user_hash, get_ip(request))
     sent = first_turn_sent(args.prompt_value, pair, llms_data)
     try:
@@ -504,8 +562,9 @@ async def get_limits(
     anonymous_user_hash: RequiredAnomymous, request: Request, response: Response
 ) -> ArenaLimits:
     """Which allowances this person has spent and which models are paused for
-    them, read on page load and after each vote. It changes with every
-    message, so no cache may keep it."""
+    them, or for everyone once their daily cap is full, read on page load and
+    after each vote. It changes with every message, so no cache may keep
+    it."""
     response.headers["Cache-Control"] = "no-store"
     who = Identity.of(anonymous_user_hash, get_ip(request))
     try:
@@ -516,10 +575,13 @@ async def get_limits(
         logger.exception("Could not read the arena limits", extra={"request": request})
         limit_status = LimitStatus(())
 
+    llms_data = await get_llms_data()
     expensive_models: list[UUID] = []
     if not limit_status.expensive_available:
-        expensive_models = (await get_llms_data()).expensive_models
-    return arena_limits(limit_status, expensive_models)
+        expensive_models = llms_data.expensive_models
+    return arena_limits(
+        limit_status, expensive_models, read_resting(llms_data, request)
+    )
 
 
 @router.post("/add_first_text", dependencies=[Depends(assert_not_block_cooldown)])
@@ -585,7 +647,12 @@ async def add_first_text(
     # Select LLMs
     llms_data = await get_llms_data()
     (llm_a_id, llm_b_id), expensive_available, charge = pick_and_charge(
-        args, llms_data, anonymous_user_hash, request, allowance
+        args,
+        llms_data,
+        anonymous_user_hash,
+        request,
+        allowance,
+        read_resting(llms_data, request),
     )
 
     logger.info(

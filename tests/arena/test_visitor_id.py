@@ -50,7 +50,10 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(pick_two=lambda _mode, _selection: (uuid4(), uuid4()))
+        return SimpleNamespace(
+            pick_two=lambda _mode, _selection, **_kwargs: (uuid4(), uuid4()),
+            enabled={},
+        )
 
     async def create_comparison(comparison):
         created.append(comparison)

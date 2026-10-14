@@ -37,12 +37,14 @@ SPENT = settings.RATELIMIT_ALL_PER_IP + 1
 
 @pytest.fixture
 def arena(monkeypatch):
-    """The route against a fake Redis. `loads` counts reads of the models."""
-    state = SimpleNamespace(loads=0)
+    """The route against a fake Redis. `enabled` holds the models, for their
+    daily caps."""
+    state = SimpleNamespace(enabled={})
 
     async def get_llms_data():
-        state.loads += 1
-        return SimpleNamespace(expensive_models=[PRICEY, PRICIER])
+        return SimpleNamespace(
+            expensive_models=[PRICEY, PRICIER], enabled=state.enabled
+        )
 
     monkeypatch.setattr(arena_router, "get_llms_data", get_llms_data)
     app = FastAPI()
@@ -67,12 +69,11 @@ def close(when, seconds):
     return abs(lifts - lifts_in(seconds)) < timedelta(seconds=2)
 
 
-def test_nothing_spent_says_nothing_and_reads_no_model(arena):
+def test_nothing_spent_says_nothing(arena):
     response = arena.client.get("/arena/limits")
 
     assert response.status_code == 200
     assert response.json() == {"total": None, "expensive": None, "paused_llms": []}
-    assert arena.loads == 0
 
 
 def test_a_message_to_an_expensive_pair_changes_nothing_until_a_pool_is_spent(arena):
@@ -227,3 +228,20 @@ def test_a_full_model_is_paused_with_the_expensive_allowance_left():
 
     assert status.expensive is None
     assert [(p.id, p.reason) for p in status.paused_llms] == [(cheap, "full")]
+
+
+def test_a_model_whose_daily_cap_is_full_is_paused_for_everyone_until_midnight(
+    arena, monkeypatch
+):
+    monkeypatch.setattr(limits, "now", lambda: arena.redis.now)
+    arena.enabled = {
+        PRICEY: SimpleNamespace(id=PRICEY, daily_usd_cap=5.0),
+        PRICIER: SimpleNamespace(id=PRICIER, daily_usd_cap=None),
+    }
+    day = limits.Day.at()
+    limits.count_day(day, {PRICEY: {"usd": 5_000_000}, PRICIER: {"usd": 9_000_000}})
+
+    paused = arena.client.get("/arena/limits").json()["paused_llms"]
+
+    assert [(p["id"], p["reason"]) for p in paused] == [(str(PRICEY), "full")]
+    assert datetime.fromisoformat(paused[0]["until"]) == day.ends

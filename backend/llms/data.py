@@ -4,9 +4,10 @@ from uuid import UUID
 
 import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
+from redis.exceptions import RedisError
 from sqlmodel import select
 
-from backend.arena.limits import is_expensive
+from backend.arena.limits import is_expensive, resting_models
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
@@ -354,7 +355,7 @@ async def pick_replacement_model(
     Only an expensive model may stand in for an expensive one, and only while
     the person's expensive allowance has room (`expensive_available`). A
     cheap side was charged at the cheap rate, and the person may have no
-    expensive allowance left.
+    expensive allowance left. A model resting for the day never stands in.
     """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
@@ -375,6 +376,13 @@ async def pick_replacement_model(
     expensive = models.expensive_models
     if failing not in expensive or not expensive_available:
         pool = [llm_id for llm_id in pool if llm_id not in expensive]
+    # A model whose daily cap is full stands in for no one.
+    try:
+        resting = resting_models(models.enabled.values())
+    except RedisError:
+        logger.exception("Could not read the models' daily spend")
+        resting = {}
+    pool = [llm_id for llm_id in pool if llm_id not in resting]
 
     try:
         return models.pick_one(pool, excluded=excluded)

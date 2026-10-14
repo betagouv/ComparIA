@@ -12,6 +12,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
+from redis.exceptions import RedisError
 
 from backend.llms import data
 from backend.llms.data import LLMsData, pick_replacement_model
@@ -29,6 +30,7 @@ def catalog(monkeypatch: pytest.MonkeyPatch) -> None:
         return SimpleNamespace(
             random_models=CHEAP + EXPENSIVE,
             expensive_models=EXPENSIVE,
+            enabled={},
             pick_one=lambda models, excluded: LLMsData.pick_one(
                 cast(Any, None), models, excluded
             ),
@@ -69,3 +71,27 @@ def test_an_expensive_side_gets_a_cheap_stand_in_once_the_allowance_is_spent() -
     assert replacements("expensive-a", "cheap-a", expensive_available=False) <= set(
         CHEAP
     )
+
+
+def test_a_model_resting_for_the_day_never_stands_in(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(data, "resting_models", lambda _llms: {"cheap-b": None})
+
+    assert replacements("cheap-a", "expensive-a", expensive_available=True) == {
+        "cheap-c"
+    }
+
+
+def test_a_stand_in_is_still_found_when_the_daily_spend_cannot_be_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def down(_llms: Any) -> dict[str, None]:
+        raise RedisError("Redis went away")
+
+    monkeypatch.setattr(data, "resting_models", down)
+
+    assert replacements("cheap-a", "expensive-a", expensive_available=True) == {
+        "cheap-b",
+        "cheap-c",
+    }

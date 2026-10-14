@@ -115,13 +115,13 @@ def patched(module, **attributes):
 
 
 @contextlib.contextmanager
-def arena(llm_ids=(CHEAP, CHEAP)):
+def arena(llm_ids=(CHEAP, CHEAP), caps=None):
     """The arena routes against stubs. `provider_calls` counts every time the
     models are started; `created` every comparison, turn or prompt check
     written; `draws` the models each draw had to leave out; `new_comparisons`
     what each first message asked to save. Set `in_step` to a
     barrier to hold each request just before it charges until the others get
-    there too."""
+    there too. `caps` holds the daily cap of each model that has one."""
     redis = FakeRedis()
     state = SimpleNamespace(
         redis=redis,
@@ -165,13 +165,20 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def get_llms_data():
         if state.in_step:
             await state.in_step.wait()
+        models = {
+            llm_id: SimpleNamespace(
+                id=llm_id,
+                system_prompt=None,
+                daily_usd_cap=(caps or {}).get(llm_id),
+                **vars(PRICES[llm_id]),
+            )
+            for llm_id in (CHEAP, EXPENSIVE)
+        }
         return SimpleNamespace(
             pick_two=pick_two,
             expensive_models=[EXPENSIVE],
-            all={
-                llm_id: SimpleNamespace(system_prompt=None, **vars(PRICES[llm_id]))
-                for llm_id in llm_ids
-            },
+            all=models,
+            enabled=models,
         )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
