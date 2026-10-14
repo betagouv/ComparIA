@@ -2,23 +2,78 @@
   import { Badge, Button, Icon, Search } from '$components/dsfr'
   import { AILogo } from '$components/layout'
   import Selector from '$components/Selector.svelte'
-  import type { APIModeAndPromptData } from '$lib/chatService.svelte'
+  import type { APIModeAndPromptData, Mode } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { PausedModel, Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
+  import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
+  import TimedText from './TimedText.svelte'
 
   let {
     models,
     mode = $bindable(),
     modelsSelection = $bindable(),
-    disabled = false
+    disabled = false,
+    paused = new Map(),
+    expensive,
+    pausedModes = new Map()
   }: {
     models: BotModel[]
     mode: APIModeAndPromptData['mode']
     modelsSelection: string[]
     disabled?: boolean
+    /** The models a new comparison may not use yet, by id. */
+    paused?: ReadonlyMap<string, PausedModel>
+    /** Set while the expensive allowance is spent, for whom and until when. */
+    expensive?: Spent
+    /** The modes left with nothing to draw, and when they come back. */
+    pausedModes?: ReadonlyMap<Mode, string | null>
   } = $props()
+
+  type Pause = { badge: string; reset?: ResetTime; reason: string }
+
+  function badge(reset: ResetTime): string {
+    if (!reset.clock) return m['arene.limits.picker.pausedBadgeSoon']()
+    return m[
+      reset.clock.tomorrow
+        ? 'arene.limits.picker.pausedBadgeTomorrow'
+        : 'arene.limits.picker.pausedBadge'
+    ]({ time: TIME_SLOT })
+  }
+
+  function modelPause(id: string): Pause | undefined {
+    const llm = paused.get(id)
+    if (!llm) return undefined
+    if (llm.reason === 'full') {
+      return {
+        badge: m['arene.limits.picker.fullBadge'](),
+        reason: m['arene.limits.picker.fullReason']()
+      }
+    }
+    const reset = resetTime(llm.until)
+    const reason = m[
+      expensive?.scope === 'network'
+        ? 'arene.limits.picker.pausedReasonNetwork'
+        : 'arene.limits.picker.pausedReason'
+    ]({ at: reset.at })
+    return { badge: badge(reset), reset, reason: spoken(reason, reset) }
+  }
+
+  function modePause(value: Mode): Pause | undefined {
+    if (!pausedModes.has(value)) return undefined
+    const reset = resetTime(pausedModes.get(value))
+    const reason = m['arene.limits.mode.reason']({ at: reset.at })
+    return { badge: badge(reset), reset, reason: spoken(reason, reset) }
+  }
+
+  // The line under the help text: why some cards say "En pause".
+  const expensiveReset = $derived(
+    expensive && [...paused.values()].some((llm) => llm.reason === 'allowance')
+      ? resetTime(expensive.resets_at)
+      : undefined
+  )
 
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
@@ -28,14 +83,18 @@
     const _search = search.toLowerCase()
     return models
       .filter((llm) => !_search || llm.search.includes(_search))
-      .map((llm) => ({
-        ...llm,
-        label: llm.name,
-        value: llm.id!
-      }))
+      .map((llm) => {
+        const pause = modelPause(llm.id!)
+        return { ...llm, label: llm.name, value: llm.id!, pause, disabledReason: pause?.reason }
+      })
   })
 
-  const modeChoices = getModeInfos()
+  const modeChoices = $derived(
+    getModeInfos().map((info) => {
+      const pause = modePause(info.value)
+      return { ...info, pause, disabledReason: pause?.reason }
+    })
+  )
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
   const { modelA, modelB } = $derived({
     modelA: models.find((model) => model.id === modelsSelection[0]),
@@ -118,6 +177,15 @@
   {/if}
 </div>
 
+{#snippet pauseBadge(pause: Pause)}
+  <span class="mt-2 block">
+    <Badge variant="info" size="xs">
+      <Icon icon="i-ri-pause-circle-line" size="xxs" class="me-1" />
+      {#if pause.reset}<TimedText text={pause.badge} reset={pause.reset} />{:else}{pause.badge}{/if}
+    </Badge>
+  </span>
+{/snippet}
+
 <dialog aria-labelledby="modal-mode-selection-title" id="modal-mode-selection" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
@@ -156,6 +224,21 @@
                     <p class="mb-0!">
                       {m['arenaHome.compareModels.help']()}
                     </p>
+                    {#if expensive && expensiveReset}
+                      <p class="fr-text--sm mt-2! mb-0! gap-1 flex">
+                        <Icon icon="i-ri-pause-circle-line" size="sm" class="text-primary" />
+                        <span>
+                          <TimedText
+                            text={m[
+                              expensive.scope === 'network'
+                                ? 'arene.limits.picker.pausedHelpNetwork'
+                                : 'arene.limits.picker.pausedHelp'
+                            ]({ at: expensiveReset.at })}
+                            reset={expensiveReset}
+                          />
+                        </span>
+                      </p>
+                    {/if}
                   </div>
 
                   <Search
@@ -183,12 +266,23 @@
                 {#snippet option(opt, labelProps, input)}
                   <label {...labelProps}>
                     {@render input(opt, {
-                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : ''
+                      // A paused mode is not picked, so the dialog stays open.
+                      'aria-controls':
+                        opt.value != 'custom' && !opt.pause ? 'modal-mode-selection' : ''
                     })}
-                    <Icon icon={opt.icon} block class="text-primary me-3" />
+                    <Icon
+                      icon={opt.icon}
+                      block
+                      class={['text-primary me-3', { 'opacity-60': !!opt.pause }]}
+                    />
                     {#if opt.value != 'custom'}
                       <div>
-                        <strong>{opt.label}</strong>&nbsp;: {opt.description}
+                        <span class={{ 'opacity-60': !!opt.pause }}>
+                          <strong>{opt.label}</strong>&nbsp;: {opt.description}
+                        </span>
+                        {#if opt.pause}
+                          {@render pauseBadge(opt.pause)}
+                        {/if}
                       </div>
                     {:else}
                       <strong>{opt.label}</strong>
@@ -222,7 +316,8 @@
 
                     <label {...labelProps}>
                       {@render input(opt)}
-                      <div class="text-dark-grey flex">
+                      <!-- Dimmed, but never by colour alone: the badge says it, with an icon. -->
+                      <div class={['text-dark-grey flex', { 'opacity-60': !!opt.pause }]}>
                         <AILogo
                           logo={opt.lab.logo}
                           customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
@@ -234,13 +329,21 @@
                           >{opt.name}</strong
                         >
                       </div>
-                      <ul class="fr-badges-group mt-3! md:flex! hidden!">
+                      <ul
+                        class={[
+                          'fr-badges-group mt-3! md:flex! hidden!',
+                          { 'opacity-60': !!opt.pause }
+                        ]}
+                      >
                         {#each modelBadges as badge, i (i)}
                           <li>
                             <Badge {...badge} id="{opt.value}-card-badge-{i}" size="xs" noTooltip />
                           </li>
                         {/each}
                       </ul>
+                      {#if opt.pause}
+                        {@render pauseBadge(opt.pause)}
+                      {/if}
                     </label>
                   {/snippet}
                 </Selector>

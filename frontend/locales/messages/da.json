@@ -854,6 +854,8 @@
         "limits": {
             "mode": {
                 "back": "Den kræver modeller, der er sat på pause for dig og kommer tilbage {at}. Vælg en anden tilstand: din besked er gemt.",
+                "choose": "Den kræver modeller, der er sat på pause for dig og kommer tilbage {at}. Vælg en anden tilstand.",
+                "reason": "Denne tilstand kræver modeller, der er sat på pause for dig. Den kommer tilbage {at}.",
                 "title": "Denne tilstand er sat på pause for dig"
             },
             "pause": {
@@ -874,6 +876,17 @@
                 "toRandom": "Der er ingen modeller tilbage i dit valg: sammenligningen bruger tilstanden Tilfældig.",
                 "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver anden time. Alle de andre er stadig åbne.",
                 "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
+            },
+            "picker": {
+                "fullBadge": "Fuld i dag",
+                "fullReason": "Denne model har fået mange beskeder i dag. Den kommer tilbage i morgen.",
+                "pausedBadge": "Sat på pause til {time}",
+                "pausedBadgeSoon": "Sat på pause i under to timer",
+                "pausedBadgeTomorrow": "Sat på pause til i morgen, {time}",
+                "pausedHelp": "Modeller markeret “Sat på pause” koster mere at køre. Du har brugt din andel: de kommer tilbage {at}.",
+                "pausedHelpNetwork": "Modeller markeret “Sat på pause” koster mere at køre. Dit netværk (skole, kontor, organisation) har brugt sin andel: de kommer tilbage {at}.",
+                "pausedReason": "Du har brugt din andel af denne model. Den kommer tilbage {at}.",
+                "pausedReasonNetwork": "Dit netværk har brugt sin andel af denne model. Den kommer tilbage {at}."
             },
             "time": {
                 "at": "kl. {time}",

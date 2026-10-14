@@ -933,6 +933,8 @@
         "limits": {
             "mode": {
                 "back": "Il a besoin de modèles qui sont en pause pour vous et reviennent {at}. Choisissez un autre mode : votre message est gardé.",
+                "choose": "Il a besoin de modèles qui sont en pause pour vous et reviennent {at}. Choisissez un autre mode.",
+                "reason": "Ce mode a besoin de modèles qui sont en pause pour vous. Il revient {at}.",
                 "title": "Ce mode est en pause pour vous"
             },
             "pause": {
@@ -953,6 +955,17 @@
                 "toRandom": "Il ne reste plus de modèle dans votre sélection : la comparaison se fera en mode Aléatoire.",
                 "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les deux heures. Tous les autres restent ouverts.",
                 "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
+            },
+            "picker": {
+                "fullBadge": "Complet aujourd'hui",
+                "fullReason": "Ce modèle a reçu beaucoup de messages aujourd'hui. Il revient demain.",
+                "pausedBadge": "En pause jusqu'à {time}",
+                "pausedBadgeSoon": "En pause moins de deux heures",
+                "pausedBadgeTomorrow": "En pause jusqu'à demain, {time}",
+                "pausedHelp": "Les modèles « En pause » coûtent plus cher à faire tourner. Vous avez utilisé votre part : ils reviennent {at}.",
+                "pausedHelpNetwork": "Les modèles « En pause » coûtent plus cher à faire tourner. Votre réseau (établissement, administration, entreprise) a utilisé sa part : ils reviennent {at}.",
+                "pausedReason": "Vous avez utilisé votre part de ce modèle. Il revient {at}.",
+                "pausedReasonNetwork": "Votre réseau a utilisé sa part de ce modèle. Il revient {at}."
             },
             "time": {
                 "at": "à {time}",

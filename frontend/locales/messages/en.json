@@ -933,6 +933,8 @@
         "limits": {
             "mode": {
                 "back": "It needs models that are paused for you and come back {at}. Pick another mode: your message is kept.",
+                "choose": "It needs models that are paused for you and come back {at}. Pick another mode.",
+                "reason": "This mode needs models that are paused for you. It comes back {at}.",
                 "title": "This mode is paused for you"
             },
             "pause": {
@@ -953,6 +955,17 @@
                 "toRandom": "No model is left in your selection: the comparison will use the Random mode.",
                 "why": "To keep compar:IA free for everyone, each person can send a limited number of messages to these models every two hours. All the others stay open.",
                 "whyNetwork": "A lot of messages went from your network (school, office, organisation) to these models. This limit covers everyone on the network, not just you. All the other models stay open."
+            },
+            "picker": {
+                "fullBadge": "Full for today",
+                "fullReason": "This model has had a lot of messages today. It comes back tomorrow.",
+                "pausedBadge": "Paused until {time}",
+                "pausedBadgeSoon": "Paused for under two hours",
+                "pausedBadgeTomorrow": "Paused until tomorrow, {time}",
+                "pausedHelp": "Models marked “Paused” cost more to run. You have used your share: they come back {at}.",
+                "pausedHelpNetwork": "Models marked “Paused” cost more to run. Your network (school, office, organisation) has used its share: they come back {at}.",
+                "pausedReason": "You have used your share of this model. It comes back {at}.",
+                "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}."
             },
             "time": {
                 "at": "at {time}",
