@@ -82,7 +82,7 @@
          keeps, so the offer would not help. -->
   </div>
 
-  <p class="fr-text--sm mt-4 mb-0! relative">
+  <p class="fr-text--sm mt-4! mb-0! relative">
     <Toggletip
       id="pause-notice-why"
       label={m['arene.limits.pause.whyLabel']()}
