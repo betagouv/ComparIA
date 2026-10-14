@@ -57,10 +57,14 @@
   })
   let webSearch = $state(false)
   let submitting = $state(false)
+  // The refusal the person moved on from by changing the mode or the models.
+  let dismissedRefusal = $state.raw<PickRefusal>()
+  let toRandom = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
+  const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
   const refusedNames = $derived(
-    (pickRefusal?.limit.llm_ids ?? [])
+    (shownRefusal?.limit.llm_ids ?? [])
       .map((id) => models.find((llm) => llm.id === id)?.name)
       .filter((name): name is string => !!name)
   )
@@ -115,6 +119,7 @@
     if (loading || submitting) return
 
     submitting = true
+    toRandom = false
     try {
       await onPrompt({
         mode: mode.value,
@@ -126,11 +131,25 @@
       const refused = pickRefusal?.limit.llm_ids
       if (refused?.length) {
         modelsSelection.value = modelsSelection.value.filter((id) => !refused.includes(id))
-        if (!modelsSelection.value.length) mode.value = 'random'
+        if (!modelsSelection.value.length) {
+          mode.value = 'random'
+          toRandom = true
+        }
       }
     } finally {
       submitting = false
     }
+  }
+
+  // Changed by the person, not by onPromptSubmit: the refusal no longer fits.
+  function setMode(value: APIModeAndPromptData['mode']) {
+    mode.value = value
+    dismissedRefusal = pickRefusal
+  }
+
+  function setModelsSelection(value: string[]) {
+    modelsSelection.value = value
+    dismissedRefusal = pickRefusal
   }
 
   function handlePromptSelected(
@@ -226,8 +245,8 @@
 
           <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
             <ModelSelector
-              bind:mode={mode.value}
-              bind:modelsSelection={modelsSelection.value}
+              bind:mode={() => mode.value, setMode}
+              bind:modelsSelection={() => modelsSelection.value, setModelsSelection}
               {models}
               disabled={loading}
             />
@@ -248,9 +267,9 @@
             </Toggle>
           </div>
 
-          {#if pickRefusal}
+          {#if shownRefusal}
             <div class="md:col-span-full">
-              <PickRefusalNotice refusal={pickRefusal} names={refusedNames} />
+              <PickRefusalNotice refusal={shownRefusal} names={refusedNames} {toRandom} />
             </div>
           {/if}
 

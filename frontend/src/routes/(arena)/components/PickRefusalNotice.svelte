@@ -8,11 +8,14 @@
 
   let {
     refusal,
-    names
+    names,
+    toRandom = false
   }: {
     refusal: PickRefusal
     /** The names of the picked models the person may not use yet, if any. */
     names: string[]
+    /** Taking them out emptied the selection, so the mode went back to random. */
+    toRandom?: boolean
   } = $props()
 
   const reset = $derived(resetTime(refusal.limit.resets_at))
@@ -44,6 +47,9 @@
           : 'arene.limits.picked.why'
       ]()}
     </p>
+    {#if toRandom}
+      <p>{m['arene.limits.picked.toRandom']()}</p>
+    {/if}
     <p>{m['arene.limits.picked.resend']()}</p>
   {:else}
     <p><TimedText text={m['arene.limits.mode.back']({ at: reset.at })} {reset} /></p>

@@ -17,6 +17,14 @@ vi.mock('$lib/chatService.svelte', () => ({
       label: 'Aléatoire',
       alt_label: 'Aléatoire',
       description: 'Deux modèles choisis au hasard'
+    },
+    {
+      value: 'small-models',
+      icon: 'i-ri-leaf-line',
+      title: 'Frugal',
+      label: 'Frugal',
+      alt_label: 'Frugal',
+      description: 'Deux petits modèles'
     }
   ]
 }))
@@ -131,5 +139,36 @@ describe('ViewPrompt', () => {
     expect(view.getByRole('textbox')).toHaveValue('Ma question')
     expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+    // Two models were picked, so one is left and the mode stays custom.
+    expect(view.queryByText(/mode Aléatoire/)).toBeNull()
+  })
+
+  it('says so when the refused pick empties the selection, and goes once the mode changes', async () => {
+    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
+    catalog.models = [{ id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab }]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id']))
+    const pickRefusal = {
+      detail: 'expensive_allowance_spent' as const,
+      limit: {
+        scope: 'session' as const,
+        resets_at: new Date(Date.now() + 3600_000).toISOString(),
+        resets_in: 3600,
+        llm_ids: ['expensive-id']
+      }
+    }
+    const onPrompt = vi.fn(async () => {
+      await view.rerender({ ...props, onPrompt, pickRefusal })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    expect(await view.findByText(/la comparaison se fera en mode Aléatoire/)).toBeInTheDocument()
+    await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
+
+    await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
+    expect(view.queryByRole('heading', { name: /Nous avons retiré/ })).toBeNull()
   })
 })
