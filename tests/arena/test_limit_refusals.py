@@ -60,6 +60,14 @@ def test_the_limit_that_lifts_last_is_the_one_told():
     assert abs(error.limit.resets_at - lifts) < timedelta(seconds=2)
 
 
+def test_a_limit_with_no_known_reset_is_told_over_one_that_lifts():
+    error = arena_router.limit_refusal(
+        [spent("all", "ip", None), spent("expensive", "session", 4210)]
+    )
+    assert (error.detail, error.limit.scope) == ("allowance_spent", "network")
+    assert (error.limit.resets_in, error.limit.resets_at) == (None, None)
+
+
 def test_a_refused_reservation_says_when_it_lifts(monkeypatch):
     monkeypatch.setattr(settings, "RATELIMIT_ALL_PER_SESSION", 10)
     with fake_redis(limits) as redis:

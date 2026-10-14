@@ -101,9 +101,13 @@ router = APIRouter(
 def limit_refusal(spent: Sequence[Allowance]) -> LimitReachedError:
     """
     What the person is told for these spent allowances: the one that lifts
-    last, since that is when they can go on.
+    last, since that is when they can go on. One with no known reset counts
+    as the last.
     """
-    last = max(spent, key=lambda allowance: allowance.resets_in or 0)
+    last = max(
+        spent,
+        key=lambda allowance: (allowance.resets_in is None, allowance.resets_in or 0),
+    )
     resets_at = (
         datetime.now(timezone.utc).replace(microsecond=0)
         + timedelta(seconds=last.resets_in)
