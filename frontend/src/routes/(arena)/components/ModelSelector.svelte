@@ -180,8 +180,14 @@
 {#snippet pauseBadge(pause: Pause)}
   <span class="mt-2 block">
     <Badge variant="info" size="xs">
-      <Icon icon="i-ri-pause-circle-line" size="xxs" class="me-1" />
-      {#if pause.reset}<TimedText text={pause.badge} reset={pause.reset} />{:else}{pause.badge}{/if}
+      <Icon icon="i-ri-pause-circle-line" size="xs" block class="me-1" />
+      <!-- One flex item, so the space before the time stays. -->
+      <span
+        >{#if pause.reset}<TimedText
+            text={pause.badge}
+            reset={pause.reset}
+          />{:else}{pause.badge}{/if}</span
+      >
     </Badge>
   </span>
 {/snippet}
@@ -226,7 +232,12 @@
                     </p>
                     {#if expensive && expensiveReset}
                       <p class="fr-text--sm mt-2! mb-0! gap-1 flex">
-                        <Icon icon="i-ri-pause-circle-line" size="sm" class="text-primary" />
+                        <Icon
+                          icon="i-ri-pause-circle-line"
+                          size="sm"
+                          block
+                          class="text-primary mt-0.5 shrink-0"
+                        />
                         <span>
                           <TimedText
                             text={m[
