@@ -5,7 +5,6 @@
   import { clockTime } from '$lib/clockTime'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { onMount } from 'svelte'
 
   let {
     refusal,
@@ -34,12 +33,6 @@
       : m[clock.tomorrow ? 'arene.limits.time.tomorrowAt' : 'arene.limits.time.at']({ time: SLOT })
   )
   const network = $derived(refusal.limit.scope === 'network')
-
-  let titleEl = $state<HTMLHeadingElement>()
-
-  // The notice takes the place of the text box the person just sent from, so
-  // without this focus would fall to the page.
-  onMount(() => titleEl?.focus())
 </script>
 
 {#snippet withTime(text: string)}
@@ -51,7 +44,9 @@
   {@render withTime(title)}
 {/snippet}
 
-<Alert id="pause-notice" title={titleWithTime} bind:titleEl class="w-full">
+<!-- The notice takes the place of the text box the person just sent from, so
+     without focusTitle focus would fall to the page. -->
+<Alert id="pause-notice" title={titleWithTime} focusTitle class="w-full">
   <p>
     {@render withTime(
       m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']({ at })

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte'
+  import { onMount, type Snippet } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
     title,
     variant = 'info',
     small = false,
-    titleEl = $bindable(),
+    focusTitle = false,
     children,
     ...props
   }: {
@@ -15,9 +15,18 @@
     variant?: 'info' | 'success' | 'warning' | 'error'
     /** DSFR's small alert: a one-line message rather than a titled block. */
     small?: boolean
-    /** The title of a full alert, focusable from script to move focus there. */
-    titleEl?: HTMLHeadingElement
+    /** Move focus to the title of a full alert once it shows. */
+    focusTitle?: boolean
   } & Omit<SvelteHTMLElements['div'], 'title'> = $props()
+
+  let titleEl = $state<HTMLHeadingElement>()
+
+  // From script, so that only a title meant to take focus can.
+  onMount(() => {
+    if (!focusTitle || !titleEl) return
+    titleEl.tabIndex = -1
+    titleEl.focus()
+  })
 </script>
 
 {#snippet titleText()}
@@ -31,7 +40,7 @@
   {#if small}
     <p>{@render titleText()}</p>
   {:else}
-    <h3 class="fr-alert__title" bind:this={titleEl} tabindex="-1">{@render titleText()}</h3>
+    <h3 class="fr-alert__title" bind:this={titleEl}>{@render titleText()}</h3>
   {/if}
   {@render children?.()}
 </div>
