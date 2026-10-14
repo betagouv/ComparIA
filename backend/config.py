@@ -147,13 +147,18 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
-    # Model allowances, in characters, over a window that ends 2 hours after
-    # the last message they let through. Settings rather than constants so a
-    # local run can lower them to watch a refusal.
+    # Model allowances, in characters the models are sent and write, over a
+    # window that ends 2 hours after the last message they let through. A
+    # turn costs the system prompt, the whole transcript, the web search
+    # results and both answers. Settings rather than constants so a local run
+    # can lower them to watch a refusal.
+    # TODO set them from `comparia-cli arena limits calibrate` on production:
+    # these numbers date from when a message cost only its own length.
     #
     # Counted per anonymous session (the `anonymous_session` cookie hash), not
     # per IP, so users behind a shared NAT (schools, hospitals) each get their
-    # own. This one covers expensive models (openai models, etc.).
+    # own. This one covers the expensive models only, each character counted
+    # as many times as the model's cost weight.
     RATELIMIT_EXPENSIVE_PER_SESSION: PositiveInt = 100_000
     # A client that drops the `anonymous_session` cookie gets a fresh session on
     # every request, so the same allowance also runs per IP as a backstop. Room
