@@ -6,9 +6,10 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
+from backend.arena.limits import LimitSetting
 from backend.arena.normalize import strip_hidden
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -156,3 +157,63 @@ class ArenaLimits(BaseModel):
     # The expensive allowance, session or network, the one that lifts last.
     expensive: SpentAllowance | None
     paused_llms: list[PausedLLM]
+
+
+# The admin's view of the limits, at /admin/limites.
+
+# Largest value a Postgres INTEGER column holds.
+_INT_MAX = 2_147_483_647
+
+
+class AdminLimit(BaseModel):
+    name: LimitSetting
+    # In force: the stored value, else the default.
+    value: int
+    # The RATELIMIT_* env value, in force while none is stored.
+    default: int
+    stored: bool
+
+
+class AdminLimits(BaseModel):
+    limits: list[AdminLimit]
+    # The last change to any limit, and the admin who made it.
+    updated_at: datetime | None
+    updated_by: str | None
+
+
+class AdminLimitsPatch(BaseModel):
+    """A field left out stays as it is; null puts it back on its default."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    all_per_session: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    all_per_ip: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    expensive_per_session: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    expensive_per_ip: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    expected_answer_chars: int | None = Field(default=None, ge=0, le=_INT_MAX)
+
+
+class LimitProposal(BaseModel):
+    """A value the calibration proposes, with what the page needs to say why."""
+
+    name: LimitSetting
+    value: int
+    # How many two-hour windows, or answers, the value was read from.
+    sample: int
+    # The percentile of those it was read from.
+    percentile: int
+    # Per session: about how many messages of a typical cost fit in it.
+    messages: int | None = None
+    # Per network: the class it makes room for, and the share of the
+    # networks' windows that went past it.
+    class_size: int | None = None
+    over_share: float | None = None
+
+
+class LimitsCalibration(BaseModel):
+    days: int
+    comparisons: int
+    turns: int
+    # The sample stopped at its cap: only the latest comparisons were read.
+    capped: bool
+    proposals: list[LimitProposal]

@@ -1,7 +1,8 @@
 """
 What people really spend of the model allowances, replayed from the stored
 comparisons through the charging rule the arena applies today, to set the
-allowances from it. Read-only.
+allowances from it. Read-only. The CLI prints the whole replay; the admin's
+"Calibrer" button reads a bounded sample and gets values to propose.
 
 Each turn costs what both models were sent (system prompt, every turn so far
 with its web search results, that side's earlier answers) and what they
@@ -11,19 +12,36 @@ refused before it reached the models.
 """
 
 import logging
+import math
 import uuid
 from collections import defaultdict
+from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Sequence
+from typing import Any, AsyncGenerator, Callable, Sequence
 
 import numpy as np
 from linkup import LinkupSearchTextResult
+from psycopg.errors import QueryCanceled
 from sqlalchemy import Row, case, func, select
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import aliased
 from sqlmodel import col
+from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.arena.limits import POOLS, WINDOW_SECONDS, Call, Pool, turn_cost
+from backend.activity.services import QueryTimedOutError
+from backend.arena.limits import (
+    POOL_SETTINGS,
+    POOLS,
+    WINDOW_SECONDS,
+    Call,
+    Pool,
+    limit,
+    load_settings,
+    setting,
+    turn_cost,
+)
+from backend.arena.models import LimitProposal, LimitsCalibration
 from backend.arena.web_search import merge_web_search_with_content
 from backend.config import settings
 from backend.utils.user import ip_bucket
@@ -35,11 +53,24 @@ from utils.database.models import (
     UserMessage,
 )
 from utils.database.models.llms import LLMData
-from utils.database.session import get_session
+from utils.database.session import get_activity_session, get_session
 
 logger = logging.getLogger("comparia.arena")
 
 PERCENTILES = (50, 90, 95, 99)
+
+# What the admin's button reads: a week, the latest comparisons only, on the
+# activity panel's engine and its statement timeout, so it answers in seconds
+# and cannot crowd the arena out of Postgres.
+CALIBRATION_DAYS = 7
+CALIBRATION_MAX_COMPARISONS = 30_000
+
+# A session allowance that 99 in 100 people's two hours stay under.
+SESSION_PERCENTILE = 99
+# A network allowance that lets a class through, each pupil spending what 95
+# in 100 people do. Pix sends whole classes from one school IP.
+CLASS_SIZE = 35
+CLASS_PERCENTILE = 95
 
 
 @dataclass
@@ -90,6 +121,8 @@ class Replay:
     networks: dict[str, Spend] = field(default_factory=lambda: defaultdict(Spend))
     unknown_people: int = 0
     turns: int = 0
+    # What each turn cost of each pool it charged.
+    turn_costs: dict[Pool, list[int]] = field(default_factory=lambda: defaultdict(list))
     answers: int = 0
     cached: int = 0
     # What each answer wrote, its reasoning included.
@@ -164,6 +197,7 @@ def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
         cost = turn_cost(calls)
         for pool, chars in cost.items():
             spent[pool] = spent.get(pool, 0) + chars
+            result.turn_costs[pool].append(chars)
         if person:
             result.people[person].add(row.created_at, cost)
         result.networks[network].add(row.created_at, cost)
@@ -175,7 +209,15 @@ def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
     return result
 
 
-async def _read(days: int) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, float]]:
+async def _read(
+    days: int,
+    max_comparisons: int | None = None,
+    session_factory: Callable[
+        [], AbstractAsyncContextManager[AsyncSession]
+    ] = get_session,
+) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, float]]:
+    """The turns of the comparisons started in the last `days`, the latest
+    `max_comparisons` of them when set, and each model's cost weight."""
     since = datetime.now() - timedelta(days=days)
     answer_a, answer_b = aliased(LLMMessage), aliased(LLMMessage)
     has_search = col(UserMessage.web_search_results).is_not(None)
@@ -214,7 +256,15 @@ async def _read(days: int) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, float]]:
         .where(col(Comparison.created_at) >= since)
         .order_by(col(Comparison.id), col(Turn.created_at))
     )
-    async with get_session() as session:
+    if max_comparisons is not None:
+        latest = (
+            select(col(Comparison.id))
+            .where(col(Comparison.created_at) >= since)
+            .order_by(col(Comparison.created_at).desc())
+            .limit(max_comparisons)
+        )
+        query = query.where(col(Comparison.id).in_(latest))
+    async with session_factory() as session:
         rows = (await session.execute(query)).all()
         weights = {
             llm_id: weight
@@ -223,6 +273,108 @@ async def _read(days: int) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, float]]:
             ).all()
         }
     return rows, weights
+
+
+def round_up(value: float) -> int:
+    """Up to two significant digits, so a proposal reads as a round number."""
+    if value <= 0:
+        return 0
+    step = 10 ** max(0, math.floor(math.log10(value)) - 1)
+    return int(math.ceil(value / step) * step)
+
+
+def _percentile(values: list[int], percentile: int) -> float:
+    return float(np.percentile(values, percentile))
+
+
+def propose(result: Replay) -> list[LimitProposal]:
+    """
+    The limits this replay suggests: per session, what 99 in 100 people's
+    two hours stay under; per network, room for a class of 35 that each spend
+    what 95 in 100 people do, never below the session one; the expected
+    answer, the median answer. A pool nobody spent proposes nothing.
+    """
+    proposals: list[LimitProposal] = []
+    for pool in POOLS:
+        people = [w for spend in result.people.values() for w in spend.windows(pool)]
+        if not people:
+            continue
+        per_session = max(1, round_up(_percentile(people, SESSION_PERCENTILE)))
+        typical_turn = _percentile(result.turn_costs[pool], 50)
+        proposals.append(
+            LimitProposal(
+                name=POOL_SETTINGS[(pool, "session")],
+                value=per_session,
+                sample=len(people),
+                percentile=SESSION_PERCENTILE,
+                messages=int(per_session // typical_turn) if typical_turn else None,
+            )
+        )
+
+        networks = [
+            w for spend in result.networks.values() for w in spend.windows(pool)
+        ]
+        per_network = max(
+            per_session,
+            round_up(CLASS_SIZE * _percentile(people, CLASS_PERCENTILE)),
+        )
+        proposals.append(
+            LimitProposal(
+                name=POOL_SETTINGS[(pool, "ip")],
+                value=per_network,
+                sample=len(networks),
+                percentile=CLASS_PERCENTILE,
+                class_size=CLASS_SIZE,
+                over_share=(
+                    sum(w > per_network for w in networks) / len(networks)
+                    if networks
+                    else None
+                ),
+            )
+        )
+
+    if result.written:
+        proposals.append(
+            LimitProposal(
+                name="expected_answer_chars",
+                value=int(_percentile(result.written, 50)),
+                sample=len(result.written),
+                percentile=50,
+            )
+        )
+    return proposals
+
+
+@asynccontextmanager
+async def _bounded_session() -> AsyncGenerator[AsyncSession, None]:
+    try:
+        async with get_activity_session() as session:
+            yield session
+    except DBAPIError as error:
+        if isinstance(error.orig, QueryCanceled):
+            raise QueryTimedOutError() from error
+        raise
+
+
+async def calibrate(
+    days: int = CALIBRATION_DAYS, max_comparisons: int = CALIBRATION_MAX_COMPARISONS
+) -> LimitsCalibration:
+    """
+    Replay a bounded sample of the latest comparisons and propose limits from
+    it, for the admin. Read-only.
+
+    Raises:
+        QueryTimedOutError: the read ran past the statement timeout
+    """
+    rows, weights = await _read(days, max_comparisons, _bounded_session)
+    result = replay(rows, weights)
+    return LimitsCalibration(
+        days=days,
+        comparisons=len(result.conversations),
+        turns=result.turns,
+        capped=len(result.conversations) >= max_comparisons,
+        proposals=propose(result),
+    )
 
 
 def _line(name: str, values: list[int], limit: int | None = None) -> str:
@@ -263,12 +415,8 @@ async def limits_calibrate(*, days: int = 30) -> None:
         f"comparisons with no person to count them against"
     )
 
-    limits: dict[tuple[Pool, str], int] = {
-        ("all", "session"): settings.RATELIMIT_ALL_PER_SESSION,
-        ("all", "ip"): settings.RATELIMIT_ALL_PER_IP,
-        ("expensive", "session"): settings.RATELIMIT_EXPENSIVE_PER_SESSION,
-        ("expensive", "ip"): settings.RATELIMIT_EXPENSIVE_PER_IP,
-    }
+    # The limits in force, an admin's or the defaults.
+    await load_settings()
     for pool in POOLS:
         people = [w for spend in result.people.values() for w in spend.windows(pool)]
         networks = [
@@ -277,10 +425,10 @@ async def limits_calibrate(*, days: int = 30) -> None:
         hours = [h for spend in result.networks.values() for h in spend.hours(pool)]
         conversations = [spent[pool] for spent in result.conversations if pool in spent]
         logger.info(
-            _line(f"{pool}, per person and window", people, limits[(pool, "session")])
+            _line(f"{pool}, per person and window", people, limit(pool, "session"))
         )
         logger.info(
-            _line(f"{pool}, per network and window", networks, limits[(pool, "ip")])
+            _line(f"{pool}, per network and window", networks, limit(pool, "ip"))
         )
         logger.info(_line(f"{pool}, per network and hour", hours))
         logger.info(_line(f"{pool}, per conversation", conversations))
@@ -296,3 +444,8 @@ async def limits_calibrate(*, days: int = 30) -> None:
         f"turns of a suggested prompt: "
         f"{share(result.suggested_cached, result.suggested_answers)}"
     )
+    for proposal in propose(result):
+        logger.info(
+            f"Proposed {proposal.name}: {proposal.value:,} "
+            f"(now {setting(proposal.name):,})"
+        )

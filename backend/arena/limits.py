@@ -85,7 +85,7 @@ LimitSetting = Literal[
 ]
 LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
 
-_POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
+POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
     ("all", "session"): "all_per_session",
     ("all", "ip"): "all_per_ip",
     ("expensive", "session"): "expensive_per_session",
@@ -145,7 +145,7 @@ async def reload_settings() -> None:
 
 
 def limit(pool: Pool, scope: Scope) -> int:
-    return setting(_POOL_SETTINGS[(pool, scope)])
+    return setting(POOL_SETTINGS[(pool, scope)])
 
 
 @dataclass(frozen=True)
