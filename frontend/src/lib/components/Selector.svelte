@@ -4,12 +4,18 @@
     Multiple extends boolean, 
     Kind extends 'checkbox' | 'radio', 
     V extends string, Value extends Kind extends 'checkbox' ? Multiple extends true ?  V[]: V : V, 
-    Option extends { value: V, label: string }
+    Option extends { value: V, label: string, disabledReason?: string }
   "
 >
-  import { type Snippet } from 'svelte'
+  import { tick, type Snippet } from 'svelte'
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements'
 
+  /**
+   * A choice with a `disabledReason` cannot be picked, but stays in the tab
+   * order with `aria-disabled`, described by its reason. A native `disabled`
+   * input would drop out of it, and screen readers in focus mode skip it, so
+   * the reason would be lost. Picking it speaks the reason instead.
+   */
   interface SelectorProps {
     id: string
     kind?: Kind
@@ -57,6 +63,24 @@
     },
     class: 'sr-only'
   })
+
+  // What the live region says when someone tries a choice they cannot pick.
+  let said = $state('')
+
+  function reasonProps(choice: Option): HTMLInputAttributes {
+    if (!choice.disabledReason) return {}
+    return {
+      'aria-disabled': 'true',
+      'aria-describedby': `${id}-${choice.value}-reason`,
+      onclick: async (e: MouseEvent) => {
+        e.preventDefault()
+        // Emptied first, so the same reason is spoken again on a second try.
+        said = ''
+        await tick()
+        said = choice.disabledReason!
+      }
+    }
+  }
 </script>
 
 {#snippet input(choice: Option, props: HTMLInputAttributes = {})}
@@ -69,6 +93,7 @@
         id="{id}-{choice.value}"
         {...inputProps}
         {...props}
+        {...reasonProps(choice)}
         disabled={disabled || (multiple && !value.includes(choice.value) && value.length >= max)}
       />
     {:else}
@@ -79,6 +104,7 @@
         id="{id}-{choice.value}"
         {...inputProps}
         {...props}
+        {...reasonProps(choice)}
         disabled={disabled || (multiple && !value.includes(choice.value) && value.length >= max)}
       />
     {/if}
@@ -90,6 +116,7 @@
       id="{id}-{choice.value}"
       {...inputProps}
       {...props}
+      {...reasonProps(choice)}
     />
   {/if}
 {/snippet}
@@ -120,6 +147,14 @@
   {/if}
 </div>
 
+{#each choices as choice (choice.value)}
+  {#if choice.disabledReason}
+    <span id="{id}-{choice.value}-reason" hidden>{choice.disabledReason}</span>
+  {/if}
+{/each}
+<!-- Present from first render: a live region only speaks what lands in it after. -->
+<p role="status" class="sr-only">{said}</p>
+
 <style>
   .cl-selector :global(label) {
     &:has(input) {
@@ -140,6 +175,11 @@
 
     &:has(input:disabled) {
       filter: grayscale(100%);
+    }
+
+    &:has(input[aria-disabled='true']) {
+      cursor: not-allowed;
+      border-style: dashed;
     }
   }
 </style>
