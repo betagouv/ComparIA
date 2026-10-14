@@ -67,7 +67,6 @@
     {:else}
       <Link
         button
-        variant="secondary"
         size="sm"
         href={resolve('/ranking')}
         text={m['arene.limits.pause.ranking']()}
