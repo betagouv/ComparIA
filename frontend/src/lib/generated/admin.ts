@@ -179,6 +179,28 @@ export interface AdminLegalDocument {
   retired_at: string | null;
   seeded: boolean;
 }
+export interface AdminLimits {
+  limits: AdminLimit[];
+  updated_at: string | null;
+  updated_by: string | null;
+}
+export interface AdminLimit {
+  name: "all_per_session" | "all_per_ip" | "expensive_per_session" | "expensive_per_ip" | "expected_answer_chars";
+  value: number;
+  default: number;
+  stored: boolean;
+  [k: string]: unknown;
+}
+/**
+ * A field left out stays as it is; null puts it back on its default.
+ */
+export interface AdminLimitsPatch {
+  all_per_session?: number | null;
+  all_per_ip?: number | null;
+  expensive_per_session?: number | null;
+  expensive_per_ip?: number | null;
+  expected_answer_chars?: number | null;
+}
 export interface AdminPublishDestination {
   id: string;
   name: string;
@@ -535,6 +557,26 @@ export interface LLMLicense {
   name: string;
   reuse: boolean;
   commercial_use: boolean;
+}
+export interface LimitsCalibration {
+  days: number;
+  comparisons: number;
+  turns: number;
+  capped: boolean;
+  proposals: LimitProposal[];
+}
+/**
+ * A value the calibration proposes, with what the page needs to say why.
+ */
+export interface LimitProposal {
+  name: "all_per_session" | "all_per_ip" | "expensive_per_session" | "expensive_per_ip" | "expected_answer_chars";
+  value: number;
+  sample: number;
+  percentile: number;
+  messages?: number | null;
+  class_size?: number | null;
+  over_share?: number | null;
+  [k: string]: unknown;
 }
 export interface PromptCheckPatch {
   enabled?: boolean | null;
