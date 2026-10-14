@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Annotated, Literal, Self
 
 from pydantic import BaseModel, ValidationInfo, computed_field, model_validator
+from sqlalchemy import false
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
@@ -78,6 +79,12 @@ class ComparisonBase(BaseDBModel):
     )
     revealed: bool = False
     revealed_at: OptionalDatetime = None
+    # The person's expensive allowance was spent, so the draw left expensive
+    # models out. The ranking can set these duels apart. The server default
+    # is the migration's, for rows written without the column.
+    expensive_paused: Annotated[
+        bool, Field(sa_column_kwargs={"server_default": false()})
+    ] = False
 
     # a
     llm_id_a: LLMDataId
