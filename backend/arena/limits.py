@@ -3,8 +3,9 @@ How much text a person, and the network they send from, may have the models
 handle in a window.
 
 Each allowance is one Redis counter per pool and identity. The `all` pool counts
-every message, the `expensive` pool only the messages an expensive model
-answers. Each pool runs per anonymous session and per IP: the session one is
+every character the models are sent and write. The `expensive` pool counts
+only the expensive models' characters, each as many times as the model's cost
+weight. Each pool runs per anonymous session and per IP: the session one is
 the one that matters, since people behind a shared NAT each get their own; the
 IP one catches a client that drops its cookie to start over.
 
@@ -12,12 +13,24 @@ A spent `all` allowance stops every message. A spent `expensive` one only
 keeps expensive models out of new comparisons: the conversations already
 started with one may finish.
 
-Routes call `read_status` for a cheap early answer and `reserve` to charge a
-message before any model sees it.
+Routes call `read_status` for a cheap early answer, `Charge.reserve` to charge
+what the models are sent before any of them is called, and `Charge.settle` to
+add what they wrote once the turn is over.
 """
 
+import logging
+import math
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Collection, Literal, Mapping, Sequence, get_args
+from typing import (
+    TYPE_CHECKING,
+    Collection,
+    Iterable,
+    Literal,
+    Mapping,
+    Protocol,
+    Sequence,
+    get_args,
+)
 from uuid import UUID
 
 from backend.config import settings
@@ -26,6 +39,8 @@ from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
 
 if TYPE_CHECKING:
     from backend.llms.data import LLMsData
+
+logger = logging.getLogger("languia")
 
 Pool = Literal["all", "expensive"]
 POOLS: tuple[Pool, ...] = get_args(Pool)
@@ -135,6 +150,38 @@ class AllowanceSpent(Exception):
     def __init__(self, spent: Sequence[Allowance]) -> None:
         super().__init__(", ".join(f"{a.pool} per {a.scope}" for a in spent))
         self.spent = tuple(spent)
+
+
+@dataclass
+class Call:
+    """One model answering one side of a turn: the characters it was sent and
+    wrote, and how many times an ordinary model it costs."""
+
+    weight: float
+    sent: int
+    written: int = 0
+    # Served from the answer cache: the provider was not called.
+    cached: bool = False
+
+
+def turn_cost(calls: Iterable[Call]) -> dict[Pool, int]:
+    """
+    What a turn spends of each pool. The whole one counts every character
+    each model was sent and wrote, cached answers included: it bounds what one
+    client can push through the arena. The expensive one counts the expensive
+    models only, each character `weight` times, and nothing for a cached
+    answer, which cost the provider nothing. A turn with no expensive model
+    leaves that pool out, so a spent expensive allowance never refuses it.
+    """
+    calls = list(calls)
+    cost: dict[Pool, int] = {"all": sum(call.sent + call.written for call in calls)}
+    if expensive := [call for call in calls if call.weight > 1]:
+        cost["expensive"] = sum(
+            math.ceil(call.weight * (call.sent + call.written))
+            for call in expensive
+            if not call.cached
+        )
+    return cost
 
 
 def message_cost(
@@ -266,6 +313,107 @@ def reserve(
                 for (pool, identity, used), ttl in zip(refused, ttls)
             ]
         )
+
+
+class Answer(Protocol):
+    """What settling reads of a model's answer."""
+
+    @property
+    def content(self) -> str: ...
+
+    @property
+    def reasoning_content(self) -> str | None: ...
+
+    @property
+    def is_cached(self) -> bool: ...
+
+
+class Charge:
+    """
+    What one turn spends, charged in two steps. `reserve` charges what the
+    models are sent before either is called, and may refuse. `settle` adds,
+    once the turn is over, what they wrote and what they were sent beyond the
+    reservation, such as web search results found after it.
+    """
+
+    def __init__(self, who: Identity, calls: Mapping[str, Call]) -> None:
+        self.who = who
+        # The model answering each side now.
+        self.calls = dict(calls)
+        # Models that failed mid-turn and gave their side to a stand-in.
+        self.replaced: list[Call] = []
+        self.reserved = turn_cost(self.calls.values())
+        self.settled = False
+
+    @classmethod
+    def reserve(
+        cls,
+        who: Identity,
+        calls: Mapping[str, Call],
+        refusing: Collection[Pool] = POOLS,
+    ) -> "Charge":
+        """
+        Charge what each side is sent, see `reserve`.
+
+        Raises:
+            AllowanceSpent: with each allowance that refused
+        """
+        charge = cls(who, calls)
+        reserve(who, charge.reserved, refusing)
+        return charge
+
+    def sending(self, pos: str, chars: int) -> None:
+        """What this side is sent, counted on the messages as they go out."""
+        self.calls[pos].sent = chars
+
+    def replace(self, pos: str, weight: float, sent: int, written: int) -> None:
+        """
+        A stand-in takes this side over from a model that failed mid-turn.
+        The failed model keeps what it was sent and what it wrote, since the
+        provider bills both, and the stand-in is charged as itself.
+        """
+        failed = self.calls[pos]
+        failed.written = written
+        self.replaced.append(failed)
+        self.calls[pos] = Call(weight, sent)
+
+    def settle(self, answers: Mapping[str, Answer | None]) -> None:
+        """
+        Charge the turn's answers, however it ended: in full, on an error, or
+        with the client gone, in which case what was written so far counts.
+        Nothing comes back on an error: one a client can provoke would buy
+        whatever the models had written. A cached answer gives its side's
+        share of the expensive pool back.
+
+        It never refuses and never raises: the answers are already out. Nor
+        does it move an expiry. SET NX gives a counter that expired meanwhile
+        a new window and leaves every other expiry alone, so the reset time a
+        person was told stays true, and no counter is left without one.
+        Settling twice charges once.
+        """
+        if self.settled:
+            return
+        self.settled = True
+        for pos, call in self.calls.items():
+            if answer := answers.get(pos):
+                call.written = len(answer.content) + len(answer.reasoning_content or "")
+                call.cached = answer.is_cached
+
+        cost = turn_cost([*self.replaced, *self.calls.values()])
+        owed = {
+            pool: cost.get(pool, 0) - self.reserved.get(pool, 0)
+            for pool in {*cost, *self.reserved}
+        }
+        try:
+            pipe = get_redis_client().pipeline()
+            for pool, chars in owed.items():
+                for identity in self.who.identities if chars else ():
+                    key = budget_key(pool, identity)
+                    pipe.set(key, 0, ex=WINDOW_SECONDS, nx=True)
+                    pipe.incrby(key, chars)
+            pipe.execute()
+        except Exception:
+            logger.exception("Could not charge what the models wrote")
 
 
 def reset_counters(identities: Sequence[str]) -> int:
