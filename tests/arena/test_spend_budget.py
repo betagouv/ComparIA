@@ -46,7 +46,13 @@ SESSION = "b" * 64
 IP = "10.0.0.1"
 PROMPT = "Bonjour, explique la photosynthese"
 CHEAP, EXPENSIVE = uuid4(), uuid4()
-WEIGHT = 4
+# Prices in dollars per million tokens, at or above the threshold for the
+# expensive one. At four characters a token, each character it is sent costs
+# a millionth of a dollar, and each one it writes three.
+PRICES = {
+    CHEAP: SimpleNamespace(price_in=0.4, price_out=1.2),
+    EXPENSIVE: SimpleNamespace(price_in=4.0, price_out=12.0),
+}
 ME, NETWORK = f"s:{SESSION}", f"ip:{IP}"
 # What each model writes, all at once.
 ANSWER = "La photosynthese transforme la lumiere en sucres. " * 4
@@ -62,6 +68,18 @@ SENT = {
 # typical answer, settled to the real one when the turn ends.
 RESERVED = {
     route: sent + settings.RATELIMIT_EXPECTED_ANSWER_CHARS
+    for route, sent in SENT.items()
+}
+
+
+def usd(sent, written=0):
+    """What the expensive model costs, in millionths of a dollar."""
+    return sent + 3 * written
+
+
+# The same reservation on the expensive allowance.
+RESERVED_USD = {
+    route: usd(sent, settings.RATELIMIT_EXPECTED_ANSWER_CHARS)
     for route, sent in SENT.items()
 }
 
@@ -150,8 +168,10 @@ def arena(llm_ids=(CHEAP, CHEAP)):
         return SimpleNamespace(
             pick_two=pick_two,
             expensive_models=[EXPENSIVE],
-            weight=lambda llm_id: WEIGHT if llm_id == EXPENSIVE else 1,
-            all={llm_id: SimpleNamespace(system_prompt=None) for llm_id in llm_ids},
+            all={
+                llm_id: SimpleNamespace(system_prompt=None, **vars(PRICES[llm_id]))
+                for llm_id in llm_ids
+            },
         )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
@@ -359,13 +379,13 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
 
 
 def test_an_expensive_model_spends_the_expensive_allowance_up_front():
-    """Its side only, each character as many times as its weight."""
+    """Its side only, at its prices."""
     for route in ROUTES:
         with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
             start(route, state)
-            weighted = WEIGHT * RESERVED[route]
-            assert counter(state.redis, "expensive", ME) == weighted, route
-            assert counter(state.redis, "expensive", NETWORK) == weighted, route
+            reserved = RESERVED_USD[route]
+            assert counter(state.redis, "expensive", ME) == reserved, route
+            assert counter(state.redis, "expensive", NETWORK) == reserved, route
 
         with arena(llm_ids=(CHEAP, CHEAP)) as state:
             start(route, state)

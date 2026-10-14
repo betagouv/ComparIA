@@ -17,14 +17,13 @@ from fastapi import HTTPException
 
 import backend.arena.limits as limits
 import backend.arena.router as arena_router
-from backend.config import settings
 from tests.arena.test_spend_budget import (
     CHEAP,
     EXPENSIVE,
     ME,
     NETWORK,
     RESERVED,
-    WEIGHT,
+    RESERVED_USD,
     arena,
     counter,
     gate,
@@ -33,7 +32,8 @@ from tests.arena.test_spend_budget import (
     start,
 )
 
-SPENT = settings.RATELIMIT_EXPENSIVE_PER_IP + 1
+# In millionths of a dollar, past the network allowance and so the session one.
+SPENT = limits.limit("expensive", "ip") + 1
 
 
 def spend(redis, pool, identity):
@@ -61,9 +61,7 @@ def test_a_draw_keeps_expensive_models_while_the_allowance_has_room():
 
         assert state.draws == [()]
         assert [c.expensive_paused for c in state.new_comparisons] == [False]
-        assert counter(state.redis, "expensive", ME) == (
-            WEIGHT * RESERVED["add_first_text"]
-        )
+        assert counter(state.redis, "expensive", ME) == (RESERVED_USD["add_first_text"])
 
 
 @pytest.mark.parametrize("route", ["add_text", "retry"])
@@ -78,9 +76,7 @@ def test_a_started_expensive_conversation_goes_on_while_the_whole_allowance_has_
 
         assert response.status_code == 200
         # Its turns still count, and the reset time already told stays put.
-        assert counter(state.redis, "expensive", ME) == (
-            SPENT + WEIGHT * RESERVED[route]
-        )
+        assert counter(state.redis, "expensive", ME) == (SPENT + RESERVED_USD[route])
         assert state.redis.ttl(limits.budget_key("expensive", ME)) == (
             limits.WINDOW_SECONDS - 600
         )

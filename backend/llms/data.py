@@ -6,6 +6,7 @@ import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
 from sqlmodel import select
 
+from backend.arena.limits import is_expensive
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
@@ -120,18 +121,14 @@ class LLMsData(BaseModel):
             if model.params >= BIG_MODELS_BUCKET_LOWER_LIMIT
         ]
 
-    @computed_field  # type: ignore[prop-decorator]
     @property
     def expensive_models(self) -> list[UUID]:
         """
-        Models that cost more than an ordinary one: they spend people's
-        expensive-model allowance.
+        Models priced at or above the admin's threshold: they spend people's
+        expensive-model allowance. Read from the threshold in force, so not
+        kept with the cached models.
         """
-        return [model.id for model in self.enabled.values() if model.cost_weight > 1]
-
-    def weight(self, llm_id: UUID) -> float:
-        """How many times an ordinary model this one costs."""
-        return self.all[llm_id].cost_weight
+        return [model.id for model in self.enabled.values() if is_expensive(model)]
 
     def pick_one(
         self,

@@ -37,8 +37,9 @@ async def limits_show(*, session: str | None = None, ip: str | None = None) -> N
     await limits.load_settings()
     for allowance in limits.read_counters(_identities(session, ip)).allowances:
         logger.info(
-            f"{allowance.identity} {allowance.pool}: {allowance.used:,} of "
-            f"{allowance.limit:,}, {_resets(allowance)}"
+            f"{allowance.identity} {allowance.pool}: "
+            f"{limits.counted(allowance.pool, allowance.used)} of "
+            f"{limits.counted(allowance.pool, allowance.limit)}, {_resets(allowance)}"
             f"{', spent' if allowance.spent else ''}"
         )
 

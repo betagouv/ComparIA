@@ -3,7 +3,13 @@ from pathlib import Path
 from typing import Literal, get_args
 
 from httpx import Timeout
-from pydantic import NonNegativeInt, PositiveInt, field_validator
+from pydantic import (
+    NonNegativeFloat,
+    NonNegativeInt,
+    PositiveFloat,
+    PositiveInt,
+    field_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -147,8 +153,9 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
-    # Model allowances, in characters the models are sent and write, over a
-    # window that ends 2 hours after the last message they let through. A
+    # Model allowances, in characters the models are sent and write (the
+    # expensive ones in dollars), over a window that ends 2 hours after the
+    # last message they let through. A
     # turn costs the system prompt, the whole transcript, the web search
     # results and both answers. Settings rather than constants so a local run
     # can lower them to watch a refusal.
@@ -158,14 +165,24 @@ class Settings(BaseSettings):
     #
     # Counted per anonymous session (the `anonymous_session` cookie hash), not
     # per IP, so users behind a shared NAT (schools, hospitals) each get their
-    # own. This one covers the expensive models only, each character counted
-    # as many times as the model's cost weight.
-    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveInt = 1_000_000
+    # own. This one covers the expensive models only, in US dollars: what
+    # they cost, estimated from each model's prices at four characters per
+    # token. 0.40 is what the earlier 1,000,000 characters at weight 4 came
+    # to on a typical expensive model of the seed (Claude 4.6 Sonnet, 2.60
+    # in and 13.01 out per million tokens), for five 5-turn conversations
+    # with 70% of the characters sent and 30% written, rounded up.
+    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveFloat = 0.40
     # A client that drops the `anonymous_session` cookie gets a fresh session on
     # every request, so the same allowance also runs per IP as a backstop, with
     # room for a whole school on one network. Spam seen in the OpenRouter logs
-    # picks the cheapest models, which this pool does not cover.
-    RATELIMIT_EXPENSIVE_PER_IP: PositiveInt = 50_000_000
+    # picks the cheapest models, which this pool does not cover. Fifty times
+    # the session one, as the earlier 50,000,000 characters were.
+    RATELIMIT_EXPENSIVE_PER_IP: PositiveFloat = 20.0
+    # A model is expensive from this output price, in US dollars per million
+    # tokens. At 8 the seed's Claude Sonnet, Gemini Pro, GPT 5.5 and 5.6 Terra
+    # and Kimi K3 are, its Flash, Mistral and small models are not. A model
+    # priced 0 never is.
+    RATELIMIT_EXPENSIVE_PRICE_OUT: NonNegativeFloat = 8.0
     # Cheap models are not free either, and only expensive ones used to be
     # counted, so nothing at all stopped someone hammering the rest. Wider
     # still: an ordinary session must never meet this.

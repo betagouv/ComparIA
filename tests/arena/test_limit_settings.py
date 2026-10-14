@@ -5,6 +5,7 @@ route (no database, no real Redis).
 """
 
 import asyncio
+from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
@@ -86,14 +87,40 @@ def test_a_failed_read_keeps_the_last_values(monkeypatch):
 
 
 def test_a_message_is_refused_at_the_stored_limit(monkeypatch):
-    monkeypatch.setattr(limits, "get_app_settings", stored(expensive_per_session=100))
+    monkeypatch.setattr(
+        limits, "get_app_settings", stored(expensive_per_session=0.0001)
+    )
     asyncio.run(limits.load_settings())
     with fake_redis(limits):
         limits.reserve(WHO, {"all": 101, "expensive": 101})
         with pytest.raises(AllowanceSpent) as refusal:
             limits.reserve(WHO, {"all": 1, "expensive": 1})
     [spent] = refusal.value.spent
+    # 0.0001 dollars, in millionths.
     assert (spent.pool, spent.scope, spent.limit) == ("expensive", "session", 100)
+
+
+def test_dollars_stay_dollars_and_characters_whole(monkeypatch):
+    monkeypatch.setattr(
+        limits,
+        "get_app_settings",
+        stored(expensive_per_ip=12.5, expensive_price_out=9.99, all_per_ip=5000),
+    )
+    asyncio.run(limits.load_settings())
+
+    assert limits.setting("expensive_per_ip") == 12.5
+    assert limits.limit("expensive", "ip") == 12_500_000
+    assert limits.setting("expensive_price_out") == 9.99
+    assert limits.limit("all", "ip") == 5000
+
+
+def test_the_stored_threshold_decides_which_models_are_expensive(monkeypatch):
+    sonnet = SimpleNamespace(price_in=2.6, price_out=13.0)
+    assert limits.is_expensive(sonnet)
+
+    monkeypatch.setattr(limits, "get_app_settings", stored(expensive_price_out=20))
+    asyncio.run(limits.load_settings())
+    assert not limits.is_expensive(sonnet)
 
 
 def test_every_arena_route_reads_the_settings_first():
@@ -105,9 +132,9 @@ def test_every_arena_route_reads_the_settings_first():
 def test_a_turn_reserves_the_stored_expected_answer(monkeypatch):
     monkeypatch.setattr(limits, "_stored", {"expected_answer_chars": 42})
 
-    class Data:
-        def weight(self, llm_id):
-            return 1.0
+    a, b = uuid4(), uuid4()
+    priced = SimpleNamespace(price_in=1.0, price_out=2.0)
+    data = SimpleNamespace(all={a: priced, b: priced})
 
-    calls = arena_router.turn_calls({"a": (uuid4(), 10), "b": (uuid4(), 20)}, Data())
+    calls = arena_router.turn_calls({"a": (a, 10), "b": (b, 20)}, data)
     assert [call.written for call in calls.values()] == [42, 42]

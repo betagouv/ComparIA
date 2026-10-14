@@ -163,14 +163,20 @@ class ArenaLimits(BaseModel):
 
 # Largest value a Postgres INTEGER column holds.
 _INT_MAX = 2_147_483_647
+# Far above any allowance or price an arena needs, in dollars.
+_USD_MAX = 1_000_000
 
 
 class AdminLimit(BaseModel):
+    """A limit in its unit: characters for the whole allowances and the
+    reserved answer, US dollars for the expensive ones, US dollars per million
+    output tokens for the threshold."""
+
     name: LimitSetting
     # In force: the stored value, else the default.
-    value: int
+    value: float
     # The RATELIMIT_* env value, in force while none is stored.
-    default: int
+    default: float
     stored: bool
 
 
@@ -190,8 +196,16 @@ class AdminLimitsPatch(BaseModel):
 
     all_per_session: int | None = Field(default=None, ge=1, le=_INT_MAX)
     all_per_ip: int | None = Field(default=None, ge=1, le=_INT_MAX)
-    expensive_per_session: int | None = Field(default=None, ge=1, le=_INT_MAX)
-    expensive_per_ip: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    # A cent at least, the smallest step the page edits in.
+    expensive_per_session: float | None = Field(
+        default=None, ge=0.01, le=_USD_MAX, allow_inf_nan=False
+    )
+    expensive_per_ip: float | None = Field(
+        default=None, ge=0.01, le=_USD_MAX, allow_inf_nan=False
+    )
+    expensive_price_out: float | None = Field(
+        default=None, ge=0, le=_USD_MAX, allow_inf_nan=False
+    )
     expected_answer_chars: int | None = Field(default=None, ge=0, le=_INT_MAX)
 
 
@@ -199,7 +213,8 @@ class LimitProposal(BaseModel):
     """A value the calibration proposes, with what the page needs to say why."""
 
     name: LimitSetting
-    value: int
+    # In the limit's unit, see `AdminLimit`.
+    value: float
     # How many two-hour windows, or answers, the value was read from.
     sample: int
     # The percentile of those it was read from.

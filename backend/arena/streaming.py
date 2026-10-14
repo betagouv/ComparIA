@@ -297,7 +297,7 @@ async def stream_comparison_messages(
                                 if charge:
                                     charge.replace(
                                         e.pos,
-                                        llms_data[new_llm_id].cost_weight,
+                                        llms_data[new_llm_id],
                                         sent_chars(messages),
                                         answer_chars(failed),
                                     )

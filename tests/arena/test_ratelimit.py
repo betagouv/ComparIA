@@ -26,6 +26,10 @@ from backend.utils.user import ip_bucket
 from tests.arena import fakes
 from tests.arena.fakes import FakeRedis
 
+# The expensive allowances, in the counters' millionths of a dollar.
+EXPENSIVE_PER_SESSION = limits.limit("expensive", "session")
+EXPENSIVE_PER_IP = limits.limit("expensive", "ip")
+
 
 @contextlib.contextmanager
 def fake_redis(fake=None):
@@ -51,9 +55,7 @@ def is_ratelimited(key, ip):
 
 def test_under_threshold_not_limited():
     with fake_redis():
-        reserve_input_chars(
-            "sess-a", "1.1.1.1", settings.RATELIMIT_EXPENSIVE_PER_SESSION, pricey=True
-        )
+        reserve_input_chars("sess-a", "1.1.1.1", EXPENSIVE_PER_SESSION, pricey=True)
         # exactly the limit is not over (check is strictly greater-than)
         assert is_ratelimited("sess-a", "1.1.1.1") is False
 
@@ -63,7 +65,7 @@ def test_over_threshold_is_limited():
         reserve_input_chars(
             "sess-a",
             "1.1.1.1",
-            settings.RATELIMIT_EXPENSIVE_PER_SESSION + 1,
+            EXPENSIVE_PER_SESSION + 1,
             pricey=True,
         )
         assert is_ratelimited("sess-a", "1.1.1.1") is True
@@ -76,7 +78,7 @@ def test_budget_is_per_session_not_shared():
         reserve_input_chars(
             "sess-a",
             "1.1.1.1",
-            settings.RATELIMIT_EXPENSIVE_PER_SESSION + 1,
+            EXPENSIVE_PER_SESSION + 1,
             pricey=True,
         )
         assert is_ratelimited("sess-a", "1.1.1.1") is True
@@ -89,14 +91,14 @@ def test_dropping_the_cookie_does_not_reset_the_budget():
     with fake_redis():
         spent = 0
         n = 0
-        while spent <= settings.RATELIMIT_EXPENSIVE_PER_IP:
+        while spent <= EXPENSIVE_PER_IP:
             reserve_input_chars(
                 f"sess-{n}",
                 "1.1.1.1",
-                settings.RATELIMIT_EXPENSIVE_PER_SESSION // 2,
+                EXPENSIVE_PER_SESSION // 2,
                 pricey=True,
             )
-            spent += settings.RATELIMIT_EXPENSIVE_PER_SESSION // 2
+            spent += EXPENSIVE_PER_SESSION // 2
             n += 1
 
         # Every one of those sessions was under its own budget.
@@ -119,7 +121,7 @@ def test_a_cheap_message_does_not_spend_the_expensive_budget():
         reserve_input_chars(
             "sess-a",
             "1.1.1.1",
-            settings.RATELIMIT_EXPENSIVE_PER_SESSION + 1,
+            EXPENSIVE_PER_SESSION + 1,
             pricey=False,
         )
         assert is_ratelimited("sess-a", "1.1.1.1") is False
@@ -132,7 +134,7 @@ def test_one_ipv6_subscriber_shares_one_budget():
         reserve_input_chars(
             "sess-a",
             "2001:db8:1:2::1",
-            settings.RATELIMIT_EXPENSIVE_PER_IP + 1,
+            EXPENSIVE_PER_IP + 1,
             pricey=True,
         )
         assert is_ratelimited("sess-b", "2001:db8:1:2:ffff::9") is True
@@ -186,12 +188,12 @@ def test_requests_at_the_edge_cannot_all_pass():
 def test_a_refused_message_is_charged_nothing():
     with fake_redis() as fake:
         spent = limits.budget_key("expensive", "ip:1.1.1.1")
-        fake.set(spent, settings.RATELIMIT_EXPENSIVE_PER_IP + 1, ex=600)
+        fake.set(spent, EXPENSIVE_PER_IP + 1, ex=600)
 
         assert not reserve_input_chars("sess-a", "1.1.1.1", 500, pricey=True)
 
         assert {k: v for k, v in fake.store.items() if v} == {
-            spent: settings.RATELIMIT_EXPENSIVE_PER_IP + 1
+            spent: EXPENSIVE_PER_IP + 1
         }
         # The window of the spent budget does not move on a refusal, but the
         # empty counters the refusal created still expire.

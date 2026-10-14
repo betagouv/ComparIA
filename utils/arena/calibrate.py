@@ -6,7 +6,7 @@ allowances from it. Read-only. The CLI prints the whole replay; the admin's
 
 Each turn costs what both models were sent (system prompt, every turn so far
 with its web search results, that side's earlier answers) and what they
-wrote, weighted by today's cost weights. What the database cannot tell is
+wrote, priced at today's model prices and threshold. What the database cannot tell is
 left out: a failed attempt that a retry or a stand-in replaced, and a prompt
 refused before it reached the models.
 """
@@ -31,11 +31,14 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena.limits import (
+    MICRO_USD,
     POOL_SETTINGS,
     POOLS,
     WINDOW_SECONDS,
     Call,
     Pool,
+    Priced,
+    counted,
     limit,
     load_settings,
     setting,
@@ -105,12 +108,24 @@ class Spend:
         return list(totals.values())
 
 
+@dataclass(frozen=True)
+class Prices:
+    """A model's prices, in US dollars per million tokens."""
+
+    price_in: float
+    price_out: float
+
+
+# A model the database no longer knows costs nothing.
+UNPRICED = Prices(0.0, 0.0)
+
+
 @dataclass
 class Side:
-    """One side of a conversation: its cost weight, and what it is sent
+    """One side of a conversation: its model's prices, and what it is sent
     before the next prompt."""
 
-    weight: float
+    llm: Priced
     transcript: int
 
 
@@ -140,7 +155,7 @@ def _prompt_chars(row: Row[Any]) -> int:
     return len(merge_web_search_with_content(row.searched, results))
 
 
-def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
+def replay(rows: Sequence[Row[Any]], prices: dict[uuid.UUID, Prices]) -> Replay:
     """Rows are turns, each comparison's in the order they were sent."""
     result = Replay()
     sides: dict[str, Side] = {}
@@ -153,8 +168,8 @@ def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
                 result.conversations.append(spent)
             current, spent = row.comparison_id, {}
             sides = {
-                "a": Side(weights.get(row.llm_id_a, 1.0), row.system_a),
-                "b": Side(weights.get(row.llm_id_b, 1.0), row.system_b),
+                "a": Side(prices.get(row.llm_id_a, UNPRICED), row.system_a),
+                "b": Side(prices.get(row.llm_id_b, UNPRICED), row.system_b),
             }
             # A signed-in person's comparisons keep no session, only the
             # account.
@@ -182,14 +197,9 @@ def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
                 if first and row.suggested:
                     result.suggested_answers += 1
                     result.suggested_cached += cached
-            calls.append(
-                Call(
-                    side.weight,
-                    side.transcript + prompt,
-                    content + reasoning,
-                    bool(cached),
-                )
-            )
+            call = Call.of(side.llm, side.transcript + prompt, content + reasoning)
+            call.cached = bool(cached)
+            calls.append(call)
             # Only the answer goes back to the model next turn, not its
             # reasoning.
             side.transcript += prompt + content
@@ -215,9 +225,9 @@ async def _read(
     session_factory: Callable[
         [], AbstractAsyncContextManager[AsyncSession]
     ] = get_session,
-) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, float]]:
+) -> tuple[Sequence[Row[Any]], dict[uuid.UUID, Prices]]:
     """The turns of the comparisons started in the last `days`, the latest
-    `max_comparisons` of them when set, and each model's cost weight."""
+    `max_comparisons` of them when set, and each model's prices."""
     since = datetime.now() - timedelta(days=days)
     answer_a, answer_b = aliased(LLMMessage), aliased(LLMMessage)
     has_search = col(UserMessage.web_search_results).is_not(None)
@@ -266,13 +276,17 @@ async def _read(
         query = query.where(col(Comparison.id).in_(latest))
     async with session_factory() as session:
         rows = (await session.execute(query)).all()
-        weights = {
-            llm_id: weight
-            for llm_id, weight in (
-                await session.execute(select(col(LLMData.id), col(LLMData.cost_weight)))
+        prices = {
+            llm_id: Prices(price_in, price_out)
+            for llm_id, price_in, price_out in (
+                await session.execute(
+                    select(
+                        col(LLMData.id), col(LLMData.price_in), col(LLMData.price_out)
+                    )
+                )
             ).all()
         }
-    return rows, weights
+    return rows, prices
 
 
 def round_up(value: float) -> int:
@@ -281,6 +295,23 @@ def round_up(value: float) -> int:
         return 0
     step = 10 ** max(0, math.floor(math.log10(value)) - 1)
     return int(math.ceil(value / step) * step)
+
+
+# Cents in a dollar, the smallest step the admin edits dollars in.
+CENTS = 100
+
+
+def in_setting_unit(pool: Pool, value: float) -> float:
+    """A counter's value, rounded up to two significant digits, in the unit
+    its setting is in: characters, or dollars to the cent."""
+    if pool == "all":
+        return round_up(value)
+    return round_up(value * CENTS / MICRO_USD) / CENTS
+
+
+def smallest(pool: Pool) -> float:
+    """The smallest value a setting of this pool may take."""
+    return 1 if pool == "all" else 1 / CENTS
 
 
 def _percentile(values: list[int], percentile: int) -> float:
@@ -299,8 +330,13 @@ def propose(result: Replay) -> list[LimitProposal]:
         people = [w for spend in result.people.values() for w in spend.windows(pool)]
         if not people:
             continue
-        per_session = max(1, round_up(_percentile(people, SESSION_PERCENTILE)))
+        per_session = max(
+            smallest(pool),
+            in_setting_unit(pool, _percentile(people, SESSION_PERCENTILE)),
+        )
         typical_turn = _percentile(result.turn_costs[pool], 50)
+        if pool == "expensive":
+            typical_turn /= MICRO_USD
         proposals.append(
             LimitProposal(
                 name=POOL_SETTINGS[(pool, "session")],
@@ -316,8 +352,10 @@ def propose(result: Replay) -> list[LimitProposal]:
         ]
         per_network = max(
             per_session,
-            round_up(CLASS_SIZE * _percentile(people, CLASS_PERCENTILE)),
+            in_setting_unit(pool, CLASS_SIZE * _percentile(people, CLASS_PERCENTILE)),
         )
+        # The networks' windows are compared in the counters' unit.
+        over = round(per_network * MICRO_USD) if pool == "expensive" else per_network
         proposals.append(
             LimitProposal(
                 name=POOL_SETTINGS[(pool, "ip")],
@@ -326,7 +364,7 @@ def propose(result: Replay) -> list[LimitProposal]:
                 percentile=CLASS_PERCENTILE,
                 class_size=CLASS_SIZE,
                 over_share=(
-                    sum(w > per_network for w in networks) / len(networks)
+                    sum(w > over for w in networks) / len(networks)
                     if networks
                     else None
                 ),
@@ -366,8 +404,10 @@ async def calibrate(
     Raises:
         QueryTimedOutError: the read ran past the statement timeout
     """
-    rows, weights = await _read(days, max_comparisons, _bounded_session)
-    result = replay(rows, weights)
+    # Whether a model is expensive reads the threshold in force.
+    await load_settings()
+    rows, prices = await _read(days, max_comparisons, _bounded_session)
+    result = replay(rows, prices)
     return LimitsCalibration(
         days=days,
         comparisons=len(result.conversations),
@@ -377,17 +417,19 @@ async def calibrate(
     )
 
 
-def _line(name: str, values: list[int], limit: int | None = None) -> str:
+def _line(
+    name: str, values: list[int], limit: int | None = None, pool: Pool = "all"
+) -> str:
     if not values:
         return f"{name}: nothing"
     shown = ", ".join(
-        f"p{p} {int(v):,}"
+        f"p{p} {counted(pool, v)}"
         for p, v in zip(PERCENTILES, np.percentile(values, PERCENTILES))
     )
-    line = f"{name}: {shown}, max {max(values):,} ({len(values):,})"
+    line = f"{name}: {shown}, max {counted(pool, max(values))} ({len(values):,})"
     if limit is not None:
         over = sum(value > limit for value in values) / len(values)
-        line += f", limit {limit:,}, {over:.1%} over"
+        line += f", limit {counted(pool, limit)}, {over:.1%} over"
     return line
 
 
@@ -406,8 +448,11 @@ async def limits_calibrate(*, days: int = 30) -> None:
         logger.error("COMPARIA_DB_URI is not set, nothing to read")
         raise SystemExit(1)
 
-    rows, weights = await _read(days)
-    result = replay(rows, weights)
+    # The limits in force, an admin's or the defaults: the threshold decides
+    # which models are expensive.
+    await load_settings()
+    rows, prices = await _read(days)
+    result = replay(rows, prices)
     logger.info(
         f"{len(result.conversations):,} comparisons and {result.turns:,} turns "
         f"over {days} days; {len(result.people):,} people, "
@@ -415,8 +460,6 @@ async def limits_calibrate(*, days: int = 30) -> None:
         f"comparisons with no person to count them against"
     )
 
-    # The limits in force, an admin's or the defaults.
-    await load_settings()
     for pool in POOLS:
         people = [w for spend in result.people.values() for w in spend.windows(pool)]
         networks = [
@@ -425,13 +468,18 @@ async def limits_calibrate(*, days: int = 30) -> None:
         hours = [h for spend in result.networks.values() for h in spend.hours(pool)]
         conversations = [spent[pool] for spent in result.conversations if pool in spent]
         logger.info(
-            _line(f"{pool}, per person and window", people, limit(pool, "session"))
+            _line(
+                f"{pool}, per person and window",
+                people,
+                limit(pool, "session"),
+                pool,
+            )
         )
         logger.info(
-            _line(f"{pool}, per network and window", networks, limit(pool, "ip"))
+            _line(f"{pool}, per network and window", networks, limit(pool, "ip"), pool)
         )
-        logger.info(_line(f"{pool}, per network and hour", hours))
-        logger.info(_line(f"{pool}, per conversation", conversations))
+        logger.info(_line(f"{pool}, per network and hour", hours, pool=pool))
+        logger.info(_line(f"{pool}, per conversation", conversations, pool=pool))
 
     # The median sets RATELIMIT_EXPECTED_ANSWER_CHARS.
     logger.info(_line("Characters written per answer", result.written))

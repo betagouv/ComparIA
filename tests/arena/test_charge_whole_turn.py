@@ -4,8 +4,8 @@ no real Redis).
 
 A message used to cost its own length, while each model is sent the system
 prompt, the whole transcript and the web search results, and writes answers
-far longer than the question. The expensive allowance now counts each
-expensive model's characters as many times as its cost weight.
+far longer than the question. The expensive allowance now counts what each
+expensive model costs at its prices.
 """
 
 import asyncio
@@ -38,13 +38,13 @@ from tests.arena.test_spend_budget import (  # noqa: E402
     ME,
     ROUTES,
     SENT,
-    WEIGHT,
     arena,
     counter,
     patched,
     read,
     route_only,
     start,
+    usd,
 )
 from utils.database.models import (  # noqa: E402
     LLMMessageCreate,
@@ -53,6 +53,21 @@ from utils.database.models import (  # noqa: E402
 )
 
 WHO = Identity.of("s" * 64, "10.0.0.1")
+
+# Prices in dollars per million tokens. At four characters a token, each
+# character the expensive model is sent costs a millionth of a dollar, and
+# each one it writes three: `usd(sent, written)`.
+ORDINARY_PRICES = SimpleNamespace(price_in=0.4, price_out=1.2)
+EXPENSIVE_PRICES = SimpleNamespace(price_in=4.0, price_out=12.0)
+
+
+def cheap(sent, written=0):
+    return Call.of(ORDINARY_PRICES, sent, written)
+
+
+def pricey(sent, written=0):
+    return Call.of(EXPENSIVE_PRICES, sent, written)
+
 
 SYSTEM = "Tu es un assistant."
 FIRST, SECOND = "Bonjour ?", "Et la suite ?"
@@ -117,37 +132,59 @@ def spent(redis, pool):
     return session
 
 
-def test_an_expensive_model_counts_each_character_its_weight_times():
-    cheap, pricey = Call(weight=1, sent=100, written=300), Call(4, 100, 300)
+def test_an_expensive_model_costs_what_its_prices_say():
+    assert turn_cost([cheap(100, 300), cheap(100, 300)]) == {"all": 800}
+    assert turn_cost([cheap(100, 300), pricey(100, 300)]) == {
+        "all": 800,
+        "expensive": usd(100, 300),
+    }
 
-    assert turn_cost([cheap, cheap]) == {"all": 800}
-    assert turn_cost([cheap, pricey]) == {"all": 800, "expensive": 1600}
-    # Rounded up, so a fractional weight never charges less than it says.
-    assert turn_cost([Call(2.5, 1, 0)]) == {"all": 1, "expensive": 3}
+
+def test_a_call_is_priced_at_four_characters_a_token_rounded_up():
+    # 2.60 and 13.01 dollars per million tokens: 250 tokens in, 100 out.
+    sonnet = Call(1_000, 400, price_in=2.6012, price_out=13.0061, expensive=True)
+    assert sonnet.micro_usd == 1_951  # 650.3 + 1,300.61
+    # A float a hair above a whole number is not charged one more.
+    assert Call(40, price_in=0.1 + 0.2).micro_usd == 3
+
+
+def test_a_model_priced_zero_is_never_expensive_and_costs_nothing():
+    free = Call.of(SimpleNamespace(price_in=0.0, price_out=0.0), 100, 300)
+    assert not free.expensive
+    assert free.micro_usd == 0
+    assert turn_cost([free, cheap(100)]) == {"all": 500}
+
+
+def test_a_model_is_expensive_from_the_threshold_on(monkeypatch):
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PRICE_OUT", 12.0)
+    assert pricey(1).expensive
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PRICE_OUT", 12.01)
+    assert not pricey(1).expensive
 
 
 def test_a_cached_answer_is_free_on_the_expensive_pool_only():
-    cached = Call(4, 100, 300, cached=True)
-    assert turn_cost([cached, Call(1, 100, 300)]) == {"all": 800, "expensive": 0}
+    cached = pricey(100, 300)
+    cached.cached = True
+    assert turn_cost([cached, cheap(100, 300)]) == {"all": 800, "expensive": 0}
 
 
 def test_the_input_is_charged_up_front_and_the_answers_on_settle():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 120), "b": Call(4, 150)})
+        charge = Charge.reserve(WHO, {"a": cheap(120), "b": pricey(150)})
         assert spent(redis, "all") == 270
-        assert spent(redis, "expensive") == 600
+        assert spent(redis, "expensive") == usd(150)
 
         charge.settle(
             {"a": written("x" * 30), "b": written("y" * 40, reasoning="z" * 10)}
         )
 
     assert spent(redis, "all") == 270 + 30 + 50
-    assert spent(redis, "expensive") == 4 * (150 + 50)
+    assert spent(redis, "expensive") == usd(150, 50)
 
 
 def test_web_search_results_found_after_the_reservation_are_charged_on_settle():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 10), "b": Call(1, 10)})
+        charge = Charge.reserve(WHO, {"a": cheap(10), "b": cheap(10)})
         charge.sending("a", 2_010)
         charge.sending("b", 2_010)
         charge.settle({"a": None, "b": None})
@@ -157,7 +194,7 @@ def test_web_search_results_found_after_the_reservation_are_charged_on_settle():
 
 def test_a_cached_side_gives_its_expensive_share_back():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(4, 100), "b": Call(1, 100)})
+        charge = Charge.reserve(WHO, {"a": pricey(100), "b": cheap(100)})
         charge.settle({"a": written("x" * 50, cached=True), "b": written("y" * 50)})
 
     assert spent(redis, "all") == 300
@@ -166,18 +203,18 @@ def test_a_cached_side_gives_its_expensive_share_back():
 
 def test_a_stand_in_is_charged_as_itself_and_the_failed_model_still_counts():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 100), "b": Call(1, 100)})
+        charge = Charge.reserve(WHO, {"a": cheap(100), "b": cheap(100)})
         # b timed out after writing 20 characters; an expensive model stands in.
-        charge.replace("b", weight=4, sent=100, written=20)
+        charge.replace("b", EXPENSIVE_PRICES, sent=100, written=20)
         charge.settle({"a": written("x" * 10), "b": written("y" * 30)})
 
     assert spent(redis, "all") == 100 + 10 + (100 + 20) + (100 + 30)
-    assert spent(redis, "expensive") == 4 * (100 + 30)
+    assert spent(redis, "expensive") == usd(100, 30)
 
 
 def test_settling_never_moves_a_reset_time():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 100), "b": Call(4, 100)})
+        charge = Charge.reserve(WHO, {"a": cheap(100), "b": pricey(100)})
         redis.advance(600)
         charge.settle({"a": written("x" * 10), "b": written("y" * 10)})
         ttls = {redis.ttl(limits.budget_key(p, i)) for p, i in counters(redis)}
@@ -187,12 +224,12 @@ def test_settling_never_moves_a_reset_time():
 
 def test_settling_after_the_window_closed_leaves_no_counter_without_expiry():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 100), "b": Call(4, 100)})
+        charge = Charge.reserve(WHO, {"a": cheap(100), "b": pricey(100)})
         redis.advance(limits.WINDOW_SECONDS)
         charge.settle({"a": written("x" * 10), "b": written("y" * 10)})
 
         assert spent(redis, "all") == 20
-        assert spent(redis, "expensive") == 40
+        assert spent(redis, "expensive") == usd(0, 10)
         assert {redis.ttl(limits.budget_key(p, i)) for p, i in counters(redis)} == {
             limits.WINDOW_SECONDS
         }
@@ -200,7 +237,7 @@ def test_settling_after_the_window_closed_leaves_no_counter_without_expiry():
 
 def test_settling_twice_charges_once():
     with fake_redis(limits) as redis:
-        charge = Charge.reserve(WHO, {"a": Call(1, 100), "b": Call(1, 100)})
+        charge = Charge.reserve(WHO, {"a": cheap(100), "b": cheap(100)})
         answers = {"a": written("x" * 10), "b": written("y" * 10)}
         charge.settle(answers)
         charge.settle(answers)
@@ -212,18 +249,18 @@ def test_settling_on_a_spent_allowance_still_charges_and_never_refuses():
     with fake_redis(limits) as redis:
         redis.set(limits.budget_key("expensive", WHO.personal), 10**9, ex=60)
         charge = Charge.reserve(
-            WHO, {"a": Call(1, 100), "b": Call(4, 100)}, refusing=("all",)
+            WHO, {"a": cheap(100), "b": pricey(100)}, refusing=("all",)
         )
         charge.settle({"a": written("x"), "b": written("y")})
 
-        assert counters(redis)[("expensive", WHO.personal)] == 10**9 + 4 * 101
+        assert counters(redis)[("expensive", WHO.personal)] == 10**9 + usd(100, 1)
         assert redis.ttl(limits.budget_key("expensive", WHO.personal)) == 60
 
 
 def test_settling_never_raises_when_redis_is_down():
     redis = FakeRedis(pipelines_that_work=2)
     with fake_redis(limits, fake=redis):
-        charge = Charge.reserve(WHO, {"a": Call(1, 100), "b": Call(1, 100)})
+        charge = Charge.reserve(WHO, {"a": cheap(100), "b": cheap(100)})
         charge.settle({"a": written("x"), "b": written("y")})
 
     assert spent(redis, "all") == 200
@@ -297,7 +334,7 @@ def test_a_failed_turn_keeps_what_was_written_and_refunds_nothing(route):
             read(start(route, state))
 
         assert counter(state.redis, "all", ME) == 2 * SENT[route] + 70
-        assert counter(state.redis, "expensive", ME) == WEIGHT * SENT[route]
+        assert counter(state.redis, "expensive", ME) == usd(SENT[route])
 
 
 @pytest.mark.parametrize("route", ROUTES)
@@ -318,18 +355,22 @@ def test_a_cached_expensive_side_is_free_there_and_counted_on_the_whole(route):
 def test_a_conversation_over_a_spent_allowance_never_moves_its_reset(route):
     with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
         key = limits.budget_key("expensive", ME)
-        over = settings.RATELIMIT_EXPENSIVE_PER_SESSION + 1
+        over = limits.limit("expensive", "session") + 1
         state.redis.set(key, over, ex=600)
         read(start(route, state))
 
         assert counter(state.redis, "expensive", ME) == (
-            over + WEIGHT * (SENT[route] + len(ANSWER))
+            over + usd(SENT[route], len(ANSWER))
         )
         assert state.redis.ttl(key) == 600
 
 
 def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch):
-    weights = {"steady": 1, "stuck": 1, "spare": WEIGHT}
+    prices = {
+        "steady": ORDINARY_PRICES,
+        "stuck": ORDINARY_PRICES,
+        "spare": EXPENSIVE_PRICES,
+    }
 
     async def bot_response_async(pos, llm, turn, _turn_index, _messages, _request):
         msg = LLMMessageCreate()
@@ -346,10 +387,10 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
             enabled={
                 llm_id: SimpleNamespace(
                     id=llm_id,
-                    cost_weight=weight,
                     endpoint=SimpleNamespace(api_type="openai"),
+                    **vars(llm_prices),
                 )
-                for llm_id, weight in weights.items()
+                for llm_id, llm_prices in prices.items()
             }
         )
 
@@ -384,7 +425,7 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
     )
 
     async def run():
-        charge = Charge.reserve(WHO, {"a": Call(1, 1), "b": Call(1, 1)})
+        charge = Charge.reserve(WHO, {"a": cheap(1), "b": cheap(1)})
         async for _event in streaming.stream_comparison_messages(
             comparison, turn, charge=charge
         ):
@@ -397,7 +438,7 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
     answered = len("undeuxtrois")
     # Each model was sent the prompt; the stuck one wrote "un" and gave up.
     assert spent(redis, "all") == 3 * len(FIRST) + answered + len("un") + answered
-    assert spent(redis, "expensive") == WEIGHT * (len(FIRST) + answered)
+    assert spent(redis, "expensive") == usd(len(FIRST), answered)
 
 
 # A typical answer reserved up front.
@@ -406,22 +447,22 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
 def test_settling_gives_back_the_unused_reservation():
     with fake_redis(limits) as redis:
         charge = Charge.reserve(
-            WHO, {"a": Call(1, 100, written=500), "b": Call(4, 100, written=500)}
+            WHO, {"a": cheap(100, written=500), "b": pricey(100, written=500)}
         )
         assert spent(redis, "all") == 1_200
-        assert spent(redis, "expensive") == 2_400
+        assert spent(redis, "expensive") == usd(100, 500)
 
         charge.settle({"a": written("x" * 50), "b": written("y" * 900)})
 
     # Never below what the turn cost: shorter answers give back, longer add.
     assert spent(redis, "all") == 100 + 50 + 100 + 900
-    assert spent(redis, "expensive") == 4 * (100 + 900)
+    assert spent(redis, "expensive") == usd(100, 900)
 
 
 def test_a_turn_with_no_answer_keeps_only_its_input():
     with fake_redis(limits) as redis:
         charge = Charge.reserve(
-            WHO, {"a": Call(1, 100, written=500), "b": Call(1, 100, written=500)}
+            WHO, {"a": cheap(100, written=500), "b": cheap(100, written=500)}
         )
         charge.settle({"a": None, "b": None})
 
@@ -431,7 +472,7 @@ def test_a_turn_with_no_answer_keeps_only_its_input():
 def test_a_refund_after_the_window_closed_never_goes_below_zero():
     with fake_redis(limits) as redis:
         charge = Charge.reserve(
-            WHO, {"a": Call(1, 100, written=500), "b": Call(4, 100, written=500)}
+            WHO, {"a": cheap(100, written=500), "b": pricey(100, written=500)}
         )
         redis.advance(limits.WINDOW_SECONDS)
         charge.settle({"a": written("x"), "b": written("y")})

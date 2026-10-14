@@ -28,24 +28,32 @@ def allowance(status, pool, scope):
 
 
 def test_an_env_var_sets_an_allowance(monkeypatch):
-    monkeypatch.setenv("RATELIMIT_EXPENSIVE_PER_SESSION", "2000")
-    assert Settings().RATELIMIT_EXPENSIVE_PER_SESSION == 2000
+    monkeypatch.setenv("RATELIMIT_EXPENSIVE_PER_SESSION", "0.05")
+    assert Settings().RATELIMIT_EXPENSIVE_PER_SESSION == 0.05
 
 
-def test_the_allowances_keep_their_numbers():
-    assert settings.RATELIMIT_EXPENSIVE_PER_SESSION == 1_000_000
-    assert settings.RATELIMIT_EXPENSIVE_PER_IP == 50_000_000
+def test_the_allowances_have_their_defaults():
+    assert settings.RATELIMIT_EXPENSIVE_PER_SESSION == 0.40
+    assert settings.RATELIMIT_EXPENSIVE_PER_IP == 20.0
+    assert settings.RATELIMIT_EXPENSIVE_PRICE_OUT == 8.0
     assert settings.RATELIMIT_ALL_PER_SESSION == 3_000_000
     assert settings.RATELIMIT_ALL_PER_IP == 60_000_000
 
 
-def test_the_counters_keep_the_keys_they_had_before_the_module():
-    # A deploy must not hand everyone their allowances back.
+def test_the_expensive_limits_count_in_millionths_of_a_dollar(monkeypatch):
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 0.4)
+    assert limits.limit("expensive", "session") == 400_000
+    assert limits.limit("all", "session") == settings.RATELIMIT_ALL_PER_SESSION
+
+
+def test_the_whole_counters_keep_the_keys_they_had_before_the_module():
+    # A deploy must not hand everyone their allowances back. The expensive
+    # counters are new: the old ones held characters.
     assert limits.budget_key("expensive", WHO.personal) == (
-        f"{REDIS_INSTANCE_PREFIX}pricey_chars:pricey:sess-a"
+        f"{REDIS_INSTANCE_PREFIX}pricey_chars:expensive_usd:sess-a"
     )
     assert limits.budget_key("expensive", WHO.network) == (
-        f"{REDIS_INSTANCE_PREFIX}pricey_chars:pricey_ip:1.1.1.1"
+        f"{REDIS_INSTANCE_PREFIX}pricey_chars:expensive_usd_ip:1.1.1.1"
     )
     assert limits.budget_key("all", WHO.personal) == (
         f"{REDIS_INSTANCE_PREFIX}pricey_chars:all:sess-a"
@@ -56,7 +64,7 @@ def test_the_counters_keep_the_keys_they_had_before_the_module():
 
 
 def test_a_lowered_allowance_refuses_at_its_new_limit(monkeypatch):
-    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 2000)
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 0.002)
     with fake_redis(limits):
         limits.reserve(WHO, {"all": 2000, "expensive": 2000})
         limits.reserve(WHO, {"all": 1, "expensive": 1})
@@ -77,9 +85,10 @@ def test_a_message_that_counts_for_nothing_still_meets_a_spent_allowance():
 
 
 def test_a_cheap_pair_leaves_the_expensive_pool_out():
-    cheap, expensive = limits.Call(1, 3), limits.Call(4, 3)
+    cheap = limits.Call(3, price_in=4.0, price_out=4.0)
+    expensive = limits.Call(3, price_in=4.0, price_out=12.0, expensive=True)
     assert limits.turn_cost([cheap, cheap]) == {"all": 6}
-    assert limits.turn_cost([cheap, expensive]) == {"all": 6, "expensive": 12}
+    assert limits.turn_cost([cheap, expensive]) == {"all": 6, "expensive": 3}
 
 
 def test_a_status_counts_down_to_the_reset():
@@ -141,7 +150,8 @@ def test_a_reset_forgets_one_identity_only():
 
 
 def test_a_pool_that_may_not_refuse_is_still_charged(monkeypatch):
-    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 100)
+    # 100 millionths of a dollar.
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 0.0001)
     with fake_redis(limits):
         limits.reserve(WHO, {"all": 10, "expensive": 101})
         with pytest.raises(AllowanceSpent):
@@ -157,7 +167,8 @@ def test_a_pool_that_may_not_refuse_is_still_charged(monkeypatch):
 def test_a_spent_allowance_keeps_its_reset_time_while_it_is_charged(monkeypatch):
     """The person was told when the expensive models come back. A conversation
     that finishes over the spent allowance must not push that time back."""
-    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 100)
+    # 100 millionths of a dollar.
+    monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PER_SESSION", 0.0001)
     with fake_redis(limits) as redis:
         limits.reserve(WHO, {"all": 101, "expensive": 101})
         redis.advance(600)
@@ -175,10 +186,10 @@ def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog, monkeypatch
     monkeypatch.setattr(limits, "get_app_settings", no_stored_settings)
     with fake_redis(limits) as redis, caplog.at_level("INFO", "comparia.arena"):
         redis.set(limits.budget_key("all", WHO.personal), 10)
-        redis.set(limits.budget_key("expensive", WHO.personal), 10, ex=61)
+        redis.set(limits.budget_key("expensive", WHO.personal), 12_345, ex=61)
         asyncio.run(limits_show(session="sess-a"))
     assert "s:sess-a all: 10 of 3,000,000, never resets" in caplog.text
-    assert "s:sess-a expensive: 10 of 1,000,000, resets in 2 min" in caplog.text
+    assert "s:sess-a expensive: $0.0123 of $0.4000, resets in 2 min" in caplog.text
 
 
 def test_the_cli_refuses_a_reset_with_no_one_to_reset(caplog):

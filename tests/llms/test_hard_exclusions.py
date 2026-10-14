@@ -26,7 +26,8 @@ def llms_data(big=(BIG_CHEAP, *EXPENSIVE)) -> LLMsData:
             id=llm_id,
             status="enabled",
             params=params,
-            cost_weight=4.0 if llm_id in EXPENSIVE else 1.0,
+            price_in=2.6 if llm_id in EXPENSIVE else 0.2,
+            price_out=13.0 if llm_id in EXPENSIVE else 1.0,
         )
 
     return LLMsData.model_construct(

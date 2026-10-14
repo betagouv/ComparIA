@@ -26,9 +26,9 @@ from backend.arena.limits import (
     Identity,
     LimitStatus,
     Pool,
+    expected_answer_chars,
     read_status,
     reload_settings,
-    setting,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (
@@ -254,11 +254,7 @@ def follow_up_sent(comparison: ComparisonRead, message: str = "") -> Sent:
 def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
     """Each side as reserved: what it is sent, and a typical answer."""
     return {
-        pos: Call(
-            llms_data.weight(llm_id),
-            chars,
-            written=setting("expected_answer_chars"),
-        )
+        pos: Call.of(llms_data.all[llm_id], chars, written=expected_answer_chars())
         for pos, (llm_id, chars) in sent.items()
     }
 

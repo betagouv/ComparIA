@@ -4,10 +4,11 @@ handle in a window.
 
 Each allowance is one Redis counter per pool and identity. The `all` pool counts
 every character the models are sent and write. The `expensive` pool counts
-only the expensive models' characters, each as many times as the model's cost
-weight. Each pool runs per anonymous session and per IP: the session one is
-the one that matters, since people behind a shared NAT each get their own; the
-IP one catches a client that drops its cookie to start over.
+what the expensive models cost, in millionths of a US dollar, estimated from
+each model's prices. A model is expensive when its output price reaches the
+threshold an admin sets. Each pool runs per anonymous session and per IP: the
+session one is the one that matters, since people behind a shared NAT each get
+their own; the IP one catches a client that drops its cookie to start over.
 
 A spent `all` allowance stops every message. A spent `expensive` one only
 keeps expensive models out of new comparisons: the conversations already
@@ -57,13 +58,22 @@ def ip_identity(ip: str) -> str:
 
 # The pool names the counters had before this module, kept with the key so a
 # deploy leaves what people spent in place. The key holds the identity without
-# its prefix, as it always did.
+# its prefix, as it always did. The expensive counters get new keys: the old
+# ones counted characters, which would be wrong read as dollars.
 _KEY_POOLS: dict[tuple[Pool, Scope], str] = {
     ("all", "session"): "all",
     ("all", "ip"): "all_ip",
-    ("expensive", "session"): "pricey",
-    ("expensive", "ip"): "pricey_ip",
+    ("expensive", "session"): "expensive_usd",
+    ("expensive", "ip"): "expensive_usd_ip",
 }
+
+# Model prices are in US dollars per million tokens, and a token is about four
+# characters of text.
+CHARS_PER_TOKEN = 4
+# The expensive counters hold millionths of a dollar, so they stay whole
+# numbers. At a price in dollars per million tokens, a token costs that many
+# of them.
+MICRO_USD = 1_000_000
 
 
 def budget_key(pool: Pool, identity: str) -> str:
@@ -81,6 +91,7 @@ LimitSetting = Literal[
     "all_per_ip",
     "expensive_per_session",
     "expensive_per_ip",
+    "expensive_price_out",
     "expected_answer_chars",
 ]
 LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
@@ -96,30 +107,37 @@ POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
 # change reaches every pod within that time, without a read per message.
 RELOAD_SECONDS = 30
 
-_stored: dict[LimitSetting, int] = {}
+# The settings in characters, whole numbers. The others are in dollars.
+CHAR_SETTINGS: tuple[LimitSetting, ...] = (
+    "all_per_session",
+    "all_per_ip",
+    "expected_answer_chars",
+)
+
+_stored: dict[LimitSetting, float] = {}
 _loaded_at: float | None = None
 
 
-def default(name: LimitSetting) -> int:
+def default(name: LimitSetting) -> float:
     """The RATELIMIT_* env value, in force while no admin has set one."""
-    value: int = getattr(settings, f"RATELIMIT_{name.upper()}")
+    value: float = getattr(settings, f"RATELIMIT_{name.upper()}")
     return value
 
 
-def setting(name: LimitSetting) -> int:
+def setting(name: LimitSetting) -> float:
     """The value in force: the one an admin stored, else the default. Every
     read of a limit goes through here."""
     # The default is read on each call, so a test can move it.
     return _stored[name] if name in _stored else default(name)
 
 
-def stored_settings(row: AppSettings) -> dict[LimitSetting, int]:
+def stored_settings(row: AppSettings) -> dict[LimitSetting, float]:
     """The settings an admin stored, leaving out those on their default."""
-    stored: dict[LimitSetting, int] = {}
+    stored: dict[LimitSetting, float] = {}
     for name in LIMIT_SETTINGS:
         value = getattr(row, f"limit_{name}")
         if value is not None:
-            stored[name] = int(value)
+            stored[name] = int(value) if name in CHAR_SETTINGS else float(value)
     return stored
 
 
@@ -145,7 +163,37 @@ async def reload_settings() -> None:
 
 
 def limit(pool: Pool, scope: Scope) -> int:
-    return setting(POOL_SETTINGS[(pool, scope)])
+    """The limit in its counter's unit: characters, or millionths of a
+    dollar."""
+    value = setting(POOL_SETTINGS[(pool, scope)])
+    return round(value * MICRO_USD) if pool == "expensive" else int(value)
+
+
+def counted(pool: Pool, value: float) -> str:
+    """A counter's value as people read it: characters, or dollars."""
+    if pool == "expensive":
+        return f"${value / MICRO_USD:,.4f}"
+    return f"{int(value):,}"
+
+
+def expected_answer_chars() -> int:
+    return int(setting("expected_answer_chars"))
+
+
+class Priced(Protocol):
+    """A model's prices, in US dollars per million tokens."""
+
+    @property
+    def price_in(self) -> float: ...
+
+    @property
+    def price_out(self) -> float: ...
+
+
+def is_expensive(llm: Priced) -> bool:
+    """Whether the model spends the expensive allowance: its output price
+    reaches the threshold. A model priced 0 never does."""
+    return llm.price_out > 0 and llm.price_out >= setting("expensive_price_out")
 
 
 @dataclass(frozen=True)
@@ -211,32 +259,51 @@ class AllowanceSpent(Exception):
 @dataclass
 class Call:
     """One model answering one side of a turn: the characters it was sent and
-    wrote, and how many times an ordinary model it costs."""
+    wrote, its prices, and whether it spends the expensive allowance."""
 
-    weight: float
     sent: int
     written: int = 0
+    price_in: float = 0.0
+    price_out: float = 0.0
+    expensive: bool = False
     # Served from the answer cache: the provider was not called.
     cached: bool = False
+
+    @classmethod
+    def of(cls, llm: Priced, sent: int, written: int = 0) -> "Call":
+        """Whether the model is expensive is read once, here, so a threshold
+        changed during a turn cannot reserve it one way and settle it the
+        other."""
+        return cls(sent, written, llm.price_in, llm.price_out, is_expensive(llm))
+
+    @property
+    def micro_usd(self) -> int:
+        """What the provider bills for this call, estimated from the prices
+        and rounded up, in millionths of a dollar."""
+        tokens_in, tokens_out = (
+            self.sent / CHARS_PER_TOKEN,
+            self.written / CHARS_PER_TOKEN,
+        )
+        # Rounded first, so a float a hair above a whole number does not
+        # charge one more.
+        return math.ceil(
+            round(tokens_in * self.price_in + tokens_out * self.price_out, 6)
+        )
 
 
 def turn_cost(calls: Iterable[Call]) -> dict[Pool, int]:
     """
     What a turn spends of each pool. The whole one counts every character
     each model was sent and wrote, cached answers included: it bounds what one
-    client can push through the arena. The expensive one counts the expensive
-    models only, each character `weight` times, and nothing for a cached
+    client can push through the arena. The expensive one counts what the
+    expensive models cost, in millionths of a dollar, and nothing for a cached
     answer, which cost the provider nothing. A turn with no expensive model
     leaves that pool out, so a spent expensive allowance never refuses it.
     """
     calls = list(calls)
     cost: dict[Pool, int] = {"all": sum(call.sent + call.written for call in calls)}
-    if expensive := [call for call in calls if call.weight > 1]:
-        cost["expensive"] = sum(
-            math.ceil(call.weight * (call.sent + call.written))
-            for call in expensive
-            if not call.cached
-        )
+    if expensive := [call for call in calls if call.expensive]:
+        cost["expensive"] = sum(call.micro_usd for call in expensive if not call.cached)
     return cost
 
 
@@ -420,7 +487,7 @@ class Charge:
         """What this side is sent, counted on the messages as they go out."""
         self.calls[pos].sent = chars
 
-    def replace(self, pos: str, weight: float, sent: int, written: int) -> None:
+    def replace(self, pos: str, llm: Priced, sent: int, written: int) -> None:
         """
         A stand-in takes this side over from a model that failed mid-turn.
         The failed model keeps what it was sent and what it wrote, since the
@@ -429,7 +496,7 @@ class Charge:
         failed = self.calls[pos]
         failed.written = written
         self.replaced.append(failed)
-        self.calls[pos] = Call(weight, sent)
+        self.calls[pos] = Call.of(llm, sent)
 
     def settle(self, answers: Mapping[str, Answer | None]) -> None:
         """
