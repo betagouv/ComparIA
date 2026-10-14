@@ -1,3 +1,4 @@
+import type { Mode } from '$lib/chatService.svelte'
 import type { PausedModel, Spent } from '$lib/limits.svelte'
 import type { BotModel } from '$lib/models'
 import { expectNoDanglingAriaRefs } from '$lib/testing/a11y'
@@ -87,7 +88,7 @@ describe('ModelSelector', () => {
       modelsSelection: [],
       paused,
       expensive: expensive('session'),
-      pausedModes: new Map([['big-vs-small', at]])
+      pausedModes: new Map<Mode, string | null>([['big-vs-small', at]])
     })
 
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
