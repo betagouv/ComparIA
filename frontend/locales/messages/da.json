@@ -341,6 +341,7 @@
                 "label": "API-nøgle",
                 "placeholder": "Ny nøgle",
                 "replace": "Erstat",
+                "replaceLabel": "Erstat API-nøglen",
                 "set": "Nøgle gemt",
                 "unset": "Ingen nøgle gemt",
                 "willClear": "Når du gemmer, slettes den gemte nøgle, og miljøvariablen overtager."
@@ -422,6 +423,8 @@
                 "title": "Indstillinger"
             },
             "stats": {
+                "byCategoryAria": "Registreringer efter kategori",
+                "byCategoryDesc": "Fordeling af registreringer efter kategori og resultat.",
                 "byCategoryNone": "Ingen kategori blev udløst i perioden.",
                 "byCategoryTitle": "Udløste kategorier",
                 "byDecisionTitle": "Resultater",
@@ -433,7 +436,21 @@
                     "skipped": "Ikke kontrolleret (Mistral nede)",
                     "warned": "Advarsler"
                 },
+                "desc": "Følg registreringerne og de trufne beslutninger i den valgte periode.",
+                "heading": "Beskedaktivitet",
+                "period": {
+                    "all": "Siden starten",
+                    "days": "Sidste {count} dage",
+                    "year": "Sidste 12 måneder"
+                },
+                "periodLabel": "Vist periode",
                 "proceeded": "{count} sendt alligevel",
+                "timelineAria": "Udvikling i overvågede, advarede, afviste og fejlede beskeder",
+                "timelineCount": "beskeder verificeret",
+                "timelineDesc": "Beskeder overvåget, advaret, afvist eller fejlet i perioden.",
+                "timelineEmpty": "Ingen registreringer i denne periode.",
+                "timelineLegend": "Signaturforklaring",
+                "timelineTitle": "Registreringer over tid",
                 "title": "Aktivitet de sidste {days} dage",
                 "totalLabel": "beskeder verificeret i perioden",
                 "unavailable": "Tællerne er ikke tilgængelige i øjeblikket.",
