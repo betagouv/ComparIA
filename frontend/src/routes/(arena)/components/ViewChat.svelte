@@ -47,6 +47,22 @@
     else remindToVote()
   }
 
+  // Focus sits in the send area. A panel that takes the place of the text box
+  // then takes focus too, which would otherwise fall to the page; after a
+  // vote it leaves focus on the vote.
+  let sendAreaFocused = $state(false)
+
+  function onSendAreaFocusOut(e: FocusEvent) {
+    const area = e.currentTarget as HTMLElement
+    const left = e.target as Node
+    if (area.contains(e.relatedTarget as Node | null)) return
+    // Some browsers send focusout when the focused text box is removed: that
+    // is the case to keep, told apart once the removal is done.
+    setTimeout(() => {
+      if (left.isConnected) sendAreaFocused = area.contains(document.activeElement)
+    })
+  }
+
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
       const success = await comparator.ask(prompt)
@@ -91,7 +107,7 @@
   const announcement = $derived.by(() => {
     // A pause that shows after a turn or a vote takes the text box away
     // without moving focus, so it is told here. One met on a send takes focus.
-    if (comparator.pause && !comparator.pauseFromSend) {
+    if (comparator.pause && !comparator.pauseFromSend && !sendAreaFocused) {
       const reset = resetTime(comparator.pause.limit.resets_at)
       return spoken(pauseTitle(reset), reset)
     }
@@ -99,10 +115,7 @@
       case 'generating':
         return m['chatbot.announce.generating']()
       case 'complete':
-        // The text box goes as the last answer lands: tell why.
-        return full
-          ? `${m['chatbot.announce.ready']()} ${m['arene.limits.turns.fullTitle']()}`
-          : m['chatbot.announce.ready']()
+        return m['chatbot.announce.ready']()
       default:
         return ''
     }
@@ -160,6 +173,8 @@
   {:else if !comparator.comparison.revealed}
     <div
       bind:this={footer}
+      onfocusin={() => (sendAreaFocused = true)}
+      onfocusout={onSendAreaFocusOut}
       id="send-area"
       class={[
         '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',
@@ -168,7 +183,12 @@
       ]}
     >
       {#if full}
-        <Alert id="turns-full-notice" title={m['arene.limits.turns.fullTitle']()} class="w-full">
+        <Alert
+          id="turns-full-notice"
+          title={m['arene.limits.turns.fullTitle']()}
+          focusTitle={sendAreaFocused}
+          class="w-full"
+        >
           <p>{m['arene.limits.turns.full']({ max: MAX_TURNS_PER_COMPARISON })}</p>
           <div class="mt-4 gap-3 md:flex-row flex flex-col">
             <Button
@@ -193,7 +213,7 @@
           refusal={comparator.pause}
           {onReveal}
           failed={!!comparator.error}
-          focusTitle={comparator.pauseFromSend}
+          focusTitle={comparator.pauseFromSend || sendAreaFocused}
         />
       {:else}
         <TextPrompt
