@@ -143,9 +143,12 @@ class ArenaLimits(BaseModel):
     """
     What the arena may do for this person right now, read before they type.
 
-    No counter and no share of an allowance: the person learns that one is
-    spent and when it lifts, never how much their network sent. Nothing here
-    depends on a comparison, so it says nothing about a blind pair.
+    An allowance shows only once it is spent: before that, no field, no reset
+    time, since watching one appear after a message would tell that the pair
+    had an expensive model. No counter and no share either: the person learns
+    that an allowance is spent and when it lifts, never how much their network
+    sent. What is left: the moment an allowance runs out, the person learns
+    that one of their recent pairs used an expensive model, not which one.
     """
 
     # The whole allowance: while spent, no message goes through.

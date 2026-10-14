@@ -4,7 +4,9 @@ no DB, no real Redis).
 
 It says which allowance is spent, for whom and when it lifts, and which models
 are paused, so the picker can grey them out. It never says how much was used:
-a school's total behind one IP is not one pupil's to see.
+a school's total behind one IP is not one pupil's to see. Nor anything of an
+allowance not yet spent: watching it change after a message would tell
+whether the pair had an expensive model.
 """
 
 import os
@@ -71,6 +73,13 @@ def test_nothing_spent_says_nothing_and_reads_no_model(arena):
     assert response.status_code == 200
     assert response.json() == {"total": None, "expensive": None, "paused_llms": []}
     assert arena.loads == 0
+
+
+def test_a_message_to_an_expensive_pair_changes_nothing_until_a_pool_is_spent(arena):
+    fresh = arena.client.get("/arena/limits").json()
+    limits.reserve(limits.Identity(ME, NETWORK), {"all": 3000, "expensive": 3000})
+
+    assert arena.client.get("/arena/limits").json() == fresh
 
 
 def test_no_cache_may_keep_it(arena):
