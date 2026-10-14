@@ -105,6 +105,32 @@ class FakeRedis:
         assert isinstance(fields, dict), f"{key} is not a hash"
         return {name: str(value) for name, value in fields.items()}
 
+    def zadd(self, key, mapping):
+        members = self.store[key] if self._live(key) else {}
+        assert isinstance(members, dict), f"{key} is not a sorted set"
+        added = sum(member not in members for member in mapping)
+        members.update(mapping)
+        self.store[key] = members
+        return added
+
+    def zrem(self, key, *members):
+        if not self._live(key):
+            return 0
+        removed = [member for member in members if member in self.store[key]]
+        for member in removed:
+            del self.store[key][member]
+        return len(removed)
+
+    def zremrangebyscore(self, key, low, high):
+        if not self._live(key):
+            return 0
+        low = float(low)
+        out = [m for m, score in self.store[key].items() if low <= score <= high]
+        return self.zrem(key, *out)
+
+    def zcard(self, key):
+        return len(self.store[key]) if self._live(key) else 0
+
     def pipeline(self, transaction=True):
         return FakePipeline(self)
 

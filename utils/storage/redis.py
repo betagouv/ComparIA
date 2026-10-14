@@ -32,6 +32,9 @@ REDIS_BUDGET_KEY: Final[str] = (
 # What one model cost on one Paris calendar day, across everyone: a hash of
 # millionths of a dollar, characters sent and written, answers and cached ones.
 REDIS_MODEL_DAY_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}model_day:{{llm_id}}:{{day}}"
+# The turns one network has the models answering now: a sorted set of slots,
+# each scored with the moment it lapses.
+REDIS_IN_FLIGHT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}in_flight:{{network}}"
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
 REDIS_VOTE_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}count"
 REDIS_RANKING_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}rankings_and_prefs"

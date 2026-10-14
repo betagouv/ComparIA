@@ -82,6 +82,7 @@ check_untyped_defs = true
 module = [
     "backend.admin.limits",
     "backend.arena.cache",
+    "backend.arena.in_flight",
     "backend.arena.limits",
     "utils.arena.calibrate",
 ]

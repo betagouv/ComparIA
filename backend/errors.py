@@ -119,6 +119,21 @@ class ActivityQueryTimeoutError(HTTPException):
         )
 
 
+class TooManyAtOnceError(HTTPException):
+    """A turn refused because its network already has as many answering as
+    it may. One of them ends within seconds, so the person can send again
+    then. Nothing in it depends on the models."""
+
+    RETRY_AFTER_SECONDS = 5
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="too_many_at_once",
+            headers={"Retry-After": str(self.RETRY_AFTER_SECONDS)},
+        )
+
+
 class LimitReachedError(HTTPException):
     """A message refused because a limit on model use was reached. The body
     says which limit and when it lifts, see `limit_reached_handler`."""

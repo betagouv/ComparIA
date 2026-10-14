@@ -16,6 +16,7 @@ from backend.arena.checks import (
     issue_warning_token,
     run_prompt_check,
 )
+from backend.arena.in_flight import hold_turn_slot
 from backend.arena.limits import (
     POOLS,
     Allowance,
@@ -584,7 +585,10 @@ async def get_limits(
     )
 
 
-@router.post("/add_first_text", dependencies=[Depends(assert_not_block_cooldown)])
+@router.post(
+    "/add_first_text",
+    dependencies=[Depends(assert_not_block_cooldown), Depends(hold_turn_slot)],
+)
 async def add_first_text(
     args: AddFirstTextBody,
     user: OptionalUser,
@@ -742,7 +746,11 @@ async def add_first_text(
 
 @router.post(
     "/add_text/{comparison_id}",
-    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
+    dependencies=[
+        Depends(assert_allowance_left),
+        Depends(assert_not_block_cooldown),
+        Depends(hold_turn_slot),
+    ],
 )
 async def add_text(
     comparison_: ComparisonAnno,
@@ -844,7 +852,11 @@ async def add_text(
 
 @router.post(
     "/retry/{comparison_id}",
-    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
+    dependencies=[
+        Depends(assert_allowance_left),
+        Depends(assert_not_block_cooldown),
+        Depends(hold_turn_slot),
+    ],
 )
 async def retry(
     comparison: ComparisonAnno,

@@ -81,4 +81,3 @@ def test_each_model_s_day_against_its_cap(usage):
         1,
     )
     assert (rows[2]["estimated_usd"], rows[2]["resting"]) == (0, False)
-
