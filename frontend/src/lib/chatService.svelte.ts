@@ -253,7 +253,6 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let loading = $state(false)
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
-  // The pause met a message sent from here, rather than showing before it.
   let pauseFromSend = $state(false)
   let pickRefusal = $state<PickRefusal>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the

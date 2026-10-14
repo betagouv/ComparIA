@@ -187,6 +187,9 @@ describe('ViewPrompt', () => {
   })
 
   it('takes a saved pick paused since out of the selection before anyone sends', async () => {
+    // Midday, so the hour back never falls after midnight.
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 9, 14, 12, 0))
     catalog.models = [
       { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
       { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
@@ -200,11 +203,12 @@ describe('ViewPrompt', () => {
     await view.findAllByText(/Nous avons retiré GPT-5/)
     const notice = view.container.querySelector('#pick-paused-notice')!
     expect(notice).toHaveTextContent(
-      /Nous avons retiré GPT-5 de votre sélection : il est en pause pour vous et revient à \d+\sh\s\d+/
+      /Nous avons retiré GPT-5 de votre sélection : il est en pause pour vous et revient à 13\sh\s00/
     )
+    // An hour on from midday, the countdown the server sent.
     expect(notice.querySelector('time')).toHaveAttribute(
       'datetime',
-      (arena.limits as Limits).expensive!.resets_at
+      new Date(2026, 9, 14, 13, 0).toISOString()
     )
     await vi.waitFor(() =>
       expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
@@ -213,7 +217,12 @@ describe('ViewPrompt', () => {
     // Told to a screen reader too: it may land after the page showed.
     expect(view.getAllByRole('status')[0]).toHaveTextContent(/Nous avons retiré GPT-5/)
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeInTheDocument()
+
+    // Gone once the person picks for themselves.
+    await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
+    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
     ;(arena.limits as Limits).destroy()
+    vi.useRealTimers()
   })
 
   it('takes a paused model out of a ?vs= link once the limits are read, back to random', async () => {

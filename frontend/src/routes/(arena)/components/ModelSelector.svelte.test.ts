@@ -11,7 +11,8 @@ function model(id: string, name: string) {
   return { id, name, lab, badges: {}, search: name.toLowerCase() } as unknown as BotModel
 }
 const models = [model('gpt', 'GPT-5'), model('gemma', 'Gemma 4'), model('gemini', 'Gemini 3.1 Pro')]
-const at = new Date(Date.now() + 3600_000).toISOString()
+// Later today at whatever hour this runs, so the copy never says "demain".
+const at = new Date(new Date().setHours(23, 59, 0, 0)).toISOString()
 
 function expensive(scope: Spent['scope']): Spent {
   return { scope, resets_at: at, resets_in: 3600, liftsAt: Date.now() + 3600_000 }
