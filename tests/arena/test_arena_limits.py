@@ -191,6 +191,16 @@ def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
     assert (paused.reason, paused.until) == ("allowance", status.expensive_resets_at)
 
 
+def test_a_full_model_stays_paused_by_an_allowance_with_no_known_end():
+    """No known end is the longest pause, not one shorter than midnight."""
+    status = arena_router.arena_limits(
+        expensive_spent(None), [PRICEY], full={PRICEY: lifts_in(8 * 3600)}
+    )
+
+    [paused] = status.paused_llms
+    assert (paused.reason, paused.until) == ("allowance", None)
+
+
 def test_a_full_model_is_paused_with_the_expensive_allowance_left():
     cheap, midnight = uuid4(), lifts_in(3600)
 

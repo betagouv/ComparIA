@@ -173,9 +173,12 @@ def arena_limits(
             llm_id: PausedLLM(id=llm_id, until=expensive_resets_at, reason="allowance")
             for llm_id in expensive_models
         }
+    # TODO pass `full` from the daily cap per model (feat/model-daily-cap);
+    # until then nothing is ever full.
     for llm_id, until in (full or {}).items():
         other = paused.get(llm_id)
-        if other is None or other.until is None or until > other.until:
+        # An allowance pause with no known end is the longest there is.
+        if other is None or (other.until is not None and until > other.until):
             paused[llm_id] = PausedLLM(id=llm_id, until=until, reason="full")
 
     return ArenaLimits(
