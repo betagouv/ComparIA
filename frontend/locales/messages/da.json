@@ -632,7 +632,7 @@
             },
             "oidc": {
                 "buttonLabel": {
-                    "hint": "Ex. : Se connecter avec ProConnect",
+                    "hint": "F.eks. Log ind med ProConnect",
                     "label": "Knaptekst"
                 },
                 "buttonLogo": {
@@ -654,7 +654,7 @@
                     "set": "Secret gemt"
                 },
                 "issuer": {
-                    "hint": "Ex. : https://auth.example.gouv.fr",
+                    "hint": "F.eks. https://auth.example.gouv.fr",
                     "label": "Udsteder URL (issuer)",
                     "required": "Udsteder URL er påkrævet"
                 },
