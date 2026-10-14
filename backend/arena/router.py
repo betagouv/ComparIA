@@ -160,17 +160,13 @@ def arena_limits(
     `full` holds each model whose daily cap is full and when it lifts. A model
     paused both ways is listed once, by the pause that lasts longer.
     """
-    total = None
-    if spent := limit_status.spent_in("all"):
-        last, resets_at = lifts_last(spent)
-        total = SpentAllowance(scope=public_scope(last), resets_at=resets_at)
+    total = spent_allowance(limit_status.spent_in("all"))
+    expensive = spent_allowance(limit_status.spent_in("expensive"))
 
-    expensive_resets_at = None
     paused: dict[UUID, PausedLLM] = {}
-    if spent := limit_status.spent_in("expensive"):
-        _last, expensive_resets_at = lifts_last(spent)
+    if expensive:
         paused = {
-            llm_id: PausedLLM(id=llm_id, until=expensive_resets_at, reason="allowance")
+            llm_id: PausedLLM(id=llm_id, until=expensive.resets_at, reason="allowance")
             for llm_id in expensive_models
         }
     # TODO pass `full` from the daily cap per model (feat/model-daily-cap);
@@ -182,9 +178,17 @@ def arena_limits(
             paused[llm_id] = PausedLLM(id=llm_id, until=until, reason="full")
 
     return ArenaLimits(
-        total=total,
-        expensive_resets_at=expensive_resets_at,
-        paused_llms=list(paused.values()),
+        total=total, expensive=expensive, paused_llms=list(paused.values())
+    )
+
+
+def spent_allowance(spent: Sequence[Allowance]) -> SpentAllowance | None:
+    """What is told of a pool's spent allowances, None while none is spent."""
+    if not spent:
+        return None
+    last, resets_at = lifts_last(spent)
+    return SpentAllowance(
+        scope=public_scope(last), resets_at=resets_at, resets_in=last.resets_in
     )
 
 

@@ -69,11 +69,7 @@ def test_nothing_spent_says_nothing_and_reads_no_model(arena):
     response = arena.client.get("/arena/limits")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "total": None,
-        "expensive_resets_at": None,
-        "paused_llms": [],
-    }
+    assert response.json() == {"total": None, "expensive": None, "paused_llms": []}
     assert arena.loads == 0
 
 
@@ -91,7 +87,8 @@ def test_a_spent_whole_allowance_says_for_whom_and_when_it_lifts(
 
     assert body["total"]["scope"] == scope
     assert close(body["total"]["resets_at"], 4210)
-    assert body["expensive_resets_at"] is None
+    assert body["total"]["resets_in"] == 4210
+    assert body["expensive"] is None
     assert body["paused_llms"] == []
 
 
@@ -112,12 +109,15 @@ def test_a_spent_expensive_allowance_pauses_every_expensive_model(arena, identit
     body = arena.client.get("/arena/limits").json()
 
     assert body["total"] is None
-    assert close(body["expensive_resets_at"], 4210)
+    assert body["expensive"]["scope"] == ("session" if identity == ME else "network")
+    assert close(body["expensive"]["resets_at"], 4210)
     assert [(p["id"], p["reason"]) for p in body["paused_llms"]] == [
         (str(PRICEY), "allowance"),
         (str(PRICIER), "allowance"),
     ]
-    assert all(p["until"] == body["expensive_resets_at"] for p in body["paused_llms"])
+    assert all(
+        p["until"] == body["expensive"]["resets_at"] for p in body["paused_llms"]
+    )
 
 
 def test_each_expensive_model_is_listed_once_when_both_scopes_are_spent(arena):
@@ -127,7 +127,7 @@ def test_each_expensive_model_is_listed_once_when_both_scopes_are_spent(arena):
     body = arena.client.get("/arena/limits").json()
 
     assert [p["id"] for p in body["paused_llms"]] == [str(PRICEY), str(PRICIER)]
-    assert close(body["expensive_resets_at"], 4210)
+    assert close(body["expensive"]["resets_at"], 4210)
 
 
 def test_it_never_tells_how_much_was_used(arena):
@@ -139,8 +139,16 @@ def test_it_never_tells_how_much_was_used(arena):
 
     body = arena.client.get("/arena/limits").json()
 
-    assert set(body) == {"total", "expensive_resets_at", "paused_llms"}
-    assert set(body["total"]) == {"scope", "resets_at"}
+    assert set(body) == {"total", "expensive", "paused_llms"}
+    assert (
+        set(body["total"])
+        == set(body["expensive"])
+        == {
+            "scope",
+            "resets_at",
+            "resets_in",
+        }
+    )
     assert all(set(p) == {"id", "until", "reason"} for p in body["paused_llms"])
     assert str(SPENT) not in str(body)
 
@@ -177,9 +185,9 @@ def test_a_full_model_is_listed_as_full_when_that_ends_later():
 
     assert [(p.id, p.reason, p.until) for p in status.paused_llms] == [
         (PRICEY, "full", midnight),
-        (PRICIER, "allowance", status.expensive_resets_at),
+        (PRICIER, "allowance", status.expensive.resets_at),
     ]
-    assert close(status.expensive_resets_at.isoformat(), 600)
+    assert close(status.expensive.resets_at.isoformat(), 600)
 
 
 def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
@@ -188,7 +196,7 @@ def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
     )
 
     [paused] = status.paused_llms
-    assert (paused.reason, paused.until) == ("allowance", status.expensive_resets_at)
+    assert (paused.reason, paused.until) == ("allowance", status.expensive.resets_at)
 
 
 def test_a_full_model_stays_paused_by_an_allowance_with_no_known_end():
@@ -208,5 +216,5 @@ def test_a_full_model_is_paused_with_the_expensive_allowance_left():
         LimitStatus(()), [PRICEY], full={cheap: midnight}
     )
 
-    assert status.expensive_resets_at is None
+    assert status.expensive is None
     assert [(p.id, p.reason) for p in status.paused_llms] == [(cheap, "full")]

@@ -124,6 +124,9 @@ class SpentAllowance(BaseModel):
 
     scope: Literal["session", "network"]
     resets_at: datetime | None
+    # The same, in seconds from now, so the page can count down on the
+    # server's clock rather than its own.
+    resets_in: int | None
 
 
 class PausedLLM(BaseModel):
@@ -148,5 +151,5 @@ class ArenaLimits(BaseModel):
     # The whole allowance: while spent, no message goes through.
     total: SpentAllowance | None
     # The expensive allowance, session or network, the one that lifts last.
-    expensive_resets_at: datetime | None
+    expensive: SpentAllowance | None
     paused_llms: list[PausedLLM]
