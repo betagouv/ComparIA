@@ -28,7 +28,7 @@ describe('JSON-schema form fields', () => {
       {
         type: 'object',
         properties: {
-          cost_weight: { type: 'number', minimum: 1, maximum: 100, step: 1 },
+          score: { type: 'number', minimum: 1, maximum: 100, step: 1 },
           params: { type: 'number' },
           count: { type: 'integer', minimum: 0 }
         }
@@ -37,7 +37,7 @@ describe('JSON-schema form fields', () => {
     )
 
     expect(fields).toEqual([
-      expect.objectContaining({ id: 'cost_weight', min: 1, max: 100, step: '1' }),
+      expect.objectContaining({ id: 'score', min: 1, max: 100, step: '1' }),
       expect.objectContaining({ id: 'params', min: undefined, step: '0.0001' }),
       expect.objectContaining({ id: 'count', min: 0, max: undefined, step: '1' })
     ])

@@ -10,6 +10,11 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
+  const dollars = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol'
+  })
   const baseRoute = '/admin/llms/llms' as const
 
   const llms = $derived(
@@ -27,7 +32,7 @@
   const cols = [
     { id: 'human_id', label: 'Human ID', orderable: true },
     { id: 'status', label: 'Status', orderable: true },
-    { id: 'cost_weight', label: 'Cost weight', kind: 'number', orderable: true },
+    { id: 'price_out', label: 'Output price (per M tokens)', kind: 'number', orderable: true },
     { id: 'release_date', label: 'Release date', kind: 'date', orderable: true },
     { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true },
@@ -75,6 +80,8 @@
         text={status}
         variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
       />
+    {:else if col.id === 'price_out'}
+      {dollars.format(llm.price_out)}
     {:else if col.id === 'release_date'}
       {toShortDate(llm.release_date, locale)}
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
