@@ -31,7 +31,14 @@
     }
     const models = new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(pause.names)
     const why = m[pause.network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']()
-    if (pause.full) return { reset, why, text: m['arene.limits.picker.trimmedFull']({ models }) }
+    if (pause.full) {
+      // Full for everyone until midnight, not this person's allowance.
+      return {
+        reset,
+        why: m['arene.limits.picker.fullWhy'](),
+        text: m['arene.limits.picker.trimmedFull']({ models })
+      }
+    }
     const two = pause.names.length > 1
     const key = pause.toRandom
       ? two

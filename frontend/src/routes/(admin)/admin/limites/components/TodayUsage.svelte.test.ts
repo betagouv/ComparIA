@@ -23,6 +23,16 @@ const usage = [
     resting: false,
     answers: 0,
     cached_answers: 0
+  },
+  {
+    ...day,
+    llm_id: 'idle',
+    name: 'Llama 4 Scout',
+    estimated_usd: 0,
+    cap_usd: null,
+    resting: false,
+    answers: 0,
+    cached_answers: 0
   }
 ]
 
@@ -40,6 +50,18 @@ describe('TodayUsage', () => {
     expect(row(view, 'Gemma 4')).toHaveTextContent('Aucune réponse')
     expect(row(view, 'Gemma 4')).not.toHaveTextContent('Au repos')
     expect(view.queryByRole('columnheader', { name: /Proposé/ })).toBeNull()
+    // A model that cost nothing and has no cap is only counted.
+    expect(view.queryByRole('link', { name: 'Llama 4 Scout' })).toBeNull()
+    expect(
+      view.getByText("1 autre modèle activé n'a rien coûté aujourd'hui et n'a pas de plafond.")
+    ).toBeInTheDocument()
+  })
+
+  it('lists a model with nothing spent once a cap is proposed for it', () => {
+    const proposals = [{ llm_id: 'idle', value: 5, days: 6, percentile: 95, highest: 3 }]
+    const view = render(TodayUsage, { usage, proposals })
+
+    expect(view.getByRole('link', { name: 'Llama 4 Scout' })).toBeInTheDocument()
   })
 
   it('shows the caps the calibration proposes next to each model', () => {
@@ -47,9 +69,12 @@ describe('TodayUsage', () => {
     const view = render(TodayUsage, { usage, proposals })
 
     expect(view.getByRole('columnheader', { name: /Proposé/ })).toBeInTheDocument()
-    expect(row(view, 'GPT 5.5')).toHaveTextContent(
-      /30,00\s*\$ : 95e centile de 6 jours, plus la moitié\. Au plus 21,50\s*\$ en un jour\./
-    )
+    expect(row(view, 'GPT 5.5')).toHaveTextContent(/30,00\s*\$\s*au plus 21,50\s*\$ en un jour/)
+    expect(
+      view.getByText(
+        "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur 95 % des 6 jours entiers lus, plus la moitié."
+      )
+    ).toBeInTheDocument()
   })
 
   it('says so when the spend cannot be read', () => {

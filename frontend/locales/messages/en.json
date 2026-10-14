@@ -900,13 +900,18 @@
                 "noAnswer": "No answer",
                 "resting": "Resting",
                 "proposed": "Proposed",
-                "proposal": "{value}: percentile {percentile} of {days} days, plus half. At most {highest} in one day.",
                 "noProposal": "None",
-                "empty": "No enabled model.",
+                "empty": "No model cost anything today, and none has a cap.",
                 "failed": "Today's spend could not be read.",
                 "capsApplied": "{count} proposed caps will be applied with “Apply”.",
-                "capsAppliedOne": "1 proposed cap will be applied with “Apply”."
-            }
+                "capsAppliedOne": "1 proposed cap will be applied with “Apply”.",
+                "idle": "{count} other enabled models cost nothing today and have no cap.",
+                "idleOne": "1 other enabled model cost nothing today and has no cap.",
+                "underCent": "under {value}",
+                "proposalRule": "Proposed cap: what each expensive model stayed under on {percentile}% of the {days} whole days read, plus half.",
+                "highest": "at most {value} in one day"
+            },
+            "inFlightKept": "The calibration proposes no value here: it stays as you set it."
         }
     },
     "arenaHome": {
@@ -984,6 +989,7 @@
                 "chipTomorrow": "Paused · tomorrow {time}",
                 "fullBadge": "Full for today",
                 "fullReason": "This model has had a lot of messages today. It comes back tomorrow.",
+                "fullWhy": "This model has had a lot of messages today. To keep compar:IA free for everyone, each model answers a limited number of messages a day. It comes back tomorrow; all the others stay open.",
                 "headerMany": "{count} models paused for you {until}.",
                 "headerManyNetwork": "{count} models paused for your network {until}.",
                 "headerOne": "1 model paused for you {until}.",

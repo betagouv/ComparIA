@@ -880,6 +880,7 @@
                 "chipTomorrow": "På pause · i morgen {time}",
                 "fullBadge": "Fuld i dag",
                 "fullReason": "Denne model har fået mange beskeder i dag. Den kommer tilbage i morgen.",
+                "fullWhy": "Denne model har fået mange beskeder i dag. For at compar:IA kan forblive gratis for alle, svarer hver model på et begrænset antal beskeder om dagen. Den kommer tilbage i morgen; alle de andre er stadig åbne.",
                 "headerMany": "{count} modeller sat på pause for dig {until}.",
                 "headerManyNetwork": "{count} modeller sat på pause for dit netværk {until}.",
                 "headerOne": "1 model sat på pause for dig {until}.",

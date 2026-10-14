@@ -389,6 +389,8 @@
                       <p class="fr-text--xs mb-0!">{explain(proposal)}</p>
                     {:else if kind === 'price'}
                       <p class="fr-text--xs mb-0!">{m['admin.limits.thresholdKept']()}</p>
+                    {:else if kind === 'count'}
+                      <p class="fr-text--xs mb-0!">{m['admin.limits.inFlightKept']()}</p>
                     {:else}
                       <p class="fr-text--xs mb-0!">{m['admin.limits.calibrate.none']()}</p>
                     {/if}

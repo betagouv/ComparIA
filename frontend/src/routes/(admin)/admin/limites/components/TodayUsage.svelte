@@ -28,7 +28,15 @@
   })
 
   const proposed = $derived(new Map((proposals ?? []).map((cap) => [cap.llm_id, cap])))
-  const rows = $derived((usage ?? []).map((llm) => ({ ...llm, id: llm.llm_id })))
+  // The models worth a look: those that cost something today, have a cap,
+  // or get a proposed one. The rest are only counted.
+  const shown = $derived(
+    (usage ?? []).filter(
+      (llm) => llm.estimated_usd > 0 || llm.cap_usd !== null || proposed.has(llm.llm_id)
+    )
+  )
+  const rows = $derived(shown.map((llm) => ({ ...llm, id: llm.llm_id })))
+  const idle = $derived((usage?.length ?? 0) - shown.length)
 
   type ColId = 'name' | 'estimated_usd' | 'cap_usd' | 'cache' | 'proposed'
   const cols = $derived.by((): TableCol<ColId>[] => {
@@ -42,14 +50,22 @@
     return cols
   })
 
-  function proposal(cap: DailyCapProposal) {
-    return m['admin.limits.today.proposal']({
-      value: dollars.format(cap.value),
-      percentile: String(cap.percentile),
-      days: String(cap.days),
-      highest: dollars.format(cap.highest)
-    })
+  // Under a cent reads as spent, not as nothing.
+  function spent(usd: number) {
+    return usd > 0 && usd < 0.005
+      ? m['admin.limits.today.underCent']({ value: dollars.format(0.01) })
+      : dollars.format(usd)
   }
+
+  // How the caps were proposed, told once under the table.
+  const rule = $derived.by(() => {
+    const first = proposals?.[0]
+    if (!first) return undefined
+    return m['admin.limits.today.proposalRule']({
+      percentile: String(first.percentile),
+      days: String(first.days)
+    })
+  })
 </script>
 
 <section aria-labelledby="limits-today">
@@ -58,7 +74,7 @@
 
   {#if usage === null}
     <Alert variant="error" title={m['admin.limits.today.failed']()} small />
-  {:else if !usage.length}
+  {:else if !shown.length}
     <p class="fr-text--sm mb-0!">{m['admin.limits.today.empty']()}</p>
   {:else}
     <Table
@@ -82,7 +98,7 @@
             {/if}
           </span>
         {:else if col.id === 'estimated_usd'}
-          {dollars.format(llm.estimated_usd)}
+          {spent(llm.estimated_usd)}
         {:else if col.id === 'cap_usd'}
           {llm.cap_usd === null ? m['admin.limits.today.noCap']() : dollars.format(llm.cap_usd)}
         {:else if col.id === 'cache'}
@@ -95,12 +111,27 @@
         {:else if col.id === 'proposed'}
           {@const cap = proposed.get(llm.llm_id)}
           {#if cap}
-            <span class="fr-text--sm mb-0!">{proposal(cap)}</span>
+            <span class="flex flex-col">
+              <strong>{dollars.format(cap.value)}</strong>
+              <span class="fr-text--xs mb-0! text-[--text-mention-grey]">
+                {m['admin.limits.today.highest']({ value: dollars.format(cap.highest) })}
+              </span>
+            </span>
           {:else}
             {m['admin.limits.today.noProposal']()}
           {/if}
         {/if}
       {/snippet}
     </Table>
+  {/if}
+  {#if rule}
+    <p class="fr-text--sm mb-0! mt-2!">{rule}</p>
+  {/if}
+  {#if usage?.length && idle}
+    <p class="fr-text--sm mb-0! mt-2! text-[--text-mention-grey]">
+      {idle > 1
+        ? m['admin.limits.today.idle']({ count: numbers.format(idle) })
+        : m['admin.limits.today.idleOne']()}
+    </p>
   {/if}
 </section>
