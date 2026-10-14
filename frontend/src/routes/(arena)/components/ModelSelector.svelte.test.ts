@@ -77,6 +77,25 @@ describe('ModelSelector', () => {
     expect(view.getByText('0/2 modèles')).toBeInTheDocument()
   })
 
+  it('counts the models paused for the allowance, not the full ones', async () => {
+    const two = new Map<string, PausedModel>([
+      ...paused,
+      ['gemma', { id: 'gemma', until: at, reason: 'allowance' }]
+    ])
+    const view = await openModels({ expensive: expensive('session'), paused: two })
+
+    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
+      /^2 modèles en pause pour vous/
+    )
+  })
+
+  it('says nothing in the header when only full models are paused', async () => {
+    const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
+    const view = await openModels({ expensive: undefined, paused: full })
+
+    expect(view.container.querySelector('#picker-paused-hint')).toBeNull()
+  })
+
   it('tells a network it has used its share', async () => {
     const view = await openModels({ expensive: expensive('network') })
 
