@@ -1,7 +1,7 @@
 import uuid
 from typing import Iterable
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena import limits
@@ -19,7 +19,12 @@ from utils.arena.calibrate import CALIBRATION_DAYS, calibrate, enabled_llms
 from utils.database.models.app_settings import AppSettings
 from utils.database.models.auth import User
 from utils.database.session import get_session
-from utils.database.settings import get_app_settings, update_limit_settings
+from utils.database.settings import (
+    UnknownLLMsError,
+    get_app_settings,
+    update_daily_caps,
+    update_limit_settings,
+)
 
 router = APIRouter(prefix="/limits", tags=["limits"])
 
@@ -84,9 +89,13 @@ async def read_limits() -> AdminLimits:
 async def patch_limits(
     body: AdminLimitsPatch, current_user: RequiredAdmin
 ) -> AdminLimits:
-    row = await update_limit_settings(
-        body.model_dump(exclude_unset=True), updated_by=current_user.id
-    )
+    changes = body.model_dump(exclude_unset=True)
+    if caps := changes.pop("daily_usd_caps", None):
+        try:
+            await update_daily_caps(caps, updated_by=current_user.id)
+        except UnknownLLMsError:
+            raise HTTPException(status_code=422, detail="unknown_llm")
+    row = await update_limit_settings(changes, updated_by=current_user.id)
     # In force at once on this process; the others read it within
     # `limits.RELOAD_SECONDS`.
     await limits.load_settings()

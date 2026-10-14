@@ -3,7 +3,7 @@ The calibration replay charges a stored conversation as the arena does (no
 database: the rows are built here).
 """
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -15,8 +15,10 @@ from backend.arena.web_search import merge_web_search_with_content
 from utils.arena.calibrate import (
     Prices,
     check_prices,
+    complete_days,
     in_setting_unit,
     propose,
+    propose_daily_caps,
     replay,
     round_up,
 )
@@ -269,3 +271,64 @@ def test_a_pool_nobody_spent_proposes_nothing():
 def test_suspicious_prices_are_flagged(price_in, price_out, issue):
     llm = LLMPrice(id=uuid4(), name="Model", price_in=price_in, price_out=price_out)
     assert [check.issue for check in check_prices([llm])] == ([issue] if issue else [])
+
+
+def a_week(longest_day=4, cached=False):
+    """One turn a day at noon from 1 to 8 October, the expensive side b
+    writing 10,000 characters, ten times that on `longest_day`."""
+    return [
+        turn(
+            uuid4(),
+            START.replace(day=day, hour=12),
+            "x",
+            (10, 0, False),
+            (100_000 if day == longest_day else 10_000, 0, cached),
+        )
+        for day in range(1, 9)
+    ]
+
+
+LLMS = [
+    LLMPrice(id=EXPENSIVE, name="Pricey", price_in=4.0, price_out=12.0),
+    LLMPrice(id=uuid4(), name="Unused", price_in=4.0, price_out=12.0),
+    LLMPrice(id=CHEAP, name="Cheap", price_in=0.4, price_out=1.2),
+]
+TODAY = date(2026, 10, 8)
+
+
+def test_each_model_s_day_is_counted_in_dollars():
+    days = replay(a_week(), PRICES).model_days[EXPENSIVE]
+
+    # Sent the one-character prompt, wrote 10,000: 1 + 3 x 10,000.
+    assert days[date(2026, 10, 2)] == 30_001
+    assert days[date(2026, 10, 4)] == 300_001
+
+
+def test_a_cached_answer_costs_its_model_s_day_nothing():
+    assert replay(a_week(cached=True), PRICES).model_days.get(EXPENSIVE, {}) == {}
+
+
+def test_only_whole_days_are_read():
+    result = replay(a_week(), PRICES)
+
+    # Not today, nor the first day, which the sample may start halfway into.
+    assert complete_days(result, TODAY) == [date(2026, 10, d) for d in range(2, 8)]
+
+
+def test_each_expensive_model_drawn_gets_a_daily_cap():
+    [cap] = propose_daily_caps(replay(a_week(), PRICES), LLMS, TODAY)
+
+    # The 95th percentile of five days at 30,001 and one at 300,001 is
+    # 232,501 millionths; half again is 0.3488 USD, up to 0.35.
+    assert (cap.llm_id, cap.value, cap.days, cap.percentile) == (
+        EXPENSIVE,
+        0.35,
+        6,
+        95,
+    )
+    assert cap.highest == pytest.approx(0.300001)
+
+
+def test_no_whole_day_proposes_no_cap():
+    rows = [r for r in a_week() if r.created_at.day >= 7]
+    assert propose_daily_caps(replay(rows, PRICES), LLMS, TODAY) == []

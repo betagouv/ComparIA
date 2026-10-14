@@ -17,7 +17,7 @@ import uuid
 from collections import defaultdict
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any, AsyncGenerator, Callable, Sequence
 
 import numpy as np
@@ -31,6 +31,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena.limits import (
+    DAY_ZONE,
     MICRO_USD,
     POOL_SETTINGS,
     POOLS,
@@ -41,12 +42,15 @@ from backend.arena.limits import (
     Pool,
     Priced,
     counted,
+    day_cost,
+    is_expensive,
     limit,
     load_settings,
     setting,
     turn_cost,
 )
 from backend.arena.models import (
+    DailyCapProposal,
     LimitProposal,
     LimitsCalibration,
     LLMPrice,
@@ -86,6 +90,11 @@ SESSION_PERCENTILE = 99
 # in 100 people do. Pix sends whole classes from one school IP.
 CLASS_SIZE = 35
 CLASS_PERCENTILE = 95
+# A daily cap per expensive model: what 95 in 100 of its days stayed under,
+# with half again as much room, so an ordinary busy day never meets it and
+# only a day far out of the ordinary does.
+DAY_PERCENTILE = 95
+DAY_MARGIN = 1.5
 
 
 @dataclass
@@ -140,6 +149,7 @@ class Side:
 
     llm: Priced
     transcript: int
+    llm_id: uuid.UUID
 
 
 @dataclass
@@ -157,6 +167,12 @@ class Replay:
     written: list[int] = field(default_factory=list)
     suggested_answers: int = 0
     suggested_cached: int = 0
+    # What each model cost on each Paris calendar day, in millionths of a
+    # dollar, and every day a turn was sent on.
+    model_days: dict[uuid.UUID, dict[date, int]] = field(
+        default_factory=lambda: defaultdict(lambda: defaultdict(int))
+    )
+    days: set[date] = field(default_factory=set)
 
 
 def _prompt_chars(row: Row[Any]) -> int:
@@ -181,8 +197,12 @@ def replay(rows: Sequence[Row[Any]], prices: dict[uuid.UUID, Prices]) -> Replay:
                 result.conversations.append(spent)
             current, spent = row.comparison_id, {}
             sides = {
-                "a": Side(prices.get(row.llm_id_a, UNPRICED), row.system_a),
-                "b": Side(prices.get(row.llm_id_b, UNPRICED), row.system_b),
+                "a": Side(
+                    prices.get(row.llm_id_a, UNPRICED), row.system_a, row.llm_id_a
+                ),
+                "b": Side(
+                    prices.get(row.llm_id_b, UNPRICED), row.system_b, row.llm_id_b
+                ),
             }
             # A signed-in person's comparisons keep no session, only the
             # account.
@@ -212,10 +232,18 @@ def replay(rows: Sequence[Row[Any]], prices: dict[uuid.UUID, Prices]) -> Replay:
                     result.suggested_cached += cached
             call = Call.of(side.llm, side.transcript + prompt, content + reasoning)
             call.cached = bool(cached)
+            call.llm_id = side.llm_id
             calls.append(call)
             # Only the answer goes back to the model next turn, not its
             # reasoning.
             side.transcript += prompt + content
+
+        # The stored times are the host's local time, as AutoDatetime keeps
+        # them.
+        day = row.created_at.astimezone(DAY_ZONE).date()
+        result.days.add(day)
+        for llm_id, spent_today in day_cost(calls).items():
+            result.model_days[llm_id][day] += spent_today.get("usd", 0)
 
         cost = turn_cost(calls)
         for pool, chars in cost.items():
@@ -396,6 +424,51 @@ def propose(result: Replay) -> list[LimitProposal]:
     return proposals
 
 
+def complete_days(result: Replay, today: date) -> list[date]:
+    """The days the replay saw whole: not today, which is not over, nor the
+    first one, which the sample may start in the middle of."""
+    return sorted(day for day in result.days if day != today)[1:]
+
+
+def propose_daily_caps(
+    result: Replay, llms: Sequence[LLMPrice], today: date
+) -> list[DailyCapProposal]:
+    """
+    A daily cap for each enabled expensive model: what 95 in 100 of its
+    whole days cost, days it was not drawn counting as nothing, with half
+    again as much room, in dollars rounded up to two digits and the cent.
+    A model that cost nothing on any of them gets no proposal.
+    """
+    days = complete_days(result, today)
+    proposals: list[DailyCapProposal] = []
+    for llm in llms:
+        if not is_expensive(llm):
+            continue
+        spent = [result.model_days.get(llm.id, {}).get(day, 0) for day in days]
+        if not any(spent):
+            continue
+        proposals.append(
+            DailyCapProposal(
+                llm_id=llm.id,
+                value=max(
+                    smallest("expensive"),
+                    in_setting_unit(
+                        "expensive",
+                        DAY_MARGIN * _percentile(spent, DAY_PERCENTILE),
+                    ),
+                ),
+                days=len(days),
+                percentile=DAY_PERCENTILE,
+                highest=max(spent) / MICRO_USD,
+            )
+        )
+    return proposals
+
+
+def paris_today() -> date:
+    return datetime.now(DAY_ZONE).date()
+
+
 async def enabled_llms(
     session_factory: Callable[
         [], AbstractAsyncContextManager[AsyncSession]
@@ -466,13 +539,15 @@ async def calibrate(
     await load_settings()
     rows, prices = await _read(days, max_comparisons, _bounded_session)
     result = replay(rows, prices)
+    llms = await enabled_llms(_bounded_session)
     return LimitsCalibration(
         days=days,
         comparisons=len(result.conversations),
         turns=result.turns,
         capped=len(result.conversations) >= max_comparisons,
         proposals=propose(result),
-        price_checks=check_prices(await enabled_llms(_bounded_session)),
+        daily_caps=propose_daily_caps(result, llms, paris_today()),
+        price_checks=check_prices(llms),
     )
 
 
@@ -560,7 +635,15 @@ async def limits_calibrate(*, days: int = 30) -> None:
             f"Proposed {proposal.name}: {shown(proposal.name, proposal.value)} "
             f"(now {shown(proposal.name, setting(proposal.name))})"
         )
-    for check in check_prices(await enabled_llms()):
+    llms = await enabled_llms()
+    names = {llm.id: llm.name for llm in llms}
+    for cap in propose_daily_caps(result, llms, paris_today()):
+        logger.info(
+            f"Proposed daily cap of {names[cap.llm_id]}: ${cap.value:,.2f} "
+            f"(p{cap.percentile} of {cap.days} days times {DAY_MARGIN}, "
+            f"highest ${cap.highest:,.2f})"
+        )
+    for check in check_prices(llms):
         logger.warning(
             f"Check the prices of {check.name} ({check.id}): {check.issue}, "
             f"{check.price_in} in and {check.price_out} out per million tokens"

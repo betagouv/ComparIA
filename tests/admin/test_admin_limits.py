@@ -190,6 +190,50 @@ def test_a_change_is_stored_with_who_made_it_and_applies_at_once(database, caplo
     assert limits.setting("all_per_session") == whole.default
 
 
+@pytest.mark.parametrize("cap", [-1, 1_000_001, "inf"])
+def test_a_daily_cap_the_arena_cannot_use_is_refused(cap):
+    body = {"daily_usd_caps": {str(uuid.uuid4()): cap}}
+    assert client().patch("/admin/limits", json=body).status_code == 422
+
+
+def test_a_daily_cap_for_a_model_nobody_knows_is_refused(monkeypatch):
+    async def update(caps, updated_by):
+        raise admin_limits.UnknownLLMsError(set(caps))
+
+    monkeypatch.setattr(admin_limits, "update_daily_caps", update)
+    body = {"daily_usd_caps": {str(uuid.uuid4()): 5}}
+
+    response = client().patch("/admin/limits", json=body)
+
+    assert (response.status_code, response.json()["detail"]) == (422, "unknown_llm")
+
+
+def test_daily_caps_are_stored_on_the_models_with_who_set_them(activity, caplog):
+    admin = SimpleNamespace(id=ADMIN_ID)
+
+    async def scenario():
+        await add_admin()
+        alpha, beta = await add_llms()
+        await admin_limits.patch_limits(
+            AdminLimitsPatch(daily_usd_caps={alpha: 12.5, beta: 3}), admin
+        )
+        await admin_limits.patch_limits(
+            AdminLimitsPatch(daily_usd_caps={beta: None}), admin
+        )
+        async with session_module.get_session() as session:
+            rows = await session.execute(
+                text("SELECT name, daily_usd_cap FROM llm_data ORDER BY name")
+            )
+            return rows.all()
+
+    with caplog.at_level("INFO", "languia"):
+        caps = activity(scenario)
+
+    assert [tuple(row) for row in caps] == [("Alpha", 12.5), ("Beta", None)]
+    assert "daily cap of Alpha" in caplog.text
+    assert f"from $3.00 to none by admin {ADMIN_ID}" in caplog.text
+
+
 def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
     async def scenario():
         llms = await add_llms()
@@ -223,7 +267,9 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
         "all_per_ip",
         "expected_answer_chars",
     }
-    # Both test models are priced 0: never expensive, worth a look.
+    # Both test models are priced 0: never expensive, so no daily cap, and
+    # worth a look.
+    assert whole_week.daily_caps == []
     assert [(c.name, c.issue) for c in whole_week.price_checks] == [
         ("Alpha", "free"),
         ("Beta", "free"),

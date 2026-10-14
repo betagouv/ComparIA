@@ -3,7 +3,7 @@ Data validation models using Pydantic.
 """
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -222,6 +222,9 @@ class LLMDailyUsage(BaseModel):
     cached_answers: int
 
 
+DailyCap = Annotated[float, Field(ge=0, le=_USD_MAX, allow_inf_nan=False)]
+
+
 class AdminLimitsPatch(BaseModel):
     """A field left out stays as it is; null puts it back on its default."""
 
@@ -241,6 +244,8 @@ class AdminLimitsPatch(BaseModel):
     )
     expected_answer_chars: int | None = Field(default=None, ge=0, le=_INT_MAX)
     in_flight_per_network: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    # Daily caps of models, in US dollars, by id; null takes a cap off.
+    daily_usd_caps: dict[UUID, DailyCap | None] | None = None
 
 
 class LimitProposal(BaseModel):
@@ -272,6 +277,19 @@ class PriceCheck(LLMPrice):
     issue: PriceIssue
 
 
+class DailyCapProposal(BaseModel):
+    """A daily cap the calibration proposes for an expensive model, in US
+    dollars."""
+
+    llm_id: UUID
+    value: float
+    # How many whole days it was read from, and the percentile of them.
+    days: int
+    percentile: int
+    # The most the model cost on one of those days.
+    highest: float
+
+
 class LimitsCalibration(BaseModel):
     days: int
     comparisons: int
@@ -279,6 +297,7 @@ class LimitsCalibration(BaseModel):
     # The sample stopped at its cap: only the latest comparisons were read.
     capped: bool
     proposals: list[LimitProposal]
+    daily_caps: list[DailyCapProposal]
     # Enabled models whose prices an admin should check: the dollars counted
     # on the expensive allowance come from them.
     price_checks: list[PriceCheck]
