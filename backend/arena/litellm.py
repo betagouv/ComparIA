@@ -54,6 +54,11 @@ def litellm_messages(messages: list["AnyMessageRead"]) -> list[dict[str, Any]]:
     ]
 
 
+def sent_chars(messages: list["AnyMessageRead"]) -> int:
+    """How many characters a model is sent for these messages."""
+    return sum(len(msg["content"] or "") for msg in litellm_messages(messages))
+
+
 async def litellm_stream_iter(
     llm: "LLMDataEnabled",
     messages: list["AnyMessageRead"],
