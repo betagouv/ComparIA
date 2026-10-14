@@ -809,7 +809,7 @@
         },
         "limits": {
             "title": "Limits",
-            "subtitle": "What one person, and a whole network, can have the models read and write in two hours. A change reaches the whole arena in less than a minute.",
+            "subtitle": "What one person, and a whole network, can have the models read and write in two hours, counted from their first message. A change reaches the whole arena in less than a minute.",
             "updated": "Last changed on {date} by {who}.",
             "updatedUnknown": "Last changed on {date}.",
             "unit": "{value} characters",
@@ -837,7 +837,7 @@
                 "expected_answer_chars": "Reserved answer length"
             },
             "help": {
-                "all_per_session": "What one person can have the models read and write in two hours, all models together. Once reached, they wait for the two hours to end before sending another message.",
+                "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
                 "all_per_ip": "The same limit for a whole network, such as a school or a hospital. It stops someone who clears their cookies to start over.",
                 "expensive_per_session": "The share of expensive models for one person in two hours. Each character counts as many times as the model's cost weight. Once reached, new conversations go on without the expensive models; the other models stay open.",
                 "expensive_per_ip": "The same share of expensive models for a whole network.",

@@ -335,7 +335,7 @@
             },
             "help": {
                 "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu'un qui efface ses cookies pour repartir de zéro.",
-                "all_per_session": "Ce qu'une personne peut faire lire et écrire aux modèles en deux heures, tous modèles confondus. Une fois atteinte, elle attend la fin des deux heures pour envoyer un nouveau message.",
+                "all_per_session": "Ce qu'une personne peut faire lire et écrire aux modèles en deux heures, tous modèles confondus. Les deux heures partent de son premier message, quoi qu'elle envoie ensuite. Une fois la limite atteinte, elle attend la fin des deux heures pour envoyer un nouveau message.",
                 "expected_answer_chars": "Ce que chaque modèle devrait écrire, compté d'avance à chaque message puis remplacé par la vraie longueur. Sans elle, des messages envoyés tous en même temps passeraient avant que leurs réponses soient comptées.",
                 "expensive_per_ip": "La même part des modèles coûteux pour tout un réseau.",
                 "expensive_per_session": "La part des modèles coûteux pour une personne en deux heures. Chaque caractère y compte autant de fois que le poids de coût du modèle. Une fois atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts."
@@ -353,7 +353,7 @@
             "nothingToApply": "Aucune valeur n'a changé.",
             "reset": "Revenir au défaut ({value})",
             "resetDone": "Valeur par défaut rétablie.",
-            "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures. Un changement s'applique à toute l'arène en moins d'une minute.",
+            "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
             "title": "Limites",
             "unit": "{value} caractères",
             "updated": "Dernière modification le {date} par {who}.",
