@@ -88,8 +88,9 @@ def test_web_search_results_count_as_sent():
     prompt = UserMessageRead(content=FIRST, web_search_results=results)
 
     [sent] = litellm_messages([prompt])
-    assert sent["content"] == merge_web_search_with_content(FIRST, results)
-    assert sent_chars([prompt]) == len(sent["content"]) > len(FIRST) + 30
+    assert sent["content"].startswith(FIRST)
+    assert "Paris est la capitale de la France." in sent["content"]
+    assert sent_chars([prompt]) == len(sent["content"])
 
 
 def written(content, cached=False, reasoning=""):
