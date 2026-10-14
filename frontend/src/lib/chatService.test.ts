@@ -140,6 +140,31 @@ describe('a refusal on an allowance', () => {
     expect(chat.canReveal).toBe(true)
   })
 
+  it.each([
+    ['by the server countdown, whatever the browser clock says', 600, 600],
+    ['after two hours when the reset is unknown', null, 7200]
+  ])('gives the send area back %s', async (_, resetsIn, liftsAfter) => {
+    vi.useFakeTimers()
+    arena.comparisons = [{ id: 'voted-id', turns: [] } as unknown as Comparison]
+    arena.refusal = Object.assign(new ValidationError('allowance_spent'), {
+      status: 429,
+      detail: 'allowance_spent',
+      // A clock time already past here, as from a server whose clock is ahead.
+      limit: { ...limit, resets_at: '2000-01-01T00:00:00Z', resets_in: resetsIn }
+    })
+
+    const chat = getComparison('voted-id')
+    await chat.ask('Encore une question')
+    arena.refusal = undefined
+    arena.comparisons = []
+
+    vi.advanceTimersByTime(liftsAfter * 1000 - 1)
+    expect(chat.pause).toBeDefined()
+    vi.advanceTimersByTime(1)
+    expect(chat.pause).toBeUndefined()
+    vi.useRealTimers()
+  })
+
   it('leaves a refusal with no limit to the input error', async () => {
     const comparison = {
       id: 'voted-id',

@@ -16,6 +16,7 @@ import type {
 import { m } from '$lib/i18n/messages'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
+import { createSubscriber } from 'svelte/reactivity'
 import { InternalError } from './fastapi-client'
 
 export type { APIRevealData, WebSearchResults }
@@ -125,6 +126,9 @@ export interface RevealData {
 export type PauseRefusal = LimitRefusalBody & {
   detail: 'allowance_spent' | 'expensive_allowance_spent'
 }
+
+// A window of the allowances: the longest a pause with no known reset can last.
+const PAUSE_FALLBACK_SECONDS = 2 * 60 * 60
 
 function asPauseRefusal(err: unknown): PauseRefusal | undefined {
   const { detail, limit } = err as ApiError
@@ -252,6 +256,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
   let pause = $state<PauseRefusal>()
+  let pauseLiftsAt = 0
   let pauseTimer: ReturnType<typeof setTimeout> | undefined
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
@@ -279,14 +284,25 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       !!comparison?.turns.every((turn) => !!turn.choice)
   )
 
+  // The send area comes back on its own once the allowance lifts.
+  function armPauseTimer() {
+    clearTimeout(pauseTimer)
+    if (!pause) return
+    pauseTimer = setTimeout(() => (pause = undefined), Math.max(pauseLiftsAt - Date.now(), 0))
+  }
+
+  // The timer runs while a page shows the pause, and stops when it goes.
+  const watchPause = createSubscriber(() => {
+    armPauseTimer()
+    return () => clearTimeout(pauseTimer)
+  })
+
   function pauseUntilReset(refusal: PauseRefusal) {
     pause = refusal
-    clearTimeout(pauseTimer)
-    if (refusal.limit.resets_at) {
-      // The send area comes back on its own once the allowance lifts.
-      const delay = Date.parse(refusal.limit.resets_at) - Date.now()
-      pauseTimer = setTimeout(() => (pause = undefined), Math.max(delay, 0))
-    }
+    // From the server's countdown, not its clock time: the browser's clock may
+    // be off.
+    pauseLiftsAt = Date.now() + (refusal.limit.resets_in ?? PAUSE_FALLBACK_SECONDS) * 1000
+    armPauseTimer()
   }
 
   async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
@@ -398,6 +414,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     /** Set while an allowance is spent, until it lifts. */
     get pause() {
+      watchPause()
       return pause
     },
     get error() {
