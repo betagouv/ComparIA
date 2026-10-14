@@ -202,6 +202,8 @@ class AppSettings(SQLModel, table=True):
     limit_expensive_per_ip: float | None = None
     limit_expensive_price_out: float | None = None
     limit_expected_answer_chars: int | None = None
+    # Turns one network may have the models answer at once.
+    limit_in_flight_per_network: int | None = None
     # Who last changed an allowance, and when. Kept apart from updated_by,
     # which every other setting moves too.
     limits_updated_at: datetime | None = None

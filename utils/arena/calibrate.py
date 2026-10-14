@@ -31,10 +31,10 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena.limits import (
-    CHAR_SETTINGS,
     MICRO_USD,
     POOL_SETTINGS,
     POOLS,
+    WHOLE_SETTINGS,
     WINDOW_SECONDS,
     Call,
     LimitSetting,
@@ -553,7 +553,7 @@ async def limits_calibrate(*, days: int = 30) -> None:
     )
 
     def shown(name: LimitSetting, value: float) -> str:
-        return f"{int(value):,}" if name in CHAR_SETTINGS else f"${value:,.2f}"
+        return f"{int(value):,}" if name in WHOLE_SETTINGS else f"${value:,.2f}"
 
     for proposal in propose(result):
         logger.info(

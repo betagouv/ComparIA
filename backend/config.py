@@ -195,6 +195,12 @@ class Settings(BaseSettings):
     # calibration replay on the local seed (`db seed-activity`); set it from
     # the production replay's median (`make arena-limits-calibrate`).
     RATELIMIT_EXPECTED_ANSWER_CHARS: NonNegativeInt = 508
+    # Turns one network may have the models answer at once. A turn is charged
+    # what it is sent and a typical answer before the call, and what it really
+    # wrote only at the end, so hundreds of messages sent at once could all
+    # pass before any long answer was counted. 40 lets a class of 35 send
+    # together; past it, a message waits a few seconds.
+    RATELIMIT_IN_FLIGHT_PER_NETWORK: PositiveInt = 40
 
     # Response caching
     # Always on. Set the probability to 0 to stop serving cached answers in an

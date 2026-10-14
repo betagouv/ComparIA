@@ -106,6 +106,7 @@ LimitSetting = Literal[
     "expensive_per_ip",
     "expensive_price_out",
     "expected_answer_chars",
+    "in_flight_per_network",
 ]
 LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
 
@@ -120,12 +121,15 @@ POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
 # change reaches every pod within that time, without a read per message.
 RELOAD_SECONDS = 30
 
-# The settings in characters, whole numbers. The others are in dollars.
+# The settings in characters, whole numbers.
 CHAR_SETTINGS: tuple[LimitSetting, ...] = (
     "all_per_session",
     "all_per_ip",
     "expected_answer_chars",
 )
+# The whole numbers: characters, and a count of turns. The others are in
+# dollars.
+WHOLE_SETTINGS: tuple[LimitSetting, ...] = (*CHAR_SETTINGS, "in_flight_per_network")
 
 _stored: dict[LimitSetting, float] = {}
 _loaded_at: float | None = None
@@ -150,7 +154,7 @@ def stored_settings(row: AppSettings) -> dict[LimitSetting, float]:
     for name in LIMIT_SETTINGS:
         value = getattr(row, f"limit_{name}")
         if value is not None:
-            stored[name] = int(value) if name in CHAR_SETTINGS else float(value)
+            stored[name] = int(value) if name in WHOLE_SETTINGS else float(value)
     return stored
 
 
@@ -191,6 +195,10 @@ def counted(pool: Pool, value: float) -> str:
 
 def expected_answer_chars() -> int:
     return int(setting("expected_answer_chars"))
+
+
+def in_flight_per_network() -> int:
+    return int(setting("in_flight_per_network"))
 
 
 class Priced(Protocol):

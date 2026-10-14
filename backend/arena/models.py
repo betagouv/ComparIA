@@ -170,7 +170,8 @@ _USD_MAX = 1_000_000
 class AdminLimit(BaseModel):
     """A limit in its unit: characters for the whole allowances and the
     reserved answer, US dollars for the expensive ones, US dollars per million
-    output tokens for the threshold."""
+    output tokens for the threshold, turns for those a network may have
+    answered at once."""
 
     name: LimitSetting
     # In force: the stored value, else the default.
@@ -239,6 +240,7 @@ class AdminLimitsPatch(BaseModel):
         default=None, ge=0, le=_USD_MAX, allow_inf_nan=False
     )
     expected_answer_chars: int | None = Field(default=None, ge=0, le=_INT_MAX)
+    in_flight_per_network: int | None = Field(default=None, ge=1, le=_INT_MAX)
 
 
 class LimitProposal(BaseModel):
