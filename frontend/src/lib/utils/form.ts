@@ -19,6 +19,9 @@ export type JSONSchema = BaseJSONSchema & {
   optional?: boolean
   disabled?: boolean
   hidden?: boolean
+  // The step of a number input, when the API takes finer values than the
+  // form should offer.
+  step?: number
 }
 
 export type AnyFormItemComponent =
@@ -126,11 +129,15 @@ function parseSchema(
   } else if (type === 'boolean') {
     return { ...baseProps, component: 'toggle' }
   } else if (type === 'integer' || type === 'number') {
+    // The bounds the API checks, so the browser refuses a value past them
+    // before the form is sent.
     return {
       ...baseProps,
       component: 'input',
       type: 'number',
-      step: schema.type === 'integer' ? '1' : '0.0001'
+      min: schema.minimum,
+      max: schema.maximum,
+      step: String(schema.step ?? (schema.type === 'integer' ? 1 : 0.0001))
     }
   } else if (type === 'array') {
     const inner = schema.items

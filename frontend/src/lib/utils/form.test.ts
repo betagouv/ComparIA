@@ -23,6 +23,26 @@ describe('JSON-schema form fields', () => {
     )
   })
 
+  it('gives number inputs the bounds and the step of the schema', () => {
+    const fields = getFormFields(
+      {
+        type: 'object',
+        properties: {
+          cost_weight: { type: 'number', minimum: 1, maximum: 100, step: 1 },
+          params: { type: 'number' },
+          count: { type: 'integer', minimum: 0 }
+        }
+      },
+      ''
+    )
+
+    expect(fields).toEqual([
+      expect.objectContaining({ id: 'cost_weight', min: 1, max: 100, step: '1' }),
+      expect.objectContaining({ id: 'params', min: undefined, step: '0.0001' }),
+      expect.objectContaining({ id: 'count', min: 0, max: undefined, step: '1' })
+    ])
+  })
+
   it('does not make generated hidden or disabled inputs browser-required', () => {
     const fields = getFormFields(
       {

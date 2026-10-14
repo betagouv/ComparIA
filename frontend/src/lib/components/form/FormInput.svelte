@@ -3,6 +3,8 @@
     type: HTMLInputElement['type']
     placeholder?: HTMLInputElement['placeholder']
     step?: HTMLInputElement['step']
+    min?: number
+    max?: number
   } & BaseFormFieldProps<'input'>
 </script>
 
@@ -17,6 +19,8 @@
     disabled,
     placeholder,
     step,
+    min,
+    max,
     children,
     ...props
   }: FormInputProps & { value: string | number } & SvelteHTMLElements['div'] = $props()
@@ -25,7 +29,17 @@
 <FormField {...props} component="input">
   {#snippet formItem(fieldProps)}
     <div class="gap-3 mt-2 flex">
-      <input {...fieldProps} {type} {placeholder} {disabled} {step} bind:value class="fr-input" />
+      <input
+        {...fieldProps}
+        {type}
+        {placeholder}
+        {disabled}
+        {step}
+        {min}
+        {max}
+        bind:value
+        class="fr-input"
+      />
       {@render children?.()}
     </div>
   {/snippet}
