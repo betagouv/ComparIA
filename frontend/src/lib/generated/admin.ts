@@ -45,6 +45,7 @@ export interface ActivityConversation {
       )
     | null;
   error: ErrorDetails | null;
+  expensive_paused: boolean;
   turns: ActivityTurn[];
 }
 export interface ActivityLLM {
@@ -123,6 +124,7 @@ export interface ActivityConversationRow {
   contains_spam: boolean;
   archived: boolean;
   has_error: boolean;
+  expensive_paused: boolean;
   [k: string]: unknown;
 }
 export interface ActivityFilterOptions {
