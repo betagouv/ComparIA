@@ -229,6 +229,9 @@ export interface AdminLimitsPatch {
   expensive_price_out?: number | null;
   expected_answer_chars?: number | null;
   in_flight_per_network?: number | null;
+  daily_usd_caps?: {
+    [k: string]: number | null;
+  } | null;
 }
 export interface AdminPublishDestination {
   id: string;
@@ -609,6 +612,7 @@ export interface LimitsCalibration {
   turns: number;
   capped: boolean;
   proposals: LimitProposal[];
+  daily_caps: DailyCapProposal[];
   price_checks: PriceCheck[];
 }
 /**
@@ -629,6 +633,18 @@ export interface LimitProposal {
   messages?: number | null;
   class_size?: number | null;
   over_share?: number | null;
+  [k: string]: unknown;
+}
+/**
+ * A daily cap the calibration proposes for an expensive model, in US
+ * dollars.
+ */
+export interface DailyCapProposal {
+  llm_id: string;
+  value: number;
+  days: number;
+  percentile: number;
+  highest: number;
   [k: string]: unknown;
 }
 export interface PriceCheck {
