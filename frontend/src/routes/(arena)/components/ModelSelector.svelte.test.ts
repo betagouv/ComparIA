@@ -91,7 +91,7 @@ describe('ModelSelector', () => {
 
   it('says nothing in the header when only full models are paused', async () => {
     const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
-    const view = await openModels({ expensive: undefined, paused: full })
+    const view = await openModels({ expensive: expensive('session'), paused: full })
 
     expect(view.container.querySelector('#picker-paused-hint')).toBeNull()
   })

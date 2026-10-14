@@ -25,9 +25,7 @@
 
   let titleEl = $state<HTMLHeadingElement>()
 
-  // Taking the place of a focused text box, the card would drop focus to the
-  // page. Shown before anyone sends, it is part of the page and leaves focus
-  // alone.
+  // Shown before anyone sends, it is part of the page and leaves focus alone.
   onMount(() => {
     if (!focusTitle || !titleEl) return
     titleEl.tabIndex = -1
