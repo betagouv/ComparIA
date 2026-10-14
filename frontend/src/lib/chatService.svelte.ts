@@ -120,16 +120,24 @@ export interface RevealData {
 export type PauseRefusal = LimitRefusalBody & { detail: 'allowance_spent' }
 
 /**
- * A new comparison refused on the expensive allowance: the person picked
- * expensive models (in `limit.llm_ids`), or chose a mode left with nothing to
- * draw. Every other model stays open, so this does not pause anyone.
- * `model_full_today` is not sent yet.
+ * A new comparison refused on models it may not use yet: the person picked
+ * them (in `limit.llm_ids`), or chose a mode left with nothing to draw.
+ * `expensive_allowance_spent` while their expensive allowance is spent,
+ * `model_full_today` once the models' daily cap is full, for everyone until
+ * midnight. Every other model stays open, so this does not pause anyone.
  */
-export type PickRefusal = LimitRefusalBody & { detail: 'expensive_allowance_spent' }
+export type PickRefusal = LimitRefusalBody & {
+  detail: 'expensive_allowance_spent' | 'model_full_today'
+}
 
 function asLimitRefusal(err: unknown): PauseRefusal | PickRefusal | undefined {
   const { detail, limit } = err as ApiError
-  if (limit && (detail === 'allowance_spent' || detail === 'expensive_allowance_spent')) {
+  if (
+    limit &&
+    (detail === 'allowance_spent' ||
+      detail === 'expensive_allowance_spent' ||
+      detail === 'model_full_today')
+  ) {
     return { detail, limit }
   }
   return undefined
@@ -255,6 +263,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let promptWarnings = $state<string[]>()
   let pauseFromSend = $state(false)
   let pickRefusal = $state<PickRefusal>()
+  // The network has as many turns answering as it may: send again shortly.
+  let busy = $state(false)
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
   let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
@@ -294,6 +304,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     promptError = undefined
     promptWarnings = undefined
     pickRefusal = undefined
+    busy = false
     pauseFromSend = false
     const previousError = comparison?.error
     if (comparison) {
@@ -362,8 +373,13 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       }
       if (refusal?.detail === 'allowance_spent') {
         pauseFromSend = true
-      } else if (refusal?.detail === 'expensive_allowance_spent') {
+      } else if (refusal) {
         pickRefusal = refusal
+      } else if ((err as ApiError).detail === 'too_many_at_once') {
+        // Not an error in what was typed: the same message goes through in
+        // a few seconds, so it stays in the box and can be sent again.
+        refused = true
+        busy = true
       } else if (err instanceof ValidationError) {
         const detail = err.errors ? err.errors[0].msg : err.message
         promptError = promptCheckMessage(arenaErrorMessage(detail))
@@ -424,6 +440,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     get promptError() {
       return promptError
+    },
+    /** Set when a message was refused for coming with too many at once. */
+    get busyHint() {
+      return busy ? arenaErrorMessage('too_many_at_once') : undefined
     },
     set promptError(v: string | undefined) {
       promptError = v

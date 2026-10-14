@@ -224,7 +224,7 @@
           label={m['chatbot.continuePrompt']()}
           placeholder={m['chatbot.continuePrompt']()}
           bind:error={comparator.promptError}
-          hint={turnsHint}
+          hint={comparator.busyHint ?? turnsHint}
           hideLabel
           submitBtn
           submitDisabled={!canContinue || prompt === ''}

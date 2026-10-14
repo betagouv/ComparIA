@@ -199,6 +199,56 @@ describe('ViewPrompt', () => {
     expect(send.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
+  it('says a refused pick is full for the day, not paused for the person', async () => {
+    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
+    const pickRefusal = {
+      detail: 'model_full_today' as const,
+      limit: {
+        scope: null,
+        resets_at: new Date(Date.now() + 3600_000).toISOString(),
+        resets_in: 3600,
+        llm_ids: ['expensive-id']
+      }
+    }
+    const onPrompt = vi.fn(async () => {
+      await view.rerender({ ...props, onPrompt, pickRefusal })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    const title = view.container.querySelector<HTMLElement>('#pick-paused-notice')!
+    expect(title).toHaveFocus()
+    expect(title).toHaveTextContent(
+      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection\. Pourquoi \?$/
+    )
+    expect(title).not.toHaveTextContent(/pour vous/)
+    await vi.waitFor(() =>
+      expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
+    )
+  })
+
+  it('asks to send again shortly when too many messages went at once', async () => {
+    const view = render(ViewPrompt, {
+      ...props,
+      busyHint: 'Trop de messages en même temps, réessayez dans quelques secondes.'
+    })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+
+    expect(view.getByText(/réessayez dans quelques secondes/)).toBeInTheDocument()
+    // A hint, not an error in what was typed: sending stays open.
+    expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
+    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+  })
+
   it('takes a saved pick paused since out of the selection before anyone sends', async () => {
     // Midday, so the hour back never falls after midnight.
     vi.useFakeTimers({ toFake: ['Date'] })

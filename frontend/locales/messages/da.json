@@ -849,7 +849,8 @@
             "prompt_too_long": "Din besked er længere end 20.000 tegn. Gør den kortere.",
             "rate_limited": "Du har sendt mange beskeder de seneste timer. Prøv igen senere.",
             "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",
-            "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog."
+            "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog.",
+            "too_many_at_once": "For mange beskeder på én gang, prøv igen om et par sekunder."
         },
         "limits": {
             "mode": {

@@ -928,7 +928,8 @@
             "prompt_too_long": "Your message is longer than 20,000 characters. Please shorten it.",
             "rate_limited": "You have sent a lot of messages in the last few hours. Please try again later.",
             "retry_unavailable": "Retrying is not possible, please reload the page.",
-            "spam_detected": "This message format is not allowed. Please write in natural language."
+            "spam_detected": "This message format is not allowed. Please write in natural language.",
+            "too_many_at_once": "Too many messages at once, try again in a few seconds."
         },
         "limits": {
             "mode": {

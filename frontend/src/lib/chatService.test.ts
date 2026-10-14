@@ -298,3 +298,63 @@ describe('a refusal on an allowance', () => {
     expect(chat.pickRefusal).toBeUndefined()
   })
 })
+
+describe('a refusal on a model full for the day', () => {
+  it('takes the model out of the pick for everyone, not as a pause for the person', async () => {
+    arena.refusal = Object.assign(new ValidationError('model_full_today'), {
+      status: 429,
+      detail: 'model_full_today',
+      limit: {
+        scope: null,
+        resets_at: '2026-10-14T22:00:00Z',
+        resets_in: 3600,
+        llm_ids: ['full-id']
+      }
+    })
+
+    const chat = getComparison(undefined)
+    const sent = await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'custom',
+      custom_models_selection: ['full-id'],
+      web_search: false
+    })
+
+    arena.refusal = undefined
+    expect(sent).toBe(false)
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal).toMatchObject({
+      detail: 'model_full_today',
+      limit: { scope: null, llm_ids: ['full-id'] }
+    })
+  })
+})
+
+describe('a message sent with too many at once', () => {
+  it('keeps the message and asks to send it again shortly, without an input error', async () => {
+    arena.refusal = Object.assign(new ValidationError('too_many_at_once'), {
+      status: 429,
+      detail: 'too_many_at_once'
+    })
+
+    const chat = getComparison(undefined)
+    const args = {
+      prompt_value: 'Bonjour',
+      mode: 'random' as const,
+      custom_models_selection: [],
+      web_search: false
+    }
+    const sent = await chat.askFirst(args)
+
+    expect(sent).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pause).toBeUndefined()
+    expect(chat.status).not.toBe('error')
+    expect(chat.busyHint).toBe('Trop de messages en même temps, réessayez dans quelques secondes.')
+
+    arena.refusal = undefined
+    await chat.askFirst(args)
+    expect(chat.busyHint).toBeUndefined()
+  })
+})

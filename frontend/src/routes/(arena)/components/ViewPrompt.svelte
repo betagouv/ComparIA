@@ -32,6 +32,7 @@
     pause,
     pauseFromSend = false,
     pickRefusal,
+    busyHint,
     loading,
     suggestions
   }: {
@@ -43,6 +44,8 @@
     pauseFromSend?: boolean
     /** Set when the comparison asked for models the person may not use yet. */
     pickRefusal?: PickRefusal
+    /** Set when the message just sent came with too many at once. */
+    busyHint?: string
     loading: boolean
     suggestions: SuggestionCategory[]
   } = $props()
@@ -91,7 +94,7 @@
         .map((id) => models.find((llm) => llm.id === id)?.name)
         .filter((name): name is string => !!name),
       until: resets_at,
-      full: false,
+      full: shownRefusal.detail === 'model_full_today',
       toRandom,
       network: scope === 'network'
     }
@@ -297,6 +300,7 @@
               label={m['arenaHome.prompt.label']()}
               placeholder={m['arenaHome.prompt.placeholder']()}
               bind:error={promptError}
+              hint={busyHint}
               disabled={loading}
               submitDisabled={disabled}
               hideLabel

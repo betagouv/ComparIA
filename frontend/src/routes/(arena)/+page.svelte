@@ -87,6 +87,7 @@
       pause={comparator.pause}
       pauseFromSend={comparator.pauseFromSend}
       pickRefusal={comparator.pickRefusal}
+      busyHint={comparator.busyHint}
       onPrompt={submitInitialPrompt}
       suggestions={data.suggestions.categories}
     />
