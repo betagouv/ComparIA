@@ -6,13 +6,22 @@
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
+  import { createLimits, setLimitsContext } from '$lib/limits.svelte'
   import { setVoteTagsContext } from '$lib/voteTags'
+  import { onDestroy, onMount } from 'svelte'
   import type { LayoutProps } from './$types'
 
   let { children, data }: LayoutProps = $props()
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
+  const limits = createLimits(data.limits)
+  setLimitsContext(limits)
+  // A page rendered on the server has no limits yet: read them here.
+  onMount(() => {
+    if (!data.limits) void limits.refresh()
+  })
+  onDestroy(() => limits.destroy())
   const auth = getAuthContext()
 
   let mainEl: HTMLElement | undefined = $state()
