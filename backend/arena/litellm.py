@@ -7,7 +7,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Union, cast
 
 import litellm
 
@@ -43,6 +43,15 @@ def mock_answer(chars: int) -> str:
         return MOCK_ANSWER
     repeats = chars // (len(MOCK_ANSWER) + 1) + 1
     return " ".join([MOCK_ANSWER] * repeats)[:chars]
+
+
+def litellm_messages(messages: list["AnyMessageRead"]) -> list[dict[str, Any]]:
+    """What a model is sent: each message's role and content only, with the
+    web search results merged into the prompt they came with."""
+    return [
+        msg.model_dump(include={"role", "content"}, context={"merge_web_search": True})
+        for msg in messages
+    ]
 
 
 async def litellm_stream_iter(
@@ -110,13 +119,7 @@ async def litellm_stream_iter(
         # litellm endpoint formated args
         **endpoint.model_dump(),
         # max_retries can be added if needed
-        # Only pass supported message args 'role' and 'content'
-        "messages": [
-            msg.model_dump(
-                include={"role", "content"}, context={"merge_web_search": True}
-            )
-            for msg in messages
-        ],
+        "messages": litellm_messages(messages),
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,  # Enable streaming for real-time responses
