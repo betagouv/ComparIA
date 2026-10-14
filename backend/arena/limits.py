@@ -16,15 +16,22 @@ started with one may finish.
 Routes call `read_status` for a cheap early answer, `Charge.reserve` to charge
 what the models are sent before any of them is called, and `Charge.settle` to
 add what they wrote once the turn is over.
+
+The limits are settings an admin can change from /admin/limites, stored in the
+app settings, with the RATELIMIT_* env values as defaults. Each process reads
+them again at most every `RELOAD_SECONDS`, see `reload_settings`.
 """
 
 import logging
 import math
+import time
 from dataclasses import dataclass
 from typing import Collection, Iterable, Literal, Mapping, Protocol, Sequence, get_args
 
 from backend.config import settings
 from backend.utils.user import ip_bucket
+from utils.database.models.app_settings import AppSettings
+from utils.database.settings import get_app_settings
 from utils.storage.redis import REDIS_BUDGET_KEY, get_redis_client
 
 logger = logging.getLogger("languia")
@@ -69,14 +76,76 @@ def _scope(identity: str) -> Scope:
     return _SCOPES[identity.split(":", 1)[0]]
 
 
-def _limit(pool: Pool, scope: Scope) -> int:
-    # Read on each call, so a test can move them.
-    return {
-        ("all", "session"): settings.RATELIMIT_ALL_PER_SESSION,
-        ("all", "ip"): settings.RATELIMIT_ALL_PER_IP,
-        ("expensive", "session"): settings.RATELIMIT_EXPENSIVE_PER_SESSION,
-        ("expensive", "ip"): settings.RATELIMIT_EXPENSIVE_PER_IP,
-    }[(pool, scope)]
+LimitSetting = Literal[
+    "all_per_session",
+    "all_per_ip",
+    "expensive_per_session",
+    "expensive_per_ip",
+    "expected_answer_chars",
+]
+LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
+
+_POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
+    ("all", "session"): "all_per_session",
+    ("all", "ip"): "all_per_ip",
+    ("expensive", "session"): "expensive_per_session",
+    ("expensive", "ip"): "expensive_per_ip",
+}
+
+# How long a process keeps the stored settings before reading them again: a
+# change reaches every pod within that time, without a read per message.
+RELOAD_SECONDS = 30
+
+_stored: dict[LimitSetting, int] = {}
+_loaded_at: float | None = None
+
+
+def default(name: LimitSetting) -> int:
+    """The RATELIMIT_* env value, in force while no admin has set one."""
+    value: int = getattr(settings, f"RATELIMIT_{name.upper()}")
+    return value
+
+
+def setting(name: LimitSetting) -> int:
+    """The value in force: the one an admin stored, else the default. Every
+    read of a limit goes through here."""
+    # The default is read on each call, so a test can move it.
+    return _stored[name] if name in _stored else default(name)
+
+
+def stored_settings(row: AppSettings) -> dict[LimitSetting, int]:
+    """The settings an admin stored, leaving out those on their default."""
+    stored: dict[LimitSetting, int] = {}
+    for name in LIMIT_SETTINGS:
+        value = getattr(row, f"limit_{name}")
+        if value is not None:
+            stored[name] = int(value)
+    return stored
+
+
+async def load_settings() -> None:
+    """Read the stored settings now. When they cannot be read, the last ones
+    read stay in force, the defaults on a fresh process."""
+    global _stored, _loaded_at
+    # Set first, so the requests that arrive meanwhile do not all read too.
+    _loaded_at = time.monotonic()
+    try:
+        row: AppSettings = await get_app_settings()
+    except Exception:
+        logger.exception("Could not read the stored model allowances")
+        return
+    _stored = stored_settings(row)
+
+
+async def reload_settings() -> None:
+    """Read the stored settings again once `RELOAD_SECONDS` have passed. Runs
+    before every arena route."""
+    if _loaded_at is None or time.monotonic() - _loaded_at >= RELOAD_SECONDS:
+        await load_settings()
+
+
+def limit(pool: Pool, scope: Scope) -> int:
+    return setting(_POOL_SETTINGS[(pool, scope)])
 
 
 @dataclass(frozen=True)
@@ -187,7 +256,7 @@ def read_counters(identities: Sequence[str]) -> LimitStatus:
                 scope=_scope(identity),
                 identity=identity,
                 used=int(used or 0),
-                limit=_limit(pool, _scope(identity)),
+                limit=limit(pool, _scope(identity)),
                 resets_in=ttl if ttl >= 0 else None,
             )
             for (pool, identity), used, ttl in zip(
@@ -250,7 +319,7 @@ def reserve(
     spent = [
         (pool, identity, total - chars)
         for (pool, identity, chars), total in zip(counters, totals)
-        if total - chars > _limit(pool, _scope(identity))
+        if total - chars > limit(pool, _scope(identity))
     ]
     refused = [counter for counter in spent if counter[0] in refusing]
     over = {(pool, identity) for pool, identity, _used in spent}
@@ -282,7 +351,7 @@ def reserve(
                     scope=_scope(identity),
                     identity=identity,
                     used=used,
-                    limit=_limit(pool, _scope(identity)),
+                    limit=limit(pool, _scope(identity)),
                     resets_in=ttl if ttl >= 0 else None,
                 )
                 for (pool, identity, used), ttl in zip(refused, ttls)

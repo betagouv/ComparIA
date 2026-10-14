@@ -25,7 +25,7 @@ def _resets(allowance: limits.Allowance) -> str:
     return "never resets" if allowance.used else "nothing counted"
 
 
-def limits_show(*, session: str | None = None, ip: str | None = None) -> None:
+async def limits_show(*, session: str | None = None, ip: str | None = None) -> None:
     """
     Show what a session or an IP spent of each allowance, and when it resets.
 
@@ -33,6 +33,8 @@ def limits_show(*, session: str | None = None, ip: str | None = None) -> None:
         session: Anonymous session hash, as stored on its comparisons
         ip: Caller IP. An IPv6 address counts for its whole /64
     """
+    # The limits an admin set, rather than the env defaults.
+    await limits.load_settings()
     for allowance in limits.read_counters(_identities(session, ip)).allowances:
         logger.info(
             f"{allowance.identity} {allowance.pool}: {allowance.used:,} of "

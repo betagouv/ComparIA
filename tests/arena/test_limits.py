@@ -3,6 +3,8 @@ The limits module on its own: where the allowances come from, what a status
 reads back, and the operator's reset (no network, no real Redis).
 """
 
+import asyncio
+
 import pytest
 
 import backend.arena.limits as limits
@@ -10,9 +12,14 @@ from backend.arena.limits import AllowanceSpent, Identity
 from backend.config import Settings, settings
 from tests.arena.fakes import fake_redis
 from utils.arena.actions import limits_reset, limits_show
+from utils.database.models.app_settings import AppSettings
 from utils.storage.redis import REDIS_INSTANCE_PREFIX
 
 WHO = Identity.of("sess-a", "1.1.1.1")
+
+
+async def no_stored_settings():
+    return AppSettings()
 
 
 def allowance(status, pool, scope):
@@ -164,11 +171,12 @@ def test_a_spent_allowance_keeps_its_reset_time_while_it_is_charged(monkeypatch)
     assert allowance(status, "expensive", "ip").resets_in == limits.WINDOW_SECONDS
 
 
-def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog):
+def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog, monkeypatch):
+    monkeypatch.setattr(limits, "get_app_settings", no_stored_settings)
     with fake_redis(limits) as redis, caplog.at_level("INFO", "comparia.arena"):
         redis.set(limits.budget_key("all", WHO.personal), 10)
         redis.set(limits.budget_key("expensive", WHO.personal), 10, ex=61)
-        limits_show(session="sess-a")
+        asyncio.run(limits_show(session="sess-a"))
     assert "s:sess-a all: 10 of 3,000,000, never resets" in caplog.text
     assert "s:sess-a expensive: 10 of 1,000,000, resets in 2 min" in caplog.text
 

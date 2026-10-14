@@ -27,6 +27,8 @@ from backend.arena.limits import (
     LimitStatus,
     Pool,
     read_status,
+    reload_settings,
+    setting,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (
@@ -78,7 +80,6 @@ from backend.config import (
     ALTCHA_MAX_NUMBER,
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
-    settings,
 )
 from backend.errors import LimitReachedError
 from backend.llms.data import (
@@ -111,6 +112,8 @@ logger = logging.getLogger("languia")
 router = APIRouter(
     prefix="/arena",
     tags=["arena"],
+    # Before the routes' own dependencies, which read the limits.
+    dependencies=[Depends(reload_settings)],
 )
 
 
@@ -254,7 +257,7 @@ def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
         pos: Call(
             llms_data.weight(llm_id),
             chars,
-            written=settings.RATELIMIT_EXPECTED_ANSWER_CHARS,
+            written=setting("expected_answer_chars"),
         )
         for pos, (llm_id, chars) in sent.items()
     }
