@@ -1,4 +1,5 @@
 import { m } from '$lib/i18n/messages'
+import type { ExternalHref } from '$lib/routing'
 import sanitizeHtml from 'sanitize-html'
 
 export const noop = () => {}
@@ -119,4 +120,14 @@ export function omit<T extends object, K extends keyof T>(obj: T, keys: readonly
   }
 
   return out as Omit<T, K>
+}
+
+/** Only http(s) sources are ever rendered as links: they come from third parties. */
+export function isSafeWebSource(url: string): url is ExternalHref {
+  try {
+    const protocol = new URL(url).protocol
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
 }

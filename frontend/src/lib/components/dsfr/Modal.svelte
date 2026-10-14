@@ -8,6 +8,7 @@
     id,
     titleId,
     locked = false,
+    class: className,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
     headerClass,
@@ -54,7 +55,7 @@
   bind:this={dialog}
   aria-labelledby={titleId}
   {id}
-  class="fr-modal"
+  class={['fr-modal', className]}
   data-fr-concealing-backdrop={(!locked).toString()}
   {...dsfrEvents}
   {@attach doTeleport && teleport('modals')}
