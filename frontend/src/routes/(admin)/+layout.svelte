@@ -63,6 +63,11 @@
       icon: 'i-ri-shield-check-line'
     },
     {
+      label: m['admin.nav.limits'](),
+      href: '/admin/limites',
+      icon: 'i-ri-dashboard-3-line'
+    },
+    {
       label: m['admin.nav.publishing'](),
       href: '/admin/publication',
       icon: 'i-ri-upload-cloud-line'
