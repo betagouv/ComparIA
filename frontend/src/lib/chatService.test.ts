@@ -165,6 +165,21 @@ describe('a refusal on an allowance', () => {
     vi.useRealTimers()
   })
 
+  it('keeps the reveal shut on a failed comparison', () => {
+    arena.comparisons = [
+      {
+        id: 'failed-id',
+        error: 'provider_error',
+        turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+      } as unknown as Comparison
+    ]
+
+    const chat = getComparison('failed-id')
+
+    expect(chat.canReveal).toBe(false)
+    arena.comparisons = []
+  })
+
   it('leaves a refusal with no limit to the input error', async () => {
     const comparison = {
       id: 'voted-id',
