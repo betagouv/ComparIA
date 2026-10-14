@@ -330,6 +330,7 @@
             "current": "Valeur actuelle : {value}",
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux : {names}.",
             "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
+            "expensiveOne": "À ce seuil, un modèle activé est coûteux : {names}.",
             "groups": {
                 "all": "Toutes les réponses",
                 "answer": "Réservation",

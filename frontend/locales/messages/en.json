@@ -880,7 +880,8 @@
                     "very_high": "Output above $100: maybe typed in cents."
                 },
                 "none": "No price looks worth checking."
-            }
+            },
+            "expensiveOne": "At this threshold, one enabled model is expensive: {names}."
         }
     },
     "arenaHome": {

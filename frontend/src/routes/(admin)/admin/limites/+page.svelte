@@ -137,6 +137,16 @@
     price: m['admin.limits.newValuePrice']()
   }
 
+  function expensiveText(llms: { name: string }[]) {
+    const names = llms.map((llm) => llm.name).join(', ')
+    if (llms.length > 1) {
+      return m['admin.limits.expensiveList']({ count: String(llms.length), names })
+    }
+    return llms.length
+      ? m['admin.limits.expensiveOne']({ names })
+      : m['admin.limits.expensiveNone']()
+  }
+
   function priceIssue(check: PriceCheck) {
     return m[`admin.limits.prices.issues.${check.issue}`]()
   }
@@ -344,12 +354,7 @@
                 />
                 {#if kind === 'price'}
                   <p class="fr-text--sm mt-3! mb-0!" aria-live="polite">
-                    {expensiveLLMs.length
-                      ? m['admin.limits.expensiveList']({
-                          count: String(expensiveLLMs.length),
-                          names: expensiveLLMs.map((llm) => llm.name).join(', ')
-                        })
-                      : m['admin.limits.expensiveNone']()}
+                    {expensiveText(expensiveLLMs)}
                   </p>
                 {/if}
                 {#if calibration}
