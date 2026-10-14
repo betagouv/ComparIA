@@ -178,10 +178,14 @@ describe('ViewPrompt', () => {
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
     await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
 
-    const title = view.getByRole('heading', { name: 'Nous avons retiré GPT-5 de votre sélection' })
+    // One line, focused: nothing started, and this says why.
+    const title = view.container.querySelector<HTMLElement>('#pick-paused-notice')!
     expect(title).toHaveFocus()
-    const back = view.getByText(/Il est en pause pour vous et revient à/)
-    expect(back.querySelector('time')).toHaveAttribute('datetime', pickRefusal.limit.resets_at)
+    expect(title).toHaveTextContent(
+      /^GPT-5 est en pause pour vous jusqu'à .*, on l'a retiré\. Pourquoi \?$/
+    )
+    expect(title.querySelector('time')).toHaveAttribute('datetime', pickRefusal.limit.resets_at)
+    expect(view.queryByRole('heading', { level: 3 })).toBeNull()
     await vi.waitFor(() =>
       expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
     )
@@ -189,7 +193,7 @@ describe('ViewPrompt', () => {
     expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
     // Two models were picked, so one is left and the mode stays custom.
-    expect(view.queryByText(/mode Aléatoire/)).toBeNull()
+    expect(view.queryByText(/aléatoire/)).toBeNull()
     // The notice sits after the send button, as it shows on screen.
     const send = view.getByRole('button', { name: 'Envoyer' })
     expect(send.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
@@ -209,11 +213,13 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
 
-    await view.findAllByText(/Nous avons retiré GPT-5/)
+    await view.findAllByText(/GPT-5 est en pause/)
     const notice = view.container.querySelector('#pick-paused-notice')!
     expect(notice).toHaveTextContent(
-      /Nous avons retiré GPT-5 de votre sélection : il est en pause pour vous et revient à 13\sh\s00/
+      /^GPT-5 est en pause pour vous jusqu'à 13\sh\s00, on l'a retiré\. Pourquoi \?$/
     )
+    // Not focused: nobody sent anything.
+    expect(notice).not.toHaveFocus()
     // An hour on from midday, the countdown the server sent.
     expect(notice.querySelector('time')).toHaveAttribute(
       'datetime',
@@ -224,7 +230,7 @@ describe('ViewPrompt', () => {
     )
     expect(localStorage.getItem('mode')).toBe('custom')
     // Told to a screen reader too: it may land after the page showed.
-    expect(view.getAllByRole('status')[0]).toHaveTextContent(/Nous avons retiré GPT-5/)
+    expect(view.getAllByRole('status')[0]).toHaveTextContent(/GPT-5 est en pause pour vous/)
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeInTheDocument()
 
     // Gone once the person picks for themselves.
@@ -251,14 +257,14 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('custom'))
-    expect(view.queryByText(/Nous avons retiré/)).toBeNull()
+    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
 
     vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
     await limits.refresh()
 
     await vi.waitFor(() =>
       expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-        /Nous avons retiré GPT-5 .*la comparaison se fera en mode Aléatoire/
+        /GPT-5 est en pause pour vous .*, on l'a retiré, la comparaison sera aléatoire\./
       )
     )
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
@@ -277,14 +283,15 @@ describe('ViewPrompt', () => {
     const view = render(ViewPrompt, props)
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
 
-    expect(view.getByRole('heading', { name: 'Ce mode est en pause pour vous' })).not.toHaveFocus()
-    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /Choisissez un autre mode\./
+    const notice = view.container.querySelector('#pick-paused-notice')
+    expect(notice).toHaveTextContent(
+      /^Ce mode est en pause pour vous jusqu'à .*, choisissez-en un autre\./
     )
+    expect(notice).not.toHaveFocus()
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
 
     await fireEvent.click(view.getByRole('radio', { name: /Aléatoire/, hidden: true }))
-    expect(view.queryByRole('heading', { name: 'Ce mode est en pause pour vous' })).toBeNull()
+    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
     ;(arena.limits as Limits).destroy()
   })
@@ -311,10 +318,10 @@ describe('ViewPrompt', () => {
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
     await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
 
-    expect(await view.findByText(/la comparaison se fera en mode Aléatoire/)).toBeInTheDocument()
+    expect(await view.findByText(/la comparaison sera aléatoire/)).toBeInTheDocument()
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
 
     await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
-    expect(view.queryByRole('heading', { name: /Nous avons retiré/ })).toBeNull()
+    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
   })
 })

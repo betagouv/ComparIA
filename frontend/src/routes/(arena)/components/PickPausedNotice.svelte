@@ -3,7 +3,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { resetTime, spoken } from './resetTime'
 
-  /** What the home form changed, or cannot do, before anyone sends. */
+  /** What the home form changed, or cannot do, for models paused for the person. */
   export type PickPause =
     | {
         kind: 'trimmed'
@@ -15,49 +15,54 @@
         full: boolean
         /** Taking them out emptied the selection, so the mode went back to random. */
         toRandom: boolean
+        /** The network spent the allowance, not just this person. */
+        network: boolean
       }
     | { kind: 'mode'; until: string | null }
 
   function copy(pause: PickPause) {
     const reset = resetTime(pause.until)
-    if (pause.kind === 'mode')
-      return { reset, text: m['arene.limits.mode.choose']({ at: reset.at }) }
+    if (pause.kind === 'mode') {
+      return {
+        reset,
+        text: m['arene.limits.mode.hint']({ until: reset.until }),
+        why: m['arene.limits.mode.why']()
+      }
+    }
     const models = new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(pause.names)
-    if (pause.full) return { reset, text: m['arene.limits.picker.trimmedFull']({ models }) }
-    const key =
-      pause.names.length > 1 ? 'arene.limits.picker.trimmedTwo' : 'arene.limits.picker.trimmedOne'
-    return { reset, text: m[key]({ models, at: reset.at }) }
+    const why = m[pause.network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']()
+    if (pause.full) return { reset, why, text: m['arene.limits.picker.trimmedFull']({ models }) }
+    const two = pause.names.length > 1
+    const key = pause.toRandom
+      ? two
+        ? 'arene.limits.picker.trimmedTwoToRandom'
+        : 'arene.limits.picker.trimmedOneToRandom'
+      : two
+        ? 'arene.limits.picker.trimmedTwo'
+        : 'arene.limits.picker.trimmedOne'
+    return { reset, why, text: m[key]({ models, until: reset.until }) }
   }
 
   /** The notice as a screen reader hears it, for the form's live region. */
   export function pickPauseSaid(pause: PickPause): string {
     const { reset, text } = copy(pause)
-    const line = spoken(text, reset)
-    if (pause.kind === 'mode') return `${m['arene.limits.mode.title']()}. ${line}`
-    return pause.toRandom ? `${line} ${m['arene.limits.picked.toRandom']()}` : line
+    return spoken(text, reset)
   }
 </script>
 
 <script lang="ts">
-  import { Alert } from '$components/dsfr'
-  import TimedText from './TimedText.svelte'
+  import LimitHint from './LimitHint.svelte'
 
-  let { pause }: { pause: PickPause } = $props()
+  let {
+    pause,
+    focusOnShow = false
+  }: {
+    pause: PickPause
+    /** It answers a refused send: focus it, or nothing tells why nothing started. */
+    focusOnShow?: boolean
+  } = $props()
 
-  const { reset, text } = $derived(copy(pause))
+  const { reset, text, why } = $derived(copy(pause))
 </script>
 
-{#if pause.kind === 'mode'}
-  <Alert id="pick-paused-notice" title={m['arene.limits.mode.title']()} class="w-full">
-    <p><TimedText {text} {reset} /></p>
-  </Alert>
-{:else}
-  {#snippet title()}
-    <TimedText {text} {reset} />
-  {/snippet}
-  <Alert id="pick-paused-notice" {title} small class="w-full">
-    {#if pause.toRandom}
-      <p>{m['arene.limits.picked.toRandom']()}</p>
-    {/if}
-  </Alert>
-{/if}
+<LimitHint id="pick-paused-notice" {text} {reset} {why} {focusOnShow} />

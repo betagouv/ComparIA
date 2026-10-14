@@ -25,7 +25,6 @@
   import { pausedModes } from './pausedModes'
   import PauseNotice from './PauseNotice.svelte'
   import PickPausedNotice, { pickPauseSaid, type PickPause } from './PickPausedNotice.svelte'
-  import PickRefusalNotice from './PickRefusalNotice.svelte'
 
   let {
     onPrompt,
@@ -81,11 +80,22 @@
     if (modePaused) return { kind: 'mode', until: modesPaused.get(mode.value) ?? null }
     return trimmed
   })
-  const refusedNames = $derived(
-    (shownRefusal?.limit.llm_ids ?? [])
-      .map((id) => models.find((llm) => llm.id === id)?.name)
-      .filter((name): name is string => !!name)
-  )
+  // A refused send, told the same way and focused, since nothing started.
+  const refusalPause = $derived.by((): PickPause | undefined => {
+    if (!shownRefusal) return undefined
+    const { llm_ids = [], resets_at, scope } = shownRefusal.limit
+    if (!llm_ids.length) return { kind: 'mode', until: resets_at }
+    return {
+      kind: 'trimmed',
+      names: llm_ids
+        .map((id) => models.find((llm) => llm.id === id)?.name)
+        .filter((name): name is string => !!name),
+      until: resets_at,
+      full: false,
+      toRandom,
+      network: scope === 'network'
+    }
+  })
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
@@ -112,7 +122,8 @@
           .filter((name): name is string => !!name),
         until: until ?? null,
         full: pauses.every((llm) => llm.reason === 'full'),
-        toRandom: !left
+        toRandom: !left,
+        network: limits.expensive?.scope === 'network'
       }
     })
   })
@@ -330,9 +341,9 @@
           />
 
           <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
-          {#if shownRefusal}
+          {#if refusalPause}
             <div class="md:col-span-full md:order-none order-3">
-              <PickRefusalNotice refusal={shownRefusal} names={refusedNames} {toRandom} />
+              <PickPausedNotice pause={refusalPause} focusOnShow />
             </div>
           {:else if pickPause}
             <div class="md:col-span-full md:order-none order-3">

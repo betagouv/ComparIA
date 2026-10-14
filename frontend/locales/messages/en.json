@@ -934,8 +934,10 @@
             "mode": {
                 "back": "It needs models that are paused for you and come back {at}. Pick another mode: your message is kept.",
                 "choose": "It needs models that are paused for you and come back {at}. Pick another mode.",
+                "hint": "This mode is paused for you {until}, pick another one.",
                 "reason": "This mode needs models that are paused for you. It comes back {at}.",
-                "title": "This mode is paused for you"
+                "title": "This mode is paused for you",
+                "why": "It needs models that cost more to run. To keep compar:IA free for everyone, each person can send them a limited number of messages every two hours."
             },
             "pause": {
                 "meanwhile": "Until then, you can vote, discover the models and look at the ranking.",
@@ -970,9 +972,11 @@
                 "pausedHelpNetwork": "Models marked “Paused” cost more to run. Your network (school, office, organisation) has used its share: they come back {at}.",
                 "pausedReason": "You have used your share of this model. It comes back {at}.",
                 "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}.",
-                "trimmedFull": "We took {models} out of your selection: full for today, back tomorrow.",
-                "trimmedOne": "We took {models} out of your selection: it is paused for you and comes back {at}.",
-                "trimmedTwo": "We took {models} out of your selection: they are paused for you and come back {at}."
+                "trimmedFull": "Full for today, so we took {models} out of your selection.",
+                "trimmedOne": "{models} is paused for you {until}, so we took it out.",
+                "trimmedOneToRandom": "{models} is paused for you {until}, so we took it out and the comparison will be random.",
+                "trimmedTwo": "{models} are paused for you {until}, so we took them out.",
+                "trimmedTwoToRandom": "{models} are paused for you {until}, so we took them out and the comparison will be random."
             },
             "time": {
                 "at": "at {time}",
@@ -987,7 +991,8 @@
                 "fullTitle": "This conversation is full",
                 "last": "Last message possible in this conversation.",
                 "left": "{count} more messages possible in this conversation."
-            }
+            },
+            "why": "Why?"
         },
         "promptWarning": {
             "edit": "Edit my message",
