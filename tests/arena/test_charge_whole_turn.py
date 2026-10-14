@@ -43,6 +43,7 @@ from tests.arena.test_spend_budget import (  # noqa: E402
     counter,
     patched,
     read,
+    route_only,
     start,
 )
 from utils.database.models import (  # noqa: E402
@@ -397,3 +398,83 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
     # Each model was sent the prompt; the stuck one wrote "un" and gave up.
     assert spent(redis, "all") == 3 * len(FIRST) + answered + len("un") + answered
     assert spent(redis, "expensive") == WEIGHT * (len(FIRST) + answered)
+
+
+# A typical answer reserved up front.
+
+
+def test_settling_gives_back_the_unused_reservation():
+    with fake_redis(limits) as redis:
+        charge = Charge.reserve(
+            WHO, {"a": Call(1, 100, written=500), "b": Call(4, 100, written=500)}
+        )
+        assert spent(redis, "all") == 1_200
+        assert spent(redis, "expensive") == 2_400
+
+        charge.settle({"a": written("x" * 50), "b": written("y" * 900)})
+
+    # Never below what the turn cost: shorter answers give back, longer add.
+    assert spent(redis, "all") == 100 + 50 + 100 + 900
+    assert spent(redis, "expensive") == 4 * (100 + 900)
+
+
+def test_a_turn_with_no_answer_keeps_only_its_input():
+    with fake_redis(limits) as redis:
+        charge = Charge.reserve(
+            WHO, {"a": Call(1, 100, written=500), "b": Call(1, 100, written=500)}
+        )
+        charge.settle({"a": None, "b": None})
+
+    assert spent(redis, "all") == 200
+
+
+def test_a_refund_after_the_window_closed_never_goes_below_zero():
+    with fake_redis(limits) as redis:
+        charge = Charge.reserve(
+            WHO, {"a": Call(1, 100, written=500), "b": Call(4, 100, written=500)}
+        )
+        redis.advance(limits.WINDOW_SECONDS)
+        charge.settle({"a": written("x"), "b": written("y")})
+
+        assert spent(redis, "all") == 0
+        assert spent(redis, "expensive") == 0
+        assert {redis.ttl(limits.budget_key(p, i)) for p, i in counters(redis)} == {
+            limits.WINDOW_SECONDS
+        }
+
+
+def test_first_messages_sent_at_once_overshoot_by_one_reservation_at_most(
+    monkeypatch,
+):
+    """Each request used to meet only the others' prompts, so twenty sent at
+    once all passed on a few dozen characters each, and all their answers
+    landed beyond the allowance."""
+    reserved = 2 * (SENT["add_first_text"] + settings.RATELIMIT_EXPECTED_ANSWER_CHARS)
+    limit = 5 * reserved
+    monkeypatch.setattr(settings, "RATELIMIT_ALL_PER_SESSION", limit)
+
+    with arena() as state:
+
+        async def together():
+            state.in_step = asyncio.Barrier(20)
+            return await asyncio.gather(
+                *(route_only("add_first_text", state) for _ in range(20)),
+                return_exceptions=True,
+            )
+
+        results = asyncio.run(together())
+        state.in_step = None
+        passed = [r for r in results if not isinstance(r, Exception)]
+        refused = [r for r in results if isinstance(r, Exception)]
+
+        # Each passes while what came before is within the limit.
+        assert len(passed) == limit // reserved + 1
+        assert counter(state.redis, "all", ME) <= limit + reserved
+        assert {r.detail for r in refused} == {"allowance_spent"}
+
+        for response in passed:
+            read(response)
+        # The answers ran shorter than expected, so each gave the rest back.
+        assert counter(state.redis, "all", ME) == len(passed) * 2 * (
+            SENT["add_first_text"] + len(ANSWER)
+        )
