@@ -267,12 +267,6 @@
             </Toggle>
           </div>
 
-          {#if shownRefusal}
-            <div class="md:col-span-full">
-              <PickRefusalNotice refusal={shownRefusal} names={refusedNames} {toRandom} />
-            </div>
-          {/if}
-
           <Button
             type="submit"
             text={m['words.send']()}
@@ -280,6 +274,13 @@
             class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
             onclick={() => onPromptSubmit()}
           />
+
+          <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
+          {#if shownRefusal}
+            <div class="md:col-span-full md:order-none order-3">
+              <PickRefusalNotice refusal={shownRefusal} names={refusedNames} {toRandom} />
+            </div>
+          {/if}
         </div>
 
         <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />

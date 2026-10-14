@@ -141,6 +141,9 @@ describe('ViewPrompt', () => {
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
     // Two models were picked, so one is left and the mode stays custom.
     expect(view.queryByText(/mode Aléatoire/)).toBeNull()
+    // The notice sits after the send button, as it shows on screen.
+    const send = view.getByRole('button', { name: 'Envoyer' })
+    expect(send.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('says so when the refused pick empties the selection, and goes once the mode changes', async () => {
