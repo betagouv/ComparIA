@@ -51,6 +51,7 @@ def llm(
             "inputs": ["text"],
             "price_in": 1.0,
             "price_out": 2.0,
+            "daily_usd_cap": 20.0,
         }
     )
 
@@ -92,6 +93,7 @@ def test_models_carry_metadata_but_no_internal_plumbing(tmp_path):
         "endpoint_id",
         "lab_id",
         "license_id",
+        "daily_usd_cap",
         "created_at",
         "updated_at",
     ):

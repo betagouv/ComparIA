@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, model_validator
+from pydantic import AfterValidator, FiniteFloat, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
@@ -87,6 +87,10 @@ FIELDS = {
     "price_out": {
         "description": "Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.",
     },
+    "daily_usd_cap": {
+        "title": "Plafond par jour (USD)",
+        "description": "Coût estimé au plus par jour, tous utilisateurs confondus. Une fois atteint, le modèle sort des nouveaux tirages jusqu'à minuit, heure de Paris. Vide : pas de plafond.",
+    },
     "system_prompt": {
         "description": "System message to add in llm call if specified",
     },
@@ -144,6 +148,9 @@ class LLMDataBase(BaseDBModel):
     ]
     price_in: Annotated[float, Field(**FIELDS["price_in"])]
     price_out: Annotated[float, Field(**FIELDS["price_out"])]
+    daily_usd_cap: Annotated[
+        FiniteFloat | None, Field(default=None, ge=0, **FIELDS["daily_usd_cap"])
+    ]
     system_prompt: Annotated[
         NonEmptyStr | None, Field(default=None, **FIELDS["system_prompt"])
     ]

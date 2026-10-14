@@ -103,3 +103,15 @@ def test_an_llm_read_back_always_carries_its_defaulted_fields():
     schema = LLMData.model_json_schema(mode="serialization")
 
     assert {"links", "api_model_id", "system_prompt"} <= set(schema["required"])
+
+
+def test_a_model_has_no_daily_cap_unless_one_is_set():
+    assert LLMDataUpsert(**payload()).daily_usd_cap is None
+    assert LLMDataUpsert(**payload(daily_usd_cap=None)).daily_usd_cap is None
+    assert LLMDataUpsert(**payload(daily_usd_cap=12.5)).daily_usd_cap == 12.5
+
+
+@pytest.mark.parametrize("cap", [-1, float("inf"), float("nan")])
+def test_a_daily_cap_below_zero_or_not_finite_is_refused(cap):
+    with pytest.raises(ValidationError, match="daily_usd_cap"):
+        LLMDataUpsert(**payload(daily_usd_cap=cap))
