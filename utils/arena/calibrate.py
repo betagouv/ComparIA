@@ -92,6 +92,8 @@ class Replay:
     turns: int = 0
     answers: int = 0
     cached: int = 0
+    # What each answer wrote, its reasoning included.
+    written: list[int] = field(default_factory=list)
     suggested_answers: int = 0
     suggested_cached: int = 0
 
@@ -140,6 +142,7 @@ def replay(rows: Sequence[Row[Any]], weights: dict[uuid.UUID, float]) -> Replay:
             cached = getattr(row, f"cached_{pos}")
             if cached is not None:
                 result.answers += 1
+                result.written.append(content + reasoning)
                 result.cached += cached
                 if first and row.suggested:
                     result.suggested_answers += 1
@@ -239,7 +242,8 @@ async def limits_calibrate(*, days: int = 30) -> None:
     Replay the comparisons of the last days through the charging rule and
     print what the allowances would have counted: per person and per network
     in each two-hour window, per network in each clock hour, per conversation,
-    and the share of answers served from the cache. Read-only.
+    how long answers run, and the share of answers served from the cache.
+    Read-only.
 
     Args:
         days: How far back to read
@@ -278,6 +282,9 @@ async def limits_calibrate(*, days: int = 30) -> None:
         )
         logger.info(_line(f"{pool}, per network and hour", hours))
         logger.info(_line(f"{pool}, per conversation", conversations))
+
+    # The median sets RATELIMIT_EXPECTED_ANSWER_CHARS.
+    logger.info(_line("Characters written per answer", result.written))
 
     def share(part: int, whole: int) -> str:
         return f"{part / whole:.1%} of {whole:,}" if whole else "none"

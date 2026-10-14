@@ -77,6 +77,7 @@ def test_a_conversation_costs_its_transcript_and_answers_each_turn():
     assert result.conversations == [{"all": all_chars, "expensive": expensive}]
     assert result.turns == 2
     assert (result.answers, result.cached) == (3, 0)
+    assert result.written == [140, 200, 100]
 
 
 def test_a_cached_answer_is_free_on_the_expensive_pool_only():
