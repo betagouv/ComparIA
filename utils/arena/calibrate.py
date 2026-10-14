@@ -6,9 +6,9 @@ allowances from it. Read-only. The CLI prints the whole replay; the admin's
 
 Each turn costs what both models were sent (system prompt, every turn so far
 with its web search results, that side's earlier answers) and what they
-wrote, priced at today's model prices and threshold. What the database cannot tell is
-left out: a failed attempt that a retry or a stand-in replaced, and a prompt
-refused before it reached the models.
+wrote, priced at today's model prices and threshold. What the database
+cannot tell is left out: a failed attempt that a retry or a stand-in
+replaced, and a prompt refused before it reached the models.
 """
 
 import logging
