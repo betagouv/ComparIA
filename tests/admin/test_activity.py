@@ -294,6 +294,22 @@ def test_the_list_filters_on_what_was_said_and_how_it_was_voted(activity):
     assert by_revealed == [revealed]
 
 
+def test_a_draw_without_expensive_models_shows_and_filters(activity):
+    async def scenario():
+        llms = await add_llms()
+        paused = await add_comparison(llms, expensive_paused=True)
+        await add_comparison(llms)
+        page = await services.list_conversations(
+            ConversationFilters(expensive_paused=True)
+        )
+        return paused, page.items, await services.get_conversation(paused)
+
+    paused, rows, conversation = activity(scenario)
+
+    assert [(row.id, row.expensive_paused) for row in rows] == [(paused, True)]
+    assert conversation is not None and conversation.expensive_paused
+
+
 def test_a_conversation_reads_in_full_without_who_wrote_it(activity):
     async def scenario():
         llms = await add_llms()
