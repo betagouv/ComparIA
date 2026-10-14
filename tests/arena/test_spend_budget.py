@@ -5,8 +5,9 @@ DB, no real Redis).
 The budgets used to be charged once both answers had streamed in full and
 without error. A visitor who closed the connection halfway, or sent many
 requests at once, got the models' answers and was never charged. Every route
-that calls the models now pays for what they are sent before it starts them,
-and for what they wrote once the turn is over, however it ended.
+that calls the models now pays before it starts them, for what they are sent
+and a typical answer, then for what they really wrote once the turn is over,
+however it ended.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_spend_budget.py
