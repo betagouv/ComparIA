@@ -20,6 +20,7 @@ from backend.arena.limits import (
     Allowance,
     AllowanceSpent,
     Identity,
+    LimitStatus,
     Pool,
     message_cost,
     read_status,
@@ -145,14 +146,19 @@ def refuse(spent: Sequence[Allowance], request: Request) -> LimitReachedError:
 
 def assert_allowance_left(
     anonymous_user_hash: RequiredAnomymous, request: Request
-) -> None:
+) -> LimitStatus:
     """Rate-limit model usage per anonymous session, with the IP as a backstop
     for clients that drop the session cookie. Only the whole allowance stops a
     message here: a spent expensive one keeps expensive models out of new
-    comparisons, see `pick_and_charge`."""
+    comparisons, see `pick_and_charge`, which takes the status read here."""
     who = Identity.of(anonymous_user_hash, get_ip(request))
-    if spent := read_status(who).spent_in("all"):
+    limit_status = read_status(who)
+    if spent := limit_status.spent_in("all"):
         raise refuse(spent, request)
+    return limit_status
+
+
+AllowanceLeft = Annotated[LimitStatus, Depends(assert_allowance_left)]
 
 
 def charge_budget(
@@ -183,6 +189,7 @@ def pick_and_charge(
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
+    limit_status: LimitStatus,
 ) -> tuple[tuple[UUID, UUID], bool]:
     """
     Draw the two models of a new comparison and charge its first message.
@@ -192,10 +199,12 @@ def pick_and_charge(
     pick of an expensive model is refused with its id, as is a mode left with
     nothing to draw.
 
+    `limit_status` is the one read before the route, see
+    `assert_allowance_left`.
+
     Returns the pair, and whether expensive models were open to this draw.
     """
     who = Identity.of(anonymous_user_hash, get_ip(request))
-    status = read_status(who)
 
     def without_expensive(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
         try:
@@ -214,8 +223,8 @@ def pick_and_charge(
         charge_budget(args.prompt_value, pair, llms_data, anonymous_user_hash, request)
         return pair
 
-    if not status.expensive_available:
-        return without_expensive(status.spent_in("expensive")), False
+    if not limit_status.expensive_available:
+        return without_expensive(limit_status.spent_in("expensive")), False
 
     pair = llms_data.pick_two(args.mode, args.custom_models_selection)
     try:
@@ -384,15 +393,13 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
     return generate_challenge(ALTCHA_MAX_NUMBER)
 
 
-@router.post(
-    "/add_first_text",
-    dependencies=[Depends(assert_allowance_left), Depends(assert_not_block_cooldown)],
-)
+@router.post("/add_first_text", dependencies=[Depends(assert_not_block_cooldown)])
 async def add_first_text(
     args: AddFirstTextBody,
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    allowance: AllowanceLeft,
 ) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -408,6 +415,7 @@ async def add_first_text(
         user: User if connected
         anonymous_user_hash: anonymous user hash from cookie
         request: FastAPI request
+        allowance: The person's allowances, read before anything else runs
 
     Returns:
         StreamingResponse: Server-Sent Events stream with LLM responses
@@ -448,7 +456,7 @@ async def add_first_text(
     # Select LLMs
     llms_data = await get_llms_data()
     (llm_a_id, llm_b_id), expensive_available = pick_and_charge(
-        args, llms_data, anonymous_user_hash, request
+        args, llms_data, anonymous_user_hash, request, allowance
     )
 
     logger.info(

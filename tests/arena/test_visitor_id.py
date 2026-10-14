@@ -86,7 +86,9 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             pick_and_charge=pick_and_charge,
         ):
             try:
-                asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))
+                asyncio.run(
+                    arena_router.add_first_text(body, None, "b" * 64, request, None)
+                )
             except HTTPException as error:
                 assert error.status_code == 503
 

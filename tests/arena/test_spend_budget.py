@@ -185,7 +185,10 @@ async def route_only(route, state, **first_text):
         body = arena_models.AddFirstTextBody(
             prompt_value=PROMPT, cohorts="", altcha_token="valid", **first_text
         )
-        return await arena_router.add_first_text(body, None, SESSION, request)
+        allowance = arena_router.read_status(limits.Identity.of(SESSION, IP))
+        return await arena_router.add_first_text(
+            body, None, SESSION, request, allowance
+        )
     if route == "add_text":
         message = arena_models.AddTextBody(message=PROMPT, altcha_token="valid")
         return await arena_router.add_text(

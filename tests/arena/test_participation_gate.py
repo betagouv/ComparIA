@@ -124,7 +124,7 @@ def send_first_message():
             "client": ("10.0.0.1", 1234),
         }
     )
-    return asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))
+    return asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request, None))
 
 
 def test_a_first_message_needs_the_terms_in_force_to_be_accepted():
