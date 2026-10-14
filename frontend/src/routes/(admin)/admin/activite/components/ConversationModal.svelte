@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Alert, Button, Modal } from '$components/dsfr'
+  import { Alert, Badge, Button, Modal } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import { api } from '$lib/fastapi-client'
   import type { ActivityConversation, ActivityConversationRow } from '$lib/generated/admin'
@@ -132,6 +132,14 @@
       {/if}
       <span aria-hidden="true">·</span>
       <JourneyTrack stage={stageOf(row)} />
+      {#if row.expensive_paused}
+        <Badge
+          size="sm"
+          variant="orange"
+          text={m['admin.activity.conversation.expensivePaused']()}
+          noTooltip
+        />
+      {/if}
     </p>
 
     {#if error}

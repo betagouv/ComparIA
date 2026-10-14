@@ -19,6 +19,7 @@ export const CONVERSATION_FILTERS = [
   'has_vote',
   'has_comment',
   'revealed',
+  'expensive_paused',
   'category',
   'flag',
   'search'

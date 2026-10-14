@@ -67,8 +67,16 @@
           </dd>
         </div>
       </dl>
-      {#if conversation.archived || conversation.error}
+      {#if conversation.archived || conversation.error || conversation.expensive_paused}
         <div class="mt-3 gap-1 flex flex-wrap">
+          {#if conversation.expensive_paused}
+            <Badge
+              size="sm"
+              variant="orange"
+              text={m['admin.activity.conversation.expensivePaused']()}
+              noTooltip
+            />
+          {/if}
           {#if conversation.archived}
             <Badge
               size="sm"

@@ -178,6 +178,14 @@
                     title={label('flags', flag)}
                   ></span>
                 {/each}
+                {#if row.expensive_paused}
+                  <span
+                    class="i-ri-pause-circle-line shrink-0"
+                    role="img"
+                    aria-label={m['admin.activity.conversation.expensivePaused']()}
+                    title={m['admin.activity.conversation.expensivePaused']()}
+                  ></span>
+                {/if}
                 {#if row.comment && !row.contains_pii}
                   <span class="gap-1 min-w-0 flex items-center">
                     <span class="i-ri-chat-quote-line shrink-0" aria-hidden="true"></span>

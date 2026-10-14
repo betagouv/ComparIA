@@ -63,6 +63,7 @@
                 "cohort": "Cohorte",
                 "details": "Détails",
                 "error": "Erreur : {code}",
+                "expensivePaused": "Modèles coûteux en pause",
                 "keywords": "Mots-clés",
                 "languages": "Langues",
                 "mode": "Mode",

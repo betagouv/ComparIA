@@ -167,7 +167,8 @@
                 "vote": "Vote: {choice}",
                 "readMore": "Read more",
                 "readLess": "Show less",
-                "versus": "{a} vs {b}"
+                "versus": "{a} vs {b}",
+                "expensivePaused": "Expensive models paused"
             },
             "errors": {
                 "timeout": "The query took too long. Narrow the period or remove some filters.",
