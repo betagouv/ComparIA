@@ -17,9 +17,13 @@
   })
   const baseRoute = '/admin/llms/llms' as const
 
+  const usage = $derived(new Map((data.usage ?? []).map((used) => [used.llm_id, used])))
+
   const llms = $derived(
     data.llms.map((llm) => ({
       ...llm,
+      // What it cost since midnight, Paris time, for the "Aujourd'hui" column.
+      today: usage.get(llm.id)?.estimated_usd,
       votes: data.data.models.find((other) => other.id === llm.id)?.data?.n_match,
       release_date: new Date(llm.release_date),
       updated_at: new Date(llm.updated_at),
@@ -33,6 +37,7 @@
     { id: 'human_id', label: 'Human ID', orderable: true },
     { id: 'status', label: 'Status', orderable: true },
     { id: 'price_out', label: 'Output price (per M tokens)', kind: 'number', orderable: true },
+    { id: 'today', label: m['admin.limits.today.title'](), kind: 'number', orderable: true },
     { id: 'release_date', label: 'Release date', kind: 'date', orderable: true },
     { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true },
@@ -82,6 +87,20 @@
       />
     {:else if col.id === 'price_out'}
       {dollars.format(llm.price_out)}
+    {:else if col.id === 'today'}
+      {@const used = usage.get(llm.id)}
+      {#if used}
+        <span class="gap-2 flex flex-wrap items-center">
+          <span>
+            {used.cap_usd === null
+              ? dollars.format(used.estimated_usd)
+              : `${dollars.format(used.estimated_usd)} / ${dollars.format(used.cap_usd)}`}
+          </span>
+          {#if used.resting}
+            <Badge size="sm" variant="orange" text={m['admin.limits.today.resting']()} noTooltip />
+          {/if}
+        </span>
+      {/if}
     {:else if col.id === 'release_date'}
       {toShortDate(llm.release_date, locale)}
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
