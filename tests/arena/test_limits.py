@@ -58,7 +58,9 @@ def test_a_lowered_allowance_refuses_at_its_new_limit(monkeypatch):
         limits.reserve(WHO, {"all": 1, "expensive": 1})
         with pytest.raises(AllowanceSpent) as refusal:
             limits.reserve(WHO, {"all": 1, "expensive": 1})
-    assert refusal.value.refused == (("expensive", "session"),)
+    assert [(a.pool, a.scope) for a in refusal.value.spent] == [
+        ("expensive", "session")
+    ]
 
 
 def test_a_message_that_counts_for_nothing_still_meets_a_spent_allowance():

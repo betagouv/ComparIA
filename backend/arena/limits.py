@@ -124,10 +124,6 @@ class AllowanceSpent(Exception):
         super().__init__(", ".join(f"{a.pool} per {a.scope}" for a in spent))
         self.spent = tuple(spent)
 
-    @property
-    def refused(self) -> tuple[tuple[Pool, Scope], ...]:
-        return tuple((allowance.pool, allowance.scope) for allowance in self.spent)
-
 
 def message_cost(
     text: str, llm_ids: tuple[UUID, UUID], llms_data: "LLMsData"
