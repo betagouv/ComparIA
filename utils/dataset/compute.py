@@ -544,7 +544,6 @@ _MODELS_EXCLUDE: dict = {
     "updated_at": True,
     "api_model_id": True,
     "endpoint_id": True,
-    "cost_weight": True,
     "lab_id": True,
     "license_id": True,
     "lab": {

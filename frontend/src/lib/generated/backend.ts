@@ -163,10 +163,6 @@ export interface APILLMData {
    */
   endpoint_id?: string | null;
   /**
-   * Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.
-   */
-  cost_weight?: number;
-  /**
    * The lab that developed the LLM, create it first if not already available
    */
   lab_id: string;
@@ -224,7 +220,7 @@ export interface APILLMData {
    */
   price_in: number;
   /**
-   * Price per million output tokens in USD.
+   * Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.
    */
   price_out: number;
   /**

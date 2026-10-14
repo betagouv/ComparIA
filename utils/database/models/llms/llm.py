@@ -1,9 +1,9 @@
 from datetime import date
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, field_validator, model_validator
+from pydantic import AfterValidator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
@@ -46,9 +46,6 @@ FIELDS = {
     "name": {
         "title": "Readable name",
     },
-    "cost_weight": {
-        "description": "Cost compared with an ordinary model. 1 = ordinary, above 1 = expensive. 4 = each character counts four times in the expensive-model allowance.",
-    },
     "release_date": {},
     "knowledge_cutoff": {
         "description": "Date after which the LLM no longer has knowledge.",
@@ -88,7 +85,7 @@ FIELDS = {
         "description": "Price per million input tokens in USD.",
     },
     "price_out": {
-        "description": "Price per million output tokens in USD.",
+        "description": "Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.",
     },
     "system_prompt": {
         "description": "System message to add in llm call if specified",
@@ -116,16 +113,6 @@ class LLMDataBase(BaseDBModel):
     endpoint_id: Annotated[
         UUID | None,
         Field(default=None, foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"]),
-    ]
-    cost_weight: Annotated[
-        float,
-        Field(
-            default=1.0,
-            ge=1,
-            le=100,
-            schema_extra={"json_schema_extra": {"optional": True}},
-            **FIELDS["cost_weight"],
-        ),
     ]
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
@@ -201,12 +188,6 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
-    @field_validator("cost_weight", mode="before")
-    @classmethod
-    def ordinary_when_left_empty(cls, value: Any) -> Any:
-        """The admin form sends null for a weight it cleared."""
-        return 1.0 if value is None else value
-
     @model_validator(mode="after")
     def check_active_params_is_defined_if_moe(self):
         """

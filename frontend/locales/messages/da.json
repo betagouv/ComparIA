@@ -1432,10 +1432,6 @@
                 "help": "Størrelsen på kontekstvinduet i tokens.",
                 "label": "Konteksttokens"
             },
-            "cost_weight": {
-                "help": "Omkostning i forhold til en almindelig model. 1 = almindelig, over 1 = dyr. 4 = hvert tegn tæller fire gange i kvoten til dyre modeller.",
-                "label": "Omkostningsvægt"
-            },
             "created_at": {
                 "label": "Oprettet"
             },
@@ -1486,7 +1482,7 @@
                 "label": "Inputpris"
             },
             "price_out": {
-                "help": "Pris pr. million outputtokens i $.",
+                "help": "Pris pr. million outputtokens i $. Ved eller over grænsen på siden Grænser regnes sprogmodellen som dyr.",
                 "label": "Outputpris"
             },
             "public_training_code": {

@@ -15,7 +15,6 @@ def payload(**overrides):
         "human_id": "test-llm",
         "api_model_id": "test-llm",
         "endpoint_id": uuid4(),
-        "cost_weight": 1.0,
         "lab_id": uuid4(),
         "release_date": date(2026, 1, 1),
         "license_id": uuid4(),
@@ -96,46 +95,11 @@ def test_llm_metadata_dates_are_date_only():
         LLMDataUpsert(**payload(release_date="2026-01-02T12:30:00"))
 
 
-def test_an_llm_left_without_a_cost_weight_costs_as_much_as_an_ordinary_one():
-    llm = LLMDataUpsert(**{k: v for k, v in payload().items() if k != "cost_weight"})
-
-    assert llm.cost_weight == 1.0
-
-
-def test_the_cost_weight_is_not_required_in_the_admin_form():
-    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
-
-    assert schema["properties"]["cost_weight"]["optional"] is True
-    assert "cost_weight" not in schema["required"]
-
-
-def test_a_cost_weight_below_one_is_refused():
-    with pytest.raises(ValidationError, match="cost_weight"):
-        LLMDataUpsert(**payload(cost_weight=0.5))
-
-    assert LLMDataUpsert(**payload(cost_weight=4)).cost_weight == 4.0
-
-
-def test_a_cost_weight_the_form_cleared_is_an_ordinary_one():
-    assert LLMDataUpsert(**payload(cost_weight=None)).cost_weight == 1.0
-
-
-@pytest.mark.parametrize("weight", [2.5, 100])
-def test_a_cost_weight_up_to_a_hundred_is_kept(weight):
-    assert LLMDataUpsert(**payload(cost_weight=weight)).cost_weight == weight
-
-
-@pytest.mark.parametrize("weight", [100.5, float("inf"), float("nan")])
-def test_a_cost_weight_above_a_hundred_or_not_finite_is_refused(weight):
-    with pytest.raises(ValidationError, match="cost_weight"):
-        LLMDataUpsert(**payload(cost_weight=weight))
-
-
-def test_an_llm_read_back_always_carries_its_cost_weight():
+def test_an_llm_read_back_always_carries_its_defaulted_fields():
     """
-    The admin list reads the weight of every row, so the type generated from
-    what the API sends must not mark it as possibly missing.
+    The API sends every field of an LLM, defaults included, so the type
+    generated from what it sends must not mark them as possibly missing.
     """
     schema = LLMData.model_json_schema(mode="serialization")
 
-    assert "cost_weight" in schema["required"]
+    assert {"links", "api_model_id", "system_prompt"} <= set(schema["required"])
