@@ -37,10 +37,7 @@ from backend.config import (  # noqa: E402
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_ALL_MODELS_INPUT_PER_IP,
 )
-from tests.arena.test_ratelimit import (  # noqa: E402
-    FakeRedis,
-    default_prompt_check,
-)
+from tests.arena.test_ratelimit import FakeRedis, default_prompt_check  # noqa: E402
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
@@ -103,6 +100,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             llm_id_a=llm_a,
             llm_id_b=llm_b,
             cohorts=None,
+            enabled_tools=[],
         )
 
     state.comparison = comparison
