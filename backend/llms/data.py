@@ -152,7 +152,8 @@ class LLMsData(BaseModel):
             UUID: Selected LLM id
 
         Raises:
-            NoModelLeft: If the hard exclusions leave no model
+            NoModelLeft: If the hard exclusions leave no model, or none but
+                the excluded ones
         """
         if len(models) == 0:
             logger.critical("No model to choose from")
@@ -171,6 +172,10 @@ class LLMsData(BaseModel):
 
         # Handle empty pool
         if len(models_pool) == 0:
+            if len(allowed) < len(models):
+                # The fallback below would hand back an excluded model, such as
+                # the one drawn for the other side: a model against itself.
+                raise NoModelLeft()
             # TODO: tell user in a toast notif that we couldn't respect prefs
             logger.warning("Couldn't respect exclusion prefs")
             # Fall back to the allowed models if couldn't respect exclusions

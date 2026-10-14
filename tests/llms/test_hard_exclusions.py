@@ -50,12 +50,27 @@ def drawn(mode, selection=None, data=None) -> set:
 
 def test_pick_one_never_puts_a_hard_exclusion_back():
     data = llms_data()
-    only = SMALL[0]
     picks = {
-        data.pick_one([only, *EXPENSIVE], excluded=[only], hard_excluded=EXPENSIVE)
+        data.pick_one(
+            [*SMALL, *EXPENSIVE], excluded=[SMALL[0]], hard_excluded=EXPENSIVE
+        )
         for _ in range(DRAWS)
     }
-    assert picks == {only}
+    assert picks == {SMALL[1]}
+
+
+def test_pick_one_with_only_the_excluded_left_raises_rather_than_repeat_it():
+    """Put back, the model drawn for one side would face itself."""
+    only = SMALL[0]
+    with pytest.raises(NoModelLeft):
+        llms_data().pick_one(
+            [only, *EXPENSIVE], excluded=[only], hard_excluded=EXPENSIVE
+        )
+
+
+def test_a_mode_left_with_one_model_has_nothing_to_draw():
+    with pytest.raises(NoModelLeft):
+        llms_data().pick_two("small-models", hard_excluded=[SMALL[1], *EXPENSIVE])
 
 
 def test_pick_one_with_nothing_left_raises():
