@@ -11,7 +11,7 @@
     colors: Record<PromptCheckDecision, string>
   } = $props()
 
-  const series: PromptCheckDecision[] = ['logged', 'warned', 'blocked', 'error']
+  const series: PromptCheckDecision[] = ['logged', 'warned', 'blocked', 'error', 'skipped']
   const width = 760
   const height = 250
   const left = 42

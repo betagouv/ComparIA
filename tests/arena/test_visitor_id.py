@@ -46,7 +46,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
     async def get_current_terms_acceptance_version(**_ids):
         return "2026.07"
 
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
     async def get_llms_data():
@@ -55,6 +55,9 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
     async def create_comparison(comparison):
         created.append(comparison)
         raise HTTPException(status_code=503, detail="stop here")
+
+    def charge_budget(*_args):
+        return None
 
     request = Request(
         {
@@ -80,6 +83,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             run_checks=run_checks,
             get_llms_data=get_llms_data,
             create_comparison=create_comparison,
+            charge_budget=charge_budget,
         ):
             try:
                 asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))

@@ -5,7 +5,7 @@
 
 export type PromptCheckAction = 'off' | 'log' | 'warn' | 'block'
 
-export type PromptCheckDecision = 'pass' | 'logged' | 'warned' | 'blocked' | 'error'
+export type PromptCheckDecision = 'pass' | 'logged' | 'warned' | 'blocked' | 'error' | 'skipped'
 
 /** Réponse de POST /admin/prompt-check/try. */
 export type PromptCheckTry = {

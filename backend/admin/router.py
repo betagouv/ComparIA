@@ -8,6 +8,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field, field_validator
 
+from backend.admin.activity import router as admin_activity_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
@@ -96,6 +97,7 @@ from utils.database.prompt_checks import (
     get_prompt_check,
     get_prompt_check_stats,
     get_warnings_shown,
+    is_key_rejected,
     update_prompt_check,
 )
 from utils.database.session import get_session
@@ -109,6 +111,7 @@ router = APIRouter(
     prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)]
 )
 
+router.include_router(admin_activity_router)
 router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_survey_router)
@@ -422,6 +425,8 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         auth_access_policy=row.auth_access_policy,
         auth_domain_allowlist=row.auth_domain_allowlist,
         votes_objective=row.votes_objective,
+        ranking_min_votes=row.ranking_min_votes,
+        ranking_max_rank_spread=row.ranking_max_rank_spread,
         survey_reask_after_days=row.survey_reask_after_days,
         platform_name=row.platform_name,
         primary_color_light=row.primary_color_light,
@@ -605,6 +610,7 @@ async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
     failures = get_consecutive_failures()
+    key_rejected = is_key_rejected()
     return PromptCheckStatus(
         enabled=row.enabled,
         has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
@@ -613,7 +619,8 @@ def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
         consecutive_failures=failures,
-        healthy=failures < UNHEALTHY_AFTER_FAILURES,
+        key_rejected=key_rejected,
+        healthy=failures < UNHEALTHY_AFTER_FAILURES and not key_rejected,
         warnings_shown=get_warnings_shown(),
     )
 

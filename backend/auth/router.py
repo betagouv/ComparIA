@@ -6,6 +6,7 @@ from typing import Literal
 from urllib.parse import urlencode
 from uuid import UUID
 
+import redis
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import (
@@ -70,16 +71,17 @@ from backend.auth.totp import (
     start_totp_setup,
     verify_totp_challenge,
 )
-from backend.config import settings
+from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
 from backend.survey.services import signup_questions_answered
-from backend.utils.user import get_ip
+from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
+    REDIS_ANONYMOUS_CONSENT_REQ,
     REDIS_AUTH_EMAIL_REQ,
     REDIS_AUTH_EMAIL_REQ_EMAIL,
     REDIS_AUTH_OIDC_REQ,
@@ -345,6 +347,19 @@ def _require_email_code(app_settings) -> None:
         )
 
 
+def _count_attempt(client: redis.Redis, key: str, ttl: int) -> int:
+    """Count one attempt and return the total so far. INCR is atomic, so
+    however many requests arrive at once, each sees its own number. The key
+    is created with its expiry in the same transaction: a connection lost
+    between the two would leave a counter that never runs out, and lock the
+    email or the account out for good."""
+    pipe = client.pipeline(transaction=True)
+    pipe.set(key, 0, ex=ttl, nx=True)
+    pipe.incr(key)
+    _created, count = pipe.execute()
+    return count
+
+
 @router.post("/email/request", status_code=status.HTTP_204_NO_CONTENT)
 async def email_request(body: EmailRequestBody, request: Request) -> None:
     _reject_cross_site(request)
@@ -358,7 +373,7 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
 
     try:
         client = get_redis_client()
-        key = REDIS_AUTH_EMAIL_REQ.format(ip=ip)
+        key = REDIS_AUTH_EMAIL_REQ.format(ip=ip_bucket(ip))
         count = client.incr(key)
         if count == 1:
             client.expire(key, 3600)
@@ -401,20 +416,23 @@ async def email_request(body: EmailRequestBody, request: Request) -> None:
         )
 
     code = await request_login_code(body.email)
-    try:
-        await send_login_code(
-            body.email,
-            code,
-            platform_name=app_settings.platform_name,
-            primary_color=app_settings.primary_color_light,
-            secondary_color=app_settings.secondary_color_light,
-            locale=body.locale or app_settings.default_locale,
-        )
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Failed to send login code, please try again later.",
-        )
+    # A deleted account gets no email, but the same answer as any other
+    # address, so the reply does not tell who once had an account.
+    if code is not None:
+        try:
+            await send_login_code(
+                body.email,
+                code,
+                platform_name=app_settings.platform_name,
+                primary_color=app_settings.primary_color_light,
+                secondary_color=app_settings.secondary_color_light,
+                locale=body.locale or app_settings.default_locale,
+            )
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Failed to send login code, please try again later.",
+            )
 
     # A fresh code resets the verify attempt counter so a locked-out user can
     # retry. The per-email request cap above still bounds total guesses.
@@ -435,28 +453,25 @@ async def email_verify(
     ip = get_ip(request)
     user_agent = request.headers.get("user-agent")
     email_hash = _hash(body.email)
-    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip, email=email_hash)
+    fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip=ip_bucket(ip), email=email_hash)
     # Same counter, keyed on the email alone: "*" is not a possible host, so the
     # two buckets never collide. Bounds guessing spread over many source IPs.
     email_fail_key = REDIS_AUTH_VERIFY_FAIL.format(ip="*", email=email_hash)
 
+    # Count every guess before checking it, right or wrong, so guesses sent
+    # all at once cannot all be checked before the first wrong one counts. A
+    # right code clears the count below.
     try:
         client = get_redis_client()
-        fail_count = client.get(fail_key)
-        if fail_count and int(fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS:
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many attempts, please request a new code.",
-            )
-        email_fail_count = client.get(email_fail_key)
-        if (
-            email_fail_count
-            and int(email_fail_count) >= settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL
+        for key, cap in (
+            (fail_key, settings.AUTH_VERIFY_MAX_ATTEMPTS),
+            (email_fail_key, settings.AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL),
         ):
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail="Too many attempts, please request a new code.",
-            )
+            if _count_attempt(client, key, 600) > cap:
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail="Too many attempts, please request a new code.",
+                )
     except HTTPException:
         raise
     except Exception as e:
@@ -470,15 +485,6 @@ async def email_verify(
         anonymous_user_hash=_anonymous_hash(request),
     )
     if not login:
-        try:
-            client = get_redis_client()
-            for key in (fail_key, email_fail_key):
-                fail_count = client.incr(key)
-                if fail_count == 1:
-                    client.expire(key, 600)
-        except Exception as e:
-            logger.error(f"[AUTH] Redis rate limit check failed: {e}")
-
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired code.",
@@ -550,8 +556,9 @@ _TOTP_ENROL_FAIL_TTL = 3600
 
 
 def _totp_enrol_guard(user_id: UUID) -> None:
-    """Wrong codes while enrolling are bounded per account. Fail-open like the
-    other Redis counters: a Redis outage must not lock admins out."""
+    """Refuse once the account is out of attempts, without spending one. For
+    a request that will not check a code. Fail-open like the other Redis
+    counters: a Redis outage must not lock admins out."""
     try:
         count = get_redis_client().get(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
         if count and int(count) >= _TOTP_ENROL_MAX_FAILS:
@@ -567,14 +574,35 @@ def _totp_enrol_guard(user_id: UUID) -> None:
         )
 
 
-def _totp_enrol_failed(user_id: UUID) -> None:
+def _totp_enrol_attempt(user_id: UUID) -> None:
+    """Spend one of the account's attempts before a code is checked, so codes
+    sent all at once cannot all be checked before the first wrong one counts.
+    A right code clears the count afterwards."""
     try:
-        client = get_redis_client()
         key = REDIS_AUTH_TOTP_FAIL.format(user=user_id)
-        if client.incr(key) == 1:
-            client.expire(key, _TOTP_ENROL_FAIL_TTL)
+        if (
+            _count_attempt(get_redis_client(), key, _TOTP_ENROL_FAIL_TTL)
+            > _TOTP_ENROL_MAX_FAILS
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Too many attempts, try again later.",
+            )
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not counted: {e}")
+        logger.warning(
+            f"[AUTH] Redis enrolment guard unavailable, letting through: {e}"
+        )
+
+
+def _totp_enrol_refund(user_id: UUID) -> None:
+    """Give the attempt back when no code was checked after all: a missing or
+    unreadable secret is not the admin's doing."""
+    try:
+        get_redis_client().decr(REDIS_AUTH_TOTP_FAIL.format(user=user_id))
+    except Exception as e:
+        logger.warning(f"[AUTH] Redis enrolment guard unavailable, not refunded: {e}")
 
 
 def _totp_enrol_passed(user_id: UUID) -> None:
@@ -598,7 +626,10 @@ async def totp_setup(
     body: TotpSetupBody, user: RequiredUser, response: Response
 ) -> TotpSetupResponse:
     _require_admin_role(user)
-    _totp_enrol_guard(user.id)
+    if body.code:
+        _totp_enrol_attempt(user.id)
+    else:
+        _totp_enrol_guard(user.id)
     app_settings = await get_app_settings()
     try:
         setup = await start_totp_setup(user, body.code, app_settings.platform_name)
@@ -608,12 +639,13 @@ async def totp_setup(
             detail="totp_code_required",
         )
     except InvalidTotpCodeError:
-        _totp_enrol_failed(user.id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
     except SecretUnreadableError:
+        if body.code:
+            _totp_enrol_refund(user.id)
         raise TotpSecretUnreadableError()
     if body.code:
         _totp_enrol_passed(user.id)
@@ -629,23 +661,24 @@ async def totp_confirm(
     body: TotpCodeBody, user: RequiredUser, request: Request
 ) -> None:
     _require_admin_role(user)
-    _totp_enrol_guard(user.id)
+    _totp_enrol_attempt(user.id)
     try:
         await confirm_totp_setup(
             user, body.code, request.cookies.get(SESSION_COOKIE) or ""
         )
     except TotpSetupMissingError:
+        _totp_enrol_refund(user.id)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="No authenticator waiting to be confirmed, start again.",
         )
     except InvalidTotpCodeError:
-        _totp_enrol_failed(user.id)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid authenticator code.",
         )
     except SecretUnreadableError:
+        _totp_enrol_refund(user.id)
         raise TotpSecretUnreadableError()
     _totp_enrol_passed(user.id)
 
@@ -710,7 +743,7 @@ async def oidc_login(
 
     try:
         client = get_redis_client()
-        key = REDIS_AUTH_OIDC_REQ.format(ip=get_ip(request))
+        key = REDIS_AUTH_OIDC_REQ.format(ip=ip_bucket(get_ip(request)))
         count = client.incr(key)
         if count == 1:
             client.expire(key, 3600)
@@ -1079,8 +1112,23 @@ async def consent_status(user: RequiredUser) -> dict:
 
 @router.post("/consent/anonymous", status_code=status.HTTP_204_NO_CONTENT)
 async def accept_anonymous_consent(
-    body: ConsentBody, anonymous_user_hash: RequiredAnomymous
+    body: ConsentBody, anonymous_user_hash: RequiredAnomymous, request: Request
 ) -> None:
+    try:
+        client = get_redis_client()
+        key = REDIS_ANONYMOUS_CONSENT_REQ.format(ip=ip_bucket(get_ip(request)))
+        count = client.incr(key)
+        if count == 1:
+            client.expire(key, 3600)
+        if count > RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="rate_limited"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[AUTH] Redis rate limit check failed: {e}")
+
     document = await _validated_terms(body.consent)
     await record_anonymous_consent(
         anonymous_user_hash, document, body.consent.accepted_at

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon, Link } from '$components/dsfr'
+  import { Icon } from '$components/dsfr'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
   import {
@@ -10,7 +10,7 @@
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
-  import { WinHistogram } from '.'
+  import { DownloadDataButton, WinHistogram } from '.'
 
   const platformName = getPlatformName()
 
@@ -189,15 +189,7 @@
               class="text-[14px]! text-dark-grey!"
             /> -->
 
-            <Link
-              href="#"
-              download="true"
-              text={m['actions.downloadData']()}
-              icon="download-line"
-              iconPos="right"
-              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
-              onclick={() => onDownloadData()}
-            />
+            <DownloadDataButton class="text-dark-grey!" onclick={onDownloadData} />
           </div>
         </div>
 
@@ -228,15 +220,7 @@
               class="text-[14px]! text-dark-grey!"
             /> -->
 
-            <Link
-              href="#"
-              download="true"
-              text={m['actions.downloadData']()}
-              icon="download-line"
-              iconPos="right"
-              class="text-dark-grey! bg-none! text-[14px]! no-underline!"
-              onclick={() => onDownloadData()}
-            />
+            <DownloadDataButton class="text-dark-grey!" onclick={onDownloadData} />
           </div>
         </div>
 

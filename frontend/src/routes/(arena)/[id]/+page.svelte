@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Link } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
@@ -9,6 +11,15 @@
   const id = $derived(page.params.id)
   const comparator = $derived(getComparison(id))
   const revealed = $derived(comparator.status === 'revealed')
+
+  // Any path the arena doesn't own lands here too (e.g. /arene), so an id with
+  // no comparison behind it goes back to the arena instead of rendering a chat.
+  // The query is kept so links like /arene?vs=… still preselect their models.
+  $effect(() => {
+    if (!comparator.comparison) {
+      goto(resolve(`/${page.url.search}`), { replaceState: true })
+    }
+  })
 
   let tosModal = $state<{
     runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
@@ -42,5 +53,7 @@
     </div>
   {/snippet}
 
-  <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
+  {#if comparator.comparison}
+    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
+  {/if}
 </PageLayout>

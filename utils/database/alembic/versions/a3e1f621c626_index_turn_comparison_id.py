@@ -18,6 +18,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    # if_not_exists: the index was already created by hand in production.
     # Deleting a comparison makes Postgres look for turns that still point
     # at it. Without this index, each one is a full read of the turn table.
     with op.get_context().autocommit_block():
@@ -27,6 +28,7 @@ def upgrade() -> None:
             ["comparison_id"],
             unique=False,
             postgresql_concurrently=True,
+            if_not_exists=True,
         )
 
 
@@ -36,4 +38,5 @@ def downgrade() -> None:
             "ix_turn_comparison_id",
             table_name="turn",
             postgresql_concurrently=True,
+            if_exists=True,
         )

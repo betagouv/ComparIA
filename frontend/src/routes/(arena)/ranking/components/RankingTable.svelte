@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Badge, Link, Table, Toggle, Tooltip } from '$components/dsfr'
+  import { Badge, Table, Toggle, Tooltip } from '$components/dsfr'
+  import DownloadDataButton from './DownloadDataButton.svelte'
   import { AILogo } from '$components/layout'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { convertFromUsd, currencyFormatter } from '$lib/currency'
@@ -255,15 +256,9 @@
         </div>
       {/if}
 
-      <Link
-        native={raw}
-        href="#"
-        download="true"
-        text={m['actions.downloadData']()}
-        icon="download-line"
-        iconPos="right"
-        class={['bg-none! text-[14px]! no-underline!', { 'text-grey!': raw }]}
-        onclick={() => onDownloadData()}
+      <DownloadDataButton
+        class={{ 'text-primary!': !raw, 'text-grey!': raw }}
+        onclick={onDownloadData}
       />
     </div>
   {/snippet}

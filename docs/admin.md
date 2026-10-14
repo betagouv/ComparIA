@@ -12,7 +12,7 @@ On an instance that is already running, `./comparia-cli db seed-admins` does the
 
 ## Two-factor authentication
 
-Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits. An admin who has just been invited or promoted should pair their app straight away: until they do, anyone holding their session can pair a device in their name.
+Every admin has to pair an authenticator app (Google Authenticator, Aegis, FreeOTP, or any app that reads a QR code and shows six digits). The first time an admin opens `/admin` without one, they land on `/settings` and are asked to set it up; after that, signing in asks for the email code and then the six digits. Promoting someone signs them out everywhere, so they pair their app at their next sign-in. An admin who has just accepted an invite should pair it straight away: until they do, anyone holding their session can pair a device in their name.
 
 The app's secrets are encrypted in the database with `COMPARIA_ENCRYPTION_KEY`. The same key protects the provider API keys of the endpoints, the moderation key and the publishing credentials. The backend refuses to start without one outside debug mode, and refuses to start anywhere with one that is not a Fernet key (a hex string from `openssl rand -hex 32` is not). The migration job needs the same variable, since `backend.config` checks it at import before Alembic runs. Generate one with:
 
@@ -36,6 +36,20 @@ If the only admin is locked out, there is no button left. Run the same reset fro
 ```
 
 Then sign in with an email code and set the app up again from `/settings`.
+
+## Activity
+
+`/admin/activite` shows what happens in the arena. The two filters at the top, period and model, apply to both tabs and stay in the address, so a link shows a colleague the same view. Mode, cohort, custom dates and archived conversations have no control on the page but still work when set in the address (`mode=`, `cohort=`, `start=`/`end=`, `include_archived=true`).
+
+**Vue d'ensemble** opens on the journey as a funnel: conversations started, those with at least one vote, those where the models were revealed, with the share that goes on at each step. Each step, and each group that stopped before the next one, opens the matching conversations. Under it sit the message counts, the activity over time, and the share of each vote and mode. Prompt checks have their own page under Vérifications. The counts are kept for five minutes; the link at the bottom computes them again. The period still under way is drawn as an estimate of what it will hold once full, read from how a typical day fills up, rather than as the drop its partial count would show.
+
+**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects, keywords and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
+
+To try the panel at the size of a real instance on a debug database:
+
+```bash
+make db-seed-activity COUNT=500000
+```
 
 ## LLMs
 
@@ -64,6 +78,8 @@ Adding models one by one through the panel is fine for a handful. For more, writ
 ## Customization
 
 `/admin/customization` controls the platform name, logo, the four brand colours (primary and secondary, each in a light and a dark variant), the homepage link, and the vote target the public counter counts towards.
+
+It also sets two leaderboard thresholds: the votes a model needs before it is ranked (0 by default), and how many places its rank may move either way before it is hidden (30 by default). A small instance can relax them to show something while votes come in. The vote minimum applies at the next ranking update, within the hour.
 
 ## Languages
 
@@ -107,11 +123,15 @@ If the button is there but every sign-in comes back to the login page with an er
 
 `/admin/utilisateurs` is where you search accounts, change roles, invite people by email, reset someone's two-factor authentication and delete an account. Anyone in `ADMIN_EMAILS` gets admin again on every restart, so remove them from the env before demoting them here.
 
+Changing someone's role signs them out everywhere, you included if you demote yourself. A pending invite still works, so to add an admin, invite them and then change their role. Changing someone's address signs them out too and cancels the links and codes already sent: send a new invite to the corrected address.
+
+A deleted account cannot ask for an email code. Inviting or re-adding its address brings it back signed out and without an authenticator: as a plain user by invite, or with the role you pick when you add it here.
+
 ### Inactive accounts
 
 `comparia-cli db purge-inactive --months N` (or `make db-purge-inactive MONTHS=N`) removes accounts nobody has signed into for N months. The default is 24, the two years the privacy policy states. It is a dry run until you pass `--apply` (`APPLY=1` with make): it lists who would get the warning, who would be erased, which rows asked for a login code but never signed in, and which admins would have matched. Run it that way from the CLI first to preview what the CronJob below will do.
 
-An account is first warned by email, once, 30 days before the deadline or as soon as it is found past it, in the language the person accepted the terms in. It is erased at the later of the deadline and 30 days after the warning, unless the person signs in again meanwhile, which resets the clock. Erasure is what the person gets when they delete their own account from the settings page, which goes further than a deletion from the admin panel: sessions are revoked, login codes and invite links go, the email address is replaced by a placeholder, the consent proof is kept without its address, and the conversations stay in the research datasets with no link back to the person. Rows that asked for a login code but never signed in are erased without a warning once past the deadline, as there was never an account to keep. Accounts holding an invite that can still be accepted are left alone. Admins are never erased, only listed. "Signed in" is what counts, not visits: a session lasts `AUTH_SESSION_LENGTH_DAYS` (30 by default), so the command refuses a number of months whose window, 30 days of notice included, would reach an account still on a live session.
+An account is first warned by email, once, 30 days before the deadline or as soon as it is found past it, in the language the person accepted the terms in. It is erased at the later of the deadline and 30 days after the warning, unless the person signs in again meanwhile, which resets the clock. Erasure is what the person gets when they delete their own account from the settings page. A deletion from the admin panel already signs the person out, closes their codes and links, and refuses new email codes; erasure also replaces the email address with a placeholder, keeps the consent proof without its address, and leaves the conversations in the research datasets with no link back to the person. Rows that asked for a login code but never signed in are erased without a warning once past the deadline, as there was never an account to keep. Accounts holding an invite that can still be accepted are left alone. Admins are never erased, only listed. "Signed in" is what counts, not visits: a session lasts `AUTH_SESSION_LENGTH_DAYS` (30 by default), so the command refuses a number of months whose window, 30 days of notice included, would reach an account still on a live session.
 
 The Helm chart carries a weekly CronJob for it, `cronjobs.purgeInactive`, off by default. Before you turn it on, publish a privacy policy that states the retention period you chose, and check SMTP is set up: the CronJob reads the same `config.smtp.*` and `config.appUrl` values as the backend, and without them no warning goes out. Accounts warned on an earlier run, and rows that never signed in, are still erased.
 

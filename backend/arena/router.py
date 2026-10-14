@@ -1,18 +1,20 @@
+import asyncio
 import logging
-from typing import Annotated, AsyncGenerator
+from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from backend.arena.captcha import generate_challenge
+from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
+    drop_flagged_results,
     issue_warning_token,
     run_prompt_check,
 )
-from backend.arena.models import AddFirstTextBody, AddTextBody
+from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -28,22 +30,33 @@ from backend.arena.services import (
 )
 from backend.arena.session import (
     ComparisonMetadata,
+    clear_unvoted,
     increment_blocked_prompts,
-    increment_input_chars,
+    increment_sent_warnings,
+    increment_unvoted,
     is_block_cooldown,
     is_ratelimited,
+    is_warning_cooldown,
+    reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
+    unvoted_comparisons,
 )
+from backend.arena.spam_detection import is_spam
 from backend.arena.streaming import (
     create_sse_response,
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.web_search import search_web
+from backend.arena.web_search import keep_search_results, search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
-from backend.config import MAX_TURNS_PER_COMPARISON
+from backend.config import (
+    ALTCHA_HARD_MAX_NUMBER,
+    ALTCHA_MAX_NUMBER,
+    ALTCHA_UNVOTED_COMPARISONS,
+    MAX_TURNS_PER_COMPARISON,
+)
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.survey.dependencies import require_answered_questions
 from backend.utils.user import get_ip
@@ -88,44 +101,107 @@ def assert_not_rate_limited(
         )
 
 
-def _is_pricey(comparison: ComparisonRead, llms_data: LLMsData) -> bool:
-    """Whether either side of this comparison is an expensive model."""
-    return any(
-        llm_id in llms_data.pricey_models
-        for llm_id in (comparison.llm_id_a, comparison.llm_id_b)
-    )
+def charge_budget(
+    text: str,
+    llm_ids: tuple[UUID, UUID],
+    llms_data: LLMsData,
+    anonymous_user_hash: str,
+    request: Request,
+) -> None:
+    """
+    Spend the message's characters against the session and IP budgets before
+    any model is called. The charge used to wait for a full, error-free answer,
+    so a client that hung up halfway, or sent many requests at once, never paid.
+    No refund when a model then fails: an error a client can provoke would buy
+    whatever the models had already written.
+    """
+    pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
+    if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
+        logger.error(
+            "Too much text submitted to the models for anonymous session",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
 
 
-def assert_not_block_cooldown(request: Request) -> None:
-    """Cool down IPs that keep tripping the content-safety guardrail."""
-    if is_block_cooldown(get_ip(request)):
+def assert_not_block_cooldown(
+    anonymous_user_hash: RequiredAnomymous, request: Request
+) -> None:
+    """Cool down IPs that keep tripping the prompt check, and sessions that
+    keep sending warned prompts anyway."""
+    if is_block_cooldown(get_ip(request)) or is_warning_cooldown(anonymous_user_hash):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="block_cooldown",
         )
 
 
+def assert_captcha_paid(token: str, session: str) -> None:
+    """
+    Refuse an easy captcha from a session that has to solve hard ones. One
+    comparison of slack over `get_challenge`: the browser fetches its next
+    challenge while the comparison that crosses the line is being created, so
+    that challenge may still be an easy one.
+    """
+    if (
+        unvoted_comparisons(session) > ALTCHA_UNVOTED_COMPARISONS
+        and solved_max_number(token) < ALTCHA_HARD_MAX_NUMBER
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[
+                {
+                    "loc": ["body", "altcha_token"],
+                    "msg": "captcha_failed",
+                    "type": "value_error",
+                }
+            ],
+        )
+
+
 async def run_checks(
-    text: str, field: str, request: Request, warning_token: str | None = None
+    text: str,
+    field: str,
+    request: Request,
+    warning_token: str | None = None,
+    context: Sequence[str] = (),
+    session: str = "",
 ) -> PromptCheckResult | None:
     """
-    Run the prompt check on a user message. Raises a 422 (shaped like a Pydantic
-    validation error so the frontend renders it under the input) when a category
-    set to `block` refuses the prompt, otherwise returns the verdict, to warn the
-    user about and to persist on the turn.
+    Run the spam patterns and the prompt check on a user message. Raises a 422
+    (shaped like a Pydantic validation error so the frontend renders it under
+    the input) when a pattern matches or a category set to `block` refuses the
+    prompt, otherwise returns the verdict, to warn the user about and to
+    persist on the turn.
     """
-    result = await run_prompt_check(text, request, warning_token=warning_token)
-    if result and result.decision == "error":
-        # The check fails open, so a prompt that times out the moderation API
-        # still reaches the models. Left at that, an attacker who can induce
-        # timeouts gets an unchecked arena for free, so a failure spends the
-        # same per-IP budget a block does. Refusing the prompt outright instead
-        # would take the whole arena down every time Mistral hiccups, which is
-        # the worse trade: one connection slowed is better than all of them
-        # stopped.
+    if is_spam(text):
+        # Counted like a block, so a script probing for a spelling the
+        # patterns miss runs into the cooldown instead of trying forever.
         increment_blocked_prompts(get_ip(request))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=[
+                {"loc": ["body", field], "msg": "spam_detected", "type": "value_error"}
+            ],
+        )
+
+    result = await run_prompt_check(
+        text, request, warning_token=warning_token, context=context
+    )
+    if result and result.decision == "blocked":
+        # A prompt that could not be checked is refused below but not charged:
+        # the failure is ours, and it gets an attacker nothing.
+        increment_blocked_prompts(get_ip(request))
+    if result and result.decision == "warned" and result.user_proceeded:
+        # A script reads the warning token off the response and resends, so
+        # without a cost `warn` would stop no one but people. Charged to the
+        # session rather than the IP, so people sharing one IP do not pay for
+        # each other.
+        increment_sent_warnings(session)
     if result and result.block_message:
-        increment_blocked_prompts(get_ip(request))
         result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -197,9 +273,12 @@ ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
 
 @router.get("/challenge")
-async def get_challenge() -> dict:
-    """Generate a new Altcha proof-of-work challenge."""
-    return generate_challenge()
+async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
+    """Generate a new Altcha proof-of-work challenge, a harder one for a session
+    that keeps starting comparisons without voting."""
+    if unvoted_comparisons(anonymous_user_hash) >= ALTCHA_UNVOTED_COMPARISONS:
+        return generate_challenge(ALTCHA_HARD_MAX_NUMBER)
+    return generate_challenge(ALTCHA_MAX_NUMBER)
 
 
 @router.post(
@@ -252,12 +331,16 @@ async def add_first_text(
         extra={"request": request},
     )
 
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
-        args.prompt_value, "prompt_value", request, args.warning_token
+        args.prompt_value,
+        "prompt_value",
+        request,
+        args.warning_token,
+        session=anonymous_user_hash,
     )
     if check and check.pending_warning:
         return warning_response(check, args.prompt_value)
-    check = (await save_prompt_check_result(check)) if check else None
 
     # Select LLMs
     llms_data = await get_llms_data()
@@ -267,9 +350,20 @@ async def add_first_text(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
+    charge_budget(
+        args.prompt_value, (llm_a_id, llm_b_id), llms_data, anonymous_user_hash, request
+    )
+    check = (await save_prompt_check_result(check)) if check else None
+
     web_search_results = None
     if args.web_search:
         web_search_results = await search_web(args.prompt_value)
+        if web_search_results:
+            web_search_results = keep_search_results(
+                args.prompt_value, web_search_results
+            )
+        if web_search_results:
+            web_search_results = await drop_flagged_results(web_search_results)
         if web_search_results:
             logger.info("Web search returned context", extra={"request": request})
 
@@ -292,6 +386,10 @@ async def add_first_text(
         f"Saved partial Comparison with id '{comparison.id}'",
         extra={"request": request},
     )
+    # Only new comparisons count. Someone deep in one conversation is using the
+    # arena; someone opening comparison after comparison and never voting is
+    # more likely using the models for free.
+    increment_unvoted(anonymous_user_hash)
 
     # Stream responses
     async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
@@ -323,13 +421,6 @@ async def add_first_text(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.prompt_value),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
@@ -380,9 +471,25 @@ async def add_text(
             detail="max_turns_reached",
         )
 
-    check = await run_checks(args.message, "message", request, args.warning_token)
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
+    check = await run_checks(
+        args.message,
+        "message",
+        request,
+        args.warning_token,
+        context=[turn.user_msg.content for turn in comparison_.turns],
+        session=anonymous_user_hash,
+    )
     if check and check.pending_warning:
         return warning_response(check, args.message)
+
+    charge_budget(
+        args.message,
+        (comparison_.llm_id_a, comparison_.llm_id_b),
+        await get_llms_data(),
+        anonymous_user_hash,
+        request,
+    )
     check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
@@ -407,14 +514,6 @@ async def add_text(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(args.message),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
@@ -422,9 +521,13 @@ async def add_text(
     return create_sse_response(event_stream())
 
 
-@router.post("/retry/{comparison_id}", dependencies=[Depends(assert_not_rate_limited)])
+@router.post(
+    "/retry/{comparison_id}",
+    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+)
 async def retry(
     comparison: ComparisonAnno,
+    args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> StreamingResponse:
@@ -436,6 +539,7 @@ async def retry(
 
     Args:
         comparison: linked Comparison
+        args: Request body with the captcha solution
         request: FastAPI request for logging
 
     Returns:
@@ -445,10 +549,15 @@ async def retry(
         HTTPException: If session not found or rate limiting triggered
     """
     logger.info(f"'/retry' on comparison '{comparison.id}'", extra={"request": request})
+    assert_captcha_paid(args.altcha_token, anonymous_user_hash)
 
     turn = comparison.turns[-1]
 
-    if turn.user_msg is None:
+    # Only a turn that failed or never finished can be run again. Otherwise one
+    # prompt that passed the check could be answered again and again, with no
+    # captcha and no check in the way.
+    finished = turn.llm_msg_a is not None and turn.llm_msg_b is not None
+    if turn.user_msg is None or (finished and not comparison.error):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="retry_unavailable",
@@ -469,6 +578,14 @@ async def retry(
             if new_llm_id := await pick_replacement_model(comparison, pos):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
+
+    charge_budget(
+        turn.user_msg.content,
+        (comparison.llm_id_a, comparison.llm_id_b),
+        await get_llms_data(),
+        anonymous_user_hash,
+        request,
+    )
 
     await update_comparison_error(comparison, None)
 
@@ -491,14 +608,6 @@ async def retry(
                 yield format_sse_event(chunk)
 
             if not comparison.error:
-                llms_data = await get_llms_data()
-                increment_input_chars(
-                    anonymous_user_hash,
-                    get_ip(request),
-                    len(turn.user_msg.content),
-                    pricey=_is_pricey(comparison, llms_data),
-                )
-
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
@@ -510,6 +619,7 @@ async def retry(
 async def vote(
     comparison: ComparisonAnno,
     vote: TurnVoteChoice | TurnVoteAnnotate,
+    anonymous_user_hash: RequiredAnomymous,
     request: Request,
 ) -> None:
     """
@@ -572,6 +682,8 @@ async def vote(
             ) from error
 
     await update_turn_vote(turn.id, vote)
+    if isinstance(vote, TurnVoteChoice):
+        clear_unvoted(anonymous_user_hash)
 
 
 @router.post("/reveal/{comparison_id}")
@@ -613,8 +725,10 @@ async def reveal(
     await set_comparison_revealed(comparison.id)
     llms_data = await get_llms_data()
 
-    # Return computed reveal data with environmental impact
-    return get_reveal_data(comparison, llms_data)
+    # Return computed reveal data with environmental impact. Counting the
+    # tokens of a long conversation takes seconds, so it runs off the event
+    # loop; the comparison is plain data by now, with no session behind it.
+    return await asyncio.to_thread(get_reveal_data, comparison, llms_data)
 
 
 @router.get("/comparison/list")

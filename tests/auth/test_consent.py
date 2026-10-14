@@ -125,12 +125,35 @@ def active_terms(document):
             yield
 
 
+class FakePipeline:
+    """Queues commands and runs them in one go, as MULTI/EXEC would."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.commands = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.commands.append((name, args, kwargs))
+
+        return queue
+
+    def execute(self):
+        return [getattr(self.redis, n)(*a, **k) for n, a, k in self.commands]
+
+
 class FakeRedis:
     def incr(self, key):
         return 1
 
     def expire(self, key, ttl):
         pass
+
+    def set(self, key, value, ex=None, nx=False):
+        return True
+
+    def pipeline(self, transaction=True):
+        return FakePipeline(self)
 
     def get(self, key):
         return None
@@ -153,13 +176,12 @@ def routed(auth_methods=("email_code",), **overrides):
             default_locale="fr",
         )
 
-    with patched(
-        auth_router,
-        get_redis_client=lambda: FakeRedis(),
-        verify_altcha_token=lambda _payload: (True, None),
-        get_app_settings=app_settings,
-        **overrides,
-    ):
+    defaults = {
+        "get_redis_client": lambda: FakeRedis(),
+        "verify_altcha_token": lambda _payload: (True, None),
+        "get_app_settings": app_settings,
+    }
+    with patched(auth_router, **(defaults | overrides)):
         app = FastAPI()
         app.include_router(auth_router.router)
         test_client = TestClient(app)
@@ -346,6 +368,37 @@ def test_acceptance_of_the_active_document_is_recorded():
         )
     assert response.status_code == 204
     assert session.committed
+
+
+class CountingRedis:
+    def __init__(self, start=0):
+        self.count = start
+
+    def incr(self, _key):
+        self.count += 1
+        return self.count
+
+    def expire(self, _key, _ttl):
+        pass
+
+
+def test_fresh_anonymous_sessions_are_capped_per_ip():
+    """A script that clears its cookie whenever the session budget runs out
+    has to accept the terms again, and that is capped per IP."""
+    limit = auth_router.RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR
+    redis = CountingRedis(start=limit)
+    session = FakeSession()
+    with (
+        active_terms(DOCUMENT),
+        fake_session(session),
+        routed(get_redis_client=lambda: redis) as test_client,
+    ):
+        response = test_client.post(
+            "/auth/consent/anonymous", json={"consent": evidence()}
+        )
+    assert response.status_code == 429
+    assert response.json()["detail"] == "rate_limited"
+    assert not session.committed
 
 
 def test_current_acceptance_reports_the_document_version():

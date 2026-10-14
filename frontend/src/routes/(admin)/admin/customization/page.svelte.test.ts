@@ -26,6 +26,8 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   auth_access_policy: 'anonymous_first',
   auth_domain_allowlist: [],
   votes_objective: votesObjective,
+  ranking_min_votes: 0,
+  ranking_max_rank_spread: 30,
   survey_reask_after_days: 7,
   platform_name: 'ComparIA',
   primary_color_light: '#000091',
@@ -72,5 +74,23 @@ describe('admin customization page', () => {
     await fireEvent.submit(input.closest('form')!)
 
     await waitFor(() => expect(votes.objective).toBe(450_000))
+  })
+
+  it('sends the leaderboard thresholds on save', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    const { container } = render(Page)
+    await waitFor(() =>
+      expect(container.querySelector('#settings-ranking-min-votes')).not.toBeNull()
+    )
+    const minVotes = container.querySelector<HTMLInputElement>('#settings-ranking-min-votes')!
+    const spread = container.querySelector<HTMLInputElement>('#settings-ranking-max-rank-spread')!
+
+    await fireEvent.input(minVotes, { target: { value: '50' } })
+    await fireEvent.input(spread, { target: { value: '60' } })
+    await fireEvent.submit(minVotes.closest('form')!)
+
+    await waitFor(() => expect(api.request).toHaveBeenCalledTimes(2))
+    const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
+    expect(body).toMatchObject({ ranking_min_votes: 50, ranking_max_rank_spread: 60 })
   })
 })

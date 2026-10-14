@@ -14,6 +14,12 @@
 
   const navLinks: NavLink[] = $derived([
     {
+      label: m['admin.nav.activity'](),
+      href: '/admin/activite',
+      icon: 'i-ri-line-chart-line',
+      isCurrent: () => page.url.pathname.startsWith('/admin/activite')
+    },
+    {
       label: m['admin.nav.customization'](),
       href: '/admin/customization',
       icon: 'i-ri-palette-line'

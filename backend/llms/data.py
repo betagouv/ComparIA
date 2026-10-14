@@ -18,6 +18,7 @@ from backend.utils.countries import get_ranking
 from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.llms import LLMData
 from utils.database.session import get_session
+from utils.database.settings import get_app_settings
 from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
 
 if TYPE_CHECKING:
@@ -259,6 +260,9 @@ class LLMList(BaseModel):
     data_timestamp: float | None
     models: list[APILLMData]
     style_coefficients: dict[str, float] | None
+    # How far a model's rank may move either way and still be shown, see
+    # AppSettings.ranking_max_rank_spread.
+    max_rank_spread: int
     currency: CurrencyInfo
 
 
@@ -267,12 +271,14 @@ async def get_llms_list() -> LLMList:
     llms = await get_llms_data()
     ranking = get_ranking()
     currency = await get_currency_info()
+    app_settings = await get_app_settings()
 
     return LLMList.model_validate(
         {
             "models": llms.all.values(),
             "data_timestamp": ranking.timestamp if ranking else None,
             "style_coefficients": ranking.style_coefficients if ranking else None,
+            "max_rank_spread": app_settings.ranking_max_rank_spread,
             "currency": currency,
         },
         context={"ranking": ranking},
@@ -280,9 +286,15 @@ async def get_llms_list() -> LLMList:
 
 
 async def pick_replacement_model(
-    comparison: "ComparisonRead", pos: "BotPos"
+    comparison: "ComparisonRead", pos: "BotPos", charged: bool = False
 ) -> str | None:
-    """Pick a replacement model from the appropriate pool, excluding both current models."""
+    """
+    Pick a replacement model from the appropriate pool, excluding both current models.
+
+    `charged` says the turn already paid its character budgets for the current
+    pair. If neither model is pricey, the turn skipped the pricey budget, so
+    no pricey model may take over.
+    """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
@@ -298,6 +310,10 @@ async def pick_replacement_model(
         )
     else:
         pool = models.random_models
+
+    pricey = models.pricey_models
+    if charged and failing not in pricey and other not in pricey:
+        pool = [llm_id for llm_id in pool if llm_id not in pricey]
 
     try:
         return models.pick_one(pool, excluded=excluded)

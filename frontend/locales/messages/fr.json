@@ -46,6 +46,145 @@
         "selectLanguage": "Sélectionner une langue"
     },
     "admin": {
+        "activity": {
+            "title": "Activité",
+            "subTitle": "Ce qui se passe dans l'arène : les questions posées, les modèles comparés, les votes.",
+            "tabs": {
+                "overview": "Vue d'ensemble",
+                "conversations": "Conversations"
+            },
+            "filters": {
+                "label": "Filtres",
+                "period": "Période",
+                "model": "Modèle",
+                "search": "Rechercher dans les messages",
+                "periodsShort": {
+                    "24h": "24 h",
+                    "7d": "7 j",
+                    "30d": "30 j",
+                    "90d": "90 j",
+                    "365d": "12 mois",
+                    "all": "Tout"
+                },
+                "journey": "Parcours",
+                "allModels": "Tous les modèles",
+                "allJourneys": "Tous les parcours"
+            },
+            "modes": {
+                "random": "Aléatoire",
+                "big-vs-small": "Grand contre petit",
+                "small-models": "Petits modèles",
+                "custom": "Choix manuel"
+            },
+            "choices": {
+                "a_better": "A est meilleur",
+                "b_better": "B est meilleur",
+                "both_good": "Les deux sont bons",
+                "both_bad": "Les deux sont mauvais",
+                "idk": "Ne sait pas",
+                "none": "Pas de vote"
+            },
+            "flags": {
+                "pii": "Données personnelles",
+                "spam": "Spam",
+                "error": "Erreur",
+                "archived": "Archivée",
+                "not_analyzed": "Pas encore analysée"
+            },
+            "overview": {
+                "computedAt": "Chiffres calculés à {time}",
+                "refresh": "Actualiser",
+                "metrics": {
+                    "conversations": "Conversations",
+                    "prompts": "Messages envoyés",
+                    "voteRate": "Messages votés",
+                    "commentRate": "Messages commentés",
+                    "promptsPerConversation": "Messages par conversation",
+                    "errorRate": "Conversations en erreur"
+                },
+                "ofPrompts": "{count} sur {total} messages",
+                "ofConversations": "{count} sur {total} conversations",
+                "activityTitle": "Activité dans le temps",
+                "activityChartTitle": "Conversations et messages",
+                "activityTable": "Conversations et messages par période",
+                "activityDate": "Période",
+                "funnelTitle": "Parcours",
+                "funnel": {
+                    "started": "Conversations commencées",
+                    "voted": "Avec au moins un vote",
+                    "revealed": "Modèles révélés",
+                    "continue": "{share} continuent",
+                    "dropped": "{count} s’arrêtent là"
+                },
+                "choicesTitle": "Votes",
+                "modesTitle": "Modes",
+                "empty": "Aucune conversation sur cette période.",
+                "unvoted": "Sans vote : {count} messages ({share})"
+            },
+            "conversations": {
+                "caption": "Conversations",
+                "cols": {
+                    "date": "Date",
+                    "models": "Modèles",
+                    "conversation": "Conversation",
+                    "journey": "Parcours"
+                },
+                "count": "{count} conversations",
+                "countCapped": "Plus de {count} conversations",
+                "next": "Suivantes",
+                "first": "Revenir aux plus récentes",
+                "empty": "Aucune conversation ne correspond à ces filtres.",
+                "hiddenPrompt": "Masqué : données personnelles",
+                "open": "Ouvrir la page",
+                "previous": "Précédente",
+                "nextOne": "Suivante",
+                "turnsCount": "{count} messages"
+            },
+            "conversation": {
+                "title": "Conversation",
+                "back": "Retour aux conversations",
+                "prompt": "Message {index}",
+                "analysis": "Analyse",
+                "notAnalyzed": "Cette conversation n'a pas encore été analysée.",
+                "summary": "Résumé",
+                "keywords": "Mots-clés",
+                "categories": "Sujets",
+                "languages": "Langues",
+                "details": "Détails",
+                "mode": "Mode",
+                "cohort": "Cohorte",
+                "revealed": "Modèles révélés",
+                "yes": "Oui",
+                "no": "Non",
+                "archived": "Archivée : {reason}",
+                "error": "Erreur : {code}",
+                "systemPrompts": "Instructions système",
+                "piiWarning": "L'analyse a repéré des données personnelles dans cette conversation. Le texte est masqué.",
+                "show": "Afficher le texte",
+                "unknownModel": "Modèle supprimé",
+                "tokens": "jetons",
+                "noAnswer": "Pas de réponse : erreur ou délai dépassé.",
+                "vote": "Vote : {choice}",
+                "readMore": "Lire la suite",
+                "readLess": "Réduire",
+                "versus": "{a} contre {b}"
+            },
+            "errors": {
+                "timeout": "La requête a pris trop de temps. Réduisez la période ou retirez des filtres.",
+                "generic": "Les données n'ont pas pu être chargées."
+            },
+            "verdicts": {
+                "preferred": "Préférée",
+                "rejected": "Rejetée",
+                "mixed": "Avis partagés"
+            },
+            "stages": {
+                "started": "Sans vote",
+                "voted": "Votée",
+                "revealed": "Révélée",
+                "commented": "Commentée"
+            }
+        },
         "endpointKey": {
             "hint": "Laissez le champ vide pour conserver la clé actuelle. Saisissez-en une nouvelle pour la remplacer.",
             "remove": "Retirer la clé",
@@ -169,6 +308,7 @@
             "title": "LLMs data configuration"
         },
         "nav": {
+            "activity": "Activité",
             "authentification": "Authentification",
             "customization": "Personnalisation",
             "legal": "Documents juridiques",
@@ -217,6 +357,7 @@
                     "error": "La vérification n'a pas répondu",
                     "logged": "Surveillé",
                     "pass": "Passé sans rien",
+                    "skipped": "Pas vérifié, Mistral en panne",
                     "warned": "Prévenu"
                 },
                 "decisionLegend": "Résultat",
@@ -264,7 +405,9 @@
             "health": {
                 "failures": "{count} échecs consécutifs",
                 "unhealthy": "La vérification ne répond plus",
-                "unhealthyHint": "Les appels à l'API de modération échouent. La vérification laisse passer tous les messages, ce qui ressemble en tout point à une vérification qui ne trouve rien. Contrôlez la clé Mistral et les journaux du serveur."
+                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
+                "keyRejected": "Mistral refuse la clé",
+                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous."
             },
             "model": {
                 "label": "Modèle de modération"
@@ -288,6 +431,7 @@
                     "error": "En échec",
                     "logged": "Surveillés",
                     "pass": "Passés sans rien",
+                    "skipped": "Non vérifiés (Mistral en panne)",
                     "warned": "Prévenus"
                 },
                 "proceeded": "{count} envoyés quand même",
@@ -450,6 +594,13 @@
                     "updated": "Logo mis à jour"
                 },
                 "platformName": "Nom de la plateforme",
+                "ranking": {
+                    "title": "Classement",
+                    "minVotes": "Nombre minimum de votes",
+                    "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
+                    "maxRankSpread": "Écart de rang maximum",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs."
+                },
                 "votesObjective": "Objectif de votes"
             },
             "loading": "Chargement...",
@@ -694,8 +845,10 @@
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
                 "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
-                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7."
+                "self_harm": "Si vous traversez une période difficile ou avez des pensées suicidaires, vous n'êtes pas seul·e. Le 3114, numéro national de prévention du suicide, est joignable gratuitement et de façon confidentielle 24h/24 et 7j/7.",
+                "unavailable": "Votre message n'a pas pu être vérifié. Veuillez réessayer dans quelques minutes."
             },
+            "prompt_too_long": "Votre message dépasse 20 000 caractères. Veuillez le raccourcir.",
             "rate_limited": "Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits.",
             "retry_unavailable": "Il n'est pas possible de réessayer, veuillez recharger la page.",
             "spam_detected": "Ce format de message n'est pas autorisé. Veuillez écrire en langage naturel."
@@ -1786,7 +1939,7 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "no_data": "Le classement est actuellement indisponible ou en cours de calcul.",
-        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que l’incertitude sur son score descend sous ±30 points : continuez à voter !",
+        "notEnoughVotes": "Aucun modèle n’a encore reçu assez de votes pour être classé. Un modèle apparaît dès que son rang est assez sûr : continuez à voter !",
         "personal": {
             "cols": {
                 "battles": "Comparaisons",
@@ -2085,6 +2238,8 @@
         "activity": {
             "conversationsLabel": "Conversations",
             "dateLabel": "Date",
+            "estimateLabel": "estimation pour la période en cours",
+            "ongoingLabel": "en cours",
             "promptsLabel": "Prompts envoyés",
             "sectionTitle": "Activité",
             "tableLabel": "Consulter les données sous forme de tableau",

@@ -10,13 +10,15 @@ const ARENA_ERRORS = {
   retry_unavailable: () => m['arene.apiErrors.retry_unavailable'](),
   captcha_failed: () => m['arene.apiErrors.captcha_failed'](),
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),
+  prompt_too_long: () => m['arene.apiErrors.prompt_too_long'](),
   spam_detected: () => m['arene.apiErrors.spam_detected']()
 } as const
 
 const PROMPT_CHECK_MESSAGES = {
   generic: () => m['arene.apiErrors.prompt_check.generic'](),
   self_harm: () => m['arene.apiErrors.prompt_check.self_harm'](),
-  pii: () => m['arene.apiErrors.prompt_check.pii']()
+  pii: () => m['arene.apiErrors.prompt_check.pii'](),
+  unavailable: () => m['arene.apiErrors.prompt_check.unavailable']()
 } as const
 
 export type ArenaErrorKey = keyof typeof ARENA_ERRORS
@@ -29,7 +31,7 @@ export function isArenaErrorKey(detail: unknown): detail is ArenaErrorKey {
 /** The sentence for a backend `detail`, or the detail itself when unknown. */
 export function arenaErrorMessage(detail: string): string {
   if (isArenaErrorKey(detail)) return ARENA_ERRORS[detail]()
-  // Pydantic prefixes the message of a failed field validator.
+  // Pydantic prefixes the message of a failed validator.
   const stripped = detail.replace(/^Value error, /, '')
   return isArenaErrorKey(stripped) ? ARENA_ERRORS[stripped]() : detail
 }

@@ -938,9 +938,29 @@ def test_revoking_a_challenge_spends_it_rather_than_forgetting_it():
 # Enrolment routes and the admin gate
 
 
+class FakePipeline:
+    """Queues commands and runs them in one go, as MULTI/EXEC would."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.commands = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.commands.append((name, args, kwargs))
+
+        return queue
+
+    def execute(self):
+        return [getattr(self.redis, n)(*a, **k) for n, a, k in self.commands]
+
+
 class NoRedis:
     def get(self, _key):
         return None
+
+    def set(self, _key, _value, ex=None, nx=False):
+        return True
 
     def incr(self, _key):
         return 1
@@ -950,6 +970,9 @@ class NoRedis:
 
     def delete(self, _key):
         pass
+
+    def pipeline(self, transaction=True):
+        return FakePipeline(self)
 
 
 @contextlib.contextmanager
@@ -1044,9 +1067,14 @@ def test_confirm_without_a_pending_secret_is_a_conflict():
     async def nothing_pending(*_args):
         raise auth_totp.TotpSetupMissingError()
 
-    with signed_in(admin, confirm_totp_setup=nothing_pending) as client:
+    redis = CountingRedis()
+    with signed_in(
+        admin, confirm_totp_setup=nothing_pending, get_redis_client=lambda: redis
+    ) as client:
         r = client.post("/auth/totp/confirm", json={"code": "123456"})
     assert r.status_code == 409
+    # No code was checked, so no attempt is spent.
+    assert set(redis.store.values()) <= {0}
 
 
 def test_too_many_wrong_enrolment_codes_are_refused():
@@ -1058,9 +1086,13 @@ def test_too_many_wrong_enrolment_codes_are_refused():
         def get(self, _key):
             return str(auth_router._TOTP_ENROL_MAX_FAILS)
 
-    with signed_in(admin, get_redis_client=Saturated) as client:
-        r = client.post("/auth/totp/confirm", json={"code": "123456"})
-    assert r.status_code == 429
+        def incr(self, _key):
+            return auth_router._TOTP_ENROL_MAX_FAILS + 1
+
+    with signed_in(admin, get_app_settings=platform, get_redis_client=Saturated) as c:
+        assert c.post("/auth/totp/confirm", json={"code": "123456"}).status_code == 429
+        assert c.post("/auth/totp/setup", json={"code": "123456"}).status_code == 429
+        assert c.post("/auth/totp/setup", json={}).status_code == 429
 
 
 def test_wrong_enrolment_codes_are_five_an_hour():
@@ -1075,8 +1107,9 @@ def test_wrong_enrolment_codes_are_five_an_hour():
     expiries = {}
 
     class Counting(NoRedis):
-        def expire(self, key, ttl):
-            expiries[key] = ttl
+        def set(self, key, _value, ex=None, nx=False):
+            expiries[key] = ex
+            return True
 
     async def wrong(*_args):
         raise auth_totp.InvalidTotpCodeError()
@@ -1149,6 +1182,77 @@ def test_a_confirmed_enrolment_forgets_the_wrong_codes_before_it():
     assert deleted == [auth_router.REDIS_AUTH_TOTP_FAIL.format(user=admin.id)]
 
 
+class CountingRedis(NoRedis):
+    """Keeps real counts, so a test can see what a burst leaves behind."""
+
+    def __init__(self):
+        self.store = {}
+
+    def get(self, key):
+        value = self.store.get(key)
+        return None if value is None else str(value)
+
+    def set(self, key, value, ex=None, nx=False):
+        if nx and key in self.store:
+            return None
+        self.store[key] = int(value)
+        return True
+
+    def incr(self, key):
+        self.store[key] = self.store.get(key, 0) + 1
+        return self.store[key]
+
+    def decr(self, key):
+        self.store[key] = self.store.get(key, 0) - 1
+        return self.store[key]
+
+    def delete(self, key):
+        self.store.pop(key, None)
+
+
+@pytest.mark.parametrize("route", ["/auth/totp/setup", "/auth/totp/confirm"])
+def test_parallel_wrong_enrolment_codes_stop_at_the_cap(route):
+    """Codes sent all at once must meet the same cap as codes sent one by
+    one: a burst cannot slip in between the check and the count."""
+    import httpx
+
+    import backend.auth.router as auth_router
+
+    admin = User(email="admin@example.org", role="admin")
+    evaluated = []
+
+    async def slow_wrong(_user, code, *_args):
+        evaluated.append(code)
+        # The database round trip, where the other requests get their turn.
+        await asyncio.sleep(0.01)
+        raise auth_totp.InvalidTotpCodeError()
+
+    redis = CountingRedis()
+
+    async def burst(app):
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(
+            transport=transport, base_url="http://testserver"
+        ) as client:
+            return await asyncio.gather(
+                *(client.post(route, json={"code": f"{n:06d}"}) for n in range(30))
+            )
+
+    with signed_in(
+        admin,
+        get_app_settings=platform,
+        start_totp_setup=slow_wrong,
+        confirm_totp_setup=slow_wrong,
+        get_redis_client=lambda: redis,
+    ) as client:
+        responses = asyncio.run(burst(client.app))
+
+    assert len(evaluated) == auth_router._TOTP_ENROL_MAX_FAILS
+    statuses = [r.status_code for r in responses]
+    assert statuses.count(400) == len(evaluated)
+    assert statuses.count(429) == 30 - len(evaluated)
+
+
 def test_a_redis_outage_lets_enrolment_through_and_says_so(caplog):
     import logging
 
@@ -1172,12 +1276,7 @@ def test_a_redis_outage_lets_enrolment_through_and_says_so(caplog):
 
 def test_enrolment_routes_answer_503_when_no_key_opens_the_secret():
     admin = User(email="admin@example.org", role="admin")
-    counted = []
-
-    class Counting(NoRedis):
-        def incr(self, key):
-            counted.append(key)
-            return 1
+    redis = CountingRedis()
 
     async def unreadable(*_args):
         raise SecretUnreadableError()
@@ -1186,20 +1285,20 @@ def test_enrolment_routes_answer_503_when_no_key_opens_the_secret():
         admin,
         get_app_settings=platform,
         start_totp_setup=unreadable,
-        get_redis_client=Counting,
+        get_redis_client=lambda: redis,
     ) as client:
         r = client.post("/auth/totp/setup", json={"code": "123456"})
     assert r.status_code == 503
     assert r.json()["detail"] == "totp_secret_unreadable"
 
     with signed_in(
-        admin, confirm_totp_setup=unreadable, get_redis_client=Counting
+        admin, confirm_totp_setup=unreadable, get_redis_client=lambda: redis
     ) as client:
         r = client.post("/auth/totp/confirm", json={"code": "123456"})
     assert r.status_code == 503
     assert r.json()["detail"] == "totp_secret_unreadable"
     # Not the admin's doing: it does not eat into their attempts.
-    assert counted == []
+    assert set(redis.store.values()) <= {0}
 
 
 def test_admin_routes_want_an_enrolled_authenticator():
@@ -1394,7 +1493,7 @@ def test_the_cli_reset_is_wired_into_comparia_cli():
     assert "reset-totp" in cli_db
 
 
-def test_demoting_an_admin_forgets_their_authenticator():
+def test_demoting_an_admin_forgets_their_authenticator_and_sessions():
     import backend.admin.services as admin_services
     from utils.database.models.auth import UserUpsert
 
@@ -1423,6 +1522,10 @@ def test_demoting_an_admin_forgets_their_authenticator():
         "auth_totp",
         "auth_totp_challenge",
     }
+    [sessions] = updates_on(session.statements, "auth_session")
+    assert sessions["revoked_at"] is not None
+    [codes] = updates_on(session.statements, "auth_login_code")
+    assert codes["used_at"] is not None
 
 
 def test_deleting_an_admin_closes_every_way_back_in():

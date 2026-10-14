@@ -1,19 +1,19 @@
 {
-  "version": "1.5",
+  "version": "1.6",
   "description": "Regex patterns to detect prompt injection spam. Blocks structured prompt template formats that no legitimate user would type.",
   "patterns": [
     {
       "name": "xml_chat_tags",
-      "regex": "<\\s*/?\\s*(?:conversation|user|assistant|system)\\s*>",
+      "regex": "<\\s*(?:/\\s*)?(?:conversation|user|assistant|system|human|developer)\\s*>",
       "flags": "IGNORECASE",
-      "description": "XML-style chat role tags: <user>, </assistant>, <system>, <conversation>, etc.",
+      "description": "XML-style chat role tags: <user>, </assistant>, <system>, <human>, <developer>, <conversation>, etc.",
       "enabled": true
     },
     {
       "name": "json_role_injection",
-      "regex": "[\"']role[\"']\\s*:\\s*[\"'](?:system|user|assistant)[\"']",
+      "regex": "[\"'`“”‘’]role[\"'`“”‘’]\\s*:\\s*[\"'`“”‘’](?:system|user|assistant|developer)[\"'`“”‘’]",
       "flags": "IGNORECASE",
-      "description": "JSON role objects with single or double quotes: {\"role\":\"system\",...} or {'role':'system',...}",
+      "description": "JSON role objects with any quote style, including backticks and curly quotes: {\"role\":\"system\",...}, {`role`: `developer`}",
       "enabled": true
     },
     {
@@ -46,7 +46,7 @@
     },
     {
       "name": "role_prefixed_command",
-      "regex": "^\\s*(?:User|Assistant|System)\\s*:\\s*(?:say|repeat|respond|reply)\\s+",
+      "regex": "^[^\\S\\n]*(?:User|Assistant|System)\\s*:\\s*(?:say|repeat|respond|reply)\\s+",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Role-prefixed short commands used by bots: 'User: say ok', 'Assistant: repeat hello', etc.",
       "enabled": true
@@ -67,7 +67,7 @@
     },
     {
       "name": "fake_session_id_prefix",
-      "regex": "^\\s*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{4,}(?:[-_][0-9a-f]{4,})*\\s*[\\]\\)]",
+      "regex": "^[^\\S\\n]*[\\[\\(]\\s*(?:session\\s+)?[a-z]{2,10}[-_][0-9a-f]{4,}(?:[-_][0-9a-f]{4,})*\\s*[\\]\\)]",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Bot-generated prompts prefixed with fake session/trace IDs like '[trace-01598e97...]' or '(session ref-f7b8a24f...)'. Legitimate users don't prefix messages with hex session IDs.",
       "enabled": true
@@ -88,7 +88,7 @@
     },
     {
       "name": "canned_followup_probe",
-      "regex": "^\\s*Following on from that,\\s*I'?d like to ask\\s*:",
+      "regex": "^[^\\S\\n]*Following on from that,\\s*I'?d like to ask\\s*:",
       "flags": "IGNORECASE|MULTILINE",
       "description": "Canned bot continuation probe 'Following on from that, I'd like to ask:' used to test free-tier endpoints with trivial follow-ups (e.g. 'say OK', 'hi').",
       "enabled": true
@@ -102,23 +102,23 @@
     },
     {
       "name": "fake_history_injection",
-      "regex": "(?:^|\\n)\\s*(?:For background,|Earlier you mentioned[:,]|Previously you (?:said|mentioned|told me))",
+      "regex": "(?:^|\\n)[^\\S\\n]*(?:For background,|Earlier you mentioned[:,]|Previously you (?:said|mentioned|told me))",
       "flags": "IGNORECASE",
       "description": "Fake conversation-history preamble used to trick models into thinking they had prior context: 'For background,...', 'Earlier you mentioned:...'. Legitimate users don't open with these.",
       "enabled": true
     },
     {
       "name": "roleplay_injection_tags",
-      "regex": "<[^>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
+      "regex": "<[^<>]*(?:Persona|Scenario|UserPersona|example_dialogs|char_description|char_name)\\s*>",
       "flags": "IGNORECASE",
       "description": "Roleplay injection XML tags: <...Persona>, <Scenario>, <UserPersona>, <example_dialogs>, etc. Used in jailbreak prompts pasted from character.ai-style platforms.",
       "enabled": true
     },
     {
       "name": "qa_named_chat_replay",
-      "regex": "(?:^|\\n)\\s*Q:\\s+\\w+:[\\s\\S]{0,4000}?(?:^|\\n)\\s*A:\\s+\\w+:",
+      "regex": "(?:^|\\n)[^\\S\\n]*Q:[^\\S\\n]+\\w+:(?:(?!\\n[^\\S\\n]*Q:[^\\S\\n]+\\w+:)[\\s\\S]){0,4000}?\\n[^\\S\\n]*A:\\s+\\w+:",
       "flags": "",
-      "description": "Pasted chat history using 'Q: <name>:' and 'A: <name>:' alternation (character.ai / SillyTavern export style). Legitimate Q&A uses 'Q:' / 'A:' without a name after the colon.",
+      "description": "Pasted chat history using 'Q: <name>:' and 'A: <name>:' alternation (character.ai / SillyTavern export style). The name must sit on the same line as 'Q:'. Legitimate Q&A uses 'Q:' / 'A:' without a name after the colon.",
       "enabled": true
     },
     {
@@ -140,6 +140,48 @@
       "regex": "冥_RESPONSE_START_",
       "flags": "",
       "description": "Literal jailbreak control token '冥_RESPONSE_START_' observed in roleplay injection payloads.",
+      "enabled": true
+    },
+    {
+      "name": "generic_special_tokens",
+      "regex": "<\\|[a-z_]{2,30}\\|>",
+      "flags": "IGNORECASE",
+      "description": "Any special token in the <|name|> shape, which covers chat formats not listed in chatml_tokens (<|begin_of_text|>, <|start|>, <|channel|>, <|message|>...)",
+      "enabled": true
+    },
+    {
+      "name": "gemma_turn_tokens",
+      "regex": "<\\s*(?:/\\s*)?(?:start_of_turn|end_of_turn)\\s*>",
+      "flags": "IGNORECASE",
+      "description": "Gemma-style turn markers: <start_of_turn>user, <end_of_turn>",
+      "enabled": true
+    },
+    {
+      "name": "mistral_control_tokens",
+      "regex": "\\[/?(?:SYSTEM_PROMPT|AVAILABLE_TOOLS|TOOL_CALLS|TOOL_RESULTS)\\]",
+      "flags": "",
+      "description": "Mistral control tokens: [SYSTEM_PROMPT], [AVAILABLE_TOOLS], [TOOL_CALLS]",
+      "enabled": true
+    },
+    {
+      "name": "human_assistant_transcript",
+      "regex": "(?:^|\\n)[^\\S\\n]*Human[^\\S\\n]*:(?:(?!\\n[^\\S\\n]*Human[^\\S\\n]*:)[\\s\\S]){0,4000}?\\n[^\\S\\n]*Assistant[^\\S\\n]*:",
+      "flags": "IGNORECASE",
+      "description": "Anthropic-style transcript: a 'Human:' line followed later by an 'Assistant:' line",
+      "enabled": true
+    },
+    {
+      "name": "yaml_role_list",
+      "regex": "^[^\\S\\n]*-[^\\S\\n]*role[^\\S\\n]*:[^\\S\\n]*[\"'`]?(?:system|assistant|developer)\\b",
+      "flags": "IGNORECASE|MULTILINE",
+      "description": "Chat messages written as a YAML list: '- role: system'",
+      "enabled": true
+    },
+    {
+      "name": "canned_reply_probe",
+      "regex": "^\\s*(?:please\\s+)?(?:say|reply|respond|answer)(?:[\\s\\W]+(?:with|only))*[\\s\\W]+[\"'`]?(?:ok|okay|hi|hello|yes|pong)[\"'`]?(?:[\\s\\W]+please)?[\\s.!?]*$",
+      "flags": "IGNORECASE",
+      "description": "Whole-message probes asking for a fixed one-word reply: 'say OK please', 'reply with ok', 'respond only with \"pong\"'",
       "enabled": true
     }
   ]

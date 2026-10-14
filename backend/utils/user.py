@@ -1,3 +1,5 @@
+import ipaddress
+
 from fastapi import Request
 
 from backend.config import settings
@@ -32,3 +34,22 @@ def get_ip(request: Request) -> str:
         return direct_ip
 
     return chain[-hops]
+
+
+def ip_bucket(ip: str) -> str:
+    """
+    The unit a per-IP limit counts against.
+
+    An IPv6 subscriber is usually handed a whole /64, so counting single
+    addresses would give one connection billions of fresh budgets. IPv4 and
+    anything unparseable are counted as they are.
+    """
+    try:
+        address = ipaddress.ip_address(ip)
+    except ValueError:
+        return ip
+    if isinstance(address, ipaddress.IPv6Address):
+        if address.ipv4_mapped:
+            return str(address.ipv4_mapped)
+        return str(ipaddress.ip_network(f"{address}/64", strict=False))
+    return ip

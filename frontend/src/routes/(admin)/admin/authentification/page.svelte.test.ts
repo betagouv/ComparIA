@@ -22,6 +22,8 @@ const base: AppSettingsPublic = {
   auth_methods: ['email_code'],
   survey_reask_after_days: 999,
   votes_objective: 300000,
+  ranking_min_votes: 0,
+  ranking_max_rank_spread: 30,
   platform_name: 'Compar:IA',
   primary_color_light: '#6464F3',
   primary_color_dark: '#9898F8',

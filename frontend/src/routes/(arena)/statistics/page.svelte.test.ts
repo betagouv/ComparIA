@@ -2,7 +2,7 @@ import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import type { PageData, PageProps } from './$types'
 import Page from './+page.svelte'
-import ConversationActivityChart from './ConversationActivityChart.svelte'
+import ConversationActivityChart from '$components/ConversationActivityChart.svelte'
 
 const { getLocale } = vi.hoisted(() => ({ getLocale: vi.fn(() => 'fr') }))
 
@@ -24,7 +24,16 @@ describe('statistics page', () => {
           conversations_count: 6789,
           votes_count: 4321,
           models_count: 31,
-          activity: [{ date: '2026-01-01', prompts: 42, conversations: 21 }]
+          activity: [
+            {
+              date: '2026-01-01',
+              prompts: 42,
+              conversations: 21,
+              partial: false,
+              projected_prompts: null,
+              projected_conversations: null
+            }
+          ]
         } satisfies PageData['statistics']
       }
     } as PageProps)
@@ -70,7 +79,9 @@ describe('statistics page', () => {
         table: 'View table',
         date: 'Date',
         prompts: 'Prompts',
-        conversations: 'Conversations'
+        conversations: 'Conversations',
+        ongoing: 'in progress',
+        estimate: 'estimate'
       }
     })
     const formatter = new Intl.DateTimeFormat('fr', { day: 'numeric', month: 'short' })
@@ -85,5 +96,40 @@ describe('statistics page', () => {
 
     expect(container.textContent).toContain(expectedFirstRange)
     expect(container.textContent).toContain(expectedLastRange)
+  })
+
+  it('draws the period under way as an estimate, not as a drop', () => {
+    const { container } = render(ConversationActivityChart, {
+      points: [
+        { date: '2026-08-03', prompts: 100, conversations: 50 },
+        {
+          date: '2026-08-04',
+          prompts: 30,
+          conversations: 15,
+          partial: true,
+          projected_prompts: 120,
+          projected_conversations: 60
+        }
+      ],
+      granularity: 'day',
+      rangeStart: '2026-08-03',
+      rangeEnd: '2026-08-04',
+      title: 'Activity',
+      labels: {
+        table: 'View table',
+        date: 'Date',
+        prompts: 'Prompts',
+        conversations: 'Conversations',
+        ongoing: 'in progress',
+        estimate: 'estimate'
+      }
+    })
+
+    // Measured points stop at the last full day; the current one is an
+    // estimate marker, and the table still gives the real count so far.
+    expect(container.querySelectorAll('.activity-point')).toHaveLength(2)
+    expect(container.querySelectorAll('.estimate-point')).toHaveLength(2)
+    expect(container.querySelector('tbody')?.textContent).toContain('≈ 120')
+    expect(container.querySelector('tbody')?.textContent).toContain('30 in progress')
   })
 })

@@ -53,6 +53,12 @@ class Settings(BaseSettings):
     # this is here to end a query that has stopped moving, not a slow one.
     DATASET_STATEMENT_TIMEOUT_MS: int = 2 * 3600 * 1000
 
+    # Admin activity panel. Its queries run on their own two connections and
+    # stop after this long, so a heavy filter fails alone instead of taking
+    # connections the arena needs.
+    ADMIN_ACTIVITY_STATEMENT_TIMEOUT_MS: int = 15_000
+    ADMIN_ACTIVITY_CACHE_SECONDS: int = 300
+
     # Auth
     # "anonymous_first": sign-in optional; "sign_in_required": blocks /arena/* without session
     ADMIN_EMAILS: list[str] = []
@@ -71,8 +77,9 @@ class Settings(BaseSettings):
     # provider, but a whole class signing in at once must still go through.
     AUTH_OIDC_LOGIN_PER_IP_PER_HOUR: int = 2000
     AUTH_VERIFY_MAX_ATTEMPTS: int = 5
-    # Ceiling on wrong codes per email, whatever the source IP. The per-IP counter
-    # above only slows one attacker down; this one closes the login code itself.
+    # Ceiling on guesses per email (a right code clears the count), whatever the
+    # source IP. The per-IP counter above only slows one attacker down; this one
+    # closes the login code itself.
     AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
     # Fernet key(s) for secrets stored in the database: the admins'
     # authenticator secrets, the OIDC client secret, the endpoints' API keys,
@@ -252,9 +259,11 @@ RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 # The per-session budget above is the one that matters, since users behind one
 # shared NAT each get their own. But a client that drops the `anonymous_session`
 # cookie gets a fresh session on every request, so the same budget also runs per
-# IP as a backstop. Twenty times the room, because that IP may be a whole
-# building.
-RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 20
+# IP as a backstop. A hundred times the room, because that IP may be a whole
+# school: at twenty, one class of thirty could spend it before the break. Spam
+# seen in the OpenRouter logs picks the cheapest models, which this pool does
+# not cover.
+RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
 
 # Cheap models are not free either, and only pricey ones used to be counted, so
 # nothing at all stopped someone hammering the rest. Wider still: an ordinary
@@ -263,14 +272,29 @@ RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
-# probing). Counts only blocks in a rolling window; once an IP crosses the
-# threshold it is cooled down for the rest of the window WITHOUT calling the
-# moderation API (protects the quota). Kept generous because gov users share NAT
-# IPs (hospitals, ministries) and must not be locked out.
+# probing). Counts blocks and spam pattern hits in a rolling window; once an
+# IP crosses the threshold it is cooled down for the rest of the window
+# WITHOUT calling the moderation API (protects the quota). Kept generous
+# because gov users share NAT IPs (hospitals, ministries) and must not be
+# locked out.
 RATELIMIT_BLOCKED_PROMPTS_PER_HOUR = 15
 
-# Character limit for blind mode (comparison without model names)
-BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+# Warnings one session may answer with "send anyway" in an hour. Counted per
+# session, not per IP like the cooldown above: on a sante instance PII warnings
+# are routine, and a hospital behind one IP must not lock itself out. A script
+# that drops its cookie to start over runs into the consent cap below.
+RATELIMIT_SENT_WARNINGS_PER_HOUR = 15
+
+# Each anonymous session gets its own input budget, and a new session costs only
+# a consent. Without a cap here, a script would clear its cookie and accept the
+# terms again whenever the session budget ran out. Set for a school or a
+# ministry where hundreds of people share one IP.
+RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR = 300
+
+# Longest message a user can send, about five pages. Mistral checks a message
+# in windows of 2,000 characters, so this keeps every check to one quick
+# request, and a check that cannot finish refuses the message.
+BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 20_000
 
 # Every turn resends the whole transcript to both models, so an endless
 # conversation costs more on each message. Cap it.
@@ -297,6 +321,14 @@ OIDC_LOGO_BOX = (160, 160)
 ALTCHA_MAX_NUMBER = 100_000  # Difficulty: ~0.5s on good devices, ~2-3s on low-end
 ALTCHA_CHALLENGE_EXPIRY_SECONDS = 600  # 10 minutes
 ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
+
+# A session that keeps starting comparisons and never votes is using the arena
+# as a free model API. After this many comparisons in a row without a vote, its
+# challenges take ten times the work, until it votes again. The browser solves
+# the next challenge while the user reads the answers and types, so a person
+# rarely waits for it; a script sending at once pays the full cost every time.
+ALTCHA_UNVOTED_COMPARISONS = 5
+ALTCHA_HARD_MAX_NUMBER = ALTCHA_MAX_NUMBER * 10
 
 # Web search intro for LLM
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"

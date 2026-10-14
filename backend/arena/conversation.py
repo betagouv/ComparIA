@@ -7,6 +7,7 @@ handling streaming responses, token counting, and message tracking.
 
 import asyncio
 import logging
+from contextlib import aclosing
 from datetime import datetime
 from typing import AsyncGenerator, Literal
 
@@ -72,12 +73,7 @@ async def _stream_cached_response(
         if llm_msg.content or llm_msg.reasoning_content:
             yield llm_msg
 
-        try:
-            await asyncio.sleep(0.2)
-        except asyncio.CancelledError:
-            # Sleep can be cancelled and raise StopAsyncGenerator error
-            # Simply silence error
-            pass
+        await asyncio.sleep(0.2)
 
     # Final yield with complete content and timing
     llm_msg.content = cached["content"].strip()
@@ -147,10 +143,11 @@ async def bot_response_async(
     )
 
     # Process streaming response chunks and update current message
-    for llm_msg in stream_iter:
-        # Yield complete chat only if there's content to display in current message
-        if llm_msg.content or llm_msg.reasoning_content:
-            yield llm_msg
+    async with aclosing(stream_iter):
+        async for llm_msg in stream_iter:
+            # Yield complete chat only if there's content to display in current message
+            if llm_msg.content or llm_msg.reasoning_content:
+                yield llm_msg
 
     duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()
     logger.debug(
@@ -167,9 +164,12 @@ async def bot_response_async(
             f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
         )
 
-    # Fallback: count tokens locally if API didn't provide them
+    # Fallback: count tokens locally if API didn't provide them. Off the event
+    # loop: a long answer takes a while to count, and some tokenizers are
+    # downloaded the first time they are needed.
     if not llm_msg.tokens:
-        llm_msg.tokens = token_counter(
+        llm_msg.tokens = await asyncio.to_thread(
+            token_counter,
             text=[llm_msg.reasoning_content, llm_msg.content],
             model=llm.human_id,
         )

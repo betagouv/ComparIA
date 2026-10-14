@@ -51,6 +51,23 @@ def patched(module, **attributes):
             setattr(module, name, value)
 
 
+class FakePipeline:
+    """Queues commands and runs them in one go, as MULTI/EXEC would."""
+
+    def __init__(self, redis):
+        self.redis = redis
+        self.commands = []
+
+    def __getattr__(self, name):
+        def queue(*args, **kwargs):
+            self.commands.append((name, args, kwargs))
+
+        return queue
+
+    def execute(self):
+        return [getattr(self.redis, n)(*a, **k) for n, a, k in self.commands]
+
+
 class FakeRedis:
     def __init__(self):
         self.store = {}
@@ -61,6 +78,15 @@ class FakeRedis:
 
     def expire(self, key, seconds):
         pass
+
+    def set(self, key, value, ex=None, nx=False):
+        if nx and key in self.store:
+            return None
+        self.store[key] = value
+        return True
+
+    def pipeline(self, transaction=True):
+        return FakePipeline(self)
 
     def get(self, key):
         return self.store.get(key)

@@ -43,11 +43,20 @@ def patched(module, **attributes):
 
 
 def comparison_with(turn_count: int):
-    return SimpleNamespace(id=uuid4(), turns=[object()] * turn_count)
+    turn = SimpleNamespace(user_msg=SimpleNamespace(content="Bonjour"))
+    return SimpleNamespace(
+        id=uuid4(), turns=[turn] * turn_count, llm_id_a=uuid4(), llm_id_b=uuid4()
+    )
 
 
 def send_follow_up(comparison):
-    async def run_checks(_text, _field, _request, _warning_token):
+    async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
+        return None
+
+    def charge_budget(*_args):
+        return None
+
+    async def get_llms_data():
         return None
 
     body = arena_models.AddTextBody(
@@ -65,7 +74,12 @@ def send_follow_up(comparison):
             "client": ("10.0.0.1", 1234),
         }
     )
-    with patched(arena_router, run_checks=run_checks):
+    with patched(
+        arena_router,
+        run_checks=run_checks,
+        charge_budget=charge_budget,
+        get_llms_data=get_llms_data,
+    ):
         # The body of the response streams the models, which these tests never
         # consume, so nothing here reaches the database.
         return asyncio.run(arena_router.add_text(comparison, body, "b" * 64, request))

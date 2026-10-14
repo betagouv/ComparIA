@@ -1,3 +1,4 @@
+export { default as DownloadDataButton } from './DownloadDataButton.svelte'
 export { default as Energy } from './Energy.svelte'
 export { default as EnergyGraph } from './EnergyGraph.svelte'
 export { default as Methodology } from './Methodology.svelte'
