@@ -41,7 +41,8 @@ Pool = Literal["all", "expensive"]
 POOLS: tuple[Pool, ...] = get_args(Pool)
 Scope = Literal["session", "ip"]
 
-# Counters expire 2 hours after the last message they let through.
+# A counter expires 2 hours after the first message it counts, whatever comes
+# after: the window is a fixed clock, not 2 hours of quiet.
 WINDOW_SECONDS = 3600 * 2
 
 # The prefix of an identity says which kind of counter it is.
@@ -353,9 +354,12 @@ def reserve(
 
     Only the pools in `refusing` may refuse. The others are charged all the
     same: a conversation started with an expensive model finishes once that
-    allowance is spent, and its turns still count against it. A spent
-    allowance keeps its expiry, so the reset time the person was told stays
-    true while such conversations finish.
+    allowance is spent, and its turns still count against it.
+
+    A counter's window starts with it and never moves: no charge, refund or
+    settle pushes its expiry back. A network that sends all day gets a fresh
+    allowance every two hours, and the reset time a person was told stays
+    true while conversations finish.
 
     A refused message gets its characters back. It never reached a model, and
     left counted it would go on eating the allowances that were not spent yet,
@@ -389,41 +393,38 @@ def reserve(
         if total - chars > limit(pool, _scope(identity))
     ]
     refused = [counter for counter in spent if counter[0] in refusing]
-    over = {(pool, identity) for pool, identity, _used in spent}
+    if not refused:
+        return
+
     pipe = client.pipeline()
     for pool, identity, chars in counters:
         key = budget_key(pool, identity)
-        # A refused message leaves the window where it was.
-        if refused:
-            pipe.decrby(key, chars)
-            # Should the counter expire between the charge and the refund,
-            # DECRBY brings it back below zero with no expiry: an allowance
-            # that never resets. NX gives it the window and leaves any other
-            # expiry alone.
-            pipe.expire(key, WINDOW_SECONDS, nx=True)
-        elif (pool, identity) not in over:
-            pipe.expire(key, WINDOW_SECONDS)
+        pipe.decrby(key, chars)
+        # Should the counter expire between the charge and the refund,
+        # DECRBY brings it back below zero with no expiry: an allowance
+        # that never resets. NX gives it the window and leaves any other
+        # expiry alone.
+        pipe.expire(key, WINDOW_SECONDS, nx=True)
     # When each spent allowance lifts, for the refusal to say so.
     for pool, identity, _used in refused:
         pipe.ttl(budget_key(pool, identity))
     replies = pipe.execute()
 
-    if refused:
-        # Two replies per counter (the refund and its expiry), then the TTLs.
-        ttls = replies[2 * len(counters) :]
-        raise AllowanceSpent(
-            [
-                Allowance(
-                    pool=pool,
-                    scope=_scope(identity),
-                    identity=identity,
-                    used=used,
-                    limit=limit(pool, _scope(identity)),
-                    resets_in=ttl if ttl >= 0 else None,
-                )
-                for (pool, identity, used), ttl in zip(refused, ttls)
-            ]
-        )
+    # Two replies per counter (the refund and its expiry), then the TTLs.
+    ttls = replies[2 * len(counters) :]
+    raise AllowanceSpent(
+        [
+            Allowance(
+                pool=pool,
+                scope=_scope(identity),
+                identity=identity,
+                used=used,
+                limit=limit(pool, _scope(identity)),
+                resets_in=ttl if ttl >= 0 else None,
+            )
+            for (pool, identity, used), ttl in zip(refused, ttls)
+        ]
+    )
 
 
 class Answer(Protocol):

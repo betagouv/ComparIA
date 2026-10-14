@@ -258,7 +258,8 @@ def test_settling_on_a_spent_allowance_still_charges_and_never_refuses():
 
 
 def test_settling_never_raises_when_redis_is_down():
-    redis = FakeRedis(pipelines_that_work=2)
+    # The reservation goes through, then Redis drops.
+    redis = FakeRedis(pipelines_that_work=1)
     with fake_redis(limits, fake=redis):
         charge = Charge.reserve(WHO, {"a": cheap(100), "b": cheap(100)})
         charge.settle({"a": written("x"), "b": written("y")})

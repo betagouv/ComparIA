@@ -177,9 +177,62 @@ def test_a_spent_allowance_keeps_its_reset_time_while_it_is_charged(monkeypatch)
 
     spent = allowance(status, "expensive", "session")
     assert spent.resets_in == limits.WINDOW_SECONDS - 600
-    # The allowances with room left start their window again, as before.
-    assert allowance(status, "all", "session").resets_in == limits.WINDOW_SECONDS
-    assert allowance(status, "expensive", "ip").resets_in == limits.WINDOW_SECONDS
+    # The allowances with room left keep their window too.
+    assert {a.resets_in for a in status.allowances} == {limits.WINDOW_SECONDS - 600}
+
+
+MINUTES = 60
+
+
+def test_a_window_runs_two_hours_from_its_first_message_whatever_follows():
+    """Each message let through used to restart the two hours, so a school
+    sending all morning never got its allowance back."""
+    with fake_redis(limits) as redis:
+        limits.reserve(WHO, {"all": 10, "expensive": 10})
+        redis.advance(90 * MINUTES)
+        limits.reserve(WHO, {"all": 10, "expensive": 10})
+        status = limits.read_status(WHO)
+        assert {a.resets_in for a in status.allowances} == {30 * MINUTES}
+
+        redis.advance(30 * MINUTES)
+        assert all(a.used == 0 for a in limits.read_status(WHO).allowances)
+
+
+def test_a_refused_message_never_moves_a_window(monkeypatch):
+    monkeypatch.setattr(settings, "RATELIMIT_ALL_PER_SESSION", 100)
+    with fake_redis(limits) as redis:
+        limits.reserve(WHO, {"all": 101})
+        redis.advance(90 * MINUTES)
+        with pytest.raises(AllowanceSpent) as refusal:
+            limits.reserve(WHO, {"all": 10})
+        status = limits.read_status(WHO)
+
+    [spent] = refusal.value.spent
+    assert spent.resets_in == 30 * MINUTES
+    assert {a.resets_in for a in status.allowances if a.used} == {30 * MINUTES}
+
+
+def test_a_settled_turn_never_moves_a_window():
+    with fake_redis(limits) as redis:
+        charge = limits.Charge.reserve(
+            WHO, {"a": limits.Call(10, written=500), "b": limits.Call(10)}
+        )
+        redis.advance(90 * MINUTES)
+        charge.settle({"a": None, "b": None})
+        status = limits.read_status(WHO)
+
+    whole = allowance(status, "all", "session")
+    assert (whole.used, whole.resets_in) == (20, 30 * MINUTES)
+
+
+def test_a_message_after_the_reset_opens_a_new_window():
+    with fake_redis(limits) as redis:
+        limits.reserve(WHO, {"all": 10})
+        redis.advance(limits.WINDOW_SECONDS)
+        limits.reserve(WHO, {"all": 7})
+        whole = allowance(limits.read_status(WHO), "all", "session")
+
+    assert (whole.used, whole.resets_in) == (7, limits.WINDOW_SECONDS)
 
 
 def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog, monkeypatch):

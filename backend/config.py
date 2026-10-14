@@ -154,10 +154,10 @@ class Settings(BaseSettings):
     EMAIL_FROM_NAME: str = "ComparIA"
 
     # Model allowances, in characters the models are sent and write (the
-    # expensive ones in dollars), over a window that ends 2 hours after the
-    # last message they let through. A
-    # turn costs the system prompt, the whole transcript, the web search
-    # results and both answers. Settings rather than constants so a local run
+    # expensive ones in dollars), over a window that starts at the first
+    # message counted and ends 2 hours later, however many follow. A turn
+    # costs the system prompt, the whole transcript, the web search results
+    # and both answers. Settings rather than constants so a local run
     # can lower them to watch a refusal.
     # Set from the calibration replay (`comparia-cli arena limits calibrate`)
     # once whole turns are charged, a turn costing 20 to 230 times its own
