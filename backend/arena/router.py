@@ -273,9 +273,9 @@ def charge_turn(
     refusing: Collection[Pool] = POOLS,
 ) -> Charge:
     """
-    Spend what each model is sent against the session and IP budgets before
-    any model is called; the route settles what they write once the turn is
-    over. The charge used to wait for a full, error-free answer, so a client
+    Spend what each model is sent, and a typical answer, against the session
+    and IP budgets before any model is called; the route settles it to what
+    they wrote once the turn is over. The charge used to wait for a full, error-free answer, so a client
     that hung up halfway, or sent many requests at once, never paid. No refund
     when a model then fails: an error a client can provoke would buy whatever
     the models had already written. Only the pools in `refusing` may refuse
