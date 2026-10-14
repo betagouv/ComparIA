@@ -15,6 +15,8 @@
     maxRows?: number
     lineHeightPx?: number
     error?: string
+    /** A quiet line under the box, told once when it shows. Not an error. */
+    hint?: string
     autofocus?: boolean
     autoscroll?: boolean
     el?: HTMLTextAreaElement
@@ -37,6 +39,7 @@
     maxRows = 4,
     lineHeightPx = 16 * 1.5,
     error = $bindable(),
+    hint,
     autofocus = false,
     autoscroll = false,
     el = $bindable(),
@@ -114,6 +117,9 @@
   <div class="fr-messages-group" id="messages-{id}" aria-live="polite">
     {#if error}
       <p class="fr-message fr-message--error" id="messages-{id}-error">{error}</p>
+    {/if}
+    {#if hint}
+      <p class="fr-message" id="messages-{id}-hint">{hint}</p>
     {/if}
   </div>
 </div>
