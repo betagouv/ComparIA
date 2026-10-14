@@ -319,13 +319,20 @@ class Answer(Protocol):
     """What settling reads of a model's answer."""
 
     @property
-    def content(self) -> str: ...
+    def content(self) -> str | None: ...
 
     @property
     def reasoning_content(self) -> str | None: ...
 
     @property
     def is_cached(self) -> bool: ...
+
+
+def answer_chars(answer: Answer | None) -> int:
+    """What a model wrote, its reasoning included: the provider bills both."""
+    if answer is None:
+        return 0
+    return len(answer.content or "") + len(answer.reasoning_content or "")
 
 
 class Charge:
@@ -396,7 +403,7 @@ class Charge:
         self.settled = True
         for pos, call in self.calls.items():
             if answer := answers.get(pos):
-                call.written = len(answer.content) + len(answer.reasoning_content or "")
+                call.written = answer_chars(answer)
                 call.cached = answer.is_cached
 
         cost = turn_cost([*self.replaced, *self.calls.values()])

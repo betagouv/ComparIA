@@ -23,6 +23,8 @@ from backend.arena.conversation import (
     SystemMessageRead,
     bot_response_async,
 )
+from backend.arena.limits import Charge, answer_chars
+from backend.arena.litellm import sent_chars
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
@@ -200,6 +202,7 @@ async def stream_comparison_messages(
     turn: TurnRead,
     request: Any | None = None,
     expensive_available: bool = False,
+    charge: Charge | None = None,
 ) -> AsyncGenerator[AnySSEEvent]:
     """
     Stream both LLMs responses in parallel using Server-Sent Events.
@@ -213,6 +216,8 @@ async def stream_comparison_messages(
         request: FastAPI Request object for logging
         expensive_available: Whether an expensive model may stand in for an
             expensive one that times out
+        charge: What the turn spends, told what each model is sent; the
+            route settles it
 
     Yields:
         AnySSEEvent
@@ -222,17 +227,19 @@ async def stream_comparison_messages(
 
     try:
         # Create async generators for both models
-        generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {
-            pos: stream_llm_response(
+        generators: dict[BotPos, AsyncGenerator[AnySSEEventMsg]] = {}
+        for pos in BOT_POS:
+            messages = get_messages(comparison, pos)
+            if charge:
+                charge.sending(pos, sent_chars(messages))
+            generators[pos] = stream_llm_response(
                 pos,
                 llms_data[getattr(comparison, f"llm_id_{pos}")],
                 turn,
                 turn_index,
-                _get_messages(comparison, pos),
+                messages,
                 request,
             )
-            for pos in BOT_POS
-        }
         # Track state from both generators
         complete: dict[BotPos, bool] = {"a": False, "b": False}
         # Track timeout swap attempts (max one per position)
@@ -278,18 +285,28 @@ async def stream_comparison_messages(
                             if new_llm_id := await pick_replacement_model(
                                 comparison, e.pos, expensive_available
                             ):
+                                # Read before the swap clears it.
+                                failed = getattr(turn, f"llm_msg_{e.pos}", None)
                                 await update_comparison_llm_id(
                                     comparison, e.pos, new_llm_id
                                 )
                                 logger.warning(
                                     f"LLM '{failing_llm_id}' timed out, swapping to '{new_llm_id}'"
                                 )
+                                messages = get_messages(comparison, e.pos)
+                                if charge:
+                                    charge.replace(
+                                        e.pos,
+                                        llms_data[new_llm_id].cost_weight,
+                                        sent_chars(messages),
+                                        answer_chars(failed),
+                                    )
                                 generators[e.pos] = stream_llm_response(
                                     e.pos,
                                     llms_data[new_llm_id],
                                     turn,
                                     turn_index,
-                                    _get_messages(comparison, e.pos),
+                                    messages,
                                     request,
                                 )
                                 retried[e.pos] = True
@@ -368,7 +385,7 @@ async def _close_streams(
 _closing: set[asyncio.Task[None]] = set()
 
 
-def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
+def get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRead]:
     messages: list[AnyMessageRead] = []
 
     if system_msg := getattr(comparison, f"system_msg_{pos}"):
