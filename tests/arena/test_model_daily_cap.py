@@ -339,12 +339,16 @@ def test_unknown_model_ids_are_not_counted(clock):
 def test_two_models_of_a_turn_each_get_their_own_day(clock):
     pricey = SimpleNamespace(id=EXPENSIVE, price_in=4.0, price_out=12.0)
     cheap = SimpleNamespace(id=CHEAP, price_in=0.4, price_out=1.2)
-    other = uuid4()
 
     Charge.reserve(WHO, {"a": Call.of(pricey, 100), "b": Call.of(cheap, 100)}).settle(
         {"a": answer("x" * 10), "b": None}
     )
 
-    assert day_of(clock, EXPENSIVE)["answers"] == "1"
-    assert "answers" not in day_of(clock, CHEAP)
-    assert day_of(clock, other) == {}
+    assert day_of(clock, EXPENSIVE) == {
+        "usd": str(usd(100, 10)),
+        "in": "100",
+        "out": "10",
+        "answers": "1",
+    }
+    # Sent 100 characters at 0.40 per million tokens, and no answer.
+    assert day_of(clock, CHEAP) == {"usd": "10", "in": "100"}
