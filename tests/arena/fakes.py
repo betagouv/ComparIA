@@ -87,6 +87,13 @@ class FakeRedis:
             return -1
         return int(self.expires_at[key] - self.now)
 
+    def pttl(self, key):
+        if not self._live(key):
+            return -2
+        if key not in self.expires_at:
+            return -1
+        return int((self.expires_at[key] - self.now) * 1000)
+
     def expiretime(self, key):
         if not self._live(key):
             return -2
@@ -144,6 +151,11 @@ class FakeRedis:
     def pipeline(self, transaction=True):
         return FakePipeline(self)
 
+    def refuses(self, name, kwargs):
+        """The error Redis answers a command it does not know, None for one
+        it knows. A transaction holding one runs nothing."""
+        return None
+
 
 class FakePipeline:
     """Queues calls and runs them in order on `execute`, as MULTI/EXEC does."""
@@ -164,6 +176,10 @@ class FakePipeline:
             if self.redis.pipelines_left == 0:
                 raise RedisConnectionError("Redis went away")
             self.redis.pipelines_left -= 1
+        for name, _args, kwargs in self.calls:
+            if error := self.redis.refuses(name, kwargs):
+                self.calls = []
+                raise error
         results = [
             getattr(self.redis, name)(*args, **kwargs)
             for name, args, kwargs in self.calls

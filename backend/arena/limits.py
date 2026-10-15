@@ -33,11 +33,22 @@ import time
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Collection, Iterable, Literal, Mapping, Protocol, Sequence, get_args
+from typing import (
+    Any,
+    Callable,
+    Collection,
+    Iterable,
+    Literal,
+    Mapping,
+    Protocol,
+    Sequence,
+    get_args,
+)
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
-from redis.exceptions import RedisError
+from redis.client import Pipeline
+from redis.exceptions import RedisError, ResponseError
 
 from backend.config import settings
 from backend.utils.user import ip_bucket
@@ -497,28 +508,76 @@ def resting_models(
     return {llm.id: day.ends for llm in capped if is_resting(llm, days[llm.id])}
 
 
+# EXPIRETIME needs Redis 7. An older Redis does not know it, and an expiry is
+# then read from PTTL and this clock.
+_expiry_command: Literal["expiretime", "pttl"] = "expiretime"
+
+
+def _with_expiries(
+    build: Callable[[str], Pipeline],
+) -> tuple[list[Any], Literal["expiretime", "pttl"]]:
+    """
+    Run the pipeline `build` makes for the expiry command this Redis knows,
+    and say which one it used. An unknown command refuses the whole
+    transaction, so nothing ran when it is sent again with PTTL.
+    """
+    global _expiry_command
+    command = _expiry_command
+    try:
+        return build(command).execute(), command
+    except ResponseError as error:
+        if command == "pttl" or "unknown command" not in str(error).lower():
+            raise
+    logger.warning("This Redis has no EXPIRETIME: expiries are read from PTTL")
+    _expiry_command = "pttl"
+    return build("pttl").execute(), "pttl"
+
+
+def _allowance(
+    pool: Pool,
+    identity: str,
+    used: int,
+    ttl: int,
+    expiry: int,
+    command: Literal["expiretime", "pttl"],
+) -> Allowance:
+    """An allowance from its counter's TTL and expiry replies, -1 or -2 when
+    it has none."""
+    expires_at = None
+    if expiry >= 0:
+        # Up to the second: nobody told that time comes back too early.
+        expires_at = (
+            expiry if command == "expiretime" else math.ceil(now() + expiry / 1000)
+        )
+    return Allowance(
+        pool=pool,
+        scope=_scope(identity),
+        identity=identity,
+        used=used,
+        limit=limit(pool, _scope(identity)),
+        resets_in=ttl if ttl >= 0 else None,
+        expires_at=expires_at,
+    )
+
+
 def read_counters(identities: Sequence[str]) -> LimitStatus:
     """Every allowance of these identities, in one round trip."""
     counters = [(pool, identity) for identity in identities for pool in POOLS]
-    pipe = get_redis_client().pipeline()
-    for pool, identity in counters:
-        pipe.get(budget_key(pool, identity))
-        pipe.ttl(budget_key(pool, identity))
-        pipe.expiretime(budget_key(pool, identity))
-    replies = pipe.execute()
 
+    def build(expiry: str) -> Pipeline:
+        pipe = get_redis_client().pipeline()
+        for pool, identity in counters:
+            key = budget_key(pool, identity)
+            pipe.get(key)
+            pipe.ttl(key)
+            getattr(pipe, expiry)(key)
+        return pipe
+
+    replies, command = _with_expiries(build)
     return LimitStatus(
         tuple(
-            Allowance(
-                pool=pool,
-                scope=_scope(identity),
-                identity=identity,
-                used=int(used or 0),
-                limit=limit(pool, _scope(identity)),
-                resets_in=ttl if ttl >= 0 else None,
-                expires_at=expires if expires >= 0 else None,
-            )
-            for (pool, identity), used, ttl, expires in zip(
+            _allowance(pool, identity, int(used or 0), ttl, expiry, command)
+            for (pool, identity), used, ttl, expiry in zip(
                 counters, replies[::3], replies[1::3], replies[2::3]
             )
         )
@@ -597,24 +656,26 @@ def reserve(
     if not refused:
         return
 
-    pipe = client.pipeline()
-    for pool, identity, chars in counters:
-        key = budget_key(pool, identity)
-        pipe.decrby(key, chars)
-        # Should the counter expire between the charge and the refund,
-        # DECRBY brings it back below zero with no expiry: an allowance
-        # that never resets. NX gives it the window and leaves any other
-        # expiry alone.
-        pipe.expire(key, WINDOW_SECONDS, nx=True)
-    # When each spent allowance lifts, for the refusal to say so.
-    for pool, identity, _used in refused:
-        pipe.ttl(budget_key(pool, identity))
-        pipe.expiretime(budget_key(pool, identity))
-    replies = pipe.execute()
+    def build(expiry: str) -> Pipeline:
+        pipe = client.pipeline()
+        for pool, identity, chars in counters:
+            key = budget_key(pool, identity)
+            # Should the counter expire between the charge and the refund,
+            # DECRBY alone would bring it back below zero with no expiry: an
+            # allowance that never resets. SET NX gives it the window first
+            # and leaves any other expiry alone.
+            pipe.set(key, 0, ex=WINDOW_SECONDS, nx=True)
+            pipe.decrby(key, chars)
+        # When each spent allowance lifts, for the refusal to say so.
+        for pool, identity, _used in refused:
+            pipe.ttl(budget_key(pool, identity))
+            getattr(pipe, expiry)(budget_key(pool, identity))
+        return pipe
 
-    # Two replies per counter (the refund and its expiry), then each refused
-    # one's TTL and expiry time.
-    refunded: list[int] = replies[: 2 * len(counters) : 2]
+    replies, command = _with_expiries(build)
+    # Two replies per counter (its expiry and the refund), then each refused
+    # one's TTL and expiry.
+    refunded: list[int] = replies[1 : 2 * len(counters) : 2]
     ttls = replies[2 * len(counters) :: 2]
     expiries = replies[2 * len(counters) + 1 :: 2]
     # A counter that expired meanwhile took the refund below zero, which
@@ -631,16 +692,8 @@ def reserve(
         pipe.execute()
     raise AllowanceSpent(
         [
-            Allowance(
-                pool=pool,
-                scope=_scope(identity),
-                identity=identity,
-                used=used,
-                limit=limit(pool, _scope(identity)),
-                resets_in=ttl if ttl >= 0 else None,
-                expires_at=expires if expires >= 0 else None,
-            )
-            for (pool, identity, used), ttl, expires in zip(refused, ttls, expiries)
+            _allowance(pool, identity, used, ttl, expiry, command)
+            for (pool, identity, used), ttl, expiry in zip(refused, ttls, expiries)
         ]
     )
 

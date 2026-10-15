@@ -6,7 +6,7 @@ reads back, and the operator's reset (no network, no real Redis).
 import asyncio
 
 import pytest
-from redis.exceptions import RedisError
+from redis.exceptions import RedisError, ResponseError
 
 import backend.arena.limits as limits
 from backend.arena.limits import AllowanceSpent, Identity
@@ -262,3 +262,39 @@ def test_the_cli_refuses_a_reset_with_no_one_to_reset(caplog):
         limits_reset()
     assert exit.value.code == 1
     assert "Give --session, --ip or both." in caplog.text
+
+
+class Redis6(FakeRedis):
+    """A Redis older than 7, which has neither EXPIRETIME nor EXPIRE NX."""
+
+    def refuses(self, name, kwargs):
+        if name == "expiretime":
+            return ResponseError("unknown command 'expiretime'")
+        if name == "expire" and kwargs.get("nx"):
+            return ResponseError("wrong number of arguments for 'expire' command")
+        return None
+
+
+def test_an_older_redis_still_tells_when_an_allowance_lifts(monkeypatch):
+    """Without EXPIRETIME, a spent allowance is read and refused all the
+    same, its reset time read from PTTL and rounded up to the second."""
+    monkeypatch.setattr(settings, "RATELIMIT_ALL_PER_SESSION", 100)
+    monkeypatch.setattr(limits, "_expiry_command", "expiretime")
+    redis = Redis6(now=1_800_000_000.5)
+    monkeypatch.setattr(limits, "now", lambda: redis.now)
+    with fake_redis(limits, fake=redis):
+        limits.reserve(WHO, {"all": 101})
+        redis.advance(600)
+        status = limits.read_status(WHO)
+        # The refusal learns it on its own too.
+        monkeypatch.setattr(limits, "_expiry_command", "expiretime")
+        with pytest.raises(AllowanceSpent) as refusal:
+            limits.reserve(WHO, {"all": 1})
+
+    lifts = 1_800_000_000 + limits.WINDOW_SECONDS + 1
+    spent = allowance(status, "all", "session")
+    assert (spent.resets_in, spent.expires_at) == (limits.WINDOW_SECONDS - 600, lifts)
+    [refused] = refusal.value.spent
+    assert refused.expires_at == lifts
+    # The refund came back, and the counter kept its window.
+    assert redis.get(limits.budget_key("all", WHO.personal)) == "101"
