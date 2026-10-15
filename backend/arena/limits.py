@@ -9,7 +9,8 @@ each model's prices. A model is expensive when its output price reaches the
 threshold an admin sets. Each pool runs per anonymous session and per network
 (its IP): the session one is the one that matters, since people behind a
 shared NAT each get their own; the network one catches a client that drops
-its cookie to start over.
+its cookie to start over. A person signed in counts on their account instead
+of their session, with `signed_in_factor` times the room.
 
 A spent `all` allowance stops every message. A spent `expensive` one only
 keeps expensive models out of new comparisons: the conversations already
@@ -73,12 +74,22 @@ Scope = Literal["session", "network"]
 # after: the window is a fixed clock, not 2 hours of quiet.
 WINDOW_SECONDS = 3600 * 2
 
-# The prefix of an identity says which kind of counter it is.
-_SCOPES: dict[str, Scope] = {"s": "session", "ip": "network"}
+# The prefix of an identity says which kind of counter it is. An account is
+# the person, as a session is: the scope people are told is the same.
+_SCOPES: dict[str, Scope] = {"s": "session", "u": "session", "ip": "network"}
+ACCOUNT_PREFIX = "u"
 
 
 def session_identity(anonymous_user_hash: str) -> str:
     return f"s:{anonymous_user_hash}"
+
+
+def account_identity(user_id: UUID) -> str:
+    return f"{ACCOUNT_PREFIX}:{user_id}"
+
+
+def is_account(identity: str) -> bool:
+    return identity.split(":", 1)[0] == ACCOUNT_PREFIX
 
 
 def network_identity(ip: str) -> str:
@@ -87,13 +98,16 @@ def network_identity(ip: str) -> str:
 
 # The pool names the counters had before this module, kept with the key so a
 # deploy leaves what people spent in place. The key holds the identity without
-# its prefix, as it always did. The expensive counters get new keys: the old
-# ones counted characters, which would be wrong read as dollars.
-_KEY_POOLS: dict[tuple[Pool, Scope], str] = {
-    ("all", "session"): "all",
-    ("all", "network"): "all_ip",
-    ("expensive", "session"): "expensive_usd",
-    ("expensive", "network"): "expensive_usd_ip",
+# its prefix, as it always did, so the accounts get pool names of their own.
+# The expensive counters get new keys: the old ones counted characters, which
+# would be wrong read as dollars.
+_KEY_POOLS: dict[tuple[Pool, str], str] = {
+    ("all", "s"): "all",
+    ("all", "ip"): "all_ip",
+    ("all", ACCOUNT_PREFIX): "all_user",
+    ("expensive", "s"): "expensive_usd",
+    ("expensive", "ip"): "expensive_usd_ip",
+    ("expensive", ACCOUNT_PREFIX): "expensive_usd_user",
 }
 
 # Model prices are in US dollars per million tokens, and a token is about four
@@ -103,9 +117,8 @@ CHARS_PER_TOKEN = 4
 
 
 def budget_key(pool: Pool, identity: str) -> str:
-    return REDIS_BUDGET_KEY.format(
-        pool=_KEY_POOLS[(pool, _scope(identity))], identity=identity.split(":", 1)[1]
-    )
+    kind, name = identity.split(":", 1)
+    return REDIS_BUDGET_KEY.format(pool=_KEY_POOLS[(pool, kind)], identity=name)
 
 
 def _scope(identity: str) -> Scope:
@@ -219,6 +232,13 @@ def signed_in_factor() -> float:
     return setting("signed_in_factor")
 
 
+def identity_limit(pool: Pool, identity: str) -> int:
+    """The limit of this identity's counter: an account gets the session one
+    `signed_in_factor` times."""
+    base = limit(pool, _scope(identity))
+    return math.floor(base * signed_in_factor()) if is_account(identity) else base
+
+
 class Priced(Protocol):
     """A model's prices, in US dollars per million tokens."""
 
@@ -238,14 +258,24 @@ def is_expensive(llm: Priced) -> bool:
 @dataclass(frozen=True)
 class Identity:
     """Who a message counts against: the person, and the network they send
-    from. Both are identities as the Redis keys spell them."""
+    from. Both are identities as the Redis keys spell them. The person is
+    their account while signed in, else their anonymous session."""
 
     session: str
     network: str
 
     @classmethod
-    def of(cls, anonymous_user_hash: str, ip: str) -> "Identity":
-        return cls(session_identity(anonymous_user_hash), network_identity(ip))
+    def of(
+        cls, anonymous_user_hash: str, ip: str, user_id: UUID | None = None
+    ) -> "Identity":
+        """Signing in starts the account's counter, empty the first time, and
+        signing out goes back to the session's, which kept what it had."""
+        person = (
+            account_identity(user_id)
+            if user_id is not None
+            else session_identity(anonymous_user_hash)
+        )
+        return cls(person, network_identity(ip))
 
     @property
     def identities(self) -> tuple[str, str]:
@@ -584,7 +614,7 @@ def _allowance(
         scope=_scope(identity),
         identity=identity,
         used=used,
-        limit=limit(pool, _scope(identity)),
+        limit=identity_limit(pool, identity),
         resets_in=ttl if ttl >= 0 else None,
         expires_at=expires_at,
     )
@@ -680,7 +710,7 @@ def reserve(
     spent = [
         (pool, identity, total - chars)
         for (pool, identity, chars), total in zip(counters, totals)
-        if total - chars > limit(pool, _scope(identity))
+        if total - chars > identity_limit(pool, identity)
     ]
     refused = [counter for counter in spent if counter[0] in refusing]
     if not refused:
