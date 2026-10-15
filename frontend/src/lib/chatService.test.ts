@@ -18,7 +18,7 @@ const arena = vi.hoisted(() => ({
   reads: [] as unknown[],
   events: [] as unknown[]
 }))
-const open = { total: null, expensive: null, paused_llms: [] }
+const open = { total: null, expensive: null, signed_in_factor: 3, paused_llms: [] }
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
 vi.mock('$app/environment', async (importOriginal) => ({

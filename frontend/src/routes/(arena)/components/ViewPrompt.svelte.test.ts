@@ -63,6 +63,7 @@ function expensiveSpent(...ids: string[]): ArenaLimits {
   return {
     total: null,
     expensive: { scope: 'session', resets_at: null, resets_in: 3600 },
+    signed_in_factor: 3,
     paused_llms: ids.map((id) => ({ id, until: null, reason: 'allowance' as const }))
   }
 }
@@ -338,6 +339,7 @@ describe('ViewPrompt', () => {
     const spent = expensiveSpent('paused-id')
     arena.limits = createLimits({
       ...spent,
+      signed_in_factor: 3,
       paused_llms: [
         ...spent.paused_llms,
         { id: 'full-id', until: '2026-10-14T22:00:00Z', reason: 'full' }
@@ -380,6 +382,7 @@ describe('ViewPrompt', () => {
     arena.limits = createLimits({
       total: null,
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: [{ id: 'full-id', until: '2026-10-14T22:00:00Z', reason: 'full' }]
     })
 
@@ -465,6 +468,7 @@ describe('ViewPrompt', () => {
     arena.limits = createLimits({
       total: null,
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: [{ id: 'big-id', until: '2026-10-14T22:00:00Z', reason: 'full' }]
     })
 

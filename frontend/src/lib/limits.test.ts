@@ -19,7 +19,7 @@ vi.mock('$lib/fastapi-client', () => ({
   }
 }))
 
-const open: ArenaLimits = { total: null, expensive: null, paused_llms: [] }
+const open: ArenaLimits = { total: null, expensive: null, signed_in_factor: 3, paused_llms: [] }
 // A clock time long past, as from a server whose clock is far ahead.
 const wrongClock = '2000-01-01T00:00:00Z'
 
@@ -44,6 +44,7 @@ describe('createLimits', () => {
     const limits = createLimits({
       total: null,
       expensive: { scope: 'session', resets_at: wrongClock, resets_in: 600 },
+      signed_in_factor: 3,
       paused_llms: [{ id: 'gpt', until: wrongClock, reason: 'allowance' }]
     })
 
@@ -51,6 +52,15 @@ describe('createLimits', () => {
     expect(limits.paused.get('gpt')?.until).toBe('2026-10-14T10:10:00.000Z')
     expect(limits.total).toBeUndefined()
     limits.destroy()
+  })
+
+  it('keeps the signed-in factor the server says, unknown before a read', async () => {
+    const limits = createLimits()
+    expect(limits.signedInFactor).toBeUndefined()
+
+    reply({ ...open, signed_in_factor: 2.5 })
+    await limits.refresh()
+    expect(limits.signedInFactor).toBe(2.5)
   })
 
   it('says it has not read the limits yet until the first read lands', async () => {
@@ -136,12 +146,14 @@ describe('createLimits', () => {
     const first = createLimits({
       total: { scope: 'session', resets_at: at, resets_in: 600 },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
     vi.setSystemTime(new Date('2026-10-14T10:00:00.700Z'))
     const second = createLimits({
       total: { scope: 'session', resets_at: at, resets_in: 599 },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
 
@@ -155,6 +167,7 @@ describe('createLimits', () => {
     const limits = createLimits({
       total: { scope: 'network', resets_at: wrongClock, resets_in: 600 },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
 
@@ -169,11 +182,13 @@ describe('createLimits', () => {
     const limits = createLimits({
       total: { scope: 'session', resets_at: null, resets_in: null },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
     reply({
       total: { scope: 'session', resets_at: wrongClock, resets_in: 60 },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
 
@@ -190,6 +205,7 @@ describe('createLimits', () => {
     const limits = createLimits({
       total: { scope: 'session', resets_at: wrongClock, resets_in: 30 },
       expensive: { scope: 'session', resets_at: wrongClock, resets_in: 30 },
+      signed_in_factor: 3,
       paused_llms: [
         { id: 'gpt', until: wrongClock, reason: 'allowance' },
         { id: 'full', until: '2026-10-15T00:00:00Z', reason: 'full' }
@@ -210,6 +226,7 @@ describe('createLimits', () => {
     reply({
       total: { scope: 'session', resets_at: wrongClock, resets_in: 900 },
       expensive: null,
+      signed_in_factor: 3,
       paused_llms: []
     })
 
