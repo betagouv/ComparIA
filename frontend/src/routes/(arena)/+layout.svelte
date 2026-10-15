@@ -8,14 +8,15 @@
   import { m } from '$lib/i18n/messages'
   import { createLimits, setLimitsContext } from '$lib/limits.svelte'
   import { setVoteTagsContext } from '$lib/voteTags'
-  import { onDestroy, onMount } from 'svelte'
+  import { onDestroy, onMount, untrack } from 'svelte'
   import type { LayoutProps } from './$types'
 
   let { children, data }: LayoutProps = $props()
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
-  const limits = createLimits(data.limits, { pending: !data.limits })
+  // Made once for the layout; later reads go through `refresh`.
+  const limits = untrack(() => createLimits(data.limits, { pending: !data.limits }))
   setLimitsContext(limits)
   // A page rendered on the server has no limits yet: read them here.
   onMount(() => {
