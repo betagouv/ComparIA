@@ -537,7 +537,8 @@
         </p>
       {/if}
 
-      <div class="gap-3 flex flex-wrap">
+      <!-- In reach wherever the admin is on the page, as after "Calibrer". -->
+      <div class="cl-limit-actions gap-3 p-4 bottom-0 z-1 sticky flex flex-wrap">
         <Button
           type="submit"
           text={saving ? m['admin.limits.applying']() : applyText}
@@ -597,5 +598,11 @@
 <style>
   .proposal {
     background-color: var(--background-contrast-info);
+  }
+
+  .cl-limit-actions {
+    margin-inline: -1rem;
+    background-color: var(--background-default-grey);
+    border-top: 1px solid var(--border-default-grey);
   }
 </style>
