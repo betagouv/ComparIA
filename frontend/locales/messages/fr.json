@@ -964,8 +964,11 @@
         "limits": {
             "mode": {
                 "hint": "Ce mode est en pause pour vous {until}, choisissez-en un autre.",
+                "hintFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre.",
                 "reason": "Ce mode a besoin de modèles qui sont en pause pour vous. Il revient {at}.",
-                "why": "Il a besoin de modèles qui coûtent plus cher à faire tourner. Pour que compar:IA reste gratuit pour tous, chacun peut leur envoyer un nombre limité de messages toutes les deux heures."
+                "reasonFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui. Il revient demain.",
+                "why": "Il a besoin de modèles qui coûtent plus cher à faire tourner. Pour que compar:IA reste gratuit pour tous, chacun peut leur envoyer un nombre limité de messages toutes les deux heures.",
+                "whyFull": "Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Les autres modes restent ouverts."
             },
             "pause": {
                 "models": "Découvrir les modèles",

@@ -413,6 +413,29 @@ describe('ViewPrompt', () => {
     ;(arena.limits as Limits).destroy()
   })
 
+  it('says a mode is full for today, not paused for the person, when its models are full', async () => {
+    catalog.models = [
+      { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'small-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
+      { id: 'other-small-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+    ]
+    localStorage.setItem('mode', 'big-vs-small')
+    arena.limits = createLimits({
+      total: null,
+      expensive: null,
+      paused_llms: [{ id: 'big-id', until: '2026-10-14T22:00:00Z', reason: 'full' }]
+    })
+
+    const view = render(ViewPrompt, props)
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+
+    const notice = view.container.querySelector('#pick-paused-notice')
+    expect(notice).toHaveTextContent(
+      /^Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre\./
+    )
+    expect(notice).not.toHaveTextContent(/pour vous/)
+  })
+
   it('says so when the refused pick empties the selection, and goes once the mode changes', async () => {
     const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
     catalog.models = [{ id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab }]

@@ -19,7 +19,8 @@
     disabled = false,
     paused = new Map(),
     expensive,
-    pausedModes = new Map()
+    pausedModes = new Map(),
+    fullModes = new Set()
   }: {
     models: BotModel[]
     mode: APIModeAndPromptData['mode']
@@ -31,6 +32,8 @@
     expensive?: Spent
     /** The modes left with nothing to draw, and when they come back. */
     pausedModes?: ReadonlyMap<Mode, string | null>
+    /** Of those, the ones full models alone leave with nothing, until midnight. */
+    fullModes?: ReadonlySet<Mode>
   } = $props()
 
   type Pause = { chip: string; reset?: ResetTime; reason: string }
@@ -63,6 +66,12 @@
 
   function modePause(value: Mode): Pause | undefined {
     if (!pausedModes.has(value)) return undefined
+    if (fullModes.has(value)) {
+      return {
+        chip: m['arene.limits.picker.fullBadge'](),
+        reason: m['arene.limits.mode.reasonFull']()
+      }
+    }
     const reset = resetTime(pausedModes.get(value))
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
     return { chip: chip(reset), reset, reason: spoken(reason, reset) }

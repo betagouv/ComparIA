@@ -18,7 +18,12 @@
         /** The network spent the allowance, not just this person. */
         network: boolean
       }
-    | { kind: 'mode'; until: string | null }
+    | {
+        kind: 'mode'
+        until: string | null
+        /** Its models are full for the day, for everyone, not paused for this person. */
+        full: boolean
+      }
 
   const TRIMMED = {
     one: {
@@ -47,6 +52,13 @@
 
   function copy(pause: PickPause) {
     const reset = resetTime(pause.until)
+    if (pause.kind === 'mode' && pause.full) {
+      return {
+        reset,
+        text: m['arene.limits.mode.hintFull'](),
+        why: m['arene.limits.mode.whyFull']()
+      }
+    }
     if (pause.kind === 'mode') {
       return {
         reset,

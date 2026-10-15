@@ -42,3 +42,12 @@ export function pausedModes(
   }
   return out
 }
+
+/**
+ * The modes that the models full for the day leave with nothing on their
+ * own, for everyone until midnight, whatever this person's allowance.
+ */
+export function fullModes(models: Sized[], paused: ReadonlyMap<string, PausedModel>): Set<Mode> {
+  const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
+  return new Set(pausedModes(models, full).keys())
+}

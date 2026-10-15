@@ -22,7 +22,7 @@
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
-  import { pausedModes } from './pausedModes'
+  import { fullModes, pausedModes } from './pausedModes'
   import PauseNotice from './PauseNotice.svelte'
   import PickPausedNotice, { pickPauseSaid, type PickPause } from './PickPausedNotice.svelte'
 
@@ -80,13 +80,17 @@
   }
 
   const modesPaused = $derived(pausedModes(models, limits.paused))
+  const modesFull = $derived(fullModes(models, limits.paused))
   const modePaused = $derived(mode.value !== 'custom' && modesPaused.has(mode.value))
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting || modePaused)
   const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
   // Before anyone sends; a refusal, when there is one, already says it all.
   const pickPause = $derived.by((): PickPause | undefined => {
     if (shownRefusal) return undefined
-    if (modePaused) return { kind: 'mode', until: modesPaused.get(mode.value) ?? null }
+    if (modePaused) {
+      const until = modesPaused.get(mode.value) ?? null
+      return { kind: 'mode', until, full: modesFull.has(mode.value) }
+    }
     return trimmed
   })
   // A refused send, told the same way and focused, since nothing started.
@@ -94,7 +98,8 @@
     if (!shownRefusal) return undefined
     const { detail, limit } = shownRefusal
     const { llm_ids = [], resets_at, scope } = limit
-    if (!llm_ids.length) return { kind: 'mode', until: resets_at }
+    if (!llm_ids.length)
+      return { kind: 'mode', until: resets_at, full: detail === 'model_full_today' }
     // Each model by its own reason, read from the limits once they are
     // read again after the refusal, and from the refusal until then.
     const isFull = (id: string) => {
@@ -329,6 +334,7 @@
               paused={limits.paused}
               expensive={limits.expensive}
               pausedModes={modesPaused}
+              fullModes={modesFull}
             />
             <Toggle
               id="web-search"

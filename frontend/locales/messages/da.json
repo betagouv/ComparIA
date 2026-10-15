@@ -855,8 +855,11 @@
         "limits": {
             "mode": {
                 "hint": "Denne tilstand er sat på pause for dig {until}, vælg en anden.",
+                "hintFull": "Denne tilstands modeller har fået mange beskeder i dag: den kommer tilbage i morgen, vælg en anden.",
                 "reason": "Denne tilstand kræver modeller, der er sat på pause for dig. Den kommer tilbage {at}.",
-                "why": "Den kræver modeller, der koster mere at køre. For at holde compar:IA gratis for alle kan hver person sende dem et begrænset antal beskeder hver anden time."
+                "reasonFull": "Denne tilstands modeller har fået mange beskeder i dag. Den kommer tilbage i morgen.",
+                "why": "Den kræver modeller, der koster mere at køre. For at holde compar:IA gratis for alle kan hver person sende dem et begrænset antal beskeder hver anden time.",
+                "whyFull": "For at compar:IA kan forblive gratis for alle, svarer hver model på et begrænset antal beskeder om dagen. De andre tilstande er stadig åbne."
             },
             "pause": {
                 "models": "Se modellerne",
