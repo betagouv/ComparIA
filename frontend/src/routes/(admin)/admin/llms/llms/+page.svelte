@@ -1,8 +1,9 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Badge, Link, Table } from '$components/dsfr'
+  import { Badge, Icon, Link, Table } from '$components/dsfr'
   import { usdFormatter } from '$lib/currency'
   import { m } from '$lib/i18n/messages'
+  import { FULL_ICON } from '$lib/limits.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { sortRows, toRelativeTime, toSearchString, toShortDate } from '$lib/utils/data'
@@ -94,7 +95,10 @@
               : `${dollars.format(used.estimated_usd)} / ${dollars.format(used.cap_usd)}`}
           </span>
           {#if used.full}
-            <Badge size="sm" variant="orange" text={m['admin.limits.today.full']()} noTooltip />
+            <Badge size="sm" class="normal-case!">
+              <Icon icon={FULL_ICON} size="xs" block class="me-1" />
+              {m['admin.limits.today.full']()}
+            </Badge>
           {/if}
         </span>
       {/if}

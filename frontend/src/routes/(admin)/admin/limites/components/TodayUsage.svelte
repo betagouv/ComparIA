@@ -1,9 +1,10 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Alert, Badge, Table } from '$components/dsfr'
+  import { Alert, Badge, Icon, Table } from '$components/dsfr'
   import { usdFormatter } from '$lib/currency'
   import type { DailyCapProposal, LLMDailyUsage } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
+  import { FULL_ICON } from '$lib/limits.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { TableCol } from '$lib/utils/data'
 
@@ -84,7 +85,11 @@
           <span class="gap-2 flex flex-wrap items-center">
             <a href={resolve(`/admin/llms/llms/${llm.llm_id}`)}>{llm.name}</a>
             {#if llm.full}
-              <Badge size="sm" variant="orange" text={m['admin.limits.today.full']()} noTooltip />
+              <!-- The arena's word and icon for it; a state, not an error. -->
+              <Badge size="sm" class="normal-case!">
+                <Icon icon={FULL_ICON} size="xs" block class="me-1" />
+                {m['admin.limits.today.full']()}
+              </Badge>
             {/if}
           </span>
         {:else if col.id === 'estimated_usd'}

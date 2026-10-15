@@ -411,18 +411,18 @@
                 "caption": "Dépenses du jour par modèle",
                 "empty": "Aucun modèle n'a rien coûté aujourd'hui, et aucun n'a de plafond.",
                 "failed": "Les dépenses du jour n'ont pas pu être lues.",
-                "full": "Au repos",
+                "full": "Complet jusqu'à minuit",
                 "highest": "au plus {value} en un jour",
                 "idle": "{count} autres modèles activés n'ont rien coûté aujourd'hui et n'ont pas de plafond.",
                 "idleOne": "1 autre modèle activé n'a rien coûté aujourd'hui et n'a pas de plafond.",
-                "intro": "Ce que chaque modèle a coûté depuis minuit, heure de Paris, tous utilisateurs confondus, estimé d'après ses prix. Un modèle qui atteint son plafond est au repos : il sort des nouvelles conversations jusqu'à minuit, celles en cours continuent. Le plafond se règle dans la fiche du modèle.",
+                "intro": "Ce que chaque modèle a coûté depuis minuit, heure de Paris, tous utilisateurs confondus, estimé d'après ses prix. Un modèle qui atteint son plafond est complet : il sort des nouvelles conversations jusqu'à minuit, celles en cours continuent. Le plafond se règle dans la fiche du modèle.",
                 "model": "Modèle",
                 "noAnswer": "Aucune réponse",
                 "noCap": "Aucun",
                 "noProposal": "Aucun",
                 "proposalRule": "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur {percentile} % des {days} jours entiers lus, plus la moitié.",
                 "proposed": "Proposé",
-                "restsAtOnce": "Plus bas que ce qu'il a déjà coûté aujourd'hui : l'appliquer le met au repos tout de suite, pour tout le monde.",
+                "restsAtOnce": "Plus bas que ce qu'il a déjà coûté aujourd'hui : l'appliquer le rend complet tout de suite, pour tout le monde.",
                 "spent": "Dépensé",
                 "title": "Aujourd'hui",
                 "underCent": "moins de {value}"
@@ -1616,7 +1616,7 @@
                 "label": "Created At"
             },
             "daily_usd_cap": {
-                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
+                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. Empty: no cap.",
                 "label": "Daily cap (USD)"
             },
             "endpoint_id": {

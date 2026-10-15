@@ -90,7 +90,7 @@ FIELDS = {
     },
     "daily_usd_cap": {
         "title": "Daily cap (USD)",
-        "description": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
+        "description": "Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. Empty: no cap.",
     },
     "system_prompt": {
         "description": "System message to add in llm call if specified",

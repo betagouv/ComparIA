@@ -912,7 +912,7 @@
             "newValueCount": "New value, in messages",
             "today": {
                 "title": "Today",
-                "intro": "What each model cost since midnight, Paris time, across everyone, estimated from its prices. A model that reaches its cap rests: it leaves new conversations until midnight, the ones under way go on. The cap is set on the model's form.",
+                "intro": "What each model cost since midnight, Paris time, across everyone, estimated from its prices. A model that reaches its cap is full: it leaves new conversations until midnight, the ones under way go on. The cap is set on the model's form.",
                 "caption": "Today's spend per model",
                 "model": "Model",
                 "spent": "Spent",
@@ -921,7 +921,7 @@
                 "cache": "From the cache",
                 "cacheShare": "{share} of {count}",
                 "noAnswer": "No answer",
-                "full": "Resting",
+                "full": "Full until midnight",
                 "proposed": "Proposed",
                 "noProposal": "None",
                 "empty": "No model cost anything today, and none has a cap.",
@@ -933,7 +933,7 @@
                 "underCent": "under {value}",
                 "proposalRule": "Proposed cap: what each expensive model stayed under on {percentile}% of the {days} whole days read, plus half.",
                 "highest": "at most {value} in one day",
-                "restsAtOnce": "Below what it already cost today: applying it rests the model at once, for everyone."
+                "restsAtOnce": "Below what it already cost today: applying it makes the model full at once, for everyone."
             },
             "inFlightKept": "The calibration proposes no value here: it stays as you set it."
         }
@@ -1616,7 +1616,7 @@
                 "label": "Created At"
             },
             "daily_usd_cap": {
-                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
+                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. Empty: no cap.",
                 "label": "Daily cap (USD)"
             },
             "endpoint_id": {

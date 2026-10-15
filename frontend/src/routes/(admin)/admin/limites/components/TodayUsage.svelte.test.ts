@@ -41,14 +41,20 @@ function row(name: string) {
 }
 
 describe('TodayUsage', () => {
-  it("lists each model's spend against its cap, with the ones at rest marked", () => {
+  it("lists each model's spend against its cap, with the full ones marked", () => {
     const view = render(TodayUsage, { usage })
 
-    expect(row('GPT 5.5')).toHaveTextContent(/GPT 5.5\s*Au repos\s*21,50\s*\$\s*20,00\s*\$/)
+    expect(row('GPT 5.5')).toHaveTextContent(
+      /GPT 5.5\s*Complet jusqu.à minuit\s*21,50\s*\$\s*20,00\s*\$/
+    )
+    // The arena's icon, on a neutral badge: a state, not an error.
+    const badge = row('GPT 5.5').querySelector('.fr-badge')!
+    expect(badge.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
+    expect(badge.className).not.toMatch(/orange|error/)
     expect(row('GPT 5.5')).toHaveTextContent('25 % de 40')
     expect(row('Gemma 4')).toHaveTextContent('Aucun')
     expect(row('Gemma 4')).toHaveTextContent('Aucune réponse')
-    expect(row('Gemma 4')).not.toHaveTextContent('Au repos')
+    expect(row('Gemma 4')).not.toHaveTextContent('Complet')
     expect(view.queryByRole('columnheader', { name: /Proposé/ })).toBeNull()
     // A model that cost nothing and has no cap is only counted.
     expect(view.queryByRole('link', { name: 'Llama 4 Scout' })).toBeNull()
@@ -84,8 +90,8 @@ describe('TodayUsage', () => {
     ]
     const view = render(TodayUsage, { usage, proposals })
 
-    expect(row('Gemma 4')).toHaveTextContent(/le met au repos tout de suite, pour tout le monde/)
-    expect(row('GPT 5.5')).not.toHaveTextContent(/au repos tout de suite/)
+    expect(row('Gemma 4')).toHaveTextContent(/le rend complet tout de suite, pour tout le monde/)
+    expect(row('GPT 5.5')).not.toHaveTextContent(/complet tout de suite/)
     view.unmount()
   })
 

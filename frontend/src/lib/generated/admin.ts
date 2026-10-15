@@ -483,7 +483,7 @@ export interface LLMData {
    */
   price_out: number;
   /**
-   * Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.
+   * Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. Empty: no cap.
    */
   daily_usd_cap: number | null;
   /**
