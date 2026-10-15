@@ -307,6 +307,8 @@
         "limits": {
             "applied": "Limites enregistrées.",
             "apply": "Appliquer",
+            "applyCount": "Appliquer {count} changements",
+            "applyCountOne": "Appliquer 1 changement",
             "applying": "Enregistrement…",
             "calibrate": {
                 "button": "Calibrer",
@@ -332,6 +334,14 @@
                 "big": "Gros changement : vérifiez avant d'appliquer.",
                 "less": "{values} ({times} fois moins)",
                 "more": "{values} ({times} fois plus)"
+            },
+            "confirm": {
+                "back": "Revoir les valeurs",
+                "big": "Gros changement.",
+                "cap": "Plafond du jour de {name}",
+                "intro": "Ils s'appliquent à toute l'arène en moins d'une minute.",
+                "line": "{name} : {change}",
+                "title": "Appliquer ces changements ?"
             },
             "current": "Valeur actuelle : {value}",
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux : {names}.",

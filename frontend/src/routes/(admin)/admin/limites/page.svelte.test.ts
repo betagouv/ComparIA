@@ -1,6 +1,6 @@
 import { api } from '$lib/fastapi-client'
 import type { AdminLimits, LimitsCalibration } from '$lib/generated/admin'
-import { fireEvent, render, waitFor } from '@testing-library/svelte'
+import { fireEvent, render, waitFor, within } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PageProps } from './$types'
 import Page from './+page.svelte'
@@ -58,11 +58,25 @@ const calibration = {
 } as unknown as LimitsCalibration
 
 const request = vi.mocked(api.request)
+const modal = { disclose: vi.fn(), conceal: vi.fn() }
 
-beforeEach(() => request.mockReset())
+beforeEach(() => {
+  request.mockReset()
+  modal.disclose.mockClear()
+  Object.defineProperty(window, 'dsfr', { configurable: true, value: () => ({ modal }) })
+})
 
+/** The confirmation dialog, which DSFR shows on `disclose`. */
+function dialog(view: ReturnType<typeof page>) {
+  return within(view.container.querySelector<HTMLElement>('#limits-confirm')!)
+}
+
+// "Appliquer", then the same button in the dialog that lists the changes.
 async function apply(view: ReturnType<typeof page>) {
-  await fireEvent.click(view.getByRole('button', { name: /^Appliquer/ }))
+  const form = view.container.querySelector('form')!
+  await fireEvent.click(within(form).getByRole('button', { name: /^Appliquer/ }))
+  expect(modal.disclose).toHaveBeenCalledOnce()
+  await fireEvent.click(dialog(view).getByRole('button', { name: /^Appliquer/, hidden: true }))
 }
 
 function page() {
@@ -177,5 +191,53 @@ describe('limits page', () => {
       /20,00\s\$ → 24,00\s\$ \(1,2 fois plus\)/
     )
     expect(card('limit-expensive_per_ip')).not.toHaveTextContent('Gros changement')
+  })
+
+  it('stores nothing until the dialog listing every change is confirmed', async () => {
+    request.mockImplementation(async (url: string) =>
+      url === '/admin/limits/calibration' ? calibration : limits
+    )
+    const view = page()
+    const form = within(view.container.querySelector('form')!)
+    expect(form.getByRole('button', { name: 'Appliquer' })).toBeInTheDocument()
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+    await waitFor(() => expect(view.getByText(/Plafond proposé/)).toBeInTheDocument())
+    await fireEvent.input(view.container.querySelector('#limit-all_per_ip')!, {
+      target: { value: '600000' }
+    })
+
+    // The proposed answer length, the network value and GPT 5.5's cap.
+    await fireEvent.click(form.getByRole('button', { name: 'Appliquer 3 changements' }))
+
+    expect(modal.disclose).toHaveBeenCalledOnce()
+    expect(request).not.toHaveBeenCalledWith('/admin/limits', expect.anything())
+    const items = dialog(view)
+      .getAllByRole('listitem', { hidden: true })
+      .map((item) => item.textContent?.replace(/\s+/g, ' ').trim())
+    expect(items).toEqual([
+      'Tous les modèles · Par réseau (école, entreprise) : 60 000 000 → 600 000 caractères (100 fois moins) Gros changement.',
+      'Longueur de réponse réservée : 508 → 600 caractères (1,2 fois plus)',
+      'Plafond du jour de GPT 5.5 : Aucun → 3,00 $'
+    ])
+
+    await fireEvent.click(
+      dialog(view).getByRole('button', { name: 'Revoir les valeurs', hidden: true })
+    )
+    expect(modal.conceal).toHaveBeenCalled()
+    expect(request).not.toHaveBeenCalledWith('/admin/limits', expect.anything())
+
+    await fireEvent.click(
+      dialog(view).getByRole('button', { name: 'Appliquer 3 changements', hidden: true })
+    )
+    await waitFor(() =>
+      expect(request).toHaveBeenLastCalledWith('/admin/limits', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          all_per_ip: 600_000,
+          expected_answer_chars: 600,
+          daily_usd_caps: { gpt: 3 }
+        })
+      })
+    )
   })
 })

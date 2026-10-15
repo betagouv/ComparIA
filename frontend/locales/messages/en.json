@@ -808,10 +808,20 @@
             "title": "Vote tags"
         },
         "limits": {
+            "applyCount": "Apply {count} changes",
+            "applyCountOne": "Apply 1 change",
             "change": {
                 "big": "Big change: check before applying.",
                 "less": "{values} ({times} times less)",
                 "more": "{values} ({times} times more)"
+            },
+            "confirm": {
+                "back": "Back to the values",
+                "big": "Big change.",
+                "cap": "Daily cap of {name}",
+                "intro": "They reach the whole arena in less than a minute.",
+                "line": "{name}: {change}",
+                "title": "Apply these changes?"
             },
             "messages": {
                 "network": "That is about {count} messages in two hours for the whole network.",

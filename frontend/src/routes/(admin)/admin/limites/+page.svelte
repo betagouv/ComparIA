@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Accordion, Alert, Badge, Button, Input } from '$components/dsfr'
+  import { Accordion, Alert, Badge, Button, Input, Modal } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
   import { usdFormatter } from '$lib/currency'
   import { api, type ApiError } from '$lib/fastapi-client'
@@ -285,12 +285,40 @@
     if (!toDefault.includes(name)) toDefault = [...toDefault, name]
   }
 
-  async function apply(event: SubmitEvent) {
+  // Each limit and each daily cap that "Appliquer" would change.
+  const changeCount = $derived(changed.length + changedCaps.length)
+  const applyText = $derived(
+    changeCount > 1
+      ? m['admin.limits.applyCount']({ count: String(changeCount) })
+      : changeCount
+        ? m['admin.limits.applyCountOne']()
+        : m['admin.limits.apply']()
+  )
+  const capNames = $derived(new Map((data.usage ?? []).map((llm) => [llm.llm_id, llm])))
+  // Where a value sits on the page, since "Par personne" names two of them.
+  const places: Partial<Record<Name, string>> = Object.fromEntries(
+    groups.flatMap((group) => group.names.map((name) => [name, group.title]))
+  )
+
+  type DsfrModal = { disclose: () => void; conceal: () => void }
+  function confirmModal(): DsfrModal | undefined {
+    const el = document.getElementById('limits-confirm')
+    // @ts-expect-error - DSFR is globally available
+    return el ? (window.dsfr(el).modal as DsfrModal) : undefined
+  }
+
+  // Nothing is stored before the admin has seen every change in the dialog.
+  function apply(event: SubmitEvent) {
     event.preventDefault()
-    if (!changed.length && !changedCaps.length) {
+    if (!changeCount) {
       useToast(m['admin.limits.nothingToApply'](), 4000)
       return
     }
+    confirmModal()?.disclose()
+  }
+
+  async function confirmApply() {
+    confirmModal()?.conceal()
     const patch: AdminLimitsPatch = Object.fromEntries(
       changed.map((name) => [name, resets.includes(name) ? null : Number(draft[name])])
     )
@@ -512,7 +540,7 @@
       <div class="gap-3 flex flex-wrap">
         <Button
           type="submit"
-          text={saving ? m['admin.limits.applying']() : m['admin.limits.apply']()}
+          text={saving ? m['admin.limits.applying']() : applyText}
           disabled={saving}
         />
         <Button
@@ -525,6 +553,46 @@
     </form>
   </div>
 </PageLayout>
+
+<Modal id="limits-confirm" titleId="limits-confirm-title">
+  <h2 id="limits-confirm-title" class="fr-modal__title">{m['admin.limits.confirm.title']()}</h2>
+  <p class="fr-text--sm">{m['admin.limits.confirm.intro']()}</p>
+  <ul class="fr-text--sm">
+    {#each changed as name (name)}
+      {@const to = next(name)}
+      {@const place = places[name]}
+      {#if to !== null}
+        {@const { text, big } = change(name, byName[name].value, to)}
+        <li>
+          {m['admin.limits.confirm.line']({
+            name: place ? `${place} · ${labels[name]}` : labels[name],
+            change: text
+          })}
+          {#if big}&nbsp;<strong>{m['admin.limits.confirm.big']()}</strong>{/if}
+        </li>
+      {/if}
+    {/each}
+    {#each changedCaps as cap (cap.llm_id)}
+      {@const llm = capNames.get(cap.llm_id)}
+      <li>
+        {m['admin.limits.confirm.line']({
+          name: m['admin.limits.confirm.cap']({ name: llm?.name ?? cap.llm_id }),
+          change: `${
+            llm?.cap_usd == null ? m['admin.limits.today.noCap']() : dollars.format(llm.cap_usd)
+          } → ${dollars.format(cap.value)}`
+        })}
+      </li>
+    {/each}
+  </ul>
+  <div class="fr-btns-group fr-btns-group--inline-md">
+    <Button
+      variant="secondary"
+      text={m['admin.limits.confirm.back']()}
+      onclick={() => confirmModal()?.conceal()}
+    />
+    <Button text={applyText} disabled={saving} onclick={confirmApply} />
+  </div>
+</Modal>
 
 <style>
   .proposal {
