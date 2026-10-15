@@ -9,7 +9,7 @@ and the conversations already under way with it finish.
 """
 
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 from zoneinfo import ZoneInfo
@@ -19,7 +19,7 @@ from fastapi import HTTPException
 
 import backend.arena.limits as limits
 import backend.arena.router as arena_router
-from backend.arena.limits import Call, Charge, Day, Identity
+from backend.arena.limits import Allowance, Call, Charge, Day, Identity
 from backend.llms.data import NoModelLeft
 from tests.arena.fakes import FakeRedis, fake_redis
 from tests.arena.test_spend_budget import (
@@ -306,6 +306,27 @@ def test_a_mode_left_with_only_full_models_is_refused_with_no_model_named():
     assert refusal.detail == "model_full_today"
     assert refusal.limit.llm_ids == []
     assert refusal.limit.resets_at == midnight
+
+
+@pytest.mark.parametrize(
+    ("resets_in", "detail"),
+    [(600, "model_full_today"), (2 * 3600, "expensive_allowance_spent")],
+)
+def test_a_pick_of_a_full_model_and_a_paused_one_is_told_the_later_end(
+    resets_in, detail
+):
+    """The full model comes back in an hour, the paused one once the
+    allowance lifts."""
+    paused = uuid4()
+    back = datetime.now(timezone.utc) + timedelta(hours=1)
+    spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
+
+    refusal = arena_router.pick_refusal(
+        NoModelLeft([EXPENSIVE, paused]), {EXPENSIVE: back}, spent
+    )
+
+    assert refusal.detail == detail
+    assert refusal.limit.llm_ids == [EXPENSIVE, paused]
 
 
 def test_unknown_model_ids_are_not_counted(clock):
