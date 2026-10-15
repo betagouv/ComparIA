@@ -87,12 +87,18 @@
       {dollars.format(llm.price_out)}
     {:else if col.id === 'today'}
       {@const used = usage.get(llm.id)}
-      {#if used}
+      <!-- A dash when nothing was spent, enabled or not, rather than 0,00 $. -->
+      {#if !used?.estimated_usd && !used?.full}
+        —
+      {:else if used}
         <span class="gap-2 flex flex-wrap items-center">
           <span>
             {used.cap_usd === null
               ? dollars.format(used.estimated_usd)
-              : `${dollars.format(used.estimated_usd)} / ${dollars.format(used.cap_usd)}`}
+              : m['admin.limits.today.spentOfCap']({
+                  spent: dollars.format(used.estimated_usd),
+                  cap: dollars.format(used.cap_usd)
+                })}
           </span>
           {#if used.full}
             <Badge size="sm" class="normal-case!">

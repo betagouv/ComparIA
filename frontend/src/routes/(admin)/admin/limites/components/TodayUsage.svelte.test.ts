@@ -45,14 +45,14 @@ describe('TodayUsage', () => {
     const view = render(TodayUsage, { usage })
 
     expect(row('GPT 5.5')).toHaveTextContent(
-      /GPT 5.5\s*Complet jusqu.à minuit\s*21,50\s*\$\s*20,00\s*\$/
+      /GPT 5.5\s*Complet jusqu.à minuit\s*21,50\s*\$ sur 20,00\s*\$/
     )
     // The arena's icon, on a neutral badge: a state, not an error.
     const badge = row('GPT 5.5').querySelector('.fr-badge')!
     expect(badge.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
     expect(badge.className).not.toMatch(/orange|error/)
     expect(row('GPT 5.5')).toHaveTextContent('25 % de 40')
-    expect(row('Gemma 4')).toHaveTextContent('Aucun')
+    expect(row('Gemma 4')).toHaveTextContent(/0,42\s\$, sans plafond/)
     expect(row('Gemma 4')).toHaveTextContent('Aucune réponse')
     expect(row('Gemma 4')).not.toHaveTextContent('Complet')
     expect(view.queryByRole('columnheader', { name: /Proposé/ })).toBeNull()

@@ -34,12 +34,13 @@
   const rows = $derived(shown.map((llm) => ({ ...llm, id: llm.llm_id })))
   const idle = $derived((usage?.length ?? 0) - shown.length)
 
-  type ColId = 'name' | 'estimated_usd' | 'cap_usd' | 'cache' | 'proposed'
+  type ColId = 'name' | 'estimated_usd' | 'cache' | 'proposed'
   const cols = $derived.by((): TableCol<ColId>[] => {
     const cols: TableCol<ColId>[] = [
       { id: 'name', label: m['admin.limits.today.model']() },
+      // One column for the spend and its cap, so the figure that matters fits
+      // on a phone.
       { id: 'estimated_usd', label: m['admin.limits.today.spent'](), kind: 'number' },
-      { id: 'cap_usd', label: m['admin.limits.today.cap'](), kind: 'number' },
       { id: 'cache', label: m['admin.limits.today.cache'](), kind: 'number' }
     ]
     if (proposals) cols.push({ id: 'proposed', label: m['admin.limits.today.proposed']() })
@@ -93,9 +94,12 @@
             {/if}
           </span>
         {:else if col.id === 'estimated_usd'}
-          {spent(llm.estimated_usd)}
-        {:else if col.id === 'cap_usd'}
-          {llm.cap_usd === null ? m['admin.limits.today.noCap']() : dollars.format(llm.cap_usd)}
+          {llm.cap_usd === null
+            ? m['admin.limits.today.spentNoCap']({ spent: spent(llm.estimated_usd) })
+            : m['admin.limits.today.spentOfCap']({
+                spent: spent(llm.estimated_usd),
+                cap: dollars.format(llm.cap_usd)
+              })}
         {:else if col.id === 'cache'}
           {llm.answers
             ? m['admin.limits.today.cacheShare']({

@@ -405,7 +405,6 @@
             "today": {
                 "cache": "Depuis le cache",
                 "cacheShare": "{share} de {count}",
-                "cap": "Plafond",
                 "capsApplied": "{count} plafonds proposés seront appliqués avec « Appliquer ».",
                 "capsAppliedOne": "1 plafond proposé sera appliqué avec « Appliquer ».",
                 "caption": "Dépenses du jour par modèle",
@@ -424,6 +423,8 @@
                 "proposed": "Proposé",
                 "restsAtOnce": "Plus bas que ce qu'il a déjà coûté aujourd'hui : l'appliquer le rend complet tout de suite, pour tout le monde.",
                 "spent": "Dépensé",
+                "spentNoCap": "{spent}, sans plafond",
+                "spentOfCap": "{spent} sur {cap}",
                 "title": "Aujourd'hui",
                 "underCent": "moins de {value}"
             },
