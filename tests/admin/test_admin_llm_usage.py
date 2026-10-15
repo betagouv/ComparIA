@@ -71,7 +71,8 @@ def test_each_model_s_day_against_its_cap(usage):
         "estimated_usd": 2.5,
         "cap_usd": 2.0,
         "resting": True,
-        "resets_in": day.ends_in(),
+        # The fake clock reads 9:00 in Paris: 15 hours to midnight.
+        "resets_in": 15 * 3600,
         "answers": 4,
         "cached_answers": 0,
     }
