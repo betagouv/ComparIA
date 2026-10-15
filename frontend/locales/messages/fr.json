@@ -988,6 +988,7 @@
         },
         "limits": {
             "mode": {
+                "change": "Changer de mode",
                 "hint": "Ce mode est en pause pour vous {until}, choisissez-en un autre.",
                 "hintFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre.",
                 "reason": "Ce mode a besoin de modèles qui sont en pause pour vous. Il revient {at}.",

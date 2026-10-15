@@ -854,6 +854,7 @@
         },
         "limits": {
             "mode": {
+                "change": "Skift tilstand",
                 "hint": "Denne tilstand er sat på pause for dig {until}, vælg en anden.",
                 "hintFull": "Denne tilstands modeller har fået mange beskeder i dag: den kommer tilbage i morgen, vælg en anden.",
                 "reason": "Denne tilstand kræver modeller, der er sat på pause for dig. Den kommer tilbage {at}.",

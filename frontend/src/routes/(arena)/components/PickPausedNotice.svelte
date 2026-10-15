@@ -137,4 +137,16 @@
   const { reset, text, why, icon } = $derived(copy(pause))
 </script>
 
-<LimitHint id="pick-paused-notice" {text} {reset} {why} {icon} {focusOnShow} />
+<!-- A paused mode can only be changed, and the mode button may be far up the
+     page on a phone. -->
+<LimitHint
+  id="pick-paused-notice"
+  {text}
+  {reset}
+  {why}
+  {icon}
+  {focusOnShow}
+  action={pause.kind === 'mode'
+    ? { label: m['arene.limits.mode.change'](), controls: 'modal-mode-selection' }
+    : undefined}
+/>

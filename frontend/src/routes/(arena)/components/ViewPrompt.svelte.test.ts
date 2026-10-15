@@ -1,7 +1,7 @@
 import { api } from '$lib/fastapi-client'
 import type { ArenaLimits } from '$lib/generated/backend'
 import { createLimits, type Limits } from '$lib/limits.svelte'
-import { fireEvent, render } from '@testing-library/svelte'
+import { fireEvent, render, within } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ViewPrompt from './ViewPrompt.svelte'
 
@@ -444,6 +444,10 @@ describe('ViewPrompt', () => {
     )
     expect(notice).not.toHaveFocus()
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
+    // A way to the mode list from the hint, before "Pourquoi ?".
+    const change = within(notice as HTMLElement).getByRole('button', { name: 'Changer de mode' })
+    expect(change).toHaveAttribute('aria-controls', 'modal-mode-selection')
+    expect(notice).toHaveTextContent(/choisissez-en un autre\. Changer de mode Pourquoi \?$/)
 
     await fireEvent.click(view.getByRole('radio', { name: /Aléatoire/, hidden: true }))
     expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
