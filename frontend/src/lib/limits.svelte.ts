@@ -92,6 +92,8 @@ export function createLimits(
   }
   let total = $state<Spent>()
   let expensive = $state<Spent>()
+  // Unknown until the first read.
+  let signedInFactor = $state<number>()
   const paused = new SvelteMap<string, PausedLLM>()
   let timer: ReturnType<typeof setTimeout> | undefined
   // Only the latest read counts: an older one may land after a refusal.
@@ -101,6 +103,7 @@ export function createLimits(
     const now = Date.now()
     total = spent(data.total, now)
     expensive = spent(data.expensive, now)
+    signedInFactor = data.signed_in_factor
     paused.clear()
     for (const llm of data.paused_llms) {
       paused.set(llm.id, {
@@ -153,6 +156,10 @@ export function createLimits(
     /** Set while the expensive allowance is spent. Shown in the picker only. */
     get expensive() {
       return expensive
+    },
+    /** How many times the personal allowances signing in gives. */
+    get signedInFactor() {
+      return signedInFactor
     },
     /** The models a new comparison may not use yet, by id. */
     get paused(): ReadonlyMap<string, PausedLLM> {
