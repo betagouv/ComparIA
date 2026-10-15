@@ -18,7 +18,7 @@ route that calls the models asks one function here and does what it says:
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Collection, Literal, Mapping, Sequence
+from typing import Collection, Mapping, Sequence
 from uuid import UUID
 
 from backend.arena.limits import (
@@ -205,10 +205,6 @@ def lifts_last(spent: Sequence[Allowance]) -> tuple[Allowance, datetime | None]:
     return last, now + timedelta(seconds=last.resets_in)
 
 
-def public_scope(allowance: Allowance) -> Literal["session", "network"]:
-    return "session" if allowance.scope == "session" else "network"
-
-
 def limit_refusal(
     spent: Sequence[Allowance], llm_ids: Sequence[UUID] = (), reason: str = ""
 ) -> Refused:
@@ -221,7 +217,7 @@ def limit_refusal(
     return Refused(
         "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
         LimitRefusal(
-            scope=public_scope(last),
+            scope=last.scope,
             resets_at=resets_at,
             resets_in=last.resets_in,
             llm_ids=list(llm_ids),
@@ -316,7 +312,7 @@ def spent_allowance(spent: Sequence[Allowance]) -> SpentAllowance | None:
         return None
     last, resets_at = lifts_last(spent)
     return SpentAllowance(
-        scope=public_scope(last), resets_at=resets_at, resets_in=last.resets_in
+        scope=last.scope, resets_at=resets_at, resets_in=last.resets_in
     )
 
 

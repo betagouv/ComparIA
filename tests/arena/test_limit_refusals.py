@@ -29,7 +29,7 @@ WHO = Identity.of("sess-a", "1.1.1.1")
 
 
 def spent(pool, scope, resets_in):
-    identity = WHO.personal if scope == "session" else WHO.network
+    identity = WHO.session if scope == "session" else WHO.network
     return Allowance(pool, scope, identity, used=11, limit=10, resets_in=resets_in)
 
 
@@ -37,9 +37,9 @@ def spent(pool, scope, resets_in):
     "pool, scope, said",
     [
         ("all", "session", ("allowance_spent", "session")),
-        ("all", "ip", ("allowance_spent", "network")),
+        ("all", "network", ("allowance_spent", "network")),
         ("expensive", "session", ("expensive_allowance_spent", "session")),
-        ("expensive", "ip", ("expensive_allowance_spent", "network")),
+        ("expensive", "network", ("expensive_allowance_spent", "network")),
     ],
 )
 def test_each_allowance_has_its_own_key_and_scope(pool, scope, said):
@@ -51,7 +51,7 @@ def test_each_allowance_has_its_own_key_and_scope(pool, scope, said):
 def test_the_limit_that_lifts_last_is_the_one_told():
     """That is when the person can go on."""
     error = turn_limits.limit_refusal(
-        [spent("expensive", "session", 600), spent("all", "ip", 4210)]
+        [spent("expensive", "session", 600), spent("all", "network", 4210)]
     )
     assert (error.key, error.limit.scope) == ("allowance_spent", "network")
     assert error.limit.resets_in == 4210
@@ -61,7 +61,7 @@ def test_the_limit_that_lifts_last_is_the_one_told():
 
 def test_a_limit_with_no_known_reset_is_told_over_one_that_lifts():
     error = turn_limits.limit_refusal(
-        [spent("all", "ip", None), spent("expensive", "session", 4210)]
+        [spent("all", "network", None), spent("expensive", "session", 4210)]
     )
     assert (error.key, error.limit.scope) == ("allowance_spent", "network")
     assert (error.limit.resets_in, error.limit.resets_at) == (None, None)
@@ -95,7 +95,7 @@ def client_raising(refused):
 def test_the_body_keeps_detail_a_string_and_puts_the_limit_beside_it():
     """An object `detail` would break every client that reads it as a key."""
     response = client_raising(
-        turn_limits.limit_refusal([spent("all", "ip", 4210)])
+        turn_limits.limit_refusal([spent("all", "network", 4210)])
     ).post("/send")
 
     assert response.status_code == 429

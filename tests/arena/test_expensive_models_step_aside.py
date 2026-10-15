@@ -33,7 +33,7 @@ from tests.arena.test_spend_budget import (
 )
 
 # In millionths of a dollar, past the network allowance and so the session one.
-SPENT = limits.limit("expensive", "ip") + 1
+SPENT = limits.limit("expensive", "network") + 1
 
 
 def spend(redis, pool, identity):

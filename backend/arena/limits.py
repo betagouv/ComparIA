@@ -6,9 +6,10 @@ Each allowance is one Redis counter per pool and identity. The `all` pool counts
 every character the models are sent and write. The `expensive` pool counts
 what the expensive models cost, in millionths of a US dollar, estimated from
 each model's prices. A model is expensive when its output price reaches the
-threshold an admin sets. Each pool runs per anonymous session and per IP: the
-session one is the one that matters, since people behind a shared NAT each get
-their own; the IP one catches a client that drops its cookie to start over.
+threshold an admin sets. Each pool runs per anonymous session and per network
+(its IP): the session one is the one that matters, since people behind a
+shared NAT each get their own; the network one catches a client that drops
+its cookie to start over.
 
 A spent `all` allowance stops every message. A spent `expensive` one only
 keeps expensive models out of new comparisons: the conversations already
@@ -18,9 +19,10 @@ Each model's spend is also counted per Paris calendar day, across everyone,
 in the same two steps. A model whose daily cap is reached is full until
 midnight: new comparisons leave it out, the ones under way finish.
 
-Routes call `read_status` for a cheap early answer, `Charge.reserve` to charge
-what the models are sent before any of them is called, and `Charge.settle` to
-add what they wrote once the turn is over.
+The rules the routes apply sit in `turn_limits`, on top of three steps here:
+`read_status` for a cheap early answer, `Charge.reserve` to charge what the
+models are sent before any of them is called, and `Charge.settle` to add what
+they wrote once the turn is over.
 
 The limits are settings an admin can change from /admin/limites, stored in the
 app settings, with the RATELIMIT_* env values as defaults. Each process reads
@@ -64,21 +66,21 @@ logger = logging.getLogger("languia")
 
 Pool = Literal["all", "expensive"]
 POOLS: tuple[Pool, ...] = get_args(Pool)
-Scope = Literal["session", "ip"]
+Scope = Literal["session", "network"]
 
 # A counter expires 2 hours after the first message it counts, whatever comes
 # after: the window is a fixed clock, not 2 hours of quiet.
 WINDOW_SECONDS = 3600 * 2
 
 # The prefix of an identity says which kind of counter it is.
-_SCOPES: dict[str, Scope] = {"s": "session", "ip": "ip"}
+_SCOPES: dict[str, Scope] = {"s": "session", "ip": "network"}
 
 
 def session_identity(anonymous_user_hash: str) -> str:
     return f"s:{anonymous_user_hash}"
 
 
-def ip_identity(ip: str) -> str:
+def network_identity(ip: str) -> str:
     return f"ip:{ip_bucket(ip)}"
 
 
@@ -88,9 +90,9 @@ def ip_identity(ip: str) -> str:
 # ones counted characters, which would be wrong read as dollars.
 _KEY_POOLS: dict[tuple[Pool, Scope], str] = {
     ("all", "session"): "all",
-    ("all", "ip"): "all_ip",
+    ("all", "network"): "all_ip",
     ("expensive", "session"): "expensive_usd",
-    ("expensive", "ip"): "expensive_usd_ip",
+    ("expensive", "network"): "expensive_usd_ip",
 }
 
 # Model prices are in US dollars per million tokens, and a token is about four
@@ -125,9 +127,9 @@ LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
 
 POOL_SETTINGS: dict[tuple[Pool, Scope], LimitSetting] = {
     ("all", "session"): "all_per_session",
-    ("all", "ip"): "all_per_ip",
+    ("all", "network"): "all_per_ip",
     ("expensive", "session"): "expensive_per_session",
-    ("expensive", "ip"): "expensive_per_ip",
+    ("expensive", "network"): "expensive_per_ip",
 }
 
 # How long a process keeps the stored settings before reading them again: a
@@ -235,16 +237,16 @@ class Identity:
     """Who a message counts against: the person, and the network they send
     from. Both are identities as the Redis keys spell them."""
 
-    personal: str
+    session: str
     network: str
 
     @classmethod
     def of(cls, anonymous_user_hash: str, ip: str) -> "Identity":
-        return cls(session_identity(anonymous_user_hash), ip_identity(ip))
+        return cls(session_identity(anonymous_user_hash), network_identity(ip))
 
     @property
     def identities(self) -> tuple[str, str]:
-        return (self.personal, self.network)
+        return (self.session, self.network)
 
 
 @dataclass(frozen=True)
@@ -648,7 +650,7 @@ def reserve(
 
     A refused message gets its characters back. It never reached a model, and
     left counted it would go on eating the allowances that were not spent yet,
-    such as the IP one a whole school can share.
+    such as the network one a whole school can share.
 
     Raises:
         AllowanceSpent: with each allowance that refused

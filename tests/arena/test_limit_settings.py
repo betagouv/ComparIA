@@ -110,9 +110,9 @@ def test_dollars_stay_dollars_and_characters_whole(monkeypatch):
     asyncio.run(limits.load_settings())
 
     assert limits.setting("expensive_per_ip") == 12.5
-    assert limits.limit("expensive", "ip") == 12_500_000
+    assert limits.limit("expensive", "network") == 12_500_000
     assert limits.setting("expensive_price_out") == 9.99
-    assert limits.limit("all", "ip") == 5000
+    assert limits.limit("all", "network") == 5000
 
 
 def test_the_stored_threshold_decides_which_models_are_expensive(monkeypatch):

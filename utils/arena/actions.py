@@ -11,7 +11,7 @@ def _identities(session: str | None, ip: str | None) -> list[str]:
     if session:
         identities.append(limits.session_identity(session))
     if ip:
-        identities.append(limits.ip_identity(ip))
+        identities.append(limits.network_identity(ip))
     if not identities:
         logger.error("Give --session, --ip or both.")
         raise SystemExit(1)

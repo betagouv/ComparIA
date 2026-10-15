@@ -28,7 +28,7 @@ from tests.arena.fakes import FakeRedis
 
 # The expensive allowances, in the counters' millionths of a dollar.
 EXPENSIVE_PER_SESSION = limits.limit("expensive", "session")
-EXPENSIVE_PER_IP = limits.limit("expensive", "ip")
+EXPENSIVE_PER_IP = limits.limit("expensive", "network")
 
 
 @contextlib.contextmanager

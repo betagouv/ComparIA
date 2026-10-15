@@ -404,7 +404,7 @@ def propose(result: Replay) -> list[LimitProposal]:
         over = round(per_network * MICRO_USD) if pool == "expensive" else per_network
         proposals.append(
             LimitProposal(
-                name=POOL_SETTINGS[(pool, "ip")],
+                name=POOL_SETTINGS[(pool, "network")],
                 value=per_network,
                 sample=len(networks),
                 percentile=CLASS_PERCENTILE,
@@ -618,7 +618,12 @@ async def limits_calibrate(*, days: int = 30) -> None:
             )
         )
         logger.info(
-            _line(f"{pool}, per network and window", networks, limit(pool, "ip"), pool)
+            _line(
+                f"{pool}, per network and window",
+                networks,
+                limit(pool, "network"),
+                pool,
+            )
         )
         logger.info(_line(f"{pool}, per network and hour", hours, pool=pool))
         logger.info(_line(f"{pool}, per conversation", conversations, pool=pool))

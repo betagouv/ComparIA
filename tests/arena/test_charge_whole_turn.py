@@ -248,14 +248,14 @@ def test_settling_twice_charges_once():
 
 def test_settling_on_a_spent_allowance_still_charges_and_never_refuses():
     with fake_redis(limits) as redis:
-        redis.set(limits.budget_key("expensive", WHO.personal), 10**9, ex=60)
+        redis.set(limits.budget_key("expensive", WHO.session), 10**9, ex=60)
         charge = Charge.reserve(
             WHO, {"a": cheap(100), "b": pricey(100)}, refusing=("all",)
         )
         charge.settle({"a": written("x"), "b": written("y")})
 
-        assert counters(redis)[("expensive", WHO.personal)] == 10**9 + usd(100, 1)
-        assert redis.ttl(limits.budget_key("expensive", WHO.personal)) == 60
+        assert counters(redis)[("expensive", WHO.session)] == 10**9 + usd(100, 1)
+        assert redis.ttl(limits.budget_key("expensive", WHO.session)) == 60
 
 
 def test_settling_never_raises_when_redis_is_down():

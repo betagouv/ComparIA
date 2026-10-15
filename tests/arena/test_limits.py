@@ -51,13 +51,13 @@ def test_the_expensive_limits_count_in_millionths_of_a_dollar(monkeypatch):
 def test_the_whole_counters_keep_the_keys_they_had_before_the_module():
     # A deploy must not hand everyone their allowances back. The expensive
     # counters are new: the old ones held characters.
-    assert limits.budget_key("expensive", WHO.personal) == (
+    assert limits.budget_key("expensive", WHO.session) == (
         f"{REDIS_INSTANCE_PREFIX}pricey_chars:expensive_usd:sess-a"
     )
     assert limits.budget_key("expensive", WHO.network) == (
         f"{REDIS_INSTANCE_PREFIX}pricey_chars:expensive_usd_ip:1.1.1.1"
     )
-    assert limits.budget_key("all", WHO.personal) == (
+    assert limits.budget_key("all", WHO.session) == (
         f"{REDIS_INSTANCE_PREFIX}pricey_chars:all:sess-a"
     )
     assert limits.budget_key("all", WHO.network) == (
@@ -168,8 +168,8 @@ def test_a_reset_forgets_one_identity_only():
         assert limits.reset_counters([WHO.network]) == 2
         status = limits.read_status(WHO)
         assert allowance(status, "all", "session").used == 10
-        assert allowance(status, "all", "ip").used == 0
-        assert allowance(limits.read_status(other), "all", "ip").used == 10
+        assert allowance(status, "all", "network").used == 0
+        assert allowance(limits.read_status(other), "all", "network").used == 10
 
 
 def test_a_pool_that_may_not_refuse_is_still_charged(monkeypatch):
@@ -261,8 +261,8 @@ def test_a_message_after_the_reset_opens_a_new_window():
 def test_the_cli_tells_a_counter_that_never_resets_from_none(caplog, monkeypatch):
     monkeypatch.setattr(limits, "get_app_settings", no_stored_settings)
     with fake_redis(limits) as redis, caplog.at_level("INFO", "comparia.arena"):
-        redis.set(limits.budget_key("all", WHO.personal), 10)
-        redis.set(limits.budget_key("expensive", WHO.personal), 12_345, ex=61)
+        redis.set(limits.budget_key("all", WHO.session), 10)
+        redis.set(limits.budget_key("expensive", WHO.session), 12_345, ex=61)
         asyncio.run(limits_show(session="sess-a"))
     assert "s:sess-a all: 10 of 3,000,000, never resets" in caplog.text
     assert "s:sess-a expensive: $0.0123 of $0.4000, resets in 2 min" in caplog.text
@@ -308,4 +308,4 @@ def test_an_older_redis_still_tells_when_an_allowance_lifts(monkeypatch):
     [refused] = refusal.value.spent
     assert refused.expires_at == lifts
     # The refund came back, and the counter kept its window.
-    assert redis.get(limits.budget_key("all", WHO.personal)) == "101"
+    assert redis.get(limits.budget_key("all", WHO.session)) == "101"

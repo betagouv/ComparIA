@@ -23,7 +23,7 @@ from uuid import uuid4
 from fastapi import Request
 from redis.exceptions import RedisError
 
-from backend.arena.limits import in_flight_per_network, ip_identity
+from backend.arena.limits import in_flight_per_network, network_identity
 from backend.errors import TooManyAtOnceError
 from backend.utils.user import get_ip
 from utils.storage.redis import REDIS_IN_FLIGHT_KEY, get_redis_client
@@ -55,7 +55,7 @@ class TurnSlot:
     @classmethod
     def take(cls, network: str) -> "TurnSlot":
         """
-        Take a slot for a turn of this network, an identity as `ip_identity`
+        Take a slot for a turn of this network, an identity as `network_identity`
         spells it.
 
         Counted after the slot is added, so requests sent at once each count
@@ -108,7 +108,7 @@ def hold_turn_slot(request: Request) -> Iterator[None]:
             seconds"
     """
     try:
-        slot = TurnSlot.take(ip_identity(get_ip(request)))
+        slot = TurnSlot.take(network_identity(get_ip(request)))
     except TooManyAtOnce:
         logger.warning(
             "Refused a turn: too many answering at once on its network",
