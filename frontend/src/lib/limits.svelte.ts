@@ -11,13 +11,15 @@ import { SvelteMap } from 'svelte/reactivity'
 
 // A window of the allowances: the longest one with no known reset can last.
 const FALLBACK_SECONDS = 2 * 60 * 60
+// Off by less than this, this browser's clock agrees with the server's.
+const CLOCK_SKEW_MS = 60_000
 // Never read again sooner than this, even when the server says it lifts now.
 const MIN_WAIT_MS = 1000
 
 /**
- * A spent allowance. `resets_at` is set from the server's countdown on this
- * browser's clock, so the time shown agrees with the person's own clock even
- * when it is off from the server's.
+ * A spent allowance. `resets_at` is the server's, or, on a browser whose
+ * clock is off from the server's, the countdown on this clock, so the time
+ * shown agrees with the person's own clock.
  */
 export interface Spent extends SpentAllowance {
   /** When to read the limits again, from the countdown or two hours. */
@@ -45,11 +47,15 @@ export async function queryLimits(_fetch: typeof fetch = fetch): Promise<ArenaLi
 function spent(allowance: SpentAllowance | null, now: number): Spent | undefined {
   if (!allowance) return undefined
   const resetsIn = allowance.resets_in
-  return {
-    ...allowance,
-    resets_at: resetsIn === null ? null : new Date(now + resetsIn * 1000).toISOString(),
-    liftsAt: now + (resetsIn ?? FALLBACK_SECONDS) * 1000
-  }
+  if (resetsIn === null)
+    return { ...allowance, resets_at: null, liftsAt: now + FALLBACK_SECONDS * 1000 }
+  const counted = now + resetsIn * 1000
+  // The server's time is fixed for the window, where the countdown loses a
+  // second here and there between reads: keep it while this clock agrees
+  // with it, and trust the countdown on a clock that is off.
+  const server = allowance.resets_at ? Date.parse(allowance.resets_at) : NaN
+  const at = Math.abs(server - counted) < CLOCK_SKEW_MS ? server : counted
+  return { ...allowance, resets_at: new Date(at).toISOString(), liftsAt: at }
 }
 
 /**

@@ -244,6 +244,9 @@ class Allowance:
     # Seconds until the counter expires. None when there is no counter, or
     # when it has no expiry and so never resets.
     resets_in: int | None
+    # When it expires, in Unix seconds: fixed when the window opens, so every
+    # read tells the same time, where now + `resets_in` moves by a second.
+    expires_at: int | None = None
 
     @property
     def spent(self) -> bool:
@@ -495,6 +498,7 @@ def read_counters(identities: Sequence[str]) -> LimitStatus:
     for pool, identity in counters:
         pipe.get(budget_key(pool, identity))
         pipe.ttl(budget_key(pool, identity))
+        pipe.expiretime(budget_key(pool, identity))
     replies = pipe.execute()
 
     return LimitStatus(
@@ -506,9 +510,10 @@ def read_counters(identities: Sequence[str]) -> LimitStatus:
                 used=int(used or 0),
                 limit=limit(pool, _scope(identity)),
                 resets_in=ttl if ttl >= 0 else None,
+                expires_at=expires if expires >= 0 else None,
             )
-            for (pool, identity), used, ttl in zip(
-                counters, replies[::2], replies[1::2]
+            for (pool, identity), used, ttl, expires in zip(
+                counters, replies[::3], replies[1::3], replies[2::3]
             )
         )
     )
@@ -588,11 +593,14 @@ def reserve(
     # When each spent allowance lifts, for the refusal to say so.
     for pool, identity, _used in refused:
         pipe.ttl(budget_key(pool, identity))
+        pipe.expiretime(budget_key(pool, identity))
     replies = pipe.execute()
 
-    # Two replies per counter (the refund and its expiry), then the TTLs.
+    # Two replies per counter (the refund and its expiry), then each refused
+    # one's TTL and expiry time.
     refunded: list[int] = replies[: 2 * len(counters) : 2]
-    ttls = replies[2 * len(counters) :]
+    ttls = replies[2 * len(counters) :: 2]
+    expiries = replies[2 * len(counters) + 1 :: 2]
     # A counter that expired meanwhile took the refund below zero, which
     # would hand the new window more than its allowance. The window the
     # message was charged to is gone, so the refund goes with it.
@@ -614,8 +622,9 @@ def reserve(
                 used=used,
                 limit=limit(pool, _scope(identity)),
                 resets_in=ttl if ttl >= 0 else None,
+                expires_at=expires if expires >= 0 else None,
             )
-            for (pool, identity, used), ttl in zip(refused, ttls)
+            for (pool, identity, used), ttl, expires in zip(refused, ttls, expiries)
         ]
     )
 

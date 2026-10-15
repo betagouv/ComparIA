@@ -8,6 +8,7 @@ forward to watch a window close, and to make Redis fail between two calls.
 """
 
 import contextlib
+import time
 from datetime import datetime
 
 from redis.exceptions import ConnectionError as RedisConnectionError
@@ -17,10 +18,12 @@ class FakeRedis:
     """`pipelines_that_work` makes every pipeline after that many fail, as when
     Redis drops between two calls."""
 
-    def __init__(self, pipelines_that_work=None, now=1_800_000_000.0):
+    def __init__(self, pipelines_that_work=None, now=None):
         self.store: dict[str, object] = {}
         self.expires_at: dict[str, float] = {}
-        self.now = now
+        # Today by default, so expiry times read back agree with the clock
+        # the code under test reads.
+        self.now = time.time() if now is None else now
         self.pipelines_left = pipelines_that_work
 
     def advance(self, seconds):
@@ -83,6 +86,13 @@ class FakeRedis:
         if key not in self.expires_at:
             return -1
         return int(self.expires_at[key] - self.now)
+
+    def expiretime(self, key):
+        if not self._live(key):
+            return -2
+        if key not in self.expires_at:
+            return -1
+        return int(self.expires_at[key])
 
     def delete(self, *keys):
         deleted = [key for key in keys if self._live(key)]

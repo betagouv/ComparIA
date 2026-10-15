@@ -53,6 +53,27 @@ describe('createLimits', () => {
     limits.destroy()
   })
 
+  it("keeps the server's reset time while this clock agrees with it, so reads do not move it", () => {
+    const at = '2026-10-14T10:09:59Z'
+    // Two reads a moment apart: the countdown lost a second, the time did not.
+    const first = createLimits({
+      total: { scope: 'session', resets_at: at, resets_in: 600 },
+      expensive: null,
+      paused_llms: []
+    })
+    vi.setSystemTime(new Date('2026-10-14T10:00:00.700Z'))
+    const second = createLimits({
+      total: { scope: 'session', resets_at: at, resets_in: 599 },
+      expensive: null,
+      paused_llms: []
+    })
+
+    expect(first.total?.resets_at).toBe('2026-10-14T10:09:59.000Z')
+    expect(second.total?.resets_at).toBe('2026-10-14T10:09:59.000Z')
+    first.destroy()
+    second.destroy()
+  })
+
   it('reads again when a pause lifts and drops it once the server agrees', async () => {
     const limits = createLimits({
       total: { scope: 'network', resets_at: wrongClock, resets_in: 600 },

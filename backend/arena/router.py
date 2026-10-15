@@ -133,6 +133,8 @@ def lifts_last(spent: Sequence[Allowance]) -> tuple[Allowance, datetime | None]:
     )
     if last.resets_in is None:
         return last, None
+    if last.expires_at is not None:
+        return last, datetime.fromtimestamp(last.expires_at, timezone.utc)
     now = datetime.now(timezone.utc).replace(microsecond=0)
     return last, now + timedelta(seconds=last.resets_in)
 

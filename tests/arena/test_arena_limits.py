@@ -102,6 +102,20 @@ def test_a_spent_whole_allowance_says_for_whom_and_when_it_lifts(
     assert body["paused_llms"] == []
 
 
+def test_the_reset_time_is_the_same_on_every_read(arena):
+    """Read from the counter's fixed expiry, not now plus what is left, which
+    moves by a second between two reads and can tip the minute shown."""
+    spend(arena.redis, "all", ME, resets_in=4210)
+    expires = datetime.fromtimestamp(int(arena.redis.now + 4210), timezone.utc)
+
+    first = arena.client.get("/arena/limits").json()["total"]
+    arena.redis.advance(0.6)
+    second = arena.client.get("/arena/limits").json()["total"]
+
+    assert datetime.fromisoformat(first["resets_at"]) == expires
+    assert second["resets_at"] == first["resets_at"]
+
+
 def test_the_whole_allowance_that_lifts_last_is_told(arena):
     spend(arena.redis, "all", ME, resets_in=600)
     spend(arena.redis, "all", NETWORK, resets_in=4210)

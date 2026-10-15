@@ -27,7 +27,7 @@ def model(llm_id, name, cap):
 
 @pytest.fixture
 def usage(monkeypatch):
-    redis = FakeRedis()
+    redis = FakeRedis(now=1_800_000_000.0)
     monkeypatch.setattr(limits, "now", lambda: redis.now)
 
     async def get_llms_data():
