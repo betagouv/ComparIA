@@ -871,6 +871,8 @@
                 "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
                 "ranking": "Se ranglisten",
                 "session": "Du har skrevet meget de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
+                "signIn": "Log ind for at skrive op til {times} gange mere.",
+                "signInButton": "Log ind",
                 "title": "Du kan skrive igen kl. {time}",
                 "titleSoon": "Du kan skrive igen inden for to timer",
                 "titleTomorrow": "Du kan skrive igen i morgen kl. {time}",

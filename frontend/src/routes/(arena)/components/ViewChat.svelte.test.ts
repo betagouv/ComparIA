@@ -36,6 +36,11 @@ vi.mock('$lib/chatService.svelte', () => ({
   ]
 }))
 
+vi.mock('$lib/limits.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/limits.svelte')>()),
+  getLimitsContext: () => ({ signedInFactor: 3 })
+}))
+
 vi.mock('$lib/voteTags', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/voteTags')>()),
   getVoteTagsContext: () => []

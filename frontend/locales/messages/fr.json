@@ -1006,6 +1006,8 @@
                 "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
                 "ranking": "Voir le classement",
                 "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
+                "signIn": "Connectez-vous pour écrire jusqu'à {times} fois plus.",
+                "signInButton": "Se connecter",
                 "title": "Vous pourrez écrire à nouveau à {time}",
                 "titleSoon": "Vous pourrez écrire à nouveau dans moins de deux heures",
                 "titleTomorrow": "Vous pourrez écrire à nouveau demain à {time}",

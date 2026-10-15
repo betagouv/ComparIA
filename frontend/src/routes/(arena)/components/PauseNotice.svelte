@@ -1,8 +1,10 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import { Button, Link, Toggletip } from '$components/dsfr'
-  import type { Spent } from '$lib/limits.svelte'
+  import { Button, Icon, Link, Toggletip } from '$components/dsfr'
+  import { tryGetAuthContext } from '$lib/authContext.svelte'
+  import { getLimitsContext, type Spent } from '$lib/limits.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import LimitCard from './LimitCard.svelte'
   import { pauseTitle, resetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
@@ -29,6 +31,17 @@
   const reset = $derived(resetTime(pause.resets_at))
   const heading = $derived(pauseTitle(reset))
   const network = $derived(pause.scope === 'network')
+
+  const auth = tryGetAuthContext()
+  const limits = getLimitsContext()
+  const times = new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 1 })
+  // Signing in gives the person more room, never the network: offered only
+  // to someone anonymous who spent their own allowance.
+  const signInFactor = $derived.by(() => {
+    const factor = limits.signedInFactor
+    if (network || !auth || auth.user || !factor || factor <= 1) return undefined
+    return times.format(factor)
+  })
 </script>
 
 <LimitCard
@@ -68,10 +81,24 @@
       text={m[failed || onReveal ? 'arene.limits.pause.ranking' : 'arene.limits.pause.models']()}
       class="w-full!"
     />
-    <!-- TODO offer sign-in here when the scope is "session" and the person is
-         anonymous, once signing in gives more room (feat/signed-in-allowance).
-         Today the allowance follows the anonymous cookie, which signing in
-         keeps, so the offer would not help. -->
+    {#if signInFactor}
+      <div class="cl-pause-sign-in mt-3 pt-6">
+        <p class="fr-text--sm mb-3!">
+          {m['arene.limits.pause.signIn']({ times: signInFactor })}
+        </p>
+        <!-- DSFR opens the sign-in modal of the arena layout and gives focus
+             back here on close. Signing in keeps the person on this page. -->
+        <Button
+          variant="tertiary"
+          aria-controls="fr-modal-signin"
+          data-fr-opened="false"
+          class="w-full!"
+        >
+          <Icon icon="i-ri-login-box-line" block size="sm" class="me-1 -ms-1" />
+          {m['arene.limits.pause.signInButton']()}
+        </Button>
+      </div>
+    {/if}
   {/snippet}
 
   {#snippet footer()}
@@ -84,3 +111,9 @@
     </p>
   {/snippet}
 </LimitCard>
+
+<style>
+  .cl-pause-sign-in {
+    border-top: 1px solid var(--border-default-grey);
+  }
+</style>

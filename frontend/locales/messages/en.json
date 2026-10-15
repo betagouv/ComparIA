@@ -1006,6 +1006,8 @@
                 "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. Until then, you can look at the leaderboard or discover the models.",
                 "ranking": "See the leaderboard",
                 "session": "You have written a lot in the last two hours. Until then, you can look at the leaderboard or discover the models.",
+                "signIn": "Sign in to write up to {times} times more.",
+                "signInButton": "Sign in",
                 "title": "You can write again at {time}",
                 "titleSoon": "You can write again within two hours",
                 "titleTomorrow": "You can write again tomorrow at {time}",
