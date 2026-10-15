@@ -24,6 +24,15 @@
   onMount(() => void limits.refresh())
   onDestroy(() => limits.destroy())
   const auth = getAuthContext()
+  // Signed in, the allowances are the account's, signed out the session's
+  // again: read them anew when either happens on this page.
+  let account = auth.user?.email
+  $effect(() => {
+    const now = auth.user?.email
+    if (now === account) return
+    account = now
+    void limits.refresh()
+  })
 
   let mainEl: HTMLElement | undefined = $state()
   let routeAnnouncement = $state('')
