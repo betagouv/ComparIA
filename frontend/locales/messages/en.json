@@ -818,7 +818,6 @@
             "isStored": "Changed",
             "newValue": "New value, in characters",
             "reset": "Back to default ({value})",
-            "resetDone": "Default value restored.",
             "apply": "Apply",
             "applying": "Saving…",
             "applied": "Limits saved.",

@@ -61,12 +61,16 @@ const request = vi.mocked(api.request)
 
 beforeEach(() => request.mockReset())
 
+async function apply(view: ReturnType<typeof page>) {
+  await fireEvent.click(view.getByRole('button', { name: /^Appliquer/ }))
+}
+
 function page() {
   return render(Page, { data: { limits, usage } } as unknown as PageProps)
 }
 
 describe('limits page', () => {
-  it("puts one value back on its default and keeps the admin's other edits and proposals", async () => {
+  it('puts a value back on its default only once applied, with the other edits', async () => {
     request.mockImplementation(async (url: string) =>
       url === '/admin/limits/calibration' ? calibration : limits
     )
@@ -78,16 +82,25 @@ describe('limits page', () => {
 
     await fireEvent.click(view.getByRole('button', { name: /Revenir au défaut/ }))
 
+    // Nothing is stored yet: the field holds the default, like any edit.
+    expect(request).not.toHaveBeenCalledWith('/admin/limits', expect.anything())
+    expect(view.container.querySelector('#limit-all_per_session')).toHaveValue(3_000_000)
+    expect(network).toHaveValue(50_000_000)
+    expect(view.container.querySelector('#limit-expected_answer_chars')).toHaveValue(600)
+
+    await apply(view)
+
     await waitFor(() =>
       expect(request).toHaveBeenLastCalledWith('/admin/limits', {
         method: 'PATCH',
-        body: JSON.stringify({ all_per_session: null })
+        body: JSON.stringify({
+          all_per_session: null,
+          all_per_ip: 50_000_000,
+          expected_answer_chars: 600,
+          daily_usd_caps: { gpt: 3 }
+        })
       })
     )
-    expect(network).toHaveValue(50_000_000)
-    expect(view.container.querySelector('#limit-expected_answer_chars')).toHaveValue(600)
-    expect(view.container.querySelector('#limit-all_per_session')).toHaveValue(3_000_000)
-    expect(view.getByText(/Plafond proposé/)).toBeInTheDocument()
   })
 
   it('says when a proposal was read from too few windows to trust', async () => {

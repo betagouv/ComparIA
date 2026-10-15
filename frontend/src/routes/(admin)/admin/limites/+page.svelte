@@ -117,11 +117,16 @@
     )
   )
 
+  // The values put back on their default: sent as null on "Appliquer", so
+  // they follow the default again, as long as the field still holds it.
+  let toDefault = $state<Name[]>([])
+  const resets = $derived(toDefault.filter((name) => Number(draft[name]) === byName[name].default))
+
   const changed = $derived(
     data.limits.limits
       .map((limit) => limit.name)
       .filter((name) => draft[name] !== '' && draft[name] !== null)
-      .filter((name) => Number(draft[name]) !== byName[name].value)
+      .filter((name) => Number(draft[name]) !== byName[name].value || resets.includes(name))
   )
 
   function toDraft(limits: AdminLimits): Draft {
@@ -226,12 +231,10 @@
     }
   }
 
-  // Only this value goes back: what the admin typed elsewhere, and what
-  // "Calibrer" proposed, stay on screen until they apply or cancel.
-  async function reset(name: Name) {
-    if (await save({ [name]: null }, m['admin.limits.resetDone']())) {
-      draft[name] = String(byName[name].default)
-    }
+  // Like any other edit, it waits for "Appliquer".
+  function reset(name: Name) {
+    draft[name] = String(byName[name].default)
+    if (!toDefault.includes(name)) toDefault = [...toDefault, name]
   }
 
   async function apply(event: SubmitEvent) {
@@ -241,13 +244,14 @@
       return
     }
     const patch: AdminLimitsPatch = Object.fromEntries(
-      changed.map((name) => [name, Number(draft[name])])
+      changed.map((name) => [name, resets.includes(name) ? null : Number(draft[name])])
     )
     if (changedCaps.length) {
       patch.daily_usd_caps = Object.fromEntries(changedCaps.map((cap) => [cap.llm_id, cap.value]))
     }
     if (await save(patch, m['admin.limits.applied']())) {
       calibration = null
+      toDefault = []
       // The fields show what is stored now.
       draft = toDraft(data.limits)
     }
@@ -256,6 +260,7 @@
   function cancel() {
     draft = toDraft(data.limits)
     calibration = null
+    toDefault = []
   }
 </script>
 
@@ -408,14 +413,14 @@
                     {/if}
                   </div>
                 {/if}
-                {#if limit.stored}
+                {#if limit.stored && !resets.includes(name)}
                   <Button
                     variant="tertiary-no-outline"
                     size="sm"
                     text={m['admin.limits.reset']({ value: shown(name, limit.default) })}
                     disabled={saving}
                     onclick={() => reset(name)}
-                    class="mt-3 self-start"
+                    class="mt-3 -ms-3 self-start"
                   />
                 {/if}
               </div>

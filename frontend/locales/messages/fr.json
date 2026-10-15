@@ -377,7 +377,6 @@
                 "title": "Prix à vérifier"
             },
             "reset": "Revenir au défaut ({value})",
-            "resetDone": "Valeur par défaut rétablie.",
             "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
             "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",
             "title": "Limites",
