@@ -20,6 +20,17 @@
   let open = $state(false)
   let wrapper = $state<HTMLElement>()
   let button = $state<HTMLButtonElement>()
+  let bubble = $state<HTMLElement>()
+  // Where the bubble starts, so it opens under its button rather than at the
+  // start of the line. Kept inside the line's width.
+  let start = $state(0)
+
+  $effect(() => {
+    if (!open || !button || !bubble) return
+    const line = bubble.offsetParent as HTMLElement | null
+    if (!line) return
+    start = Math.max(0, Math.min(button.offsetLeft, line.clientWidth - bubble.offsetWidth))
+  })
 
   // A tooltip shows on hover and cannot hold a sentence a phone user can
   // reach, so this opens on a click or Enter and stays until dismissed.
@@ -44,12 +55,22 @@
   function onWindowClick(e: MouseEvent) {
     if (open && !wrapper?.contains(e.target as Node)) open = false
   }
+
+  // Tabbing away closes it too, or it would cover what focus moved to.
+  function onFocusOut(e: FocusEvent) {
+    if (open && !wrapper?.contains(e.relatedTarget as Node | null)) open = false
+  }
 </script>
 
 <svelte:window onkeydown={onWindowKeydown} onclick={onWindowClick} />
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<span bind:this={wrapper} class={['cl-toggletip', className]} onkeydown={onKeydown}>
+<span
+  bind:this={wrapper}
+  class={['cl-toggletip', className]}
+  onkeydown={onKeydown}
+  onfocusout={onFocusOut}
+>
   <button
     bind:this={button}
     type="button"
@@ -65,7 +86,11 @@
        out, without moving focus. Placed under the nearest positioned parent. -->
   <span {id} role="status" class="cl-toggletip__region">
     {#if open}
-      <span class="cl-toggletip__bubble fr-text--sm">
+      <span
+        bind:this={bubble}
+        class="cl-toggletip__bubble fr-text--sm"
+        style:--cl-toggletip-start="{start}px"
+      >
         {#if typeof text === 'string'}{text}{:else}{@render children?.()}{/if}
       </span>
     {/if}
@@ -73,10 +98,25 @@
 </span>
 
 <style>
+  /* Underlined, as DSFR links are, so it does not read as a link by its
+     colour alone (WCAG 1.4.1). The padding gives a 44px tap area without
+     moving the text; the background stays clear on hover, for contrast. */
   .cl-toggletip__button {
-    padding: 0;
+    --idle: transparent;
+    --hover: transparent;
+    --active: transparent;
+    padding: 0.625rem 0;
+    margin-block: -0.625rem;
     font-size: inherit;
     line-height: inherit;
+    background-image: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+
+    &:hover {
+      text-decoration-thickness: 2px;
+    }
   }
 
   .cl-toggletip__bubble {
@@ -94,5 +134,13 @@
     box-shadow: var(--overlap-shadow);
     text-align: start;
     font-weight: 400;
+  }
+
+  /* Below it, the bubble takes the whole line. */
+  @media (min-width: 48em) {
+    .cl-toggletip__bubble {
+      inset-inline: var(--cl-toggletip-start, 0) auto;
+      width: min(24rem, 100%);
+    }
   }
 </style>

@@ -62,4 +62,17 @@ describe('Toggletip', () => {
 
     expect(button).toHaveAttribute('aria-expanded', 'false')
   })
+
+  it('closes when focus leaves it by Tab', async () => {
+    const view = render(Toggletip, props)
+    const button = view.getByRole('button', { name: 'Pourquoi ?' })
+    const after = document.createElement('button')
+    document.body.append(after)
+    await fireEvent.click(button)
+
+    await fireEvent.focusOut(button, { relatedTarget: after })
+
+    expect(button).toHaveAttribute('aria-expanded', 'false')
+    after.remove()
+  })
 })
