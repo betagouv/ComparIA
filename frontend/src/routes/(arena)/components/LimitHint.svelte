@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Icon, Toggletip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { onMount } from 'svelte'
+  import { focusOnShow } from '$lib/helpers/attachments'
   import type { ClassValue } from 'svelte/elements'
   import type { ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
@@ -11,7 +11,7 @@
     text,
     reset,
     why,
-    focusOnShow = false,
+    focusOnShow: focus = false,
     class: className
   }: {
     id: string
@@ -24,17 +24,13 @@
     focusOnShow?: boolean
     class?: ClassValue
   } = $props()
-
-  let el = $state<HTMLParagraphElement>()
-
-  onMount(() => {
-    if (!focusOnShow || !el) return
-    el.tabIndex = -1
-    el.focus()
-  })
 </script>
 
-<p bind:this={el} {id} class={['cl-limit-hint fr-text--sm mb-0! gap-2 relative flex', className]}>
+<p
+  {id}
+  class={['cl-limit-hint fr-text--sm mb-0! gap-2 relative flex', className]}
+  {@attach focusOnShow(() => focus)}
+>
   <Icon icon="i-ri-pause-circle-line" size="sm" block class="text-primary mt-0.5 shrink-0" />
   <span>
     <TimedText {text} {reset} />
