@@ -214,7 +214,7 @@ class LLMDailyUsage(BaseModel):
     estimated_usd: float
     cap_usd: float | None
     # Out of new draws until the day ends.
-    resting: bool
+    full: bool
     # Seconds until the day ends.
     resets_in: int
     # Answers given today, and how many of them came from the cache.

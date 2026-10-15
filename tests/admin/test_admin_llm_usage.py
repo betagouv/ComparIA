@@ -1,6 +1,6 @@
 """
 What the admin reads of each model's day: its spend against its daily cap,
-whether it rests, and how many of its answers came from the cache (no
+whether it is full, and how many of its answers came from the cache (no
 network, no DB, no real Redis).
 """
 
@@ -70,15 +70,15 @@ def test_each_model_s_day_against_its_cap(usage):
         "output_chars": 3000,
         "estimated_usd": 2.5,
         "cap_usd": 2.0,
-        "resting": True,
+        "full": True,
         # The fake clock reads 9:00 in Paris: 15 hours to midnight.
         "resets_in": 15 * 3600,
         "answers": 4,
         "cached_answers": 0,
     }
-    assert (rows[1]["resting"], rows[1]["cap_usd"], rows[1]["cached_answers"]) == (
+    assert (rows[1]["full"], rows[1]["cap_usd"], rows[1]["cached_answers"]) == (
         False,
         None,
         1,
     )
-    assert (rows[2]["estimated_usd"], rows[2]["resting"]) == (0, False)
+    assert (rows[2]["estimated_usd"], rows[2]["full"]) == (0, False)

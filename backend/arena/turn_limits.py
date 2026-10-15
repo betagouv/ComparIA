@@ -35,7 +35,7 @@ from backend.arena.limits import (
     expected_answer_chars,
     expensive_models,
     read_status,
-    resting_models,
+    full_models,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (
@@ -102,20 +102,20 @@ def start_first_turn(
     Raises:
         Refused: on a spent whole allowance, or a draw with nothing left
     """
-    resting = resting_models(llms_data.enabled.values())
+    full = full_models(llms_data.enabled.values())
     expensive = expensive_models(llms_data.enabled.values())
 
     def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
-        excluded = [*resting, *(expensive if spent else [])]
+        excluded = [*full, *(expensive if spent else [])]
         try:
             return llms_data.pick_two(mode, selection, hard_excluded=excluded)
         except NoModelLeft as error:
             raise pick_refusal(
                 error,
-                resting,
+                full,
                 spent,
                 expensive,
-                f"a '{mode}' draw with {len(resting)} models full today and"
+                f"a '{mode}' draw with {len(full)} models full today and"
                 f" expensive models {'out' if spent else 'in'},"
                 f" picks left out: [{error}]",
             )
@@ -164,7 +164,7 @@ def read_arena_limits(who: Identity, llms_data: LLMsData) -> ArenaLimits:
     expensive: list[UUID] = []
     if not status.expensive_available:
         expensive = expensive_models(llms_data.enabled.values())
-    return arena_limits(status, expensive, resting_models(llms_data.enabled.values()))
+    return arena_limits(status, expensive, full_models(llms_data.enabled.values()))
 
 
 def charge(
@@ -231,7 +231,7 @@ def limit_refusal(
 
 
 def full_refusal(
-    resting: Mapping[UUID, datetime], llm_ids: Sequence[UUID] = (), reason: str = ""
+    full: Mapping[UUID, datetime], llm_ids: Sequence[UUID] = (), reason: str = ""
 ) -> Refused:
     """A new comparison refused on models whose daily cap is full, for
     everyone: the picked ones in `llm_ids`, or a mode left with nothing to
@@ -241,7 +241,7 @@ def full_refusal(
         "model_full_today",
         LimitRefusal(
             scope=None,
-            resets_at=min(resting.values(), default=day.ends),
+            resets_at=min(full.values(), default=day.ends),
             resets_in=day.ends_in(),
             llm_ids=list(llm_ids),
         ),
@@ -251,7 +251,7 @@ def full_refusal(
 
 def pick_refusal(
     error: NoModelLeft,
-    resting: Mapping[UUID, datetime],
+    full: Mapping[UUID, datetime],
     spent: Sequence[Allowance],
     expensive: Collection[UUID] = (),
     reason: str = "",
@@ -266,16 +266,16 @@ def pick_refusal(
     can go through.
     """
     picked = error.llm_ids
-    full = (not picked and bool(resting)) or any(i in resting for i in picked)
-    paused = bool(spent) and (not picked or any(i in expensive for i in picked))
-    if paused and not full:
+    any_full = (not picked and bool(full)) or any(i in full for i in picked)
+    any_paused = bool(spent) and (not picked or any(i in expensive for i in picked))
+    if any_paused and not any_full:
         return limit_refusal(spent, picked, reason)
-    if full and paused:
+    if any_full and any_paused:
         # An allowance with no known end lifts last.
         lifts = lifts_last(spent)[1]
-        if lifts is None or lifts > min(resting.values()):
+        if lifts is None or lifts > min(full.values()):
             return limit_refusal(spent, picked, reason)
-    return full_refusal(resting, picked, reason)
+    return full_refusal(full, picked, reason)
 
 
 def arena_limits(

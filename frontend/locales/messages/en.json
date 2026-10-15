@@ -899,7 +899,7 @@
                 "cache": "From the cache",
                 "cacheShare": "{share} of {count}",
                 "noAnswer": "No answer",
-                "resting": "Resting",
+                "full": "Resting",
                 "proposed": "Proposed",
                 "noProposal": "None",
                 "empty": "No model cost anything today, and none has a cap.",

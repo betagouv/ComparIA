@@ -43,7 +43,7 @@ def daily_usage(llms: Iterable[LLMDataEnabled]) -> list[LLMDailyUsage]:
             output_chars=days[llm.id].written,
             estimated_usd=days[llm.id].micro_usd / limits.MICRO_USD,
             cap_usd=llm.daily_usd_cap,
-            resting=limits.is_resting(llm, days[llm.id]),
+            full=limits.is_full(llm, days[llm.id]),
             resets_in=day.ends_in(),
             answers=days[llm.id].answers,
             cached_answers=days[llm.id].cached,

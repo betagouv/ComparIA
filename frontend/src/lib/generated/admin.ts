@@ -390,7 +390,7 @@ export interface LLMDailyUsage {
   output_chars: number;
   estimated_usd: number;
   cap_usd: number | null;
-  resting: boolean;
+  full: boolean;
   resets_in: number;
   answers: number;
   cached_answers: number;

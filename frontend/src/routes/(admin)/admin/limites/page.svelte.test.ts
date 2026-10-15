@@ -40,7 +40,7 @@ const usage = [
     output_chars: 0,
     estimated_usd: 0.52,
     cap_usd: null,
-    resting: false,
+    full: false,
     resets_in: 3600,
     answers: 4,
     cached_answers: 0

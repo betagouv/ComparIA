@@ -87,10 +87,10 @@ def test_an_expensive_side_gets_a_cheap_stand_in_once_the_allowance_is_spent() -
     )
 
 
-def test_a_model_resting_for_the_day_never_stands_in(
+def test_a_model_full_for_the_day_never_stands_in(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(limits, "resting_models", lambda _llms: {"cheap-b": None})
+    monkeypatch.setattr(limits, "full_models", lambda _llms: {"cheap-b": None})
 
     assert replacements("cheap-a", "expensive-a", expensive_available=True) == {
         "cheap-c"

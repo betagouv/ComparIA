@@ -3,7 +3,7 @@ A daily cap per model across everyone (no network, no DB, no real Redis).
 
 Each model's spend is counted per Paris calendar day, in estimated dollars,
 reserved before the call and settled once the turn is over, like the
-allowances. Once a capped model's day is full it rests until midnight in
+allowances. Once a capped model's day is full it is left out until midnight in
 Paris: new draws leave it out for everyone, a custom pick of it is refused,
 and the conversations already under way with it finish.
 """
@@ -154,27 +154,27 @@ def test_a_model_rests_once_its_day_reaches_the_cap(clock):
     fill(clock, EXPENSIVE, 999_999)
     models = [capped(EXPENSIVE, 1.0), capped(CHEAP, None)]
 
-    assert limits.resting_models(models) == {}
+    assert limits.full_models(models) == {}
 
     fill(clock, EXPENSIVE, 1)
 
-    assert limits.resting_models(models) == {EXPENSIVE: Day.at().ends}
+    assert limits.full_models(models) == {EXPENSIVE: Day.at().ends}
 
 
 def test_a_cap_of_zero_keeps_a_model_out_all_day(clock):
-    assert limits.resting_models([capped(EXPENSIVE, 0)]) == {EXPENSIVE: Day.at().ends}
+    assert limits.full_models([capped(EXPENSIVE, 0)]) == {EXPENSIVE: Day.at().ends}
 
 
 def test_a_model_comes_back_at_midnight_in_paris(clock):
     fill(clock, EXPENSIVE, 5_000_000)
     models = [capped(EXPENSIVE, 1.0)]
-    assert EXPENSIVE in limits.resting_models(models)
+    assert EXPENSIVE in limits.full_models(models)
 
     clock.advance(9 * 60)
-    assert EXPENSIVE in limits.resting_models(models)
+    assert EXPENSIVE in limits.full_models(models)
 
     clock.advance(2 * 60)
-    assert limits.resting_models(models) == {}
+    assert limits.full_models(models) == {}
 
 
 def test_a_daily_spend_that_cannot_be_read_rests_no_model():
@@ -182,13 +182,13 @@ def test_a_daily_spend_that_cannot_be_read_rests_no_model():
     charge every turn."""
     redis = FakeRedis(pipelines_that_work=0)
     with fake_redis(limits, fake=redis):
-        assert limits.resting_models([capped(EXPENSIVE, 0)]) == {}
+        assert limits.full_models([capped(EXPENSIVE, 0)]) == {}
 
 
 def test_no_cap_reads_nothing():
     redis = FakeRedis(pipelines_that_work=0)
     with fake_redis(limits, fake=redis):
-        assert limits.resting_models([capped(EXPENSIVE, None)]) == {}
+        assert limits.full_models([capped(EXPENSIVE, None)]) == {}
 
 
 # Through the routes, with the arena stubs of test_spend_budget.

@@ -88,11 +88,11 @@
         {#if col.id === 'name'}
           <span class="gap-2 flex flex-wrap items-center">
             <a href={resolve(`/admin/llms/llms/${llm.llm_id}`)}>{llm.name}</a>
-            {#if llm.resting}
+            {#if llm.full}
               <Badge
                 size="sm"
                 variant="orange"
-                text={m['admin.limits.today.resting']()}
+                text={m['admin.limits.today.full']()}
                 noTooltip
               />
             {/if}

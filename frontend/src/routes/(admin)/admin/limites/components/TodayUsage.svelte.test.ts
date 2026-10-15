@@ -10,7 +10,7 @@ const usage = [
     name: 'GPT 5.5',
     estimated_usd: 21.5,
     cap_usd: 20,
-    resting: true,
+    full: true,
     answers: 40,
     cached_answers: 10
   },
@@ -20,7 +20,7 @@ const usage = [
     name: 'Gemma 4',
     estimated_usd: 0.42,
     cap_usd: null,
-    resting: false,
+    full: false,
     answers: 0,
     cached_answers: 0
   },
@@ -30,7 +30,7 @@ const usage = [
     name: 'Llama 4 Scout',
     estimated_usd: 0,
     cap_usd: null,
-    resting: false,
+    full: false,
     answers: 0,
     cached_answers: 0
   }

@@ -96,8 +96,8 @@
               ? dollars.format(used.estimated_usd)
               : `${dollars.format(used.estimated_usd)} / ${dollars.format(used.cap_usd)}`}
           </span>
-          {#if used.resting}
-            <Badge size="sm" variant="orange" text={m['admin.limits.today.resting']()} noTooltip />
+          {#if used.full}
+            <Badge size="sm" variant="orange" text={m['admin.limits.today.full']()} noTooltip />
           {/if}
         </span>
       {/if}

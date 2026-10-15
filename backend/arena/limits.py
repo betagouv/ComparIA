@@ -15,7 +15,7 @@ keeps expensive models out of new comparisons: the conversations already
 started with one may finish.
 
 Each model's spend is also counted per Paris calendar day, across everyone,
-in the same two steps. A model whose daily cap is reached rests until
+in the same two steps. A model whose daily cap is reached is full until
 midnight: new comparisons leave it out, the ones under way finish.
 
 Routes call `read_status` for a cheap early answer, `Charge.reserve` to charge
@@ -481,16 +481,14 @@ class Capped(Protocol):
     def daily_usd_cap(self) -> float | None: ...
 
 
-def is_resting(llm: Capped, spent: ModelDay) -> bool:
+def is_full(llm: Capped, spent: ModelDay) -> bool:
     """Whether the model's day is full: what it spent reached its cap."""
     if llm.daily_usd_cap is None:
         return False
     return spent.micro_usd >= round(llm.daily_usd_cap * MICRO_USD)
 
 
-def resting_models(
-    llms: Iterable[Capped], day: Day | None = None
-) -> dict[UUID, datetime]:
+def full_models(llms: Iterable[Capped], day: Day | None = None) -> dict[UUID, datetime]:
     """
     The models whose daily cap is full, each with the moment it lifts. Read
     before a draw, like the allowances: first messages sent at once may each
@@ -505,7 +503,7 @@ def resting_models(
     except RedisError:
         logger.exception("Could not read the models' daily spend")
         return {}
-    return {llm.id: day.ends for llm in capped if is_resting(llm, days[llm.id])}
+    return {llm.id: day.ends for llm in capped if is_full(llm, days[llm.id])}
 
 
 class Model(Priced, Capped, Protocol):
@@ -529,7 +527,7 @@ def stand_in_exclusions(
     """
     llms = list(llms)
     expensive = expensive_models(llms)
-    left_out = list(resting_models(llms))
+    left_out = list(full_models(llms))
     if failing not in expensive or not expensive_available:
         left_out += expensive
     return left_out
