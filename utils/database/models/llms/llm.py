@@ -1,9 +1,10 @@
+import math
 from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, FiniteFloat, model_validator
+from pydantic import AfterValidator, FiniteFloat, field_validator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
@@ -105,6 +106,9 @@ class Link(SQLModel):
     url: HttpUrl
 
 
+_PRICE: dict = {"schema_extra": {"json_schema_extra": {"minimum": 0}}}
+
+
 class LLMDataBase(BaseDBModel):
     status: Annotated[LLMStatus, Field(sa_type=String, **FIELDS["status"])]
     name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
@@ -146,8 +150,10 @@ class LLMDataBase(BaseDBModel):
         list[Literal["text", "image", "audio", "video"]],
         Field(sa_type=JSONB, **FIELDS["inputs"]),
     ]
-    price_in: Annotated[float, Field(**FIELDS["price_in"])]
-    price_out: Annotated[float, Field(**FIELDS["price_out"])]
+    # At least 0 in the form and on write (`LLMDataUpsert`), not on read, so a
+    # row stored before the check cannot stop the models from loading.
+    price_in: Annotated[float, Field(**_PRICE, **FIELDS["price_in"])]
+    price_out: Annotated[float, Field(**_PRICE, **FIELDS["price_out"])]
     daily_usd_cap: Annotated[
         FiniteFloat | None, Field(default=None, ge=0, **FIELDS["daily_usd_cap"])
     ]
@@ -195,6 +201,15 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
+    @field_validator("price_in", "price_out")
+    @classmethod
+    def check_price(cls, value: float) -> float:
+        """Prices decide which models are expensive and when a daily cap is
+        reached: a negative one would make a model free."""
+        if not math.isfinite(value) or value < 0:
+            raise ValueError("must be a finite number, at least 0")
+        return value
+
     @model_validator(mode="after")
     def check_active_params_is_defined_if_moe(self):
         """

@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from utils.database.models.llms.llm import LLMData, LLMDataUpsert
+from utils.database.models.llms.llm import LLMData, LLMDataBase, LLMDataUpsert
 from utils.utils import FormJsonSchema
 
 
@@ -115,3 +115,21 @@ def test_a_model_has_no_daily_cap_unless_one_is_set():
 def test_a_daily_cap_below_zero_or_not_finite_is_refused(cap):
     with pytest.raises(ValidationError, match="daily_usd_cap"):
         LLMDataUpsert(**payload(daily_usd_cap=cap))
+
+
+@pytest.mark.parametrize("field", ["price_in", "price_out"])
+def test_a_price_below_zero_is_refused(field):
+    with pytest.raises(ValidationError, match=field):
+        LLMDataUpsert(**payload(**{field: -1}))
+
+
+@pytest.mark.parametrize("field", ["price_in", "price_out"])
+def test_the_admin_form_offers_prices_from_zero(field):
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert schema["properties"][field]["minimum"] == 0
+    assert LLMDataUpsert(**payload(**{field: 0})).model_dump()[field] == 0
+
+
+def test_a_price_stored_below_zero_before_the_check_still_reads():
+    assert LLMDataBase.model_validate(payload(price_out=-1)).price_out == -1
