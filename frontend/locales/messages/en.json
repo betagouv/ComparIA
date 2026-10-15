@@ -989,6 +989,10 @@
         "limits": {
             "mode": {
                 "change": "Change mode",
+                "fullMany": "{count} modes full today.",
+                "fullOne": "1 mode full today.",
+                "headerMany": "{count} modes paused for you {until}.",
+                "headerOne": "1 mode paused for you {until}.",
                 "hint": "This mode is paused for you {until}, pick another one.",
                 "hintFull": "This mode's models have had a lot of messages today: it comes back tomorrow, pick another one.",
                 "reason": "This mode needs models that are paused for you. It comes back {at}.",

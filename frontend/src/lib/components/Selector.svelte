@@ -183,8 +183,10 @@
       outline-offset: 2px;
     }
 
-    &:has(input:checked),
-    &:has(input:active) {
+    /* A choice that cannot be picked never looks picked, even when it is the
+       one saved from before it paused. */
+    &:has(input:checked:not([aria-disabled='true'])),
+    &:has(input:active:not([aria-disabled='true'])) {
       border: 2px solid var(--blue-france-main-525);
       color: var(--blue-france-main-525);
       margin: 0;
