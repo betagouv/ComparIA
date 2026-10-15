@@ -359,6 +359,16 @@ def _percentile(values: list[int], percentile: int) -> float:
     return float(np.percentile(values, percentile))
 
 
+def typical_message(result: Replay, pool: Pool) -> float | None:
+    """What a typical message costs of the pool, the median turn, in its
+    setting's unit: characters, or dollars. None when no turn charged it."""
+    costs = result.turn_costs[pool]
+    if not costs:
+        return None
+    typical = _percentile(costs, 50)
+    return to_usd(typical) if pool == "expensive" else typical
+
+
 def propose(result: Replay) -> list[LimitProposal]:
     """
     The limits this replay suggests: per session, what 99 in 100 people's
@@ -375,9 +385,7 @@ def propose(result: Replay) -> list[LimitProposal]:
             smallest(pool),
             in_setting_unit(pool, _percentile(people, SESSION_PERCENTILE)),
         )
-        typical_turn = _percentile(result.turn_costs[pool], 50)
-        if pool == "expensive":
-            typical_turn = to_usd(typical_turn)
+        typical_turn = typical_message(result, pool)
         proposals.append(
             LimitProposal(
                 name=POOL_SETTINGS[(pool, "session")],
@@ -550,6 +558,8 @@ async def calibrate(
         turns=result.turns,
         capped=len(result.conversations) >= max_comparisons,
         proposals=propose(result),
+        message_chars=typical_message(result, "all"),
+        message_usd=typical_message(result, "expensive"),
         daily_caps=propose_daily_caps(result, llms, paris_today()),
         price_checks=check_prices(llms),
     )

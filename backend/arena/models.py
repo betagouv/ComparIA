@@ -299,6 +299,11 @@ class LimitsCalibration(BaseModel):
     # The sample stopped at its cap: only the latest comparisons were read.
     capped: bool
     proposals: list[LimitProposal]
+    # What a typical message costs, in characters of the whole allowance and
+    # in dollars of the expensive one, so the page can say how many messages
+    # a value lets through. None when no message charged it.
+    message_chars: float | None = None
+    message_usd: float | None = None
     daily_caps: list[DailyCapProposal]
     # Enabled models whose prices an admin should check: the dollars counted
     # on the expensive allowance come from them.

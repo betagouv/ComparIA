@@ -612,6 +612,8 @@ export interface LimitsCalibration {
   turns: number;
   capped: boolean;
   proposals: LimitProposal[];
+  message_chars?: number | null;
+  message_usd?: number | null;
   daily_caps: DailyCapProposal[];
   price_checks: PriceCheck[];
 }

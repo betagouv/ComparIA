@@ -267,6 +267,8 @@ def test_the_calibration_reads_the_latest_comparisons_of_the_week(activity):
         "all_per_ip",
         "expected_answer_chars",
     }
+    # A typical message, in characters; nothing charged the expensive pool.
+    assert whole_week.message_chars and whole_week.message_usd is None
     # Both test models are priced 0: never expensive, so no daily cap, and
     # worth a look.
     assert whole_week.daily_caps == []

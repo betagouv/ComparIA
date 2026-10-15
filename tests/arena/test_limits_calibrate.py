@@ -21,6 +21,7 @@ from utils.arena.calibrate import (
     propose_daily_caps,
     replay,
     round_up,
+    typical_message,
 )
 
 CHEAP, EXPENSIVE = uuid4(), uuid4()
@@ -222,6 +223,9 @@ def test_the_proposals_come_from_what_people_spent():
     assert expensive.value == 0.01
     # A typical turn costs 1,516 millionths: six fit in a cent.
     assert expensive.messages == 6
+    result = replay(hundred_people(), PRICES)
+    assert typical_message(result, "all") == 1_022
+    assert typical_message(result, "expensive") == pytest.approx(0.001516)
 
     # Room for 35 people spending what 95 in 100 do (1,913).
     network = proposals["all_per_ip"]
@@ -253,6 +257,7 @@ def test_a_pool_nobody_spent_proposes_nothing():
     names = [p.name for p in propose(replay(rows, PRICES))]
     assert names == ["all_per_session", "all_per_ip", "expected_answer_chars"]
     assert propose(replay([], PRICES)) == []
+    assert typical_message(replay(rows, PRICES), "expensive") is None
 
 
 @pytest.mark.parametrize(
