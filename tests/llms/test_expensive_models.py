@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from backend.arena.limits import expensive_models
 from backend.config import settings
 from backend.llms.data import LLMsData
 from backend.llms.models import LLMDataArchived, LLMDataEnabled
@@ -26,17 +27,21 @@ def llms_data() -> LLMsData:
     )
 
 
+def expensive(data: LLMsData) -> list:
+    return expensive_models(data.enabled.values())
+
+
 def test_enabled_models_priced_at_or_above_the_threshold_are_expensive():
-    assert llms_data().expensive_models == [EXPENSIVE, AT_THRESHOLD]
+    assert expensive(llms_data()) == [EXPENSIVE, AT_THRESHOLD]
 
 
 def test_a_new_threshold_applies_at_once(monkeypatch):
     data = llms_data()
     monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PRICE_OUT", 20.0)
-    assert data.expensive_models == []
+    assert expensive(data) == []
 
 
 def test_a_model_priced_zero_is_never_expensive(monkeypatch):
     monkeypatch.setattr(settings, "RATELIMIT_EXPENSIVE_PRICE_OUT", 0.0)
-    assert FREE not in llms_data().expensive_models
-    assert ORDINARY in llms_data().expensive_models
+    assert FREE not in expensive(llms_data())
+    assert ORDINARY in expensive(llms_data())

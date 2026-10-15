@@ -177,7 +177,6 @@ def arena(llm_ids=(CHEAP, CHEAP), caps=None):
         }
         return SimpleNamespace(
             pick_two=pick_two,
-            expensive_models=[EXPENSIVE],
             all=models,
             enabled=models,
         )

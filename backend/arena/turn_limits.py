@@ -33,6 +33,7 @@ from backend.arena.limits import (
     LimitStatus,
     Pool,
     expected_answer_chars,
+    expensive_models,
     read_status,
     resting_models,
 )
@@ -102,9 +103,10 @@ def start_first_turn(
         Refused: on a spent whole allowance, or a draw with nothing left
     """
     resting = resting_models(llms_data.enabled.values())
+    expensive = expensive_models(llms_data.enabled.values())
 
     def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
-        excluded = [*resting, *(llms_data.expensive_models if spent else [])]
+        excluded = [*resting, *(expensive if spent else [])]
         try:
             return llms_data.pick_two(mode, selection, hard_excluded=excluded)
         except NoModelLeft as error:
@@ -112,7 +114,7 @@ def start_first_turn(
                 error,
                 resting,
                 spent,
-                llms_data.expensive_models,
+                expensive,
                 f"a '{mode}' draw with {len(resting)} models full today and"
                 f" expensive models {'out' if spent else 'in'},"
                 f" picks left out: [{error}]",
@@ -161,7 +163,7 @@ def read_arena_limits(who: Identity, llms_data: LLMsData) -> ArenaLimits:
     status = read_status(who)
     expensive: list[UUID] = []
     if not status.expensive_available:
-        expensive = llms_data.expensive_models
+        expensive = expensive_models(llms_data.enabled.values())
     return arena_limits(status, expensive, resting_models(llms_data.enabled.values()))
 
 

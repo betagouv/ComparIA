@@ -15,7 +15,12 @@ from backend.arena.checks import (
     run_prompt_check,
 )
 from backend.arena.in_flight import hold_turn_slot
-from backend.arena.limits import Identity, LimitStatus, reload_settings
+from backend.arena.limits import (
+    Identity,
+    LimitStatus,
+    reload_settings,
+    stand_in_exclusions,
+)
 from backend.arena.models import AddFirstTextBody, AddTextBody, ArenaLimits, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -601,6 +606,7 @@ async def retry(
             detail="retry_unavailable",
         )
 
+    llms_data = await get_llms_data()
     # If comparison has not yet trully started
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
@@ -613,15 +619,18 @@ async def retry(
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-            if new_llm_id := await pick_replacement_model(
-                comparison, pos, allowance.expensive_available
-            ):
+            left_out = stand_in_exclusions(
+                llms_data.enabled.values(),
+                failing_llm_id,
+                allowance.expensive_available,
+            )
+            if new_llm_id := await pick_replacement_model(comparison, pos, left_out):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
     # Like a follow-up, a retry is part of a conversation under way.
     try:
-        charge = charge_follow_up(who, comparison, await get_llms_data())
+        charge = charge_follow_up(who, comparison, llms_data)
     except Refused as error:
         raise limit_reached(error, request)
 

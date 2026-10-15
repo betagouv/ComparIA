@@ -1,12 +1,11 @@
 import logging
-from typing import TYPE_CHECKING, Annotated, Any, Sequence
+from typing import TYPE_CHECKING, Annotated, Any, Collection, Sequence
 from uuid import UUID
 
 import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
 from sqlmodel import select
 
-from backend.arena.limits import is_expensive, resting_models
 from backend.config import (
     BIG_MODELS_BUCKET_LOWER_LIMIT,
     SMALL_MODELS_BUCKET_UPPER_LIMIT,
@@ -120,15 +119,6 @@ class LLMsData(BaseModel):
             for model in self.enabled.values()
             if model.params >= BIG_MODELS_BUCKET_LOWER_LIMIT
         ]
-
-    @property
-    def expensive_models(self) -> list[UUID]:
-        """
-        Models priced at or above the admin's threshold: they spend people's
-        expensive-model allowance. Read from the threshold in force, so not
-        kept with the cached models.
-        """
-        return [model.id for model in self.enabled.values() if is_expensive(model)]
 
     def pick_one(
         self,
@@ -346,21 +336,16 @@ async def get_llms_list() -> LLMList:
 
 
 async def pick_replacement_model(
-    comparison: "ComparisonRead", pos: "BotPos", expensive_available: bool = False
+    comparison: "ComparisonRead", pos: "BotPos", left_out: Collection[UUID] = ()
 ) -> str | None:
     """
-    Pick a replacement model from the appropriate pool, excluding both current models.
-
-    Only an expensive model may stand in for an expensive one, and only while
-    the person's expensive allowance has room (`expensive_available`). A
-    cheap side was charged at the cheap rate, and the person may have no
-    expensive allowance left. A model resting for the day never stands in.
+    Pick a replacement model from the appropriate pool, excluding both current
+    models and those `left_out`, see `limits.stand_in_exclusions`.
     """
     models = await get_llms_data()
     other_pos: "BotPos" = "b" if pos == "a" else "a"
     failing = getattr(comparison, f"llm_id_{pos}")
     other = getattr(comparison, f"llm_id_{other_pos}")
-    excluded = [failing, other]
 
     # Pick from the right pool based on mode
     if comparison.mode == "small-models":
@@ -372,13 +357,10 @@ async def pick_replacement_model(
     else:
         pool = models.random_models
 
-    expensive = models.expensive_models
-    if failing not in expensive or not expensive_available:
-        pool = [llm_id for llm_id in pool if llm_id not in expensive]
-    resting = resting_models(models.enabled.values())
-    pool = [llm_id for llm_id in pool if llm_id not in resting]
-
     try:
-        return models.pick_one(pool, excluded=excluded)
+        return models.pick_one(
+            [llm_id for llm_id in pool if llm_id not in left_out],
+            excluded=[failing, other],
+        )
     except Exception:
         return None

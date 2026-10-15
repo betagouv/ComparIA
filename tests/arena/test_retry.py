@@ -68,7 +68,7 @@ def retry(target, expensive_available=True, drain=False, **patches):
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(expensive_models=[])
+        return SimpleNamespace(enabled={})
 
     request = Request(
         {
@@ -142,8 +142,11 @@ def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
     swaps = []
     streamed = []
 
-    async def pick_replacement_model(_comparison, _pos, expensive_available):
+    def stand_in_exclusions(_llms, _failing, expensive_available):
         swaps.append(expensive_available)
+        return []
+
+    async def pick_replacement_model(_comparison, _pos, _left_out):
         return "c"
 
     async def stream_comparison_messages(
@@ -163,6 +166,7 @@ def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
         failed,
         expensive_available=expensive_available,
         drain=True,
+        stand_in_exclusions=stand_in_exclusions,
         pick_replacement_model=pick_replacement_model,
         update_comparison_llm_id=nothing,
         stream_comparison_messages=stream_comparison_messages,

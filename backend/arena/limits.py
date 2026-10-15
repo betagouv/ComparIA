@@ -508,6 +508,33 @@ def resting_models(
     return {llm.id: day.ends for llm in capped if is_resting(llm, days[llm.id])}
 
 
+class Model(Priced, Capped, Protocol):
+    """A model as the limits read it: its prices and its daily cap."""
+
+
+def expensive_models(llms: Iterable[Model]) -> list[UUID]:
+    """The models that spend people's expensive allowance, at the threshold
+    in force."""
+    return [llm.id for llm in llms if is_expensive(llm)]
+
+
+def stand_in_exclusions(
+    llms: Iterable[Model], failing: UUID, expensive_available: bool
+) -> list[UUID]:
+    """
+    The models that may not take over from `failing`: those whose day is
+    full, and the expensive ones unless `failing` is expensive too and the
+    person's expensive allowance has room. A cheap side was charged at the
+    cheap rate.
+    """
+    llms = list(llms)
+    expensive = expensive_models(llms)
+    left_out = list(resting_models(llms))
+    if failing not in expensive or not expensive_available:
+        left_out += expensive
+    return left_out
+
+
 # EXPIRETIME needs Redis 7. An older Redis does not know it, and an expiry is
 # then read from PTTL and this clock.
 _expiry_command: Literal["expiretime", "pttl"] = "expiretime"

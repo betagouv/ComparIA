@@ -432,13 +432,17 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
 
     swaps_expensive: list[bool] = []
 
-    async def pick_replacement_model(_comparison, _pos, expensive_available):
+    def stand_in_exclusions(_llms, _failing, expensive_available):
         swaps_expensive.append(expensive_available)
+        return []
+
+    async def pick_replacement_model(_comparison, _pos, _left_out):
         return "spare"
 
     async def update_comparison_llm_id(comparison, pos, llm_id):
         setattr(comparison, f"llm_id_{pos}", llm_id)
 
+    monkeypatch.setattr(streaming, "stand_in_exclusions", stand_in_exclusions)
     monkeypatch.setattr(streaming, "pick_replacement_model", pick_replacement_model)
     monkeypatch.setattr(streaming, "update_comparison_llm_id", update_comparison_llm_id)
     comparison = comparison_between("steady", "stuck")

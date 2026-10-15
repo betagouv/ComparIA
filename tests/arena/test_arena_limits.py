@@ -36,16 +36,21 @@ PRICEY, PRICIER = uuid4(), uuid4()
 SPENT = settings.RATELIMIT_ALL_PER_IP + 1
 
 
+def model(llm_id, daily_usd_cap=None):
+    """Priced over the expensive threshold."""
+    return SimpleNamespace(
+        id=llm_id, price_in=2.6, price_out=13.0, daily_usd_cap=daily_usd_cap
+    )
+
+
 @pytest.fixture
 def arena(monkeypatch):
     """The route against a fake Redis. `enabled` holds the models, for their
     daily caps."""
-    state = SimpleNamespace(enabled={})
+    state = SimpleNamespace(enabled={PRICEY: model(PRICEY), PRICIER: model(PRICIER)})
 
     async def get_llms_data():
-        return SimpleNamespace(
-            expensive_models=[PRICEY, PRICIER], enabled=state.enabled
-        )
+        return SimpleNamespace(enabled=state.enabled)
 
     monkeypatch.setattr(arena_router, "get_llms_data", get_llms_data)
     app = FastAPI()
@@ -248,8 +253,8 @@ def test_a_model_whose_daily_cap_is_full_is_paused_for_everyone_until_midnight(
 ):
     monkeypatch.setattr(limits, "now", lambda: arena.redis.now)
     arena.enabled = {
-        PRICEY: SimpleNamespace(id=PRICEY, daily_usd_cap=5.0),
-        PRICIER: SimpleNamespace(id=PRICIER, daily_usd_cap=None),
+        PRICEY: model(PRICEY, daily_usd_cap=5.0),
+        PRICIER: model(PRICIER),
     }
     day = limits.Day.at()
     limits.count_day(day, {PRICEY: {"usd": 5_000_000}, PRICIER: {"usd": 9_000_000}})

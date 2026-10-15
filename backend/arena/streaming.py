@@ -23,7 +23,7 @@ from backend.arena.conversation import (
     SystemMessageRead,
     bot_response_async,
 )
-from backend.arena.limits import Charge, answer_chars
+from backend.arena.limits import Charge, answer_chars, stand_in_exclusions
 from backend.arena.litellm import sent_chars
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.config import CustomModelsSelection, SelectionMode, settings
@@ -282,8 +282,11 @@ async def stream_comparison_messages(
                                 comparison.custom_models_selection,
                             )
                         ):
+                            left_out = stand_in_exclusions(
+                                llms_data.values(), failing_llm_id, expensive_available
+                            )
                             if new_llm_id := await pick_replacement_model(
-                                comparison, e.pos, expensive_available
+                                comparison, e.pos, left_out
                             ):
                                 # Read before the swap clears it.
                                 failed = getattr(turn, f"llm_msg_{e.pos}", None)

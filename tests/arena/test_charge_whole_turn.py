@@ -407,6 +407,7 @@ def test_a_stand_in_for_a_model_that_timed_out_is_charged_as_itself(monkeypatch)
         "bot_response_async": bot_response_async,
         "get_llms_data": get_llms_data,
         "pick_replacement_model": pick_replacement_model,
+        "stand_in_exclusions": lambda *_args: [],
         "update_comparison_llm_id": update_comparison_llm_id,
     }.items():
         monkeypatch.setattr(streaming, name, stub)

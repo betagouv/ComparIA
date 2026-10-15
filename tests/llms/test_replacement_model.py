@@ -13,6 +13,7 @@ from typing import Any, cast
 
 import pytest
 
+import backend.arena.limits as limits
 from backend.llms import data
 from backend.llms.data import LLMsData, pick_replacement_model
 
@@ -23,19 +24,30 @@ EXPENSIVE = ["expensive-a", "expensive-b"]
 DRAWS = 50
 
 
+# Priced under and over the threshold.
+MODELS = [
+    SimpleNamespace(
+        id=llm_id,
+        price_in=2.6 if llm_id in EXPENSIVE else 0.2,
+        price_out=13.0 if llm_id in EXPENSIVE else 1.0,
+        daily_usd_cap=None,
+    )
+    for llm_id in CHEAP + EXPENSIVE
+]
+
+
 @pytest.fixture(autouse=True)
 def catalog(monkeypatch: pytest.MonkeyPatch) -> None:
     async def get_llms_data() -> Any:
         return SimpleNamespace(
             random_models=CHEAP + EXPENSIVE,
-            expensive_models=EXPENSIVE,
-            enabled={},
             pick_one=lambda models, excluded: LLMsData.pick_one(
                 cast(Any, None), models, excluded
             ),
         )
 
     monkeypatch.setattr(data, "get_llms_data", get_llms_data)
+    monkeypatch.setattr(limits, "_stored", {})
 
 
 def replacements(
@@ -44,10 +56,13 @@ def replacements(
     comparison: Any = SimpleNamespace(
         mode="random", llm_id_a=llm_id_a, llm_id_b=llm_id_b
     )
+    left_out = limits.stand_in_exclusions(
+        MODELS, cast(Any, llm_id_a), expensive_available
+    )
 
     async def draw() -> set[str | None]:
         return {
-            await pick_replacement_model(comparison, "a", expensive_available)
+            await pick_replacement_model(comparison, "a", left_out)
             for _ in range(DRAWS)
         }
 
@@ -75,7 +90,7 @@ def test_an_expensive_side_gets_a_cheap_stand_in_once_the_allowance_is_spent() -
 def test_a_model_resting_for_the_day_never_stands_in(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(data, "resting_models", lambda _llms: {"cheap-b": None})
+    monkeypatch.setattr(limits, "resting_models", lambda _llms: {"cheap-b": None})
 
     assert replacements("cheap-a", "expensive-a", expensive_available=True) == {
         "cheap-c"

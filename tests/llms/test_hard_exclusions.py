@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import pytest
 
+from backend.arena.limits import expensive_models
 from backend.llms.data import LLMsData, NoModelLeft
 from backend.llms.models import LLMDataEnabled
 
@@ -44,7 +45,7 @@ def drawn(mode, selection=None, data=None) -> set:
         llm_id
         for _ in range(DRAWS)
         for llm_id in data.pick_two(
-            mode, selection, hard_excluded=data.expensive_models
+            mode, selection, hard_excluded=expensive_models(data.enabled.values())
         )
     }
 
