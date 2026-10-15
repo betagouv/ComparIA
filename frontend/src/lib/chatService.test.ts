@@ -163,10 +163,7 @@ describe('a refusal on an allowance', () => {
     arena.comparisons = []
     expect(sent).toBe(false)
     expect(chat.promptError).toBeUndefined()
-    expect(chat.pause).toMatchObject({
-      detail: 'allowance_spent',
-      limit: { scope: 'network', resets_in: 4210 }
-    })
+    expect(chat.pause).toMatchObject({ scope: 'network', resets_in: 4210 })
     expect(chat.canReveal).toBe(true)
     ;(arena.limits as Limits).destroy()
   })
@@ -208,7 +205,7 @@ describe('a refusal on an allowance', () => {
 
     const home = getComparison(undefined)
 
-    expect(home.pause?.limit.scope).toBe('session')
+    expect(home.pause?.scope).toBe('session')
     expect(home.pauseFromSend).toBe(false)
     ;(arena.limits as Limits).destroy()
   })
@@ -227,7 +224,7 @@ describe('a refusal on an allowance', () => {
     arena.events = []
     arena.comparisons = []
 
-    await vi.waitFor(() => expect(chat.pause?.limit.scope).toBe('network'))
+    await vi.waitFor(() => expect(chat.pause?.scope).toBe('network'))
     ;(arena.limits as Limits).destroy()
   })
 

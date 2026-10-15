@@ -116,9 +116,6 @@ export interface RevealData {
 
 // LIMITS
 
-/** The whole allowance is spent: the person can write again once it lifts. */
-export type PauseRefusal = LimitRefusalBody & { detail: 'allowance_spent' }
-
 /**
  * A new comparison refused on models it may not use yet: the person picked
  * them (in `limit.llm_ids`), or chose a mode left with nothing to draw.
@@ -130,7 +127,7 @@ export type PickRefusal = LimitRefusalBody & {
   detail: 'expensive_allowance_spent' | 'model_full_today'
 }
 
-function asLimitRefusal(err: unknown): PauseRefusal | PickRefusal | undefined {
+function asLimitRefusal(err: unknown): LimitRefusalBody | undefined {
   const { detail, limit } = err as ApiError
   if (
     limit &&
@@ -293,11 +290,6 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
   // Shared by every page: the home form and each conversation show it before
   // anyone sends, and it goes once the allowance lifts.
-  const pause = $derived.by((): PauseRefusal | undefined => {
-    if (!limits.total) return undefined
-    const { scope, resets_at, resets_in } = limits.total
-    return { detail: 'allowance_spent', limit: { scope, resets_at, resets_in, llm_ids: [] } }
-  })
 
   async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
@@ -374,7 +366,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       if (refusal?.detail === 'allowance_spent') {
         pauseFromSend = true
       } else if (refusal) {
-        pickRefusal = refusal
+        pickRefusal = { detail: refusal.detail, limit: refusal.limit }
       } else if ((err as ApiError).detail === 'too_many_at_once') {
         // Not an error in what was typed: the same message goes through in
         // a few seconds, so it stays in the box and can be sent again.
@@ -425,7 +417,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     /** Set while the whole allowance is spent, until it lifts. */
     get pause() {
-      return pause
+      return limits.total
     },
     /** False until the limits are read, on a page rendered on the server. */
     get limitsRead() {

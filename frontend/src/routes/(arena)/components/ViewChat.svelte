@@ -109,7 +109,7 @@
     // A pause that shows after a turn or a vote takes the text box away
     // without moving focus, so it is told here. One met on a send takes focus.
     if (comparator.pause && !comparator.pauseFromSend && !sendAreaFocused) {
-      const reset = resetTime(comparator.pause.limit.resets_at)
+      const reset = resetTime(comparator.pause.resets_at)
       return spoken(pauseTitle(reset), reset)
     }
     switch (comparator.status) {
@@ -212,7 +212,7 @@
         </LimitCard>
       {:else if comparator.pause}
         <PauseNotice
-          refusal={comparator.pause}
+          pause={comparator.pause}
           {onReveal}
           failed={!!comparator.error}
           focusTitle={comparator.pauseFromSend || sendAreaFocused}

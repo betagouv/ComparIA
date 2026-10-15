@@ -126,13 +126,10 @@ describe('ViewPrompt', () => {
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
 
     const pause = {
-      detail: 'allowance_spent' as const,
-      limit: {
-        scope: 'network' as const,
-        resets_at: new Date(Date.now() + 3600_000).toISOString(),
-        resets_in: 3600,
-        llm_ids: []
-      }
+      scope: 'network' as const,
+      resets_at: new Date(Date.now() + 3600_000).toISOString(),
+      resets_in: 3600,
+      liftsAt: Date.now() + 3600_000
     }
     await view.rerender({ ...props, pause })
 

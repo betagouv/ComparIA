@@ -1,19 +1,20 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { Button, Link, Toggletip } from '$components/dsfr'
-  import type { PauseRefusal } from '$lib/chatService.svelte'
+  import type { Spent } from '$lib/limits.svelte'
   import { m } from '$lib/i18n/messages'
   import LimitCard from './LimitCard.svelte'
   import { pauseTitle, resetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {
-    refusal,
+    pause,
     onReveal,
     failed = false,
     focusTitle = false
   }: {
-    refusal: PauseRefusal
+    /** The whole allowance, spent: for whom, and when it lifts. */
+    pause: Pick<Spent, 'scope' | 'resets_at'>
     /** In a conversation: discover the models. Left out on the home page. */
     onReveal?: () => void
     /** The conversation failed, so there is nothing to vote on or reveal. */
@@ -22,9 +23,9 @@
     focusTitle?: boolean
   } = $props()
 
-  const reset = $derived(resetTime(refusal.limit.resets_at))
+  const reset = $derived(resetTime(pause.resets_at))
   const heading = $derived(pauseTitle(reset))
-  const network = $derived(refusal.limit.scope === 'network')
+  const network = $derived(pause.scope === 'network')
 </script>
 
 <LimitCard

@@ -60,13 +60,9 @@ describe('ViewChat', () => {
   it('puts the pause notice in place of the text box and moves focus to its title', async () => {
     comparator.pauseFromSend = true
     comparator.pause = {
-      detail: 'allowance_spent',
-      limit: {
-        scope: 'session',
-        resets_at: new Date(Date.now() + 3600_000).toISOString(),
-        resets_in: 3600,
-        llm_ids: []
-      }
+      scope: 'session',
+      resets_at: new Date(Date.now() + 3600_000).toISOString(),
+      resets_in: 3600
     }
     const view = render(ViewChat, props)
 
@@ -87,10 +83,7 @@ describe('ViewChat', () => {
   })
 
   it('says why the pause in a toggletip under its buttons', async () => {
-    comparator.pause = {
-      detail: 'allowance_spent',
-      limit: { scope: 'network', resets_at: null, resets_in: null, llm_ids: [] }
-    }
+    comparator.pause = { scope: 'network', resets_at: null, resets_in: null }
     const view = render(ViewChat, props)
     const why = view.getByRole('button', { name: 'Pourquoi cette pause ?' })
 
@@ -102,10 +95,7 @@ describe('ViewChat', () => {
   })
 
   it('tells a pause that shows after a turn without moving focus', () => {
-    comparator.pause = {
-      detail: 'allowance_spent',
-      limit: { scope: 'network', resets_at: null, resets_in: null, llm_ids: [] }
-    }
+    comparator.pause = { scope: 'network', resets_at: null, resets_in: null }
     const view = render(ViewChat, props)
 
     const title = view.getByRole('heading', { name: 'Pause de moins de deux heures' })
@@ -115,10 +105,7 @@ describe('ViewChat', () => {
   })
 
   it('offers a new discussion, not the reveal, when the paused conversation failed', () => {
-    comparator.pause = {
-      detail: 'allowance_spent',
-      limit: { scope: 'session', resets_at: null, resets_in: null, llm_ids: [] }
-    }
+    comparator.pause = { scope: 'session', resets_at: null, resets_in: null }
     Object.assign(comparator, { error: 'provider_error', canReveal: false })
     const view = render(ViewChat, props)
 

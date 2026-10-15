@@ -8,12 +8,11 @@
   import {
     getModeInfos,
     type APIModeAndPromptData,
-    type PauseRefusal,
     type PickRefusal
   } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
-  import { getLimitsContext } from '$lib/limits.svelte'
+  import { getLimitsContext, type Spent } from '$lib/limits.svelte'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
@@ -39,7 +38,7 @@
     onPrompt: (args: APIModeAndPromptData) => void | Promise<void>
     promptError?: string
     /** Set while an allowance is spent: the notice takes the place of the form. */
-    pause?: PauseRefusal
+    pause?: Spent
     /** The pause met the prompt just sent, so it takes focus. */
     pauseFromSend?: boolean
     /** Set when the comparison asked for models the person may not use yet. */
@@ -304,7 +303,7 @@
       </h2>
       {#if pause}
         <div class="py-10">
-          <PauseNotice refusal={pause} focusTitle={pauseFromSend} />
+          <PauseNotice {pause} focusTitle={pauseFromSend} />
         </div>
       {:else}
         <!-- Hidden until the limits are read: a pause would take its place. -->
