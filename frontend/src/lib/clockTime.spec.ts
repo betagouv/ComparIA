@@ -22,4 +22,14 @@ describe('clockTime', () => {
       tomorrow: true
     })
   })
+
+  it('rounds up to the next minute, so nobody comes back before it lifts', () => {
+    expect(clockTime(new Date(2026, 9, 13, 10, 44, 48), 'fr', now).time).toBe('10\u00a0h\u00a045')
+    expect(clockTime(new Date(2026, 9, 13, 10, 44, 0), 'fr', now).time).toBe('10\u00a0h\u00a044')
+    // 23:59:30 rounds to midnight, which is tomorrow.
+    expect(clockTime(new Date(2026, 9, 13, 23, 59, 30), 'fr', now)).toEqual({
+      time: '0\u00a0h\u00a000',
+      tomorrow: true
+    })
+  })
 })
