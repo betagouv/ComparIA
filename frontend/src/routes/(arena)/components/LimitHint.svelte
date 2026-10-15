@@ -3,7 +3,8 @@
   import { m } from '$lib/i18n/messages'
   import { focusOnShow } from '$lib/helpers/attachments'
   import type { ClassValue } from 'svelte/elements'
-  import { PAUSED_ICON, type ResetTime } from './resetTime'
+  import { PAUSED_ICON } from '$lib/limits.svelte'
+  import type { ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {

@@ -2,11 +2,6 @@ import { clockTime } from '$lib/clockTime'
 import { m } from '$lib/i18n/messages'
 import { getLocale } from '$lib/i18n/runtime'
 
-/** One icon per state, wherever it shows: paused for the person until a
- * time, or full for everyone until midnight. */
-export const PAUSED_ICON = 'i-ri-pause-circle-line'
-export const FULL_ICON = 'i-ri-calendar-close-line'
-
 /** Stands for the clock time in a sentence, so the time can sit in a <time>. */
 export const TIME_SLOT = '\u2063'
 

@@ -9,6 +9,11 @@ import type {
 import { createContext } from 'svelte'
 import { SvelteMap } from 'svelte/reactivity'
 
+/** One icon per state, in the arena and the admin: paused for the person
+ * until a time, or full for everyone until midnight. */
+export const PAUSED_ICON = 'i-ri-pause-circle-line'
+export const FULL_ICON = 'i-ri-calendar-close-line'
+
 // A window of the allowances: the longest one with no known reset can last.
 const FALLBACK_SECONDS = 2 * 60 * 60
 // How long the form waits for the first read before showing anyway.

@@ -1,7 +1,8 @@
 <script lang="ts" module>
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { FULL_ICON, resetTime, spoken, type ResetTime } from './resetTime'
+  import { FULL_ICON } from '$lib/limits.svelte'
+  import { resetTime, spoken, type ResetTime } from './resetTime'
 
   /** Models taken out of the person's pick. */
   export interface TrimmedPause {

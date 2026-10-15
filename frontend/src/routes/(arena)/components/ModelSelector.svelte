@@ -6,12 +6,12 @@
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PausedLLM } from '$lib/generated/backend'
-  import type { Spent } from '$lib/limits.svelte'
+  import { FULL_ICON, PAUSED_ICON, type Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
   import LimitHint from './LimitHint.svelte'
   import type { ModePause } from './pausedModes'
-  import { FULL_ICON, PAUSED_ICON, TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
+  import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {
