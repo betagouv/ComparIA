@@ -353,7 +353,9 @@ describe('a message sent with too many at once', () => {
     expect(chat.promptError).toBeUndefined()
     expect(chat.pause).toBeUndefined()
     expect(chat.status).not.toBe('error')
-    expect(chat.busyHint).toBe('Trop de messages en même temps, réessayez dans quelques secondes.')
+    expect(chat.busyHint).toBe(
+      'Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes.'
+    )
 
     arena.refusal = undefined
     await chat.askFirst(args)

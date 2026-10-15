@@ -248,12 +248,20 @@ describe('ViewPrompt', () => {
   it('asks to send again shortly when too many messages went at once', async () => {
     const view = render(ViewPrompt, {
       ...props,
-      busyHint: 'Trop de messages en même temps, réessayez dans quelques secondes.'
+      busyHint:
+        'Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes.'
     })
 
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
 
-    expect(view.getByText(/réessayez dans quelques secondes/)).toBeInTheDocument()
+    // Told like the other limits, under the controls, with its own icon, and
+    // focused since the send did not start.
+    const hint = view.container.querySelector<HTMLElement>('#busy-hint')!
+    expect(hint).toHaveTextContent(/^Beaucoup de messages partent de votre réseau en ce moment\./)
+    expect(hint).toHaveFocus()
+    expect(hint.querySelector('.i-ri-time-line')).not.toBeNull()
+    expect(hint).not.toHaveTextContent('Pourquoi')
+    expect(view.getByRole('textbox')).not.toHaveAccessibleDescription(/Beaucoup de messages/)
     // A hint, not an error in what was typed: sending stays open.
     expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()

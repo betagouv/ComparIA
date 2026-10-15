@@ -850,7 +850,7 @@
             "rate_limited": "Du har sendt mange beskeder de seneste timer. Prøv igen senere.",
             "retry_unavailable": "Det er ikke muligt at prøve igen. Genindlæs siden.",
             "spam_detected": "Dette beskedformat er ikke tilladt. Skriv i almindeligt sprog.",
-            "too_many_at_once": "For mange beskeder på én gang, prøv igen om et par sekunder."
+            "too_many_at_once": "Mange beskeder sendes fra dit netværk lige nu. Send din igen om et par sekunder."
         },
         "limits": {
             "mode": {

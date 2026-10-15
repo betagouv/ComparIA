@@ -17,9 +17,9 @@
     class: className
   }: {
     id: string
-    /** One sentence, with TIME_SLOT where the clock time goes. */
+    /** One sentence, with TIME_SLOT where the clock time goes, if any. */
     text: string
-    reset: ResetTime
+    reset?: ResetTime
     /** The state's icon: paused for the person, full for the day, or busy. */
     icon?: string
     /** What "Pourquoi ?" opens. */

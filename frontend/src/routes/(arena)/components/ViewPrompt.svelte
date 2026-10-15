@@ -19,6 +19,7 @@
   import { onMount, tick, untrack } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
+  import LimitHint from './LimitHint.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
   import { pausedModes } from './pausedModes'
@@ -316,7 +317,6 @@
               label={m['arenaHome.prompt.label']()}
               placeholder={m['arenaHome.prompt.placeholder']()}
               bind:error={promptError}
-              hint={busyHint}
               disabled={loading}
               submitDisabled={disabled}
               hideLabel
@@ -361,7 +361,12 @@
           />
 
           <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
-          {#if refusalPause}
+          {#if busyHint}
+            <!-- Told like the other limits, and focused: the send did not start. -->
+            <div class="md:col-span-full md:order-none order-3">
+              <LimitHint id="busy-hint" text={busyHint} icon="i-ri-time-line" focusOnShow />
+            </div>
+          {:else if refusalPause}
             <div class="md:col-span-full md:order-none order-3">
               <PickPausedNotice pause={refusalPause} focusOnShow />
             </div>

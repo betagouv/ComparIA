@@ -8,6 +8,7 @@
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
   import LimitCard from './LimitCard.svelte'
+  import LimitHint from './LimitHint.svelte'
   import { pauseTitle, resetTime, spoken } from './resetTime'
 
   let {
@@ -229,7 +230,7 @@
             label={m['chatbot.continuePrompt']()}
             placeholder={m['chatbot.continuePrompt']()}
             bind:error={comparator.promptError}
-            hint={comparator.busyHint ?? turnsHint}
+            hint={turnsHint}
             hideLabel
             submitBtn
             submitDisabled={!canContinue || prompt === ''}
@@ -241,6 +242,16 @@
             onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
             class="mb-0! w-full"
           />
+          {#if comparator.busyHint}
+            <!-- Told like the other limits, and focused: the send did not start. -->
+            <LimitHint
+              id="busy-hint"
+              text={comparator.busyHint}
+              icon="i-ri-time-line"
+              focusOnShow
+              class="mt-2"
+            />
+          {/if}
         </div>
       {/if}
 
