@@ -182,24 +182,28 @@ def pick_refusal(
     error: NoModelLeft,
     resting: Mapping[UUID, datetime],
     spent: Sequence[Allowance],
+    expensive: Collection[UUID] = (),
 ) -> LimitReachedError:
     """
     What the person is told when a draw has nothing left, `spent` holding
-    the expensive allowances that left expensive models out, if any. Of a
-    custom pick both full and paused, the limit that lifts last is told,
-    with every model picked: that is when the pick can go through.
+    the expensive allowances that left the `expensive` models out, if any.
+
+    When both limits apply, to a model picked that is full and expensive, to
+    two picked models one each way, or to a mode left with nothing, the one
+    that lifts last is told, with every model picked: that is when the pick
+    can go through.
     """
-    full = [llm_id for llm_id in error.llm_ids if llm_id in resting]
-    paused = [llm_id for llm_id in error.llm_ids if llm_id not in resting]
-    if not spent or (error.llm_ids and not paused):
-        return full_refusal(resting, full)
-    if not resting or (error.llm_ids and not full):
-        return limit_refusal(spent, paused)
-    # Both. An allowance with no known end lifts last.
-    lifts = lifts_last(spent)[1]
-    if lifts is None or lifts > min(resting.values()):
-        return limit_refusal(spent, error.llm_ids)
-    return full_refusal(resting, error.llm_ids)
+    picked = error.llm_ids
+    full = (not picked and bool(resting)) or any(i in resting for i in picked)
+    paused = bool(spent) and (not picked or any(i in expensive for i in picked))
+    if paused and not full:
+        return limit_refusal(spent, picked)
+    if full and paused:
+        # An allowance with no known end lifts last.
+        lifts = lifts_last(spent)[1]
+        if lifts is None or lifts > min(resting.values()):
+            return limit_refusal(spent, picked)
+    return full_refusal(resting, picked)
 
 
 def arena_limits(
@@ -378,7 +382,7 @@ def pick_and_charge(
                 f" picks left out: [{error}]",
                 extra={"request": request},
             )
-            raise pick_refusal(error, resting, spent)
+            raise pick_refusal(error, resting, spent, llms_data.expensive_models)
 
     def without_expensive(
         spent: Sequence[Allowance],

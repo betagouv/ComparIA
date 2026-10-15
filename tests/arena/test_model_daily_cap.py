@@ -322,11 +322,58 @@ def test_a_pick_of_a_full_model_and_a_paused_one_is_told_the_later_end(
     spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
 
     refusal = arena_router.pick_refusal(
-        NoModelLeft([EXPENSIVE, paused]), {EXPENSIVE: back}, spent
+        NoModelLeft([EXPENSIVE, paused]), {EXPENSIVE: back}, spent, [paused]
     )
 
     assert refusal.detail == detail
     assert refusal.limit.llm_ids == [EXPENSIVE, paused]
+
+
+@pytest.mark.parametrize(
+    ("resets_in", "detail"),
+    [(600, "model_full_today"), (2 * 3600, "expensive_allowance_spent")],
+)
+def test_a_pick_of_a_model_both_full_and_paused_is_told_the_later_end(
+    resets_in, detail
+):
+    """The model is full until an hour from now, and expensive with the
+    allowance spent: the pick goes through once both have lifted."""
+    back = datetime.now(timezone.utc) + timedelta(hours=1)
+    spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
+
+    refusal = arena_router.pick_refusal(
+        NoModelLeft([EXPENSIVE]), {EXPENSIVE: back}, spent, [EXPENSIVE]
+    )
+
+    assert refusal.detail == detail
+    assert refusal.limit.llm_ids == [EXPENSIVE]
+
+
+@pytest.mark.parametrize(
+    ("resets_in", "detail"),
+    [(600, "model_full_today"), (2 * 3600, "expensive_allowance_spent")],
+)
+def test_a_mode_left_with_nothing_both_ways_is_told_the_later_end(resets_in, detail):
+    back = datetime.now(timezone.utc) + timedelta(hours=1)
+    spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
+
+    refusal = arena_router.pick_refusal(
+        NoModelLeft(), {EXPENSIVE: back}, spent, [EXPENSIVE]
+    )
+
+    assert refusal.detail == detail
+    assert refusal.limit.llm_ids == []
+
+
+def test_a_cheap_full_pick_is_told_full_whatever_the_allowance():
+    back = datetime.now(timezone.utc) + timedelta(hours=1)
+    spent = [Allowance("expensive", "session", ME, 2, 1, 2 * 3600)]
+
+    refusal = arena_router.pick_refusal(
+        NoModelLeft([CHEAP]), {CHEAP: back}, spent, [EXPENSIVE]
+    )
+
+    assert refusal.detail == "model_full_today"
 
 
 def test_unknown_model_ids_are_not_counted(clock):
