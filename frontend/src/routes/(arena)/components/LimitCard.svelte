@@ -28,7 +28,8 @@
   } = $props()
 </script>
 
-<div {id} class="cl-limit-card cg-border px-6 py-8 mx-auto w-full text-center">
+<!-- Less padding on a phone, where a 16 px gutter already narrows it. -->
+<div {id} class="cl-limit-card cg-border px-4 py-6 md:px-6 md:py-8 mx-auto w-full text-center">
   <span class="cl-limit-card__icon mb-4 mx-auto flex items-center justify-center">
     <Icon {icon} size="md" block />
   </span>
