@@ -1,4 +1,4 @@
-import { render } from '@testing-library/svelte'
+import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import TodayUsage from './TodayUsage.svelte'
 
@@ -36,19 +36,19 @@ const usage = [
   }
 ]
 
-function row(view: ReturnType<typeof render>, name: string) {
-  return view.getByRole('link', { name }).closest('tr')!
+function row(name: string) {
+  return screen.getByRole('link', { name }).closest('tr')!
 }
 
 describe('TodayUsage', () => {
   it("lists each model's spend against its cap, with the ones at rest marked", () => {
     const view = render(TodayUsage, { usage })
 
-    expect(row(view, 'GPT 5.5')).toHaveTextContent(/GPT 5.5\s*Au repos\s*21,50\s*\$\s*20,00\s*\$/)
-    expect(row(view, 'GPT 5.5')).toHaveTextContent('25 % de 40')
-    expect(row(view, 'Gemma 4')).toHaveTextContent('Aucun')
-    expect(row(view, 'Gemma 4')).toHaveTextContent('Aucune réponse')
-    expect(row(view, 'Gemma 4')).not.toHaveTextContent('Au repos')
+    expect(row('GPT 5.5')).toHaveTextContent(/GPT 5.5\s*Au repos\s*21,50\s*\$\s*20,00\s*\$/)
+    expect(row('GPT 5.5')).toHaveTextContent('25 % de 40')
+    expect(row('Gemma 4')).toHaveTextContent('Aucun')
+    expect(row('Gemma 4')).toHaveTextContent('Aucune réponse')
+    expect(row('Gemma 4')).not.toHaveTextContent('Au repos')
     expect(view.queryByRole('columnheader', { name: /Proposé/ })).toBeNull()
     // A model that cost nothing and has no cap is only counted.
     expect(view.queryByRole('link', { name: 'Llama 4 Scout' })).toBeNull()
@@ -69,7 +69,7 @@ describe('TodayUsage', () => {
     const view = render(TodayUsage, { usage, proposals })
 
     expect(view.getByRole('columnheader', { name: /Proposé/ })).toBeInTheDocument()
-    expect(row(view, 'GPT 5.5')).toHaveTextContent(/30,00\s*\$\s*au plus 21,50\s*\$ en un jour/)
+    expect(row('GPT 5.5')).toHaveTextContent(/30,00\s*\$\s*au plus 21,50\s*\$ en un jour/)
     expect(
       view.getByText(
         "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur 95 % des 6 jours entiers lus, plus la moitié."
