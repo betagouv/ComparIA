@@ -320,6 +320,25 @@ describe('ViewPrompt', () => {
     vi.useRealTimers()
   })
 
+  it('says a pick is paused for the network when the network spent the allowance', async () => {
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
+    const spent = expensiveSpent('expensive-id')
+    arena.limits = createLimits({ ...spent, expensive: { ...spent.expensive!, scope: 'network' } })
+
+    const view = render(ViewPrompt, props)
+
+    await view.findAllByText(/GPT-5 est en pause/)
+    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
+      /^GPT-5 est en pause pour votre réseau jusqu'à .*, on l'a retiré\. Pourquoi \?$/
+    )
+    ;(arena.limits as Limits).destroy()
+  })
+
   it('says the comparison goes random when a full model empties the pick', async () => {
     catalog.models = [{ id: 'full-id', name: 'GPT-5', status: 'enabled', lab, badges }]
     localStorage.setItem('mode', 'custom')

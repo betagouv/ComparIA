@@ -20,6 +20,27 @@
       }
     | { kind: 'mode'; until: string | null }
 
+  const TRIMMED = {
+    one: {
+      kept: 'arene.limits.picker.trimmedOne',
+      toRandom: 'arene.limits.picker.trimmedOneToRandom'
+    },
+    two: {
+      kept: 'arene.limits.picker.trimmedTwo',
+      toRandom: 'arene.limits.picker.trimmedTwoToRandom'
+    }
+  } as const
+  const TRIMMED_NETWORK = {
+    one: {
+      kept: 'arene.limits.picker.trimmedOneNetwork',
+      toRandom: 'arene.limits.picker.trimmedOneToRandomNetwork'
+    },
+    two: {
+      kept: 'arene.limits.picker.trimmedTwoNetwork',
+      toRandom: 'arene.limits.picker.trimmedTwoToRandomNetwork'
+    }
+  } as const
+
   function list(names: string[]) {
     return new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(names)
   }
@@ -48,14 +69,9 @@
       why.push(m['arene.limits.picker.fullWhy']())
     }
     if (paused.length) {
-      const two = paused.length > 1
-      const key = toRandom
-        ? two
-          ? 'arene.limits.picker.trimmedTwoToRandom'
-          : 'arene.limits.picker.trimmedOneToRandom'
-        : two
-          ? 'arene.limits.picker.trimmedTwo'
-          : 'arene.limits.picker.trimmedOne'
+      // "pour votre réseau" when the network spent it, as the picker says.
+      const keys = pause.network ? TRIMMED_NETWORK : TRIMMED
+      const key = keys[paused.length > 1 ? 'two' : 'one'][toRandom ? 'toRandom' : 'kept']
       text.push(m[key]({ models: list(paused), until: reset.until }))
       why.push(m[pause.network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']())
     }

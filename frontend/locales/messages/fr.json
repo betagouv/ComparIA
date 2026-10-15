@@ -999,9 +999,13 @@
                 "trimmedFull": "Complet aujourd'hui : on a retiré {models} de votre sélection.",
                 "trimmedFullToRandom": "Complet aujourd'hui : on a retiré {models} de votre sélection, la comparaison sera aléatoire.",
                 "trimmedOne": "{models} est en pause pour vous {until}, on l'a retiré.",
+                "trimmedOneNetwork": "{models} est en pause pour votre réseau {until}, on l'a retiré.",
                 "trimmedOneToRandom": "{models} est en pause pour vous {until}, on l'a retiré, la comparaison sera aléatoire.",
+                "trimmedOneToRandomNetwork": "{models} est en pause pour votre réseau {until}, on l'a retiré, la comparaison sera aléatoire.",
                 "trimmedTwo": "{models} sont en pause pour vous {until}, on les a retirés.",
-                "trimmedTwoToRandom": "{models} sont en pause pour vous {until}, on les a retirés, la comparaison sera aléatoire."
+                "trimmedTwoNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés.",
+                "trimmedTwoToRandom": "{models} sont en pause pour vous {until}, on les a retirés, la comparaison sera aléatoire.",
+                "trimmedTwoToRandomNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés, la comparaison sera aléatoire."
             },
             "time": {
                 "at": "à {time}",
