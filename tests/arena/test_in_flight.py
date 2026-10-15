@@ -136,14 +136,17 @@ def test_turns_sent_together_pass_up_to_the_cap(redis):
     TurnSlot.take(NETWORK)
 
 
-def test_a_slot_given_back_twice_frees_one(redis):
+def test_a_slot_given_back_twice_frees_one(redis, monkeypatch):
     first = TurnSlot.take(NETWORK)
     TurnSlot.take(NETWORK)
 
     first.release()
+    removed = []
+    monkeypatch.setattr(redis, "zrem", lambda *args: removed.append(args))
     first.release()
 
     assert held(redis) == 1
+    assert removed == []
 
 
 def test_the_cap_is_an_admin_setting(redis, monkeypatch):
