@@ -3,21 +3,24 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { resetTime, spoken } from './resetTime'
 
+  /** Models taken out of the person's pick. */
+  export interface TrimmedPause {
+    kind: 'trimmed'
+    /** The models taken out because their day is full, for everyone. */
+    full: string[]
+    /** The models taken out because the expensive allowance is spent. */
+    paused: string[]
+    /** When the paused ones come back, null when unknown. */
+    until: string | null
+    /** Taking them out emptied the selection, so the mode went back to random. */
+    toRandom: boolean
+    /** The network spent the allowance, not just this person. */
+    network: boolean
+  }
+
   /** What the home form changed, or cannot do, for models paused for the person. */
   export type PickPause =
-    | {
-        kind: 'trimmed'
-        /** The models taken out because their day is full, for everyone. */
-        full: string[]
-        /** The models taken out because the expensive allowance is spent. */
-        paused: string[]
-        /** When the first paused one comes back, null when unknown. */
-        until: string | null
-        /** Taking them out emptied the selection, so the mode went back to random. */
-        toRandom: boolean
-        /** The network spent the allowance, not just this person. */
-        network: boolean
-      }
+    | TrimmedPause
     | {
         kind: 'mode'
         until: string | null

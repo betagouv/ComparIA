@@ -9,6 +9,7 @@
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
   import LimitHint from './LimitHint.svelte'
+  import type { ModePause } from './pausedModes'
   import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
@@ -19,8 +20,7 @@
     disabled = false,
     paused = new Map(),
     expensive,
-    pausedModes = new Map(),
-    fullModes = new Set()
+    pausedModes = new Map()
   }: {
     models: BotModel[]
     mode: APIModeAndPromptData['mode']
@@ -31,9 +31,7 @@
     /** Set while the expensive allowance is spent, for whom and until when. */
     expensive?: Spent
     /** The modes left with nothing to draw, and when they come back. */
-    pausedModes?: ReadonlyMap<Mode, string | null>
-    /** Of those, the ones full models alone leave with nothing, until midnight. */
-    fullModes?: ReadonlySet<Mode>
+    pausedModes?: ReadonlyMap<Mode, ModePause>
   } = $props()
 
   type Pause = { chip: string; reset?: ResetTime; reason: string }
@@ -65,14 +63,15 @@
   }
 
   function modePause(value: Mode): Pause | undefined {
-    if (!pausedModes.has(value)) return undefined
-    if (fullModes.has(value)) {
+    const pause = pausedModes.get(value)
+    if (!pause) return undefined
+    if (pause.full) {
       return {
         chip: m['arene.limits.picker.fullBadge'](),
         reason: m['arene.limits.mode.reasonFull']()
       }
     }
-    const reset = resetTime(pausedModes.get(value))
+    const reset = resetTime(pause.until)
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
     return { chip: chip(reset), reset, reason: spoken(reason, reset) }
   }

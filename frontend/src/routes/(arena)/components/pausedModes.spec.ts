@@ -1,6 +1,6 @@
 import type { PausedModel } from '$lib/limits.svelte'
 import { describe, expect, it } from 'vitest'
-import { fullModes, pausedModes } from './pausedModes'
+import { pausedModes } from './pausedModes'
 
 const models = [
   { id: 'gpt', params: 1000 },
@@ -26,7 +26,9 @@ describe('pausedModes', () => {
   it('pauses David contre Goliath once every big model is paused, until the first is back', () => {
     const modes = pausedModes(models, pausedFor('gpt', 'claude'))
 
-    expect([...modes]).toEqual([['big-vs-small', '2026-10-14T14:40:00.000Z']])
+    expect([...modes]).toEqual([
+      ['big-vs-small', { until: '2026-10-14T14:40:00.000Z', full: false }]
+    ])
   })
 
   it('needs two different models when both sides come from one pool', () => {
@@ -44,7 +46,9 @@ describe('pausedModes', () => {
 
     // Big models are full; the small pool lacks a second model only because
     // of an allowance pause.
-    expect([...fullModes(models, paused)]).toEqual(['big-vs-small'])
+    const modes = pausedModes(models, paused)
+    expect(modes.get('big-vs-small')?.full).toBe(true)
+    expect(modes.get('small-models')?.full).toBe(false)
   })
 
   it('leaves alone a mode that had no model before any pause', () => {

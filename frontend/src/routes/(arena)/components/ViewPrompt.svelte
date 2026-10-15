@@ -21,9 +21,13 @@
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
-  import { fullModes, pausedModes } from './pausedModes'
+  import { pausedModes } from './pausedModes'
   import PauseNotice from './PauseNotice.svelte'
-  import PickPausedNotice, { pickPauseSaid, type PickPause } from './PickPausedNotice.svelte'
+  import PickPausedNotice, {
+    pickPauseSaid,
+    type PickPause,
+    type TrimmedPause
+  } from './PickPausedNotice.svelte'
 
   let {
     onPrompt,
@@ -70,7 +74,7 @@
   let toRandom = $state(false)
   // Paused models taken out of a saved or `?vs=` selection, until the person
   // changes the mode or the models.
-  let trimmed = $state.raw<Extract<PickPause, { kind: 'trimmed' }>>()
+  let trimmed = $state.raw<TrimmedPause>()
 
   function names(ids: string[]): string[] {
     return ids
@@ -79,42 +83,52 @@
   }
 
   const modesPaused = $derived(pausedModes(models, limits.paused))
-  const modesFull = $derived(fullModes(models, limits.paused))
-  const modePaused = $derived(mode.value !== 'custom' && modesPaused.has(mode.value))
+  const modePause = $derived(mode.value === 'custom' ? undefined : modesPaused.get(mode.value))
+  const modePaused = $derived(!!modePause)
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting || modePaused)
   const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
   // Before anyone sends; a refusal, when there is one, already says it all.
   const pickPause = $derived.by((): PickPause | undefined => {
     if (shownRefusal) return undefined
-    if (modePaused) {
-      const until = modesPaused.get(mode.value) ?? null
-      return { kind: 'mode', until, full: modesFull.has(mode.value) }
-    }
-    return trimmed
+    return modePause ? { kind: 'mode', ...modePause } : trimmed
   })
   // A refused send, told the same way and focused, since nothing started.
   const refusalPause = $derived.by((): PickPause | undefined => {
     if (!shownRefusal) return undefined
     const { detail, limit } = shownRefusal
-    const { llm_ids = [], resets_at, scope } = limit
-    if (!llm_ids.length)
-      return { kind: 'mode', until: resets_at, full: detail === 'model_full_today' }
-    // Each model by its own reason, read from the limits once they are
-    // read again after the refusal, and from the refusal until then.
+    if (!limit.llm_ids?.length)
+      return { kind: 'mode', until: limit.resets_at, full: detail === 'model_full_today' }
+    return trimmedPause(limit.llm_ids, toRandom, shownRefusal)
+  })
+
+  /**
+   * Models taken out of a pick, each told by its own reason: read from the
+   * limits, and from the refusal that took them out until the limits are
+   * read again.
+   */
+  function trimmedPause(ids: string[], toRandom: boolean, refusal?: PickRefusal): TrimmedPause {
     const isFull = (id: string) => {
       const reason = limits.paused.get(id)?.reason
-      return reason ? reason === 'full' : detail === 'model_full_today'
+      return reason ? reason === 'full' : refusal?.detail === 'model_full_today'
     }
-    const allowance = detail === 'expensive_allowance_spent'
+    const told = refusal?.detail === 'expensive_allowance_spent' ? refusal.limit : limits.expensive
     return {
       kind: 'trimmed',
-      full: names(llm_ids.filter(isFull)),
-      paused: names(llm_ids.filter((id) => !isFull(id))),
-      until: allowance ? resets_at : (limits.expensive?.resets_at ?? null),
+      full: names(ids.filter(isFull)),
+      paused: names(ids.filter((id) => !isFull(id))),
+      until: told?.resets_at ?? null,
       toRandom,
-      network: (allowance ? scope : limits.expensive?.scope) === 'network'
+      network: told?.scope === 'network'
     }
-  })
+  }
+
+  /** Takes models out of the selection. A custom pick left empty goes random. */
+  function takeOut(ids: string[]): boolean {
+    modelsSelection.value = modelsSelection.value.filter((id) => !ids.includes(id))
+    if (mode.value !== 'custom' || modelsSelection.value.length) return false
+    mode.value = 'random'
+    return true
+  }
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
@@ -125,24 +139,9 @@
     const out = modelsSelection.value.filter((id) => limits.paused.has(id))
     if (!out.length || submitting) return
     untrack(() => {
-      modelsSelection.value = modelsSelection.value.filter((id) => !limits.paused.has(id))
-      if (mode.value !== 'custom') return
-      const left = modelsSelection.value.length > 0
-      if (!left) mode.value = 'random'
-      const isFull = (id: string) => limits.paused.get(id)!.reason === 'full'
-      const until = out
-        .filter((id) => !isFull(id))
-        .map((id) => limits.paused.get(id)!.until)
-        .filter((until): until is string => !!until)
-        .sort()[0]
-      trimmed = {
-        kind: 'trimmed',
-        full: names(out.filter(isFull)),
-        paused: names(out.filter((id) => !isFull(id))),
-        until: until ?? null,
-        toRandom: !left,
-        network: limits.expensive?.scope === 'network'
-      }
+      const custom = mode.value === 'custom'
+      const emptied = takeOut(out)
+      if (custom) trimmed = trimmedPause(out, emptied)
     })
   })
 
@@ -204,13 +203,7 @@
       })
       // Take the refused models out, so sending again starts a comparison.
       const refused = pickRefusal?.limit.llm_ids
-      if (refused?.length) {
-        modelsSelection.value = modelsSelection.value.filter((id) => !refused.includes(id))
-        if (!modelsSelection.value.length) {
-          mode.value = 'random'
-          toRandom = true
-        }
-      }
+      if (refused?.length) toRandom = takeOut(refused)
     } finally {
       submitting = false
     }
@@ -340,7 +333,6 @@
               paused={limits.paused}
               expensive={limits.expensive}
               pausedModes={modesPaused}
-              fullModes={modesFull}
             />
             <Toggle
               id="web-search"

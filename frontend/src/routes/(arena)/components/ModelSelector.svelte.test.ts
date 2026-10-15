@@ -5,6 +5,7 @@ import { expectNoDanglingAriaRefs } from '$lib/testing/a11y'
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import ModelSelector from './ModelSelector.svelte'
+import type { ModePause } from './pausedModes'
 
 const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0, name: 'Lab' }
 function model(id: string, name: string) {
@@ -114,7 +115,7 @@ describe('ModelSelector', () => {
       modelsSelection: [],
       paused,
       expensive: expensive('session'),
-      pausedModes: new Map<Mode, string | null>([['big-vs-small', at]])
+      pausedModes: new Map<Mode, ModePause>([['big-vs-small', { until: at, full: false }]])
     })
 
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
