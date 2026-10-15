@@ -328,6 +328,11 @@
                 "timeout": "Le calcul a pris trop de temps. Réessayez dans quelques minutes."
             },
             "cancel": "Annuler",
+            "change": {
+                "big": "Gros changement : vérifiez avant d'appliquer.",
+                "less": "{values} ({times} fois moins)",
+                "more": "{values} ({times} fois plus)"
+            },
             "current": "Valeur actuelle : {value}",
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux : {names}.",
             "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",

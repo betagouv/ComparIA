@@ -154,4 +154,28 @@ describe('limits page', () => {
     ).toBeInTheDocument()
     expect(view.getByRole('heading', { name: 'Réglages techniques', level: 2 })).toBeInTheDocument()
   })
+
+  it('shows each change as old → new, and flags one past three times', async () => {
+    const view = page()
+    const card = (id: string) => view.container.querySelector(`#${id}`)!.closest('.cg-border')!
+    expect(view.queryByText(/→/)).toBeNull()
+
+    await fireEvent.input(view.container.querySelector('#limit-all_per_ip')!, {
+      target: { value: '600000' }
+    })
+    await fireEvent.input(view.container.querySelector('#limit-expensive_per_ip')!, {
+      target: { value: '24' }
+    })
+
+    expect(card('limit-all_per_ip')).toHaveTextContent(
+      /60\s000\s000 → 600\s000 caractères \(100 fois moins\)/
+    )
+    expect(card('limit-all_per_ip')).toHaveTextContent(
+      "Gros changement : vérifiez avant d'appliquer."
+    )
+    expect(card('limit-expensive_per_ip')).toHaveTextContent(
+      /20,00\s\$ → 24,00\s\$ \(1,2 fois plus\)/
+    )
+    expect(card('limit-expensive_per_ip')).not.toHaveTextContent('Gros changement')
+  })
 })

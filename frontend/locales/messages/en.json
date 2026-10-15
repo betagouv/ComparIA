@@ -808,6 +808,11 @@
             "title": "Vote tags"
         },
         "limits": {
+            "change": {
+                "big": "Big change: check before applying.",
+                "less": "{values} ({times} times less)",
+                "more": "{values} ({times} times more)"
+            },
             "messages": {
                 "network": "That is about {count} messages in two hours for the whole network.",
                 "session": "That is about {count} messages in two hours for one person."

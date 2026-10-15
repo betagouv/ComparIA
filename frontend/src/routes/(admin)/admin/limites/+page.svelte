@@ -129,17 +129,48 @@
     ) as Draft
   }
 
-  function shown(name: Name, value: number) {
-    switch (unit(name)) {
+  // A value in its unit; `to` makes it "3 000 000 → 31 000 caractères".
+  function shown(name: Name, value: number, to?: number) {
+    const kind = unit(name)
+    const format = kind === 'usd' || kind === 'price' ? dollars : numbers
+    const values =
+      to === undefined ? format.format(value) : `${format.format(value)} → ${format.format(to)}`
+    switch (kind) {
       case 'usd':
-        return dollars.format(value)
+        return values
       case 'price':
-        return m['admin.limits.unitPrice']({ value: dollars.format(value) })
+        return m['admin.limits.unitPrice']({ value: values })
       case 'count':
-        return m['admin.limits.unitCount']({ value: numbers.format(value) })
+        return m['admin.limits.unitCount']({ value: values })
       default:
-        return m['admin.limits.unit']({ value: numbers.format(value) })
+        return m['admin.limits.unit']({ value: values })
     }
+  }
+
+  // Past this many times smaller or larger, a change is worth a second look.
+  const BIG_CHANGE = 3
+  const ratios = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+
+  // "3 000 000 → 31 000 caractères (97 fois moins)", and whether it is big.
+  function change(name: Name, from: number, to: number) {
+    const values = shown(name, from, to)
+    if (from <= 0 || to <= 0) return { text: values, big: false }
+    const ratio = Math.max(from, to) / Math.min(from, to)
+    const times = ratio < 10 ? ratios.format(ratio) : numbers.format(Math.round(ratio))
+    const text =
+      times === ratios.format(1)
+        ? values
+        : m[to < from ? 'admin.limits.change.less' : 'admin.limits.change.more']({
+            values,
+            times
+          })
+    return { text, big: ratio > BIG_CHANGE }
+  }
+
+  /** The value a field would store, null while it holds nothing to store. */
+  function next(name: Name): number | null {
+    if (!changed.includes(name)) return null
+    return resets.includes(name) ? byName[name].default : Number(draft[name])
   }
 
   // What a value lets through, in messages of a typical cost, once
@@ -286,6 +317,7 @@
   {@const proposal = proposals[name]}
   {@const kind = unit(name)}
   {@const messages = inMessages(name, limit.value)}
+  {@const to = next(name)}
   <div class={['p-4 rounded-lg cg-border flex flex-col', { 'md:col-span-2': kind === 'price' }]}>
     <h3 class="fr-h6 mb-1!">{labels[name]}</h3>
     <p class="fr-text--sm mb-3! text-[--text-mention-grey]">{helps[name]}</p>
@@ -318,6 +350,17 @@
       required
       groupClass="mb-0!"
     />
+    {#if to !== null}
+      {@const { text, big } = change(name, limit.value, to)}
+      {@const after = inMessages(name, to)}
+      <p class="fr-text--sm mt-3! mb-0! font-bold">{text}</p>
+      {#if after}
+        <p class="fr-text--sm mt-1! mb-0!">{after}</p>
+      {/if}
+      {#if big}
+        <Alert variant="warning" title={m['admin.limits.change.big']()} small class="mt-2" />
+      {/if}
+    {/if}
     {#if kind === 'price'}
       <p class="fr-text--sm mt-3! mb-0!" aria-live="polite">
         {expensiveText(expensiveLLMs)}
