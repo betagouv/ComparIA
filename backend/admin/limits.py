@@ -1,7 +1,7 @@
 import uuid
 from typing import Iterable
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
 from backend.activity.services import QueryTimedOutError
 from backend.arena import limits
@@ -13,7 +13,7 @@ from backend.arena.models import (
     LLMDailyUsage,
 )
 from backend.auth.dependencies import RequiredAdmin
-from backend.errors import ActivityQueryTimeoutError
+from backend.errors import ActivityQueryTimeoutError, UnknownLLMError
 from backend.llms.models import LLMDataEnabled
 from utils.arena.calibrate import CALIBRATION_DAYS, calibrate, enabled_llms
 from utils.database.models.app_settings import AppSettings
@@ -94,7 +94,7 @@ async def patch_limits(
         try:
             await update_daily_caps(caps, updated_by=current_user.id)
         except UnknownLLMsError:
-            raise HTTPException(status_code=422, detail="unknown_llm")
+            raise UnknownLLMError()
     row = await update_limit_settings(changes, updated_by=current_user.id)
     # In force at once on this process; the others read it within
     # `limits.RELOAD_SECONDS`.

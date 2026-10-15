@@ -119,6 +119,15 @@ class ActivityQueryTimeoutError(HTTPException):
         )
 
 
+class UnknownLLMError(HTTPException):
+    """Daily caps sent for models the database does not hold."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="unknown_llm"
+        )
+
+
 class TooManyAtOnceError(HTTPException):
     """A turn refused because its network already has as many answering as
     it may. One of them ends within seconds, so the person can send again
