@@ -1581,8 +1581,8 @@
                 "label": "Created At"
             },
             "daily_usd_cap": {
-                "help": "Coût estimé au plus par jour, tous utilisateurs confondus. Une fois atteint, le modèle sort des nouveaux tirages jusqu'à minuit, heure de Paris. Vide : pas de plafond.",
-                "label": "Plafond par jour (USD)"
+                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
+                "label": "Daily cap (USD)"
             },
             "endpoint_id": {
                 "help": "The LLM's endpoint information, create it first if not already available",

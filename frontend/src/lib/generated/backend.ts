@@ -224,7 +224,7 @@ export interface APILLMData {
    */
   price_out: number;
   /**
-   * Coût estimé au plus par jour, tous utilisateurs confondus. Une fois atteint, le modèle sort des nouveaux tirages jusqu'à minuit, heure de Paris. Vide : pas de plafond.
+   * Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.
    */
   daily_usd_cap?: number | null;
   /**

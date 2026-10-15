@@ -89,8 +89,8 @@ FIELDS = {
         "description": "Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.",
     },
     "daily_usd_cap": {
-        "title": "Plafond par jour (USD)",
-        "description": "Coût estimé au plus par jour, tous utilisateurs confondus. Une fois atteint, le modèle sort des nouveaux tirages jusqu'à minuit, heure de Paris. Vide : pas de plafond.",
+        "title": "Daily cap (USD)",
+        "description": "Most this model may cost per day, across everyone, estimated. Once reached, the model leaves new draws until midnight, Paris time. Empty: no cap.",
     },
     "system_prompt": {
         "description": "System message to add in llm call if specified",
