@@ -1,7 +1,7 @@
 <script lang="ts" module>
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { resetTime, spoken } from './resetTime'
+  import { FULL_ICON, resetTime, spoken, type ResetTime } from './resetTime'
 
   /** Models taken out of the person's pick. */
   export interface TrimmedPause {
@@ -49,15 +49,35 @@
     }
   } as const
 
+  const TRIMMED_FULL = {
+    one: {
+      kept: 'arene.limits.picker.trimmedFullOne',
+      toRandom: 'arene.limits.picker.trimmedFullOneToRandom'
+    },
+    two: {
+      kept: 'arene.limits.picker.trimmedFullTwo',
+      toRandom: 'arene.limits.picker.trimmedFullTwoToRandom'
+    }
+  } as const
+  const TRIMMED_MIXED = {
+    kept: 'arene.limits.picker.trimmedMixed',
+    toRandom: 'arene.limits.picker.trimmedMixedToRandom'
+  } as const
+  const TRIMMED_MIXED_NETWORK = {
+    kept: 'arene.limits.picker.trimmedMixedNetwork',
+    toRandom: 'arene.limits.picker.trimmedMixedToRandomNetwork'
+  } as const
+
   function list(names: string[]) {
     return new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(names)
   }
 
-  function copy(pause: PickPause) {
+  function copy(pause: PickPause): { reset: ResetTime; text: string; why: string; icon?: string } {
     const reset = resetTime(pause.until)
     if (pause.kind === 'mode' && pause.full) {
       return {
         reset,
+        icon: FULL_ICON,
         text: m['arene.limits.mode.hintFull'](),
         why: m['arene.limits.mode.whyFull']()
       }
@@ -69,28 +89,29 @@
         why: m['arene.limits.mode.why']()
       }
     }
-    // Each model is told by its own reason: a full one is back at midnight
-    // for everyone, a paused one when this person's allowance lifts. The
-    // comparison going random is said once, at the end.
+    // Each model is told by its own reason, in one sentence: a full one is
+    // back at midnight for everyone, a paused one when this person's
+    // allowance lifts. The comparison going random is said once, at the end.
     const { full, paused, toRandom } = pause
-    const text: string[] = []
-    const why: string[] = []
+    const end = toRandom ? 'toRandom' : 'kept'
+    const fullWhy = m['arene.limits.picker.fullWhy']()
+    const pausedWhy =
+      m[pause.network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
+    if (full.length && paused.length) {
+      const key = (pause.network ? TRIMMED_MIXED_NETWORK : TRIMMED_MIXED)[end]
+      return {
+        reset,
+        text: m[key]({ full: list(full), paused: list(paused), until: reset.until }),
+        why: `${fullWhy} ${pausedWhy}`
+      }
+    }
     if (full.length) {
-      const key =
-        toRandom && !paused.length
-          ? 'arene.limits.picker.trimmedFullToRandom'
-          : 'arene.limits.picker.trimmedFull'
-      text.push(m[key]({ models: list(full) }))
-      why.push(m['arene.limits.picker.fullWhy']())
+      const key = TRIMMED_FULL[full.length > 1 ? 'two' : 'one'][end]
+      return { reset, icon: FULL_ICON, text: m[key]({ models: list(full) }), why: fullWhy }
     }
-    if (paused.length) {
-      // "pour votre réseau" when the network spent it, as the picker says.
-      const keys = pause.network ? TRIMMED_NETWORK : TRIMMED
-      const key = keys[paused.length > 1 ? 'two' : 'one'][toRandom ? 'toRandom' : 'kept']
-      text.push(m[key]({ models: list(paused), until: reset.until }))
-      why.push(m[pause.network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']())
-    }
-    return { reset, text: text.join(' '), why: why.join(' ') }
+    // "pour votre réseau" when the network spent it, as the picker says.
+    const key = (pause.network ? TRIMMED_NETWORK : TRIMMED)[paused.length > 1 ? 'two' : 'one'][end]
+    return { reset, text: m[key]({ models: list(paused), until: reset.until }), why: pausedWhy }
   }
 
   /** The notice as a screen reader hears it, for the form's live region. */
@@ -112,7 +133,7 @@
     focusOnShow?: boolean
   } = $props()
 
-  const { reset, text, why } = $derived(copy(pause))
+  const { reset, text, why, icon } = $derived(copy(pause))
 </script>
 
-<LimitHint id="pick-paused-notice" {text} {reset} {why} {focusOnShow} />
+<LimitHint id="pick-paused-notice" {text} {reset} {why} {icon} {focusOnShow} />

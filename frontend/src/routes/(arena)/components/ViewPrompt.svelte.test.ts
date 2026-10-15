@@ -223,9 +223,7 @@ describe('ViewPrompt', () => {
 
     const title = view.container.querySelector<HTMLElement>('#pick-paused-notice')!
     expect(title).toHaveFocus()
-    expect(title).toHaveTextContent(
-      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection\. Pourquoi \?$/
-    )
+    expect(title).toHaveTextContent(/^GPT-5 est complet aujourd'hui, on l'a retiré\. Pourquoi \?$/)
     expect(title).not.toHaveTextContent(/pour vous/)
     await vi.waitFor(() =>
       expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
@@ -325,9 +323,9 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
 
-    await view.findAllByText(/Complet aujourd'hui/)
+    await view.findAllByText(/complet aujourd'hui/)
     expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection\. Kimi K3 est en pause pour vous jusqu'à 13\sh\s00, on l'a retiré, la comparaison sera aléatoire\. Pourquoi \?$/
+      /^On a retiré GPT-5 \(complet aujourd'hui\) et Kimi K3 \(en pause pour vous jusqu'à 13\sh\s00\) : la comparaison sera aléatoire\. Pourquoi \?$/
     )
     ;(arena.limits as Limits).destroy()
     vi.useRealTimers()
@@ -364,10 +362,14 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
 
-    await view.findAllByText(/Complet aujourd'hui/)
+    await view.findAllByText(/complet aujourd'hui/)
     expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection, la comparaison sera aléatoire\. Pourquoi \?$/
+      /^GPT-5 est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire\. Pourquoi \?$/
     )
+    // A full model has its own icon, not the pause one.
+    expect(
+      view.container.querySelector('#pick-paused-notice .i-ri-calendar-close-line')
+    ).not.toBeNull()
   })
 
   it('takes a paused model out of a ?vs= link once the limits are read, back to random', async () => {
