@@ -89,6 +89,9 @@ def test_the_limits_need_an_admin(method, path):
         {"all_per_ip": 2_147_483_648},
         {"all_per_session": 2.5},
         {"expected_answer_chars": -1},
+        # Signing in never gives less room.
+        {"signed_in_factor": 0.5},
+        {"signed_in_factor": 1001},
         {"unknown": 1},
     ],
 )
@@ -124,6 +127,11 @@ def test_the_expensive_limits_take_dollars_and_cents():
     assert (patch.expensive_per_session, patch.expensive_per_ip) == (0.4, 12.75)
     # 0 makes every priced model expensive.
     assert patch.expensive_price_out == 0
+
+
+def test_the_signed_in_factor_takes_a_number_of_times():
+    assert AdminLimitsPatch(signed_in_factor=1).signed_in_factor == 1
+    assert AdminLimitsPatch(signed_in_factor=2.5).signed_in_factor == 2.5
 
 
 def test_a_calibration_past_its_timeout_says_so(monkeypatch):
@@ -188,6 +196,26 @@ def test_a_change_is_stored_with_who_made_it_and_applies_at_once(database, caplo
     # Left out of the second change, so still stored.
     assert by_name(reset)["expected_answer_chars"].stored
     assert limits.setting("all_per_session") == whole.default
+
+
+def test_a_stored_signed_in_factor_is_in_force_at_once(database):
+    admin = SimpleNamespace(id=ADMIN_ID)
+
+    async def scenario():
+        await add_admin()
+        before = await admin_limits.read_limits()
+        changed = await admin_limits.patch_limits(
+            AdminLimitsPatch(signed_in_factor=5), admin
+        )
+        return before, changed, limits.signed_in_factor()
+
+    before, changed, in_force = database(scenario)
+
+    [factor] = [limit for limit in before.limits if limit.name == "signed_in_factor"]
+    assert (factor.value, factor.default, factor.stored) == (3, 3, False)
+    [factor] = [limit for limit in changed.limits if limit.name == "signed_in_factor"]
+    assert (factor.value, factor.stored) == (5, True)
+    assert in_force == 5
 
 
 @pytest.mark.parametrize("cap", [-1, 1_000_001, "inf"])
