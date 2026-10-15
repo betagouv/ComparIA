@@ -11,7 +11,7 @@
   import { fade } from 'svelte/transition'
   import LimitHint from './LimitHint.svelte'
   import type { ModePause } from './pausedModes'
-  import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
+  import { FULL_ICON, PAUSED_ICON, TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {
@@ -35,7 +35,7 @@
     pausedModes?: ReadonlyMap<Mode, ModePause>
   } = $props()
 
-  type Pause = { chip: string; reset?: ResetTime; reason: string }
+  type Pause = { chip: string; icon: string; reset?: ResetTime; reason: string }
 
   // "En pause · 13 h 32" on the card; the reason says the rest.
   function chip(reset: ResetTime): string {
@@ -51,6 +51,7 @@
     if (llm.reason === 'full') {
       return {
         chip: m['arene.limits.picker.fullBadge'](),
+        icon: FULL_ICON,
         reason: m['arene.limits.picker.fullReason']()
       }
     }
@@ -60,7 +61,7 @@
         ? 'arene.limits.picker.pausedReasonNetwork'
         : 'arene.limits.picker.pausedReason'
     ]({ at: reset.at })
-    return { chip: chip(reset), reset, reason: spoken(reason, reset) }
+    return { chip: chip(reset), icon: PAUSED_ICON, reset, reason: spoken(reason, reset) }
   }
 
   function modePause(value: Mode): Pause | undefined {
@@ -69,18 +70,32 @@
     if (pause.full) {
       return {
         chip: m['arene.limits.picker.fullBadge'](),
+        icon: FULL_ICON,
         reason: m['arene.limits.mode.reasonFull']()
       }
     }
     const reset = resetTime(pause.until)
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
-    return { chip: chip(reset), reset, reason: spoken(reason, reset) }
+    return { chip: chip(reset), icon: PAUSED_ICON, reset, reason: spoken(reason, reset) }
   }
 
-  // The line under the help text: how many cards say "En pause", and why.
+  // The line under the help text: how many cards are paused, how many full,
+  // and why.
   const header = $derived.by(() => {
-    const count = [...paused.values()].filter((llm) => llm.reason === 'allowance').length
-    if (!expensive || !count) return undefined
+    const all = [...paused.values()]
+    const count = all.filter((llm) => llm.reason === 'allowance').length
+    const full = all.filter((llm) => llm.reason === 'full').length
+    if (!expensive || !count) {
+      if (!full) return undefined
+      return {
+        reset: resetTime(null),
+        icon: FULL_ICON,
+        text: m[full > 1 ? 'arene.limits.picker.onlyFullMany' : 'arene.limits.picker.onlyFullOne']({
+          count: full
+        }),
+        why: m['arene.limits.picker.whyFull']()
+      }
+    }
     const reset = resetTime(expensive.resets_at)
     const network = expensive.scope === 'network'
     const key =
@@ -91,10 +106,18 @@
         : network
           ? 'arene.limits.picker.headerManyNetwork'
           : 'arene.limits.picker.headerMany'
+    const pausedText = m[key]({ count, until: reset.until })
+    const why = m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
+    if (!full) return { reset, text: m['arene.limits.picker.header']({ paused: pausedText }), why }
     return {
       reset,
-      text: m[key]({ count, until: reset.until }),
-      why: m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
+      text: m['arene.limits.picker.headerWithFull']({
+        paused: pausedText,
+        full: m[full > 1 ? 'arene.limits.picker.fullMany' : 'arene.limits.picker.fullOne']({
+          count: full
+        })
+      }),
+      why: `${why} ${m['arene.limits.picker.whyFull']()}`
     }
   })
 
@@ -207,7 +230,7 @@
 {#snippet pauseChip(pause: Pause, tried: boolean)}
   <span class="mt-2 block">
     <Badge size="xs" class="cl-pause-chip">
-      <Icon icon="i-ri-pause-circle-line" size="xs" block class="me-1" />
+      <Icon icon={pause.icon} size="xs" block class="me-1" />
       <!-- One flex item, so the space before the time stays. -->
       <span
         >{#if pause.reset}<TimedText

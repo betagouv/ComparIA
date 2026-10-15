@@ -63,15 +63,17 @@ describe('ModelSelector', () => {
     expect(gpt.closest('label')!.querySelector('time')).toHaveAttribute('datetime', at)
 
     const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
-    expect(gemini).toHaveAccessibleName(/Complet aujourd'hui/)
+    expect(gemini).toHaveAccessibleName(/Complet · revient demain/)
+    // Its own icon, not the pause one.
+    expect(gemini.closest('label')!.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
     expect(gemini).toHaveAccessibleDescription(/Il revient demain\./)
 
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(gemma).not.toHaveAttribute('aria-disabled')
-    // One model paused for an allowance: the full one is not counted.
+    // One model paused for the person, one full for everyone.
     const hint = view.container.querySelector('#picker-paused-hint')!
     expect(hint).toHaveTextContent(
-      /^1 modèle en pause pour vous jusqu'à \d+\sh\s\d+\. Pourquoi \?$/
+      /^1 modèle en pause pour vous jusqu'à \d+\sh\s\d+, 1 complet aujourd'hui\. Pourquoi \?$/
     )
     await fireEvent.click(view.getByRole('button', { name: 'Pourquoi ?', hidden: true }))
     expect(hint).toHaveTextContent(/chacun peut envoyer un nombre limité de messages/)
@@ -121,11 +123,13 @@ describe('ModelSelector', () => {
     )
   })
 
-  it('says nothing in the header when only full models are paused', async () => {
+  it('counts only the full models when nothing is paused for the person', async () => {
     const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
-    const view = await openModels({ expensive: expensive('session'), paused: full })
+    const view = await openModels({ paused: full })
 
-    expect(view.container.querySelector('#picker-paused-hint')).toBeNull()
+    const hint = view.container.querySelector('#picker-paused-hint')!
+    expect(hint).toHaveTextContent(/^1 modèle complet aujourd'hui\. Pourquoi \?$/)
+    expect(hint.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
   })
 
   it('tells a network it has used its share', async () => {
