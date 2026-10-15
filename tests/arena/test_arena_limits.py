@@ -79,7 +79,12 @@ def test_nothing_spent_says_nothing(arena):
     response = arena.client.get("/arena/limits")
 
     assert response.status_code == 200
-    assert response.json() == {"total": None, "expensive": None, "paused_llms": []}
+    assert response.json() == {
+        "total": None,
+        "expensive": None,
+        "paused_llms": [],
+        "signed_in_factor": settings.RATELIMIT_SIGNED_IN_FACTOR,
+    }
 
 
 def test_a_message_to_an_expensive_pair_changes_nothing_until_a_pool_is_spent(arena):
@@ -169,7 +174,8 @@ def test_it_never_tells_how_much_was_used(arena):
 
     body = arena.client.get("/arena/limits").json()
 
-    assert set(body) == {"total", "expensive", "paused_llms"}
+    # The signed-in factor is the same for everyone, so it tells nothing.
+    assert set(body) == {"total", "expensive", "paused_llms", "signed_in_factor"}
     assert (
         set(body["total"])
         == set(body["expensive"])
