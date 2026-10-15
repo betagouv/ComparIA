@@ -103,6 +103,8 @@
     if (loading || submitting) return
 
     submitting = true
+    // Manual mode can be left empty, e.g. when the saved models were disabled.
+    if (mode.value === 'custom' && !modelsSelection.value.length) mode.value = 'random'
     try {
       await onPrompt({
         mode: mode.value,
