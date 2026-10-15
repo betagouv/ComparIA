@@ -984,10 +984,6 @@
                 "whyLabel": "Pourquoi cette pause ?",
                 "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."
             },
-            "picked": {
-                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les deux heures. Tous les autres restent ouverts.",
-                "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
-            },
             "picker": {
                 "chip": "En pause · {time}",
                 "chipSoon": "En pause",
@@ -1010,7 +1006,9 @@
                 "trimmedTwo": "{models} sont en pause pour vous {until}, on les a retirés.",
                 "trimmedTwoNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés.",
                 "trimmedTwoToRandom": "{models} sont en pause pour vous {until}, on les a retirés, la comparaison sera aléatoire.",
-                "trimmedTwoToRandomNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés, la comparaison sera aléatoire."
+                "trimmedTwoToRandomNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés, la comparaison sera aléatoire.",
+                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les deux heures. Tous les autres restent ouverts.",
+                "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
             },
             "time": {
                 "at": "à {time}",

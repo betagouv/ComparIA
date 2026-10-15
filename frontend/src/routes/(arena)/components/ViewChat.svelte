@@ -35,8 +35,11 @@
 
   // The server refuses a turn past the cap: say so before anyone types it.
   const turnsLeft = $derived(MAX_TURNS_PER_COMPARISON - (comparator.comparison?.turns.length ?? 0))
-  const full = $derived(turnsLeft <= 0 && !comparator.loading && comparator.status !== 'generating')
-  // From turn 18, once its vote is in: the person is about to type again.
+  const atTurnCap = $derived(
+    turnsLeft <= 0 && !comparator.loading && comparator.status !== 'generating'
+  )
+  // Two turns before the cap, once the vote is in: the person is about to
+  // type again.
   const turnsHint = $derived.by(() => {
     if (!canContinue || turnsLeft > 2 || turnsLeft <= 0) return undefined
     if (turnsLeft === 1) return m['arene.limits.turns.last']()
@@ -180,10 +183,10 @@
       class={[
         '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',
         // A notice that long must not cover the conversation on a phone.
-        { sticky: !comparator.pause && !full }
+        { sticky: !comparator.pause && !atTurnCap }
       ]}
     >
-      {#if full}
+      {#if atTurnCap}
         <LimitCard
           id="turns-full-notice"
           icon="i-ri-chat-check-line"
@@ -247,7 +250,7 @@
         </p>
       {/if}
 
-      {#if !comparator.pause && !full}
+      {#if !comparator.pause && !atTurnCap}
         <Button
           text={m['chatbot.revealButton']()}
           aria-disabled={!comparator.canReveal}

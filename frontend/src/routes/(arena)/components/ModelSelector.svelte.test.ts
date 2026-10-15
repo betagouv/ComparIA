@@ -1,5 +1,6 @@
 import type { Mode } from '$lib/chatService.svelte'
-import type { PausedModel, Spent } from '$lib/limits.svelte'
+import type { PausedLLM } from '$lib/generated/backend'
+import type { Spent } from '$lib/limits.svelte'
 import type { BotModel } from '$lib/models'
 import { expectNoDanglingAriaRefs } from '$lib/testing/a11y'
 import { fireEvent, render } from '@testing-library/svelte'
@@ -18,7 +19,7 @@ const at = new Date(new Date().setHours(23, 59, 0, 0)).toISOString()
 function expensive(scope: Spent['scope']): Spent {
   return { scope, resets_at: at, resets_in: 3600, liftsAt: Date.now() + 3600_000 }
 }
-const paused = new Map<string, PausedModel>([
+const paused = new Map<string, PausedLLM>([
   ['gpt', { id: 'gpt', until: at, reason: 'allowance' }],
   ['gemini', { id: 'gemini', until: '2026-10-15T00:00:00Z', reason: 'full' }]
 ])
@@ -79,7 +80,7 @@ describe('ModelSelector', () => {
   })
 
   it('counts the models paused for the allowance, not the full ones', async () => {
-    const two = new Map<string, PausedModel>([
+    const two = new Map<string, PausedLLM>([
       ...paused,
       ['gemma', { id: 'gemma', until: at, reason: 'allowance' }]
     ])

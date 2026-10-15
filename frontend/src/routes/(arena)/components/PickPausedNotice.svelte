@@ -88,7 +88,7 @@
       const keys = pause.network ? TRIMMED_NETWORK : TRIMMED
       const key = keys[paused.length > 1 ? 'two' : 'one'][toRandom ? 'toRandom' : 'kept']
       text.push(m[key]({ models: list(paused), until: reset.until }))
-      why.push(m[pause.network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']())
+      why.push(m[pause.network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']())
     }
     return { reset, text: text.join(' '), why: why.join(' ') }
   }

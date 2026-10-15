@@ -82,10 +82,9 @@
       .filter((name): name is string => !!name)
   }
 
-  const modesPaused = $derived(pausedModes(models, limits.paused))
-  const modePause = $derived(mode.value === 'custom' ? undefined : modesPaused.get(mode.value))
-  const modePaused = $derived(!!modePause)
-  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || modePaused)
+  const modePauses = $derived(pausedModes(models, limits.paused))
+  const modePause = $derived(mode.value === 'custom' ? undefined : modePauses.get(mode.value))
+  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || !!modePause)
   const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
   // Before anyone sends; a refusal, when there is one, already says it all.
   const pickPause = $derived.by((): PickPause | undefined => {
@@ -332,7 +331,7 @@
               disabled={loading}
               paused={limits.paused}
               expensive={limits.expensive}
-              pausedModes={modesPaused}
+              pausedModes={modePauses}
             />
             <Toggle
               id="web-search"

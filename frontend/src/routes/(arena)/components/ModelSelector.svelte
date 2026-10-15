@@ -5,7 +5,8 @@
   import type { APIModeAndPromptData, Mode } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { PausedModel, Spent } from '$lib/limits.svelte'
+  import type { PausedLLM } from '$lib/generated/backend'
+  import type { Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
   import LimitHint from './LimitHint.svelte'
@@ -27,7 +28,7 @@
     modelsSelection: string[]
     disabled?: boolean
     /** The models a new comparison may not use yet, by id. */
-    paused?: ReadonlyMap<string, PausedModel>
+    paused?: ReadonlyMap<string, PausedLLM>
     /** Set while the expensive allowance is spent, for whom and until when. */
     expensive?: Spent
     /** The modes left with nothing to draw, and when they come back. */
@@ -93,7 +94,7 @@
     return {
       reset,
       text: m[key]({ count, until: reset.until }),
-      why: m[network ? 'arene.limits.picked.whyNetwork' : 'arene.limits.picked.why']()
+      why: m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
     }
   })
 

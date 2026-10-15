@@ -873,10 +873,6 @@
                 "whyLabel": "Hvorfor denne pause?",
                 "whyNetwork": "For at holde compar:IA gratis for alle kan hvert netværk sende et begrænset antal beskeder hver anden time. Grænsen gælder alle på netværket, ikke kun dig."
             },
-            "picked": {
-                "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver anden time. Alle de andre er stadig åbne.",
-                "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
-            },
             "picker": {
                 "chip": "På pause · {time}",
                 "chipSoon": "På pause",
@@ -899,7 +895,9 @@
                 "trimmedTwo": "{models} er sat på pause for dig {until}, så vi har fjernet dem.",
                 "trimmedTwoNetwork": "{models} er sat på pause for dit netværk {until}, så vi har fjernet dem.",
                 "trimmedTwoToRandom": "{models} er sat på pause for dig {until}, så vi har fjernet dem, og sammenligningen bliver tilfældig.",
-                "trimmedTwoToRandomNetwork": "{models} er sat på pause for dit netværk {until}, så vi har fjernet dem, og sammenligningen bliver tilfældig."
+                "trimmedTwoToRandomNetwork": "{models} er sat på pause for dit netværk {until}, så vi har fjernet dem, og sammenligningen bliver tilfældig.",
+                "why": "For at compar:IA kan forblive gratis for alle, kan hver person sende et begrænset antal beskeder til disse modeller hver anden time. Alle de andre er stadig åbne.",
+                "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
             },
             "time": {
                 "at": "kl. {time}",

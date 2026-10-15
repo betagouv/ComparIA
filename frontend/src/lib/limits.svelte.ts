@@ -30,9 +30,6 @@ export interface Spent extends SpentAllowance {
   liftsAt: number
 }
 
-/** A paused model. An "allowance" one comes back with `expensive`. */
-export type PausedModel = PausedLLM
-
 export type Limits = ReturnType<typeof createLimits>
 
 export const [getLimitsContext, setLimitsContext] = createContext<Limits>()
@@ -83,7 +80,7 @@ export function createLimits(
   if (pending && browser) waiting = setTimeout(() => (read = true), FIRST_READ_MS)
   let total = $state<Spent>()
   let expensive = $state<Spent>()
-  const paused = new SvelteMap<string, PausedModel>()
+  const paused = new SvelteMap<string, PausedLLM>()
   let timer: ReturnType<typeof setTimeout> | undefined
   // Only the latest read counts: an older one may land after a refusal.
   let reads = 0
@@ -146,7 +143,7 @@ export function createLimits(
       return expensive
     },
     /** The models a new comparison may not use yet, by id. */
-    get paused(): ReadonlyMap<string, PausedModel> {
+    get paused(): ReadonlyMap<string, PausedLLM> {
       return paused
     },
     /** False until the first read lands on a page rendered on the server. */

@@ -1,4 +1,4 @@
-import type { PausedModel } from '$lib/limits.svelte'
+import type { PausedLLM } from '$lib/generated/backend'
 import { describe, expect, it } from 'vitest'
 import { pausedModes } from './pausedModes'
 
@@ -9,11 +9,11 @@ const models = [
   { id: 'mistral-small', params: 24 }
 ]
 
-function pausedFor(...ids: string[]): Map<string, PausedModel> {
+function pausedFor(...ids: string[]): Map<string, PausedLLM> {
   return new Map(
     ids.map((id, i) => [
       id,
-      { id, reason: 'allowance', until: `2026-10-14T1${5 - i}:40:00.000Z` } as PausedModel
+      { id, reason: 'allowance', until: `2026-10-14T1${5 - i}:40:00.000Z` } as PausedLLM
     ])
   )
 }
@@ -38,7 +38,7 @@ describe('pausedModes', () => {
   })
 
   it('tells the modes that full models alone leave with nothing', () => {
-    const paused = new Map<string, PausedModel>([
+    const paused = new Map<string, PausedLLM>([
       ['gpt', { id: 'gpt', reason: 'full', until: '2026-10-14T22:00:00.000Z' }],
       ['claude', { id: 'claude', reason: 'full', until: '2026-10-14T22:00:00.000Z' }],
       ['gemma', { id: 'gemma', reason: 'allowance', until: '2026-10-14T15:40:00.000Z' }]

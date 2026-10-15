@@ -3,7 +3,7 @@ import {
   BIG_MODELS_BUCKET_LOWER_LIMIT,
   SMALL_MODELS_BUCKET_UPPER_LIMIT
 } from '$lib/generated/constants'
-import type { PausedModel } from '$lib/limits.svelte'
+import type { PausedLLM } from '$lib/generated/backend'
 
 type Sized = { id?: string; params: number }
 
@@ -21,7 +21,7 @@ export interface ModePause {
  */
 export function pausedModes(
   models: Sized[],
-  paused: ReadonlyMap<string, PausedModel>
+  paused: ReadonlyMap<string, PausedLLM>
 ): Map<Mode, ModePause> {
   const small = models.filter((llm) => llm.params <= SMALL_MODELS_BUCKET_UPPER_LIMIT)
   const big = models.filter((llm) => llm.params >= BIG_MODELS_BUCKET_LOWER_LIMIT)
