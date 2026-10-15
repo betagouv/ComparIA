@@ -46,18 +46,16 @@
     {#if failed}
       <Link
         button
-        size="sm"
         icon="edit-line"
         href={resolve('/')}
         text={m['header.chatbot.newDiscussion']()}
         class="w-full!"
       />
     {:else if onReveal}
-      <Button text={m['chatbot.revealButton']()} size="sm" class="w-full!" onclick={onReveal} />
+      <Button text={m['chatbot.revealButton']()} class="w-full!" onclick={onReveal} />
     {:else}
       <Link
         button
-        size="sm"
         href={resolve('/ranking')}
         text={m['arene.limits.pause.ranking']()}
         class="w-full!"
@@ -66,7 +64,6 @@
     <Link
       button
       variant="secondary"
-      size="sm"
       href={resolve(failed || onReveal ? '/ranking' : '/models')}
       text={m[failed || onReveal ? 'arene.limits.pause.ranking' : 'arene.limits.pause.models']()}
       class="w-full!"

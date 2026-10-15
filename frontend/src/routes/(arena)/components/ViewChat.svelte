@@ -198,16 +198,10 @@
             {m['arene.limits.turns.fullTitle']()}
           {/snippet}
           {#snippet actions()}
-            <Button
-              text={m['chatbot.revealButton']()}
-              size="sm"
-              class="w-full!"
-              onclick={onReveal}
-            />
+            <Button text={m['chatbot.revealButton']()} class="w-full!" onclick={onReveal} />
             <Link
               button
               variant="secondary"
-              size="sm"
               href={resolve('/')}
               text={m['header.chatbot.newDiscussion']()}
               class="w-full!"
