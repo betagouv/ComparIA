@@ -59,6 +59,23 @@ describe('Selector', () => {
     expect(onChange).toHaveBeenCalledWith(['gemma'])
   })
 
+  it('shows the reason in the card it was tried on, until another choice is picked', async () => {
+    const view = render(Selector, {
+      id: 'models',
+      kind: 'checkbox',
+      multiple: true,
+      value: [],
+      choices
+    })
+    const paused = view.getByRole('checkbox', { name: 'GPT-5' })
+
+    await fireEvent.click(paused)
+    expect(paused.closest('label')).toHaveTextContent('Il revient à 15 h 40.')
+
+    await fireEvent.click(view.getByRole('checkbox', { name: 'Gemma 4' }))
+    expect(paused.closest('label')).not.toHaveTextContent('Il revient')
+  })
+
   it('does not pick a paused radio either', async () => {
     const onChange = vi.fn()
     const view = render(Selector, { id: 'modes', kind: 'radio', value: 'gemma', choices, onChange })

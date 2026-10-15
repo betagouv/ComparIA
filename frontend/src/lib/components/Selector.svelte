@@ -14,7 +14,9 @@
    * A choice with a `disabledReason` cannot be picked, but stays in the tab
    * order with `aria-disabled`, described by its reason. A native `disabled`
    * input would drop out of it, and screen readers in focus mode skip it, so
-   * the reason would be lost. Picking it speaks the reason instead.
+   * the reason would be lost. Picking it speaks the reason instead, and sets
+   * `tried`, for the card to show the reason too: on a phone nothing else
+   * answers the tap.
    */
   interface SelectorProps {
     id: string
@@ -29,6 +31,8 @@
     containerClass?: ClassValue
     choiceClass?: ClassValue
     onChange?: (value: Value) => void
+    /** The choice last tried while it could not be picked, until another is. */
+    tried?: V
     option?: Snippet<
       [
         Option,
@@ -50,6 +54,7 @@
     containerClass,
     choiceClass,
     onChange,
+    tried = $bindable(),
     option,
     extra
   }: SelectorProps = $props()
@@ -59,6 +64,7 @@
     disabled,
     onchange: (e: Event) => {
       if (!multiple) value = (e.target as HTMLInputElement).value as Value
+      tried = undefined
       onChange?.(value)
     },
     class: 'sr-only'
@@ -74,6 +80,7 @@
       'aria-describedby': `${id}-${choice.value}-reason`,
       onclick: async (e: MouseEvent) => {
         e.preventDefault()
+        tried = choice.value
         // Emptied first, so the same reason is spoken again on a second try.
         said = ''
         await tick()
@@ -138,6 +145,12 @@
       <label for="{id}-{choice.value}" class={['cg-border', choiceClass]}>
         {@render input(choice)}
         {choice.label}
+        {#if tried === choice.value}
+          <!-- Seen in the card; read out through the live region and the description. -->
+          <span class="cl-selector__reason fr-text--sm mb-0! mt-2 block" aria-hidden="true">
+            {choice.disabledReason}
+          </span>
+        {/if}
       </label>
     {/if}
   {/each}
@@ -156,6 +169,10 @@
 <p role="status" class="sr-only">{said}</p>
 
 <style>
+  .cl-selector :global(.cl-selector__reason) {
+    color: var(--text-mention-grey);
+  }
+
   .cl-selector :global(label) {
     &:has(input) {
       margin: 1px;

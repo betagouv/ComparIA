@@ -87,6 +87,28 @@ describe('ModelSelector', () => {
     expect(view.getByText('0/2 modèles')).toBeInTheDocument()
   })
 
+  it('shows the reason inside a paused card once tapped, until another card is', async () => {
+    const view = await openModels({ expensive: expensive('session') })
+    const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
+    const card = gpt.closest('label')!
+    expect(card).not.toHaveTextContent(/Vous avez utilisé votre part/)
+
+    await fireEvent.click(gpt)
+
+    expect(card).toHaveTextContent(/Vous avez utilisé votre part de ce modèle\. Il revient à/)
+    // Said once: the card's name leaves it to the description.
+    expect(gpt).toHaveAccessibleName(/^Lab\/GPT-5 En pause · \d+\sh\s\d+$/)
+
+    await fireEvent.click(view.getByRole('checkbox', { name: /Gemini/, hidden: true }))
+    expect(card).not.toHaveTextContent(/Vous avez utilisé votre part/)
+    expect(
+      view.getByRole('checkbox', { name: /Gemini/, hidden: true }).closest('label')
+    ).toHaveTextContent(/Ce modèle a reçu beaucoup de messages aujourd'hui/)
+
+    await fireEvent.click(view.getByRole('checkbox', { name: /Gemma/, hidden: true }))
+    expect(view.container.querySelector('.cl-selector__reason')).toBeNull()
+  })
+
   it('counts the models paused for the allowance, not the full ones', async () => {
     const two = new Map<string, PausedLLM>([
       ...paused,

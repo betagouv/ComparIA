@@ -98,6 +98,10 @@
     }
   })
 
+  // The paused card last tapped, which then shows its reason.
+  let triedMode = $state<Mode>()
+  let triedModel = $state<string>()
+
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
   let search = $state('')
@@ -200,7 +204,7 @@
   {/if}
 </div>
 
-{#snippet pauseChip(pause: Pause)}
+{#snippet pauseChip(pause: Pause, tried: boolean)}
   <span class="mt-2 block">
     <Badge size="xs" class="cl-pause-chip">
       <Icon icon="i-ri-pause-circle-line" size="xs" block class="me-1" />
@@ -213,6 +217,12 @@
       >
     </Badge>
   </span>
+  {#if tried}
+    <!-- Seen in the card; read out through the live region and the description. -->
+    <span class="cl-selector__reason fr-text--sm mb-0! mt-2 block" aria-hidden="true">
+      {pause.reason}
+    </span>
+  {/if}
 {/snippet}
 
 <dialog aria-labelledby="modal-mode-selection-title" id="modal-mode-selection" class="fr-modal">
@@ -275,6 +285,7 @@
                 kind="radio"
                 label={m['arenaHome.selectModels.question']()}
                 bind:value={mode}
+                bind:tried={triedMode}
                 choices={modeChoices}
                 containerClass="flex flex-col gap-3 md:gap-4"
                 choiceClass="flex items-center p-4 text-sm text-dark-grey!"
@@ -298,7 +309,7 @@
                           <strong>{opt.label}</strong>&nbsp;: {opt.description}
                         </span>
                         {#if opt.pause}
-                          {@render pauseChip(opt.pause)}
+                          {@render pauseChip(opt.pause, triedMode === opt.value)}
                         {/if}
                       </div>
                     {:else}
@@ -319,6 +330,7 @@
                   kind="checkbox"
                   label={m['arenaHome.compareModels.question']()}
                   bind:value={modelsSelection}
+                  bind:tried={triedModel}
                   choices={filteredModels}
                   multiple
                   max={2}
@@ -360,7 +372,7 @@
                         {/each}
                       </ul>
                       {#if opt.pause}
-                        {@render pauseChip(opt.pause)}
+                        {@render pauseChip(opt.pause, triedModel === opt.value)}
                       {/if}
                     </label>
                   {/snippet}
