@@ -63,7 +63,7 @@
                 "cohort": "Cohorte",
                 "details": "Détails",
                 "error": "Erreur : {code}",
-                "expensivePaused": "Modèles coûteux en pause",
+                "expensivePaused": "Commencée sans les modèles coûteux",
                 "keywords": "Mots-clés",
                 "languages": "Langues",
                 "mode": "Mode",
@@ -100,6 +100,7 @@
                 "hiddenPrompt": "Masqué : données personnelles",
                 "next": "Suivantes",
                 "nextOne": "Suivante",
+                "noExpensive": "Sans modèles coûteux",
                 "open": "Ouvrir la page",
                 "previous": "Précédente",
                 "turnsCount": "{count} messages"

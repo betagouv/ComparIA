@@ -135,6 +135,7 @@
                 "first": "Back to the newest",
                 "empty": "No conversation matches these filters.",
                 "hiddenPrompt": "Hidden: personal data",
+                "noExpensive": "No expensive models",
                 "open": "Open the page",
                 "previous": "Previous",
                 "nextOne": "Next",
@@ -168,7 +169,7 @@
                 "readMore": "Read more",
                 "readLess": "Show less",
                 "versus": "{a} vs {b}",
-                "expensivePaused": "Expensive models paused"
+                "expensivePaused": "Started without the expensive models"
             },
             "errors": {
                 "timeout": "The query took too long. Narrow the period or remove some filters.",
