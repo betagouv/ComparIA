@@ -376,7 +376,6 @@ async def pick_replacement_model(
     expensive = models.expensive_models
     if failing not in expensive or not expensive_available:
         pool = [llm_id for llm_id in pool if llm_id not in expensive]
-    # A model whose daily cap is full stands in for no one.
     try:
         resting = resting_models(models.enabled.values())
     except RedisError:
