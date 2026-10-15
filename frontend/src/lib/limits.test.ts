@@ -53,6 +53,31 @@ describe('createLimits', () => {
     limits.destroy()
   })
 
+  it('says it has not read the limits yet until the first read lands', async () => {
+    let land: (data: ArenaLimits) => void = () => {}
+    server.reads.push(() => new Promise((resolve) => (land = resolve)))
+    const limits = createLimits(null, { pending: true })
+
+    expect(limits.read).toBe(false)
+    const reading = limits.refresh()
+    expect(limits.read).toBe(false)
+    land(open)
+    await reading
+
+    expect(limits.read).toBe(true)
+    expect(createLimits().read).toBe(true)
+    limits.destroy()
+  })
+
+  it('stops waiting for a read that never lands', () => {
+    const limits = createLimits(null, { pending: true })
+
+    vi.advanceTimersByTime(2000)
+
+    expect(limits.read).toBe(true)
+    limits.destroy()
+  })
+
   it("keeps the server's reset time while this clock agrees with it, so reads do not move it", () => {
     const at = '2026-10-14T10:09:59Z'
     // Two reads a moment apart: the countdown lost a second, the time did not.

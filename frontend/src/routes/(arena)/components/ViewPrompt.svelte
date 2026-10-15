@@ -307,7 +307,15 @@
           <PauseNotice refusal={pause} focusTitle={pauseFromSend} />
         </div>
       {:else}
-        <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
+        <!-- Hidden until the limits are read: a pause would take its place. -->
+        <div
+          id="prompt-form"
+          class={[
+            'gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid',
+            { invisible: !limits.read }
+          ]}
+          inert={!limits.read}
+        >
           <div class="md:order-none md:col-span-full order-1">
             <TextPrompt
               id="initial-prompt"

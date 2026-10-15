@@ -427,6 +427,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     get pause() {
       return pause
     },
+    /** False until the limits are read, on a page rendered on the server. */
+    get limitsRead() {
+      return limits.read
+    },
     /** The pause showed when a message sent from here was refused. */
     get pauseFromSend() {
       return pauseFromSend

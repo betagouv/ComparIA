@@ -218,24 +218,30 @@
           focusTitle={comparator.pauseFromSend || sendAreaFocused}
         />
       {:else}
-        <TextPrompt
-          id="chatbot-prompt"
-          bind:value={prompt}
-          label={m['chatbot.continuePrompt']()}
-          placeholder={m['chatbot.continuePrompt']()}
-          bind:error={comparator.promptError}
-          hint={comparator.busyHint ?? turnsHint}
-          hideLabel
-          submitBtn
-          submitDisabled={!canContinue || prompt === ''}
-          size="md"
-          rows={3}
-          maxRows={4}
-          onSubmit={onPromptSubmit}
-          onSubmitBlocked={remindToVote}
-          onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
-          class="mb-0! w-full"
-        />
+        <!-- Hidden until the limits are read: a pause would take its place. -->
+        <div
+          class={['w-full', { invisible: !comparator.limitsRead }]}
+          inert={!comparator.limitsRead}
+        >
+          <TextPrompt
+            id="chatbot-prompt"
+            bind:value={prompt}
+            label={m['chatbot.continuePrompt']()}
+            placeholder={m['chatbot.continuePrompt']()}
+            bind:error={comparator.promptError}
+            hint={comparator.busyHint ?? turnsHint}
+            hideLabel
+            submitBtn
+            submitDisabled={!canContinue || prompt === ''}
+            size="md"
+            rows={3}
+            maxRows={4}
+            onSubmit={onPromptSubmit}
+            onSubmitBlocked={remindToVote}
+            onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
+            class="mb-0! w-full"
+          />
+        </div>
       {/if}
 
       {#if voteReminder}

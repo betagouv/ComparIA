@@ -15,7 +15,7 @@
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
-  const limits = createLimits(data.limits)
+  const limits = createLimits(data.limits, { pending: !data.limits })
   setLimitsContext(limits)
   // A page rendered on the server has no limits yet: read them here.
   onMount(() => {

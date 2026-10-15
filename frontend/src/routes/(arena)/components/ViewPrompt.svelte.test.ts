@@ -290,6 +290,17 @@ describe('ViewPrompt', () => {
     vi.useRealTimers()
   })
 
+  it('keeps the form out of reach until the limits are read, so a pause never replaces it', async () => {
+    arena.limits = createLimits(null, { pending: true })
+
+    const view = render(ViewPrompt, props)
+
+    const form = view.container.querySelector<HTMLElement>('#prompt-form')!
+    expect(form.inert || form.hasAttribute('inert')).toBe(true)
+    expect(form).toHaveClass('invisible')
+    ;(arena.limits as Limits).destroy()
+  })
+
   it('tells a full model and a paused one taken out of a pick each by its own reason', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date(2026, 9, 14, 12, 0))

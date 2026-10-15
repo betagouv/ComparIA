@@ -11,6 +11,8 @@ import { SvelteMap } from 'svelte/reactivity'
 
 // A window of the allowances: the longest one with no known reset can last.
 const FALLBACK_SECONDS = 2 * 60 * 60
+// How long the form waits for the first read before showing anyway.
+const FIRST_READ_MS = 2000
 // Off by less than this, this browser's clock agrees with the server's.
 const CLOCK_SKEW_MS = 60_000
 // Never read again sooner than this, even when the server says it lifts now.
@@ -63,7 +65,16 @@ function spent(allowance: SpentAllowance | null, now: number): Spent | undefined
  * (`total`), the expensive one, and the models paused for them. Read on page
  * load, after each turn and refusal, and again when a pause lifts.
  */
-export function createLimits(initial: ArenaLimits | null = null) {
+export function createLimits(
+  initial: ArenaLimits | null = null,
+  { pending = false }: { pending?: boolean } = {}
+) {
+  // `pending` while a page rendered on the server waits for its first read:
+  // the forms stay hidden meanwhile, or a spent allowance would show the
+  // text box for a moment before the pause took its place.
+  let read = $state(!pending)
+  let waiting: ReturnType<typeof setTimeout> | undefined
+  if (pending && browser) waiting = setTimeout(() => (read = true), FIRST_READ_MS)
   let total = $state<Spent>()
   let expensive = $state<Spent>()
   const paused = new SvelteMap<string, PausedModel>()
@@ -108,9 +119,11 @@ export function createLimits(initial: ArenaLimits | null = null) {
 
   /** Reads the limits again; false when the server could not tell. */
   async function refresh(): Promise<boolean> {
-    const read = ++reads
+    const current = ++reads
     const data = await queryLimits()
-    if (read !== reads) return true
+    read = true
+    clearTimeout(waiting)
+    if (current !== reads) return true
     if (data) apply(data)
     return !!data
   }
@@ -130,6 +143,10 @@ export function createLimits(initial: ArenaLimits | null = null) {
     get paused(): ReadonlyMap<string, PausedModel> {
       return paused
     },
+    /** False until the first read lands on a page rendered on the server. */
+    get read() {
+      return read
+    },
     refresh,
     /** A message was refused on a limit: show it at once, then read the rest. */
     refused(refusal: LimitRefusalBody) {
@@ -143,6 +160,7 @@ export function createLimits(initial: ArenaLimits | null = null) {
     },
     destroy() {
       clearTimeout(timer)
+      clearTimeout(waiting)
     }
   }
 }
