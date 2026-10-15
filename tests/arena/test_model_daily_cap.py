@@ -177,6 +177,14 @@ def test_a_model_comes_back_at_midnight_in_paris(clock):
     assert limits.resting_models(models) == {}
 
 
+def test_a_daily_spend_that_cannot_be_read_rests_no_model():
+    """A model's day only decides the next draws, and the allowances still
+    charge every turn."""
+    redis = FakeRedis(pipelines_that_work=0)
+    with fake_redis(limits, fake=redis):
+        assert limits.resting_models([capped(EXPENSIVE, 0)]) == {}
+
+
 def test_no_cap_reads_nothing():
     redis = FakeRedis(pipelines_that_work=0)
     with fake_redis(limits, fake=redis):

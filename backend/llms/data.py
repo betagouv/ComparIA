@@ -4,7 +4,6 @@ from uuid import UUID
 
 import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
-from redis.exceptions import RedisError
 from sqlmodel import select
 
 from backend.arena.limits import is_expensive, resting_models
@@ -376,11 +375,7 @@ async def pick_replacement_model(
     expensive = models.expensive_models
     if failing not in expensive or not expensive_available:
         pool = [llm_id for llm_id in pool if llm_id not in expensive]
-    try:
-        resting = resting_models(models.enabled.values())
-    except RedisError:
-        logger.exception("Could not read the models' daily spend")
-        resting = {}
+    resting = resting_models(models.enabled.values())
     pool = [llm_id for llm_id in pool if llm_id not in resting]
 
     try:

@@ -37,6 +37,8 @@ from typing import Collection, Iterable, Literal, Mapping, Protocol, Sequence, g
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
+from redis.exceptions import RedisError
+
 from backend.config import settings
 from backend.utils.user import ip_bucket
 from utils.database.models.app_settings import AppSettings
@@ -483,11 +485,15 @@ def resting_models(
     before a draw, like the allowances: first messages sent at once may each
     draw a model that only one of them fills, so a cap can be passed by a few
     turns, and by the conversations already under way, which finish.
-    Reads nothing while no model has a cap.
+    Reads nothing while no model has a cap. Fails open, see `read_status`.
     """
     day = day or Day.at()
     capped = [llm for llm in llms if llm.daily_usd_cap is not None]
-    days = read_model_days([llm.id for llm in capped], day)
+    try:
+        days = read_model_days([llm.id for llm in capped], day)
+    except RedisError:
+        logger.exception("Could not read the models' daily spend")
+        return {}
     return {llm.id: day.ends for llm in capped if is_resting(llm, days[llm.id])}
 
 
@@ -520,9 +526,19 @@ def read_counters(identities: Sequence[str]) -> LimitStatus:
 
 
 def read_status(who: Identity) -> LimitStatus:
-    """A cheap early answer. It charges nothing, so the routes still go
-    through `reserve` before calling a model."""
-    return read_counters(who.identities)
+    """
+    A cheap early answer. It charges nothing, so the routes still go through
+    `reserve` before calling a model.
+
+    Reading the limits fails open: with Redis down, nothing reads as spent
+    and no model as full, and the page and the draws go on. Charging fails
+    closed: `reserve` raises, so no model is called that nothing counted.
+    """
+    try:
+        return read_counters(who.identities)
+    except RedisError:
+        logger.exception("Could not read the allowances")
+        return LimitStatus(())
 
 
 def reserve(

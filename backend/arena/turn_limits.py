@@ -16,13 +16,10 @@ route that calls the models asks one function here and does what it says:
 `Refused`, which the router answers with a 429.
 """
 
-import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Collection, Literal, Mapping, Sequence
 from uuid import UUID
-
-from redis.exceptions import RedisError
 
 from backend.arena.limits import (
     POOLS,
@@ -51,8 +48,6 @@ from backend.arena.streaming import get_messages
 from backend.config import CustomModelsSelection, SelectionMode
 from backend.llms.data import LLMsData, NoModelLeft
 from utils.database.models import BOT_POS, BotPos, ComparisonRead, TurnRead
-
-logger = logging.getLogger("languia")
 
 
 class Refused(Exception):
@@ -106,7 +101,7 @@ def start_first_turn(
     Raises:
         Refused: on a spent whole allowance, or a draw with nothing left
     """
-    resting = _resting(llms_data)
+    resting = resting_models(llms_data.enabled.values())
 
     def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
         excluded = [*resting, *(llms_data.expensive_models if spent else [])]
@@ -163,27 +158,11 @@ def charge_follow_up(
 
 def read_arena_limits(who: Identity, llms_data: LLMsData) -> ArenaLimits:
     """What the person meets before typing, see `arena_limits`."""
-    try:
-        status = read_status(who)
-    except RedisError:
-        # Fail open: the message itself is still charged, and refused, by
-        # `reserve`.
-        logger.exception("Could not read the arena limits")
-        status = LimitStatus(())
+    status = read_status(who)
     expensive: list[UUID] = []
     if not status.expensive_available:
         expensive = llms_data.expensive_models
-    return arena_limits(status, expensive, _resting(llms_data))
-
-
-def _resting(llms_data: LLMsData) -> dict[UUID, datetime]:
-    """The models whose daily cap is full. Fails open: a model's day only
-    decides the next draws, and the allowances still charge every turn."""
-    try:
-        return resting_models(llms_data.enabled.values())
-    except RedisError:
-        logger.exception("Could not read the models' daily spend")
-        return {}
+    return arena_limits(status, expensive, resting_models(llms_data.enabled.values()))
 
 
 def charge(

@@ -6,11 +6,12 @@ reads back, and the operator's reset (no network, no real Redis).
 import asyncio
 
 import pytest
+from redis.exceptions import RedisError
 
 import backend.arena.limits as limits
 from backend.arena.limits import AllowanceSpent, Identity
 from backend.config import Settings, settings
-from tests.arena.fakes import fake_redis
+from tests.arena.fakes import FakeRedis, fake_redis
 from utils.arena.actions import limits_reset, limits_show
 from utils.database.models.app_settings import AppSettings
 from utils.storage.redis import REDIS_INSTANCE_PREFIX
@@ -102,6 +103,15 @@ def test_a_status_counts_down_to_the_reset():
     untouched = allowance(status, "expensive", "session")
     assert (untouched.used, untouched.resets_in) == (0, None)
     assert status.spent == ()
+
+
+def test_reading_the_limits_fails_open_and_charging_fails_closed():
+    """With Redis down, nothing reads as spent, and a message is refused
+    when it is charged, before any model is called."""
+    with fake_redis(limits, fake=FakeRedis(pipelines_that_work=0)):
+        assert limits.read_status(WHO).spent == ()
+        with pytest.raises(RedisError):
+            limits.reserve(WHO, {"all": 1})
 
 
 def test_a_window_closes_after_two_quiet_hours():
