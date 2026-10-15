@@ -86,6 +86,7 @@ module = [
     "backend.arena.limits",
     "backend.arena.turn_limits",
     "utils.arena.calibrate",
+    "utils.usd",
 ]
 disallow_any_generics = true
 disallow_subclassing_any = true

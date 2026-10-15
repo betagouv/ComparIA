@@ -14,6 +14,7 @@ from utils.storage.redis import (
     invalidate_cache,
     redis_cache,
 )
+from utils.usd import shown_usd
 
 logger = logging.getLogger("languia")
 
@@ -132,7 +133,7 @@ async def update_daily_caps(
 
 
 def _cap(value: float | None) -> str:
-    return "none" if value is None else f"${value:,.2f}"
+    return "none" if value is None else shown_usd(value)
 
 
 def _shown(value: float | None) -> str:

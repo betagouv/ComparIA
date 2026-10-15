@@ -34,8 +34,8 @@ from backend.arena.limits import (
     Pool,
     expected_answer_chars,
     expensive_models,
-    read_status,
     full_models,
+    read_status,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (

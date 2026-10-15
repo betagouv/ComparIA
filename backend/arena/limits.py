@@ -61,6 +61,7 @@ from utils.storage.redis import (
     REDIS_MODEL_DAY_KEY,
     get_redis_client,
 )
+from utils.usd import shown_usd, to_micro_usd, to_usd
 
 logger = logging.getLogger("languia")
 
@@ -96,12 +97,9 @@ _KEY_POOLS: dict[tuple[Pool, Scope], str] = {
 }
 
 # Model prices are in US dollars per million tokens, and a token is about four
-# characters of text.
+# characters of text. At such a price, a token costs that many millionths of
+# a dollar, the unit the expensive counters hold.
 CHARS_PER_TOKEN = 4
-# The expensive counters hold millionths of a dollar, so they stay whole
-# numbers. At a price in dollars per million tokens, a token costs that many
-# of them.
-MICRO_USD = 1_000_000
 
 
 def budget_key(pool: Pool, identity: str) -> str:
@@ -198,13 +196,13 @@ def limit(pool: Pool, scope: Scope) -> int:
     """The limit in its counter's unit: characters, or millionths of a
     dollar."""
     value = setting(POOL_SETTINGS[(pool, scope)])
-    return round(value * MICRO_USD) if pool == "expensive" else int(value)
+    return to_micro_usd(value) if pool == "expensive" else int(value)
 
 
 def counted(pool: Pool, value: float) -> str:
     """A counter's value as people read it: characters, or dollars."""
     if pool == "expensive":
-        return f"${value / MICRO_USD:,.4f}"
+        return shown_usd(to_usd(value), places=4)
     return f"{int(value):,}"
 
 
@@ -487,7 +485,7 @@ def is_full(llm: Capped, spent: ModelDay) -> bool:
     """Whether the model's day is full: what it spent reached its cap."""
     if llm.daily_usd_cap is None:
         return False
-    return spent.micro_usd >= round(llm.daily_usd_cap * MICRO_USD)
+    return spent.micro_usd >= to_micro_usd(llm.daily_usd_cap)
 
 
 def full_models(llms: Iterable[Capped], day: Day | None = None) -> dict[UUID, datetime]:

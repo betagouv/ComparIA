@@ -32,7 +32,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from backend.activity.services import QueryTimedOutError
 from backend.arena.limits import (
     DAY_ZONE,
-    MICRO_USD,
     POOL_SETTINGS,
     POOLS,
     WHOLE_SETTINGS,
@@ -69,6 +68,7 @@ from utils.database.models import (
 )
 from utils.database.models.llms import LLMData
 from utils.database.session import get_activity_session, get_session
+from utils.usd import CENTS, shown_usd, to_micro_usd, to_usd
 
 logger = logging.getLogger("comparia.arena")
 
@@ -342,16 +342,12 @@ def round_up(value: float) -> int:
     return int(math.ceil(value / step) * step)
 
 
-# Cents in a dollar, the smallest step the admin edits dollars in.
-CENTS = 100
-
-
 def in_setting_unit(pool: Pool, value: float) -> float:
     """A counter's value, rounded up to two significant digits, in the unit
     its setting is in: characters, or dollars to the cent."""
     if pool == "all":
         return round_up(value)
-    return round_up(value * CENTS / MICRO_USD) / CENTS
+    return round_up(to_usd(value) * CENTS) / CENTS
 
 
 def smallest(pool: Pool) -> float:
@@ -381,7 +377,7 @@ def propose(result: Replay) -> list[LimitProposal]:
         )
         typical_turn = _percentile(result.turn_costs[pool], 50)
         if pool == "expensive":
-            typical_turn /= MICRO_USD
+            typical_turn = to_usd(typical_turn)
         proposals.append(
             LimitProposal(
                 name=POOL_SETTINGS[(pool, "session")],
@@ -401,7 +397,7 @@ def propose(result: Replay) -> list[LimitProposal]:
             in_setting_unit(pool, CLASS_SIZE * _percentile(people, CLASS_PERCENTILE)),
         )
         # The networks' windows are compared in the counters' unit.
-        over = round(per_network * MICRO_USD) if pool == "expensive" else per_network
+        over = to_micro_usd(per_network) if pool == "expensive" else per_network
         proposals.append(
             LimitProposal(
                 name=POOL_SETTINGS[(pool, "network")],
@@ -467,7 +463,7 @@ def propose_daily_caps(
                 ),
                 days=len(days),
                 percentile=DAY_PERCENTILE,
-                highest=max(spent) / MICRO_USD,
+                highest=to_usd(max(spent)),
             )
         )
     return proposals
@@ -641,7 +637,7 @@ async def limits_calibrate(*, days: int = 30) -> None:
     )
 
     def shown(name: LimitSetting, value: float) -> str:
-        return f"{int(value):,}" if name in WHOLE_SETTINGS else f"${value:,.2f}"
+        return f"{int(value):,}" if name in WHOLE_SETTINGS else shown_usd(value)
 
     for proposal in propose(result):
         logger.info(
@@ -657,9 +653,9 @@ async def limits_calibrate(*, days: int = 30) -> None:
     names = {llm.id: llm.name for llm in llms}
     for cap in propose_daily_caps(result, llms, paris_today()):
         logger.info(
-            f"Proposed daily cap of {names[cap.llm_id]}: ${cap.value:,.2f} "
+            f"Proposed daily cap of {names[cap.llm_id]}: {shown_usd(cap.value)} "
             f"(p{cap.percentile} of {cap.days} days times {DAY_MARGIN}, "
-            f"highest ${cap.highest:,.2f})"
+            f"highest {shown_usd(cap.highest)})"
         )
     for check in check_prices(llms):
         logger.warning(

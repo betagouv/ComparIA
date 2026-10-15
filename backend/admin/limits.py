@@ -25,6 +25,7 @@ from utils.database.settings import (
     update_daily_caps,
     update_limit_settings,
 )
+from utils.usd import to_usd
 
 router = APIRouter(prefix="/limits", tags=["limits"])
 
@@ -41,7 +42,7 @@ def daily_usage(llms: Iterable[LLMDataEnabled]) -> list[LLMDailyUsage]:
             name=llm.name,
             input_chars=days[llm.id].sent,
             output_chars=days[llm.id].written,
-            estimated_usd=days[llm.id].micro_usd / limits.MICRO_USD,
+            estimated_usd=to_usd(days[llm.id].micro_usd),
             cap_usd=llm.daily_usd_cap,
             full=limits.is_full(llm, days[llm.id]),
             resets_in=day.ends_in(),
