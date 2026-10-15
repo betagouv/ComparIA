@@ -122,7 +122,7 @@
   {#if rule}
     <p class="fr-text--sm mb-0! mt-2!">{rule}</p>
   {/if}
-  {#if usage?.length && idle}
+  {#if shown.length && idle}
     <p class="fr-text--sm mb-0! mt-2! text-[--text-mention-grey]">
       {idle > 1
         ? m['admin.limits.today.idle']({ count: numbers.format(idle) })

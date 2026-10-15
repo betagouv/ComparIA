@@ -89,6 +89,16 @@ describe('TodayUsage', () => {
     view.unmount()
   })
 
+  it('says once that nothing was spent, without counting the others', () => {
+    const idle = usage.map((llm) => ({ ...llm, estimated_usd: 0, cap_usd: null, full: false }))
+    const view = render(TodayUsage, { usage: idle })
+
+    expect(
+      view.getByText("Aucun modèle n'a rien coûté aujourd'hui, et aucun n'a de plafond.")
+    ).toBeInTheDocument()
+    expect(view.queryByText(/autres modèles activés/)).toBeNull()
+  })
+
   it('says so when the spend cannot be read', () => {
     const view = render(TodayUsage, { usage: null })
 
