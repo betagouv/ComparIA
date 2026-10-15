@@ -15,6 +15,7 @@ const FALLBACK_SECONDS = 2 * 60 * 60
 const FIRST_READ_MS = 2000
 // A read that hangs is abandoned after this long.
 const READ_TIMEOUT_MS = 10_000
+let firstLoad = true
 // Off by less than this, this browser's clock agrees with the server's.
 const CLOCK_SKEW_MS = 60_000
 // Never read again sooner than this, even when the server says it lifts now.
@@ -77,7 +78,13 @@ export function createLimits(
   // text box for a moment before the pause took its place.
   let read = $state(!pending)
   let waiting: ReturnType<typeof setTimeout> | undefined
-  if (pending && browser) waiting = setTimeout(() => (read = true), FIRST_READ_MS)
+  if (pending && browser) {
+    // On the page's first load the wait counts from when it started loading,
+    // so a slow hydration does not add to it.
+    const since = firstLoad ? performance.now() : 0
+    firstLoad = false
+    waiting = setTimeout(() => (read = true), Math.max(0, FIRST_READ_MS - since))
+  }
   let total = $state<Spent>()
   let expensive = $state<Spent>()
   const paused = new SvelteMap<string, PausedLLM>()

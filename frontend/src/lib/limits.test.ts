@@ -69,6 +69,25 @@ describe('createLimits', () => {
     limits.destroy()
   })
 
+  it("counts the first wait from the page's load, so a slow hydration does not add to it", async () => {
+    vi.resetModules()
+    const { createLimits: onLoad } = await import('./limits.svelte')
+    // The page took 1.5 s to hydrate.
+    vi.advanceTimersByTime(1500)
+    const limits = onLoad(null, { pending: true })
+
+    vi.advanceTimersByTime(499)
+    expect(limits.read).toBe(false)
+    vi.advanceTimersByTime(1)
+    expect(limits.read).toBe(true)
+    limits.destroy()
+    // A layout made later, on a navigation, waits the whole two seconds.
+    const later = onLoad(null, { pending: true })
+    vi.advanceTimersByTime(1999)
+    expect(later.read).toBe(false)
+    later.destroy()
+  })
+
   it('stops waiting for a read that never lands', () => {
     const limits = createLimits(null, { pending: true })
 
