@@ -125,7 +125,7 @@ def test_a_redis_out_of_reach_raises_what_the_limit_reads_catch(monkeypatch):
         redis_module.get_redis_client.__wrapped__()
 
 
-def test_a_window_closes_after_two_quiet_hours():
+def test_a_spent_allowance_lifts_two_hours_after_its_first_message():
     with fake_redis(limits) as redis:
         limits.reserve(WHO, {"all": settings.RATELIMIT_ALL_PER_SESSION + 1})
         assert limits.read_status(WHO).spent

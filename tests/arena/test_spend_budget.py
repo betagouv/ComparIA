@@ -1,13 +1,11 @@
 """
-When the arena charges a message against the character budgets (no network, no
-DB, no real Redis).
+When the arena charges a message against the allowances (no network, no DB,
+no real Redis).
 
-The budgets used to be charged once both answers had streamed in full and
-without error. A visitor who closed the connection halfway, or sent many
-requests at once, got the models' answers and was never charged. Every route
-that calls the models now pays before it starts them, for what they are sent
-and a typical answer, then for what they really wrote once the turn is over,
-however it ended.
+Every route that calls the models pays before it starts them, for what they
+are sent and a typical answer, then for what they really wrote once the turn
+is over, however it ended: a client that hangs up halfway, or sends many
+requests at once, still pays.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_spend_budget.py
@@ -236,7 +234,7 @@ def arena(llm_ids=(CHEAP, CHEAP), caps=None):
 
 
 def gate(route):
-    """The budget check FastAPI runs before the route."""
+    """The allowance check FastAPI runs before the route."""
     arena_router.assert_allowance_left(
         limits.Identity.of(SESSION, IP), make_request(f"/arena/{route}")
     )
@@ -337,7 +335,9 @@ def test_a_full_answer_is_charged_once(route, state):
 
 
 @each_route
-def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, state):
+def test_requests_sent_together_cannot_all_spend_the_last_of_the_allowance(
+    route, state
+):
     """The gate used to read the counters and the charge came later, so every
     request sent at once passed the gate before any of them was counted. Here
     both requests are past the gate and inside the route before either one
@@ -359,7 +359,7 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
     state.in_step = None
 
     refused = [r for r in results if isinstance(r, HTTPException)]
-    assert len(refused) == 1, f"{route}: two requests spent one budget"
+    assert len(refused) == 1, f"{route}: two requests spent one allowance"
     assert refused[0].status_code == 429
     assert refused[0].detail == "allowance_spent"
     assert refused[0].limit.scope == "session"
@@ -372,7 +372,7 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
 @each_route
 def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     """Refused, the message never reached a model. Left counted, it would keep
-    eating the budgets that were not spent yet, such as the IP one a whole
+    eating the allowances that were not spent yet, such as the network one a whole
     school can share."""
     spent = limits.budget_key("all", NETWORK)
     state.redis.store[spent] = settings.RATELIMIT_ALL_PER_IP + 1
@@ -383,7 +383,7 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     except HTTPException as error:
         assert error.status_code == 429
     else:
-        raise AssertionError(f"{route}: an over-budget message went through")
+        raise AssertionError(f"{route}: a message over its allowance went through")
 
     assert {k: v for k, v in state.redis.store.items() if v} == before, route
     assert state.created == 0, route
@@ -491,7 +491,7 @@ if __name__ == "__main__":
     test_a_message_is_charged_before_the_models_start()
     test_a_client_that_hangs_up_has_still_paid()
     test_a_full_answer_is_charged_once()
-    test_requests_sent_together_cannot_all_spend_the_last_of_the_budget()
+    test_requests_sent_together_cannot_all_spend_the_last_of_the_allowance()
     test_a_refused_message_spends_nothing_and_writes_nothing()
     test_an_expensive_model_spends_the_expensive_allowance_up_front()
     test_only_the_whole_allowance_stops_a_message_at_the_gate()

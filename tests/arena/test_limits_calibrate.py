@@ -101,7 +101,7 @@ def test_a_cached_answer_is_free_on_the_expensive_pool_only():
     assert spent["all"] == 10 + 7 + 100 + 7 + 300
 
 
-def test_a_window_closes_after_two_quiet_hours():
+def test_a_window_closes_two_hours_after_its_first_message():
     rows = [
         turn(uuid4(), START, "a", (10, 0, False), (10, 0, False)),
         turn(uuid4(), START + timedelta(hours=1), "b", (10, 0, False), (10, 0, False)),
