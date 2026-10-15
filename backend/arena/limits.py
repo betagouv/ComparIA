@@ -282,9 +282,9 @@ class LimitStatus:
         return tuple(allowance for allowance in self.spent if allowance.pool == pool)
 
     @property
-    def expensive_available(self) -> bool:
-        """Whether a new draw may hold an expensive model."""
-        return not self.spent_in("expensive")
+    def expensive_paused(self) -> bool:
+        """Whether new draws leave expensive models out."""
+        return bool(self.spent_in("expensive"))
 
 
 class AllowanceSpent(Exception):
@@ -519,18 +519,18 @@ def expensive_models(llms: Iterable[Model]) -> list[UUID]:
 
 
 def stand_in_exclusions(
-    llms: Iterable[Model], failing: UUID, expensive_available: bool
+    llms: Iterable[Model], failing: UUID, expensive_paused: bool
 ) -> list[UUID]:
     """
     The models that may not take over from `failing`: those whose day is
-    full, and the expensive ones unless `failing` is expensive too and the
-    person's expensive allowance has room. A cheap side was charged at the
+    full, and the expensive ones unless `failing` is expensive too and
+    expensive models are not paused for the person. A cheap side was charged at the
     cheap rate.
     """
     llms = list(llms)
     expensive = expensive_models(llms)
     left_out = list(full_models(llms))
-    if failing not in expensive or not expensive_available:
+    if failing not in expensive or expensive_paused:
         left_out += expensive
     return left_out
 

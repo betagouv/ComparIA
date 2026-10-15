@@ -80,8 +80,8 @@ def check_allowance(who: Identity) -> LimitStatus:
 @dataclass(frozen=True)
 class FirstTurn:
     pair: tuple[UUID, UUID]
-    # Whether expensive models were open to the draw.
-    expensive_available: bool
+    # Expensive models were left out of the draw.
+    expensive_paused: bool
     # To settle once the models have answered.
     charge: Charge
 
@@ -123,15 +123,15 @@ def start_first_turn(
     def without_expensive(spent: Sequence[Allowance]) -> FirstTurn:
         pair = draw(spent)
         sent = first_turn_sent(prompt, pair, llms_data)
-        return FirstTurn(pair, False, charge(who, sent, llms_data))
+        return FirstTurn(pair, True, charge(who, sent, llms_data))
 
-    if not status.expensive_available:
+    if status.expensive_paused:
         return without_expensive(status.spent_in("expensive"))
 
     pair = draw(())
     sent = first_turn_sent(prompt, pair, llms_data)
     try:
-        return FirstTurn(pair, True, Charge.reserve(who, turn_calls(sent, llms_data)))
+        return FirstTurn(pair, False, Charge.reserve(who, turn_calls(sent, llms_data)))
     except AllowanceSpent as error:
         if whole := [a for a in error.spent if a.pool == "all"]:
             # Only the whole allowance is told: the expensive one says to
@@ -162,7 +162,7 @@ def read_arena_limits(who: Identity, llms_data: LLMsData) -> ArenaLimits:
     """What the person meets before typing, see `arena_limits`."""
     status = read_status(who)
     expensive: list[UUID] = []
-    if not status.expensive_available:
+    if status.expensive_paused:
         expensive = expensive_models(llms_data.enabled.values())
     return arena_limits(status, expensive, full_models(llms_data.enabled.values()))
 

@@ -62,7 +62,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
 
     def start_first_turn(*_args):
         return SimpleNamespace(
-            pair=(uuid4(), uuid4()), expensive_available=True, charge=None
+            pair=(uuid4(), uuid4()), expensive_paused=False, charge=None
         )
 
     request = Request(

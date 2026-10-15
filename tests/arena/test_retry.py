@@ -63,7 +63,7 @@ def comparison(answered: bool, error=None):
     )
 
 
-def retry(target, expensive_available=True, drain=False, **patches):
+def retry(target, expensive_paused=False, drain=False, **patches):
     async def nothing(*_args, **_kwargs):
         return None
 
@@ -102,7 +102,7 @@ def retry(target, expensive_available=True, drain=False, **patches):
                 body,
                 "b" * 64,
                 request,
-                SimpleNamespace(expensive_available=expensive_available),
+                SimpleNamespace(expensive_paused=expensive_paused),
                 Identity.of("b" * 64, "10.0.0.1"),
             )
             # The response streams the models, which most tests never read.
@@ -133,26 +133,24 @@ def test_a_failed_turn_can_be_retried():
     assert retry(failed).status_code == 200
 
 
-@pytest.mark.parametrize("expensive_available", [True, False])
+@pytest.mark.parametrize("expensive_paused", [True, False])
 def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
-    expensive_available,
+    expensive_paused,
 ):
     """The swap at the start and the swap while streaming both follow what is
     left of the person's expensive allowance."""
     swaps = []
     streamed = []
 
-    def stand_in_exclusions(_llms, _failing, expensive_available):
-        swaps.append(expensive_available)
+    def stand_in_exclusions(_llms, _failing, expensive_paused):
+        swaps.append(expensive_paused)
         return []
 
     async def pick_replacement_model(_comparison, _pos, _left_out):
         return "c"
 
-    async def stream_comparison_messages(
-        _comparison, _turn, _request, available, _charge
-    ):
-        streamed.append(available)
+    async def stream_comparison_messages(_comparison, _turn, _request, paused, _charge):
+        streamed.append(paused)
         return
         yield
 
@@ -164,7 +162,7 @@ def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
     )
     response = retry(
         failed,
-        expensive_available=expensive_available,
+        expensive_paused=expensive_paused,
         drain=True,
         stand_in_exclusions=stand_in_exclusions,
         pick_replacement_model=pick_replacement_model,
@@ -175,8 +173,8 @@ def test_a_retry_hands_the_stand_in_whether_an_expensive_model_may_answer(
     )
 
     assert response.status_code == 200
-    assert swaps == [expensive_available]
-    assert streamed == [expensive_available]
+    assert swaps == [expensive_paused]
+    assert streamed == [expensive_paused]
 
 
 def test_a_retry_needs_a_captcha():

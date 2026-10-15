@@ -201,7 +201,7 @@ async def stream_comparison_messages(
     comparison: ComparisonRead,
     turn: TurnRead,
     request: Any | None = None,
-    expensive_available: bool = False,
+    expensive_paused: bool = True,
     charge: Charge | None = None,
 ) -> AsyncGenerator[AnySSEEvent]:
     """
@@ -214,8 +214,8 @@ async def stream_comparison_messages(
         comparison: current Comparison
         turn: current Turn
         request: FastAPI Request object for logging
-        expensive_available: Whether an expensive model may stand in for an
-            expensive one that times out
+        expensive_paused: Whether expensive models are paused for the
+            person, so none may stand in for one that times out
         charge: What the turn spends, told what each model is sent; the
             route settles it
 
@@ -283,7 +283,7 @@ async def stream_comparison_messages(
                             )
                         ):
                             left_out = stand_in_exclusions(
-                                llms_data.values(), failing_llm_id, expensive_available
+                                llms_data.values(), failing_llm_id, expensive_paused
                             )
                             if new_llm_id := await pick_replacement_model(
                                 comparison, e.pos, left_out

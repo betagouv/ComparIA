@@ -94,7 +94,7 @@ def arena(active_document):
 
     def start_first_turn(*_args):
         return SimpleNamespace(
-            pair=(uuid4(), uuid4()), expensive_available=True, charge=None
+            pair=(uuid4(), uuid4()), expensive_paused=False, charge=None
         )
 
     with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):

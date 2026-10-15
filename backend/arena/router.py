@@ -404,7 +404,7 @@ async def add_first_text(
             custom_models_selection=args.custom_models_selection,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
-            expensive_paused=not first.expensive_available,
+            expensive_paused=first.expensive_paused,
         )
     )
 
@@ -446,7 +446,7 @@ async def add_first_text(
 
                 # Stream both model responses
                 async for chunk in stream_comparison_messages(
-                    comparison, turn, request, first.expensive_available, charge
+                    comparison, turn, request, first.expensive_paused, charge
                 ):
                     yield format_sse_event(chunk)
 
@@ -622,7 +622,7 @@ async def retry(
             left_out = stand_in_exclusions(
                 llms_data.enabled.values(),
                 failing_llm_id,
-                allowance.expensive_available,
+                allowance.expensive_paused,
             )
             if new_llm_id := await pick_replacement_model(comparison, pos, left_out):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
@@ -652,7 +652,7 @@ async def retry(
         try:
             # Stream both model responses
             async for chunk in stream_comparison_messages(
-                comparison, turn, request, allowance.expensive_available, charge
+                comparison, turn, request, allowance.expensive_paused, charge
             ):
                 yield format_sse_event(chunk)
 

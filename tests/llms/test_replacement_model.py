@@ -51,14 +51,12 @@ def catalog(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def replacements(
-    llm_id_a: str, llm_id_b: str, expensive_available: bool
+    llm_id_a: str, llm_id_b: str, expensive_paused: bool
 ) -> set[str | None]:
     comparison: Any = SimpleNamespace(
         mode="random", llm_id_a=llm_id_a, llm_id_b=llm_id_b
     )
-    left_out = limits.stand_in_exclusions(
-        MODELS, cast(Any, llm_id_a), expensive_available
-    )
+    left_out = limits.stand_in_exclusions(MODELS, cast(Any, llm_id_a), expensive_paused)
 
     async def draw() -> set[str | None]:
         return {
@@ -70,21 +68,17 @@ def replacements(
 
 
 def test_a_cheap_side_gets_a_cheap_stand_in() -> None:
-    assert replacements("cheap-a", "expensive-a", expensive_available=True) <= set(
-        CHEAP
-    )
+    assert replacements("cheap-a", "expensive-a", expensive_paused=False) <= set(CHEAP)
 
 
 def test_an_expensive_side_may_get_an_expensive_stand_in() -> None:
-    assert replacements("expensive-a", "cheap-a", expensive_available=True) & {
+    assert replacements("expensive-a", "cheap-a", expensive_paused=False) & {
         "expensive-b"
     }
 
 
 def test_an_expensive_side_gets_a_cheap_stand_in_once_the_allowance_is_spent() -> None:
-    assert replacements("expensive-a", "cheap-a", expensive_available=False) <= set(
-        CHEAP
-    )
+    assert replacements("expensive-a", "cheap-a", expensive_paused=True) <= set(CHEAP)
 
 
 def test_a_model_full_for_the_day_never_stands_in(
@@ -92,6 +86,4 @@ def test_a_model_full_for_the_day_never_stands_in(
 ) -> None:
     monkeypatch.setattr(limits, "full_models", lambda _llms: {"cheap-b": None})
 
-    assert replacements("cheap-a", "expensive-a", expensive_available=True) == {
-        "cheap-c"
-    }
+    assert replacements("cheap-a", "expensive-a", expensive_paused=False) == {"cheap-c"}

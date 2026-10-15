@@ -184,7 +184,7 @@ def test_a_pool_that_may_not_refuse_is_still_charged(monkeypatch):
 
     assert allowance(status, "expensive", "session").used == 111
     assert allowance(status, "all", "session").used == 20
-    assert not status.expensive_available
+    assert status.expensive_paused
 
 
 def test_a_spent_allowance_keeps_its_reset_time_while_it_is_charged(monkeypatch):

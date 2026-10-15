@@ -430,10 +430,10 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
         times_out="stuck",
     )
 
-    swaps_expensive: list[bool] = []
+    swaps_paused: list[bool] = []
 
-    def stand_in_exclusions(_llms, _failing, expensive_available):
-        swaps_expensive.append(expensive_available)
+    def stand_in_exclusions(_llms, _failing, expensive_paused):
+        swaps_paused.append(expensive_paused)
         return []
 
     async def pick_replacement_model(_comparison, _pos, _left_out):
@@ -451,7 +451,7 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
         return [
             event
             async for event in streaming.stream_comparison_messages(
-                comparison, comparison.turns[0], expensive_available=True
+                comparison, comparison.turns[0], expensive_paused=False
             )
         ]
 
@@ -468,7 +468,7 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
     assert {"type": "swap", "pos": "b"} in events
     assert comparison.llm_id_b == "spare"
     # The stand-in follows what the route said of the expensive allowance.
-    assert swaps_expensive == [True]
+    assert swaps_paused == [False]
     assert answers["a"][-1] == "undeuxtrois"
     assert answers["b"][-1] == "undeuxtrois"
     assert events[-1] == {"type": "complete"}
