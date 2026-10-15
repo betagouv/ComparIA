@@ -759,7 +759,7 @@ class Charge:
         reserve(who, charge.reserved, refusing)
         try:
             count_day(charge.day, charge.day_reserved)
-        except Exception:
+        except RedisError:
             # The allowances are charged. A model's day only decides the
             # next draws, so it fails open, like reading it.
             logger.exception("Could not count the models' day")
@@ -836,7 +836,7 @@ class Charge:
                 for key, chars in undo:
                     pipe.decrby(key, chars)
                 pipe.execute()
-        except Exception:
+        except RedisError:
             logger.exception("Could not charge what the models wrote")
 
     def _settle_day(self, answers: Mapping[str, Answer | None]) -> None:
@@ -858,7 +858,7 @@ class Charge:
             fields["cached"] = fields.get("cached", 0) + int(call.cached)
         try:
             count_day(self.day, changes)
-        except Exception:
+        except RedisError:
             logger.exception("Could not count the models' day")
 
 

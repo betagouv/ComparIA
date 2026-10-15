@@ -9,6 +9,7 @@ import pytest
 from redis.exceptions import RedisError, ResponseError
 
 import backend.arena.limits as limits
+import utils.storage.redis as redis_module
 from backend.arena.limits import AllowanceSpent, Identity
 from backend.config import Settings, settings
 from tests.arena.fakes import FakeRedis, fake_redis
@@ -112,6 +113,16 @@ def test_reading_the_limits_fails_open_and_charging_fails_closed():
         assert limits.read_status(WHO).spent == ()
         with pytest.raises(RedisError):
             limits.reserve(WHO, {"all": 1})
+
+
+def test_a_redis_out_of_reach_raises_what_the_limit_reads_catch(monkeypatch):
+    def refused(_client):
+        raise OSError("Connection refused")
+
+    monkeypatch.setattr(redis_module.redis.Redis, "ping", refused)
+
+    with pytest.raises(RedisError):
+        redis_module.get_redis_client.__wrapped__()
 
 
 def test_a_window_closes_after_two_quiet_hours():

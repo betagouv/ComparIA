@@ -21,6 +21,7 @@ from typing import Iterator
 from uuid import uuid4
 
 from fastapi import Request
+from redis.exceptions import RedisError
 
 from backend.arena.limits import in_flight_per_network, ip_identity
 from backend.errors import TooManyAtOnceError
@@ -76,7 +77,7 @@ class TurnSlot:
             # The set goes with its last slot.
             pipe.expire(key, SLOT_SECONDS)
             taken = int(pipe.execute()[2])
-        except Exception:
+        except RedisError:
             logger.exception("Could not count the turns answering at once")
             return cls(key, None)
         slot = cls(key, member)
@@ -92,7 +93,7 @@ class TurnSlot:
         self.released = True
         try:
             get_redis_client().zrem(self.key, self.member)
-        except Exception:
+        except RedisError:
             logger.exception("Could not give back a turn's slot")
 
 

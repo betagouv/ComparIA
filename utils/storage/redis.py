@@ -130,7 +130,8 @@ def get_redis_client() -> redis.Redis:
 
         return client
     except Exception as e:
-        raise Exception(f"Redis Connection Error: {e}")
+        # A RedisError, so the callers that fail open on one catch this too.
+        raise redis.exceptions.ConnectionError(f"Redis Connection Error: {e}") from e
 
 
 # Spaces or tabs after the first word of a line. Leading indentation is left
