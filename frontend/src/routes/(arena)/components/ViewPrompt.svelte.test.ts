@@ -151,9 +151,18 @@ describe('ViewPrompt', () => {
     expect(
       view.getByRole('heading', { name: /^Vous pourrez écrire à nouveau à/ })
     ).not.toHaveFocus()
+    // The card's title takes the place of the page's question, which would
+    // invite typing.
+    expect(
+      view.getByRole('heading', { level: 2, name: /^Vous pourrez écrire à nouveau à/ })
+    ).toBeInTheDocument()
+    expect(view.queryByRole('heading', { name: /Comment puis-je vous aider/ })).toBeNull()
 
     await view.rerender({ ...props, pause: undefined })
     expect(view.getByRole('textbox')).toHaveValue('Ma question')
+    expect(
+      view.getByRole('heading', { level: 2, name: /Comment puis-je vous aider/ })
+    ).toBeInTheDocument()
   })
 
   it('takes a refused pick out of the selection and says why, keeping the prompt', async () => {

@@ -9,6 +9,7 @@
     title,
     text,
     focusTitle = false,
+    level = 3,
     actions,
     footer
   }: {
@@ -19,6 +20,8 @@
     text: string
     /** It takes the place of the text box the person just sent from. */
     focusTitle?: boolean
+    /** The title's heading level: 2 where the card is the page's main content. */
+    level?: 2 | 3
     /** A primary button, then a secondary one. */
     actions: Snippet
     footer?: Snippet
@@ -30,7 +33,9 @@
     <Icon {icon} size="md" block />
   </span>
   <!-- Shown before anyone sends, it is part of the page and leaves focus alone. -->
-  <h3 class="fr-h6 mb-2!" {@attach focusOnShow(() => focusTitle)}>{@render title()}</h3>
+  <svelte:element this={`h${level}`} class="fr-h6 mb-2!" {@attach focusOnShow(() => focusTitle)}>
+    {@render title()}
+  </svelte:element>
   <p class="fr-text--sm mb-6!">{text}</p>
 
   <div class="gap-3 flex flex-col">

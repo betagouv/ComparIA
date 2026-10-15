@@ -11,7 +11,8 @@
     pause,
     onReveal,
     failed = false,
-    focusTitle = false
+    focusTitle = false,
+    level = 3
   }: {
     /** The whole allowance, spent: for whom, and when it lifts. */
     pause: Pick<Spent, 'scope' | 'resets_at'>
@@ -21,6 +22,8 @@
     failed?: boolean
     /** It takes the place of the text box the person just sent from. */
     focusTitle?: boolean
+    /** 2 on the home page, where the card replaces the page's question. */
+    level?: 2 | 3
   } = $props()
 
   const reset = $derived(resetTime(pause.resets_at))
@@ -33,6 +36,7 @@
   icon="i-ri-hourglass-line"
   text={m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']()}
   {focusTitle}
+  {level}
 >
   {#snippet title()}
     <TimedText text={heading} {reset} />

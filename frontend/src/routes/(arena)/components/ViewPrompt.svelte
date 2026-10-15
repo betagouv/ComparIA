@@ -290,14 +290,16 @@
 {:else}
   <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
     <div class="fr-col-xl-8 m-auto">
-      <h2 class="fr-h4 mb-0! text-center">
-        {m['arenaHome.title']()}
-      </h2>
       {#if pause}
+        <!-- The card's title is the page's question then: "Comment puis-je vous
+             aider ?" would invite typing above a card that says not yet. -->
         <div class="py-10">
-          <PauseNotice {pause} focusTitle={pauseFromSend} />
+          <PauseNotice {pause} focusTitle={pauseFromSend} level={2} />
         </div>
       {:else}
+        <h2 class="fr-h4 mb-0! text-center">
+          {m['arenaHome.title']()}
+        </h2>
         <!-- Hidden until the limits are read: a pause would take its place. -->
         <div
           id="prompt-form"
