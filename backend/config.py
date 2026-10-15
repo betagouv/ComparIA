@@ -157,26 +157,23 @@ class Settings(BaseSettings):
     # expensive ones in dollars), over a window that starts at the first
     # message counted and ends 2 hours later, however many follow. A turn
     # costs the system prompt, the whole transcript, the web search results
-    # and both answers. Settings rather than constants so a local run
-    # can lower them to watch a refusal.
-    # Set from the calibration replay (`comparia-cli arena limits calibrate`)
-    # once whole turns are charged, a turn costing 20 to 230 times its own
-    # message.
+    # and both answers. An admin sets them at /admin/limites, from the
+    # calibration replay (`comparia-cli arena limits calibrate`); these are
+    # the values in force until one does.
     #
     # Counted per anonymous session (the `anonymous_session` cookie hash), not
     # per IP, so users behind a shared NAT (schools, hospitals) each get their
     # own. This one covers the expensive models only, in US dollars: what
     # they cost, estimated from each model's prices at four characters per
-    # token. 0.40 is what the earlier 1,000,000 characters at weight 4 came
-    # to on a typical expensive model of the seed (Claude 4.6 Sonnet, 2.60
-    # in and 13.01 out per million tokens), for five 5-turn conversations
-    # with 70% of the characters sent and 30% written, rounded up.
+    # token. 0.40 lets about five 5-turn conversations through on a typical
+    # expensive model of the seed (Claude 4.6 Sonnet, 2.60 in and 13.01 out
+    # per million tokens), with 70% of the characters sent and 30% written.
     RATELIMIT_EXPENSIVE_PER_SESSION: PositiveFloat = 0.40
     # A client that drops the `anonymous_session` cookie gets a fresh session on
     # every request, so the same allowance also runs per IP as a backstop, with
     # room for a whole school on one network. Spam seen in the OpenRouter logs
     # picks the cheapest models, which this pool does not cover. Fifty times
-    # the session one, as the earlier 50,000,000 characters were.
+    # the session one.
     RATELIMIT_EXPENSIVE_PER_IP: PositiveFloat = 20.0
     # A model is expensive from this output price, in US dollars per million
     # tokens. At 8 the seed's Claude Sonnet, Gemini Pro, GPT 5.5 and 5.6 Terra

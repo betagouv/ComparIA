@@ -222,7 +222,7 @@ def limit_refusal(
             resets_in=last.resets_in,
             llm_ids=list(llm_ids),
         ),
-        reason or f"the {last.pool} allowance is spent per {last.scope}",
+        reason or f"the {last.pool!r} allowance is spent per {last.scope}",
     )
 
 
