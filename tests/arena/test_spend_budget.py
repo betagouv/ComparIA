@@ -30,6 +30,7 @@ from uuid import UUID  # noqa: E402
 
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from redis.exceptions import ConnectionError as RedisConnectionError  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 
 import backend.arena.limits as limits  # noqa: E402
@@ -245,11 +246,11 @@ def gate(route):
 async def route_only(route, state, **first_text):
     """The route on its own, which hands back the stream without reading it."""
     request = make_request(f"/arena/{route}")
+    allowance = limits.read_status(limits.Identity.of(SESSION, IP))
     if route == "add_first_text":
         body = arena_models.AddFirstTextBody(
             prompt_value=PROMPT, cohorts="", altcha_token="valid", **first_text
         )
-        allowance = arena_router.read_status(limits.Identity.of(SESSION, IP))
         return await arena_router.add_first_text(
             body, None, SESSION, request, allowance, limits.Identity.of(SESSION, IP)
         )
@@ -267,6 +268,7 @@ async def route_only(route, state, **first_text):
         arena_models.RetryBody(altcha_token="valid"),
         SESSION,
         request,
+        allowance,
         limits.Identity.of(SESSION, IP),
     )
 
@@ -468,6 +470,24 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         )
 
 
+def test_a_retry_goes_on_when_the_limits_cannot_be_read():
+    """Reading the limits fails open, and the retry reads them once, at the
+    gate. The charge still counts the turn."""
+
+    def down(_identities):
+        raise RedisConnectionError("Redis went away")
+
+    with retry_client() as (client, state):
+        with patched(limits, read_counters=down):
+            response = client.post(
+                f"/arena/retry/{uuid4()}", json={"altcha_token": "ok"}
+            )
+
+        assert response.status_code == 200
+        assert state.provider_calls == 1
+        assert counter(state.redis, "all", "ip:testclient") > 0
+
+
 if __name__ == "__main__":
     test_a_message_is_charged_before_the_models_start()
     test_a_client_that_hangs_up_has_still_paid()
@@ -478,4 +498,5 @@ if __name__ == "__main__":
     test_only_the_whole_allowance_stops_a_message_at_the_gate()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
+    test_a_retry_goes_on_when_the_limits_cannot_be_read()
     print("Spend budget cases passed.")

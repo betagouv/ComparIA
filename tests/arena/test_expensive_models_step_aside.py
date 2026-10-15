@@ -129,7 +129,7 @@ def test_a_draw_that_meets_an_allowance_spent_meanwhile_draws_again():
     with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
         spend(state.redis, "expensive", ME)
         stale = SimpleNamespace(expensive_available=True)
-        with patched(arena_router, read_status=lambda _who: stale):
+        with patched(limits, read_status=lambda _who: stale):
             response = asyncio.run(route_only("add_first_text", state))
 
         assert response.status_code == 200
@@ -147,7 +147,7 @@ def test_a_draw_that_meets_both_allowances_spent_meanwhile_is_told_the_whole():
         state.redis.set(limits.budget_key("all", ME), SPENT, ex=60)
         stale = SimpleNamespace(expensive_available=True)
         with (
-            patched(arena_router, read_status=lambda _who: stale),
+            patched(limits, read_status=lambda _who: stale),
             pytest.raises(HTTPException) as refusal,
         ):
             asyncio.run(route_only("add_first_text", state))
@@ -162,7 +162,7 @@ def test_a_custom_pick_that_meets_an_allowance_spent_meanwhile_is_refused():
         spend(state.redis, "expensive", ME)
         stale = SimpleNamespace(expensive_available=True)
         with (
-            patched(arena_router, read_status=lambda _who: stale),
+            patched(limits, read_status=lambda _who: stale),
             pytest.raises(HTTPException) as refusal,
         ):
             asyncio.run(

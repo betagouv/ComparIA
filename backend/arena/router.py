@@ -15,7 +15,7 @@ from backend.arena.checks import (
     run_prompt_check,
 )
 from backend.arena.in_flight import hold_turn_slot
-from backend.arena.limits import Identity, LimitStatus, read_status, reload_settings
+from backend.arena.limits import Identity, LimitStatus, reload_settings
 from backend.arena.models import AddFirstTextBody, AddTextBody, ArenaLimits, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -558,17 +558,14 @@ async def add_text(
 
 @router.post(
     "/retry/{comparison_id}",
-    dependencies=[
-        Depends(assert_allowance_left),
-        Depends(assert_not_block_cooldown),
-        Depends(hold_turn_slot),
-    ],
+    dependencies=[Depends(assert_not_block_cooldown), Depends(hold_turn_slot)],
 )
 async def retry(
     comparison: ComparisonAnno,
     args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    allowance: AllowanceLeft,
     who: Who,
 ) -> StreamingResponse:
     """
@@ -581,6 +578,7 @@ async def retry(
         comparison: linked Comparison
         args: Request body with the captcha solution
         request: FastAPI request for logging
+        allowance: The person's allowances, read before anything else runs
 
     Returns:
         StreamingResponse: Server-Sent Events stream with LLM responses
@@ -603,8 +601,6 @@ async def retry(
             detail="retry_unavailable",
         )
 
-    expensive_available = read_status(who).expensive_available
-
     # If comparison has not yet trully started
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
@@ -618,7 +614,7 @@ async def retry(
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
             if new_llm_id := await pick_replacement_model(
-                comparison, pos, expensive_available
+                comparison, pos, allowance.expensive_available
             ):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
@@ -647,7 +643,7 @@ async def retry(
         try:
             # Stream both model responses
             async for chunk in stream_comparison_messages(
-                comparison, turn, request, expensive_available, charge
+                comparison, turn, request, allowance.expensive_available, charge
             ):
                 yield format_sse_event(chunk)
 

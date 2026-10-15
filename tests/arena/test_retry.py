@@ -91,9 +91,6 @@ def retry(target, expensive_available=True, drain=False, **patches):
             charge_follow_up=lambda *_args, **_kwargs: SimpleNamespace(
                 settle=lambda _answers: None
             ),
-            read_status=lambda _who: SimpleNamespace(
-                expensive_available=expensive_available
-            ),
             **patches,
         ),
     ):
@@ -101,7 +98,12 @@ def retry(target, expensive_available=True, drain=False, **patches):
 
         async def call():
             response = await arena_router.retry(
-                target, body, "b" * 64, request, Identity.of("b" * 64, "10.0.0.1")
+                target,
+                body,
+                "b" * 64,
+                request,
+                SimpleNamespace(expensive_available=expensive_available),
+                Identity.of("b" * 64, "10.0.0.1"),
             )
             # The response streams the models, which most tests never read.
             # Those that do read it here, while the stand-ins still hold.
