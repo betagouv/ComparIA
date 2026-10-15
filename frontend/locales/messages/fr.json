@@ -333,10 +333,9 @@
             "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
             "expensiveOne": "À ce seuil, un modèle activé est coûteux : {names}.",
             "groups": {
-                "all": "Toutes les réponses",
-                "answer": "Réservation",
+                "all": "Tous les modèles",
                 "expensive": "Modèles coûteux",
-                "inFlight": "Messages en même temps"
+                "technical": "Réglages techniques"
             },
             "help": {
                 "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu'un qui efface ses cookies pour repartir de zéro.",
@@ -350,14 +349,18 @@
             "inFlightKept": "La calibration ne propose pas cette valeur : elle reste celle que vous avez choisie.",
             "isDefault": "Par défaut",
             "isStored": "Modifiée",
+            "messages": {
+                "network": "Soit environ {count} messages en deux heures pour tout le réseau.",
+                "session": "Soit environ {count} messages en deux heures pour une personne."
+            },
             "names": {
-                "all_per_ip": "Par réseau",
+                "all_per_ip": "Par réseau (école, entreprise)",
                 "all_per_session": "Par personne",
                 "expected_answer_chars": "Longueur de réponse réservée",
-                "expensive_per_ip": "Par réseau",
+                "expensive_per_ip": "Par réseau (école, entreprise)",
                 "expensive_per_session": "Par personne",
                 "expensive_price_out": "Seuil de prix",
-                "in_flight_per_network": "Par réseau"
+                "in_flight_per_network": "Messages en même temps"
             },
             "newValue": "Nouvelle valeur, en caractères",
             "newValueCount": "Nouvelle valeur, en messages",

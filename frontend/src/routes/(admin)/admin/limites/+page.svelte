@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Alert, Badge, Button, Input } from '$components/dsfr'
+  import { Accordion, Alert, Badge, Button, Input } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
   import { usdFormatter } from '$lib/currency'
   import { api, type ApiError } from '$lib/fastapi-client'
@@ -43,6 +43,7 @@
   const dollars = usdFormatter(locale)
   const dates = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short' })
 
+  // What an admin sets first, then the engine settings, folded away.
   const groups = [
     {
       title: m['admin.limits.groups.all'](),
@@ -51,16 +52,9 @@
     {
       title: m['admin.limits.groups.expensive'](),
       names: ['expensive_price_out', 'expensive_per_session', 'expensive_per_ip']
-    },
-    {
-      title: m['admin.limits.groups.answer'](),
-      names: ['expected_answer_chars']
-    },
-    {
-      title: m['admin.limits.groups.inFlight'](),
-      names: ['in_flight_per_network']
     }
   ] satisfies { title: string; names: Name[] }[]
+  const technical: Name[] = ['expected_answer_chars', 'in_flight_per_network']
 
   const labels: Record<Name, string> = {
     all_per_session: m['admin.limits.names.all_per_session'](),
@@ -146,6 +140,29 @@
       default:
         return m['admin.limits.unit']({ value: numbers.format(value) })
     }
+  }
+
+  // What a value lets through, in messages of a typical cost, once
+  // "Calibrer" has read what a message costs.
+  function inMessages(name: Name, value: number): string | undefined {
+    const per = name.endsWith('_per_session')
+      ? 'session'
+      : name.endsWith('_per_ip')
+        ? 'network'
+        : undefined
+    const cost = name.startsWith('expensive_')
+      ? calibration?.message_usd
+      : calibration?.message_chars
+    if (!per || !cost) return undefined
+    const count = numbers.format(Math.floor(value / cost))
+    return m[`admin.limits.messages.${per}`]({ count })
+  }
+
+  // The typed value, spelled out with its unit, under the field.
+  function typed(name: Name): string | undefined {
+    const value = draft[name]
+    if (value === '' || value === null || !Number.isFinite(Number(value))) return undefined
+    return shown(name, Number(value))
   }
 
   const newValueLabels: Record<Unit, string> = {
@@ -264,6 +281,84 @@
   }
 </script>
 
+{#snippet card(name: Name)}
+  {@const limit = byName[name]}
+  {@const proposal = proposals[name]}
+  {@const kind = unit(name)}
+  {@const messages = inMessages(name, limit.value)}
+  <div class={['p-4 rounded-lg cg-border flex flex-col', { 'md:col-span-2': kind === 'price' }]}>
+    <h3 class="fr-h6 mb-1!">{labels[name]}</h3>
+    <p class="fr-text--sm mb-3! text-[--text-mention-grey]">{helps[name]}</p>
+    <p class="fr-text--sm mb-3! gap-2 flex flex-wrap items-center">
+      <span>{m['admin.limits.current']({ value: shown(name, limit.value) })}</span>
+      <Badge
+        size="sm"
+        variant={limit.stored ? 'info' : ''}
+        text={limit.stored ? m['admin.limits.isStored']() : m['admin.limits.isDefault']()}
+        noTooltip
+      />
+      {#if messages}
+        <span class="basis-full">{messages}</span>
+      {/if}
+    </p>
+    <Input
+      id="limit-{name}"
+      type="number"
+      inputmode={kind === 'chars' || kind === 'count' ? 'numeric' : 'decimal'}
+      label={newValueLabels[kind]}
+      hint={typed(name)}
+      bind:value={draft[name] as string}
+      min={kind === 'usd'
+        ? 0.01
+        : kind === 'count' || name === 'all_per_session' || name === 'all_per_ip'
+          ? 1
+          : 0}
+      max={kind === 'chars' || kind === 'count' ? INT_MAX : USD_MAX}
+      step={kind === 'chars' || kind === 'count' ? '1' : '0.01'}
+      required
+      groupClass="mb-0!"
+    />
+    {#if kind === 'price'}
+      <p class="fr-text--sm mt-3! mb-0!" aria-live="polite">
+        {expensiveText(expensiveLLMs)}
+      </p>
+    {/if}
+    {#if calibration}
+      <div class="proposal mt-3 p-3 rounded-md">
+        {#if proposal}
+          <p class="fr-text--sm mb-1! font-bold">
+            {m['admin.limits.calibrate.proposal']({
+              value: shown(name, proposal.value)
+            })}
+          </p>
+          <p class="fr-text--xs mb-0!">{explain(proposal)}</p>
+          {#if proposal.few}
+            <p class="fr-text--xs mb-0! mt-1! font-bold">
+              {m['admin.limits.calibrate.few']()}
+            </p>
+          {/if}
+        {:else if kind === 'price'}
+          <p class="fr-text--xs mb-0!">{m['admin.limits.thresholdKept']()}</p>
+        {:else if kind === 'count'}
+          <p class="fr-text--xs mb-0!">{m['admin.limits.inFlightKept']()}</p>
+        {:else}
+          <p class="fr-text--xs mb-0!">{m['admin.limits.calibrate.none']()}</p>
+        {/if}
+      </div>
+    {/if}
+    {#if limit.stored && !resets.includes(name)}
+      <Button
+        variant="tertiary-no-outline"
+        size="sm"
+        text={m['admin.limits.reset']({ value: shown(name, limit.default) })}
+        disabled={saving}
+        onclick={() => reset(name)}
+        class="mt-3 -ms-3 self-start"
+      />
+    {/if}
+  </div>
+{/snippet}
+
 <PageLayout
   seoTitle={m['admin.limits.title']()}
   title={m['admin.limits.title']()}
@@ -347,87 +442,19 @@
           <h2 id="limits-group-{index}" class="fr-h5 mb-3!">{group.title}</h2>
           <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
             {#each group.names as name (name)}
-              {@const limit = byName[name]}
-              {@const proposal = proposals[name]}
-              {@const kind = unit(name)}
-              <div
-                class={[
-                  'p-4 rounded-lg cg-border flex flex-col',
-                  { 'md:col-span-2': kind === 'price' }
-                ]}
-              >
-                <h3 class="fr-h6 mb-1!">{labels[name]}</h3>
-                <p class="fr-text--sm mb-3! text-[--text-mention-grey]">{helps[name]}</p>
-                <p class="fr-text--sm mb-3! gap-2 flex flex-wrap items-center">
-                  <span>{m['admin.limits.current']({ value: shown(name, limit.value) })}</span>
-                  <Badge
-                    size="sm"
-                    variant={limit.stored ? 'info' : ''}
-                    text={limit.stored
-                      ? m['admin.limits.isStored']()
-                      : m['admin.limits.isDefault']()}
-                    noTooltip
-                  />
-                </p>
-                <Input
-                  id="limit-{name}"
-                  type="number"
-                  inputmode={kind === 'chars' || kind === 'count' ? 'numeric' : 'decimal'}
-                  label={newValueLabels[kind]}
-                  bind:value={draft[name] as string}
-                  min={kind === 'usd'
-                    ? 0.01
-                    : kind === 'count' || name === 'all_per_session' || name === 'all_per_ip'
-                      ? 1
-                      : 0}
-                  max={kind === 'chars' || kind === 'count' ? INT_MAX : USD_MAX}
-                  step={kind === 'chars' || kind === 'count' ? '1' : '0.01'}
-                  required
-                  groupClass="mb-0!"
-                />
-                {#if kind === 'price'}
-                  <p class="fr-text--sm mt-3! mb-0!" aria-live="polite">
-                    {expensiveText(expensiveLLMs)}
-                  </p>
-                {/if}
-                {#if calibration}
-                  <div class="proposal mt-3 p-3 rounded-md">
-                    {#if proposal}
-                      <p class="fr-text--sm mb-1! font-bold">
-                        {m['admin.limits.calibrate.proposal']({
-                          value: shown(name, proposal.value)
-                        })}
-                      </p>
-                      <p class="fr-text--xs mb-0!">{explain(proposal)}</p>
-                      {#if proposal.few}
-                        <p class="fr-text--xs mb-0! mt-1! font-bold">
-                          {m['admin.limits.calibrate.few']()}
-                        </p>
-                      {/if}
-                    {:else if kind === 'price'}
-                      <p class="fr-text--xs mb-0!">{m['admin.limits.thresholdKept']()}</p>
-                    {:else if kind === 'count'}
-                      <p class="fr-text--xs mb-0!">{m['admin.limits.inFlightKept']()}</p>
-                    {:else}
-                      <p class="fr-text--xs mb-0!">{m['admin.limits.calibrate.none']()}</p>
-                    {/if}
-                  </div>
-                {/if}
-                {#if limit.stored && !resets.includes(name)}
-                  <Button
-                    variant="tertiary-no-outline"
-                    size="sm"
-                    text={m['admin.limits.reset']({ value: shown(name, limit.default) })}
-                    disabled={saving}
-                    onclick={() => reset(name)}
-                    class="mt-3 -ms-3 self-start"
-                  />
-                {/if}
-              </div>
+              {@render card(name)}
             {/each}
           </div>
         </section>
       {/each}
+
+      <Accordion id="limits-technical" label={m['admin.limits.groups.technical']()} level={2}>
+        <div class="gap-4 md:grid-cols-2 grid grid-cols-1">
+          {#each technical as name (name)}
+            {@render card(name)}
+          {/each}
+        </div>
+      </Accordion>
 
       <TodayUsage usage={data.usage} proposals={calibration?.daily_caps} />
 

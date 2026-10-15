@@ -127,4 +127,31 @@ describe('limits page', () => {
     expect(view.getByText(/Conversations lues : 1 ; messages : 1/)).toBeInTheDocument()
     expect(view.queryByText(/1 périodes|1 conversations/)).toBeNull()
   })
+
+  it('spells out each typed value, and says it in messages once calibrated', async () => {
+    request.mockImplementation(async (url: string) =>
+      url === '/admin/limits/calibration'
+        ? { ...calibration, message_chars: 1_000, message_usd: 0.02 }
+        : limits
+    )
+    const view = page()
+    const person = view.container.querySelector<HTMLInputElement>('#limit-all_per_session')!
+    expect(person).toHaveAccessibleDescription(/^5\s000 caractères/)
+    await fireEvent.input(person, { target: { value: '31000' } })
+    expect(person).toHaveAccessibleDescription(/^31\s000 caractères/)
+    expect(view.queryByText(/Soit environ/)).toBeNull()
+
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+
+    await waitFor(() =>
+      expect(
+        view.getByText('Soit environ 5 messages en deux heures pour une personne.')
+      ).toBeInTheDocument()
+    )
+    // 20 $ for a network, at 0,02 $ a message.
+    expect(
+      view.getByText(/^Soit environ 1\s000 messages en deux heures pour tout le réseau\.$/)
+    ).toBeInTheDocument()
+    expect(view.getByRole('heading', { name: 'Réglages techniques', level: 2 })).toBeInTheDocument()
+  })
 })

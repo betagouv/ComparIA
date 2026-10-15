@@ -808,6 +808,10 @@
             "title": "Vote tags"
         },
         "limits": {
+            "messages": {
+                "network": "That is about {count} messages in two hours for the whole network.",
+                "session": "That is about {count} messages in two hours for one person."
+            },
             "title": "Limits",
             "subtitle": "What one person, and a whole network, can have the models read and write in two hours, counted from their first message. A change reaches the whole arena in less than a minute.",
             "updated": "Last changed on {date} by {who}.",
@@ -824,19 +828,18 @@
             "cancel": "Cancel",
             "nothingToApply": "No value has changed.",
             "groups": {
-                "all": "All answers",
+                "all": "All models",
                 "expensive": "Expensive models",
-                "answer": "Reservation",
-                "inFlight": "Messages at once"
+                "technical": "Technical settings"
             },
             "names": {
                 "all_per_session": "Per person",
-                "all_per_ip": "Per network",
+                "all_per_ip": "Per network (school, company)",
                 "expensive_per_session": "Per person",
-                "expensive_per_ip": "Per network",
+                "expensive_per_ip": "Per network (school, company)",
                 "expected_answer_chars": "Reserved answer length",
                 "expensive_price_out": "Price threshold",
-                "in_flight_per_network": "Per network"
+                "in_flight_per_network": "Messages at once"
             },
             "help": {
                 "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
