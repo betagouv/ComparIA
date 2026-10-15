@@ -8,20 +8,20 @@
   import { m } from '$lib/i18n/messages'
   import { createLimits, setLimitsContext } from '$lib/limits.svelte'
   import { setVoteTagsContext } from '$lib/voteTags'
-  import { onDestroy, onMount, untrack } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import type { LayoutProps } from './$types'
 
   let { children, data }: LayoutProps = $props()
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
-  // Made once for the layout; later reads go through `refresh`.
-  const limits = untrack(() => createLimits(data.limits, { pending: !data.limits }))
+  // Read from the browser only, once mounted: the server's request carries
+  // neither the person's session cookie nor their IP, and a load would hold
+  // up the page until the read lands. The forms wait for it two seconds at
+  // most.
+  const limits = createLimits(null, { pending: true })
   setLimitsContext(limits)
-  // A page rendered on the server has no limits yet: read them here.
-  onMount(() => {
-    if (!data.limits) void limits.refresh()
-  })
+  onMount(() => void limits.refresh())
   onDestroy(() => limits.destroy())
   const auth = getAuthContext()
 

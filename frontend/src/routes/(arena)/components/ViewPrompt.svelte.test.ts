@@ -290,15 +290,20 @@ describe('ViewPrompt', () => {
     vi.useRealTimers()
   })
 
-  it('keeps the form out of reach until the limits are read, so a pause never replaces it', async () => {
+  it('keeps the form out of sight until the limits are read, two seconds at most', async () => {
+    vi.useFakeTimers()
     arena.limits = createLimits(null, { pending: true })
 
     const view = render(ViewPrompt, props)
 
     const form = view.container.querySelector<HTMLElement>('#prompt-form')!
-    expect(form.inert || form.hasAttribute('inert')).toBe(true)
-    expect(form).toHaveClass('invisible')
+    // Hidden, so a pause never replaces a text box someone saw; shown again
+    // when JavaScript is off, see app.html.
+    expect(form).toHaveClass('invisible', 'cl-limits-pending')
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(form).not.toHaveClass('invisible')
     ;(arena.limits as Limits).destroy()
+    vi.useRealTimers()
   })
 
   it('tells a full model and a paused one taken out of a pick each by its own reason', async () => {

@@ -219,10 +219,7 @@
         />
       {:else}
         <!-- Hidden until the limits are read: a pause would take its place. -->
-        <div
-          class={['w-full', { invisible: !comparator.limitsRead }]}
-          inert={!comparator.limitsRead}
-        >
+        <div class={['w-full', { 'cl-limits-pending invisible': !comparator.limitsRead }]}>
           <TextPrompt
             id="chatbot-prompt"
             bind:value={prompt}

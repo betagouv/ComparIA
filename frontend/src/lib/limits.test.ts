@@ -3,18 +3,18 @@ import type { ArenaLimits } from './generated/backend'
 import { createLimits } from './limits.svelte'
 
 const server = vi.hoisted(() => ({
-  reads: [] as (() => Promise<unknown>)[],
+  reads: [] as ((signal: AbortSignal) => Promise<unknown>)[],
   calls: 0
 }))
 
 vi.mock('$app/environment', () => ({ browser: true }))
 vi.mock('$lib/fastapi-client', () => ({
   api: {
-    request: (url: string) => {
+    request: (url: string, options: RequestInit) => {
       expect(url).toBe('/arena/limits')
       server.calls++
       const next = server.reads.shift()
-      return next ? next() : Promise.resolve(open)
+      return next ? next(options.signal!) : Promise.resolve(open)
     }
   }
 }))
@@ -74,6 +74,39 @@ describe('createLimits', () => {
 
     vi.advanceTimersByTime(2000)
 
+    expect(limits.read).toBe(true)
+    limits.destroy()
+  })
+
+  it('abandons a read that hangs, and shows the forms meanwhile', async () => {
+    let aborted = false
+    server.reads.push(
+      (signal) =>
+        new Promise((_, reject) =>
+          signal.addEventListener('abort', () => {
+            aborted = true
+            reject(new DOMException('Aborted', 'AbortError'))
+          })
+        )
+    )
+    const limits = createLimits(null, { pending: true })
+    const reading = limits.refresh()
+
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(limits.read).toBe(true)
+    expect(aborted).toBe(false)
+    await vi.advanceTimersByTimeAsync(8000)
+
+    expect(aborted).toBe(true)
+    expect(await reading).toBe(false)
+    limits.destroy()
+  })
+
+  it('shows the forms at once when the read fails', async () => {
+    reply(new Error('500'))
+    const limits = createLimits(null, { pending: true })
+
+    expect(await limits.refresh()).toBe(false)
     expect(limits.read).toBe(true)
     limits.destroy()
   })

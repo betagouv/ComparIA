@@ -13,6 +13,8 @@ import { SvelteMap } from 'svelte/reactivity'
 const FALLBACK_SECONDS = 2 * 60 * 60
 // How long the form waits for the first read before showing anyway.
 const FIRST_READ_MS = 2000
+// A read that hangs is abandoned after this long.
+const READ_TIMEOUT_MS = 10_000
 // Off by less than this, this browser's clock agrees with the server's.
 const CLOCK_SKEW_MS = 60_000
 // Never read again sooner than this, even when the server says it lifts now.
@@ -35,14 +37,18 @@ export type Limits = ReturnType<typeof createLimits>
 
 export const [getLimitsContext, setLimitsContext] = createContext<Limits>()
 
-export async function queryLimits(_fetch: typeof fetch = fetch): Promise<ArenaLimits | null> {
+export async function queryLimits(): Promise<ArenaLimits | null> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), READ_TIMEOUT_MS)
   try {
-    return await api.request<ArenaLimits>('/arena/limits', { fetch: _fetch })
+    return await api.request<ArenaLimits>('/arena/limits', { signal: controller.signal })
   } catch (err) {
     // The arena works without it: a message is still charged, and refused, by
     // the server.
     console.error('Could not read the arena limits', err)
     return null
+  } finally {
+    clearTimeout(timer)
   }
 }
 

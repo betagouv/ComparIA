@@ -312,9 +312,8 @@
           id="prompt-form"
           class={[
             'gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid',
-            { invisible: !limits.read }
+            { 'cl-limits-pending invisible': !limits.read }
           ]}
-          inert={!limits.read}
         >
           <div class="md:order-none md:col-span-full order-1">
             <TextPrompt
