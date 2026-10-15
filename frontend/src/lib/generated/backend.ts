@@ -19,6 +19,7 @@ export interface ArenaLimits {
   total: SpentAllowance | null;
   expensive: SpentAllowance | null;
   paused_llms: PausedLLM[];
+  signed_in_factor: number;
 }
 /**
  * A spent allowance, told by who it is spent for and when it lifts.

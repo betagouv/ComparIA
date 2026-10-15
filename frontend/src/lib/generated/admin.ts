@@ -192,7 +192,7 @@ export interface AdminLimits {
  * A limit in its unit: characters for the whole allowances and the
  * reserved answer, US dollars for the expensive ones, US dollars per million
  * output tokens for the threshold, turns for those a network may have
- * answered at once.
+ * answered at once, a number of times for the signed-in factor.
  */
 export interface AdminLimit {
   name:
@@ -202,7 +202,8 @@ export interface AdminLimit {
     | "expensive_per_ip"
     | "expensive_price_out"
     | "expected_answer_chars"
-    | "in_flight_per_network";
+    | "in_flight_per_network"
+    | "signed_in_factor";
   value: number;
   default: number;
   stored: boolean;
@@ -229,6 +230,7 @@ export interface AdminLimitsPatch {
   expensive_price_out?: number | null;
   expected_answer_chars?: number | null;
   in_flight_per_network?: number | null;
+  signed_in_factor?: number | null;
   daily_usd_caps?: {
     [k: string]: number | null;
   } | null;
@@ -628,7 +630,8 @@ export interface LimitProposal {
     | "expensive_per_ip"
     | "expensive_price_out"
     | "expected_answer_chars"
-    | "in_flight_per_network";
+    | "in_flight_per_network"
+    | "signed_in_factor";
   value: number;
   sample: number;
   percentile: number;
