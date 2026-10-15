@@ -3,6 +3,7 @@
   import { resolve } from '$app/paths'
   import { Alert, Badge, Button, Input } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
+  import { usdFormatter } from '$lib/currency'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type {
     AdminLimit,
@@ -39,13 +40,7 @@
   const locale = getLocale()
   const numbers = new Intl.NumberFormat(locale)
   const percents = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 })
-  const dollars = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
+  const dollars = usdFormatter(locale)
   const dates = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short' })
 
   const groups = [

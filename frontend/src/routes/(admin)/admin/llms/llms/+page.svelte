@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { Badge, Link, Table } from '$components/dsfr'
+  import { usdFormatter } from '$lib/currency'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
@@ -10,11 +11,7 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
-  const dollars = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'narrowSymbol'
-  })
+  const dollars = usdFormatter(locale)
   const baseRoute = '/admin/llms/llms' as const
 
   const usage = $derived(new Map((data.usage ?? []).map((used) => [used.llm_id, used])))

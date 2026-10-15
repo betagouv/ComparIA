@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { Alert, Badge, Table } from '$components/dsfr'
+  import { usdFormatter } from '$lib/currency'
   import type { DailyCapProposal, LLMDailyUsage } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -19,13 +20,7 @@
   const locale = getLocale()
   const numbers = new Intl.NumberFormat(locale)
   const percents = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 })
-  const dollars = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })
+  const dollars = usdFormatter(locale)
 
   const proposed = $derived(new Map((proposals ?? []).map((cap) => [cap.llm_id, cap])))
   // The models worth a look: those that cost something today, have a cap,
@@ -89,12 +84,7 @@
           <span class="gap-2 flex flex-wrap items-center">
             <a href={resolve(`/admin/llms/llms/${llm.llm_id}`)}>{llm.name}</a>
             {#if llm.full}
-              <Badge
-                size="sm"
-                variant="orange"
-                text={m['admin.limits.today.full']()}
-                noTooltip
-              />
+              <Badge size="sm" variant="orange" text={m['admin.limits.today.full']()} noTooltip />
             {/if}
           </span>
         {:else if col.id === 'estimated_usd'}

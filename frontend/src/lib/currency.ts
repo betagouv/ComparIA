@@ -8,6 +8,17 @@ export function currencyFormatter(currency: CurrencyInfo, locale: string): Intl.
   })
 }
 
+/** US dollars to the cent, "$1,234.50" in English: the limits' admin pages. */
+export function usdFormatter(locale: string): Intl.NumberFormat {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: 'USD',
+    currencyDisplay: 'narrowSymbol',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
 export function convertFromUsd(amount: number, currency: CurrencyInfo): number {
   return amount * currency.rate_from_usd
 }
