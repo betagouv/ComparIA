@@ -103,6 +103,22 @@
       typed === '' || typed === null ? byName.expensive_price_out.value : Number(typed)
     return data.limits.llms.filter((llm) => llm.price_out > 0 && llm.price_out >= threshold)
   })
+  // Each expensive model with its price, priciest first, marked when the
+  // threshold being typed adds it or takes it out.
+  const priceTags = $derived.by(() => {
+    const now = data.limits.llms.filter(
+      (llm) => llm.price_out > 0 && llm.price_out >= byName.expensive_price_out.value
+    )
+    const typed = new Set(expensiveLLMs.map((llm) => llm.id))
+    const before = new Set(now.map((llm) => llm.id))
+    return data.limits.llms
+      .filter((llm) => typed.has(llm.id) || before.has(llm.id))
+      .map((llm) => ({
+        ...llm,
+        change: !before.has(llm.id) ? 'added' : !typed.has(llm.id) ? 'removed' : undefined
+      }))
+      .sort((a, b) => b.price_out - a.price_out)
+  })
 
   // The proposed daily caps that would change a model's cap.
   const changedCaps = $derived(
@@ -204,13 +220,8 @@
   }
 
   function expensiveText(llms: { name: string }[]) {
-    const names = llms.map((llm) => llm.name).join(', ')
-    if (llms.length > 1) {
-      return m['admin.limits.expensiveList']({ count: String(llms.length), names })
-    }
-    return llms.length
-      ? m['admin.limits.expensiveOne']({ names })
-      : m['admin.limits.expensiveNone']()
+    if (llms.length > 1) return m['admin.limits.expensiveList']({ count: String(llms.length) })
+    return llms.length ? m['admin.limits.expensiveOne']() : m['admin.limits.expensiveNone']()
   }
 
   function priceIssue(check: PriceCheck) {
@@ -390,11 +401,40 @@
       {/if}
     {/if}
     {#if kind === 'price'}
-      <p class="fr-text--sm mt-3! mb-0!" aria-live="polite">
+      <p class="fr-text--sm mt-3! mb-2!" aria-live="polite">
         {expensiveText(expensiveLLMs)}
       </p>
+      {#if priceTags.length}
+        <ul class="fr-badges-group mb-0!">
+          {#each priceTags as llm (llm.id)}
+            <li>
+              <Badge
+                size="sm"
+                variant={llm.change === 'added' ? 'info' : ''}
+                class={['normal-case!', { 'line-through': llm.change === 'removed' }]}
+              >
+                {#if llm.change}<span aria-hidden="true"
+                    >{llm.change === 'added' ? '+' : '−'}&nbsp;</span
+                  >{/if}{m['admin.limits.priceTag']({
+                  name: llm.name,
+                  price: dollars.format(llm.price_out)
+                })}
+                {#if llm.change}
+                  <span class="sr-only">
+                    {m[
+                      llm.change === 'added'
+                        ? 'admin.limits.priceAdded'
+                        : 'admin.limits.priceRemoved'
+                    ]()}
+                  </span>
+                {/if}
+              </Badge>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     {/if}
-    {#if calibration}
+    {#if calibration && (proposal || kind !== 'price' || to === null)}
       <div class="proposal mt-3 p-3 rounded-md">
         {#if proposal}
           <p class="fr-text--sm mb-1! font-bold">

@@ -345,9 +345,9 @@
                 "title": "Appliquer ces changements ?"
             },
             "current": "Valeur actuelle : {value}",
-            "expensiveList": "À ce seuil, {count} modèles activés sont coûteux : {names}.",
+            "expensiveList": "À ce seuil, {count} modèles activés sont coûteux :",
             "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
-            "expensiveOne": "À ce seuil, un modèle activé est coûteux : {names}.",
+            "expensiveOne": "À ce seuil, un modèle activé est coûteux :",
             "groups": {
                 "all": "Tous les modèles",
                 "expensive": "Modèles coûteux",
@@ -383,6 +383,8 @@
             "newValuePrice": "Nouveau seuil, en dollars par million de jetons écrits",
             "newValueUsd": "Nouvelle valeur, en dollars",
             "nothingToApply": "Aucune valeur n'a changé.",
+            "priceAdded": "(ajouté par ce seuil)",
+            "priceRemoved": "(retiré par ce seuil)",
             "prices": {
                 "intro": "Ce que comptent les modèles coûteux vient de ces prix. Vérifiez-les dans la fiche de chaque modèle.",
                 "issues": {
@@ -395,6 +397,7 @@
                 "none": "Aucun prix ne semble à vérifier.",
                 "title": "Prix à vérifier"
             },
+            "priceTag": "{name} · {price}",
             "reset": "Revenir au défaut ({value})",
             "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
             "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",

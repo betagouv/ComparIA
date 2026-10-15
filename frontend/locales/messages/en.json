@@ -827,6 +827,9 @@
                 "network": "That is about {count} messages in two hours for the whole network.",
                 "session": "That is about {count} messages in two hours for one person."
             },
+            "priceAdded": "(added by this threshold)",
+            "priceRemoved": "(taken out by this threshold)",
+            "priceTag": "{name} · {price}",
             "title": "Limits",
             "subtitle": "What one person, and a whole network, can have the models read and write in two hours, counted from their first message. A change reaches the whole arena in less than a minute.",
             "updated": "Last changed on {date} by {who}.",
@@ -888,7 +891,7 @@
             "newValueUsd": "New value, in dollars",
             "newValuePrice": "New threshold, in dollars per million output tokens",
             "unitPrice": "{value} per million output tokens",
-            "expensiveList": "At this threshold, {count} enabled models are expensive: {names}.",
+            "expensiveList": "At this threshold, {count} enabled models are expensive:",
             "expensiveNone": "At this threshold, no enabled model is expensive.",
             "thresholdKept": "The calibration proposes no threshold: it stays the one you chose.",
             "prices": {
@@ -903,7 +906,7 @@
                 },
                 "none": "No price looks worth checking."
             },
-            "expensiveOne": "At this threshold, one enabled model is expensive: {names}.",
+            "expensiveOne": "At this threshold, one enabled model is expensive:",
             "unitCount": "{value} messages",
             "newValueCount": "New value, in messages",
             "today": {

@@ -26,7 +26,10 @@ const limits = {
     limit('expected_answer_chars', 508),
     limit('in_flight_per_network', 40)
   ],
-  llms: [{ id: 'gpt', name: 'GPT 5.5', price_in: 4.3, price_out: 26 }],
+  llms: [
+    { id: 'gpt', name: 'GPT 5.5', price_in: 4.3, price_out: 26 },
+    { id: 'flash', name: 'Gemini 3.5 Flash', price_in: 0.5, price_out: 6 }
+  ],
   updated_at: null,
   updated_by: null,
   calibration_days: 7
@@ -259,5 +262,32 @@ describe('limits page', () => {
         })
       })
     )
+  })
+
+  it('lists the expensive models with their price, marking what a new threshold adds', async () => {
+    request.mockImplementation(async (url: string) =>
+      url === '/admin/limits/calibration' ? calibration : limits
+    )
+    const view = page()
+    const card = view.container.querySelector('#limit-expensive_price_out')!.closest('.cg-border')!
+    const tags = () =>
+      [...card.querySelectorAll('.fr-badges-group li')].map((li) =>
+        li.textContent?.replace(/\s+/g, ' ').trim()
+      )
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+    await waitFor(() => expect(card).toHaveTextContent('La calibration ne propose pas de seuil'))
+    expect(tags()).toEqual(['GPT 5.5 · 26,00 $'])
+
+    await fireEvent.input(view.container.querySelector('#limit-expensive_price_out')!, {
+      target: { value: '5' }
+    })
+
+    expect(card).toHaveTextContent('À ce seuil, 2 modèles activés sont coûteux :')
+    expect(tags()).toEqual([
+      'GPT 5.5 · 26,00 $',
+      '+ Gemini 3.5 Flash · 6,00 $ (ajouté par ce seuil)'
+    ])
+    // Typed over, the threshold is no longer the one "Calibrer" kept.
+    expect(card).not.toHaveTextContent('La calibration ne propose pas de seuil')
   })
 })
