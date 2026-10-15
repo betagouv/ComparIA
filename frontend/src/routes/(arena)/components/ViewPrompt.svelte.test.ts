@@ -134,7 +134,11 @@ describe('ViewPrompt', () => {
     await view.rerender({ ...props, pause })
 
     expect(view.queryByRole('textbox')).toBeNull()
-    expect(view.getByText(/la limite vaut pour tout le réseau/)).toBeInTheDocument()
+    expect(
+      view.getByText(
+        /^Beaucoup de messages sont partis de votre réseau .* vous pouvez voir le classement ou découvrir les modèles\.$/
+      )
+    ).toBeInTheDocument()
     expect(view.getByRole('link', { name: 'Voir le classement' })).toHaveAttribute(
       'href',
       '/ranking'
@@ -144,7 +148,9 @@ describe('ViewPrompt', () => {
       '/models'
     )
     // Shown before anyone sent from here: part of the page, focus stays.
-    expect(view.getByRole('heading', { name: /^De retour à/ })).not.toHaveFocus()
+    expect(
+      view.getByRole('heading', { name: /^Vous pourrez écrire à nouveau à/ })
+    ).not.toHaveFocus()
 
     await view.rerender({ ...props, pause: undefined })
     expect(view.getByRole('textbox')).toHaveValue('Ma question')

@@ -29,7 +29,7 @@ export function resetTime(resetsAt: string | null | undefined): ResetTime {
   return { datetime: resetsAt, clock, at, until }
 }
 
-/** "De retour à 15 h 40", with TIME_SLOT where the time goes. */
+/** "Vous pourrez écrire à nouveau à 15 h 40", with TIME_SLOT where the time goes. */
 export function pauseTitle(reset: ResetTime): string {
   if (!reset.clock) return m['arene.limits.pause.titleSoon']()
   return m[reset.clock.tomorrow ? 'arene.limits.pause.titleTomorrow' : 'arene.limits.pause.title']({

@@ -62,7 +62,7 @@ describe('ViewChat', () => {
     const view = render(ViewChat, props)
 
     expect(view.queryByRole('textbox')).toBeNull()
-    const title = view.getByRole('heading', { name: /^De retour à/ })
+    const title = view.getByRole('heading', { name: /^Vous pourrez écrire à nouveau à/ })
     expect(title).toHaveFocus()
     expect(title.querySelector('time')).toHaveAttribute('datetime')
     // Not an input error: nothing red, nothing marked invalid.
@@ -91,9 +91,13 @@ describe('ViewChat', () => {
     comparator.pause = { scope: 'network', resets_at: null, resets_in: null }
     const view = render(ViewChat, props)
 
-    const title = view.getByRole('heading', { name: 'Pause de moins de deux heures' })
+    const title = view.getByRole('heading', {
+      name: 'Vous pourrez écrire à nouveau dans moins de deux heures'
+    })
     expect(title).not.toHaveFocus()
-    expect(view.getAllByRole('status')[0]).toHaveTextContent('Pause de moins de deux heures')
+    expect(view.getAllByRole('status')[0]).toHaveTextContent(
+      'Vous pourrez écrire à nouveau dans moins de deux heures'
+    )
   })
 
   it('offers a new discussion, not the reveal, when the paused conversation failed', () => {

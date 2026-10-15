@@ -863,12 +863,12 @@
             },
             "pause": {
                 "models": "Se modellerne",
-                "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer: grænsen gælder hele netværket.",
+                "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
                 "ranking": "Se ranglisten",
-                "session": "Du har skrevet meget de seneste to timer. Indtil da er ranglisten og modellerne stadig åbne.",
-                "title": "Tilbage kl. {time}",
-                "titleSoon": "En pause på under to timer",
-                "titleTomorrow": "Tilbage i morgen kl. {time}",
+                "session": "Du har skrevet meget de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
+                "title": "Du kan skrive igen kl. {time}",
+                "titleSoon": "Du kan skrive igen inden for to timer",
+                "titleTomorrow": "Du kan skrive igen i morgen kl. {time}",
                 "why": "For at holde compar:IA gratis for alle kan hver person sende et begrænset antal beskeder hver anden time. Dine stemmer og samtaler gemmes.",
                 "whyLabel": "Hvorfor denne pause?",
                 "whyNetwork": "For at holde compar:IA gratis for alle kan hvert netværk sende et begrænset antal beskeder hver anden time. Grænsen gælder alle på netværket, ikke kun dig."

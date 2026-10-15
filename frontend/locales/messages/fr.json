@@ -997,12 +997,12 @@
             },
             "pause": {
                 "models": "Découvrir les modèles",
-                "network": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) ces deux dernières heures : la limite vaut pour tout le réseau.",
+                "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
                 "ranking": "Voir le classement",
-                "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, le classement et les modèles restent ouverts.",
-                "title": "De retour à {time}",
-                "titleSoon": "Pause de moins de deux heures",
-                "titleTomorrow": "De retour demain à {time}",
+                "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
+                "title": "Vous pourrez écrire à nouveau à {time}",
+                "titleSoon": "Vous pourrez écrire à nouveau dans moins de deux heures",
+                "titleTomorrow": "Vous pourrez écrire à nouveau demain à {time}",
                 "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages toutes les deux heures. Vos votes et vos conversations restent enregistrés.",
                 "whyLabel": "Pourquoi cette pause ?",
                 "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."

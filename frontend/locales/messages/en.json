@@ -997,12 +997,12 @@
             },
             "pause": {
                 "models": "Discover the models",
-                "network": "A lot of messages came from your network (school, office, organisation) in the last two hours: the limit covers the whole network.",
+                "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. Until then, you can look at the leaderboard or discover the models.",
                 "ranking": "See the ranking",
-                "session": "You have written a lot in the last two hours. Until then, the ranking and the models stay open.",
-                "title": "Back at {time}",
-                "titleSoon": "A break of under two hours",
-                "titleTomorrow": "Back tomorrow at {time}",
+                "session": "You have written a lot in the last two hours. Until then, you can look at the leaderboard or discover the models.",
+                "title": "You can write again at {time}",
+                "titleSoon": "You can write again within two hours",
+                "titleTomorrow": "You can write again tomorrow at {time}",
                 "why": "To keep compar:IA free for everyone, each person can send a limited number of messages every two hours. Your votes and conversations are kept.",
                 "whyLabel": "Why this break?",
                 "whyNetwork": "To keep compar:IA free for everyone, each network can send a limited number of messages every two hours. This limit covers everyone on the network, not just you."
