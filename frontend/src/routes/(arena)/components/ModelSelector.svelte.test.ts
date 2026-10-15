@@ -80,6 +80,15 @@ describe('ModelSelector', () => {
     expectNoDanglingAriaRefs(view.container)
   })
 
+  it('puts the open models first, then the paused and full ones', async () => {
+    const view = await openModels({ expensive: expensive('session') })
+
+    const names = view
+      .getAllByRole('checkbox', { hidden: true })
+      .map((box) => box.closest('label')!.querySelector('strong')!.textContent)
+    expect(names).toEqual(['Gemma 4', 'GPT-5', 'Gemini 3.1 Pro'])
+  })
+
   it('does not pick a paused card', async () => {
     const view = await openModels({ expensive: expensive('session') })
 

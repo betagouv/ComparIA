@@ -137,6 +137,9 @@
         const pause = modelPause(llm.id!)
         return { ...llm, label: llm.name, value: llm.id!, pause, disabledReason: pause?.reason }
       })
+      // The open ones first, so they fill the first screen; the order is kept
+      // within each.
+      .sort((a, b) => Number(!!a.pause) - Number(!!b.pause))
   })
 
   const modeChoices = $derived(
