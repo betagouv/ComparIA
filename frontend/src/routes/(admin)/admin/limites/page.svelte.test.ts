@@ -264,6 +264,19 @@ describe('limits page', () => {
     )
   })
 
+  it('writes the last change as the arena writes times', () => {
+    const changed = new Date(2026, 9, 15, 13, 30, 40).toISOString()
+    const view = render(Page, {
+      data: { limits: { ...limits, updated_at: changed, updated_by: 'admin@example.com' }, usage }
+    } as unknown as PageProps)
+
+    expect(
+      view.getByText(
+        /^Dernière modification le 15 octobre 2026 à 13\sh\s30 par admin@example\.com\.$/
+      )
+    ).toBeInTheDocument()
+  })
+
   it('lists the expensive models with their price, marking what a new threshold adds', async () => {
     request.mockImplementation(async (url: string) =>
       url === '/admin/limits/calibration' ? calibration : limits

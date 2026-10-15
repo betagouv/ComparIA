@@ -123,6 +123,21 @@ describe('ModelSelector', () => {
     )
   })
 
+  it('writes a time after midnight as "demain à 1 h 30", on the chip and in the header', async () => {
+    const late = new Date(2026, 9, 15, 1, 30).toISOString()
+    const view = await openModels({
+      expensive: { ...expensive('session'), resets_at: late },
+      paused: new Map<string, PausedLLM>([['gpt', { id: 'gpt', until: late, reason: 'allowance' }]])
+    })
+
+    expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).toHaveAccessibleName(
+      /En pause · demain à 1\sh\s30$/
+    )
+    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
+      /^1 modèle en pause pour vous jusqu'à demain à 1\sh\s30\./
+    )
+  })
+
   it('counts only the full models when nothing is paused for the person', async () => {
     const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
     const view = await openModels({ paused: full })

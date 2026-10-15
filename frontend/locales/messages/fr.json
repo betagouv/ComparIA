@@ -431,6 +431,7 @@
             "unitCount": "{value} messages",
             "unitPrice": "{value} par million de jetons écrits",
             "updated": "Dernière modification le {date} par {who}.",
+            "updatedAt": "{day} à {time}",
             "updatedUnknown": "Dernière modification le {date}."
         },
         "llms": {
@@ -1008,7 +1009,7 @@
             "picker": {
                 "chip": "En pause · {time}",
                 "chipSoon": "En pause",
-                "chipTomorrow": "En pause · demain {time}",
+                "chipTomorrow": "En pause · demain à {time}",
                 "fullBadge": "Complet · revient demain",
                 "fullMany": "{count} complets aujourd'hui",
                 "fullOne": "1 complet aujourd'hui",
@@ -1049,7 +1050,7 @@
                 "tomorrowAt": "demain à {time}",
                 "until": "jusqu'à {time}",
                 "untilSoon": "pour moins de deux heures",
-                "untilTomorrow": "jusqu'à demain, {time}",
+                "untilTomorrow": "jusqu'à demain à {time}",
                 "within": "dans moins de deux heures"
             },
             "turns": {

@@ -876,7 +876,7 @@
             "picker": {
                 "chip": "På pause · {time}",
                 "chipSoon": "På pause",
-                "chipTomorrow": "På pause · i morgen {time}",
+                "chipTomorrow": "På pause · i morgen kl. {time}",
                 "fullBadge": "Fuld · tilbage i morgen",
                 "fullMany": "{count} fulde i dag",
                 "fullOne": "1 fuld i dag",

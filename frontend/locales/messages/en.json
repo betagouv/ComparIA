@@ -833,6 +833,7 @@
             "title": "Limits",
             "subtitle": "What one person, and a whole network, can have the models read and write in two hours, counted from their first message. A change reaches the whole arena in less than a minute.",
             "updated": "Last changed on {date} by {who}.",
+            "updatedAt": "{day} at {time}",
             "updatedUnknown": "Last changed on {date}.",
             "unit": "{value} characters",
             "current": "Current value: {value}",
@@ -1008,7 +1009,7 @@
             "picker": {
                 "chip": "Paused · {time}",
                 "chipSoon": "Paused",
-                "chipTomorrow": "Paused · tomorrow {time}",
+                "chipTomorrow": "Paused · tomorrow at {time}",
                 "fullBadge": "Full · back tomorrow",
                 "fullMany": "{count} full today",
                 "fullOne": "1 full today",

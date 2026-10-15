@@ -17,6 +17,7 @@
   import { TodayUsage } from './components'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import { clockTime } from '$lib/clockTime'
   import type { PageProps } from './$types'
 
   type Name = AdminLimit['name']
@@ -41,7 +42,17 @@
   const numbers = new Intl.NumberFormat(locale)
   const percents = new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 })
   const dollars = usdFormatter(locale)
-  const dates = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short' })
+  const days = new Intl.DateTimeFormat(locale, { dateStyle: 'long' })
+
+  // "15 octobre 2026 à 13 h 30": the time written as the arena writes it,
+  // to the minute it was changed in (clockTime rounds up, for a wait).
+  function changedOn(at: Date): string {
+    const minute = new Date(Math.floor(at.getTime() / 60_000) * 60_000)
+    return m['admin.limits.updatedAt']({
+      day: days.format(at),
+      time: clockTime(minute, locale).time
+    })
+  }
 
   // What an admin sets first, then the engine settings, folded away.
   const groups = [
@@ -477,7 +488,7 @@
 >
   <div class="gap-6 flex max-w-[880px] flex-col">
     {#if data.limits.updated_at}
-      {@const date = dates.format(new Date(data.limits.updated_at))}
+      {@const date = changedOn(new Date(data.limits.updated_at))}
       <p class="fr-text--sm mb-0! text-[--text-mention-grey]">
         {data.limits.updated_by
           ? m['admin.limits.updated']({ date, who: data.limits.updated_by })

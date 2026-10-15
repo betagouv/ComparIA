@@ -15,7 +15,7 @@ export interface ResetTime {
   clock?: ReturnType<typeof clockTime>
   /** "à 15 h 40", "demain à 1 h 30", or "dans moins de deux heures" when unknown. */
   at: string
-  /** "jusqu'à 15 h 40", "jusqu'à demain, 1 h 30", or "pour moins de deux heures". */
+  /** "jusqu'à 15 h 40", "jusqu'à demain à 1 h 30", or "pour moins de deux heures". */
   until: string
 }
 
