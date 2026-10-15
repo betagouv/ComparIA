@@ -315,10 +315,11 @@
                 "capped": "Seules les conversations les plus récentes ont été lues.",
                 "empty": "Pas assez de conversations sur la période pour proposer des valeurs.",
                 "explain": {
-                    "answer": "La moitié des réponses font moins de {value} caractères (réponses lues : {count}).",
-                    "network": "Laisse passer une classe de {size} personnes qui dépensent chacune autant que {percentile} % des gens ; {share} des réseaux lus l'auraient dépassée.",
-                    "session": "{percentile} % des personnes restent en dessous en deux heures (périodes de deux heures lues : {count}).",
-                    "sessionMessages": "{percentile} % des personnes restent en dessous en deux heures ; messages avant de l'atteindre : environ {messages} (périodes de deux heures lues : {count})."
+                    "answer": "La moitié des réponses font moins de {value} caractères.",
+                    "network": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Sur {days} jours, les réseaux l'auraient dépassée dans {share} de leurs périodes de deux heures.",
+                    "networkNone": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Aucun réseau ne l'aurait atteinte ces {days} jours.",
+                    "session": "Sur {days} jours, {percentile} personnes sur 100 sont restées en dessous.",
+                    "sessionMessages": "Sur {days} jours, {percentile} personnes sur 100 sont restées en dessous. Celles qui l'atteignent y arrivent après environ {messages} messages."
                 },
                 "failed": "Le calcul n'a pas abouti.",
                 "few": "Trop peu de données pour s'y fier : il faut au moins 100 périodes de deux heures, ou réponses, lues.",

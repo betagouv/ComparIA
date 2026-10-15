@@ -217,29 +217,29 @@
     return m[`admin.limits.prices.issues.${check.issue}`]()
   }
 
-  function explain(proposal: LimitProposal) {
+  // What the proposal means for people, in the words an admin would use.
+  function explain(proposal: LimitProposal, days: number) {
     const percentile = String(proposal.percentile)
-    const count = numbers.format(proposal.sample)
     if (proposal.name === 'expected_answer_chars') {
-      return m['admin.limits.calibrate.explain.answer']({
-        value: numbers.format(proposal.value),
-        count
-      })
+      return m['admin.limits.calibrate.explain.answer']({ value: numbers.format(proposal.value) })
     }
     if (proposal.name.endsWith('_per_ip')) {
-      return m['admin.limits.calibrate.explain.network']({
-        size: String(proposal.class_size ?? ''),
-        percentile,
-        share: percents.format(proposal.over_share ?? 0)
-      })
+      const size = String(proposal.class_size ?? '')
+      return proposal.over_share
+        ? m['admin.limits.calibrate.explain.network']({
+            size,
+            days: String(days),
+            share: percents.format(proposal.over_share)
+          })
+        : m['admin.limits.calibrate.explain.networkNone']({ size, days: String(days) })
     }
     return proposal.messages != null
       ? m['admin.limits.calibrate.explain.sessionMessages']({
           percentile,
-          count,
+          days: String(days),
           messages: numbers.format(proposal.messages)
         })
-      : m['admin.limits.calibrate.explain.session']({ percentile, count })
+      : m['admin.limits.calibrate.explain.session']({ percentile, days: String(days) })
   }
 
   async function calibrate() {
@@ -402,18 +402,18 @@
               value: shown(name, proposal.value)
             })}
           </p>
-          <p class="fr-text--xs mb-0!">{explain(proposal)}</p>
+          <p class="fr-text--sm mb-0!">{explain(proposal, calibration.days)}</p>
           {#if proposal.few}
-            <p class="fr-text--xs mb-0! mt-1! font-bold">
+            <p class="fr-text--sm mb-0! mt-1! font-bold">
               {m['admin.limits.calibrate.few']()}
             </p>
           {/if}
         {:else if kind === 'price'}
-          <p class="fr-text--xs mb-0!">{m['admin.limits.thresholdKept']()}</p>
+          <p class="fr-text--sm mb-0!">{m['admin.limits.thresholdKept']()}</p>
         {:else if kind === 'count'}
-          <p class="fr-text--xs mb-0!">{m['admin.limits.inFlightKept']()}</p>
+          <p class="fr-text--sm mb-0!">{m['admin.limits.inFlightKept']()}</p>
         {:else}
-          <p class="fr-text--xs mb-0!">{m['admin.limits.calibrate.none']()}</p>
+          <p class="fr-text--sm mb-0!">{m['admin.limits.calibrate.none']()}</p>
         {/if}
       </div>
     {/if}
@@ -538,7 +538,7 @@
       {/if}
 
       <!-- In reach wherever the admin is on the page, as after "Calibrer". -->
-      <div class="cl-limit-actions gap-3 p-4 bottom-0 z-1 sticky flex flex-wrap">
+      <div class="cl-limit-actions gap-3 p-4 bottom-0 sticky z-1 flex flex-wrap">
         <Button
           type="submit"
           text={saving ? m['admin.limits.applying']() : applyText}

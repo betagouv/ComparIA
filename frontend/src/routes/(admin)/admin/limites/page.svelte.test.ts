@@ -124,7 +124,16 @@ describe('limits page', () => {
       turns: 1,
       proposals: [
         { name: 'all_per_session', value: 4000, sample: 1, percentile: 99, few: true },
-        { name: 'expected_answer_chars', value: 600, sample: 200, percentile: 50, few: false }
+        { name: 'expected_answer_chars', value: 600, sample: 200, percentile: 50, few: false },
+        {
+          name: 'all_per_ip',
+          value: 140_000,
+          sample: 5,
+          percentile: 95,
+          class_size: 35,
+          over_share: 0,
+          few: false
+        }
       ]
     }
     request.mockImplementation(async (url: string) =>
@@ -134,9 +143,20 @@ describe('limits page', () => {
 
     await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
 
+    // Each proposal in plain words, without the counts read.
     await waitFor(() =>
-      expect(view.getByText(/périodes de deux heures lues : 1\)/)).toBeInTheDocument()
+      expect(
+        view.getByText('Sur 7 jours, 99 personnes sur 100 sont restées en dessous.')
+      ).toBeInTheDocument()
     )
+    expect(
+      view.getByText('La moitié des réponses font moins de 600 caractères.')
+    ).toBeInTheDocument()
+    expect(
+      view.getByText(
+        "Une classe de 35 élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Aucun réseau ne l'aurait atteinte ces 7 jours."
+      )
+    ).toBeInTheDocument()
     expect(view.getAllByText(/Trop peu de données pour s'y fier/)).toHaveLength(1)
     expect(view.getByText(/Conversations lues : 1 ; messages : 1/)).toBeInTheDocument()
     expect(view.queryByText(/1 périodes|1 conversations/)).toBeNull()
