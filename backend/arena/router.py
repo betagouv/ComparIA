@@ -102,10 +102,12 @@ router = APIRouter(
 # Dependencies
 
 
-def who(anonymous_user_hash: RequiredAnomymous, request: Request) -> Identity:
-    """Who a message counts against: the session, and the network it comes
-    from."""
-    return Identity.of(anonymous_user_hash, get_ip(request))
+def who(
+    anonymous_user_hash: RequiredAnomymous, user: OptionalUser, request: Request
+) -> Identity:
+    """Who a message counts against: the account while signed in, else the
+    session, and the network it comes from."""
+    return Identity.of(anonymous_user_hash, get_ip(request), user.id if user else None)
 
 
 Who = Annotated[Identity, Depends(who)]
