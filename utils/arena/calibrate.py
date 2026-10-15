@@ -90,6 +90,10 @@ SESSION_PERCENTILE = 99
 # in 100 people do. Pix sends whole classes from one school IP.
 CLASS_SIZE = 35
 CLASS_PERCENTILE = 95
+# Below this many two-hour windows, or answers, a proposal is said to be
+# unreliable. The 99th percentile of fewer than 100 values is the largest of
+# them, so a single heavy user would set the allowance for everyone.
+MIN_SAMPLE = 100
 # A daily cap per expensive model: what 95 in 100 of its days stayed under,
 # with half again as much room, so an ordinary busy day never meets it and
 # only a day far out of the ordinary does.
@@ -385,6 +389,7 @@ def propose(result: Replay) -> list[LimitProposal]:
                 sample=len(people),
                 percentile=SESSION_PERCENTILE,
                 messages=int(per_session // typical_turn) if typical_turn else None,
+                few=len(people) < MIN_SAMPLE,
             )
         )
 
@@ -409,6 +414,8 @@ def propose(result: Replay) -> list[LimitProposal]:
                     if networks
                     else None
                 ),
+                # Read from the people's windows, like the session one.
+                few=len(people) < MIN_SAMPLE,
             )
         )
 
@@ -419,6 +426,7 @@ def propose(result: Replay) -> list[LimitProposal]:
                 value=int(_percentile(result.written, 50)),
                 sample=len(result.written),
                 percentile=50,
+                few=len(result.written) < MIN_SAMPLE,
             )
         )
     return proposals
@@ -634,6 +642,11 @@ async def limits_calibrate(*, days: int = 30) -> None:
         logger.info(
             f"Proposed {proposal.name}: {shown(proposal.name, proposal.value)} "
             f"(now {shown(proposal.name, setting(proposal.name))})"
+            + (
+                f", from only {proposal.sample:,}: too few to trust"
+                if proposal.few
+                else ""
+            )
         )
     llms = await enabled_llms()
     names = {llm.id: llm.name for llm in llms}

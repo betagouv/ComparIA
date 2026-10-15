@@ -332,3 +332,18 @@ def test_each_expensive_model_drawn_gets_a_daily_cap():
 def test_no_whole_day_proposes_no_cap():
     rows = [r for r in a_week() if r.created_at.day >= 7]
     assert propose_daily_caps(replay(rows, PRICES), LLMS, TODAY) == []
+
+
+def test_a_proposal_read_from_too_few_windows_says_so():
+    few = {p.name: p.few for p in propose(replay(hundred_people()[:99], PRICES))}
+    enough = {p.name: p.few for p in propose(replay(hundred_people(), PRICES))}
+
+    # 99 people, one window each, 198 answers.
+    assert few == {
+        "all_per_session": True,
+        "all_per_ip": True,
+        "expensive_per_session": True,
+        "expensive_per_ip": True,
+        "expected_answer_chars": False,
+    }
+    assert not any(enough.values())

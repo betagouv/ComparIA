@@ -633,6 +633,7 @@ export interface LimitProposal {
   messages?: number | null;
   class_size?: number | null;
   over_share?: number | null;
+  few?: boolean;
   [k: string]: unknown;
 }
 /**

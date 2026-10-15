@@ -264,6 +264,8 @@ class LimitProposal(BaseModel):
     # networks' windows that went past it.
     class_size: int | None = None
     over_share: float | None = None
+    # Read from too few windows, or answers, to trust, see `MIN_SAMPLE`.
+    few: bool = False
 
 
 # Why a model's prices are worth a look: priced 0, so never expensive and
