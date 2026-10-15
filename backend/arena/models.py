@@ -157,6 +157,9 @@ class ArenaLimits(BaseModel):
     # The expensive allowance, session or network, the one that lifts last.
     expensive: SpentAllowance | None
     paused_llms: list[PausedLLM]
+    # How many times the personal allowances signing in gives, for the pause
+    # to offer it in numbers. The same for everyone.
+    signed_in_factor: float
 
 
 # The admin's view of the limits, at /admin/limites.

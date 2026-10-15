@@ -36,6 +36,7 @@ from backend.arena.limits import (
     expensive_models,
     full_models,
     read_status,
+    signed_in_factor,
 )
 from backend.arena.litellm import sent_chars
 from backend.arena.models import (
@@ -302,7 +303,10 @@ def arena_limits(
             paused[llm_id] = PausedLLM(id=llm_id, until=until, reason="full")
 
     return ArenaLimits(
-        total=total, expensive=expensive, paused_llms=list(paused.values())
+        total=total,
+        expensive=expensive,
+        paused_llms=list(paused.values()),
+        signed_in_factor=signed_in_factor(),
     )
 
 
