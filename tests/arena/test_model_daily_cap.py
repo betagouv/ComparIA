@@ -18,7 +18,7 @@ import pytest
 from fastapi import HTTPException
 
 import backend.arena.limits as limits
-import backend.arena.router as arena_router
+import backend.arena.turn_limits as turn_limits
 from backend.arena.limits import Allowance, Call, Charge, Day, Identity
 from backend.llms.data import NoModelLeft
 from tests.arena.fakes import FakeRedis, fake_redis
@@ -301,9 +301,9 @@ def test_every_model_is_counted_capped_or_not():
 def test_a_mode_left_with_only_full_models_is_refused_with_no_model_named():
     midnight = Day.at().ends
 
-    refusal = arena_router.pick_refusal(NoModelLeft(), {EXPENSIVE: midnight}, ())
+    refusal = turn_limits.pick_refusal(NoModelLeft(), {EXPENSIVE: midnight}, ())
 
-    assert refusal.detail == "model_full_today"
+    assert refusal.key == "model_full_today"
     assert refusal.limit.llm_ids == []
     assert refusal.limit.resets_at == midnight
 
@@ -321,11 +321,11 @@ def test_a_pick_of_a_full_model_and_a_paused_one_is_told_the_later_end(
     back = datetime.now(timezone.utc) + timedelta(hours=1)
     spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
 
-    refusal = arena_router.pick_refusal(
+    refusal = turn_limits.pick_refusal(
         NoModelLeft([EXPENSIVE, paused]), {EXPENSIVE: back}, spent, [paused]
     )
 
-    assert refusal.detail == detail
+    assert refusal.key == detail
     assert refusal.limit.llm_ids == [EXPENSIVE, paused]
 
 
@@ -341,11 +341,11 @@ def test_a_pick_of_a_model_both_full_and_paused_is_told_the_later_end(
     back = datetime.now(timezone.utc) + timedelta(hours=1)
     spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
 
-    refusal = arena_router.pick_refusal(
+    refusal = turn_limits.pick_refusal(
         NoModelLeft([EXPENSIVE]), {EXPENSIVE: back}, spent, [EXPENSIVE]
     )
 
-    assert refusal.detail == detail
+    assert refusal.key == detail
     assert refusal.limit.llm_ids == [EXPENSIVE]
 
 
@@ -357,11 +357,11 @@ def test_a_mode_left_with_nothing_both_ways_is_told_the_later_end(resets_in, det
     back = datetime.now(timezone.utc) + timedelta(hours=1)
     spent = [Allowance("expensive", "session", ME, 2, 1, resets_in)]
 
-    refusal = arena_router.pick_refusal(
+    refusal = turn_limits.pick_refusal(
         NoModelLeft(), {EXPENSIVE: back}, spent, [EXPENSIVE]
     )
 
-    assert refusal.detail == detail
+    assert refusal.key == detail
     assert refusal.limit.llm_ids == []
 
 
@@ -369,11 +369,11 @@ def test_a_cheap_full_pick_is_told_full_whatever_the_allowance():
     back = datetime.now(timezone.utc) + timedelta(hours=1)
     spent = [Allowance("expensive", "session", ME, 2, 1, 2 * 3600)]
 
-    refusal = arena_router.pick_refusal(
+    refusal = turn_limits.pick_refusal(
         NoModelLeft([CHEAP]), {CHEAP: back}, spent, [EXPENSIVE]
     )
 
-    assert refusal.detail == "model_full_today"
+    assert refusal.key == "model_full_today"
 
 
 def test_unknown_model_ids_are_not_counted(clock):

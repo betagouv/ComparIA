@@ -23,6 +23,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.arena.limits as limits  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
+import backend.arena.turn_limits as turn_limits  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.arena.limits import Allowance, LimitStatus  # noqa: E402
 from backend.auth.dependencies import require_anonymous  # noqa: E402
@@ -203,7 +204,7 @@ def expensive_spent(resets_in):
 def test_a_full_model_is_listed_as_full_when_that_ends_later():
     midnight = lifts_in(8 * 3600)
 
-    status = arena_router.arena_limits(
+    status = turn_limits.arena_limits(
         expensive_spent(600), [PRICEY, PRICIER], full={PRICEY: midnight}
     )
 
@@ -215,7 +216,7 @@ def test_a_full_model_is_listed_as_full_when_that_ends_later():
 
 
 def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
-    status = arena_router.arena_limits(
+    status = turn_limits.arena_limits(
         expensive_spent(4210), [PRICEY], full={PRICEY: lifts_in(60)}
     )
 
@@ -225,7 +226,7 @@ def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
 
 def test_a_full_model_stays_paused_by_an_allowance_with_no_known_end():
     """No known end is the longest pause, not one shorter than midnight."""
-    status = arena_router.arena_limits(
+    status = turn_limits.arena_limits(
         expensive_spent(None), [PRICEY], full={PRICEY: lifts_in(8 * 3600)}
     )
 
@@ -236,9 +237,7 @@ def test_a_full_model_stays_paused_by_an_allowance_with_no_known_end():
 def test_a_full_model_is_paused_with_the_expensive_allowance_left():
     cheap, midnight = uuid4(), lifts_in(3600)
 
-    status = arena_router.arena_limits(
-        LimitStatus(()), [PRICEY], full={cheap: midnight}
-    )
+    status = turn_limits.arena_limits(LimitStatus(()), [PRICEY], full={cheap: midnight})
 
     assert status.expensive is None
     assert [(p.id, p.reason) for p in status.paused_llms] == [(cheap, "full")]

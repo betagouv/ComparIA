@@ -237,7 +237,9 @@ def arena(llm_ids=(CHEAP, CHEAP), caps=None):
 
 def gate(route):
     """The budget check FastAPI runs before the route."""
-    arena_router.assert_allowance_left(SESSION, make_request(f"/arena/{route}"))
+    arena_router.assert_allowance_left(
+        limits.Identity.of(SESSION, IP), make_request(f"/arena/{route}")
+    )
 
 
 async def route_only(route, state, **first_text):
@@ -249,18 +251,23 @@ async def route_only(route, state, **first_text):
         )
         allowance = arena_router.read_status(limits.Identity.of(SESSION, IP))
         return await arena_router.add_first_text(
-            body, None, SESSION, request, allowance
+            body, None, SESSION, request, allowance, limits.Identity.of(SESSION, IP)
         )
     if route == "add_text":
         message = arena_models.AddTextBody(message=PROMPT, altcha_token="valid")
         return await arena_router.add_text(
-            state.comparison(), message, SESSION, request
+            state.comparison(),
+            message,
+            SESSION,
+            request,
+            limits.Identity.of(SESSION, IP),
         )
     return await arena_router.retry(
         state.comparison(),
         arena_models.RetryBody(altcha_token="valid"),
         SESSION,
         request,
+        limits.Identity.of(SESSION, IP),
     )
 
 

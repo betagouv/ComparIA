@@ -84,6 +84,7 @@ module = [
     "backend.arena.cache",
     "backend.arena.in_flight",
     "backend.arena.limits",
+    "backend.arena.turn_limits",
     "utils.arena.calibrate",
 ]
 disallow_any_generics = true

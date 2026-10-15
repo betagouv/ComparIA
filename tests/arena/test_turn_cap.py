@@ -27,6 +27,7 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.arena.limits import Identity  # noqa: E402
 from backend.config import MAX_TURNS_PER_COMPARISON  # noqa: E402
 
 
@@ -53,7 +54,7 @@ def send_follow_up(comparison):
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
         return None
 
-    def charge_turn(*_args, **_kwargs):
+    def charge_follow_up(*_args, **_kwargs):
         return SimpleNamespace(settle=lambda _answers: None)
 
     async def get_llms_data():
@@ -77,13 +78,16 @@ def send_follow_up(comparison):
     with patched(
         arena_router,
         run_checks=run_checks,
-        follow_up_sent=lambda *_args: {},
-        charge_turn=charge_turn,
+        charge_follow_up=charge_follow_up,
         get_llms_data=get_llms_data,
     ):
         # The body of the response streams the models, which these tests never
         # consume, so nothing here reaches the database.
-        return asyncio.run(arena_router.add_text(comparison, body, "b" * 64, request))
+        return asyncio.run(
+            arena_router.add_text(
+                comparison, body, "b" * 64, request, Identity.of("b" * 64, "10.0.0.1")
+            )
+        )
 
 
 def test_a_conversation_below_the_cap_goes_through():

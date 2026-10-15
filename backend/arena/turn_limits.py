@@ -1,27 +1,211 @@
 """
-The limit rules of the arena routes, on top of the counters in `limits`: what
-a refused message is told, what the person meets before typing, and what each
-side of a turn is charged.
+The limit rules of the arena routes, on top of the counters in `limits`. A
+route that calls the models asks one function here and does what it says:
+
+- `check_allowance`, before anything else: a spent whole allowance stops
+  every message.
+- `start_first_turn` draws the pair of a new comparison and charges its first
+  message. Once the expensive allowance is spent, the draw leaves expensive
+  models out instead of refusing the message, and a model whose daily cap is
+  full is left out of every draw until midnight.
+- `charge_follow_up` charges a follow-up or a retry. Only the whole allowance
+  refuses it: a conversation under way finishes, since refusing it would tell
+  the person, before the reveal, what is in the pair.
+
+`read_arena_limits` is what the person meets before typing. Each refusal is a
+`Refused`, which the router answers with a 429.
 """
 
+import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Collection, Literal, Mapping, Sequence
 from uuid import UUID
 
+from redis.exceptions import RedisError
+
 from backend.arena.limits import (
+    POOLS,
     Allowance,
+    AllowanceSpent,
     Answer,
     Call,
+    Charge,
     Day,
+    Identity,
     LimitStatus,
+    Pool,
     expected_answer_chars,
+    read_status,
+    resting_models,
 )
 from backend.arena.litellm import sent_chars
-from backend.arena.models import ArenaLimits, LimitRefusal, PausedLLM, SpentAllowance
+from backend.arena.models import (
+    ArenaLimits,
+    LimitKey,
+    LimitRefusal,
+    PausedLLM,
+    SpentAllowance,
+)
 from backend.arena.streaming import get_messages
-from backend.errors import LimitReachedError
+from backend.config import CustomModelsSelection, SelectionMode
 from backend.llms.data import LLMsData, NoModelLeft
 from utils.database.models import BOT_POS, BotPos, ComparisonRead, TurnRead
+
+logger = logging.getLogger("languia")
+
+
+class Refused(Exception):
+    """A message refused on a limit: its key, what the person is told, and
+    why, for the logs."""
+
+    def __init__(self, key: LimitKey, limit: LimitRefusal, reason: str) -> None:
+        super().__init__(reason)
+        self.key = key
+        self.limit = limit
+
+
+def check_allowance(who: Identity) -> LimitStatus:
+    """
+    The person's allowances, read before anything else runs. Only the whole
+    one stops a message here: a spent expensive one keeps expensive models
+    out of new comparisons, see `start_first_turn`, which takes the status
+    read here.
+
+    Raises:
+        Refused: while the whole allowance is spent
+    """
+    status = read_status(who)
+    if spent := status.spent_in("all"):
+        raise limit_refusal(spent)
+    return status
+
+
+@dataclass(frozen=True)
+class FirstTurn:
+    pair: tuple[UUID, UUID]
+    # Whether expensive models were open to the draw.
+    expensive_available: bool
+    # To settle once the models have answered.
+    charge: Charge
+
+
+def start_first_turn(
+    who: Identity,
+    status: LimitStatus,
+    llms_data: LLMsData,
+    mode: SelectionMode,
+    selection: CustomModelsSelection,
+    prompt: str,
+) -> FirstTurn:
+    """
+    Draw the two models of a new comparison and charge its first message.
+    `status` is the one `check_allowance` read. A custom pick of a model left
+    out is refused with its id, as is a mode left with nothing to draw.
+
+    Raises:
+        Refused: on a spent whole allowance, or a draw with nothing left
+    """
+    resting = _resting(llms_data)
+
+    def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
+        excluded = [*resting, *(llms_data.expensive_models if spent else [])]
+        try:
+            return llms_data.pick_two(mode, selection, hard_excluded=excluded)
+        except NoModelLeft as error:
+            raise pick_refusal(
+                error,
+                resting,
+                spent,
+                llms_data.expensive_models,
+                f"a '{mode}' draw with {len(resting)} models full today and"
+                f" expensive models {'out' if spent else 'in'},"
+                f" picks left out: [{error}]",
+            )
+
+    def without_expensive(spent: Sequence[Allowance]) -> FirstTurn:
+        pair = draw(spent)
+        sent = first_turn_sent(prompt, pair, llms_data)
+        return FirstTurn(pair, False, charge(who, sent, llms_data))
+
+    if not status.expensive_available:
+        return without_expensive(status.spent_in("expensive"))
+
+    pair = draw(())
+    sent = first_turn_sent(prompt, pair, llms_data)
+    try:
+        return FirstTurn(pair, True, Charge.reserve(who, turn_calls(sent, llms_data)))
+    except AllowanceSpent as error:
+        if whole := [a for a in error.spent if a.pool == "all"]:
+            # Only the whole allowance is told: the expensive one says to
+            # pick other models, which would not help.
+            raise limit_refusal(whole)
+        # Another message spent the expensive allowance since it was read.
+        return without_expensive(error.spent)
+
+
+def charge_follow_up(
+    who: Identity, comparison: ComparisonRead, llms_data: LLMsData, message: str = ""
+) -> Charge:
+    """
+    Charge a follow-up `message`, or a retry of the last turn with none. A
+    conversation under way finishes even once the expensive allowance is
+    spent, and its turns still count against it, so only the whole allowance
+    refuses it. A retry is sent the whole input again: the provider billed
+    the failed attempt.
+
+    Raises:
+        Refused: while the whole allowance is spent
+    """
+    whole: tuple[Pool] = ("all",)
+    return charge(who, follow_up_sent(comparison, message), llms_data, whole)
+
+
+def read_arena_limits(who: Identity, llms_data: LLMsData) -> ArenaLimits:
+    """What the person meets before typing, see `arena_limits`."""
+    try:
+        status = read_status(who)
+    except RedisError:
+        # Fail open: the message itself is still charged, and refused, by
+        # `reserve`.
+        logger.exception("Could not read the arena limits")
+        status = LimitStatus(())
+    expensive: list[UUID] = []
+    if not status.expensive_available:
+        expensive = llms_data.expensive_models
+    return arena_limits(status, expensive, _resting(llms_data))
+
+
+def _resting(llms_data: LLMsData) -> dict[UUID, datetime]:
+    """The models whose daily cap is full. Fails open: a model's day only
+    decides the next draws, and the allowances still charge every turn."""
+    try:
+        return resting_models(llms_data.enabled.values())
+    except RedisError:
+        logger.exception("Could not read the models' daily spend")
+        return {}
+
+
+def charge(
+    who: Identity,
+    sent: "Sent",
+    llms_data: LLMsData,
+    refusing: Collection[Pool] = POOLS,
+) -> Charge:
+    """
+    Spend what each model is sent, and a typical answer, before any model is
+    called; the route settles it to what they wrote once the turn is over. No
+    refund when a model then fails: an error a client can provoke would buy
+    whatever the models had already written. Only the pools in `refusing`
+    may refuse the message, see `limits.reserve`.
+
+    Raises:
+        Refused: with the allowances that refused
+    """
+    try:
+        return Charge.reserve(who, turn_calls(sent, llms_data), refusing)
+    except AllowanceSpent as error:
+        raise limit_refusal(error.spent)
 
 
 def lifts_last(spent: Sequence[Allowance]) -> tuple[Allowance, datetime | None]:
@@ -45,15 +229,15 @@ def public_scope(allowance: Allowance) -> Literal["session", "network"]:
 
 
 def limit_refusal(
-    spent: Sequence[Allowance], llm_ids: Sequence[UUID] = ()
-) -> LimitReachedError:
+    spent: Sequence[Allowance], llm_ids: Sequence[UUID] = (), reason: str = ""
+) -> Refused:
     """
     What the person is told for these spent allowances: the one that lifts
     last. `llm_ids` are the models the person picked and may not use until
     then.
     """
     last, resets_at = lifts_last(spent)
-    return LimitReachedError(
+    return Refused(
         "allowance_spent" if last.pool == "all" else "expensive_allowance_spent",
         LimitRefusal(
             scope=public_scope(last),
@@ -61,23 +245,26 @@ def limit_refusal(
             resets_in=last.resets_in,
             llm_ids=list(llm_ids),
         ),
+        reason or f"the {last.pool} allowance is spent per {last.scope}",
     )
 
 
 def full_refusal(
-    resting: Mapping[UUID, datetime], llm_ids: Sequence[UUID] = ()
-) -> LimitReachedError:
+    resting: Mapping[UUID, datetime], llm_ids: Sequence[UUID] = (), reason: str = ""
+) -> Refused:
     """A new comparison refused on models whose daily cap is full, for
     everyone: the picked ones in `llm_ids`, or a mode left with nothing to
     draw. They come back at midnight in Paris."""
-    return LimitReachedError(
+    day = Day.at()
+    return Refused(
         "model_full_today",
         LimitRefusal(
             scope=None,
-            resets_at=min(resting.values(), default=Day.at().ends),
-            resets_in=Day.at().ends_in(),
+            resets_at=min(resting.values(), default=day.ends),
+            resets_in=day.ends_in(),
             llm_ids=list(llm_ids),
         ),
+        reason or "the models are full today",
     )
 
 
@@ -86,7 +273,8 @@ def pick_refusal(
     resting: Mapping[UUID, datetime],
     spent: Sequence[Allowance],
     expensive: Collection[UUID] = (),
-) -> LimitReachedError:
+    reason: str = "",
+) -> Refused:
     """
     What the person is told when a draw has nothing left, `spent` holding
     the expensive allowances that left the `expensive` models out, if any.
@@ -100,13 +288,13 @@ def pick_refusal(
     full = (not picked and bool(resting)) or any(i in resting for i in picked)
     paused = bool(spent) and (not picked or any(i in expensive for i in picked))
     if paused and not full:
-        return limit_refusal(spent, picked)
+        return limit_refusal(spent, picked, reason)
     if full and paused:
         # An allowance with no known end lifts last.
         lifts = lifts_last(spent)[1]
         if lifts is None or lifts > min(resting.values()):
-            return limit_refusal(spent, picked)
-    return full_refusal(resting, picked)
+            return limit_refusal(spent, picked, reason)
+    return full_refusal(resting, picked, reason)
 
 
 def arena_limits(
@@ -175,7 +363,7 @@ def follow_up_sent(comparison: ComparisonRead, message: str = "") -> Sent:
     }
 
 
-def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
+def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[str, Call]:
     """Each side as reserved: what it is sent, and a typical answer."""
     return {
         pos: Call.of(llms_data.all[llm_id], chars, written=expected_answer_chars())
@@ -183,6 +371,6 @@ def turn_calls(sent: Sent, llms_data: LLMsData) -> dict[BotPos, Call]:
     }
 
 
-def answers(turn: TurnRead | None) -> dict[BotPos, Answer | None]:
+def answers(turn: TurnRead | None) -> dict[str, Answer | None]:
     """What each model wrote this turn, so far if it was cut short."""
     return {pos: getattr(turn, f"llm_msg_{pos}", None) for pos in BOT_POS}

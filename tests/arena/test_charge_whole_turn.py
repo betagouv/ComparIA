@@ -25,6 +25,7 @@ from linkup import LinkupSearchTextResult  # noqa: E402
 import backend.arena.limits as limits  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.streaming as streaming  # noqa: E402
+import backend.arena.turn_limits as turn_limits  # noqa: E402
 from backend.arena.conversation import SystemMessageRead  # noqa: E402
 from backend.arena.limits import Call, Charge, Identity, turn_cost  # noqa: E402
 from backend.arena.litellm import litellm_messages, sent_chars  # noqa: E402
@@ -289,7 +290,7 @@ def test_a_follow_up_counts_the_system_prompt_the_transcript_and_the_search():
         system_msg_b=None,
     )
 
-    sent = arena_router.follow_up_sent(comparison, SECOND)
+    sent = turn_limits.follow_up_sent(comparison, SECOND)
 
     first_prompt = len(merge_web_search_with_content(FIRST, results))
     assert sent == {
@@ -305,7 +306,7 @@ def test_a_first_message_counts_each_model_s_system_prompt():
             EXPENSIVE: SimpleNamespace(system_prompt=None),
         }
     )
-    assert arena_router.first_turn_sent(FIRST, (CHEAP, EXPENSIVE), llms_data) == {
+    assert turn_limits.first_turn_sent(FIRST, (CHEAP, EXPENSIVE), llms_data) == {
         "a": (CHEAP, len(SYSTEM) + len(FIRST)),
         "b": (EXPENSIVE, len(FIRST)),
     }

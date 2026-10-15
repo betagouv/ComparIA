@@ -12,6 +12,7 @@ import pytest
 
 import backend.arena.limits as limits
 import backend.arena.router as arena_router
+import backend.arena.turn_limits as turn_limits
 from backend.arena.limits import AllowanceSpent, Identity
 from backend.config import settings
 from tests.arena.fakes import fake_redis
@@ -136,5 +137,5 @@ def test_a_turn_reserves_the_stored_expected_answer(monkeypatch):
     priced = SimpleNamespace(price_in=1.0, price_out=2.0)
     data = SimpleNamespace(all={a: priced, b: priced})
 
-    calls = arena_router.turn_calls({"a": (a, 10), "b": (b, 20)}, data)
+    calls = turn_limits.turn_calls({"a": (a, 10), "b": (b, 20)}, data)
     assert [call.written for call in calls.values()] == [42, 42]

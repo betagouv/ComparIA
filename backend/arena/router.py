@@ -1,12 +1,10 @@
 import asyncio
 import logging
-from datetime import datetime
-from typing import Annotated, AsyncGenerator, Collection, Mapping, Sequence
+from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
-from redis.exceptions import RedisError
 
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
@@ -17,18 +15,7 @@ from backend.arena.checks import (
     run_prompt_check,
 )
 from backend.arena.in_flight import hold_turn_slot
-from backend.arena.limits import (
-    POOLS,
-    Allowance,
-    AllowanceSpent,
-    Charge,
-    Identity,
-    LimitStatus,
-    Pool,
-    read_status,
-    reload_settings,
-    resting_models,
-)
+from backend.arena.limits import Identity, LimitStatus, read_status, reload_settings
 from backend.arena.models import AddFirstTextBody, AddTextBody, ArenaLimits, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
@@ -62,14 +49,12 @@ from backend.arena.streaming import (
     stream_comparison_messages,
 )
 from backend.arena.turn_limits import (
-    Sent,
+    Refused,
     answers,
-    arena_limits,
-    first_turn_sent,
-    follow_up_sent,
-    limit_refusal,
-    pick_refusal,
-    turn_calls,
+    charge_follow_up,
+    check_allowance,
+    read_arena_limits,
+    start_first_turn,
 )
 from backend.arena.web_search import keep_search_results, search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
@@ -81,12 +66,7 @@ from backend.config import (
     MAX_TURNS_PER_COMPARISON,
 )
 from backend.errors import LimitReachedError
-from backend.llms.data import (
-    LLMsData,
-    NoModelLeft,
-    get_llms_data,
-    pick_replacement_model,
-)
+from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -117,127 +97,34 @@ router = APIRouter(
 # Dependencies
 
 
-def refuse(spent: Sequence[Allowance], request: Request) -> LimitReachedError:
-    logger.error(
-        "Too much text submitted to the models for anonymous session",
-        extra={"request": request},
-    )
-    return limit_refusal(spent)
+def who(anonymous_user_hash: RequiredAnomymous, request: Request) -> Identity:
+    """Who a message counts against: the session, and the network it comes
+    from."""
+    return Identity.of(anonymous_user_hash, get_ip(request))
 
 
-def assert_allowance_left(
-    anonymous_user_hash: RequiredAnomymous, request: Request
-) -> LimitStatus:
-    """Rate-limit model usage per anonymous session, with the IP as a backstop
-    for clients that drop the session cookie. Only the whole allowance stops a
-    message here: a spent expensive one keeps expensive models out of new
-    comparisons, see `pick_and_charge`, which takes the status read here."""
-    who = Identity.of(anonymous_user_hash, get_ip(request))
-    limit_status = read_status(who)
-    if spent := limit_status.spent_in("all"):
-        raise refuse(spent, request)
-    return limit_status
+Who = Annotated[Identity, Depends(who)]
+
+
+def limit_reached(error: Refused, request: Request) -> LimitReachedError:
+    """A limit refusal as the 429 the arena reads. A spent whole allowance is
+    logged as an error, as the rate limit always was, a refused pick as a
+    warning."""
+    log = logger.error if error.key == "allowance_spent" else logger.warning
+    log(f"Refused a message: {error}", extra={"request": request})
+    return LimitReachedError(error.key, error.limit)
+
+
+def assert_allowance_left(who: Who, request: Request) -> LimitStatus:
+    """Only a spent whole allowance stops a message here, see
+    `check_allowance`."""
+    try:
+        return check_allowance(who)
+    except Refused as error:
+        raise limit_reached(error, request)
 
 
 AllowanceLeft = Annotated[LimitStatus, Depends(assert_allowance_left)]
-
-
-def charge_turn(
-    sent: Sent,
-    llms_data: LLMsData,
-    anonymous_user_hash: str,
-    request: Request,
-    refusing: Collection[Pool] = POOLS,
-) -> Charge:
-    """
-    Spend what each model is sent, and a typical answer, against the session
-    and IP budgets before any model is called; the route settles it to what
-    they wrote once the turn is over. The charge used to wait for a full, error-free answer, so a client
-    that hung up halfway, or sent many requests at once, never paid. No refund
-    when a model then fails: an error a client can provoke would buy whatever
-    the models had already written. Only the pools in `refusing` may refuse
-    the message, see `reserve`.
-    """
-    who = Identity.of(anonymous_user_hash, get_ip(request))
-    try:
-        return Charge.reserve(who, turn_calls(sent, llms_data), refusing)
-    except AllowanceSpent as error:
-        raise refuse(error.spent, request)
-
-
-def read_resting(llms_data: LLMsData, request: Request) -> dict[UUID, datetime]:
-    """The models whose daily cap is full. Fails open: a model's day only
-    decides the next draws, and the allowances still charge every turn."""
-    try:
-        return resting_models(llms_data.enabled.values())
-    except RedisError:
-        logger.exception(
-            "Could not read the models' daily spend", extra={"request": request}
-        )
-        return {}
-
-
-def pick_and_charge(
-    args: AddFirstTextBody,
-    llms_data: LLMsData,
-    anonymous_user_hash: str,
-    request: Request,
-    limit_status: LimitStatus,
-    resting: Mapping[UUID, datetime],
-) -> tuple[tuple[UUID, UUID], bool, Charge]:
-    """
-    Draw the two models of a new comparison and charge its first message.
-
-    Once the person's expensive allowance is spent, the draw leaves expensive
-    models out instead of refusing the message: cheap duels go on. A model
-    whose daily cap is full (in `resting`) is left out of every draw until
-    midnight. A custom pick of such a model is refused with its id, as is a
-    mode left with nothing to draw.
-
-    `limit_status` is the one read before the route, see
-    `assert_allowance_left`.
-
-    Returns the pair, whether expensive models were open to this draw, and
-    the charge to settle once the models have answered.
-    """
-
-    def draw(spent: Sequence[Allowance]) -> tuple[UUID, UUID]:
-        excluded = [*resting, *(llms_data.expensive_models if spent else [])]
-        try:
-            return llms_data.pick_two(
-                args.mode, args.custom_models_selection, hard_excluded=excluded
-            )
-        except NoModelLeft as error:
-            logger.warning(
-                f"Refused a '{args.mode}' draw with {len(resting)} models full"
-                f" today and expensive models {'out' if spent else 'in'},"
-                f" picks left out: [{error}]",
-                extra={"request": request},
-            )
-            raise pick_refusal(error, resting, spent, llms_data.expensive_models)
-
-    def without_expensive(
-        spent: Sequence[Allowance],
-    ) -> tuple[tuple[UUID, UUID], bool, Charge]:
-        pair = draw(spent)
-        sent = first_turn_sent(args.prompt_value, pair, llms_data)
-        return pair, False, charge_turn(sent, llms_data, anonymous_user_hash, request)
-
-    if not limit_status.expensive_available:
-        return without_expensive(limit_status.spent_in("expensive"))
-
-    pair = draw(())
-    who = Identity.of(anonymous_user_hash, get_ip(request))
-    sent = first_turn_sent(args.prompt_value, pair, llms_data)
-    try:
-        return pair, True, Charge.reserve(who, turn_calls(sent, llms_data))
-    except AllowanceSpent as error:
-        if whole := [a for a in error.spent if a.pool == "all"]:
-            # Only the whole allowance is told: the expensive one says to
-            # pick other models, which would not help.
-            raise refuse(whole, request)
-        # Another message spent the expensive allowance since it was read.
-        return without_expensive(error.spent)
 
 
 def assert_not_block_cooldown(
@@ -395,30 +282,13 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
 
 
 @router.get("/limits")
-async def get_limits(
-    anonymous_user_hash: RequiredAnomymous, request: Request, response: Response
-) -> ArenaLimits:
+async def get_limits(who: Who, response: Response) -> ArenaLimits:
     """Which allowances this person has spent and which models are paused for
     them, or for everyone once their daily cap is full, read on page load and
     after each vote. It changes with every message, so no cache may keep
     it."""
     response.headers["Cache-Control"] = "no-store"
-    who = Identity.of(anonymous_user_hash, get_ip(request))
-    try:
-        limit_status = read_status(who)
-    except RedisError:
-        # Fail open: the message itself is still charged, and refused, by
-        # `reserve`.
-        logger.exception("Could not read the arena limits", extra={"request": request})
-        limit_status = LimitStatus(())
-
-    llms_data = await get_llms_data()
-    expensive_models: list[UUID] = []
-    if not limit_status.expensive_available:
-        expensive_models = llms_data.expensive_models
-    return arena_limits(
-        limit_status, expensive_models, read_resting(llms_data, request)
-    )
+    return read_arena_limits(who, await get_llms_data())
 
 
 @router.post(
@@ -431,6 +301,7 @@ async def add_first_text(
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
     allowance: AllowanceLeft,
+    who: Who,
 ) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -486,14 +357,18 @@ async def add_first_text(
 
     # Select LLMs
     llms_data = await get_llms_data()
-    (llm_a_id, llm_b_id), expensive_available, charge = pick_and_charge(
-        args,
-        llms_data,
-        anonymous_user_hash,
-        request,
-        allowance,
-        read_resting(llms_data, request),
-    )
+    try:
+        first = start_first_turn(
+            who,
+            allowance,
+            llms_data,
+            args.mode,
+            args.custom_models_selection,
+            args.prompt_value,
+        )
+    except Refused as error:
+        raise limit_reached(error, request)
+    (llm_a_id, llm_b_id), charge = first.pair, first.charge
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
@@ -524,7 +399,7 @@ async def add_first_text(
             custom_models_selection=args.custom_models_selection,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
-            expensive_paused=not expensive_available,
+            expensive_paused=not first.expensive_available,
         )
     )
 
@@ -566,7 +441,7 @@ async def add_first_text(
 
                 # Stream both model responses
                 async for chunk in stream_comparison_messages(
-                    comparison, turn, request, expensive_available, charge
+                    comparison, turn, request, first.expensive_available, charge
                 ):
                     yield format_sse_event(chunk)
 
@@ -593,6 +468,7 @@ async def add_text(
     args: AddTextBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    who: Who,
 ) -> StreamingResponse:
     """
     Add a follow-up message to an existing Comparison.
@@ -639,16 +515,10 @@ async def add_text(
     if check and check.pending_warning:
         return warning_response(check, args.message)
 
-    # A conversation under way finishes even once the expensive allowance is
-    # spent, and its turns still count against it. Refusing it would tell the
-    # person, before the reveal, that one of the two models is expensive.
-    charge = charge_turn(
-        follow_up_sent(comparison_, args.message),
-        await get_llms_data(),
-        anonymous_user_hash,
-        request,
-        refusing=("all",),
-    )
+    try:
+        charge = charge_follow_up(who, comparison_, await get_llms_data(), args.message)
+    except Refused as error:
+        raise limit_reached(error, request)
     check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
@@ -699,6 +569,7 @@ async def retry(
     args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    who: Who,
 ) -> StreamingResponse:
     """
     Retry generating the last LLM responses.
@@ -732,7 +603,6 @@ async def retry(
             detail="retry_unavailable",
         )
 
-    who = Identity.of(anonymous_user_hash, get_ip(request))
     expensive_available = read_status(who).expensive_available
 
     # If comparison has not yet trully started
@@ -753,15 +623,11 @@ async def retry(
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
-    # Like a follow-up, a retry is part of a conversation under way. It is
-    # sent the whole input again, and the provider billed the failed attempt.
-    charge = charge_turn(
-        follow_up_sent(comparison),
-        await get_llms_data(),
-        anonymous_user_hash,
-        request,
-        refusing=("all",),
-    )
+    # Like a follow-up, a retry is part of a conversation under way.
+    try:
+        charge = charge_follow_up(who, comparison, await get_llms_data())
+    except Refused as error:
+        raise limit_reached(error, request)
 
     await update_comparison_error(comparison, None)
 

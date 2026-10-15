@@ -30,6 +30,7 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.arena.limits import Identity  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -87,8 +88,7 @@ def retry(target, expensive_available=True, drain=False, **patches):
             update_comparison_error=nothing,
             store_comparison_metadata=lambda *_args, **_kwargs: None,
             get_llms_data=get_llms_data,
-            follow_up_sent=lambda _comparison: {},
-            charge_turn=lambda *_args, **_kwargs: SimpleNamespace(
+            charge_follow_up=lambda *_args, **_kwargs: SimpleNamespace(
                 settle=lambda _answers: None
             ),
             read_status=lambda _who: SimpleNamespace(
@@ -100,7 +100,9 @@ def retry(target, expensive_available=True, drain=False, **patches):
         body = arena_models.RetryBody(altcha_token="valid")
 
         async def call():
-            response = await arena_router.retry(target, body, "b" * 64, request)
+            response = await arena_router.retry(
+                target, body, "b" * 64, request, Identity.of("b" * 64, "10.0.0.1")
+            )
             # The response streams the models, which most tests never read.
             # Those that do read it here, while the stand-ins still hold.
             if drain:
