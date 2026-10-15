@@ -116,6 +116,11 @@
               <span class="fr-text--xs mb-0! text-[--text-mention-grey]">
                 {m['admin.limits.today.highest']({ value: dollars.format(cap.highest) })}
               </span>
+              {#if cap.value <= llm.estimated_usd}
+                <span class="fr-text--xs mb-0! font-bold">
+                  {m['admin.limits.today.restsAtOnce']()}
+                </span>
+              {/if}
             </span>
           {:else}
             {m['admin.limits.today.noProposal']()}

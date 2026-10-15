@@ -89,4 +89,29 @@ describe('limits page', () => {
     expect(view.container.querySelector('#limit-all_per_session')).toHaveValue(3_000_000)
     expect(view.getByText(/Plafond proposé/)).toBeInTheDocument()
   })
+
+  it('says when a proposal was read from too few windows to trust', async () => {
+    const small = {
+      ...calibration,
+      comparisons: 1,
+      turns: 1,
+      proposals: [
+        { name: 'all_per_session', value: 4000, sample: 1, percentile: 99, few: true },
+        { name: 'expected_answer_chars', value: 600, sample: 200, percentile: 50, few: false }
+      ]
+    }
+    request.mockImplementation(async (url: string) =>
+      url === '/admin/limits/calibration' ? small : limits
+    )
+    const view = page()
+
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+
+    await waitFor(() =>
+      expect(view.getByText(/périodes de deux heures lues : 1\)/)).toBeInTheDocument()
+    )
+    expect(view.getAllByText(/Trop peu de données pour s'y fier/)).toHaveLength(1)
+    expect(view.getByText(/Conversations lues : 1 ; messages : 1/)).toBeInTheDocument()
+    expect(view.queryByText(/1 périodes|1 conversations/)).toBeNull()
+  })
 })

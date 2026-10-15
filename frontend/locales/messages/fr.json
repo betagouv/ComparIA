@@ -313,17 +313,18 @@
                 "capped": "Seules les conversations les plus récentes ont été lues.",
                 "empty": "Pas assez de conversations sur la période pour proposer des valeurs.",
                 "explain": {
-                    "answer": "La moitié des réponses font moins de {value} caractères, sur {count} réponses lues.",
+                    "answer": "La moitié des réponses font moins de {value} caractères (réponses lues : {count}).",
                     "network": "Laisse passer une classe de {size} personnes qui dépensent chacune autant que {percentile} % des gens ; {share} des réseaux lus l'auraient dépassée.",
-                    "session": "{percentile} % des personnes restent en dessous en deux heures, sur {count} périodes lues.",
-                    "sessionMessages": "{percentile} % des personnes restent en dessous en deux heures, sur {count} périodes lues : environ {messages} messages avant de l'atteindre."
+                    "session": "{percentile} % des personnes restent en dessous en deux heures (périodes de deux heures lues : {count}).",
+                    "sessionMessages": "{percentile} % des personnes restent en dessous en deux heures ; messages avant de l'atteindre : environ {messages} (périodes de deux heures lues : {count})."
                 },
                 "failed": "Le calcul n'a pas abouti.",
+                "few": "Trop peu de données pour s'y fier : il faut au moins 100 périodes de deux heures, ou réponses, lues.",
                 "hint": "Propose des valeurs à partir des conversations des {days} derniers jours. Rien ne change avant « Appliquer ».",
                 "none": "Pas de proposition : rien n'a été dépensé ici sur la période.",
                 "proposal": "Proposition : {value}",
                 "running": "Calcul en cours…",
-                "sample": "Calculé sur {comparisons} conversations et {turns} messages des {days} derniers jours.",
+                "sample": "Conversations lues : {comparisons} ; messages : {turns} ; sur les {days} derniers jours.",
                 "timeout": "Le calcul a pris trop de temps. Réessayez dans quelques minutes."
             },
             "cancel": "Annuler",
@@ -400,6 +401,7 @@
                 "proposalRule": "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur {percentile} % des {days} jours entiers lus, plus la moitié.",
                 "proposed": "Proposé",
                 "resting": "Au repos",
+                "restsAtOnce": "Plus bas que ce qu'il a déjà coûté aujourd'hui : l'appliquer le met au repos tout de suite, pour tout le monde.",
                 "spent": "Dépensé",
                 "title": "Aujourd'hui",
                 "underCent": "moins de {value}"

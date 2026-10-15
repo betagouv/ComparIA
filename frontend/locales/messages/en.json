@@ -852,7 +852,7 @@
                 "button": "Calibrate",
                 "running": "Calculating…",
                 "hint": "Proposes values from the last {days} days of conversations. Nothing changes until you click “Apply”.",
-                "sample": "Based on {comparisons} conversations and {turns} messages from the last {days} days.",
+                "sample": "Conversations read: {comparisons}; messages: {turns}; over the last {days} days.",
                 "capped": "Only the latest conversations were read.",
                 "empty": "Not enough conversations in the period to propose values.",
                 "timeout": "The calculation took too long. Try again in a few minutes.",
@@ -860,11 +860,12 @@
                 "proposal": "Proposal: {value}",
                 "none": "No proposal: nothing was spent here in the period.",
                 "explain": {
-                    "session": "{percentile}% of people stay under it in two hours, out of {count} periods read.",
-                    "sessionMessages": "{percentile}% of people stay under it in two hours, out of {count} periods read: about {messages} messages before reaching it.",
+                    "session": "{percentile}% of people stay under it in two hours (two-hour periods read: {count}).",
+                    "sessionMessages": "{percentile}% of people stay under it in two hours; messages before reaching it: about {messages} (two-hour periods read: {count}).",
                     "network": "Lets through a class of {size} people who each spend as much as {percentile}% of people; {share} of the networks read would have gone past it.",
-                    "answer": "Half of the answers are shorter than {value} characters, out of {count} answers read."
-                }
+                    "answer": "Half of the answers are shorter than {value} characters (answers read: {count})."
+                },
+                "few": "Too little data to trust: it takes at least 100 two-hour periods, or answers, read."
             },
             "newValueUsd": "New value, in dollars",
             "newValuePrice": "New threshold, in dollars per million output tokens",
@@ -909,7 +910,8 @@
                 "idleOne": "1 other enabled model cost nothing today and has no cap.",
                 "underCent": "under {value}",
                 "proposalRule": "Proposed cap: what each expensive model stayed under on {percentile}% of the {days} whole days read, plus half.",
-                "highest": "at most {value} in one day"
+                "highest": "at most {value} in one day",
+                "restsAtOnce": "Below what it already cost today: applying it rests the model at once, for everyone."
             },
             "inFlightKept": "The calibration proposes no value here: it stays as you set it."
         }

@@ -77,6 +77,18 @@ describe('TodayUsage', () => {
     ).toBeInTheDocument()
   })
 
+  it('warns that a proposed cap below what the model spent today rests it at once', () => {
+    const proposals = [
+      { llm_id: 'full', value: 30, days: 6, percentile: 95, highest: 21.5 },
+      { llm_id: 'open', value: 0.3, days: 6, percentile: 95, highest: 0.2 }
+    ]
+    const view = render(TodayUsage, { usage, proposals })
+
+    expect(row('Gemma 4')).toHaveTextContent(/le met au repos tout de suite, pour tout le monde/)
+    expect(row('GPT 5.5')).not.toHaveTextContent(/au repos tout de suite/)
+    view.unmount()
+  })
+
   it('says so when the spend cannot be read', () => {
     const view = render(TodayUsage, { usage: null })
 

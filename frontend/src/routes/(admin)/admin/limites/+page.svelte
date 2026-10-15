@@ -399,6 +399,11 @@
                         })}
                       </p>
                       <p class="fr-text--xs mb-0!">{explain(proposal)}</p>
+                      {#if proposal.few}
+                        <p class="fr-text--xs mb-0! mt-1! font-bold">
+                          {m['admin.limits.calibrate.few']()}
+                        </p>
+                      {/if}
                     {:else if kind === 'price'}
                       <p class="fr-text--xs mb-0!">{m['admin.limits.thresholdKept']()}</p>
                     {:else if kind === 'count'}
