@@ -183,7 +183,11 @@
                 {#snippet option(opt, labelProps, input)}
                   <label {...labelProps}>
                     {@render input(opt, {
-                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : ''
+                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : '',
+                      // An already checked radio fires no change event.
+                      onclick: () => {
+                        if (opt.value === 'custom') showModelsSelection = true
+                      }
                     })}
                     <Icon icon={opt.icon} block class="text-primary me-3" />
                     {#if opt.value != 'custom'}
