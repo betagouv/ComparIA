@@ -24,7 +24,8 @@ const limits = {
     limit('expensive_per_ip', 20),
     limit('expensive_price_out', 8),
     limit('expected_answer_chars', 508),
-    limit('in_flight_per_network', 40)
+    limit('in_flight_per_network', 40),
+    limit('signed_in_factor', 3)
   ],
   llms: [
     { id: 'gpt', name: 'GPT 5.5', price_in: 4.3, price_out: 26 },
@@ -87,6 +88,52 @@ function page() {
 }
 
 describe('limits page', () => {
+  it('says what the signed-in factor gives, from the per-person allowances', () => {
+    const view = page()
+    const card = within(view.getByRole('heading', { name: 'Place en plus' }).parentElement!)
+
+    expect(card.getByText('Valeur actuelle : 3 fois plus')).toBeInTheDocument()
+    expect(
+      card.getByText(
+        /^Une personne connectée a 3 fois plus : 15\s000 caractères pour tous les modèles et 1,20\s\$ pour les modèles coûteux, en deux heures\.$/
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('lists a new signed-in factor in the dialog before storing it', async () => {
+    request.mockResolvedValue(limits)
+    const view = page()
+    const factor = view.container.querySelector<HTMLInputElement>('#limit-signed_in_factor')!
+    await fireEvent.input(factor, { target: { value: '5' } })
+
+    expect(view.getByText(/^Une personne connectée a 5 fois plus/)).toBeInTheDocument()
+    const form = view.container.querySelector('form')!
+    await fireEvent.click(within(form).getByRole('button', { name: /^Appliquer/ }))
+
+    expect(request).not.toHaveBeenCalled()
+    expect(
+      dialog(view).getByText('Personnes connectées · Place en plus : 3 → 5 fois plus')
+    ).toBeInTheDocument()
+    await fireEvent.click(dialog(view).getByRole('button', { name: /^Appliquer/, hidden: true }))
+    await waitFor(() =>
+      expect(request).toHaveBeenLastCalledWith('/admin/limits', {
+        method: 'PATCH',
+        body: JSON.stringify({ signed_in_factor: 5 })
+      })
+    )
+  })
+
+  it('leaves the signed-in factor alone on "Calibrer"', async () => {
+    request.mockResolvedValue(calibration)
+    const view = page()
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+    await waitFor(() => expect(view.getByText(/Plafond proposé/)).toBeInTheDocument())
+
+    expect(view.container.querySelector('#limit-signed_in_factor')).toHaveValue(3)
+    const card = within(view.getByRole('heading', { name: 'Place en plus' }).parentElement!)
+    expect(card.getByText(/La calibration ne propose pas cette valeur/)).toBeInTheDocument()
+  })
+
   it('puts a value back on its default only once applied, with the other edits', async () => {
     request.mockImplementation(async (url: string) =>
       url === '/admin/limits/calibration' ? calibration : limits
