@@ -29,12 +29,16 @@
   const INT_MAX = 2_147_483_647
   // Largest value the API takes in dollars.
   const USD_MAX = 1_000_000
+  // Largest signed-in factor the API takes.
+  const FACTOR_MAX = 1000
 
-  // Characters, dollars, dollars per million output tokens, or messages.
-  type Unit = 'chars' | 'usd' | 'price' | 'count'
+  // Characters, dollars, dollars per million output tokens, messages, or a
+  // number of times.
+  type Unit = 'chars' | 'usd' | 'price' | 'count' | 'factor'
   function unit(name: Name): Unit {
     if (name === 'expensive_price_out') return 'price'
     if (name === 'in_flight_per_network') return 'count'
+    if (name === 'signed_in_factor') return 'factor'
     return name.startsWith('expensive_') ? 'usd' : 'chars'
   }
 
@@ -63,6 +67,10 @@
     {
       title: m['admin.limits.groups.expensive'](),
       names: ['expensive_price_out', 'expensive_per_session', 'expensive_per_ip']
+    },
+    {
+      title: m['admin.limits.groups.signedIn'](),
+      names: ['signed_in_factor']
     }
   ] satisfies { title: string; names: Name[] }[]
   const technical: Name[] = ['expected_answer_chars', 'in_flight_per_network']
@@ -74,7 +82,8 @@
     expensive_per_ip: m['admin.limits.names.expensive_per_ip'](),
     expensive_price_out: m['admin.limits.names.expensive_price_out'](),
     expected_answer_chars: m['admin.limits.names.expected_answer_chars'](),
-    in_flight_per_network: m['admin.limits.names.in_flight_per_network']()
+    in_flight_per_network: m['admin.limits.names.in_flight_per_network'](),
+    signed_in_factor: m['admin.limits.names.signed_in_factor']()
   }
   const helps: Record<Name, string> = {
     all_per_session: m['admin.limits.help.all_per_session'](),
@@ -83,7 +92,8 @@
     expensive_per_ip: m['admin.limits.help.expensive_per_ip'](),
     expensive_price_out: m['admin.limits.help.expensive_price_out'](),
     expected_answer_chars: m['admin.limits.help.expected_answer_chars'](),
-    in_flight_per_network: m['admin.limits.help.in_flight_per_network']()
+    in_flight_per_network: m['admin.limits.help.in_flight_per_network'](),
+    signed_in_factor: m['admin.limits.help.signed_in_factor']()
   }
 
   const byName = $derived(
@@ -169,6 +179,8 @@
         return m['admin.limits.unitPrice']({ value: values })
       case 'count':
         return m['admin.limits.unitCount']({ value: values })
+      case 'factor':
+        return m['admin.limits.unitFactor']({ value: values })
       default:
         return m['admin.limits.unit']({ value: values })
     }
@@ -181,7 +193,8 @@
   // "3 000 000 → 31 000 caractères (97 fois moins)", and whether it is big.
   function change(name: Name, from: number, to: number) {
     const values = shown(name, from, to)
-    if (from <= 0 || to <= 0) return { text: values, big: false }
+    // A factor already reads "3 → 5 fois plus": a ratio on top would not help.
+    if (from <= 0 || to <= 0 || unit(name) === 'factor') return { text: values, big: false }
     const ratio = Math.max(from, to) / Math.min(from, to)
     const times = ratio < 10 ? ratios.format(ratio) : numbers.format(Math.round(ratio))
     const text =
@@ -216,6 +229,16 @@
     return m[`admin.limits.messages.${per}`]({ count })
   }
 
+  // What a signed-in person gets at this factor, from the per-person
+  // allowances in force.
+  function signedInRoom(factor: number): string {
+    return m['admin.limits.signedInRoom']({
+      times: numbers.format(factor),
+      chars: numbers.format(Math.floor(byName.all_per_session.value * factor)),
+      usd: dollars.format(byName.expensive_per_session.value * factor)
+    })
+  }
+
   // The typed value, spelled out with its unit, under the field.
   function typed(name: Name): string | undefined {
     const value = draft[name]
@@ -227,7 +250,8 @@
     chars: m['admin.limits.newValue'](),
     usd: m['admin.limits.newValueUsd'](),
     price: m['admin.limits.newValuePrice'](),
-    count: m['admin.limits.newValueCount']()
+    count: m['admin.limits.newValueCount'](),
+    factor: m['admin.limits.newValueFactor']()
   }
 
   function expensiveText(llms: { name: string }[]) {
@@ -366,9 +390,14 @@
   {@const limit = byName[name]}
   {@const proposal = proposals[name]}
   {@const kind = unit(name)}
-  {@const messages = inMessages(name, limit.value)}
+  {@const messages = kind === 'factor' ? signedInRoom(limit.value) : inMessages(name, limit.value)}
   {@const to = next(name)}
-  <div class={['p-4 rounded-lg cg-border flex flex-col', { 'md:col-span-2': kind === 'price' }]}>
+  <div
+    class={[
+      'p-4 rounded-lg cg-border flex flex-col',
+      { 'md:col-span-2': kind === 'price' || kind === 'factor' }
+    ]}
+  >
     <h3 class="fr-h6 mb-1!">{labels[name]}</h3>
     <p class="fr-text--sm mb-3! text-[--text-mention-grey]">{helps[name]}</p>
     <p class="fr-text--sm mb-3! gap-2 flex flex-wrap items-center">
@@ -392,17 +421,24 @@
       bind:value={draft[name] as string}
       min={kind === 'usd'
         ? 0.01
-        : kind === 'count' || name === 'all_per_session' || name === 'all_per_ip'
+        : kind === 'count' ||
+            kind === 'factor' ||
+            name === 'all_per_session' ||
+            name === 'all_per_ip'
           ? 1
           : 0}
-      max={kind === 'chars' || kind === 'count' ? INT_MAX : USD_MAX}
-      step={kind === 'chars' || kind === 'count' ? '1' : '0.01'}
+      max={kind === 'chars' || kind === 'count'
+        ? INT_MAX
+        : kind === 'factor'
+          ? FACTOR_MAX
+          : USD_MAX}
+      step={kind === 'chars' || kind === 'count' ? '1' : kind === 'factor' ? '0.1' : '0.01'}
       required
       groupClass="mb-0!"
     />
     {#if to !== null}
       {@const { text, big } = change(name, limit.value, to)}
-      {@const after = inMessages(name, to)}
+      {@const after = kind === 'factor' ? signedInRoom(to) : inMessages(name, to)}
       <p class="fr-text--sm mt-3! mb-0! font-bold">{text}</p>
       {#if after}
         <p class="fr-text--sm mt-1! mb-0!">{after}</p>
@@ -463,6 +499,8 @@
           <p class="fr-text--sm mb-0!">{m['admin.limits.thresholdKept']()}</p>
         {:else if kind === 'count'}
           <p class="fr-text--sm mb-0!">{m['admin.limits.inFlightKept']()}</p>
+        {:else if kind === 'factor'}
+          <p class="fr-text--sm mb-0!">{m['admin.limits.factorKept']()}</p>
         {:else}
           <p class="fr-text--sm mb-0!">{m['admin.limits.calibrate.none']()}</p>
         {/if}

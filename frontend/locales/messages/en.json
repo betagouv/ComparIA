@@ -842,6 +842,7 @@
             "isStored": "Changed",
             "newValue": "New value, in characters",
             "reset": "Back to default ({value})",
+            "signedInRoom": "Someone signed in gets {times} times more: {chars} characters for all models and {usd} for expensive ones, over two hours.",
             "apply": "Apply",
             "applying": "Saving…",
             "applied": "Limits saved.",
@@ -850,6 +851,7 @@
             "groups": {
                 "all": "All models",
                 "expensive": "Expensive models",
+                "signedIn": "Signed-in people",
                 "technical": "Technical settings"
             },
             "names": {
@@ -859,7 +861,8 @@
                 "expensive_per_ip": "Per network (school, company)",
                 "expected_answer_chars": "Reserved answer length",
                 "expensive_price_out": "Price threshold",
-                "in_flight_per_network": "Messages at once"
+                "in_flight_per_network": "Messages at once",
+                "signed_in_factor": "Extra room"
             },
             "help": {
                 "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
@@ -868,7 +871,8 @@
                 "expensive_per_ip": "The same limit, in dollars, for a whole network.",
                 "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted.",
                 "expensive_price_out": "A model counts as expensive once its output price, what a million tokens it writes cost, reaches this threshold. A model priced 0 never does. Each model's price is set in its own form.",
-                "in_flight_per_network": "How many messages one network may have the models answer at the same time. Past it, the message is refused and the person sends it again a few seconds later. A burst of messages sent at once can then not spend everything before their answers are counted."
+                "in_flight_per_network": "How many messages one network may have the models answer at the same time. Past it, the message is refused and the person sends it again a few seconds later. A burst of messages sent at once can then not spend everything before their answers are counted.",
+                "signed_in_factor": "What someone signed in to an account gets: the per-person limit times this number, for all models and expensive ones alike. Their messages then count on their account, no longer on their browser. The network limits stay the same."
             },
             "calibrate": {
                 "button": "Calibrate",
@@ -909,8 +913,11 @@
                 "none": "No price looks worth checking."
             },
             "expensiveOne": "At this threshold, one enabled model is expensive:",
+            "factorKept": "The calibration proposes no value here: it stays as you set it.",
             "unitCount": "{value} messages",
+            "unitFactor": "{value} times more",
             "newValueCount": "New value, in messages",
+            "newValueFactor": "New value, in number of times",
             "today": {
                 "spentNoCap": "{spent}, no cap",
                 "spentOfCap": "{spent} of {cap}",

@@ -349,9 +349,11 @@
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux :",
             "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
             "expensiveOne": "À ce seuil, un modèle activé est coûteux :",
+            "factorKept": "La calibration ne propose pas cette valeur : elle reste celle que vous avez choisie.",
             "groups": {
                 "all": "Tous les modèles",
                 "expensive": "Modèles coûteux",
+                "signedIn": "Personnes connectées",
                 "technical": "Réglages techniques"
             },
             "help": {
@@ -361,7 +363,8 @@
                 "expensive_per_ip": "La même limite, en dollars, pour tout un réseau.",
                 "expensive_per_session": "Ce que les modèles coûteux peuvent coûter pour une personne en deux heures, estimé d'après le prix de chaque modèle, à quatre caractères par jeton. Une réponse servie depuis le cache ne compte pas. Une fois la limite atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts.",
                 "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu'il écrit, atteint ce seuil. Un modèle à 0 ne l'est jamais. Le prix de chaque modèle se règle dans sa fiche.",
-                "in_flight_per_network": "Combien de messages un même réseau peut faire répondre aux modèles en même temps. Au-delà, le message est refusé et la personne le renvoie quelques secondes plus tard. Une rafale de messages envoyés d'un coup ne peut donc pas tout dépenser avant que leurs réponses soient comptées."
+                "in_flight_per_network": "Combien de messages un même réseau peut faire répondre aux modèles en même temps. Au-delà, le message est refusé et la personne le renvoie quelques secondes plus tard. Une rafale de messages envoyés d'un coup ne peut donc pas tout dépenser avant que leurs réponses soient comptées.",
+                "signed_in_factor": "Ce qu'a une personne connectée à son compte : la limite par personne multipliée par ce nombre, pour tous les modèles comme pour les modèles coûteux. Ses messages comptent alors sur son compte, et non plus sur son navigateur. Les limites par réseau ne changent pas."
             },
             "inFlightKept": "La calibration ne propose pas cette valeur : elle reste celle que vous avez choisie.",
             "isDefault": "Par défaut",
@@ -377,10 +380,12 @@
                 "expensive_per_ip": "Par réseau (école, entreprise)",
                 "expensive_per_session": "Par personne",
                 "expensive_price_out": "Seuil de prix",
-                "in_flight_per_network": "Messages en même temps"
+                "in_flight_per_network": "Messages en même temps",
+                "signed_in_factor": "Place en plus"
             },
             "newValue": "Nouvelle valeur, en caractères",
             "newValueCount": "Nouvelle valeur, en messages",
+            "newValueFactor": "Nouvelle valeur, en nombre de fois",
             "newValuePrice": "Nouveau seuil, en dollars par million de jetons écrits",
             "newValueUsd": "Nouvelle valeur, en dollars",
             "nothingToApply": "Aucune valeur n'a changé.",
@@ -400,6 +405,7 @@
             },
             "priceTag": "{name} · {price}",
             "reset": "Revenir au défaut ({value})",
+            "signedInRoom": "Une personne connectée a {times} fois plus : {chars} caractères pour tous les modèles et {usd} pour les modèles coûteux, en deux heures.",
             "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
             "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",
             "title": "Limites",
@@ -431,6 +437,7 @@
             },
             "unit": "{value} caractères",
             "unitCount": "{value} messages",
+            "unitFactor": "{value} fois plus",
             "unitPrice": "{value} par million de jetons écrits",
             "updated": "Dernière modification le {date} par {who}.",
             "updatedAt": "{day} à {time}",
