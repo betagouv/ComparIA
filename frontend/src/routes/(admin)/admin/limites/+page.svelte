@@ -212,7 +212,8 @@
     }
   }
 
-  async function save(patch: AdminLimitsPatch, done: string) {
+  /** Store `patch`; false when the server refused it. */
+  async function save(patch: AdminLimitsPatch, done: string): Promise<boolean> {
     saving = true
     try {
       await api.request<AdminLimits>('/admin/limits', {
@@ -220,14 +221,21 @@
         body: JSON.stringify(patch)
       })
       useToast(done, 4000)
-      calibration = null
       await invalidate('admin:limits')
-      // The fields show what is stored now.
-      draft = toDraft(data.limits)
+      return true
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')
+      return false
     } finally {
       saving = false
+    }
+  }
+
+  // Only this value goes back: what the admin typed elsewhere, and what
+  // "Calibrer" proposed, stay on screen until they apply or cancel.
+  async function reset(name: Name) {
+    if (await save({ [name]: null }, m['admin.limits.resetDone']())) {
+      draft[name] = String(byName[name].default)
     }
   }
 
@@ -243,7 +251,11 @@
     if (changedCaps.length) {
       patch.daily_usd_caps = Object.fromEntries(changedCaps.map((cap) => [cap.llm_id, cap.value]))
     }
-    await save(patch, m['admin.limits.applied']())
+    if (await save(patch, m['admin.limits.applied']())) {
+      calibration = null
+      // The fields show what is stored now.
+      draft = toDraft(data.limits)
+    }
   }
 
   function cancel() {
@@ -402,7 +414,7 @@
                     size="sm"
                     text={m['admin.limits.reset']({ value: shown(name, limit.default) })}
                     disabled={saving}
-                    onclick={() => save({ [name]: null }, m['admin.limits.resetDone']())}
+                    onclick={() => reset(name)}
                     class="mt-3 self-start"
                   />
                 {/if}
