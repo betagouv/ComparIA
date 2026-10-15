@@ -810,6 +810,7 @@
         "compareModels": {
             "count": "{count}/2 modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
+            "noneSelected": "Aucun modèle choisi : la comparaison se fera entre deux modèles aléatoires.",
             "question": "Quels modèles voulez-vous comparer ?"
         },
         "modelSelection": "Sélection des modèles",
