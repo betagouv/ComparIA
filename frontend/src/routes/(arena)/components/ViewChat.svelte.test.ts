@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/svelte'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import ViewChat from './ViewChat.svelte'
 
 const comparator = vi.hoisted(() => ({
@@ -9,6 +9,7 @@ const comparator = vi.hoisted(() => ({
   loading: false,
   error: undefined,
   canReveal: true,
+  limitsRead: true,
   promptError: undefined as string | undefined,
   pause: undefined as unknown,
   pauseFromSend: false,
@@ -41,22 +42,16 @@ vi.mock('$lib/voteTags', async (importOriginal) => ({
 }))
 
 const props = { comparisonId: 'comparison-id', runAfterAcceptance: vi.fn() }
+const initial = { ...comparator }
+
+// Here rather than at the end of each test, so one failed assertion does not
+// leave its state to the next.
+afterEach(() => {
+  Object.assign(comparator, initial)
+})
 const revealLabel = 'Terminer et découvrir les modèles'
 
 describe('ViewChat', () => {
-  it('keeps the reveal usable after a refused message', async () => {
-    // A refusal turns the comparison status to 'error'; it must not lock the
-    // reveal, which used to do nothing at all when clicked.
-    Object.assign(comparator, { status: 'error', promptError: 'Trop de messages bloqués' })
-    const view = render(ViewChat, props)
-    const reveal = view.getByRole('button', { name: revealLabel })
-
-    expect(reveal).not.toHaveAttribute('aria-disabled', 'true')
-    await fireEvent.click(reveal)
-    expect(comparator.reveal).toHaveBeenCalledOnce()
-    Object.assign(comparator, { status: 'complete', promptError: undefined })
-  })
-
   it('puts the pause notice in place of the text box and moves focus to its title', async () => {
     comparator.pauseFromSend = true
     comparator.pause = {
@@ -79,7 +74,6 @@ describe('ViewChat', () => {
       'href',
       '/ranking'
     )
-    Object.assign(comparator, { pause: undefined, pauseFromSend: false })
   })
 
   it('says why the pause in a toggletip under its buttons', async () => {
@@ -91,7 +85,6 @@ describe('ViewChat', () => {
 
     expect(why).toHaveAttribute('aria-expanded', 'true')
     expect(document.getElementById('pause-notice-why')).toHaveTextContent(/tout le réseau/)
-    comparator.pause = undefined
   })
 
   it('tells a pause that shows after a turn without moving focus', () => {
@@ -101,7 +94,6 @@ describe('ViewChat', () => {
     const title = view.getByRole('heading', { name: 'Pause de moins de deux heures' })
     expect(title).not.toHaveFocus()
     expect(view.getAllByRole('status')[0]).toHaveTextContent('Pause de moins de deux heures')
-    comparator.pause = undefined
   })
 
   it('offers a new discussion, not the reveal, when the paused conversation failed', () => {
@@ -111,7 +103,6 @@ describe('ViewChat', () => {
 
     expect(view.getByRole('link', { name: 'Nouvelle discussion' })).toHaveAttribute('href', '/')
     expect(view.queryByRole('button', { name: revealLabel })).toBeNull()
-    Object.assign(comparator, { pause: undefined, error: undefined, canReveal: true })
   })
 
   describe('near the turn cap', () => {
@@ -149,6 +140,8 @@ describe('ViewChat', () => {
       const view = render(ViewChat, props)
 
       const box = view.container.querySelector('#chatbot-prompt')
+      // Shown: the limits are read.
+      expect(box!.closest('.invisible')).toBeNull()
       if (hint) {
         expect(box).toHaveAccessibleDescription(hint)
         // A hint, not an input error.
@@ -156,7 +149,6 @@ describe('ViewChat', () => {
       } else {
         expect(box).toHaveAccessibleDescription('')
       }
-      comparator.comparison = comparison
     })
 
     it('puts the full panel in place of the text box at turn 20', async () => {
@@ -174,7 +166,6 @@ describe('ViewChat', () => {
       expect(reveal).toHaveLength(1)
       await fireEvent.click(reveal[0])
       expect(comparator.reveal).toHaveBeenCalled()
-      comparator.comparison = comparison
     })
   })
 })

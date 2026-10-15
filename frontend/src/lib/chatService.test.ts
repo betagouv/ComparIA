@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getComparison,
   parseAPIComparison,
@@ -51,6 +51,16 @@ vi.mock('svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('svelte')>()),
   createContext: () => [() => arena.comparisons, () => undefined]
 }))
+
+// Here rather than at the end of each test, so one failed assertion does not
+// leave the next test a refusal, a comparison or a fake clock.
+afterEach(() => {
+  ;(arena.limits as Limits).destroy()
+  arena.refusal = undefined
+  arena.comparisons = []
+  arena.events = []
+  vi.useRealTimers()
+})
 
 beforeEach(() => {
   arena.reads = []
@@ -165,7 +175,6 @@ describe('a refusal on an allowance', () => {
     expect(chat.promptError).toBeUndefined()
     expect(chat.pause).toMatchObject({ scope: 'network', resets_in: 4210 })
     expect(chat.canReveal).toBe(true)
-    ;(arena.limits as Limits).destroy()
   })
 
   it.each([
@@ -193,8 +202,6 @@ describe('a refusal on an allowance', () => {
     expect(chat.pause).toBeDefined()
     await vi.advanceTimersByTimeAsync(1)
     expect(chat.pause).toBeUndefined()
-    ;(arena.limits as Limits).destroy()
-    vi.useRealTimers()
   })
 
   it('shows a pause already spent before anyone sends, without taking focus', () => {
@@ -207,7 +214,6 @@ describe('a refusal on an allowance', () => {
 
     expect(home.pause?.scope).toBe('session')
     expect(home.pauseFromSend).toBe(false)
-    ;(arena.limits as Limits).destroy()
   })
 
   it('reads the limits again once a turn is through', async () => {
@@ -225,7 +231,6 @@ describe('a refusal on an allowance', () => {
     arena.comparisons = []
 
     await vi.waitFor(() => expect(chat.pause?.scope).toBe('network'))
-    ;(arena.limits as Limits).destroy()
   })
 
   it('keeps the reveal shut on a failed comparison', () => {

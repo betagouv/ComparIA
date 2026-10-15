@@ -4,7 +4,7 @@ import type { Spent } from '$lib/limits.svelte'
 import type { BotModel } from '$lib/models'
 import { expectNoDanglingAriaRefs } from '$lib/testing/a11y'
 import { fireEvent, render } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ModelSelector from './ModelSelector.svelte'
 import type { ModePause } from './pausedModes'
 
@@ -13,11 +13,19 @@ function model(id: string, name: string) {
   return { id, name, lab, badges: {}, search: name.toLowerCase() } as unknown as BotModel
 }
 const models = [model('gpt', 'GPT-5'), model('gemma', 'Gemma 4'), model('gemini', 'Gemini 3.1 Pro')]
-// Later today at whatever hour this runs, so the copy never says "demain".
-const at = new Date(new Date().setHours(23, 59, 0, 0)).toISOString()
+// Noon, and a pause that lifts later that day: the copy never says "demain",
+// whatever the hour the tests run.
+const NOON = new Date(2026, 9, 14, 12, 0)
+const at = new Date(2026, 9, 14, 23, 59).toISOString()
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(NOON)
+})
+afterEach(() => vi.useRealTimers())
 
 function expensive(scope: Spent['scope']): Spent {
-  return { scope, resets_at: at, resets_in: 3600, liftsAt: Date.now() + 3600_000 }
+  return { scope, resets_at: at, resets_in: 3600, liftsAt: NOON.getTime() + 3600_000 }
 }
 const paused = new Map<string, PausedLLM>([
   ['gpt', { id: 'gpt', until: at, reason: 'allowance' }],
