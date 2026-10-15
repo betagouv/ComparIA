@@ -4,7 +4,7 @@ Data validation models using Pydantic.
 
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.normalize import strip_hidden
@@ -69,6 +69,15 @@ class AddFirstTextBody(CaptchaBody):
         for llm_id in v:
             UUID(llm_id)
         return v
+
+    @model_validator(mode="after")
+    def custom_without_models_is_random(self) -> "AddFirstTextBody":
+        # Manual mode with nothing picked gets two random models from
+        # `pick_two`, so store it as what it is.
+        if self.mode == "custom" and not self.custom_models_selection:
+            self.mode = "random"
+            self.custom_models_selection = None
+        return self
 
     @field_validator("prompt_value")
     @classmethod

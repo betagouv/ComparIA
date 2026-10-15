@@ -5,7 +5,9 @@
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import type { BotModel } from '$lib/models'
+  import { onMount } from 'svelte'
   import { fade } from 'svelte/transition'
 
   let {
@@ -47,6 +49,19 @@
     } else {
       return choice.alt_label
     }
+  })
+
+  // Closing the modal in manual mode with nothing picked would send two random
+  // models labelled as a manual choice.
+  onMount(() => {
+    const el = document.getElementById('modal-mode-selection')
+    const fallBackToRandom = () => {
+      if (mode !== 'custom' || modelsSelection.length) return
+      mode = 'random'
+      useToast(m['arenaHome.compareModels.noneSelected'](), 5000)
+    }
+    el?.addEventListener('dsfr.conceal', fallBackToRandom)
+    return () => el?.removeEventListener('dsfr.conceal', fallBackToRandom)
   })
 
   function toggleModelSelection(): void {
@@ -183,7 +198,11 @@
                 {#snippet option(opt, labelProps, input)}
                   <label {...labelProps}>
                     {@render input(opt, {
-                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : ''
+                      'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : '',
+                      // An already checked radio fires no change event.
+                      onclick: () => {
+                        if (opt.value === 'custom') showModelsSelection = true
+                      }
                     })}
                     <Icon icon={opt.icon} block class="text-primary me-3" />
                     {#if opt.value != 'custom'}
