@@ -204,6 +204,8 @@ class AppSettings(SQLModel, table=True):
     limit_expected_answer_chars: int | None = None
     # Turns one network may have the models answer at once.
     limit_in_flight_per_network: int | None = None
+    # How many times the personal allowances a signed-in person gets.
+    limit_signed_in_factor: float | None = None
     # Who last changed an allowance, and when. Kept apart from updated_by,
     # which every other setting moves too.
     limits_updated_at: datetime | None = None

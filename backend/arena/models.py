@@ -165,13 +165,15 @@ class ArenaLimits(BaseModel):
 _INT_MAX = 2_147_483_647
 # Far above any allowance or price an arena needs, in dollars.
 _USD_MAX = 1_000_000
+# Far above any room an account needs over an anonymous session.
+_FACTOR_MAX = 1000
 
 
 class AdminLimit(BaseModel):
     """A limit in its unit: characters for the whole allowances and the
     reserved answer, US dollars for the expensive ones, US dollars per million
     output tokens for the threshold, turns for those a network may have
-    answered at once."""
+    answered at once, a number of times for the signed-in factor."""
 
     name: LimitSetting
     # In force: the stored value, else the default.
@@ -244,6 +246,10 @@ class AdminLimitsPatch(BaseModel):
     )
     expected_answer_chars: int | None = Field(default=None, ge=0, le=_INT_MAX)
     in_flight_per_network: int | None = Field(default=None, ge=1, le=_INT_MAX)
+    # Never below 1: signing in gives more room, not less.
+    signed_in_factor: float | None = Field(
+        default=None, ge=1, le=_FACTOR_MAX, allow_inf_nan=False
+    )
     # Daily caps of models, in US dollars, by id; null takes a cap off.
     daily_usd_caps: dict[UUID, DailyCap | None] | None = None
 

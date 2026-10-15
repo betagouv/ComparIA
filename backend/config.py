@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Annotated, Literal, get_args
 
 from httpx import Timeout
 from pydantic import (
+    Field,
     NonNegativeFloat,
     NonNegativeInt,
     PositiveFloat,
@@ -198,6 +199,12 @@ class Settings(BaseSettings):
     # pass before any long answer was counted. 40 lets a class of 35 send
     # together; past it, a message waits a few seconds.
     RATELIMIT_IN_FLIGHT_PER_NETWORK: PositiveInt = 40
+    # How many times the personal allowances, whole and expensive, a person
+    # signed in to an account gets. The counter then follows the account, and
+    # an account costs a sign-in, which has its own limits per IP and per
+    # address, where a fresh cookie costs nothing. The network allowances
+    # stay as they are: a school is the same school signed in or not.
+    RATELIMIT_SIGNED_IN_FACTOR: Annotated[float, Field(ge=1)] = 3.0
 
     # Response caching
     # Always on. Set the probability to 0 to stop serving cached answers in an

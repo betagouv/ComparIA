@@ -120,6 +120,7 @@ LimitSetting = Literal[
     "expensive_price_out",
     "expected_answer_chars",
     "in_flight_per_network",
+    "signed_in_factor",
 ]
 LIMIT_SETTINGS: tuple[LimitSetting, ...] = get_args(LimitSetting)
 
@@ -141,7 +142,7 @@ CHAR_SETTINGS: tuple[LimitSetting, ...] = (
     "expected_answer_chars",
 )
 # The whole numbers: characters, and a count of turns. The others are in
-# dollars.
+# dollars, but for the signed-in factor, a number of times.
 WHOLE_SETTINGS: tuple[LimitSetting, ...] = (*CHAR_SETTINGS, "in_flight_per_network")
 
 _stored: dict[LimitSetting, float] = {}
@@ -212,6 +213,10 @@ def expected_answer_chars() -> int:
 
 def in_flight_per_network() -> int:
     return int(setting("in_flight_per_network"))
+
+
+def signed_in_factor() -> float:
+    return setting("signed_in_factor")
 
 
 class Priced(Protocol):
