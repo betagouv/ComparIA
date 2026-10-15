@@ -4,6 +4,7 @@ reads back, and the operator's reset (no network, no real Redis).
 """
 
 import asyncio
+from uuid import uuid4
 
 import pytest
 from redis.exceptions import RedisError, ResponseError
@@ -272,7 +273,16 @@ def test_the_cli_refuses_a_reset_with_no_one_to_reset(caplog):
     with fake_redis(limits), pytest.raises(SystemExit) as exit:
         limits_reset()
     assert exit.value.code == 1
-    assert "Give --session, --ip or both." in caplog.text
+    assert "Give --session, --user, --ip, or several." in caplog.text
+
+
+def test_the_cli_shows_an_account_with_its_signed_in_room(caplog, monkeypatch):
+    monkeypatch.setattr(limits, "get_app_settings", no_stored_settings)
+    user = uuid4()
+    with fake_redis(limits), caplog.at_level("INFO", "comparia.arena"):
+        limits.reserve(Identity.of("sess-a", "1.1.1.1", user), {"all": 10})
+        asyncio.run(limits_show(user=user))
+    assert f"u:{user} all: 10 of 9,000,000, resets in 120 min" in caplog.text
 
 
 class Redis6(FakeRedis):
