@@ -997,6 +997,7 @@
                 "pausedReason": "You have used your share of this model. It comes back {at}.",
                 "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}.",
                 "trimmedFull": "Full for today, so we took {models} out of your selection.",
+                "trimmedFullToRandom": "Full for today, so we took {models} out of your selection and the comparison will be random.",
                 "trimmedOne": "{models} is paused for you {until}, so we took it out.",
                 "trimmedOneToRandom": "{models} is paused for you {until}, so we took it out and the comparison will be random.",
                 "trimmedTwo": "{models} are paused for you {until}, so we took them out.",

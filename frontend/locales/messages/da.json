@@ -888,6 +888,7 @@
                 "pausedReason": "Du har brugt din andel af denne model. Den kommer tilbage {at}.",
                 "pausedReasonNetwork": "Dit netværk har brugt sin andel af denne model. Den kommer tilbage {at}.",
                 "trimmedFull": "Fuld i dag, så vi har fjernet {models} fra dit valg.",
+                "trimmedFullToRandom": "Fuld i dag, så vi har fjernet {models} fra dit valg, og sammenligningen bliver tilfældig.",
                 "trimmedOne": "{models} er sat på pause for dig {until}, så vi har fjernet den.",
                 "trimmedOneToRandom": "{models} er sat på pause for dig {until}, så vi har fjernet den, og sammenligningen bliver tilfældig.",
                 "trimmedTwo": "{models} er sat på pause for dig {until}, så vi har fjernet dem.",

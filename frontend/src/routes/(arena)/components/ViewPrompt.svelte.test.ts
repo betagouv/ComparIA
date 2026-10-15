@@ -290,6 +290,54 @@ describe('ViewPrompt', () => {
     vi.useRealTimers()
   })
 
+  it('tells a full model and a paused one taken out of a pick each by its own reason', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 9, 14, 12, 0))
+    catalog.models = [
+      { id: 'full-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'paused-id', name: 'Kimi K3', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'open-a', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
+      { id: 'open-b', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['full-id', 'paused-id']))
+    const spent = expensiveSpent('paused-id')
+    arena.limits = createLimits({
+      ...spent,
+      paused_llms: [
+        ...spent.paused_llms,
+        { id: 'full-id', until: '2026-10-14T22:00:00Z', reason: 'full' }
+      ]
+    })
+
+    const view = render(ViewPrompt, props)
+
+    await view.findAllByText(/Complet aujourd'hui/)
+    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
+      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection\. Kimi K3 est en pause pour vous jusqu'à 13\sh\s00, on l'a retiré, la comparaison sera aléatoire\. Pourquoi \?$/
+    )
+    ;(arena.limits as Limits).destroy()
+    vi.useRealTimers()
+  })
+
+  it('says the comparison goes random when a full model empties the pick', async () => {
+    catalog.models = [{ id: 'full-id', name: 'GPT-5', status: 'enabled', lab, badges }]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['full-id']))
+    arena.limits = createLimits({
+      total: null,
+      expensive: null,
+      paused_llms: [{ id: 'full-id', until: '2026-10-14T22:00:00Z', reason: 'full' }]
+    })
+
+    const view = render(ViewPrompt, props)
+
+    await view.findAllByText(/Complet aujourd'hui/)
+    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
+      /^Complet aujourd'hui : on a retiré GPT-5 de votre sélection, la comparaison sera aléatoire\. Pourquoi \?$/
+    )
+  })
+
   it('takes a paused model out of a ?vs= link once the limits are read, back to random', async () => {
     catalog.models = [
       {

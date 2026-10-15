@@ -73,6 +73,12 @@
   // changes the mode or the models.
   let trimmed = $state.raw<Extract<PickPause, { kind: 'trimmed' }>>()
 
+  function names(ids: string[]): string[] {
+    return ids
+      .map((id) => models.find((llm) => llm.id === id)?.name)
+      .filter((name): name is string => !!name)
+  }
+
   const modesPaused = $derived(pausedModes(models, limits.paused))
   const modePaused = $derived(mode.value !== 'custom' && modesPaused.has(mode.value))
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting || modePaused)
@@ -86,17 +92,23 @@
   // A refused send, told the same way and focused, since nothing started.
   const refusalPause = $derived.by((): PickPause | undefined => {
     if (!shownRefusal) return undefined
-    const { llm_ids = [], resets_at, scope } = shownRefusal.limit
+    const { detail, limit } = shownRefusal
+    const { llm_ids = [], resets_at, scope } = limit
     if (!llm_ids.length) return { kind: 'mode', until: resets_at }
+    // Each model by its own reason, read from the limits once they are
+    // read again after the refusal, and from the refusal until then.
+    const isFull = (id: string) => {
+      const reason = limits.paused.get(id)?.reason
+      return reason ? reason === 'full' : detail === 'model_full_today'
+    }
+    const allowance = detail === 'expensive_allowance_spent'
     return {
       kind: 'trimmed',
-      names: llm_ids
-        .map((id) => models.find((llm) => llm.id === id)?.name)
-        .filter((name): name is string => !!name),
-      until: resets_at,
-      full: shownRefusal.detail === 'model_full_today',
+      full: names(llm_ids.filter(isFull)),
+      paused: names(llm_ids.filter((id) => !isFull(id))),
+      until: allowance ? resets_at : (limits.expensive?.resets_at ?? null),
       toRandom,
-      network: scope === 'network'
+      network: (allowance ? scope : limits.expensive?.scope) === 'network'
     }
   })
   const modeInfos = getModeInfos()
@@ -113,18 +125,17 @@
       if (mode.value !== 'custom') return
       const left = modelsSelection.value.length > 0
       if (!left) mode.value = 'random'
-      const pauses = out.map((id) => limits.paused.get(id)!)
-      const until = pauses
-        .map((llm) => llm.until)
+      const isFull = (id: string) => limits.paused.get(id)!.reason === 'full'
+      const until = out
+        .filter((id) => !isFull(id))
+        .map((id) => limits.paused.get(id)!.until)
         .filter((until): until is string => !!until)
         .sort()[0]
       trimmed = {
         kind: 'trimmed',
-        names: out
-          .map((id) => models.find((llm) => llm.id === id)?.name)
-          .filter((name): name is string => !!name),
+        full: names(out.filter(isFull)),
+        paused: names(out.filter((id) => !isFull(id))),
         until: until ?? null,
-        full: pauses.every((llm) => llm.reason === 'full'),
         toRandom: !left,
         network: limits.expensive?.scope === 'network'
       }

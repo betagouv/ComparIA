@@ -997,6 +997,7 @@
                 "pausedReason": "Vous avez utilisé votre part de ce modèle. Il revient {at}.",
                 "pausedReasonNetwork": "Votre réseau a utilisé sa part de ce modèle. Il revient {at}.",
                 "trimmedFull": "Complet aujourd'hui : on a retiré {models} de votre sélection.",
+                "trimmedFullToRandom": "Complet aujourd'hui : on a retiré {models} de votre sélection, la comparaison sera aléatoire.",
                 "trimmedOne": "{models} est en pause pour vous {until}, on l'a retiré.",
                 "trimmedOneToRandom": "{models} est en pause pour vous {until}, on l'a retiré, la comparaison sera aléatoire.",
                 "trimmedTwo": "{models} sont en pause pour vous {until}, on les a retirés.",
