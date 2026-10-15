@@ -1,3 +1,4 @@
+import { m } from '$lib/i18n/messages'
 import sanitizeHtml from 'sanitize-html'
 
 export const noop = () => {}
@@ -77,13 +78,9 @@ export function selectRandomFromArray<T>(array: T[]): T | undefined {
  Try to get translation but do not error out and use default if any
  */
 export function tryI18n(key: string, default_?: string): string | undefined {
-  try {
-    // @ts-expect-error - fallback if error
-    return m[`generated.${key}`]()
-  } catch (_e) {
-    // FIXME throw error?
-    return default_
-  }
+  const messages = m as unknown as Record<string, (() => string) | undefined>
+  const message = messages[`generated.${key}`]
+  return message ? message() : default_
 }
 
 // Typescript object helpers

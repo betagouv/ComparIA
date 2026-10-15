@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { overwriteGetLocale } from '$lib/i18n/runtime'
 import { getFormFields } from './form'
 
 describe('JSON-schema form fields', () => {
@@ -62,5 +63,19 @@ describe('JSON-schema form fields', () => {
         expect.objectContaining({ id: 'created_at', required: false })
       ])
     )
+  })
+
+  it('labels a field from the translations of the locale in force', () => {
+    const schema = {
+      type: 'object' as const,
+      properties: { daily_usd_cap: { type: 'number' as const, title: 'Schema title' } }
+    }
+    overwriteGetLocale(() => 'en')
+    const [en] = getFormFields(schema, 'llm_upsert')
+    overwriteGetLocale(() => 'da')
+    const [da] = getFormFields(schema, 'llm_upsert')
+    overwriteGetLocale(() => 'fr')
+
+    expect([en.label, da.label]).toEqual(['Daily cap (USD)', 'Dagligt loft (USD)'])
   })
 })
