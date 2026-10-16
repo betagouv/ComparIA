@@ -510,4 +510,23 @@ describe('ViewPrompt', () => {
     await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
     expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
   })
+
+  it('says nothing in random mode once the expensive allowance is spent', async () => {
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
+      { id: 'other-cheap-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+    ]
+    arena.limits = createLimits(expensiveSpent('expensive-id'))
+
+    const view = render(ViewPrompt, props)
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+
+    // The draw leaves the expensive models out on its own.
+    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(view.container).not.toHaveTextContent(/en pause|\bcomplet\b/i)
+    expect(view.getAllByRole('status')[0].textContent).toBe('')
+    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+    ;(arena.limits as Limits).destroy()
+  })
 })
