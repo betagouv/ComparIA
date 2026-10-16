@@ -70,13 +70,8 @@ describe('ModelSelector', () => {
 
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(gemma).not.toHaveAttribute('aria-disabled')
-    // One model paused for the person, one full for everyone.
-    const hint = view.container.querySelector('#picker-paused-hint')!
-    expect(hint).toHaveTextContent(
-      /^1 modèle en pause pour vous jusqu'à \d+\sh\s\d+, 1 complet aujourd'hui\. Pourquoi \?$/
-    )
-    await fireEvent.click(view.getByRole('button', { name: 'Pourquoi ?', hidden: true }))
-    expect(hint).toHaveTextContent(/chacun peut envoyer un nombre limité de messages/)
+    // Nothing over the list counts them.
+    expect(view.container.querySelector('#picker-paused-hint')).toBeNull()
     expectNoDanglingAriaRefs(view.container)
   })
 
@@ -120,19 +115,7 @@ describe('ModelSelector', () => {
     expect(view.container.querySelector('.cl-selector__reason')).toBeNull()
   })
 
-  it('counts the models paused for the allowance, not the full ones', async () => {
-    const two = new Map<string, PausedLLM>([
-      ...paused,
-      ['gemma', { id: 'gemma', until: at, reason: 'allowance' }]
-    ])
-    const view = await openModels({ expensive: expensive('session'), paused: two })
-
-    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
-      /^2 modèles en pause pour vous/
-    )
-  })
-
-  it('writes a time after midnight as "demain à 1 h 30", on the chip and in the header', async () => {
+  it('writes a time after midnight as "demain à 1 h 30"', async () => {
     const late = new Date(2026, 9, 15, 1, 30).toISOString()
     const view = await openModels({
       expensive: { ...expensive('session'), resets_at: late },
@@ -142,26 +125,11 @@ describe('ModelSelector', () => {
     expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).toHaveAccessibleName(
       /En pause · demain à 1\sh\s30$/
     )
-    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
-      /^1 modèle en pause pour vous jusqu'à demain à 1\sh\s30\./
-    )
-  })
-
-  it('counts only the full models when nothing is paused for the person', async () => {
-    const full = new Map([...paused].filter(([, llm]) => llm.reason === 'full'))
-    const view = await openModels({ paused: full })
-
-    const hint = view.container.querySelector('#picker-paused-hint')!
-    expect(hint).toHaveTextContent(/^1 modèle complet aujourd'hui\. Pourquoi \?$/)
-    expect(hint.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
   })
 
   it('tells a network it has used its share', async () => {
     const view = await openModels({ expensive: expensive('network') })
 
-    expect(view.container.querySelector('#picker-paused-hint')).toHaveTextContent(
-      /pour votre réseau/
-    )
     expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).toHaveAccessibleDescription(
       /^Votre réseau a utilisé sa part de ce modèle\./
     )

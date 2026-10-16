@@ -9,7 +9,6 @@
   import { FULL_ICON, PAUSED_ICON, type Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
-  import LimitHint from './LimitHint.svelte'
   import type { ModePause } from './pausedModes'
   import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
@@ -78,48 +77,6 @@
     const reason = m['arene.limits.mode.reason']({ at: reset.at })
     return { chip: chip(reset), icon: PAUSED_ICON, reset, reason: spoken(reason, reset) }
   }
-
-  // The line under the help text: how many cards are paused, how many full,
-  // and why.
-  const header = $derived.by(() => {
-    const all = [...paused.values()]
-    const count = all.filter((llm) => llm.reason === 'allowance').length
-    const full = all.filter((llm) => llm.reason === 'full').length
-    if (!expensive || !count) {
-      if (!full) return undefined
-      return {
-        reset: resetTime(null),
-        icon: FULL_ICON,
-        text: m[full > 1 ? 'arene.limits.picker.onlyFullMany' : 'arene.limits.picker.onlyFullOne']({
-          count: full
-        }),
-        why: m['arene.limits.picker.whyFull']()
-      }
-    }
-    const reset = resetTime(expensive.resets_at)
-    const network = expensive.scope === 'network'
-    const key =
-      count === 1
-        ? network
-          ? 'arene.limits.picker.headerOneNetwork'
-          : 'arene.limits.picker.headerOne'
-        : network
-          ? 'arene.limits.picker.headerManyNetwork'
-          : 'arene.limits.picker.headerMany'
-    const pausedText = m[key]({ count, until: reset.until })
-    const why = m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
-    if (!full) return { reset, text: m['arene.limits.picker.header']({ paused: pausedText }), why }
-    return {
-      reset,
-      text: m['arene.limits.picker.headerWithFull']({
-        paused: pausedText,
-        full: m[full > 1 ? 'arene.limits.picker.fullMany' : 'arene.limits.picker.fullOne']({
-          count: full
-        })
-      }),
-      why: `${why} ${m['arene.limits.picker.whyFull']()}`
-    }
-  })
 
   // The paused card last tapped, which then shows its reason.
   let triedMode = $state<Mode>()
@@ -286,9 +243,6 @@
                     <p class="mb-0!">
                       {m['arenaHome.compareModels.help']()}
                     </p>
-                    {#if header}
-                      <LimitHint id="picker-paused-hint" {...header} class="mt-2" />
-                    {/if}
                   </div>
 
                   <Search
