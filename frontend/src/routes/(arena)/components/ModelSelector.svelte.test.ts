@@ -58,11 +58,11 @@ describe('ModelSelector', () => {
     // Still in the tab order, announced as unavailable with its note.
     expect(gpt).toBeEnabled()
     expect(gpt).toHaveAttribute('aria-disabled', 'true')
-    expect(gpt).toHaveAccessibleDescription(/^En pause jusqu'à \d+\sh\s\d+$/)
+    expect(gpt).toHaveAccessibleDescription(/^En pause jusqu'à\s\d+\sh\s\d+$/)
     // The card's name stays the model's.
     expect(gpt).toHaveAccessibleName('Lab/GPT-5')
     const note = card(gpt).querySelector<HTMLElement>('.cl-pause-line')!
-    expect(note).toHaveTextContent(/^En pause jusqu'à \d+\sh\s\d+$/)
+    expect(note).toHaveTextContent(/^En pause jusqu'à\s\d+\sh\s\d+$/)
     expect(note.querySelector('time')).toHaveAttribute('datetime', at)
 
     const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
@@ -132,7 +132,7 @@ describe('ModelSelector', () => {
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
     expect(card(mode)).toHaveClass('cl-unavailable')
     expect(mode).toHaveAttribute('aria-disabled', 'true')
-    expect(mode).toHaveAccessibleDescription(/^En pause jusqu'à \d+\sh\s\d+$/)
+    expect(mode).toHaveAccessibleDescription(/^En pause jusqu'à\s\d+\sh\s\d+$/)
     expect(mode).toHaveAttribute('aria-controls', '')
 
     await fireEvent.click(mode)

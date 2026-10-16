@@ -34,7 +34,11 @@
     <Icon {icon} size="md" block />
   </span>
   <!-- Shown before anyone sends, it is part of the page and leaves focus alone. -->
-  <svelte:element this={`h${level}`} class="fr-h6 mb-2!" {@attach focusOnShow(() => focusTitle)}>
+  <svelte:element
+    this={`h${level}`}
+    class="fr-h6 mb-2! text-balance"
+    {@attach focusOnShow(() => focusTitle)}
+  >
     {@render title()}
   </svelte:element>
   <p class="fr-text--sm mb-6!">{text}</p>

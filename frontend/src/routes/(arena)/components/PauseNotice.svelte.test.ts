@@ -68,4 +68,14 @@ describe('PauseNotice', () => {
     state.signedInFactor = 1
     expect(render(PauseNotice, { pause: session }).queryByText(signIn)).toBeNull()
   })
+
+  it('keeps the time on the line of the word before it, in a balanced title', () => {
+    const at = new Date()
+    at.setHours(at.getHours() < 22 ? at.getHours() + 1 : at.getHours(), 24, 0, 0)
+    const view = render(PauseNotice, { pause: { ...session, resets_at: at.toISOString() } })
+
+    const title = view.getByRole('heading')
+    expect(title.textContent).toMatch(/ à\u00a0\d+\u00a0h\u00a024$/)
+    expect(title).toHaveClass('text-balance')
+  })
 })
