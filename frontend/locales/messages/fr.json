@@ -347,6 +347,7 @@
                 "title": "Appliquer ces changements ?"
             },
             "current": "Valeur actuelle : {value}",
+            "expensiveCount": "À ce seuil, {count} modèles activés sont coûteux.",
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux :",
             "expensiveNone": "À ce seuil, aucun modèle activé n’est coûteux.",
             "expensiveOne": "À ce seuil, un modèle activé est coûteux :",
@@ -391,8 +392,11 @@
             "newValueUsd": "Nouvelle valeur, en dollars",
             "nothingToApply": "Aucune valeur n’a changé.",
             "priceAdded": "(ajouté par ce seuil)",
+            "priceChanges": "Ce seuil en ajoute {added} et en retire {removed}.",
+            "priceChangesAdded": "Ce seuil en ajoute {count}.",
+            "priceChangesRemoved": "Ce seuil en retire {count}.",
+            "priceListShow": "Voir les {count} modèles",
             "priceRemoved": "(retiré par ce seuil)",
-            "priceTag": "{name} · {price}",
             "prices": {
                 "intro": "Ce que comptent les modèles coûteux vient de ces prix. Vérifiez-les dans la fiche de chaque modèle.",
                 "issues": {
@@ -405,6 +409,7 @@
                 "none": "Aucun prix ne semble à vérifier.",
                 "title": "Prix à vérifier"
             },
+            "priceTag": "{name} · {price}",
             "reset": "Revenir au défaut ({value})",
             "signedInRoom": "Une personne connectée a {times} fois plus : {chars} caractères pour tous les modèles et {usd} pour les modèles coûteux, en deux heures.",
             "subtitle": "Ce qu’une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s’applique à toute l’arène en moins d’une minute.",

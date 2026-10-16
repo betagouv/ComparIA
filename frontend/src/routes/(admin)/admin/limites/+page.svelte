@@ -140,6 +140,18 @@
       }))
       .sort((a, b) => b.price_out - a.price_out)
   })
+  // Past this many models, the list folds away behind its count.
+  const LIST_OPEN_MAX = 8
+  // How many the threshold being typed adds or takes out, against the one stored.
+  const priceChanges = $derived.by(() => {
+    const added = priceTags.filter((llm) => llm.change === 'added').length
+    const removed = priceTags.filter((llm) => llm.change === 'removed').length
+    if (added && removed)
+      return m['admin.limits.priceChanges']({ added: String(added), removed: String(removed) })
+    if (added) return m['admin.limits.priceChangesAdded']({ count: String(added) })
+    if (removed) return m['admin.limits.priceChangesRemoved']({ count: String(removed) })
+    return undefined
+  })
 
   // Read from too few periods or answers to trust: nothing is filled or armed
   // on its own, each proposal waits for "Utiliser cette valeur".
@@ -393,6 +405,33 @@
   }
 </script>
 
+{#snippet priceList()}
+  <ul class="fr-badges-group mb-0! mt-2!">
+    {#each priceTags as llm (llm.id)}
+      <li>
+        <Badge
+          size="sm"
+          variant={llm.change === 'added' ? 'info' : ''}
+          class={['normal-case!', { 'line-through': llm.change === 'removed' }]}
+        >
+          {#if llm.change}<span aria-hidden="true">{llm.change === 'added' ? '+' : '−'}&nbsp;</span
+            >{/if}{m['admin.limits.priceTag']({
+            name: llm.name,
+            price: dollars.format(llm.price_out)
+          })}
+          {#if llm.change}
+            <span class="sr-only">
+              {m[
+                llm.change === 'added' ? 'admin.limits.priceAdded' : 'admin.limits.priceRemoved'
+              ]()}
+            </span>
+          {/if}
+        </Badge>
+      </li>
+    {/each}
+  </ul>
+{/snippet}
+
 {#snippet card(name: Name)}
   {@const limit = byName[name]}
   {@const proposal = proposals[name]}
@@ -455,37 +494,22 @@
       {/if}
     {/if}
     {#if kind === 'price'}
+      {@const folded = priceTags.length > LIST_OPEN_MAX}
       <p class="fr-text--sm mt-3! mb-2!" aria-live="polite">
-        {expensiveText(expensiveLLMs)}
+        {folded
+          ? m['admin.limits.expensiveCount']({ count: String(expensiveLLMs.length) })
+          : expensiveText(expensiveLLMs)}
+        {#if priceChanges}<br />{priceChanges}{/if}
       </p>
-      {#if priceTags.length}
-        <ul class="fr-badges-group mb-0!">
-          {#each priceTags as llm (llm.id)}
-            <li>
-              <Badge
-                size="sm"
-                variant={llm.change === 'added' ? 'info' : ''}
-                class={['normal-case!', { 'line-through': llm.change === 'removed' }]}
-              >
-                {#if llm.change}<span aria-hidden="true"
-                    >{llm.change === 'added' ? '+' : '−'}&nbsp;</span
-                  >{/if}{m['admin.limits.priceTag']({
-                  name: llm.name,
-                  price: dollars.format(llm.price_out)
-                })}
-                {#if llm.change}
-                  <span class="sr-only">
-                    {m[
-                      llm.change === 'added'
-                        ? 'admin.limits.priceAdded'
-                        : 'admin.limits.priceRemoved'
-                    ]()}
-                  </span>
-                {/if}
-              </Badge>
-            </li>
-          {/each}
-        </ul>
+      {#if folded}
+        <details class="cl-price-list">
+          <summary class="fr-text--sm">
+            {m['admin.limits.priceListShow']({ count: String(priceTags.length) })}
+          </summary>
+          {@render priceList()}
+        </details>
+      {:else if priceTags.length}
+        {@render priceList()}
       {/if}
     {/if}
     {#if calibration && (proposal || kind !== 'price' || to === null)}
@@ -703,6 +727,13 @@
 <style>
   .proposal {
     background-color: var(--background-contrast-info);
+  }
+
+  .cl-price-list summary {
+    cursor: pointer;
+    color: var(--text-action-high-blue-france);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .cl-limit-actions {

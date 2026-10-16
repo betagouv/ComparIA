@@ -945,7 +945,12 @@
                 "highest": "at most {value} in one day",
                 "restsAtOnce": "Below what it already cost today: applying it makes the model full at once, for everyone."
             },
-            "inFlightKept": "The calibration proposes no value here: it stays as you set it."
+            "inFlightKept": "The calibration proposes no value here: it stays as you set it.",
+            "expensiveCount": "At this threshold, {count} enabled models are expensive.",
+            "priceListShow": "Show the {count} models",
+            "priceChanges": "This threshold adds {added} and takes out {removed}.",
+            "priceChangesAdded": "This threshold adds {count}.",
+            "priceChangesRemoved": "This threshold takes out {count}."
         }
     },
     "arenaHome": {

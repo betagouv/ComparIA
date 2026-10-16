@@ -383,4 +383,37 @@ describe('limits page', () => {
     // Typed over, the threshold is no longer the one "Calibrer" kept.
     expect(card).not.toHaveTextContent('La calibration ne propose pas de seuil')
   })
+
+  it('folds a long list behind its count, and counts what the threshold changes', async () => {
+    const many = {
+      ...limits,
+      // 2 $ to 13 $: 6 at or above the threshold of 8 $ in force.
+      llms: Array.from({ length: 12 }, (_, i) => ({
+        id: `m${i}`,
+        name: `Modèle ${i}`,
+        price_in: 1,
+        price_out: i + 2
+      }))
+    } as unknown as AdminLimits
+    const view = render(Page, { data: { limits: many, usage } } as unknown as PageProps)
+    const field = view.container.querySelector<HTMLInputElement>('#limit-expensive_price_out')!
+    const card = field.closest<HTMLElement>('.cg-border')!
+
+    // Six: listed as they are, nothing changes.
+    expect(card.querySelector('details')).toBeNull()
+    expect(card).not.toHaveTextContent(/Ce seuil en/)
+
+    await fireEvent.input(field, { target: { value: '3' } })
+
+    expect(card).toHaveTextContent('À ce seuil, 11 modèles activés sont coûteux.')
+    expect(card).toHaveTextContent('Ce seuil en ajoute 5.')
+    const folded = card.querySelector('details')!
+    expect(folded).not.toHaveAttribute('open')
+    expect(within(folded).getByText('Voir les 11 modèles')).toBeInTheDocument()
+    // Only the five it adds are marked.
+    expect(folded.querySelectorAll('.sr-only')).toHaveLength(5)
+
+    await fireEvent.input(field, { target: { value: '10' } })
+    expect(card).toHaveTextContent('Ce seuil en retire 2.')
+  })
 })
