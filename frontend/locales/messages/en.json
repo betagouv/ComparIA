@@ -995,13 +995,6 @@
             "too_many_at_once": "Many messages are leaving your network right now. Send yours again in a few seconds."
         },
         "limits": {
-            "mode": {
-                "change": "Change mode",
-                "hint": "This mode is paused for you {until}, pick another one.",
-                "hintFull": "This mode's models have had a lot of messages today: it comes back tomorrow, pick another one.",
-                "why": "It needs models that cost more to run. To keep compar:IA free for everyone, each person can send them a limited number of messages every two hours.",
-                "whyFull": "To keep compar:IA free for everyone, each model answers a limited number of messages a day. The other modes stay open."
-            },
             "pause": {
                 "models": "Discover the models",
                 "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. Until then, you can look at the leaderboard or discover the models.",

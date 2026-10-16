@@ -84,21 +84,25 @@
   }
 
   const modePauses = $derived(pausedModes(models, limits.paused))
-  const modePause = $derived(mode.value === 'custom' ? undefined : modePauses.get(mode.value))
-  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || !!modePause)
+  // Random too has nothing to draw: only when nearly every model is paused.
+  const stuck = $derived(mode.value !== 'custom' && modePauses.has(mode.value))
+  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || stuck)
   const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
   // Before anyone sends; a refusal, when there is one, already says it all.
-  const pickPause = $derived.by((): PickPause | undefined => {
-    if (shownRefusal) return undefined
-    return modePause ? { kind: 'mode', ...modePause } : trimmed
-  })
+  const pickPause = $derived(shownRefusal ? undefined : trimmed)
   // A refused send, told the same way and focused, since nothing started.
   const refusalPause = $derived.by((): PickPause | undefined => {
-    if (!shownRefusal) return undefined
-    const { detail, limit } = shownRefusal
-    if (!limit.llm_ids?.length)
-      return { kind: 'mode', until: limit.resets_at, full: detail === 'model_full_today' }
-    return trimmedPause(limit.llm_ids, toRandom, shownRefusal)
+    const ids = shownRefusal?.limit.llm_ids
+    if (!ids?.length) return undefined
+    return trimmedPause(ids, toRandom, shownRefusal)
+  })
+
+  // A saved mode left with nothing to draw goes back to random, unsaid: its
+  // card in the mode list says why, and Envoyer works.
+  $effect(() => {
+    if (mode.value !== 'custom' && mode.value !== 'random' && modePauses.has(mode.value)) {
+      untrack(() => (mode.value = 'random'))
+    }
   })
 
   /**

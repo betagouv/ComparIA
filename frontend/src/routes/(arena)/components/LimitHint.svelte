@@ -12,7 +12,6 @@
     reset,
     why,
     icon,
-    action,
     focusOnShow: focus = false,
     class: className
   }: {
@@ -22,8 +21,6 @@
     reset?: ResetTime
     /** Left out, it is a helper line, as quiet as the text box's own hint. */
     icon?: string
-    /** A way out, before "Pourquoi ?": a button that opens the dialog it controls. */
-    action?: { label: string; controls: string }
     /** What "Pourquoi ?" opens. */
     why?: string
     /** It answers a send that did not start: focus it, or nothing tells why. */
@@ -46,16 +43,6 @@
   {/if}
   <span>
     <TimedText {text} {reset} />
-    {#if action}
-      <button
-        type="button"
-        class="cl-limit-hint__action fr-link fr-text--sm ms-1"
-        aria-controls={action.controls}
-        data-fr-opened="false"
-      >
-        {action.label}
-      </button>
-    {/if}
     {#if why}
       <Toggletip id="{id}-why" label={m['arene.limits.why']()} text={why} class="ms-1" />
     {/if}
@@ -65,24 +52,5 @@
 <style>
   .cl-limit-hint {
     color: var(--text-mention-grey);
-  }
-
-  /* As "Pourquoi ?" is: underlined, with a 44px tap area. */
-  .cl-limit-hint__action {
-    --idle: transparent;
-    --hover: transparent;
-    --active: transparent;
-    padding: 0.625rem 0;
-    margin-block: -0.625rem;
-    font-size: inherit;
-    line-height: inherit;
-    background-image: none;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-
-    &:hover {
-      text-decoration-thickness: 2px;
-    }
   }
 </style>

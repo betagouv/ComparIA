@@ -18,15 +18,8 @@
     network: boolean
   }
 
-  /** What the home form changed, or cannot do, for models paused for the person. */
-  export type PickPause =
-    | TrimmedPause
-    | {
-        kind: 'mode'
-        until: string | null
-        /** Its models are full for the day, for everyone, not paused for this person. */
-        full: boolean
-      }
+  /** What the home form changed for models paused for the person. */
+  export type PickPause = TrimmedPause
 
   const TRIMMED = {
     one: {
@@ -74,20 +67,6 @@
 
   function copy(pause: PickPause): { reset: ResetTime; text: string; why: string } {
     const reset = resetTime(pause.until)
-    if (pause.kind === 'mode' && pause.full) {
-      return {
-        reset,
-        text: m['arene.limits.mode.hintFull'](),
-        why: m['arene.limits.mode.whyFull']()
-      }
-    }
-    if (pause.kind === 'mode') {
-      return {
-        reset,
-        text: m['arene.limits.mode.hint']({ until: reset.until }),
-        why: m['arene.limits.mode.why']()
-      }
-    }
     // Each model is told by its own reason, in one sentence: a full one is
     // back at midnight for everyone, a paused one when this person's
     // allowance lifts. The comparison going random is said once, at the end.
@@ -135,15 +114,4 @@
   const { reset, text, why } = $derived(copy(pause))
 </script>
 
-<!-- A paused mode can only be changed, and the mode button may be far up the
-     page on a phone. -->
-<LimitHint
-  id="pick-paused-notice"
-  {text}
-  {reset}
-  {why}
-  {focusOnShow}
-  action={pause.kind === 'mode'
-    ? { label: m['arene.limits.mode.change'](), controls: 'modal-mode-selection' }
-    : undefined}
-/>
+<LimitHint id="pick-paused-notice" {text} {reset} {why} {focusOnShow} />

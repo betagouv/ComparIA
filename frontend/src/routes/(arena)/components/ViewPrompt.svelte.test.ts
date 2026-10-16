@@ -1,7 +1,7 @@
 import { api } from '$lib/fastapi-client'
 import type { ArenaLimits } from '$lib/generated/backend'
 import { createLimits, type Limits } from '$lib/limits.svelte'
-import { fireEvent, render, within } from '@testing-library/svelte'
+import { fireEvent, render } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ViewPrompt from './ViewPrompt.svelte'
 
@@ -429,58 +429,45 @@ describe('ViewPrompt', () => {
     limits.destroy()
   })
 
-  it('says a mode is paused before anyone sends when it has nothing left to draw', async () => {
-    catalog.models = [
-      { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
-      { id: 'small-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
-      { id: 'other-small-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+  it.each([
+    ['paused for the person', expensiveSpent('big-id')],
+    [
+      'full for the day',
+      {
+        total: null,
+        expensive: null,
+        signed_in_factor: 3,
+        paused_llms: [{ id: 'big-id', until: '2026-10-14T22:00:00Z', reason: 'full' as const }]
+      }
     ]
-    localStorage.setItem('mode', 'big-vs-small')
-    arena.limits = createLimits(expensiveSpent('big-id'))
+  ])(
+    'goes back to random, unsaid, when a saved mode has nothing left to draw (%s)',
+    async (_, read: ArenaLimits) => {
+      catalog.models = [
+        { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+        { id: 'small-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
+        { id: 'other-small-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+      ]
+      localStorage.setItem('mode', 'big-vs-small')
+      arena.limits = createLimits(read)
 
-    const view = render(ViewPrompt, props)
-    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+      const view = render(ViewPrompt, props)
+      await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
 
-    const notice = view.container.querySelector('#pick-paused-notice')
-    expect(notice).toHaveTextContent(
-      /^Ce mode est en pause pour vous jusqu'à .*, choisissez-en un autre\./
-    )
-    expect(notice).not.toHaveFocus()
-    expect(view.getByRole('button', { name: 'Envoyer' })).toBeDisabled()
-    // A way to the mode list from the hint, before "Pourquoi ?".
-    const change = within(notice as HTMLElement).getByRole('button', { name: 'Changer de mode' })
-    expect(change).toHaveAttribute('aria-controls', 'modal-mode-selection')
-    expect(notice).toHaveTextContent(/choisissez-en un autre\. Changer de mode Pourquoi \?$/)
-
-    await fireEvent.click(view.getByRole('radio', { name: /Aléatoire/, hidden: true }))
-    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
-    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
-    ;(arena.limits as Limits).destroy()
-  })
-
-  it('says a mode is full for today, not paused for the person, when its models are full', async () => {
-    catalog.models = [
-      { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
-      { id: 'small-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
-      { id: 'other-small-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
-    ]
-    localStorage.setItem('mode', 'big-vs-small')
-    arena.limits = createLimits({
-      total: null,
-      expensive: null,
-      signed_in_factor: 3,
-      paused_llms: [{ id: 'big-id', until: '2026-10-14T22:00:00Z', reason: 'full' }]
-    })
-
-    const view = render(ViewPrompt, props)
-    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
-
-    const notice = view.container.querySelector('#pick-paused-notice')
-    expect(notice).toHaveTextContent(
-      /^Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre\./
-    )
-    expect(notice).not.toHaveTextContent(/pour vous/)
-  })
+      await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
+      expect(view.getByRole('radio', { name: /Aléatoire/, hidden: true })).toBeChecked()
+      // Envoyer works, and nothing under the prompt tells of the mode.
+      expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+      expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+      expect(view.queryByText(/Changer de mode|choisissez-en un autre/)).toBeNull()
+      expect(view.getAllByRole('status')[0].textContent).toBe('')
+      // Its card in the mode list is the one place that says so.
+      expect(
+        view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
+      ).toHaveAttribute('aria-disabled', 'true')
+      ;(arena.limits as Limits).destroy()
+    }
+  )
 
   it('says so when the refused pick empties the selection, and goes once the mode changes', async () => {
     const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }

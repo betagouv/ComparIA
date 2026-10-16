@@ -995,13 +995,6 @@
             "too_many_at_once": "Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes."
         },
         "limits": {
-            "mode": {
-                "change": "Changer de mode",
-                "hint": "Ce mode est en pause pour vous {until}, choisissez-en un autre.",
-                "hintFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre.",
-                "why": "Il a besoin de modèles qui coûtent plus cher à faire tourner. Pour que compar:IA reste gratuit pour tous, chacun peut leur envoyer un nombre limité de messages toutes les deux heures.",
-                "whyFull": "Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Les autres modes restent ouverts."
-            },
             "pause": {
                 "models": "Découvrir les modèles",
                 "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
