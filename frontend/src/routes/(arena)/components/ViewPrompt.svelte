@@ -332,7 +332,6 @@
               {models}
               disabled={loading}
               paused={limits.paused}
-              expensive={limits.expensive}
               pausedModes={modePauses}
             />
             <Toggle

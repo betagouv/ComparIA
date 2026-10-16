@@ -1,9 +1,8 @@
 import type { Mode } from '$lib/chatService.svelte'
 import type { PausedLLM } from '$lib/generated/backend'
-import type { Spent } from '$lib/limits.svelte'
 import type { BotModel } from '$lib/models'
-import { expectNoDanglingAriaRefs } from '$lib/testing/a11y'
-import { fireEvent, render, within } from '@testing-library/svelte'
+import { expectNoDanglingAriaRefs, expectNoDuplicateIds } from '$lib/testing/a11y'
+import { fireEvent, render } from '@testing-library/svelte'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import ModelSelector from './ModelSelector.svelte'
 import type { ModePause } from './pausedModes'
@@ -24,9 +23,6 @@ beforeEach(() => {
 })
 afterEach(() => vi.useRealTimers())
 
-function expensive(scope: Spent['scope']): Spent {
-  return { scope, resets_at: at, resets_in: 3600, liftsAt: NOON.getTime() + 3600_000 }
-}
 const paused = new Map<string, PausedLLM>([
   ['gpt', { id: 'gpt', until: at, reason: 'allowance' }],
   ['gemini', { id: 'gemini', until: '2026-10-15T00:00:00Z', reason: 'full' }]
@@ -37,7 +33,7 @@ Element.prototype.animate ??= function () {
   return { cancel() {}, finished: Promise.resolve(), onfinish: null } as unknown as Animation
 }
 
-async function openModels(props: Record<string, unknown>) {
+async function openModels(props: Record<string, unknown> = {}) {
   const view = render(ModelSelector, {
     models,
     mode: 'random',
@@ -53,32 +49,42 @@ function card(choice: HTMLElement): HTMLElement {
   return choice.closest<HTMLElement>('.cg-border')!
 }
 
-// The selector's live region, not the toggletips' own.
-function said(view: { container: HTMLElement }, selector: string) {
-  return view.container.querySelector(`#${selector} + p[role="status"]`)!
-}
-
 describe('ModelSelector', () => {
-  it('shows a paused or full card like any other until it is tried', async () => {
-    const view = await openModels({ expensive: expensive('session') })
+  it('greys out a paused or full card, with a note saying until when', async () => {
+    const view = await openModels()
 
-    for (const name of [/GPT-5/, /Gemini/, /Gemma/]) {
-      const box = view.getByRole('checkbox', { name, hidden: true })
-      expect(box).toBeEnabled()
-      expect(box).not.toHaveAttribute('aria-disabled')
-      expect(box).not.toHaveAccessibleDescription()
-      expect(card(box)).not.toHaveTextContent(/pause|Complet/i)
-      expect(card(box).querySelector('time, button')).toBeNull()
-    }
-    // Nothing over the list counts them, and nothing is said yet.
+    const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
+    expect(card(gpt)).toHaveClass('cl-unavailable')
+    // Still in the tab order, announced as unavailable with its note.
+    expect(gpt).toBeEnabled()
+    expect(gpt).toHaveAttribute('aria-disabled', 'true')
+    expect(gpt).toHaveAccessibleDescription(/^En pause jusqu'à \d+\sh\s\d+$/)
+    // The card's name stays the model's.
+    expect(gpt).toHaveAccessibleName('Lab/GPT-5')
+    const note = card(gpt).querySelector<HTMLElement>('.cl-pause-line')!
+    expect(note).toHaveTextContent(/^En pause jusqu'à \d+\sh\s\d+$/)
+    expect(note.querySelector('time')).toHaveAttribute('datetime', at)
+
+    const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
+    expect(card(gemini)).toHaveClass('cl-unavailable')
+    expect(gemini).toHaveAttribute('aria-disabled', 'true')
+    expect(gemini).toHaveAccessibleDescription("Complet aujourd'hui")
+
+    const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
+    expect(card(gemma)).not.toHaveClass('cl-unavailable')
+    expect(gemma).not.toHaveAttribute('aria-disabled')
+    expect(gemma).not.toHaveAccessibleDescription()
+    expect(card(gemma).querySelector('.cl-pause-line')).toBeNull()
+
+    // No "Pourquoi ?", nothing over the list.
     expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
-    expect(view.container).not.toHaveTextContent(/en pause|complet/i)
-    expect(said(view, 'models-selector').textContent).toBe('')
+    expect(view.queryByRole('button', { name: 'Pourquoi ?', hidden: true })).toBeNull()
     expectNoDanglingAriaRefs(view.container)
+    expectNoDuplicateIds(view.container)
   })
 
   it('keeps the models in their usual order, paused and full ones among the others', async () => {
-    const view = await openModels({ expensive: expensive('session') })
+    const view = await openModels()
 
     const names = view
       .getAllByRole('checkbox', { hidden: true })
@@ -86,76 +92,37 @@ describe('ModelSelector', () => {
     expect(names).toEqual(['GPT-5', 'Gemma 4', 'Gemini 3.1 Pro'])
   })
 
-  it('does not pick a paused card', async () => {
-    const view = await openModels({ expensive: expensive('session') })
-
-    await fireEvent.click(view.getByRole('checkbox', { name: /GPT-5/, hidden: true }))
-
-    expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).not.toBeChecked()
-    expect(view.getByText('0/2 modèles')).toBeInTheDocument()
-  })
-
-  it('says in a tapped card until when it is paused, and why, until another card is', async () => {
-    const view = await openModels({ expensive: expensive('session') })
+  it('does not pick a greyed-out card, and a tap adds nothing to it', async () => {
+    const view = await openModels()
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
+    const before = card(gpt).textContent
 
     await fireEvent.click(gpt)
 
-    const line = card(gpt).querySelector<HTMLElement>('.cl-pause-line')!
-    expect(line).toHaveTextContent(/^En pause pour vous jusqu'à \d+\sh\s\d+ Pourquoi \?$/)
-    expect(line.querySelector('time')).toHaveAttribute('datetime', at)
-    // Outside the label: the card's name stays the model's.
-    expect(gpt).toHaveAccessibleName('Lab/GPT-5')
-    // Spoken as it shows.
-    await vi.waitFor(() =>
-      expect(said(view, 'models-selector')).toHaveTextContent(
-        /^En pause pour vous jusqu'à \d+\sh\s\d+$/
-      )
-    )
-    await fireEvent.click(within(line).getByRole('button', { name: 'Pourquoi ?', hidden: true }))
-    expect(line).toHaveTextContent(/chacun peut envoyer un nombre limité de messages/)
-
-    const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
-    await fireEvent.click(gemini)
-    expect(card(gpt).querySelector('.cl-pause-line')).toBeNull()
-    expect(card(gemini).querySelector('.cl-pause-line')).toHaveTextContent(
-      /^Complet aujourd'hui, revient demain Pourquoi \?$/
-    )
+    expect(gpt).not.toBeChecked()
+    expect(view.getByText('0/2 modèles')).toBeInTheDocument()
+    expect(card(gpt).textContent).toBe(before)
 
     await fireEvent.click(view.getByRole('checkbox', { name: /Gemma/, hidden: true }))
-    expect(view.container.querySelector('.cl-pause-line')).toBeNull()
-    expectNoDanglingAriaRefs(view.container)
+    expect(view.getByText('1/2 modèles')).toBeInTheDocument()
   })
 
   it('writes a time after midnight as "demain à 1 h 30"', async () => {
     const late = new Date(2026, 9, 15, 1, 30).toISOString()
     const view = await openModels({
-      expensive: { ...expensive('session'), resets_at: late },
       paused: new Map<string, PausedLLM>([['gpt', { id: 'gpt', until: late, reason: 'allowance' }]])
     })
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
 
-    await fireEvent.click(gpt)
-
-    expect(card(gpt)).toHaveTextContent(/En pause pour vous jusqu'à demain à 1\sh\s30/)
+    expect(card(gpt)).toHaveTextContent(/En pause jusqu'à demain à 1\sh\s30/)
   })
 
-  it('tells a network it has used its share', async () => {
-    const view = await openModels({ expensive: expensive('network') })
-    const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
-
-    await fireEvent.click(gpt)
-
-    expect(card(gpt)).toHaveTextContent(/En pause pour votre réseau jusqu'à/)
-  })
-
-  it('says a mode is paused only once tried, and keeps the dialog open on it', async () => {
+  it('greys out a mode with nothing to draw, and keeps the dialog open on it', async () => {
     const view = render(ModelSelector, {
       models,
       mode: 'random',
       modelsSelection: [],
       paused,
-      expensive: expensive('session'),
       pausedModes: new Map<Mode, ModePause>([
         ['big-vs-small', { until: at, full: false }],
         ['small-models', { until: null, full: true }]
@@ -163,23 +130,22 @@ describe('ModelSelector', () => {
     })
 
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
-    expect(mode).not.toHaveAttribute('aria-disabled')
-    expect(mode).not.toHaveAccessibleDescription()
+    expect(card(mode)).toHaveClass('cl-unavailable')
+    expect(mode).toHaveAttribute('aria-disabled', 'true')
+    expect(mode).toHaveAccessibleDescription(/^En pause jusqu'à \d+\sh\s\d+$/)
     expect(mode).toHaveAttribute('aria-controls', '')
-    expect(view.container).not.toHaveTextContent(/en pause|complet/i)
 
     await fireEvent.click(mode)
-
     expect(mode).not.toBeChecked()
-    expect(card(mode)).toHaveTextContent(/En pause pour vous jusqu'à \d+\sh\s\d+ Pourquoi \?$/)
-    await vi.waitFor(() =>
-      expect(said(view, 'mode-selector')).toHaveTextContent(/^En pause pour vous jusqu'à/)
-    )
 
     const frugal = view.getByRole('radio', { name: /Frugal/, hidden: true })
-    await fireEvent.click(frugal)
-    expect(card(frugal)).toHaveTextContent(/Complet aujourd'hui, revient demain Pourquoi \?$/)
-    expect(card(mode).querySelector('.cl-pause-line')).toBeNull()
+    expect(frugal).toHaveAttribute('aria-disabled', 'true')
+    expect(card(frugal)).toHaveTextContent(/Complet aujourd'hui$/)
+
+    const random = view.getByRole('radio', { name: /Aléatoire/, hidden: true })
+    expect(random).not.toHaveAttribute('aria-disabled')
+    expect(card(random).querySelector('.cl-pause-line')).toBeNull()
+    expectNoDanglingAriaRefs(view.container)
   })
 
   it('says nothing about the limits in random mode', () => {
@@ -187,8 +153,7 @@ describe('ModelSelector', () => {
       models,
       mode: 'random',
       modelsSelection: [],
-      paused,
-      expensive: expensive('session')
+      paused
     })
 
     expect(view.container).not.toHaveTextContent(/en pause|complet/i)

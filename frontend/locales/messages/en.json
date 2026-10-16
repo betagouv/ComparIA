@@ -1017,10 +1017,9 @@
                 "whyNetwork": "To keep compar:IA free for everyone, each network can send a limited number of messages every two hours. This limit covers everyone on the network, not just you."
             },
             "picker": {
-                "full": "Full today, back tomorrow",
+                "full": "Full today",
                 "fullWhy": "This model has had a lot of messages today. To keep compar:IA free for everyone, each model answers a limited number of messages a day. It comes back tomorrow; all the others stay open.",
-                "paused": "Paused for you {until}",
-                "pausedNetwork": "Paused for your network {until}",
+                "paused": "Paused {until}",
                 "trimmedFullOne": "{models} is full today, so we took it out.",
                 "trimmedFullOneToRandom": "{models} is full today, so we took it out and the comparison will be random.",
                 "trimmedFullTwo": "{models} are full today, so we took them out.",

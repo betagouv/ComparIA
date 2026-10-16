@@ -1,19 +1,21 @@
 <script
   lang="ts"
   generics="
-    Multiple extends boolean, 
-    Kind extends 'checkbox' | 'radio', 
-    V extends string, Value extends Kind extends 'checkbox' ? Multiple extends true ?  V[]: V : V, 
+    Multiple extends boolean,
+    Kind extends 'checkbox' | 'radio',
+    V extends string, Value extends Kind extends 'checkbox' ? Multiple extends true ?  V[]: V : V,
     Option extends { value: V, label: string, disabledReason?: string }
   "
 >
-  import { tick, type Snippet } from 'svelte'
+  import type { Snippet } from 'svelte'
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements'
 
   /**
-   * A choice with a `disabledReason` cannot be picked, yet looks and reads
-   * like the others until someone tries it: then the live region speaks the
-   * reason, and `tried` tells the card to show it.
+   * A choice with a `disabledReason` cannot be picked: it stays in the tab
+   * order with `aria-disabled`, greyed out, described by its reason. A native
+   * `disabled` input would drop out of it, and screen readers in focus mode
+   * skip it, so the reason would be lost. A custom `option` shows the reason
+   * in the card, under the id it is given as `reasonId`.
    */
   interface SelectorProps {
     id: string
@@ -28,12 +30,10 @@
     containerClass?: ClassValue
     choiceClass?: ClassValue
     onChange?: (value: Value) => void
-    /** The choice last tried while it could not be picked, until another is. */
-    tried?: V
     option?: Snippet<
       [
         Option,
-        { for: string; class: ClassValue },
+        { for: string; class: ClassValue; reasonId: string },
         Snippet<[Option, HTMLInputAttributes] | [Option]>
       ]
     >
@@ -51,7 +51,6 @@
     containerClass,
     choiceClass,
     onChange,
-    tried = $bindable(),
     option,
     extra
   }: SelectorProps = $props()
@@ -61,26 +60,19 @@
     disabled,
     onchange: (e: Event) => {
       if (!multiple) value = (e.target as HTMLInputElement).value as Value
-      tried = undefined
       onChange?.(value)
     },
     class: 'sr-only'
   })
 
-  // What the live region says when someone tries a choice they cannot pick.
-  let said = $state('')
+  const reasonId = (choice: Option) => `${id}-${choice.value}-reason`
 
   function reasonProps(choice: Option): HTMLInputAttributes {
     if (!choice.disabledReason) return {}
     return {
-      onclick: async (e: MouseEvent) => {
-        e.preventDefault()
-        tried = choice.value
-        // Emptied first, so the same reason is spoken again on a second try.
-        said = ''
-        await tick()
-        said = choice.disabledReason!
-      }
+      'aria-disabled': 'true',
+      'aria-describedby': reasonId(choice),
+      onclick: (e: MouseEvent) => e.preventDefault()
     }
   }
 </script>
@@ -133,16 +125,24 @@
     {#if option}
       {@render option(
         choice,
-        { for: `${id}-${choice.value}`, class: ['cg-border', choiceClass] },
+        {
+          for: `${id}-${choice.value}`,
+          class: ['cg-border', choiceClass],
+          reasonId: reasonId(choice)
+        },
         input
       )}
     {:else}
       <label for="{id}-{choice.value}" class={['cg-border', choiceClass]}>
         {@render input(choice)}
         {choice.label}
-        {#if tried === choice.value}
-          <!-- Seen in the card; read out through the live region. -->
-          <span class="cl-selector__reason fr-text--sm mb-0! mt-2 block" aria-hidden="true">
+        {#if choice.disabledReason}
+          <!-- The input's description, kept out of its name. -->
+          <span
+            id={reasonId(choice)}
+            class="cl-selector__reason fr-text--xs mb-0! mt-1 block"
+            aria-hidden="true"
+          >
             {choice.disabledReason}
           </span>
         {/if}
@@ -155,14 +155,7 @@
   {/if}
 </div>
 
-<!-- Present from first render: a live region only speaks what lands in it after. -->
-<p role="status" class="sr-only">{said}</p>
-
 <style>
-  .cl-selector :global(.cl-selector__reason) {
-    color: var(--text-mention-grey);
-  }
-
   /* The bordered choice: the label itself, or the card around it. */
   .cl-selector :global(.cg-border) {
     &:has(input) {
@@ -174,8 +167,9 @@
       outline-offset: 2px;
     }
 
-    &:has(input:checked),
-    &:has(input:active) {
+    /* A choice that cannot be picked never looks picked. */
+    &:has(input:checked:not([aria-disabled='true'])),
+    &:has(input:active:not([aria-disabled='true'])) {
       border: 2px solid var(--blue-france-main-525);
       color: var(--blue-france-main-525);
       margin: 0;
@@ -184,5 +178,20 @@
     &:has(input:disabled) {
       filter: grayscale(100%);
     }
+
+    /* Greyed out as DSFR does a disabled card, its text still readable. */
+    &:has(input[aria-disabled='true']) {
+      background-color: var(--background-alt-grey);
+      color: var(--text-mention-grey);
+      cursor: not-allowed;
+
+      & :global(label) {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .cl-selector :global(.cl-selector__reason) {
+    color: var(--text-mention-grey);
   }
 </style>

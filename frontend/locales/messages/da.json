@@ -875,10 +875,9 @@
                 "whyNetwork": "For at holde compar:IA gratis for alle kan hvert netværk sende et begrænset antal beskeder hver anden time. Grænsen gælder alle på netværket, ikke kun dig."
             },
             "picker": {
-                "full": "Fuld i dag, tilbage i morgen",
+                "full": "Fuld i dag",
                 "fullWhy": "Denne model har fået mange beskeder i dag. For at compar:IA kan forblive gratis for alle, svarer hver model på et begrænset antal beskeder om dagen. Den kommer tilbage i morgen; alle de andre er stadig åbne.",
-                "paused": "Sat på pause for dig {until}",
-                "pausedNetwork": "Sat på pause for dit netværk {until}",
+                "paused": "Sat på pause {until}",
                 "trimmedFullOne": "{models} er fuld i dag, så vi har fjernet den.",
                 "trimmedFullOneToRandom": "{models} er fuld i dag, så vi har fjernet den, og sammenligningen bliver tilfældig.",
                 "trimmedFullTwo": "{models} er fulde i dag, så vi har fjernet dem.",

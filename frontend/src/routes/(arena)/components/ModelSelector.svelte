@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { Badge, Button, Icon, Search, Toggletip } from '$components/dsfr'
+  import { Badge, Button, Icon, Search } from '$components/dsfr'
   import { AILogo } from '$components/layout'
   import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData, Mode } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PausedLLM } from '$lib/generated/backend'
-  import type { Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
   import type { ModePause } from './pausedModes'
@@ -20,7 +19,6 @@
     modelsSelection = $bindable(),
     disabled = false,
     paused = new Map(),
-    expensive,
     pausedModes = new Map()
   }: {
     models: BotModel[]
@@ -29,50 +27,35 @@
     disabled?: boolean
     /** The models a new comparison may not use yet, by id. */
     paused?: ReadonlyMap<string, PausedLLM>
-    /** Set while the expensive allowance is spent, for whom and until when. */
-    expensive?: Spent
     /** The modes left with nothing to draw, and when they come back. */
     pausedModes?: ReadonlyMap<Mode, ModePause>
   } = $props()
 
-  // Told only in the card the person tries, with "Pourquoi ?" for the rest.
-  type Pause = { text: string; reset?: ResetTime; why: string; said: string }
+  // The note a greyed-out card carries: when it comes back.
+  type Pause = { text: string; reset?: ResetTime; said: string }
 
-  function told(text: string, why: string, reset?: ResetTime): Pause {
-    return { text, reset, why, said: reset ? spoken(text, reset) : text }
+  function note(text: string, reset?: ResetTime): Pause {
+    return { text, reset, said: reset ? spoken(text, reset) : text }
   }
 
-  function pausedUntil(until: string | null, why: string): Pause {
+  function pausedUntil(until: string | null): Pause {
     const reset = resetTime(until)
-    const key =
-      expensive?.scope === 'network'
-        ? 'arene.limits.picker.pausedNetwork'
-        : 'arene.limits.picker.paused'
-    return told(m[key]({ until: reset.until }), why, reset)
+    return note(m['arene.limits.picker.paused']({ until: reset.until }), reset)
   }
 
   function modelPause(id: string): Pause | undefined {
     const llm = paused.get(id)
     if (!llm) return undefined
-    if (llm.reason === 'full')
-      return told(m['arene.limits.picker.full'](), m['arene.limits.picker.fullWhy']())
-    const network = expensive?.scope === 'network'
-    return pausedUntil(
-      llm.until,
-      m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
-    )
+    if (llm.reason === 'full') return note(m['arene.limits.picker.full']())
+    return pausedUntil(llm.until)
   }
 
   function modePause(value: Mode): Pause | undefined {
     const pause = pausedModes.get(value)
     if (!pause) return undefined
-    if (pause.full) return told(m['arene.limits.picker.full'](), m['arene.limits.mode.whyFull']())
-    return pausedUntil(pause.until, m['arene.limits.mode.why']())
+    if (pause.full) return note(m['arene.limits.picker.full']())
+    return pausedUntil(pause.until)
   }
-
-  // The paused card last tapped, which then shows its reason.
-  let triedMode = $state<Mode>()
-  let triedModel = $state<string>()
 
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
@@ -176,12 +159,11 @@
   {/if}
 </div>
 
-<!-- Under the card the person tried, outside its label: "Pourquoi ?" is a
-     button of its own. Spoken by the selector's live region as it shows. -->
+<!-- In a greyed-out card, outside its label so the card's name stays the
+     model's; the input is described by it. -->
 {#snippet pauseLine(id: string, pause: Pause, className: ClassValue)}
-  <p class={['cl-pause-line fr-text--sm mb-0! relative', className]}>
+  <p {id} class={['cl-pause-line fr-text--xs mb-0!', className]}>
     <TimedText text={pause.text} reset={pause.reset} />
-    <Toggletip id="{id}-why" label={m['arene.limits.why']()} text={pause.why} class="ms-1" />
   </p>
 {/snippet}
 
@@ -242,14 +224,13 @@
                 kind="radio"
                 label={m['arenaHome.selectModels.question']()}
                 bind:value={mode}
-                bind:tried={triedMode}
                 choices={modeChoices}
                 containerClass="flex flex-col gap-3 md:gap-4"
                 choiceClass="flex flex-col text-sm text-dark-grey!"
                 onChange={(mode) => (showModelsSelection = mode === 'custom')}
               >
                 {#snippet option(opt, labelProps, input)}
-                  <div class={labelProps.class}>
+                  <div class={[labelProps.class, { 'cl-unavailable': !!opt.pause }]}>
                     <label for={labelProps.for} class="p-4 flex grow items-center">
                       {@render input(opt, {
                         // A paused mode is not picked, so the dialog stays open.
@@ -266,8 +247,8 @@
                         <Icon icon="i-ri-arrow-right-s-line" block size="sm" class="ms-auto" />
                       {/if}
                     </label>
-                    {#if opt.pause && triedMode === opt.value}
-                      {@render pauseLine(`mode-${opt.value}`, opt.pause, '-mt-2 ps-13 pe-4 pb-4')}
+                    {#if opt.pause}
+                      {@render pauseLine(labelProps.reasonId, opt.pause, '-mt-3 ps-13 pe-4 pb-3')}
                     {/if}
                   </div>
                 {/snippet}
@@ -283,7 +264,6 @@
                   kind="checkbox"
                   label={m['arenaHome.compareModels.question']()}
                   bind:value={modelsSelection}
-                  bind:tried={triedModel}
                   choices={filteredModels}
                   multiple
                   max={2}
@@ -296,7 +276,7 @@
                       .map((k) => opt.badges[k])
                       .filter((b) => !!b)}
 
-                    <div class={labelProps.class}>
+                    <div class={[labelProps.class, { 'cl-unavailable': !!opt.pause }]}>
                       <label for={labelProps.for} class="p-2 md:px-4 md:py-3 grow">
                         {@render input(opt)}
                         <div class="text-dark-grey flex">
@@ -305,7 +285,7 @@
                             customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
                             customLogoVersion={opt.lab.logo_version}
                             alt=""
-                            class="me-2"
+                            class={['me-2', { 'cl-dimmed': !!opt.pause }]}
                           />
                           <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
                             >{opt.name}</strong
@@ -324,8 +304,12 @@
                           {/each}
                         </ul>
                       </label>
-                      {#if opt.pause && triedModel === opt.value}
-                        {@render pauseLine(opt.value, opt.pause, 'px-2 pb-2 md:px-4 md:pb-3')}
+                      {#if opt.pause}
+                        {@render pauseLine(
+                          labelProps.reasonId,
+                          opt.pause,
+                          '-mt-1 px-2 pb-2 md:px-4 md:pb-3'
+                        )}
                       {/if}
                     </div>
                   {/snippet}
@@ -368,5 +352,25 @@
 <style>
   .cl-pause-line {
     color: var(--text-mention-grey);
+  }
+
+  /* Greyed out as DSFR does a disabled card; the text it carries stays at
+     4.5:1 or more on the grey background. */
+  .cl-unavailable {
+    color: var(--text-mention-grey) !important;
+
+    & :global(.text-dark-grey),
+    & :global(.text-primary) {
+      color: inherit !important;
+    }
+
+    & :global(.cl-dimmed) {
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+
+    & :global(.fr-badge) {
+      filter: grayscale(1);
+    }
   }
 </style>

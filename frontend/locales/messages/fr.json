@@ -1017,10 +1017,9 @@
                 "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."
             },
             "picker": {
-                "full": "Complet aujourd'hui, revient demain",
+                "full": "Complet aujourd'hui",
                 "fullWhy": "Ce modèle a reçu beaucoup de messages aujourd'hui. Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Il revient demain ; tous les autres restent ouverts.",
-                "paused": "En pause pour vous {until}",
-                "pausedNetwork": "En pause pour votre réseau {until}",
+                "paused": "En pause {until}",
                 "trimmedFullOne": "{models} est complet aujourd'hui, on l'a retiré.",
                 "trimmedFullOneToRandom": "{models} est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire.",
                 "trimmedFullTwo": "{models} sont complets aujourd'hui, on les a retirés.",

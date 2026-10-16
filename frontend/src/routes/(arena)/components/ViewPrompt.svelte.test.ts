@@ -512,8 +512,11 @@ describe('ViewPrompt', () => {
   })
 
   it('says nothing in random mode once the expensive allowance is spent', async () => {
+    // A big model left open, as in the catalog: every mode still draws, so
+    // the mode list greys none out.
     catalog.models = [
       { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'big-open-id', name: 'Llama 4', status: 'enabled', lab, badges, params: 400 },
       { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
       { id: 'other-cheap-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
     ]
