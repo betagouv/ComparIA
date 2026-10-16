@@ -930,6 +930,7 @@
                 "noCap": "None",
                 "cache": "From the cache",
                 "cacheShare": "{share} of {count} answers",
+                "cacheShareOne": "{share} of 1 answer",
                 "noAnswer": "No answer",
                 "full": "Full until midnight",
                 "proposed": "Proposed",

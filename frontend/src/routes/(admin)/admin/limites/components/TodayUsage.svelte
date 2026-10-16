@@ -101,12 +101,14 @@
                 cap: dollars.format(llm.cap_usd)
               })}
         {:else if col.id === 'cache'}
-          {llm.answers
-            ? m['admin.limits.today.cacheShare']({
-                share: percents.format(llm.cached_answers / llm.answers),
-                count: numbers.format(llm.answers)
-              })
-            : m['admin.limits.today.noAnswer']()}
+          {@const share = percents.format(llm.cached_answers / llm.answers)}
+          {#if llm.answers > 1}
+            {m['admin.limits.today.cacheShare']({ share, count: numbers.format(llm.answers) })}
+          {:else if llm.answers}
+            {m['admin.limits.today.cacheShareOne']({ share })}
+          {:else}
+            {m['admin.limits.today.noAnswer']()}
+          {/if}
         {:else if col.id === 'proposed'}
           {@const cap = proposed.get(llm.llm_id)}
           {#if cap}

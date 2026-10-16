@@ -64,6 +64,13 @@ describe('TodayUsage', () => {
     ).toBeInTheDocument()
   })
 
+  it('counts a single answer in the singular', () => {
+    const one = [{ ...usage[0], answers: 1, cached_answers: 0 }]
+    render(TodayUsage, { usage: one })
+
+    expect(row('GPT 5.5')).toHaveTextContent(/0\s%\sde 1 réponse$/)
+  })
+
   it('lists a model with nothing spent once a cap is proposed for it', () => {
     const proposals = [{ llm_id: 'idle', value: 5, days: 6, percentile: 95, highest: 3 }]
     const view = render(TodayUsage, { usage, proposals })

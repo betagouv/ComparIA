@@ -424,6 +424,7 @@
                 "noCap": "Intet",
                 "cache": "Fra cachen",
                 "cacheShare": "{share} af {count} svar",
+                "cacheShareOne": "{share} af 1 svar",
                 "noAnswer": "Intet svar",
                 "full": "Fuld indtil midnat",
                 "proposed": "Foreslået",
