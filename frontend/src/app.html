@@ -19,6 +19,15 @@
     <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon" />
     <link rel="manifest" href="/favicon/manifest.webmanifest" crossorigin="use-credentials" />
     %sveltekit.head%
+    <!-- The arena forms hide until the browser reads the limits, which it
+         never does with JavaScript off. -->
+    <noscript
+      ><style>
+        .cl-limits-pending {
+          visibility: visible !important;
+        }
+      </style></noscript
+    >
   </head>
   <body data-sveltekit-preload-data="hover">
     <div id="app">%sveltekit.body%</div>

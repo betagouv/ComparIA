@@ -544,9 +544,10 @@ _MODELS_EXCLUDE: dict = {
     "updated_at": True,
     "api_model_id": True,
     "endpoint_id": True,
-    "rate_limited": True,
     "lab_id": True,
     "license_id": True,
+    # How the arena spends, not what the model is.
+    "daily_usd_cap": True,
     "lab": {
         "id",
         "created_at",

@@ -5,33 +5,58 @@
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import {
+    getModeInfos,
+    type APIModeAndPromptData,
+    type PickRefusal
+  } from '$lib/chatService.svelte'
+  import { focusWithin } from '$lib/helpers/attachments'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
+  import { getLimitsContext, type Spent } from '$lib/limits.svelte'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
-  import { onMount, tick } from 'svelte'
+  import { onMount, tick, untrack } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
+  import LimitHint from './LimitHint.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
+  import { pausedModes } from './pausedModes'
+  import PauseNotice from './PauseNotice.svelte'
 
   let {
     onPrompt,
     promptError,
+    pause,
+    pauseFromSend = false,
+    pickRefusal,
+    sendHint,
     loading,
     suggestions
   }: {
     onPrompt: (args: APIModeAndPromptData) => void | Promise<void>
     promptError?: string
+    /** Set while an allowance is spent: the notice takes the place of the form. */
+    pause?: Spent
+    /** The pause met the prompt just sent, so it takes focus. */
+    pauseFromSend?: boolean
+    /** Set when the comparison asked for models the person may not use yet. */
+    pickRefusal?: PickRefusal
+    /** Set when the message just sent did not start: too many at once, or the server failed. */
+    sendHint?: string
     loading: boolean
     suggestions: SuggestionCategory[]
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
+  // Focus sits in the form: a pause card read late takes its place and focus,
+  // which would otherwise fall to the page.
+  let formFocused = $state(false)
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
+  const limits = getLimitsContext()
 
   let prompt = $state('')
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
@@ -44,10 +69,38 @@
   })
   let webSearch = $state(false)
   let submitting = $state(false)
+  // Between a refused send and the one sent again: the pending view stays.
+  let resending = $state(false)
+  // Set when the send was refused twice on models just paused or filled.
+  let raced = $state<'model' | 'mode'>()
+  const modePauses = $derived(pausedModes(models, limits.paused))
+  // Random too has nothing to draw: only when nearly every model is paused.
+  const stuck = $derived(mode.value !== 'custom' && modePauses.has(mode.value))
+  const disabled = $derived(prompt == '' || !!promptError || loading || submitting || stuck)
+  // A saved mode left with nothing to draw goes back to random, unsaid: its
+  // card in the mode list says why, and Envoyer works.
+  $effect(() => {
+    if (mode.value !== 'custom' && mode.value !== 'random' && modePauses.has(mode.value)) {
+      untrack(() => (mode.value = 'random'))
+    }
+  })
 
-  const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
+  /** Takes models out of the selection. A custom pick left empty goes random. */
+  function takeOut(ids: string[]) {
+    modelsSelection.value = modelsSelection.value.filter((id) => !ids.includes(id))
+    if (mode.value === 'custom' && !modelsSelection.value.length) mode.value = 'random'
+  }
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
+
+  // A saved or `?vs=` choice may hold models paused since: take them out,
+  // unsaid, as their greyed-out cards say why. Not while sending: a refused
+  // pick takes out its own.
+  $effect(() => {
+    const out = modelsSelection.value.filter((id) => limits.paused.has(id))
+    if (!out.length || submitting) return
+    untrack(() => takeOut(out))
+  })
 
   onMount(() => {
     const vsParam = page.url.searchParams.get('vs')
@@ -93,20 +146,56 @@
     }
   }
 
+  async function send(): Promise<PickRefusal | undefined> {
+    await onPrompt({
+      mode: mode.value,
+      custom_models_selection: modelsSelection.value,
+      prompt_value: prompt,
+      web_search: webSearch
+    })
+    return pickRefusal
+  }
+
+  /** Takes out what the refusal and the limits read since say cannot be drawn. */
+  function dropUnavailable(refusal: PickRefusal) {
+    takeOut([...(refusal.limit.llm_ids ?? []), ...limits.paused.keys()])
+    if (mode.value !== 'custom' && modePauses.has(mode.value)) mode.value = 'random'
+  }
+
   async function onPromptSubmit() {
     if (loading || submitting) return
 
     submitting = true
+    raced = undefined
     try {
-      await onPrompt({
-        mode: mode.value,
-        custom_models_selection: modelsSelection.value,
-        prompt_value: prompt,
-        web_search: webSearch
-      })
+      const refusal = await send()
+      if (!refusal) return
+      // A model paused or filled between the limits read and the send: wait
+      // for the read the refusal started, take it out, and send once more, so
+      // the person sees the comparison start. Only a second refusal is told.
+      resending = true
+      await limits.reading
+      dropUnavailable(refusal)
+      const again = await send()
+      if (again) {
+        dropUnavailable(again)
+        raced = again.limit.llm_ids?.length ? 'model' : 'mode'
+      }
     } finally {
+      resending = false
       submitting = false
     }
+  }
+
+  // Changed by the person: the line about a refused send no longer fits.
+  function setMode(value: APIModeAndPromptData['mode']) {
+    mode.value = value
+    raced = undefined
+  }
+
+  function setModelsSelection(value: string[]) {
+    modelsSelection.value = value
+    raced = undefined
   }
 
   function handlePromptSelected(
@@ -149,9 +238,9 @@
 </script>
 
 <!-- Present before loading starts so assistive technology announces the state change. -->
-<p role="status" class="sr-only">{loading ? m['chatbot.loading']() : ''}</p>
+<p role="status" class="sr-only">{loading || resending ? m['chatbot.loading']() : ''}</p>
 
-{#if loading}
+{#if loading || resending}
   <div id="prompt-area" class="fr-container px-4 py-2 md:px-6 md:py-5">
     <div class="gap-2 md:gap-5 flex flex-col">
       <div class="md:flex">
@@ -174,61 +263,104 @@
   </div>
 {:else}
   <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
-    <div class="fr-col-xl-8 m-auto">
-      <h2 class="fr-h4 mb-0! text-center">
-        {m['arenaHome.title']()}
-      </h2>
-      <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
-        <div class="md:order-none md:col-span-full order-1">
-          <TextPrompt
-            id="initial-prompt"
-            bind:el={promptEl}
-            bind:value={prompt}
-            label={m['arenaHome.prompt.label']()}
-            placeholder={m['arenaHome.prompt.placeholder']()}
-            bind:error={promptError}
-            disabled={loading}
-            submitDisabled={disabled}
-            hideLabel
-            rows={4}
-            onSubmit={() => onPromptSubmit()}
+    <div class="fr-col-xl-8 m-auto" {@attach focusWithin((inside) => (formFocused = inside))}>
+      {#if pause}
+        <!-- The card's title is the page's question then: "Comment puis-je vous
+             aider ?" would invite typing above a card that says not yet. -->
+        <div class="py-10">
+          <PauseNotice
+            {pause}
+            focusTitle={pauseFromSend || formFocused}
+            level={2}
+            kept={prompt.trim() !== ''}
           />
         </div>
+      {:else}
+        <h2 class="fr-h4 mb-0! text-center">
+          {m['arenaHome.title']()}
+        </h2>
+        <!-- Hidden until the limits are read: a pause would take its place. -->
+        <div
+          id="prompt-form"
+          class={[
+            'gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid',
+            { 'cl-limits-pending invisible': !limits.read }
+          ]}
+        >
+          <div class="md:order-none md:col-span-full order-1">
+            <TextPrompt
+              id="initial-prompt"
+              bind:el={promptEl}
+              bind:value={prompt}
+              label={m['arenaHome.prompt.label']()}
+              placeholder={m['arenaHome.prompt.placeholder']()}
+              bind:error={promptError}
+              disabled={loading}
+              submitDisabled={disabled}
+              hideLabel
+              rows={4}
+              onSubmit={() => onPromptSubmit()}
+            />
+          </div>
 
-        <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
-          <ModelSelector
-            bind:mode={mode.value}
-            bind:modelsSelection={modelsSelection.value}
-            {models}
-            disabled={loading}
+          <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
+            <ModelSelector
+              bind:mode={() => mode.value, setMode}
+              bind:modelsSelection={() => modelsSelection.value, setModelsSelection}
+              {models}
+              disabled={loading}
+              paused={limits.paused}
+              pausedModes={modePauses}
+            />
+            <Toggle
+              id="web-search"
+              bind:value={webSearch}
+              checkedLabel={m['arenaHome.webSearch.enabled']()}
+              uncheckedLabel={m['arenaHome.webSearch.disabled']()}
+              hideCheckLabel
+              labelPos="right"
+              class="font-medium w-full! text-[14px]!"
+              groupClass="grow my-auto"
+            >
+              {m['arenaHome.webSearch.label']()}
+              <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
+                {@html sanitize(m['arenaHome.webSearch.tooltip']())}
+              </Tooltip>
+            </Toggle>
+          </div>
+
+          <Button
+            type="submit"
+            text={m['words.send']()}
+            {disabled}
+            class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
+            onclick={() => onPromptSubmit()}
           />
-          <Toggle
-            id="web-search"
-            bind:value={webSearch}
-            checkedLabel={m['arenaHome.webSearch.enabled']()}
-            uncheckedLabel={m['arenaHome.webSearch.disabled']()}
-            hideCheckLabel
-            labelPos="right"
-            class="font-medium w-full! text-[14px]!"
-            groupClass="grow my-auto"
-          >
-            {m['arenaHome.webSearch.label']()}
-            <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
-              {@html sanitize(m['arenaHome.webSearch.tooltip']())}
-            </Tooltip>
-          </Toggle>
+
+          <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
+          {#if sendHint}
+            <!-- Focused: the send did not start. -->
+            <div class="md:col-span-full md:order-none order-3">
+              <LimitHint id="send-hint" text={sendHint} icon="i-ri-time-line" focusOnShow />
+            </div>
+          {:else if raced}
+            <div class="md:col-span-full md:order-none order-3">
+              <LimitHint
+                id="raced-hint"
+                text={m[
+                  raced === 'model'
+                    ? 'arene.limits.picker.justPaused'
+                    : 'arene.limits.mode.justPaused'
+                ]()}
+                icon="i-ri-time-line"
+                focusOnShow
+              />
+            </div>
+          {/if}
         </div>
 
-        <Button
-          type="submit"
-          text={m['words.send']()}
-          {disabled}
-          class="md:w-auto! md:order-none order-2 h-full w-full! min-w-[130px] place-self-end"
-          onclick={() => onPromptSubmit()}
-        />
-      </div>
-
-      <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
+        <GuidedPromptSuggestions {suggestions} onPromptSelected={handlePromptSelected} />
+      {/if}
     </div>
   </div>
 {/if}

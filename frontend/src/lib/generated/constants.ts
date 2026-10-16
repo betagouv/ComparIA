@@ -6,3 +6,6 @@ export type SizeClasses = (typeof SIZE_CLASSES)[number]
 export type EnergyClasses = (typeof ENERGY_CLASSES)[number]
 export type Archs = (typeof ARCHS)[number]
 export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
+export const MAX_TURNS_PER_COMPARISON = 20
+export const SMALL_MODELS_BUCKET_UPPER_LIMIT = 60
+export const BIG_MODELS_BUCKET_LOWER_LIMIT = 100

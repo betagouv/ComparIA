@@ -26,6 +26,7 @@ import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.arena.limits import Identity  # noqa: E402
 from utils.database.models.auth import LegalDocument  # noqa: E402
 from utils.database.models.comparison import (  # noqa: E402
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -81,15 +82,20 @@ def arena(active_document):
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(pick_two=lambda _mode, _selection: (uuid4(), uuid4()))
+        return SimpleNamespace(
+            pick_two=lambda _mode, _selection, **_kwargs: (uuid4(), uuid4()),
+            enabled={},
+        )
 
     async def create_comparison(comparison):
         created.append(comparison)
         # The response streams the models, which is not what these tests check.
         raise HTTPException(status_code=503, detail="stop here")
 
-    def charge_budget(*_args):
-        return None
+    def start_first_turn(*_args):
+        return SimpleNamespace(
+            pair=(uuid4(), uuid4()), expensive_paused=False, charge=None
+        )
 
     with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
         with patched(
@@ -102,7 +108,7 @@ def arena(active_document):
                 run_checks=run_checks,
                 get_llms_data=get_llms_data,
                 create_comparison=create_comparison,
-                charge_budget=charge_budget,
+                start_first_turn=start_first_turn,
             ):
                 yield created
 
@@ -124,7 +130,11 @@ def send_first_message():
             "client": ("10.0.0.1", 1234),
         }
     )
-    return asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))
+    return asyncio.run(
+        arena_router.add_first_text(
+            body, None, "b" * 64, request, None, Identity.of("b" * 64, "10.0.0.1")
+        )
+    )
 
 
 def test_a_first_message_needs_the_terms_in_force_to_be_accepted():

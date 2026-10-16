@@ -26,6 +26,7 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.arena.limits import Identity  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -50,14 +51,19 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(pick_two=lambda _mode, _selection: (uuid4(), uuid4()))
+        return SimpleNamespace(
+            pick_two=lambda _mode, _selection, **_kwargs: (uuid4(), uuid4()),
+            enabled={},
+        )
 
     async def create_comparison(comparison):
         created.append(comparison)
         raise HTTPException(status_code=503, detail="stop here")
 
-    def charge_budget(*_args):
-        return None
+    def start_first_turn(*_args):
+        return SimpleNamespace(
+            pair=(uuid4(), uuid4()), expensive_paused=False, charge=None
+        )
 
     request = Request(
         {
@@ -83,10 +89,19 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             run_checks=run_checks,
             get_llms_data=get_llms_data,
             create_comparison=create_comparison,
-            charge_budget=charge_budget,
+            start_first_turn=start_first_turn,
         ):
             try:
-                asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))
+                asyncio.run(
+                    arena_router.add_first_text(
+                        body,
+                        None,
+                        "b" * 64,
+                        request,
+                        None,
+                        Identity.of("b" * 64, "10.0.0.1"),
+                    )
+                )
             except HTTPException as error:
                 assert error.status_code == 503
 

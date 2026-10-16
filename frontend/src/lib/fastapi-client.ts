@@ -11,6 +11,7 @@ import type {
   AssistantMessage,
   Bot
 } from '$lib/chatService.svelte'
+import type { LimitRefusal } from '$lib/generated/backend'
 import { omit } from '$lib/utils/commons'
 
 // Function to get the appropriate backend URL
@@ -113,9 +114,10 @@ export class UnauthorizedError extends Error {
 
 /**
  * Any error thrown by the client, carrying the HTTP status it came from and
- * the backend's `detail` as sent, so callers can branch on a known key.
+ * the backend's `detail` as sent, so callers can branch on a known key. A
+ * refusal on a limit also carries `limit`: for whom, and when it lifts.
  */
-export type ApiError = Error & { status?: number; detail?: unknown }
+export type ApiError = Error & { status?: number; detail?: unknown; limit?: LimitRefusal }
 
 type SearchParams = URLSearchParams | Record<string, string>
 
@@ -158,9 +160,12 @@ export class FastAPIClient {
     const content = await response.text()
     let error: Error
     let detail: string | PydanticValidationError[] | undefined
+    let limit: LimitRefusal | undefined
     try {
-      const parsed = JSON.parse(content).detail as string | PydanticValidationError[]
+      const body = JSON.parse(content)
+      const parsed = body.detail as string | PydanticValidationError[]
       detail = parsed
+      limit = body.limit ?? undefined
       if (response.status === 401 || response.status === 403) {
         error = new UnauthorizedError(parsed as string)
       } else if (response.status === 422) {
@@ -173,7 +178,7 @@ export class FastAPIClient {
     } catch {
       error = new Error(message + content)
     }
-    return Object.assign(error, { status: response.status, detail })
+    return Object.assign(error, { status: response.status, detail, limit })
   }
 
   /**

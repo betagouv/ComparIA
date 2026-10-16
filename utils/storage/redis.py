@@ -1,5 +1,7 @@
 import hashlib
 import logging
+import re
+import unicodedata
 from functools import lru_cache, wraps
 from typing import Callable, Final, ParamSpec, TypeVar
 from uuid import uuid4
@@ -22,12 +24,31 @@ REDIS_INSTANCE_PREFIX: Final[str] = (
 
 # Redis keys (all namespaced by the instance prefix)
 REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
-REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{key}}"
+# What one session or network spent from a pool: characters for `all`,
+# millionths of a dollar for the expensive one. The name dates from when only
+# expensive models were counted; it stays so a deploy keeps what people spent.
+REDIS_BUDGET_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{pool}}:{{identity}}"
+)
+# What one model cost on one Paris calendar day, across everyone: a hash of
+# millionths of a dollar, characters sent and written, answers and cached ones.
+REDIS_MODEL_DAY_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}model_day:{{llm_id}}:{{day}}"
+# The turns one network has the models answering now: a sorted set of slots,
+# each scored with the moment it lapses.
+REDIS_IN_FLIGHT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}in_flight:{{network}}"
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
 REDIS_VOTE_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}count"
 REDIS_RANKING_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}rankings_and_prefs"
+# Answers kept for a first turn. The fingerprint changes with the model version,
+# its endpoint and the system prompt sent, so an answer is only served by the
+# model that wrote it.
 REDIS_LLM_RESPONSES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}llm_cache:{{model_name}}:{{prompt_hash}}"
+    f"{REDIS_INSTANCE_PREFIX}llm_cache:{{llm_id}}:{{fingerprint}}:{{prompt_hash}}"
+)
+# The turn that first sent a prompt. An answer is only stored once another turn
+# sends it again: most prompts are never asked twice.
+REDIS_LLM_CACHE_SEEN_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}llm_cache_seen:{{prompt_hash}}"
 )
 REDIS_ALTCHA_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}altcha:"
 # Comparisons a session started since its last vote.
@@ -99,6 +120,7 @@ def get_redis_client() -> redis.Redis:
         client = redis.Redis(
             host=settings.COMPARIA_REDIS_HOST,
             port=6379,
+            db=settings.COMPARIA_REDIS_DB,
             password=settings.COMPARIA_REDIS_PASSWORD,  # None keeps local dev unauthenticated
             decode_responses=True,  # returns strings instead of bytes
         )
@@ -109,12 +131,26 @@ def get_redis_client() -> redis.Redis:
 
         return client
     except Exception as e:
-        raise Exception(f"Redis Connection Error: {e}")
+        # A RedisError, so the callers that fail open on one catch this too.
+        raise redis.exceptions.ConnectionError(f"Redis Connection Error: {e}") from e
+
+
+# Spaces or tabs after the first word of a line. Leading indentation is left
+# alone, so code and YAML indented differently keep their own keys.
+_INNER_BLANKS = re.compile(r"(?<=\S)[ \t]+")
 
 
 def hash_content(content: str) -> str:
-    """Normalize and hash content."""
-    normalized = content.strip().lower()
+    """
+    Hash content so that prompts typed differently but read the same share a
+    key: composed and decomposed accents, case, Windows line ends, runs of
+    spaces inside a line and spaces at its end. Line breaks and indentation
+    are kept, so code, YAML and tables keep their shape. Punctuation is kept
+    too, "Paris ?" and "Paris." can ask different things.
+    """
+    text = unicodedata.normalize("NFC", content).replace("\r\n", "\n")
+    lines = (_INNER_BLANKS.sub(" ", line.rstrip(" \t")) for line in text.split("\n"))
+    normalized = "\n".join(lines).strip().lower()
     return hashlib.sha256(normalized.encode()).hexdigest()[:16]
 
 

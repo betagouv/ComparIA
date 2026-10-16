@@ -11,6 +11,7 @@ from backend.arena.router import router as arena_router
 from backend.auth.middleware import anonymous_middleware, auth_middleware
 from backend.auth.router import router as auth_router
 from backend.config import settings
+from backend.errors import LimitReachedError, limit_reached_handler
 from backend.llms.router import router as models_router
 from backend.logger import configure_logger, configure_uvicorn_logging
 from backend.ranking.router import router as ranking_router
@@ -46,6 +47,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_exception_handler(LimitReachedError, limit_reached_handler)
 
 logger = configure_logger()
 configure_uvicorn_logging()

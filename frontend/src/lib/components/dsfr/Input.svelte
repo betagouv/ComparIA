@@ -6,6 +6,7 @@
     value = $bindable(),
     label,
     help,
+    hint,
     error,
     variant = 'normal',
     groupClass,
@@ -15,6 +16,8 @@
     value: string
     label: string
     help?: string
+    /** Under the field, such as the typed value spelled out. */
+    hint?: string
     error?: string
     variant?: 'light' | 'normal'
     groupClass?: ClassValue
@@ -33,9 +36,12 @@
     bind:value
     {id}
     aria-invalid={error ? 'true' : undefined}
-    aria-describedby="input-{id}-messages"
+    aria-describedby={hint ? `input-${id}-hint input-${id}-messages` : `input-${id}-messages`}
     class={['fr-input', { 'bg-white!': variant === 'light' }, props.class]}
   />
+  {#if hint}
+    <p id="input-{id}-hint" class="fr-hint-text mt-2! mb-0!">{hint}</p>
+  {/if}
   <!-- Always rendered: a live region has to exist before the message lands in
        it, otherwise screen readers announce nothing. -->
   <div class="fr-messages-group" id="input-{id}-messages" aria-live="polite">

@@ -1,7 +1,9 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
   import { Badge, Icon, Link, Table } from '$components/dsfr'
+  import { usdFormatter } from '$lib/currency'
   import { m } from '$lib/i18n/messages'
+  import { FULL_ICON } from '$lib/limits.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { sortRows, toRelativeTime, toSearchString, toShortDate } from '$lib/utils/data'
@@ -10,17 +12,21 @@
 
   let { data }: PageProps = $props()
   const locale = getLocale()
+  const dollars = usdFormatter(locale)
   const baseRoute = '/admin/llms/llms' as const
+
+  const usage = $derived(new Map((data.usage ?? []).map((used) => [used.llm_id, used])))
 
   const llms = $derived(
     data.llms.map((llm) => ({
       ...llm,
+      // What it cost since midnight, Paris time, for the "Aujourd'hui" column.
+      today: usage.get(llm.id)?.estimated_usd,
       votes: data.data.models.find((other) => other.id === llm.id)?.data?.n_match,
       release_date: new Date(llm.release_date),
-      updated_at: new Date(llm.updated_at!),
-      created_at: new Date(llm.created_at!),
-      id: llm.id!,
-      search: toSearchString([llm.human_id, llm.name, llm.id!])
+      updated_at: new Date(llm.updated_at),
+      created_at: new Date(llm.created_at),
+      search: toSearchString([llm.human_id, llm.name, llm.id])
     }))
   )
   type DataKey = keyof Omit<(typeof llms)[number], 'links'>
@@ -28,7 +34,8 @@
   const cols = [
     { id: 'human_id', label: 'Human ID', orderable: true },
     { id: 'status', label: 'Status', orderable: true },
-    { id: 'rate_limited', label: 'Rate limited', kind: 'boolean', orderable: true },
+    { id: 'price_out', label: 'Output price (per M tokens)', kind: 'number', orderable: true },
+    { id: 'today', label: m['admin.limits.today.title'](), kind: 'number', orderable: true },
     { id: 'release_date', label: 'Release date', kind: 'date', orderable: true },
     { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true },
@@ -76,11 +83,35 @@
         text={status}
         variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
       />
-    {:else if col.id === 'rate_limited'}
-      {#if llm.rate_limited}
-        <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
-      {:else}
-        <span class="sr-only">{m['words.no']()}</span>
+    {:else if col.id === 'price_out'}
+      {dollars.format(llm.price_out)}
+    {:else if col.id === 'today'}
+      {@const used = usage.get(llm.id)}
+      <!-- A dash when nothing was spent, enabled or not, rather than 0,00 $. -->
+      {#if !used?.estimated_usd && !used?.full}
+        —
+      {:else if used}
+        <span class="gap-2 flex flex-wrap items-center">
+          <span>
+            {used.cap_usd === null
+              ? dollars.format(used.estimated_usd)
+              : m['admin.limits.today.spentOfCap']({
+                  spent: dollars.format(used.estimated_usd),
+                  cap: dollars.format(used.cap_usd)
+                })}
+          </span>
+          {#if used.full}
+            <Badge size="sm" class="normal-case!">
+              <Icon icon={FULL_ICON} size="xs" block class="me-1" />
+              {m['admin.limits.today.full']()}
+            </Badge>
+          {/if}
+        </span>
+      {/if}
+      {#if used && !used.counted && used.cap_usd !== null}
+        <span class="fr-text--xs mb-0! font-bold min-w-40 block whitespace-normal">
+          {m['admin.limits.today.notCounted']()}
+        </span>
       {/if}
     {:else if col.id === 'release_date'}
       {toShortDate(llm.release_date, locale)}

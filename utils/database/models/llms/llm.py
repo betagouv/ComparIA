@@ -1,14 +1,16 @@
+import math
 from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
-from pydantic import AfterValidator, model_validator
+from pydantic import AfterValidator, FiniteFloat, field_validator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Date
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
+from sqlmodel.main import SQLModelConfig
 
 from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
@@ -44,9 +46,6 @@ FIELDS = {
     },
     "name": {
         "title": "Readable name",
-    },
-    "rate_limited": {
-        "description": "Apply rate limits (usually for high API costs LLMs).",
     },
     "release_date": {},
     "knowledge_cutoff": {
@@ -87,7 +86,11 @@ FIELDS = {
         "description": "Price per million input tokens in USD.",
     },
     "price_out": {
-        "description": "Price per million output tokens in USD.",
+        "description": "Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.",
+    },
+    "daily_usd_cap": {
+        "title": "Daily cap (USD)",
+        "description": "Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. A model with no price (input and output at 0) is not counted, so a cap on it has no effect. Empty: no cap.",
     },
     "system_prompt": {
         "description": "System message to add in llm call if specified",
@@ -103,6 +106,9 @@ class Link(SQLModel):
     url: HttpUrl
 
 
+_PRICE: dict = {"schema_extra": {"json_schema_extra": {"minimum": 0}}}
+
+
 class LLMDataBase(BaseDBModel):
     status: Annotated[LLMStatus, Field(sa_type=String, **FIELDS["status"])]
     name: Annotated[NonEmptyStr, Field(**FIELDS["name"])]
@@ -116,7 +122,6 @@ class LLMDataBase(BaseDBModel):
         UUID | None,
         Field(default=None, foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"]),
     ]
-    rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
     knowledge_cutoff: Annotated[
@@ -145,8 +150,13 @@ class LLMDataBase(BaseDBModel):
         list[Literal["text", "image", "audio", "video"]],
         Field(sa_type=JSONB, **FIELDS["inputs"]),
     ]
-    price_in: Annotated[float, Field(**FIELDS["price_in"])]
-    price_out: Annotated[float, Field(**FIELDS["price_out"])]
+    # At least 0 in the form and on write (`LLMDataUpsert`), not on read, so a
+    # row stored before the check cannot stop the models from loading.
+    price_in: Annotated[float, Field(**_PRICE, **FIELDS["price_in"])]
+    price_out: Annotated[float, Field(**_PRICE, **FIELDS["price_out"])]
+    daily_usd_cap: Annotated[
+        FiniteFloat | None, Field(default=None, ge=0, **FIELDS["daily_usd_cap"])
+    ]
     system_prompt: Annotated[
         NonEmptyStr | None, Field(default=None, **FIELDS["system_prompt"])
     ]
@@ -169,6 +179,9 @@ class LLMData(LLMDataBase, table=True):
     """
 
     __tablename__ = "llm_data"
+    # Every field is in what the API sends back, defaults included, so the
+    # generated type marks them all as present.
+    model_config = SQLModelConfig(json_schema_serialization_defaults_required=True)
 
     lab: LLMLab = Relationship(
         sa_relationship_kwargs={"foreign_keys": "[LLMData.lab_id]", "lazy": "joined"}
@@ -188,6 +201,15 @@ class LLMData(LLMDataBase, table=True):
 
 
 class LLMDataUpsert(LLMDataBase):
+    @field_validator("price_in", "price_out")
+    @classmethod
+    def check_price(cls, value: float) -> float:
+        """Prices decide which models are expensive and when a daily cap is
+        reached: a negative one would make a model free."""
+        if not math.isfinite(value) or value < 0:
+            raise ValueError("must be a finite number, at least 0")
+        return value
+
     @model_validator(mode="after")
     def check_active_params_is_defined_if_moe(self):
         """

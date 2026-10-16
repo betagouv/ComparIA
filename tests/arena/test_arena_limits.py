@@ -1,0 +1,271 @@
+"""
+What `GET /arena/limits` tells the arena before the person types (no network,
+no DB, no real Redis).
+
+It says which allowance is spent, for whom and when it lifts, and which models
+are paused, so the picker can grey them out. It never says how much was used:
+a school's total behind one IP is not one pupil's to see. Nor anything of an
+allowance not yet spent: watching it change after a message would tell
+whether the pair had an expensive model.
+"""
+
+import os
+from datetime import datetime, timedelta, timezone
+from types import SimpleNamespace
+from uuid import uuid4
+
+os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
+os.environ.setdefault("LOG_FORMAT", "JSON")
+
+import pytest  # noqa: E402
+from fastapi import FastAPI  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+
+import backend.arena.limits as limits  # noqa: E402
+import backend.arena.router as arena_router  # noqa: E402
+import backend.arena.turn_limits as turn_limits  # noqa: E402
+import utils.database.models  # noqa: E402,F401 needed before importing the router
+from backend.arena.limits import Allowance, LimitStatus  # noqa: E402
+from backend.auth.dependencies import require_anonymous  # noqa: E402
+from backend.config import settings  # noqa: E402
+from tests.arena.fakes import fake_redis  # noqa: E402
+
+SESSION = "c" * 64
+ME, NETWORK = f"s:{SESSION}", "ip:testclient"
+PRICEY, PRICIER = uuid4(), uuid4()
+SPENT = settings.RATELIMIT_ALL_PER_IP + 1
+
+
+def model(llm_id, daily_usd_cap=None):
+    """Priced over the expensive threshold."""
+    return SimpleNamespace(
+        id=llm_id, price_in=2.6, price_out=13.0, daily_usd_cap=daily_usd_cap
+    )
+
+
+@pytest.fixture
+def arena(monkeypatch):
+    """The route against a fake Redis. `enabled` holds the models, for their
+    daily caps."""
+    state = SimpleNamespace(enabled={PRICEY: model(PRICEY), PRICIER: model(PRICIER)})
+
+    async def get_llms_data():
+        return SimpleNamespace(enabled=state.enabled)
+
+    monkeypatch.setattr(arena_router, "get_llms_data", get_llms_data)
+    app = FastAPI()
+    app.include_router(arena_router.router)
+    app.dependency_overrides[require_anonymous] = lambda: SESSION
+    with fake_redis(limits) as redis:
+        state.redis = redis
+        state.client = TestClient(app)
+        yield state
+
+
+def spend(redis, pool, identity, resets_in=limits.WINDOW_SECONDS):
+    redis.set(limits.budget_key(pool, identity), SPENT, ex=resets_in)
+
+
+def lifts_in(seconds):
+    return datetime.now(timezone.utc) + timedelta(seconds=seconds)
+
+
+def close(when, seconds):
+    lifts = datetime.fromisoformat(when)
+    return abs(lifts - lifts_in(seconds)) < timedelta(seconds=2)
+
+
+def test_nothing_spent_says_nothing(arena):
+    response = arena.client.get("/arena/limits")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total": None,
+        "expensive": None,
+        "paused_llms": [],
+        "signed_in_factor": settings.RATELIMIT_SIGNED_IN_FACTOR,
+    }
+
+
+def test_a_message_to_an_expensive_pair_changes_nothing_until_a_pool_is_spent(arena):
+    fresh = arena.client.get("/arena/limits").json()
+    limits.reserve(limits.Identity(ME, NETWORK), {"all": 3000, "expensive": 3000})
+
+    assert arena.client.get("/arena/limits").json() == fresh
+
+
+def test_no_cache_may_keep_it(arena):
+    assert arena.client.get("/arena/limits").headers["Cache-Control"] == "no-store"
+
+
+@pytest.mark.parametrize("identity, scope", [(ME, "session"), (NETWORK, "network")])
+def test_a_spent_whole_allowance_says_for_whom_and_when_it_lifts(
+    arena, identity, scope
+):
+    spend(arena.redis, "all", identity, resets_in=4210)
+
+    body = arena.client.get("/arena/limits").json()
+
+    assert body["total"]["scope"] == scope
+    assert close(body["total"]["resets_at"], 4210)
+    assert body["total"]["resets_in"] == 4210
+    assert body["expensive"] is None
+    assert body["paused_llms"] == []
+
+
+def test_the_reset_time_is_the_same_on_every_read(arena):
+    """Read from the counter's fixed expiry, not now plus what is left, which
+    moves by a second between two reads and can tip the minute shown."""
+    spend(arena.redis, "all", ME, resets_in=4210)
+    expires = datetime.fromtimestamp(int(arena.redis.now + 4210), timezone.utc)
+
+    first = arena.client.get("/arena/limits").json()["total"]
+    arena.redis.advance(0.6)
+    second = arena.client.get("/arena/limits").json()["total"]
+
+    assert datetime.fromisoformat(first["resets_at"]) == expires
+    assert second["resets_at"] == first["resets_at"]
+
+
+def test_the_whole_allowance_that_lifts_last_is_told(arena):
+    spend(arena.redis, "all", ME, resets_in=600)
+    spend(arena.redis, "all", NETWORK, resets_in=4210)
+
+    total = arena.client.get("/arena/limits").json()["total"]
+
+    assert total["scope"] == "network"
+    assert close(total["resets_at"], 4210)
+
+
+@pytest.mark.parametrize("identity", [ME, NETWORK])
+def test_a_spent_expensive_allowance_pauses_every_expensive_model(arena, identity):
+    spend(arena.redis, "expensive", identity, resets_in=4210)
+
+    body = arena.client.get("/arena/limits").json()
+
+    assert body["total"] is None
+    assert body["expensive"]["scope"] == ("session" if identity == ME else "network")
+    assert close(body["expensive"]["resets_at"], 4210)
+    assert [(p["id"], p["reason"]) for p in body["paused_llms"]] == [
+        (str(PRICEY), "allowance"),
+        (str(PRICIER), "allowance"),
+    ]
+    assert all(
+        p["until"] == body["expensive"]["resets_at"] for p in body["paused_llms"]
+    )
+
+
+def test_each_expensive_model_is_listed_once_when_both_scopes_are_spent(arena):
+    spend(arena.redis, "expensive", ME, resets_in=600)
+    spend(arena.redis, "expensive", NETWORK, resets_in=4210)
+
+    body = arena.client.get("/arena/limits").json()
+
+    assert [p["id"] for p in body["paused_llms"]] == [str(PRICEY), str(PRICIER)]
+    assert close(body["expensive"]["resets_at"], 4210)
+
+
+def test_it_never_tells_how_much_was_used(arena):
+    """A spent allowance and its reset time, nothing more: no counter, no
+    limit, no share, for the session or the network."""
+    for pool in limits.POOLS:
+        for identity in (ME, NETWORK):
+            spend(arena.redis, pool, identity)
+
+    body = arena.client.get("/arena/limits").json()
+
+    # The signed-in factor is the same for everyone, so it tells nothing.
+    assert set(body) == {"total", "expensive", "paused_llms", "signed_in_factor"}
+    assert (
+        set(body["total"])
+        == set(body["expensive"])
+        == {
+            "scope",
+            "resets_at",
+            "resets_in",
+        }
+    )
+    assert all(set(p) == {"id", "until", "reason"} for p in body["paused_llms"])
+    assert str(SPENT) not in str(body)
+
+
+def test_it_needs_an_anonymous_session():
+    app = FastAPI()
+    app.include_router(arena_router.router)
+
+    assert TestClient(app).get("/arena/limits").status_code == 401
+
+
+def test_it_fails_open_when_redis_is_down(arena):
+    """A page that cannot read the limits still loads. The message itself is
+    charged, and refused, by `reserve`."""
+    arena.redis.pipelines_left = 0
+
+    response = arena.client.get("/arena/limits")
+
+    assert response.status_code == 200
+    assert response.json()["paused_llms"] == []
+
+
+def expensive_spent(resets_in):
+    allowance = Allowance("expensive", "session", ME, SPENT, 10, resets_in)
+    return LimitStatus((allowance,))
+
+
+def test_a_full_model_is_listed_as_full_when_that_ends_later():
+    midnight = lifts_in(8 * 3600)
+
+    status = turn_limits.arena_limits(
+        expensive_spent(600), [PRICEY, PRICIER], full={PRICEY: midnight}
+    )
+
+    assert [(p.id, p.reason, p.until) for p in status.paused_llms] == [
+        (PRICEY, "full", midnight),
+        (PRICIER, "allowance", status.expensive.resets_at),
+    ]
+    assert close(status.expensive.resets_at.isoformat(), 600)
+
+
+def test_a_full_model_stays_paused_by_the_allowance_when_that_ends_later():
+    status = turn_limits.arena_limits(
+        expensive_spent(4210), [PRICEY], full={PRICEY: lifts_in(60)}
+    )
+
+    [paused] = status.paused_llms
+    assert (paused.reason, paused.until) == ("allowance", status.expensive.resets_at)
+
+
+def test_a_full_model_stays_paused_by_an_allowance_with_no_known_end():
+    """No known end is the longest pause, not one shorter than midnight."""
+    status = turn_limits.arena_limits(
+        expensive_spent(None), [PRICEY], full={PRICEY: lifts_in(8 * 3600)}
+    )
+
+    [paused] = status.paused_llms
+    assert (paused.reason, paused.until) == ("allowance", None)
+
+
+def test_a_full_model_is_paused_with_the_expensive_allowance_left():
+    cheap, midnight = uuid4(), lifts_in(3600)
+
+    status = turn_limits.arena_limits(LimitStatus(()), [PRICEY], full={cheap: midnight})
+
+    assert status.expensive is None
+    assert [(p.id, p.reason) for p in status.paused_llms] == [(cheap, "full")]
+
+
+def test_a_model_whose_daily_cap_is_full_is_paused_for_everyone_until_midnight(
+    arena, monkeypatch
+):
+    monkeypatch.setattr(limits, "now", lambda: arena.redis.now)
+    arena.enabled = {
+        PRICEY: model(PRICEY, daily_usd_cap=5.0),
+        PRICIER: model(PRICIER),
+    }
+    day = limits.Day.at()
+    limits.count_day(day, {PRICEY: {"usd": 5_000_000}, PRICIER: {"usd": 9_000_000}})
+
+    paused = arena.client.get("/arena/limits").json()["paused_llms"]
+
+    assert [(p["id"], p["reason"]) for p in paused] == [(str(PRICEY), "full")]
+    assert datetime.fromisoformat(paused[0]["until"]) == day.ends

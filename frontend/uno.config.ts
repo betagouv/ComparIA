@@ -105,6 +105,9 @@ export default defineConfig({
     'i-ri-image-upload-line',
     'i-ri-volume-up-line',
     'i-ri-video-line',
+    // admin limits: paused for the person, full for the day
+    'i-ri-pause-circle-line',
+    'i-ri-calendar-close-line',
     ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })

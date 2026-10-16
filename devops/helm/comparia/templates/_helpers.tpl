@@ -66,14 +66,14 @@ subset would silently leave it without SMTP or with the default session length.
   value: "/data"
 - name: VOTES_OBJECTIVE
   value: {{ .Values.config.votesObjective | quote }}
-- name: CACHE_ENABLED
-  value: {{ .Values.config.cache.enabled | quote }}
 - name: CACHE_PROBABILITY
   value: {{ .Values.config.cache.probability | quote }}
 - name: CACHE_TTL
   value: {{ .Values.config.cache.ttl | quote }}
 - name: CACHE_MAX_RESPONSES
   value: {{ .Values.config.cache.maxResponses | quote }}
+- name: WEB_SEARCH_CACHE_TTL
+  value: {{ .Values.config.cache.webSearchTtl | quote }}
 {{- if .Values.config.sentryDsn }}
 - name: SENTRY_DSN
   value: {{ .Values.config.sentryDsn | quote }}

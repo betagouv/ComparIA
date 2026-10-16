@@ -38,10 +38,12 @@ def postgres_uri():
     A throwaway Postgres cluster on a unix socket, with the schema created.
     For the tests whose subject is what lands in the database, or what the
     database can do, like advisory locks. Skipped where Postgres is not
-    installed.
+    installed, except in CI, where a skip would pass for a green run.
     """
     bin_dir = _postgres_bin()
     if bin_dir is None:
+        if os.environ.get("CI"):
+            pytest.fail("Postgres is not installed on the CI runner")
         pytest.skip("Postgres is not installed")
 
     # A short path: a unix socket path is limited to about a hundred bytes.

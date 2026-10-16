@@ -3,6 +3,8 @@ import { m } from '$lib/i18n/messages'
 // The keys the arena backend sends as `detail`, see backend/arena/router.py,
 // backend/arena/models.py and backend/arena/checks.py.
 const ARENA_ERRORS = {
+  // No longer sent by the arena, whose limits now carry when they lift (see
+  // `LimitRefusalBody`). Kept for a release in case an older backend answers.
   rate_limited: () => m['arene.apiErrors.rate_limited'](),
   block_cooldown: () => m['arene.apiErrors.block_cooldown'](),
   comparison_streaming: () => m['arene.apiErrors.comparison_streaming'](),
@@ -11,7 +13,10 @@ const ARENA_ERRORS = {
   captcha_failed: () => m['arene.apiErrors.captcha_failed'](),
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),
   prompt_too_long: () => m['arene.apiErrors.prompt_too_long'](),
-  spam_detected: () => m['arene.apiErrors.spam_detected']()
+  spam_detected: () => m['arene.apiErrors.spam_detected'](),
+  too_many_at_once: () => m['arene.apiErrors.too_many_at_once'](),
+  // Not sent by the backend: a send that failed on the server before it started.
+  send_failed: () => m['arene.apiErrors.send_failed']()
 } as const
 
 const PROMPT_CHECK_MESSAGES = {

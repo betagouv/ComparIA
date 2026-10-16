@@ -3,7 +3,7 @@ import logging
 from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 
 from backend.arena.captcha import generate_challenge, solved_max_number
@@ -14,7 +14,14 @@ from backend.arena.checks import (
     issue_warning_token,
     run_prompt_check,
 )
-from backend.arena.models import AddFirstTextBody, AddTextBody, RetryBody
+from backend.arena.in_flight import hold_turn_slot
+from backend.arena.limits import (
+    Identity,
+    LimitStatus,
+    reload_settings,
+    stand_in_exclusions,
+)
+from backend.arena.models import AddFirstTextBody, AddTextBody, ArenaLimits, RetryBody
 from backend.arena.reveal import RevealData, get_reveal_data
 from backend.arena.services import (
     add_comparison_turn,
@@ -35,9 +42,7 @@ from backend.arena.session import (
     increment_sent_warnings,
     increment_unvoted,
     is_block_cooldown,
-    is_ratelimited,
     is_warning_cooldown,
-    reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
     unvoted_comparisons,
@@ -48,6 +53,14 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
+from backend.arena.turn_limits import (
+    Refused,
+    answers,
+    charge_follow_up,
+    check_allowance,
+    read_arena_limits,
+    start_first_turn,
+)
 from backend.arena.web_search import keep_search_results, search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
@@ -57,7 +70,8 @@ from backend.config import (
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
 )
-from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.errors import LimitReachedError
+from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -69,6 +83,7 @@ from utils.database.models import (
     ComparisonPublic,
     ComparisonRead,
     TurnPublic,
+    TurnRead,
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
@@ -79,52 +94,43 @@ logger = logging.getLogger("languia")
 router = APIRouter(
     prefix="/arena",
     tags=["arena"],
+    # Before the routes' own dependencies, which read the limits.
+    dependencies=[Depends(reload_settings)],
 )
 
 
 # Dependencies
 
 
-def assert_not_rate_limited(
-    anonymous_user_hash: RequiredAnomymous, request: Request
-) -> None:
-    """Rate-limit model usage per anonymous session, with the IP as a backstop
-    for clients that drop the session cookie."""
-    if is_ratelimited(anonymous_user_hash, get_ip(request)):
-        logger.error(
-            "Too much text submitted to the models for anonymous session",
-            extra={"request": request},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="rate_limited",
-        )
+def who(
+    anonymous_user_hash: RequiredAnomymous, user: OptionalUser, request: Request
+) -> Identity:
+    """Who a message counts against: the account while signed in, else the
+    session, and the network it comes from."""
+    return Identity.of(anonymous_user_hash, get_ip(request), user.id if user else None)
 
 
-def charge_budget(
-    text: str,
-    llm_ids: tuple[UUID, UUID],
-    llms_data: LLMsData,
-    anonymous_user_hash: str,
-    request: Request,
-) -> None:
-    """
-    Spend the message's characters against the session and IP budgets before
-    any model is called. The charge used to wait for a full, error-free answer,
-    so a client that hung up halfway, or sent many requests at once, never paid.
-    No refund when a model then fails: an error a client can provoke would buy
-    whatever the models had already written.
-    """
-    pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
-    if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
-        logger.error(
-            "Too much text submitted to the models for anonymous session",
-            extra={"request": request},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="rate_limited",
-        )
+Who = Annotated[Identity, Depends(who)]
+
+
+def limit_reached(error: Refused, request: Request) -> LimitReachedError:
+    """A limit refusal as the 429 the arena reads. Logged as a warning: a
+    person who reaches their limit is the limit working, not a fault, and an
+    error would make each of them a Sentry event."""
+    logger.warning(f"Refused a message: {error}", extra={"request": request})
+    return LimitReachedError(error.key, error.limit)
+
+
+def assert_allowance_left(who: Who, request: Request) -> LimitStatus:
+    """Only a spent whole allowance stops a message here, see
+    `check_allowance`."""
+    try:
+        return check_allowance(who)
+    except Refused as error:
+        raise limit_reached(error, request)
+
+
+AllowanceLeft = Annotated[LimitStatus, Depends(assert_allowance_left)]
 
 
 def assert_not_block_cooldown(
@@ -281,15 +287,27 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
     return generate_challenge(ALTCHA_MAX_NUMBER)
 
 
+@router.get("/limits")
+async def get_limits(who: Who, response: Response) -> ArenaLimits:
+    """Which allowances this person has spent and which models are paused for
+    them, or for everyone once their daily cap is full, read on page load and
+    after each vote. It changes with every message, so no cache may keep
+    it."""
+    response.headers["Cache-Control"] = "no-store"
+    return read_arena_limits(who, await get_llms_data())
+
+
 @router.post(
     "/add_first_text",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[Depends(assert_not_block_cooldown), Depends(hold_turn_slot)],
 )
 async def add_first_text(
     args: AddFirstTextBody,
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    allowance: AllowanceLeft,
+    who: Who,
 ) -> StreamingResponse:
     """
     Process user's first message and initiate Comparison.
@@ -305,6 +323,7 @@ async def add_first_text(
         user: User if connected
         anonymous_user_hash: anonymous user hash from cookie
         request: FastAPI request
+        allowance: The person's allowances, read before anything else runs
 
     Returns:
         StreamingResponse: Server-Sent Events stream with LLM responses
@@ -344,14 +363,21 @@ async def add_first_text(
 
     # Select LLMs
     llms_data = await get_llms_data()
-    llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+    try:
+        first = start_first_turn(
+            who,
+            allowance,
+            llms_data,
+            args.mode,
+            args.custom_models_selection,
+            args.prompt_value,
+        )
+    except Refused as error:
+        raise limit_reached(error, request)
+    (llm_a_id, llm_b_id), charge = first.pair, first.charge
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
-    )
-
-    charge_budget(
-        args.prompt_value, (llm_a_id, llm_b_id), llms_data, anonymous_user_hash, request
     )
     check = (await save_prompt_check_result(check)) if check else None
 
@@ -379,6 +405,7 @@ async def add_first_text(
             custom_models_selection=args.custom_models_selection,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
+            expensive_paused=first.expensive_paused,
         )
     )
 
@@ -393,50 +420,61 @@ async def add_first_text(
 
     # Stream responses
     async def event_stream(comparison: ComparisonRead) -> AsyncGenerator[str]:
-        yield format_sse_event(
-            {
-                "type": "init",
-                "comparison": ComparisonPublic.model_validate(
-                    comparison, context={"llms_data": llms_data}
-                ),
-            }
-        )
-
-        # Add first turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
-            comparison.id,
-            args.prompt_value,
-            web_search_results,
-            prompt_check_result=check,
-        )
-        store_comparison_metadata(comparison.id, is_streaming=True)
-
+        turn: TurnRead | None = None
         try:
             yield format_sse_event(
-                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                {
+                    "type": "init",
+                    "comparison": ComparisonPublic.model_validate(
+                        comparison, context={"llms_data": llms_data}
+                    ),
+                }
             )
 
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
+            # Add first turn and save it to db (to at least save the user prompt)
+            comparison, turn = await add_comparison_turn(
+                comparison.id,
+                args.prompt_value,
+                web_search_results,
+                prompt_check_result=check,
+            )
+            store_comparison_metadata(comparison.id, is_streaming=True)
 
-            if not comparison.error:
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            try:
+                yield format_sse_event(
+                    {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                )
+
+                # Stream both model responses
+                async for chunk in stream_comparison_messages(
+                    comparison, turn, request, first.expensive_paused, charge
+                ):
+                    yield format_sse_event(chunk)
+
+                if not comparison.error:
+                    await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            finally:
+                store_comparison_metadata(comparison.id, is_streaming=False)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream(comparison))
 
 
 @router.post(
     "/add_text/{comparison_id}",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[
+        Depends(assert_allowance_left),
+        Depends(assert_not_block_cooldown),
+        Depends(hold_turn_slot),
+    ],
 )
 async def add_text(
     comparison_: ComparisonAnno,
     args: AddTextBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    who: Who,
 ) -> StreamingResponse:
     """
     Add a follow-up message to an existing Comparison.
@@ -483,53 +521,58 @@ async def add_text(
     if check and check.pending_warning:
         return warning_response(check, args.message)
 
-    charge_budget(
-        args.message,
-        (comparison_.llm_id_a, comparison_.llm_id_b),
-        await get_llms_data(),
-        anonymous_user_hash,
-        request,
-    )
+    try:
+        charge = charge_follow_up(who, comparison_, await get_llms_data(), args.message)
+    except Refused as error:
+        raise limit_reached(error, request)
     check = (await save_prompt_check_result(check)) if check else None
 
     # Assert last turn has vote
 
     # Stream responses
     async def event_stream() -> AsyncGenerator[str]:
-        # Add new turn and save it to db (to at least save the user prompt)
-        comparison, turn = await add_comparison_turn(
-            comparison_.id,
-            args.message,
-            prompt_check_result=check,
-        )
-        store_comparison_metadata(comparison.id, is_streaming=True)
-
+        turn: TurnRead | None = None
         try:
-            yield format_sse_event(
-                {"type": "add", "turn": TurnPublic.model_validate(turn)}
+            # Add new turn and save it to db (to at least save the user prompt)
+            comparison, turn = await add_comparison_turn(
+                comparison_.id,
+                args.message,
+                prompt_check_result=check,
             )
+            store_comparison_metadata(comparison.id, is_streaming=True)
 
-            # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
-                yield format_sse_event(chunk)
+            try:
+                yield format_sse_event(
+                    {"type": "add", "turn": TurnPublic.model_validate(turn)}
+                )
 
-            if not comparison.error:
-                await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+                # Stream both model responses
+                async for chunk in stream_comparison_messages(
+                    comparison, turn, request, charge=charge
+                ):
+                    yield format_sse_event(chunk)
+
+                if not comparison.error:
+                    await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            finally:
+                store_comparison_metadata(comparison.id, is_streaming=False)
         finally:
-            store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream())
 
 
 @router.post(
     "/retry/{comparison_id}",
-    dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
+    dependencies=[Depends(assert_not_block_cooldown), Depends(hold_turn_slot)],
 )
 async def retry(
     comparison: ComparisonAnno,
     args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
+    allowance: AllowanceLeft,
+    who: Who,
 ) -> StreamingResponse:
     """
     Retry generating the last LLM responses.
@@ -541,6 +584,7 @@ async def retry(
         comparison: linked Comparison
         args: Request body with the captcha solution
         request: FastAPI request for logging
+        allowance: The person's allowances, read before anything else runs
 
     Returns:
         StreamingResponse: Server-Sent Events stream with LLM responses
@@ -563,6 +607,7 @@ async def retry(
             detail="retry_unavailable",
         )
 
+    llms_data = await get_llms_data()
     # If comparison has not yet trully started
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
@@ -575,17 +620,20 @@ async def retry(
                 )
 
             failing_llm_id = getattr(comparison, f"llm_id_{pos}")
-            if new_llm_id := await pick_replacement_model(comparison, pos):
+            left_out = stand_in_exclusions(
+                llms_data.enabled.values(),
+                failing_llm_id,
+                allowance.expensive_paused,
+            )
+            if new_llm_id := await pick_replacement_model(comparison, pos, left_out):
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
-    charge_budget(
-        turn.user_msg.content,
-        (comparison.llm_id_a, comparison.llm_id_b),
-        await get_llms_data(),
-        anonymous_user_hash,
-        request,
-    )
+    # Like a follow-up, a retry is part of a conversation under way.
+    try:
+        charge = charge_follow_up(who, comparison, llms_data)
+    except Refused as error:
+        raise limit_reached(error, request)
 
     await update_comparison_error(comparison, None)
 
@@ -604,13 +652,16 @@ async def retry(
 
         try:
             # Stream both model responses
-            async for chunk in stream_comparison_messages(comparison, turn, request):
+            async for chunk in stream_comparison_messages(
+                comparison, turn, request, allowance.expensive_paused, charge
+            ):
                 yield format_sse_event(chunk)
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
+            charge.settle(answers(turn))
 
     return create_sse_response(event_stream(comparison))
 

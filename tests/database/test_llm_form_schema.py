@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from utils.database.models.llms.llm import LLMDataUpsert
+from utils.database.models.llms.llm import LLMData, LLMDataBase, LLMDataUpsert
 from utils.utils import FormJsonSchema
 
 
@@ -15,7 +15,6 @@ def payload(**overrides):
         "human_id": "test-llm",
         "api_model_id": "test-llm",
         "endpoint_id": uuid4(),
-        "rate_limited": False,
         "lab_id": uuid4(),
         "release_date": date(2026, 1, 1),
         "license_id": uuid4(),
@@ -94,3 +93,50 @@ def test_llm_metadata_dates_are_date_only():
 
     with pytest.raises(ValidationError):
         LLMDataUpsert(**payload(release_date="2026-01-02T12:30:00"))
+
+
+def test_an_llm_read_back_always_carries_its_defaulted_fields():
+    """
+    The API sends every field of an LLM, defaults included, so the type
+    generated from what it sends must not mark them as possibly missing.
+    """
+    schema = LLMData.model_json_schema(mode="serialization")
+
+    assert {"links", "api_model_id", "system_prompt"} <= set(schema["required"])
+
+
+def test_a_model_has_no_daily_cap_unless_one_is_set():
+    assert LLMDataUpsert(**payload()).daily_usd_cap is None
+    assert LLMDataUpsert(**payload(daily_usd_cap=None)).daily_usd_cap is None
+    assert LLMDataUpsert(**payload(daily_usd_cap=12.5)).daily_usd_cap == 12.5
+
+
+@pytest.mark.parametrize("cap", [-1, float("inf"), float("nan")])
+def test_a_daily_cap_below_zero_or_not_finite_is_refused(cap):
+    with pytest.raises(ValidationError, match="daily_usd_cap"):
+        LLMDataUpsert(**payload(daily_usd_cap=cap))
+
+
+@pytest.mark.parametrize("field", ["price_in", "price_out"])
+def test_a_price_below_zero_is_refused(field):
+    with pytest.raises(ValidationError, match=field):
+        LLMDataUpsert(**payload(**{field: -1}))
+
+
+@pytest.mark.parametrize("field", ["price_in", "price_out"])
+def test_the_admin_form_offers_prices_from_zero(field):
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert schema["properties"][field]["minimum"] == 0
+    assert LLMDataUpsert(**payload(**{field: 0})).model_dump()[field] == 0
+
+
+def test_a_price_stored_below_zero_before_the_check_still_reads():
+    assert LLMDataBase.model_validate(payload(price_out=-1)).price_out == -1
+
+
+def test_the_cap_help_says_a_model_without_a_price_is_not_counted():
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert "no price" in schema["properties"]["daily_usd_cap"]["description"]
+    assert "no effect" in schema["properties"]["daily_usd_cap"]["description"]

@@ -7,12 +7,14 @@ import type {
   Consumption as APIConsoData,
   RevealData as APIRevealData,
   ComparisonPublic,
+  LimitRefusalBody,
   LLMMessageCreate,
   TurnPublic,
   UserMessageRead,
   LinkupSearchTextResult as WebSearchResults
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
+import { getLimitsContext } from '$lib/limits.svelte'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
@@ -110,6 +112,32 @@ export interface RevealData {
   selected: Bot | null
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
+}
+
+// LIMITS
+
+/**
+ * A new comparison refused on models it may not use yet: the person picked
+ * them (in `limit.llm_ids`), or chose a mode left with nothing to draw.
+ * `expensive_allowance_spent` while their expensive allowance is spent,
+ * `model_full_today` once the models' daily cap is full, for everyone until
+ * midnight. Every other model stays open, so this does not pause anyone.
+ */
+export type PickRefusal = LimitRefusalBody & {
+  detail: 'expensive_allowance_spent' | 'model_full_today'
+}
+
+function asLimitRefusal(err: unknown): LimitRefusalBody | undefined {
+  const { detail, limit } = err as ApiError
+  if (
+    limit &&
+    (detail === 'allowance_spent' ||
+      detail === 'expensive_allowance_spent' ||
+      detail === 'model_full_today')
+  ) {
+    return { detail, limit }
+  }
+  return undefined
 }
 
 // DATA
@@ -225,10 +253,16 @@ export async function updateComparisonsContext(comparisons: ComparisonsCtx) {
 
 export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   const comparisons = getComparisonsContext()
+  const limits = getLimitsContext()
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
   let promptError = $state<string>()
   let promptWarnings = $state<string[]>()
+  let pauseFromSend = $state(false)
+  let pickRefusal = $state<PickRefusal>()
+  // Why a message did not start, when sending it again shortly is the way:
+  // the network has as many turns answering as it may, or the server failed.
+  let sendHint = $state<'too_many_at_once' | 'send_failed'>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
   let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
@@ -246,10 +280,25 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     return turn.status
   })
 
+  // A refusal says nothing about the turns, so it never locks the reveal: only
+  // a turn still answering, a failed one or a missing vote does.
+  const canReveal = $derived(
+    !loading &&
+      !errorMsg &&
+      turn?.status === 'complete' &&
+      !!comparison?.turns.every((turn) => !!turn.choice)
+  )
+
+  // Shared by every page: the home form and each conversation show it before
+  // anyone sends, and it goes once the allowance lifts.
+
   async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
     promptError = undefined
     promptWarnings = undefined
+    pickRefusal = undefined
+    sendHint = undefined
+    pauseFromSend = false
     const previousError = comparison?.error
     if (comparison) {
       comparison.error = undefined
@@ -257,6 +306,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
 
     let receivedEvent = false
     let warned = false
+    let refused = false
     try {
       const altcha_token = await consumeAltchaToken()
 
@@ -309,7 +359,21 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (turn) turn.status = 'error'
       }
     } catch (err) {
-      if (err instanceof ValidationError) {
+      const refusal = asLimitRefusal(err)
+      if (refusal) {
+        refused = true
+        limits.refused(refusal)
+      }
+      if (refusal?.detail === 'allowance_spent') {
+        pauseFromSend = true
+      } else if (refusal) {
+        pickRefusal = { detail: refusal.detail, limit: refusal.limit }
+      } else if ((err as ApiError).detail === 'too_many_at_once') {
+        // Not an error in what was typed: the same message goes through in
+        // a few seconds, so it stays in the box and can be sent again.
+        refused = true
+        sendHint = 'too_many_at_once'
+      } else if (err instanceof ValidationError) {
         const detail = err.errors ? err.errors[0].msg : err.message
         promptError = promptCheckMessage(arenaErrorMessage(detail))
       } else if (err instanceof CaptchaError) {
@@ -319,8 +383,17 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (turn) turn.status = 'error'
       } else if (isArenaErrorKey((err as ApiError).detail)) {
         promptError = arenaErrorMessage((err as ApiError).detail as string)
+      } else if (receivedEvent && comparison) {
+        // Broke off once the turn had started: the turn tells it, with Retry.
+        console.error('[ARENA] The answer stream failed', err)
+        comparison.error = 'stream_failed'
+        if (turn) turn.status = 'error'
       } else {
-        throw err
+        // Failed on the server before anything started (a 500, the server
+        // out of reach): the text stays, and one line says it did not go.
+        console.error('[ARENA] The message could not be sent', err)
+        refused = true
+        sendHint = 'send_failed'
       }
     } finally {
       loading = false
@@ -329,9 +402,11 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       if (!receivedEvent && comparison && !comparison.error) {
         comparison.error = previousError
       }
+      // The turn spent some allowance: the next message may meet a pause.
+      if (receivedEvent && !warned) void limits.refresh()
     }
 
-    return !warned && !comparison?.error && !promptError
+    return !warned && !refused && !comparison?.error && !promptError
   }
 
   return {
@@ -347,11 +422,34 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     get loading() {
       return loading
     },
+    get canReveal() {
+      return canReveal
+    },
+    /** Set while the whole allowance is spent, until it lifts. */
+    get pause() {
+      return limits.total
+    },
+    /** False until the limits are read, on a page rendered on the server. */
+    get limitsRead() {
+      return limits.read
+    },
+    /** The pause showed when a message sent from here was refused. */
+    get pauseFromSend() {
+      return pauseFromSend
+    },
+    /** Set when a new comparison asked for models the person may not use yet. */
+    get pickRefusal() {
+      return pickRefusal
+    },
     get error() {
       return errorMsg
     },
     get promptError() {
       return promptError
+    },
+    /** Set when a message did not start: too many at once, or the server failed. */
+    get sendHint() {
+      return sendHint && arenaErrorMessage(sendHint)
     },
     set promptError(v: string | undefined) {
       promptError = v
@@ -410,6 +508,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       const turn = comparison!.turns.find((t) => t.id === data.turn_id)!
       if ('choice' in data) {
         turn.choice = data.choice
+        // Others on the network may have spent it meanwhile: tell before typing.
+        void limits.refresh()
       } else {
         turn[data.pos].custom_annotation = data.custom_annotation
         turn[data.pos].keyword_annotations = data.keyword_annotations

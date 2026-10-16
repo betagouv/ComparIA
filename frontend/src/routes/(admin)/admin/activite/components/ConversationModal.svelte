@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Alert, Button, Modal } from '$components/dsfr'
+  import { Alert, Badge, Button, Icon, Modal } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import { api } from '$lib/fastapi-client'
   import type { ActivityConversation, ActivityConversationRow } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import { PAUSED_ICON } from '$lib/limits.svelte'
   import { errorMessage, label, stageOf } from '../filters'
   import ConversationSummary from './ConversationSummary.svelte'
   import JourneyTrack from './JourneyTrack.svelte'
@@ -132,6 +133,12 @@
       {/if}
       <span aria-hidden="true">·</span>
       <JourneyTrack stage={stageOf(row)} />
+      {#if row.expensive_paused}
+        <Badge size="sm" class="normal-case!">
+          <Icon icon={PAUSED_ICON} size="xs" block class="me-1" />
+          {m['admin.activity.conversation.expensivePaused']()}
+        </Badge>
+      {/if}
     </p>
 
     {#if error}

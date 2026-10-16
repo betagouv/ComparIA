@@ -416,6 +416,8 @@ def _conversation_conditions(filters: ConversationFilters) -> list[Any]:
         where.append(commented if filters.has_comment else not_(commented))
     if filters.revealed is not None:
         where.append(col(Comparison.revealed).is_(filters.revealed))
+    if filters.expensive_paused is not None:
+        where.append(col(Comparison.expensive_paused).is_(filters.expensive_paused))
     if filters.category:
         where.append(col(Comparison.categories).contains([filters.category]))
     if filters.flag == "pii":
@@ -474,6 +476,7 @@ async def list_conversations(
                     col(Comparison.contains_spam),
                     col(Comparison.archived),
                     _has_error(),
+                    col(Comparison.expensive_paused),
                 )
                 .where(*page_where)
                 .order_by(col(Comparison.created_at).desc(), col(Comparison.id).desc())
@@ -544,6 +547,7 @@ async def list_conversations(
         contains_spam,
         archived,
         has_error,
+        expensive_paused,
     ) in comparisons:
         comparison_turns = by_comparison.get(id, [])
         tags_a = dict.fromkeys(tag for turn in comparison_turns for tag in turn[2])
@@ -571,6 +575,7 @@ async def list_conversations(
                 contains_spam=bool(contains_spam),
                 archived=bool(archived),
                 has_error=bool(has_error),
+                expensive_paused=bool(expensive_paused),
             )
         )
 
@@ -661,5 +666,6 @@ async def get_conversation(comparison_id: uuid.UUID) -> ActivityConversation | N
             archived=bool(comparison.archived),
             archived_reason=comparison.archived_reason,
             error=comparison.error,
+            expensive_paused=comparison.expensive_paused,
             turns=turns,
         )

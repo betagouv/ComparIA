@@ -1,11 +1,11 @@
 """
-When the arena charges a message against the character budgets (no network, no
-DB, no real Redis).
+When the arena charges a message against the allowances (no network, no DB,
+no real Redis).
 
-The budgets used to be charged once both answers had streamed in full and
-without error. A visitor who closed the connection halfway, or sent many
-requests at once, got the models' answers and was never charged. Every route
-that calls the models now pays before it starts them.
+Every route that calls the models pays before it starts them, for what they
+are sent and a typical answer, then for what they really wrote once the turn
+is over, however it ended: a client that hangs up halfway, or sends many
+requests at once, still pays.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_spend_budget.py
@@ -24,29 +24,67 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+from uuid import UUID  # noqa: E402
+
 from fastapi import FastAPI, HTTPException  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from redis.exceptions import ConnectionError as RedisConnectionError  # noqa: E402
 from starlette.requests import Request  # noqa: E402
 
+import backend.arena.limits as limits  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
-from backend.config import (  # noqa: E402
-    ANONYMOUS_SESSION_COOKIE,
-    RATELIMIT_ALL_MODELS_INPUT,
-    RATELIMIT_ALL_MODELS_INPUT_PER_IP,
-)
-from tests.arena.test_ratelimit import FakeRedis  # noqa: E402
+from backend.config import ANONYMOUS_SESSION_COOKIE, settings  # noqa: E402
+from backend.llms.data import NoModelLeft  # noqa: E402
+from tests.arena.fakes import FakeRedis  # noqa: E402
+from utils.database.models import LLMMessageCreate, UserMessageRead  # noqa: E402
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
 PROMPT = "Bonjour, explique la photosynthese"
-CHEAP, PRICEY = uuid4(), uuid4()
+CHEAP, EXPENSIVE = uuid4(), uuid4()
+# Prices in dollars per million tokens, at or above the threshold for the
+# expensive one. At four characters a token, each character it is sent costs
+# a millionth of a dollar, and each one it writes three.
+PRICES = {
+    CHEAP: SimpleNamespace(price_in=0.4, price_out=1.2),
+    EXPENSIVE: SimpleNamespace(price_in=4.0, price_out=12.0),
+}
+ME, NETWORK = f"s:{SESSION}", f"ip:{IP}"
+# What each model writes, all at once.
+ANSWER = "La photosynthese transforme la lumiere en sucres. " * 4
+
+# What each side is sent: the prompt, and for a follow-up the turn before it
+# too. Nothing else, since the models here have no system prompt.
+SENT = {
+    "add_first_text": len(PROMPT),
+    "add_text": 2 * len(PROMPT),
+    "retry": len(PROMPT),
+}
+# What each side is charged before the models start: what it is sent and a
+# typical answer, settled to the real one when the turn ends.
+RESERVED = {
+    route: sent + settings.RATELIMIT_EXPECTED_ANSWER_CHARS
+    for route, sent in SENT.items()
+}
+
+
+def usd(sent, written=0):
+    """What the expensive model costs, in millionths of a dollar."""
+    return sent + 3 * written
+
+
+# The same reservation on the expensive allowance.
+RESERVED_USD = {
+    route: usd(sent, settings.RATELIMIT_EXPECTED_ANSWER_CHARS)
+    for route, sent in SENT.items()
+}
 
 
 def counter(redis, pool, identity):
-    return redis.store.get(session._budget_key(pool, identity), 0)
+    return int(redis.get(limits.budget_key(pool, identity)) or 0)
 
 
 def make_request(path):
@@ -76,19 +114,28 @@ def patched(module, **attributes):
 
 
 @contextlib.contextmanager
-def arena(llm_ids=(CHEAP, CHEAP)):
+def arena(llm_ids=(CHEAP, CHEAP), caps=None):
     """The arena routes against stubs. `provider_calls` counts every time the
     models are started; `created` every comparison, turn or prompt check
-    written. Set `in_step` to a barrier to hold each request just before it
-    charges until the others get there too."""
+    written; `draws` the models each draw had to leave out; `new_comparisons`
+    what each first message asked to save. Set `in_step` to a
+    barrier to hold each request just before it charges until the others get
+    there too. `caps` holds the daily cap of each model that has one."""
     redis = FakeRedis()
-    state = SimpleNamespace(redis=redis, provider_calls=0, created=0, in_step=None)
+    state = SimpleNamespace(
+        redis=redis,
+        provider_calls=0,
+        created=0,
+        in_step=None,
+        draws=[],
+        new_comparisons=[],
+    )
     llm_a, llm_b = llm_ids
 
     def comparison(error=None):
         turn = SimpleNamespace(
             id=uuid4(),
-            user_msg=SimpleNamespace(content=PROMPT),
+            user_msg=UserMessageRead(content=PROMPT),
             llm_msg_a=None,
             llm_msg_b=None,
         )
@@ -99,16 +146,37 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             mode="random",
             llm_id_a=llm_a,
             llm_id_b=llm_b,
+            system_msg_a=None,
+            system_msg_b=None,
         )
 
     state.comparison = comparison
 
+    def pick_two(_mode, selection, hard_excluded=()):
+        state.draws.append(tuple(hard_excluded))
+        if refused := [
+            UUID(llm_id) for llm_id in selection or [] if UUID(llm_id) in hard_excluded
+        ]:
+            raise NoModelLeft(refused)
+        # With models left out, the draw falls on two cheap ones.
+        return (CHEAP, CHEAP) if hard_excluded else (llm_a, llm_b)
+
     async def get_llms_data():
         if state.in_step:
             await state.in_step.wait()
+        models = {
+            llm_id: SimpleNamespace(
+                id=llm_id,
+                system_prompt=None,
+                daily_usd_cap=(caps or {}).get(llm_id),
+                **vars(PRICES[llm_id]),
+            )
+            for llm_id in (CHEAP, EXPENSIVE)
+        }
         return SimpleNamespace(
-            pick_two=lambda _mode, _selection: (llm_a, llm_b),
-            pricey_models=[PRICEY],
+            pick_two=pick_two,
+            all=models,
+            enabled=models,
         )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):
@@ -121,8 +189,9 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def terms_version(**_kwargs):
         return "2026.07"
 
-    async def create_comparison(_comparison):
+    async def create_comparison(new_comparison):
         state.created += 1
+        state.new_comparisons.append(new_comparison)
         return comparison()
 
     async def add_comparison_turn(comparison_id, _text, *_args, **_kwargs):
@@ -133,13 +202,17 @@ def arena(llm_ids=(CHEAP, CHEAP)):
     async def noop(*_args, **_kwargs):
         return None
 
-    async def stream_comparison_messages(_comparison, _turn, _request):
+    async def stream_comparison_messages(_comparison, turn, *_args, **_kwargs):
         state.provider_calls += 1
-        yield {"type": "chunk", "pos": "a"}
-        yield {"type": "chunk", "pos": "b"}
+        for pos in ("a", "b"):
+            setattr(turn, f"llm_msg_{pos}", LLMMessageCreate(content=ANSWER))
+            yield {"type": "chunk", "pos": pos}
         yield {"type": "complete"}
 
-    with patched(session, get_redis_client=lambda: redis):
+    with (
+        patched(limits, get_redis_client=lambda: redis),
+        patched(session, get_redis_client=lambda: redis),
+    ):
         with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
             with patched(
                 arena_router,
@@ -161,28 +234,39 @@ def arena(llm_ids=(CHEAP, CHEAP)):
 
 
 def gate(route):
-    """The budget check FastAPI runs before the route."""
-    arena_router.assert_not_rate_limited(SESSION, make_request(f"/arena/{route}"))
+    """The allowance check FastAPI runs before the route."""
+    arena_router.assert_allowance_left(
+        limits.Identity.of(SESSION, IP), make_request(f"/arena/{route}")
+    )
 
 
-async def route_only(route, state):
+async def route_only(route, state, **first_text):
     """The route on its own, which hands back the stream without reading it."""
     request = make_request(f"/arena/{route}")
+    allowance = limits.read_status(limits.Identity.of(SESSION, IP))
     if route == "add_first_text":
         body = arena_models.AddFirstTextBody(
-            prompt_value=PROMPT, cohorts="", altcha_token="valid"
+            prompt_value=PROMPT, cohorts="", altcha_token="valid", **first_text
         )
-        return await arena_router.add_first_text(body, None, SESSION, request)
+        return await arena_router.add_first_text(
+            body, None, SESSION, request, allowance, limits.Identity.of(SESSION, IP)
+        )
     if route == "add_text":
         message = arena_models.AddTextBody(message=PROMPT, altcha_token="valid")
         return await arena_router.add_text(
-            state.comparison(), message, SESSION, request
+            state.comparison(),
+            message,
+            SESSION,
+            request,
+            limits.Identity.of(SESSION, IP),
         )
     return await arena_router.retry(
         state.comparison(),
         arena_models.RetryBody(altcha_token="valid"),
         SESSION,
         request,
+        allowance,
+        limits.Identity.of(SESSION, IP),
     )
 
 
@@ -225,18 +309,21 @@ def test_a_message_is_charged_before_the_models_start(route, state):
     response = start(route, state)
 
     assert state.provider_calls == 0
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
-    assert counter(state.redis, "all_ip", IP) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == 2 * RESERVED[route], route
+    assert counter(state.redis, "all", NETWORK) == 2 * RESERVED[route], route
     assert response.status_code == 200
 
 
 @each_route
 def test_a_client_that_hangs_up_has_still_paid(route, state):
+    """What was written before the client left counts too: the provider
+    billed it."""
     read(start(route, state), hang_up=True)
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
-    assert counter(state.redis, "all_ip", IP) == len(PROMPT), route
+    paid = 2 * SENT[route] + len(ANSWER)
+    assert counter(state.redis, "all", ME) == paid, route
+    assert counter(state.redis, "all", NETWORK) == paid, route
 
 
 @each_route
@@ -244,17 +331,19 @@ def test_a_full_answer_is_charged_once(route, state):
     read(start(route, state))
 
     assert state.provider_calls == 1, route
-    assert counter(state.redis, "all", SESSION) == len(PROMPT), route
+    assert counter(state.redis, "all", ME) == 2 * (SENT[route] + len(ANSWER)), route
 
 
 @each_route
-def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, state):
+def test_requests_sent_together_cannot_all_spend_the_last_of_the_allowance(
+    route, state
+):
     """The gate used to read the counters and the charge came later, so every
     request sent at once passed the gate before any of them was counted. Here
     both requests are past the gate and inside the route before either one
     charges."""
-    state.redis.store[session._budget_key("all", SESSION)] = (
-        RATELIMIT_ALL_MODELS_INPUT - 1
+    state.redis.store[limits.budget_key("all", ME)] = (
+        settings.RATELIMIT_ALL_PER_SESSION - 1
     )
 
     async def together():
@@ -270,10 +359,10 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
     state.in_step = None
 
     refused = [r for r in results if isinstance(r, HTTPException)]
-    assert len(refused) == 1, f"{route}: two requests spent one budget"
-    # The shape the frontend already reads for a spent budget.
+    assert len(refused) == 1, f"{route}: two requests spent one allowance"
     assert refused[0].status_code == 429
-    assert refused[0].detail == "rate_limited"
+    assert refused[0].detail == "allowance_spent"
+    assert refused[0].limit.scope == "session"
 
     [first] = [r for r in results if not isinstance(r, HTTPException)]
     read(first)
@@ -283,10 +372,10 @@ def test_requests_sent_together_cannot_all_spend_the_last_of_the_budget(route, s
 @each_route
 def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     """Refused, the message never reached a model. Left counted, it would keep
-    eating the budgets that were not spent yet, such as the IP one a whole
+    eating the allowances that were not spent yet, such as the network one a whole
     school can share."""
-    spent = session._budget_key("all_ip", IP)
-    state.redis.store[spent] = RATELIMIT_ALL_MODELS_INPUT_PER_IP + 1
+    spent = limits.budget_key("all", NETWORK)
+    state.redis.store[spent] = settings.RATELIMIT_ALL_PER_IP + 1
     before = dict(state.redis.store)
 
     try:
@@ -294,26 +383,51 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     except HTTPException as error:
         assert error.status_code == 429
     else:
-        raise AssertionError(f"{route}: an over-budget message went through")
+        raise AssertionError(f"{route}: a message over its allowance went through")
 
     assert {k: v for k, v in state.redis.store.items() if v} == before, route
     assert state.created == 0, route
     assert state.provider_calls == 0, route
     # A counter the refused message created holds nothing and must not stay in
     # Redis for ever.
-    assert all(k in state.redis.ttl for k in state.redis.store if k != spent), route
+    assert all(state.redis.ttl(k) > 0 for k in state.redis.store if k != spent), route
 
 
-def test_a_pricey_model_spends_the_pricey_budget_up_front():
+def test_an_expensive_model_spends_the_expensive_allowance_up_front():
+    """Its side only, at its prices."""
     for route in ROUTES:
-        with arena(llm_ids=(CHEAP, PRICEY)) as state:
+        with arena(llm_ids=(CHEAP, EXPENSIVE)) as state:
             start(route, state)
-            assert counter(state.redis, "pricey", SESSION) == len(PROMPT), route
-            assert counter(state.redis, "pricey_ip", IP) == len(PROMPT), route
+            reserved = RESERVED_USD[route]
+            assert counter(state.redis, "expensive", ME) == reserved, route
+            assert counter(state.redis, "expensive", NETWORK) == reserved, route
 
         with arena(llm_ids=(CHEAP, CHEAP)) as state:
             start(route, state)
-            assert counter(state.redis, "pricey", SESSION) == 0, route
+            assert counter(state.redis, "expensive", ME) == 0, route
+
+
+@each_route
+def test_only_the_whole_allowance_stops_a_message_at_the_gate(route, state):
+    """A spent expensive allowance used to stop every message, cheap pairs
+    included. It now only keeps expensive models out of new comparisons."""
+    for identity, scope in ((ME, "session"), (NETWORK, "network")):
+        state.redis.store = {
+            limits.budget_key("all", identity): settings.RATELIMIT_ALL_PER_IP + 1
+        }
+        try:
+            gate(route)
+        except HTTPException as error:
+            assert error.status_code == 429
+            assert (error.detail, error.limit.scope) == ("allowance_spent", scope)
+        else:
+            raise AssertionError(f"{route}: a spent allowance let a message by")
+
+    for identity in (ME, NETWORK):
+        state.redis.store = {
+            limits.budget_key("expensive", identity): settings.RATELIMIT_ALL_PER_IP + 1
+        }
+        gate(route)
 
 
 @contextlib.contextmanager
@@ -350,16 +464,38 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         response = client.post(f"/arena/retry/{uuid4()}", json={"altcha_token": "ok"})
         assert response.status_code == 200
         assert state.provider_calls == 1
-        assert counter(state.redis, "all_ip", "testclient") == len(PROMPT)
+        assert counter(state.redis, "all", "ip:testclient") == 2 * (
+            SENT["retry"] + len(ANSWER)
+        )
+
+
+def test_a_retry_goes_on_when_the_limits_cannot_be_read():
+    """Reading the limits fails open, and the retry reads them once, at the
+    gate. The charge still counts the turn."""
+
+    def down(_identities):
+        raise RedisConnectionError("Redis went away")
+
+    with retry_client() as (client, state):
+        with patched(limits, read_counters=down):
+            response = client.post(
+                f"/arena/retry/{uuid4()}", json={"altcha_token": "ok"}
+            )
+
+        assert response.status_code == 200
+        assert state.provider_calls == 1
+        assert counter(state.redis, "all", "ip:testclient") > 0
 
 
 if __name__ == "__main__":
     test_a_message_is_charged_before_the_models_start()
     test_a_client_that_hangs_up_has_still_paid()
     test_a_full_answer_is_charged_once()
-    test_requests_sent_together_cannot_all_spend_the_last_of_the_budget()
+    test_requests_sent_together_cannot_all_spend_the_last_of_the_allowance()
     test_a_refused_message_spends_nothing_and_writes_nothing()
-    test_a_pricey_model_spends_the_pricey_budget_up_front()
+    test_an_expensive_model_spends_the_expensive_allowance_up_front()
+    test_only_the_whole_allowance_stops_a_message_at_the_gate()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
+    test_a_retry_goes_on_when_the_limits_cannot_be_read()
     print("Spend budget cases passed.")

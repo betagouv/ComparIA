@@ -6,14 +6,33 @@
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
+  import { createLimits, setLimitsContext } from '$lib/limits.svelte'
   import { setVoteTagsContext } from '$lib/voteTags'
+  import { onDestroy, onMount } from 'svelte'
   import type { LayoutProps } from './$types'
 
   let { children, data }: LayoutProps = $props()
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
+  // Read from the browser only, once mounted: the server's request carries
+  // neither the person's session cookie nor their IP, and a load would hold
+  // up the page until the read lands. The forms wait for it two seconds at
+  // most.
+  const limits = createLimits(null, { pending: true })
+  setLimitsContext(limits)
+  onMount(() => void limits.refresh())
+  onDestroy(() => limits.destroy())
   const auth = getAuthContext()
+  // Signed in, the allowances are the account's, signed out the session's
+  // again: read them anew when either happens on this page.
+  let account = auth.user?.email
+  $effect(() => {
+    const now = auth.user?.email
+    if (now === account) return
+    account = now
+    void limits.refresh()
+  })
 
   let mainEl: HTMLElement | undefined = $state()
   let routeAnnouncement = $state('')

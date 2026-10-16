@@ -7,7 +7,7 @@ OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting,
 
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, AsyncGenerator, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Union, cast
 
 import litellm
 
@@ -33,6 +33,29 @@ if TYPE_CHECKING:
     from utils.database.models import LLMMessageCreate
 
 logger = logging.getLogger("languia")
+
+MOCK_ANSWER = "This is a fake response that didn't contact the LLM api."
+
+
+def mock_answer(chars: int) -> str:
+    """The fake answer, repeated or cut to exactly `chars` characters."""
+    if not chars:
+        return MOCK_ANSWER
+    repeats = chars // (len(MOCK_ANSWER) + 1) + 1
+    return " ".join([MOCK_ANSWER] * repeats)[:chars]
+
+
+def litellm_messages(messages: list["AnyMessageRead"]) -> list[dict[str, Any]]:
+    """What a model is sent: each message's role and content only, with the
+    web search results merged into the prompt they came with."""
+    return [
+        msg.model_dump(include={"role", "content"}, context={"merge_web_search": True})
+        for msg in messages
+    ]
+
+
+def sent_chars(messages: list["AnyMessageRead"]) -> int:
+    return sum(len(msg["content"] or "") for msg in litellm_messages(messages))
 
 
 async def litellm_stream_iter(
@@ -100,13 +123,7 @@ async def litellm_stream_iter(
         # litellm endpoint formated args
         **endpoint.model_dump(),
         # max_retries can be added if needed
-        # Only pass supported message args 'role' and 'content'
-        "messages": [
-            msg.model_dump(
-                include={"role", "content"}, context={"merge_web_search": True}
-            )
-            for msg in messages
-        ],
+        "messages": litellm_messages(messages),
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,  # Enable streaming for real-time responses
@@ -115,9 +132,7 @@ async def litellm_stream_iter(
     # Use mock response for testing if enabled
     if settings.MOCK_RESPONSE:
         logger.warning(f"MOCK_RESPONSE enabled")
-        kwargs["mock_response"] = (
-            "This is a fake response that didn't contact the LLM api."
-        )
+        kwargs["mock_response"] = mock_answer(settings.MOCK_RESPONSE_CHARS)
 
     # Request token usage reporting (except for Aya which doesn't support it)
     if "c4ai-aya-expanse-32b" not in endpoint.model:

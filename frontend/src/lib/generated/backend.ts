@@ -5,6 +5,42 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+/**
+ * What the arena may do for this person right now, read before they type.
+ *
+ * An allowance shows only once it is spent: before that, no field, no reset
+ * time, since watching one appear after a message would tell that the pair
+ * had an expensive model. No counter and no share either: the person learns
+ * that an allowance is spent and when it lifts, never how much their network
+ * sent. What is left: the moment an allowance runs out, the person learns
+ * that one of their recent pairs used an expensive model, not which one.
+ */
+export interface ArenaLimits {
+  total: SpentAllowance | null;
+  expensive: SpentAllowance | null;
+  paused_llms: PausedLLM[];
+  signed_in_factor: number;
+}
+/**
+ * A spent allowance, told by who it is spent for and when it lifts.
+ */
+export interface SpentAllowance {
+  scope: "session" | "network";
+  resets_at: string | null;
+  resets_in: number | null;
+  [k: string]: unknown;
+}
+/**
+ * A model left out of this person's new comparisons until `until`:
+ * "allowance" while their expensive allowance is spent, "full" while the
+ * model's daily cap is.
+ */
+export interface PausedLLM {
+  id: string;
+  until: string | null;
+  reason: "allowance" | "full";
+  [k: string]: unknown;
+}
 export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
@@ -128,10 +164,6 @@ export interface APILLMData {
    */
   endpoint_id?: string | null;
   /**
-   * Apply rate limits (usually for high API costs LLMs).
-   */
-  rate_limited: boolean;
-  /**
    * The lab that developed the LLM, create it first if not already available
    */
   lab_id: string;
@@ -189,9 +221,13 @@ export interface APILLMData {
    */
   price_in: number;
   /**
-   * Price per million output tokens in USD.
+   * Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.
    */
   price_out: number;
+  /**
+   * Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. A model with no price (input and output at 0) is not counted, so a cap on it has no effect. Empty: no cap.
+   */
+  daily_usd_cap?: number | null;
   /**
    * System message to add in llm call if specified
    */
@@ -328,6 +364,25 @@ export interface CurrencyInfo {
   rate_from_usd: number;
   date: string | null;
   source: "base" | "frankfurter" | "manual";
+  [k: string]: unknown;
+}
+/**
+ * The body of a 429 on a limit. `detail` stays a string key, as on every
+ * other error, so a client that only reads `detail` still works.
+ */
+export interface LimitRefusalBody {
+  detail: "allowance_spent" | "expensive_allowance_spent" | "model_full_today";
+  limit: LimitRefusal;
+}
+/**
+ * What a message refused on a limit carries beside its `detail` key, so
+ * the arena can say which limit it met and when it lifts.
+ */
+export interface LimitRefusal {
+  scope: ("session" | "network") | null;
+  resets_at: string | null;
+  resets_in: number | null;
+  llm_ids?: string[];
   [k: string]: unknown;
 }
 /**

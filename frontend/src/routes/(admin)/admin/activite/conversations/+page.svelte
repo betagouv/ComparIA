@@ -2,8 +2,9 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Alert, Button, Search, Select } from '$components/dsfr'
+  import { Alert, Badge, Button, Icon, Search, Select } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { PAUSED_ICON } from '$lib/limits.svelte'
   import { getLocale } from '$lib/i18n/runtime'
   import { untrack } from 'svelte'
   import type { ActivityConversationRow } from '$lib/generated/admin'
@@ -178,6 +179,13 @@
                     title={label('flags', flag)}
                   ></span>
                 {/each}
+                {#if row.expensive_paused}
+                  <!-- In words: the hourglass beside it means "not yet analysed". -->
+                  <Badge size="sm" class="shrink-0 normal-case!">
+                    <Icon icon={PAUSED_ICON} size="xs" block class="me-1" />
+                    {m['admin.activity.conversations.noExpensive']()}
+                  </Badge>
+                {/if}
                 {#if row.comment && !row.contains_pii}
                   <span class="gap-1 min-w-0 flex items-center">
                     <span class="i-ri-chat-quote-line shrink-0" aria-hidden="true"></span>

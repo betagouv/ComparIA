@@ -214,6 +214,27 @@ def test_the_mock_response_still_streams(monkeypatch):
     assert updates[-1].tokens
 
 
+@pytest.mark.parametrize("chars", [20, 2000])
+def test_the_mock_response_has_the_set_length(monkeypatch, chars):
+    monkeypatch.setattr(settings, "MOCK_RESPONSE", True)
+    monkeypatch.setattr(settings, "MOCK_RESPONSE_CHARS", chars)
+    turn: Any = SimpleNamespace()
+    user_msg = UserMessageRead(content="Bonjour ?")
+
+    async def answer() -> LLMMessageCreate | None:
+        final = None
+        async for msg in bot_response_async(
+            "a", llm_at("http://127.0.0.1:9/v1"), turn, 1, [user_msg]
+        ):
+            final = msg.model_copy()
+        return final
+
+    final = asyncio.run(answer())
+    assert final is not None
+    assert len(final.content) == chars
+    assert final.content.startswith("This is a fake")
+
+
 class EndlessStream:
     """Provider stream that sends one chunk, then keeps the visitor waiting."""
 
@@ -409,15 +430,19 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
         times_out="stuck",
     )
 
-    swaps_charged: list[bool] = []
+    swaps_paused: list[bool] = []
 
-    async def pick_replacement_model(_comparison, _pos, charged: bool = False):
-        swaps_charged.append(charged)
+    def stand_in_exclusions(_llms, _failing, expensive_paused):
+        swaps_paused.append(expensive_paused)
+        return []
+
+    async def pick_replacement_model(_comparison, _pos, _left_out):
         return "spare"
 
     async def update_comparison_llm_id(comparison, pos, llm_id):
         setattr(comparison, f"llm_id_{pos}", llm_id)
 
+    monkeypatch.setattr(streaming, "stand_in_exclusions", stand_in_exclusions)
     monkeypatch.setattr(streaming, "pick_replacement_model", pick_replacement_model)
     monkeypatch.setattr(streaming, "update_comparison_llm_id", update_comparison_llm_id)
     comparison = comparison_between("steady", "stuck")
@@ -426,7 +451,7 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
         return [
             event
             async for event in streaming.stream_comparison_messages(
-                comparison, comparison.turns[0]
+                comparison, comparison.turns[0], expensive_paused=False
             )
         ]
 
@@ -442,8 +467,8 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
 
     assert {"type": "swap", "pos": "b"} in events
     assert comparison.llm_id_b == "spare"
-    # The budgets were charged for the first pair before the swap.
-    assert swaps_charged == [True]
+    # The stand-in follows what the route said of the expensive allowance.
+    assert swaps_paused == [False]
     assert answers["a"][-1] == "undeuxtrois"
     assert answers["b"][-1] == "undeuxtrois"
     assert events[-1] == {"type": "complete"}

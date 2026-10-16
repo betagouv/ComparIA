@@ -81,13 +81,17 @@ describe('TOSModal', () => {
     expect(container.textContent).toContain('Conditions générales d’utilisation')
     expect(container.textContent).toContain('Politique de confidentialité')
 
-    await act(() => component.runAfterAcceptance(action))
-    expect(dialog.hasAttribute('open')).toBe(true)
+    // Settles once the message went, so the form can act on its answer.
+    let settled = false
+    const sent = component.runAfterAcceptance(action).then(() => (settled = true))
+    await waitFor(() => expect(dialog.hasAttribute('open')).toBe(true))
     expect(action).not.toHaveBeenCalled()
+    expect(settled).toBe(false)
 
     await fireEvent.click(container.querySelector<HTMLInputElement>('#tos-modal')!)
     await fireEvent.click(container.querySelector<HTMLButtonElement>('.fr-modal__footer button')!)
 
+    await sent
     await waitFor(() => expect(action).toHaveBeenCalledOnce())
     expect(dialog.hasAttribute('open')).toBe(false)
     expect(mocks.request).toHaveBeenCalledWith(
@@ -115,8 +119,11 @@ describe('TOSModal', () => {
     const action = vi.fn()
 
     await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2))
-    await act(() => component.runAfterAcceptance(action))
+    const sent = component.runAfterAcceptance(action)
+    await waitFor(() => expect(dialog.hasAttribute('open')).toBe(true))
     await fireEvent.click(container.querySelector<HTMLButtonElement>('.fr-modal__header button')!)
+    // Settled without the message: the form is free again.
+    await sent
 
     expect(action).not.toHaveBeenCalled()
     expect(dialog.hasAttribute('open')).toBe(false)
@@ -124,8 +131,22 @@ describe('TOSModal', () => {
       mocks.request.mock.calls.filter(([, options]) => options?.method === 'POST')
     ).toHaveLength(0)
 
-    await act(() => component.runAfterAcceptance(action))
-    expect(dialog.hasAttribute('open')).toBe(true)
+    void component.runAfterAcceptance(action)
+    await waitFor(() => expect(dialog.hasAttribute('open')).toBe(true))
+  })
+
+  it('settles a pending send when the dialog is closed another way', async () => {
+    const { component, container } = render(TOSModal)
+    const dialog = container.querySelector<HTMLDialogElement>('#fr-modal-welcome')!
+    const action = vi.fn()
+
+    await waitFor(() => expect(mocks.request).toHaveBeenCalledTimes(2))
+    const sent = component.runAfterAcceptance(action)
+    await waitFor(() => expect(dialog.hasAttribute('open')).toBe(true))
+    dialog.dispatchEvent(new Event('dsfr.conceal'))
+
+    await sent
+    expect(action).not.toHaveBeenCalled()
   })
 
   it('offers a working retry when the terms cannot be loaded', async () => {
@@ -137,8 +158,8 @@ describe('TOSModal', () => {
     await waitFor(() => expect(container.textContent).toContain('n’ont pas pu être chargées'))
     expect(container.querySelector('#tos-modal')).toBeNull()
 
-    await act(() => component.runAfterAcceptance(action))
-    expect(dialog.hasAttribute('open')).toBe(true)
+    void component.runAfterAcceptance(action)
+    await waitFor(() => expect(dialog.hasAttribute('open')).toBe(true))
     expect(action).not.toHaveBeenCalled()
 
     servesTerms()

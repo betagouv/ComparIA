@@ -2,15 +2,13 @@
 Concurrency guarantees of the authenticator flow, against a real PostgreSQL.
 
 The unit tests replay statements on a fake session, which says nothing about
-row locks. These run only when COMPARIA_TEST_DB_URI points at a database that
-can be wiped, e.g.:
-
-    createdb comparia_test
-    COMPARIA_TEST_DB_URI=postgresql://postgres@localhost:5432/comparia_test uv run pytest tests/auth/test_totp_postgres.py
+row locks. These run on the throwaway cluster of the `postgres_uri` fixture,
+and skip where Postgres is not installed.
 """
 
 import asyncio
 import contextlib
+import functools
 import os
 import sys
 from datetime import datetime, timedelta
@@ -18,18 +16,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pyotp  # noqa: E402
 import pytest  # noqa: E402
+from sqlalchemy import text  # noqa: E402
 from sqlalchemy.ext.asyncio import create_async_engine  # noqa: E402
-from sqlmodel import SQLModel, select  # noqa: E402
+from sqlmodel import select  # noqa: E402
 from sqlmodel.ext.asyncio.session import AsyncSession  # noqa: E402
 
 import backend.auth.services as auth_services  # noqa: E402
 import backend.auth.totp as auth_totp  # noqa: E402
 import utils.database.models  # noqa: E402,F401
+from backend.config import settings  # noqa: E402
 from utils.database.models.auth import (  # noqa: E402
     AuthSession,
     TotpChallenge,
@@ -38,50 +37,49 @@ from utils.database.models.auth import (  # noqa: E402
 )
 from utils.database.session import _async_url  # noqa: E402
 
-TEST_DB_URI = os.environ.get("COMPARIA_TEST_DB_URI")
+AUTH_TABLES = (
+    "auth_user",
+    "auth_session",
+    "auth_login_code",
+    "auth_invite_token",
+    "auth_totp",
+    "auth_totp_challenge",
+)
 
-pytestmark = pytest.mark.skipif(not TEST_DB_URI, reason="COMPARIA_TEST_DB_URI not set")
+
+@pytest.fixture
+def real_database(postgres_uri, monkeypatch):
+    monkeypatch.setattr(settings, "COMPARIA_DB_URI", postgres_uri)
+    return functools.partial(real_database_on, postgres_uri)
 
 
 @contextlib.contextmanager
-def real_database():
-    engine = create_async_engine(_async_url(TEST_DB_URI), pool_size=12, max_overflow=0)
+def real_database_on(uri):
+    engine = create_async_engine(_async_url(uri), pool_size=12, max_overflow=0)
 
     @contextlib.asynccontextmanager
     async def get_session():
         async with AsyncSession(engine) as session:
             yield session
 
-    # Only the auth tables: the whole metadata drags in the LLM catalogue.
-    tables = [
-        SQLModel.metadata.tables[name]
-        for name in (
-            "auth_user",
-            "auth_session",
-            "auth_login_code",
-            "auth_invite_token",
-            "auth_totp",
-            "auth_totp_challenge",
-        )
-    ]
-
-    async def reset_schema():
+    async def empty_tables():
         async with engine.begin() as conn:
-            await conn.run_sync(
-                lambda c: SQLModel.metadata.drop_all(c, tables=tables[::-1])
-            )
-            await conn.run_sync(
-                lambda c: SQLModel.metadata.create_all(c, tables=tables)
-            )
+            await conn.execute(text(f"TRUNCATE {', '.join(AUTH_TABLES)} CASCADE"))
 
-    asyncio.run(reset_schema())
+    async def close():
+        try:
+            await empty_tables()
+        finally:
+            await engine.dispose()
+
+    asyncio.run(empty_tables())
     originals = (auth_totp.get_session, auth_services.get_session)
     auth_totp.get_session = auth_services.get_session = get_session
     try:
         yield get_session
     finally:
         auth_totp.get_session, auth_services.get_session = originals
-        asyncio.run(engine.dispose())
+        asyncio.run(close())
 
 
 async def enrolled_admin(get_session, secret):
@@ -126,7 +124,7 @@ async def count(get_session, model, *where):
         return len(result.all())
 
 
-def test_concurrent_wrong_codes_all_count():
+def test_concurrent_wrong_codes_all_count(real_database):
     secret = pyotp.random_base32()
     with real_database() as get_session:
         asyncio.run(enrolled_admin(get_session, secret))
@@ -147,7 +145,7 @@ def test_concurrent_wrong_codes_all_count():
         )
 
 
-def test_concurrent_right_codes_open_one_session():
+def test_concurrent_right_codes_open_one_session(real_database):
     secret = pyotp.random_base32()
     with real_database() as get_session:
         asyncio.run(enrolled_admin(get_session, secret))
@@ -161,7 +159,7 @@ def test_concurrent_right_codes_open_one_session():
         assert asyncio.run(count(get_session, AuthSession)) == 1
 
 
-def test_confirming_and_revoking_is_one_transaction():
+def test_confirming_and_revoking_is_one_transaction(real_database):
     """If the revocation cannot be written, the confirmation is not either."""
     secret = pyotp.random_base32()
     with real_database() as get_session:
@@ -256,7 +254,7 @@ async def spent_challenges(get_session, user_id, *attempt_counts, age=timedelta(
         await session.commit()
 
 
-def test_wrong_codes_are_capped_per_account_over_the_hour():
+def test_wrong_codes_are_capped_per_account_over_the_hour(real_database):
     """A new email code buys a new challenge: the cap has to span them."""
     secret = pyotp.random_base32()
     cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
@@ -275,7 +273,7 @@ def test_wrong_codes_are_capped_per_account_over_the_hour():
         assert asyncio.run(count(get_session, AuthSession)) == 1
 
 
-def test_failures_older_than_an_hour_are_forgotten_and_pruned():
+def test_failures_older_than_an_hour_are_forgotten_and_pruned(real_database):
     secret = pyotp.random_base32()
     cap = auth_totp._TOTP_MAX_FAILS_PER_USER_PER_HOUR
     with real_database() as get_session:
@@ -303,7 +301,7 @@ def test_failures_older_than_an_hour_are_forgotten_and_pruned():
         )
 
 
-def test_two_first_setups_at_once_leave_one_row_and_no_error():
+def test_two_first_setups_at_once_leave_one_row_and_no_error(real_database):
     """SELECT FOR UPDATE finds nothing to lock before the first row exists:
     both setups insert, and the loser has to take the winner's row rather
     than fail on unique(user_id)."""

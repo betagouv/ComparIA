@@ -1,9 +1,16 @@
 import os
 from pathlib import Path
-from typing import Literal, get_args
+from typing import Annotated, Literal, get_args
 
 from httpx import Timeout
-from pydantic import field_validator
+from pydantic import (
+    Field,
+    NonNegativeFloat,
+    NonNegativeInt,
+    PositiveFloat,
+    PositiveInt,
+    field_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BACKEND_DIR = Path(__file__).parent
@@ -17,7 +24,15 @@ class Settings(BaseSettings):
     LANGUIA_DEBUG: bool = False
     COMPARIA_REDIS_HOST: str = "localhost"
     COMPARIA_REDIS_PASSWORD: str | None = None
+    # Lets checkouts that share one local Redis keep their counters and caches
+    # apart. The key prefix cannot do it: it is the instance name, which also
+    # picks the default locale. fr and da share one Redis and must keep the same
+    # number: the maintenance command sets the other instance's flag in its own.
+    COMPARIA_REDIS_DB: NonNegativeInt = 0
     MOCK_RESPONSE: bool = False
+    # Sets each fake answer to this many characters, so a local run can show
+    # long answers and long transcripts. 0 keeps the one fixed sentence.
+    MOCK_RESPONSE_CHARS: NonNegativeInt = 0
     LOGDIR: Path = ROOT_DIR / "logs"
     LOG_FORMAT: Literal["JSON", "RAW"] = "JSON"
     COMPARIA_DB_URI: str | None = None
@@ -139,11 +154,66 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = "noreply@comparia.beta.gouv.fr"
     EMAIL_FROM_NAME: str = "ComparIA"
 
+    # Model allowances, in characters the models are sent and write (the
+    # expensive ones in dollars), over a window that starts at the first
+    # message counted and ends 2 hours later, however many follow. A turn
+    # costs the system prompt, the whole transcript, the web search results
+    # and both answers. An admin sets them at /admin/limites, from the
+    # calibration replay (`comparia-cli arena limits calibrate`); these are
+    # the values in force until one does.
+    #
+    # Counted per anonymous session (the `anonymous_session` cookie hash), not
+    # per IP, so users behind a shared NAT (schools, hospitals) each get their
+    # own. This one covers the expensive models only, in US dollars: what
+    # they cost, estimated from each model's prices at four characters per
+    # token. 0.40 lets about five 5-turn conversations through on a typical
+    # expensive model of the seed (Claude 4.6 Sonnet, 2.60 in and 13.01 out
+    # per million tokens), with 70% of the characters sent and 30% written.
+    RATELIMIT_EXPENSIVE_PER_SESSION: PositiveFloat = 0.40
+    # A client that drops the `anonymous_session` cookie gets a fresh session on
+    # every request, so the same allowance also runs per IP as a backstop, with
+    # room for a whole school on one network. Spam seen in the OpenRouter logs
+    # picks the cheapest models, which this pool does not cover. Fifty times
+    # the session one.
+    RATELIMIT_EXPENSIVE_PER_IP: PositiveFloat = 20.0
+    # A model is expensive from this output price, in US dollars per million
+    # tokens. At 8 the seed's Claude Sonnet, Gemini Pro, GPT 5.5 and 5.6 Terra
+    # and Kimi K3 are, its Flash, Mistral and small models are not. A model
+    # priced 0 never is.
+    RATELIMIT_EXPENSIVE_PRICE_OUT: NonNegativeFloat = 8.0
+    # Cheap models are not free either, and only expensive ones used to be
+    # counted, so nothing at all stopped someone hammering the rest. Wider
+    # still: an ordinary session must never meet this.
+    RATELIMIT_ALL_PER_SESSION: PositiveInt = 3_000_000
+    RATELIMIT_ALL_PER_IP: PositiveInt = 60_000_000
+    # What each model is expected to write, charged with the input before the
+    # call and settled to the real length after it. Requests sent at once are
+    # each checked before the others' answers come back, so without it their
+    # answers would all escape the allowance. 508 is the median answer of the
+    # calibration replay on the local seed (`db seed-activity`); set it from
+    # the production replay's median (`make arena-limits-calibrate`).
+    RATELIMIT_EXPECTED_ANSWER_CHARS: NonNegativeInt = 508
+    # Turns one network may have the models answer at once. A turn is charged
+    # what it is sent and a typical answer before the call, and what it really
+    # wrote only at the end, so hundreds of messages sent at once could all
+    # pass before any long answer was counted. 40 lets a class of 35 send
+    # together; past it, a message waits a few seconds.
+    RATELIMIT_IN_FLIGHT_PER_NETWORK: PositiveInt = 40
+    # How many times the personal allowances, whole and expensive, a person
+    # signed in to an account gets. The counter then follows the account, and
+    # an account costs a sign-in, which has its own limits per IP and per
+    # address, where a fresh cookie costs nothing. The network allowances
+    # stay as they are: a school is the same school signed in or not.
+    RATELIMIT_SIGNED_IN_FACTOR: Annotated[float, Field(ge=1)] = 3.0
+
     # Response caching
-    CACHE_ENABLED: bool = False
-    CACHE_PROBABILITY: float = 0.5  # Probability of serving a cached response on hit
+    # Always on. Set the probability to 0 to stop serving cached answers in an
+    # incident; answers are still stored.
+    CACHE_PROBABILITY: float = 0.75  # Probability of serving a cached response on hit
     CACHE_TTL: int = 172800  # Cache TTL in seconds (default 48h)
     CACHE_MAX_RESPONSES: int = 5  # Max cached responses per (model, prompt) pair
+    # Shorter than the answers: results for a news question go stale fast.
+    WEB_SEARCH_CACHE_TTL: int = 3600
 
     @field_validator("DISPLAY_CURRENCY")
     @classmethod
@@ -250,26 +320,6 @@ CustomModelsSelection = tuple[str, ...] | None
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
 BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
-
-# Rate limiting specifically for expensive models (openai models, etc.).
-# Keyed per anonymous session (the `anonymous_session` cookie hash), not per IP,
-# so users behind a shared NAT (schools, hospitals) each get their own budget.
-RATELIMIT_PRICEY_MODELS_INPUT = 50_000
-
-# The per-session budget above is the one that matters, since users behind one
-# shared NAT each get their own. But a client that drops the `anonymous_session`
-# cookie gets a fresh session on every request, so the same budget also runs per
-# IP as a backstop. A hundred times the room, because that IP may be a whole
-# school: at twenty, one class of thirty could spend it before the break. Spam
-# seen in the OpenRouter logs picks the cheapest models, which this pool does
-# not cover.
-RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
-
-# Cheap models are not free either, and only pricey ones used to be counted, so
-# nothing at all stopped someone hammering the rest. Wider still: an ordinary
-# session must never meet this.
-RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
-RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

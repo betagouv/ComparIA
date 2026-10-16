@@ -45,6 +45,7 @@ export interface ActivityConversation {
       )
     | null;
   error: ErrorDetails | null;
+  expensive_paused: boolean;
   turns: ActivityTurn[];
 }
 export interface ActivityLLM {
@@ -123,6 +124,7 @@ export interface ActivityConversationRow {
   contains_spam: boolean;
   archived: boolean;
   has_error: boolean;
+  expensive_paused: boolean;
   [k: string]: unknown;
 }
 export interface ActivityFilterOptions {
@@ -178,6 +180,60 @@ export interface AdminLegalDocument {
   effective_at: string;
   retired_at: string | null;
   seeded: boolean;
+}
+export interface AdminLimits {
+  limits: AdminLimit[];
+  llms: LLMPrice[];
+  updated_at: string | null;
+  updated_by: string | null;
+  calibration_days: number;
+}
+/**
+ * A limit in its unit: characters for the whole allowances and the
+ * reserved answer, US dollars for the expensive ones, US dollars per million
+ * output tokens for the threshold, turns for those a network may have
+ * answered at once, a number of times for the signed-in factor.
+ */
+export interface AdminLimit {
+  name:
+    | "all_per_session"
+    | "all_per_ip"
+    | "expensive_per_session"
+    | "expensive_per_ip"
+    | "expensive_price_out"
+    | "expected_answer_chars"
+    | "in_flight_per_network"
+    | "signed_in_factor";
+  value: number;
+  default: number;
+  stored: boolean;
+  [k: string]: unknown;
+}
+/**
+ * An enabled model and its prices, in US dollars per million tokens.
+ */
+export interface LLMPrice {
+  id: string;
+  name: string;
+  price_in: number;
+  price_out: number;
+  [k: string]: unknown;
+}
+/**
+ * A field left out stays as it is; null puts it back on its default.
+ */
+export interface AdminLimitsPatch {
+  all_per_session?: number | null;
+  all_per_ip?: number | null;
+  expensive_per_session?: number | null;
+  expensive_per_ip?: number | null;
+  expensive_price_out?: number | null;
+  expected_answer_chars?: number | null;
+  in_flight_per_network?: number | null;
+  signed_in_factor?: number | null;
+  daily_usd_caps?: {
+    [k: string]: number | null;
+  } | null;
 }
 export interface AdminPublishDestination {
   id: string;
@@ -326,14 +382,31 @@ export interface OIDCConnectionTest {
   [k: string]: unknown;
 }
 /**
+ * What one enabled model spent today, across everyone, against its
+ * daily cap. The day ends at midnight in Paris.
+ */
+export interface LLMDailyUsage {
+  llm_id: string;
+  name: string;
+  input_chars: number;
+  output_chars: number;
+  estimated_usd: number;
+  cap_usd: number | null;
+  full: boolean;
+  resets_in: number;
+  answers: number;
+  cached_answers: number;
+  counted: boolean;
+}
+/**
  * LLM definition.
  *
  * Contains basic LLM information and links to licence, lab and endpoint.
  */
 export interface LLMData {
-  id?: string;
-  created_at?: string;
-  updated_at?: string;
+  id: string;
+  created_at: string;
+  updated_at: string;
   /**
    * enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.
    */
@@ -346,15 +419,11 @@ export interface LLMData {
   /**
    * Complete identifier used for API calls.
    */
-  api_model_id?: string | null;
+  api_model_id: string | null;
   /**
    * The LLM's endpoint information, create it first if not already available
    */
-  endpoint_id?: string | null;
-  /**
-   * Apply rate limits (usually for high API costs LLMs).
-   */
-  rate_limited: boolean;
+  endpoint_id: string | null;
   /**
    * The lab that developed the LLM, create it first if not already available
    */
@@ -363,7 +432,7 @@ export interface LLMData {
   /**
    * Date after which the LLM no longer has knowledge.
    */
-  knowledge_cutoff?: string | null;
+  knowledge_cutoff: string | null;
   /**
    * The LLM's license, create it first if not already available
    */
@@ -395,15 +464,15 @@ export interface LLMData {
   /**
    * Active parameters in billions (only for MoE LLMs).
    */
-  active_params?: number | null;
+  active_params: number | null;
   /**
    * Size of its context window in tokens.
    */
-  context_tokens?: number | null;
+  context_tokens: number | null;
   /**
    * Quantization scheme applied (q4, q8, or None for full precision).
    */
-  quantization?: ("q4" | "q8") | null;
+  quantization: ("q4" | "q8") | null;
   /**
    * What kind of media the LLM can have in input.
    */
@@ -413,17 +482,21 @@ export interface LLMData {
    */
   price_in: number;
   /**
-   * Price per million output tokens in USD.
+   * Price per million output tokens in USD. At or above the threshold set on the Limits page, the LLM counts as expensive.
    */
   price_out: number;
   /**
+   * Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. A model with no price (input and output at 0) is not counted, so a cap on it has no effect. Empty: no cap.
+   */
+  daily_usd_cap: number | null;
+  /**
    * System message to add in llm call if specified
    */
-  system_prompt?: string | null;
+  system_prompt: string | null;
   /**
    * List of links to display in LLM card.
    */
-  links?: Link[];
+  links: Link[];
 }
 export interface Link {
   text: string;
@@ -535,6 +608,59 @@ export interface LLMLicense {
   name: string;
   reuse: boolean;
   commercial_use: boolean;
+}
+export interface LimitsCalibration {
+  days: number;
+  comparisons: number;
+  turns: number;
+  capped: boolean;
+  proposals: LimitProposal[];
+  message_chars?: number | null;
+  message_usd?: number | null;
+  daily_caps: DailyCapProposal[];
+  price_checks: PriceCheck[];
+}
+/**
+ * A value the calibration proposes, with what the page needs to say why.
+ */
+export interface LimitProposal {
+  name:
+    | "all_per_session"
+    | "all_per_ip"
+    | "expensive_per_session"
+    | "expensive_per_ip"
+    | "expensive_price_out"
+    | "expected_answer_chars"
+    | "in_flight_per_network"
+    | "signed_in_factor";
+  value: number;
+  sample: number;
+  percentile: number;
+  messages?: number | null;
+  class_size?: number | null;
+  over_share?: number | null;
+  few?: boolean;
+  [k: string]: unknown;
+}
+/**
+ * A daily cap the calibration proposes for an expensive model, in US
+ * dollars.
+ */
+export interface DailyCapProposal {
+  llm_id: string;
+  value: number;
+  days: number;
+  percentile: number;
+  highest: number;
+  [k: string]: unknown;
+}
+export interface PriceCheck {
+  id: string;
+  name: string;
+  price_in: number;
+  price_out: number;
+  issue: "free" | "free_input" | "output_below_input" | "very_high";
+  [k: string]: unknown;
 }
 export interface PromptCheckPatch {
   enabled?: boolean | null;

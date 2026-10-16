@@ -1,21 +1,15 @@
 """Tests that run the suggestion queries against a real PostgreSQL database.
 
 The rest of the suite stubs the service layer, so the SQL itself is never
-executed. These tests fill that gap. They need a throwaway database, pointed at
-by COMPARIA_TEST_DB_URI, and they skip when it is not set:
-
-    createdb comparia_test_suggestions
-    COMPARIA_DB_URI=postgresql://localhost/comparia_test_suggestions \\
-        uv run alembic upgrade head
-    COMPARIA_TEST_DB_URI=postgresql://localhost/comparia_test_suggestions \\
-        uv run --with pytest --with httpx --with greenlet pytest tests/ -q
+executed. These tests fill that gap, on the throwaway cluster of the
+`postgres_uri` fixture, and skip where Postgres is not installed.
 
 The models use JSONB and the PostgreSQL TIMESTAMP type, so SQLite is not an
-option. Every test empties the suggestion tables first, which is why the
-database must be a throwaway one and never a development database.
+option. Every test empties the suggestion tables first and on the way out.
 """
 
 import asyncio
+import functools
 import os
 import sys
 import uuid
@@ -26,9 +20,6 @@ from typing import Any, AsyncIterator, Awaitable, Callable
 
 import pytest
 
-TEST_DB_URI = os.environ.get("COMPARIA_TEST_DB_URI", "")
-
-os.environ.setdefault("COMPARIA_DB_URI", TEST_DB_URI or "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -38,6 +29,8 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 import backend.suggestions.services as suggestion_services
+import utils.storage.redis as redis_storage
+from backend.config import settings
 from backend.suggestions.services import (
     list_admin_suggestions,
     list_public_suggestions,
@@ -48,11 +41,6 @@ from utils.database.models.suggestion import (
     PromptSuggestion,
     SuggestionCategory,
     SuggestionCreate,
-)
-
-requires_test_db = pytest.mark.skipif(
-    not TEST_DB_URI,
-    reason="set COMPARIA_TEST_DB_URI to a throwaway PostgreSQL database",
 )
 
 BASE_TIME = datetime(2026, 1, 1, 12, 0, 0)
@@ -69,7 +57,28 @@ def _async_url(url: str) -> str:
     return url
 
 
-def _run(scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
+class FakeRedis:
+    """The cache keys the public suggestions depend on, without a Redis."""
+
+    def __init__(self) -> None:
+        self.values: dict[str, str] = {}
+
+    def get(self, key: str) -> str | None:
+        return self.values.get(key)
+
+    def setex(self, key: str, ttl: int, value: str) -> None:
+        self.values[key] = value
+
+
+@pytest.fixture
+def run(postgres_uri: str, monkeypatch: pytest.MonkeyPatch):
+    fake = FakeRedis()
+    monkeypatch.setattr(redis_storage, "get_redis_client", lambda: fake)
+    monkeypatch.setattr(settings, "COMPARIA_DB_URI", postgres_uri)
+    return functools.partial(run_on, postgres_uri)
+
+
+def run_on(uri: str, scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
     """Run `scenario` with the service layer bound to the test database.
 
     A fresh engine per test keeps every connection inside the event loop that
@@ -78,7 +87,7 @@ def _run(scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
     """
 
     async def main() -> Any:
-        engine = create_async_engine(_async_url(TEST_DB_URI))
+        engine = create_async_engine(_async_url(uri))
 
         @asynccontextmanager
         async def session_scope() -> AsyncIterator[AsyncSession]:
@@ -167,8 +176,7 @@ async def _seed(session: AsyncSession) -> dict[str, uuid.UUID]:
     return ids
 
 
-@requires_test_db
-def test_public_suggestions_group_by_category_in_display_order() -> None:
+def test_public_suggestions_group_by_category_in_display_order(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -182,11 +190,10 @@ def test_public_suggestions_group_by_category_in_display_order() -> None:
             suggestion.text for suggestion in response.categories[1].suggestions
         ] == ["alpha available one", "alpha available two"]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_public_suggestions_exclude_archived_ones() -> None:
+def test_public_suggestions_exclude_archived_ones(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -200,11 +207,10 @@ def test_public_suggestions_exclude_archived_ones() -> None:
         assert "alpha archived lettre" not in texts
         assert len(texts) == 3
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_restoring_category_preserves_individually_archived_suggestions() -> None:
+def test_restoring_category_preserves_individually_archived_suggestions(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         seeded = await _seed(session)
         admin_id = uuid.uuid4()
@@ -235,11 +241,10 @@ def test_restoring_category_preserves_individually_archived_suggestions() -> Non
             "alpha available two",
         ]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_public_suggestions_are_empty_for_a_locale_without_rows() -> None:
+def test_public_suggestions_are_empty_for_a_locale_without_rows(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -247,11 +252,10 @@ def test_public_suggestions_are_empty_for_a_locale_without_rows() -> None:
 
         assert response.categories == []
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_public_suggestions_are_served_from_the_cache_until_invalidated() -> None:
+def test_public_suggestions_are_served_from_the_cache_until_invalidated(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
         assert len((await list_public_suggestions("fr")).categories) == 2
@@ -264,11 +268,10 @@ def test_public_suggestions_are_served_from_the_cache_until_invalidated() -> Non
         _clear_public_suggestions_cache()
         assert (await list_public_suggestions("fr")).categories == []
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_creating_a_suggestion_invalidates_the_public_cache() -> None:
+def test_creating_a_suggestion_invalidates_the_public_cache(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         seeded = await _seed(session)
         admin_id = uuid.uuid4()
@@ -289,11 +292,10 @@ def test_creating_a_suggestion_invalidates_the_public_cache() -> None:
         ]
         assert "beta brand new" in texts
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_return_every_row_and_category_counts() -> None:
+def test_admin_suggestions_return_every_row_and_category_counts(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -316,11 +318,10 @@ def test_admin_suggestions_return_every_row_and_category_counts() -> None:
             ("dansk", 1),
         ]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_sort_archived_categories_last() -> None:
+def test_admin_suggestions_sort_archived_categories_last(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         seeded = await _seed(session)
         admin_id = uuid.uuid4()
@@ -336,11 +337,10 @@ def test_admin_suggestions_sort_archived_categories_last() -> None:
         assert categories[-1].key == "beta"
         assert categories[-1].archived is True
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_search_matches_the_text_case_insensitively() -> None:
+def test_admin_suggestions_search_matches_the_text_case_insensitively(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -352,11 +352,10 @@ def test_admin_suggestions_search_matches_the_text_case_insensitively() -> None:
             "beta available lettre",
         }
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_filter_on_status() -> None:
+def test_admin_suggestions_filter_on_status(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -368,11 +367,10 @@ def test_admin_suggestions_filter_on_status() -> None:
         assert archived_total == 1
         assert [suggestion.text for suggestion in archived] == ["alpha archived lettre"]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_filter_on_locale() -> None:
+def test_admin_suggestions_filter_on_locale(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -384,11 +382,10 @@ def test_admin_suggestions_filter_on_locale() -> None:
         assert danish_total == 1
         assert [suggestion.text for suggestion in danish] == ["dansk available"]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_filter_on_category() -> None:
+def test_admin_suggestions_filter_on_category(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         seeded = await _seed(session)
 
@@ -399,11 +396,10 @@ def test_admin_suggestions_filter_on_category() -> None:
         assert total == 3
         assert {suggestion.category_title for suggestion in suggestions} == {"Alpha"}
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_combine_filters() -> None:
+def test_admin_suggestions_combine_filters(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         seeded = await _seed(session)
 
@@ -419,11 +415,10 @@ def test_admin_suggestions_combine_filters() -> None:
             "beta available lettre"
         ]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_paginate_without_losing_the_total() -> None:
+def test_admin_suggestions_paginate_without_losing_the_total(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -439,11 +434,10 @@ def test_admin_suggestions_paginate_without_losing_the_total() -> None:
             ["dansk available"],
         ]
 
-    _run(scenario)
+    run(scenario)
 
 
-@requires_test_db
-def test_admin_suggestions_return_nothing_for_an_unknown_category() -> None:
+def test_admin_suggestions_return_nothing_for_an_unknown_category(run) -> None:
     async def scenario(session: AsyncSession) -> None:
         await _seed(session)
 
@@ -455,4 +449,4 @@ def test_admin_suggestions_return_nothing_for_an_unknown_category() -> None:
         assert total == 0
         assert len(categories) == 3
 
-    _run(scenario)
+    run(scenario)

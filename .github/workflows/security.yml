@@ -3,7 +3,7 @@ name: Security
 permissions:
   contents: read
 
-# Pull requests and pushes to the integration branches are scanned for
+# Pull requests and pushes to develop are scanned for
 # leaked secrets as they happen. CodeQL is not run here: the repository's
 # code scanning default setup already covers Python, JavaScript/TypeScript
 # and Actions, and GitHub rejects workflow results while it is on.
@@ -12,7 +12,6 @@ on:
   push:
     branches:
       - develop
-      - next
 
 # A newer pull request run supersedes the older one. Pushes are never
 # cancelled: the gitleaks range of a cancelled push would never be scanned.
@@ -45,12 +44,12 @@ jobs:
           rm gitleaks gitleaks.tar.gz
 
       # Only the commits this event brings: the pull request's range, or the
-      # pushed range on develop or next. Older history is not rescanned on
+      # pushed range on develop. Older history is not rescanned on
       # every run. After a force-push, or on the first push of a branch,
       # `before` is not an ancestor of `sha` (or is all zeros), so the range
       # falls back to the pushed commit alone, diffed against its first parent
-      # so a merge commit still yields something to scan: everything on these
-      # branches arrived through a scanned PR.
+      # so a merge commit still yields something to scan: everything on
+      # develop arrived through a scanned PR.
       - name: Scan the new commits for leaked secrets
         env:
           EVENT: ${{ github.event_name }}

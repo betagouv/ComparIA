@@ -27,6 +27,8 @@
   let modal: HTMLDialogElement
   let loaded: Promise<void> | undefined
   let pendingAction: Action | undefined
+  // Settles the caller of runAfterAcceptance once its action ran, or was dropped.
+  let settle: (() => void) | undefined
   let returnFocus: HTMLElement | null = null
 
   const checkboxLabel = $derived(terms ? consentCheckboxLabel(terms) : '')
@@ -62,6 +64,11 @@
     if (acceptTos && terms) tosError = undefined
   })
 
+  /**
+   * Runs `action` now, or once the terms are accepted. Resolves when it has
+   * run, or when the person closed the dialog instead, so the caller can act
+   * on what it did.
+   */
   export async function runAfterAcceptance(action: Action): Promise<void> {
     await loaded
     if (status === 'accepted') {
@@ -69,10 +76,34 @@
       return
     }
 
-    pendingAction = action
+    settle?.()
+    let resolve!: () => void
+    const done = new Promise<void>((r) => (resolve = r))
+    settle = resolve
+    const pending: Action = async () => {
+      try {
+        await action()
+      } finally {
+        resolve()
+      }
+    }
+    pendingAction = pending
+    // Closed some other way (Escape): dropped, as with the close button.
+    // Accepting closes it too, but takes the action first.
+    modal.addEventListener(
+      'dsfr.conceal',
+      () =>
+        setTimeout(() => {
+          if (pendingAction !== pending) return
+          pendingAction = undefined
+          resolve()
+        }),
+      { once: true }
+    )
     returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
     await tick()
     getModalController().disclose()
+    await done
   }
 
   async function retry() {
@@ -90,6 +121,8 @@
 
   async function cancelPendingAction() {
     pendingAction = undefined
+    settle?.()
+    settle = undefined
     acceptTos = false
     getModalController().conceal()
     await tick()

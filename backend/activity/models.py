@@ -36,6 +36,7 @@ class ConversationFilters(ActivityFilters):
     has_vote: bool | None = None
     has_comment: bool | None = None
     revealed: bool | None = None
+    expensive_paused: bool | None = None
     category: str | None = Field(default=None, max_length=100)
     flag: ActivityFlag | None = None
     search: str | None = Field(default=None, min_length=3, max_length=200)
@@ -119,6 +120,9 @@ class ActivityConversationRow(BaseModel):
     contains_spam: bool
     archived: bool
     has_error: bool
+    # Drawn with the expensive models left out, the person's expensive
+    # allowance being spent.
+    expensive_paused: bool
 
 
 class ActivityConversationsPage(BaseModel):
@@ -181,4 +185,5 @@ class ActivityConversation(BaseModel):
     archived: bool
     archived_reason: ArchivedReason | None
     error: ErrorDetails | None
+    expensive_paused: bool
     turns: list[ActivityTurn]

@@ -1,10 +1,16 @@
 <script lang="ts">
-  import { Button, Icon, Tooltip } from '$components/dsfr'
+  import { resolve } from '$app/paths'
+  import { Button, Icon, Link, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
+  import { MAX_TURNS_PER_COMPARISON } from '$lib/generated/constants'
+  import { focusWithin } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
-  import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import LimitCard from './LimitCard.svelte'
+  import LimitHint from './LimitHint.svelte'
+  import { pauseTitle, resetTime, spoken } from './resetTime'
 
   let {
     comparisonId,
@@ -28,6 +34,29 @@
       comparator.status == 'complete' &&
       !!comparator.comparison?.turns.every((turn) => !!turn.choice)
   )
+
+  // The server refuses a turn past the cap: say so before anyone types it.
+  const turnsLeft = $derived(MAX_TURNS_PER_COMPARISON - (comparator.comparison?.turns.length ?? 0))
+  const atTurnCap = $derived(
+    turnsLeft <= 0 && !comparator.loading && comparator.status !== 'generating'
+  )
+  // Two turns before the cap, once the vote is in: the person is about to
+  // type again.
+  const turnsHint = $derived.by(() => {
+    if (!canContinue || turnsLeft > 2 || turnsLeft <= 0) return undefined
+    if (turnsLeft === 1) return m['arene.limits.turns.last']()
+    return m['arene.limits.turns.left']({ count: turnsLeft })
+  })
+
+  function onReveal() {
+    if (comparator.canReveal) comparator.reveal()
+    else remindToVote()
+  }
+
+  // Focus sits in the send area. A panel that takes the place of the text box
+  // then takes focus too, which would otherwise fall to the page; after a
+  // vote it leaves focus on the vote.
+  let sendAreaFocused = $state(false)
 
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
@@ -71,6 +100,12 @@
   // longer inside a live region, so this sentence is the only thing spoken.
   // 'pending' is skipped because Pending.svelte already announces it.
   const announcement = $derived.by(() => {
+    // A pause that shows after a turn or a vote takes the text box away
+    // without moving focus, so it is told here. One met on a send takes focus.
+    if (comparator.pause && !comparator.pauseFromSend && !sendAreaFocused) {
+      const reset = resetTime(comparator.pause.resets_at)
+      return spoken(pauseTitle(reset), reset)
+    }
     switch (comparator.status) {
       case 'generating':
         return m['chatbot.announce.generating']()
@@ -133,26 +168,76 @@
   {:else if !comparator.comparison.revealed}
     <div
       bind:this={footer}
+      {@attach focusWithin((inside) => (sendAreaFocused = inside))}
       id="send-area"
-      class="-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] sticky z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)"
+      class={[
+        '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',
+        // A notice that long must not cover the conversation on a phone.
+        { sticky: !comparator.pause && !atTurnCap }
+      ]}
     >
-      <TextPrompt
-        id="chatbot-prompt"
-        bind:value={prompt}
-        label={m['chatbot.continuePrompt']()}
-        placeholder={m['chatbot.continuePrompt']()}
-        bind:error={comparator.promptError}
-        hideLabel
-        submitBtn
-        submitDisabled={!canContinue || prompt === ''}
-        size="md"
-        rows={3}
-        maxRows={4}
-        onSubmit={onPromptSubmit}
-        onSubmitBlocked={remindToVote}
-        onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
-        class="mb-0! w-full"
-      />
+      {#if atTurnCap}
+        <LimitCard
+          id="turns-full-notice"
+          icon="i-ri-chat-check-line"
+          text={m['arene.limits.turns.full']({ max: MAX_TURNS_PER_COMPARISON })}
+          focusTitle={sendAreaFocused}
+        >
+          {#snippet title()}
+            {m['arene.limits.turns.fullTitle']()}
+          {/snippet}
+          {#snippet actions()}
+            <Button text={m['chatbot.revealButton']()} class="w-full!" onclick={onReveal} />
+            <Link
+              button
+              variant="secondary"
+              href={resolve('/')}
+              text={m['header.chatbot.newDiscussion']()}
+              class="w-full!"
+            />
+          {/snippet}
+        </LimitCard>
+      {:else if comparator.pause}
+        <PauseNotice
+          pause={comparator.pause}
+          {onReveal}
+          failed={!!comparator.error}
+          focusTitle={comparator.pauseFromSend || sendAreaFocused}
+          kept={prompt.trim() !== ''}
+        />
+      {:else}
+        <!-- Hidden until the limits are read: a pause would take its place. -->
+        <div class={['w-full', { 'cl-limits-pending invisible': !comparator.limitsRead }]}>
+          <TextPrompt
+            id="chatbot-prompt"
+            bind:value={prompt}
+            label={m['chatbot.continuePrompt']()}
+            placeholder={m['chatbot.continuePrompt']()}
+            bind:error={comparator.promptError}
+            hint={turnsHint}
+            hideLabel
+            submitBtn
+            submitDisabled={!canContinue || prompt === ''}
+            size="md"
+            rows={3}
+            maxRows={4}
+            onSubmit={onPromptSubmit}
+            onSubmitBlocked={remindToVote}
+            onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
+            class="mb-0! w-full"
+          />
+          {#if comparator.sendHint}
+            <!-- Told like the other limits, and focused: the send did not start. -->
+            <LimitHint
+              id="send-hint"
+              text={comparator.sendHint}
+              icon="i-ri-time-line"
+              focusOnShow
+              class="mt-2"
+            />
+          {/if}
+        </div>
+      {/if}
 
       {#if voteReminder}
         <p role="status" class="fr-message fr-message--info mb-0! text-center">
@@ -160,14 +245,16 @@
         </p>
       {/if}
 
-      <Button
-        text={m['chatbot.revealButton']()}
-        aria-disabled={!canContinue}
-        size="sm"
-        icon="arrow-up-circle-line"
-        class="md:w-fit! lh-none! w-full!"
-        onclick={() => (canContinue ? comparator.reveal() : remindToVote())}
-      />
+      {#if !comparator.pause && !atTurnCap}
+        <Button
+          text={m['chatbot.revealButton']()}
+          aria-disabled={!comparator.canReveal}
+          size="sm"
+          icon="arrow-up-circle-line"
+          class="md:w-fit! lh-none! w-full!"
+          onclick={onReveal}
+        />
+      {/if}
     </div>
   {/if}
 </div>

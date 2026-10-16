@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getComparison,
   parseAPIComparison,
@@ -6,14 +6,29 @@ import {
   type Comparison
 } from './chatService.svelte'
 import { ValidationError } from './fastapi-client'
+import type { ArenaLimits } from './generated/backend'
+import { createLimits, type Limits } from './limits.svelte'
 
 const streamed = vi.hoisted(() => [] as { url: string; body: Record<string, unknown> }[])
 const arena = vi.hoisted(() => ({
   comparisons: [] as unknown[],
-  refusal: undefined as Error | undefined
+  refusal: undefined as Error | undefined,
+  limits: undefined as unknown,
+  // What GET /arena/limits answers next, then an open arena.
+  reads: [] as unknown[],
+  events: [] as unknown[]
 }))
+const open = { total: null, expensive: null, signed_in_factor: 3, paused_llms: [] }
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
+vi.mock('$app/environment', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$app/environment')>()),
+  browser: true
+}))
+vi.mock('$lib/limits.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/limits.svelte')>()),
+  getLimitsContext: () => arena.limits
+}))
 vi.mock('$lib/captcha.svelte', () => ({
   CaptchaError: class extends Error {},
   consumeAltchaToken: async () => 'solved-token'
@@ -21,10 +36,14 @@ vi.mock('$lib/captcha.svelte', () => ({
 vi.mock('$lib/fastapi-client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/fastapi-client')>()),
   api: {
-    // eslint-disable-next-line require-yield
     async *stream(url: string, body: Record<string, unknown>) {
       if (arena.refusal) throw arena.refusal
       streamed.push({ url, body })
+      yield* arena.events
+    },
+    async request(url: string) {
+      if (url !== '/arena/limits') throw new Error(`unexpected ${url}`)
+      return arena.reads.shift() ?? open
     }
   }
 }))
@@ -32,6 +51,23 @@ vi.mock('svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('svelte')>()),
   createContext: () => [() => arena.comparisons, () => undefined]
 }))
+
+// Here rather than at the end of each test, so one failed assertion does not
+// leave the next test a refusal, a comparison or a fake clock.
+afterEach(() => {
+  ;(arena.limits as Limits).destroy()
+  arena.refusal = undefined
+  arena.comparisons = []
+  arena.events = []
+  vi.useRealTimers()
+})
+
+beforeEach(() => {
+  arena.reads = []
+  arena.limits = createLimits()
+  // askFirst reads the cohorts, and Node has no sessionStorage before 25.
+  vi.stubGlobal('sessionStorage', { getItem: () => '' })
+})
 
 describe('parseAPIComparison', () => {
   it('marks a persisted incomplete turn as interrupted after a page reload', () => {
@@ -106,5 +142,255 @@ describe('retry', () => {
     // still says why.
     expect(comparison.error).toBe('provider_error')
     expect(comparison.turns[0].status).toBe('error')
+  })
+})
+
+describe('a refusal on an allowance', () => {
+  const limit = {
+    scope: 'network' as const,
+    resets_at: '2026-10-13T13:40:00Z',
+    resets_in: 4210,
+    llm_ids: []
+  }
+
+  it('pauses the send area instead of showing an input error, and leaves the reveal open', async () => {
+    const comparison = {
+      id: 'voted-id',
+      turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+    } as unknown as Comparison
+    arena.comparisons = [comparison]
+    arena.refusal = Object.assign(new ValidationError('allowance_spent'), {
+      status: 429,
+      detail: 'allowance_spent',
+      limit
+    })
+    arena.reads = [{ ...open, total: limit }]
+
+    const chat = getComparison('voted-id')
+    const sent = await chat.ask('Encore une question')
+
+    arena.refusal = undefined
+    arena.comparisons = []
+    expect(sent).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pause).toMatchObject({ scope: 'network', resets_in: 4210 })
+    expect(chat.canReveal).toBe(true)
+  })
+
+  it.each([
+    ['by the server countdown, whatever the browser clock says', 600, 600],
+    ['after two hours when the reset is unknown', null, 7200]
+  ])('gives the send area back %s', async (_, resetsIn, liftsAfter) => {
+    vi.useFakeTimers()
+    arena.comparisons = [{ id: 'voted-id', turns: [] } as unknown as Comparison]
+    // A clock time already past here, as from a server whose clock is ahead.
+    const spent = { ...limit, resets_at: '2000-01-01T00:00:00Z', resets_in: resetsIn }
+    arena.refusal = Object.assign(new ValidationError('allowance_spent'), {
+      status: 429,
+      detail: 'allowance_spent',
+      limit: spent
+    })
+    arena.reads = [{ ...open, total: spent }]
+
+    const chat = getComparison('voted-id')
+    await chat.ask('Encore une question')
+    expect(chat.pauseFromSend).toBe(true)
+    arena.refusal = undefined
+    arena.comparisons = []
+
+    await vi.advanceTimersByTimeAsync(liftsAfter * 1000 - 1)
+    expect(chat.pause).toBeDefined()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(chat.pause).toBeUndefined()
+  })
+
+  it('shows a pause already spent before anyone sends, without taking focus', () => {
+    arena.limits = createLimits({
+      ...open,
+      total: { scope: 'session', resets_at: null, resets_in: 600 }
+    } as ArenaLimits)
+
+    const home = getComparison(undefined)
+
+    expect(home.pause?.scope).toBe('session')
+    expect(home.pauseFromSend).toBe(false)
+  })
+
+  it('reads the limits again once a turn is through', async () => {
+    arena.comparisons = [
+      {
+        id: 'voted-id',
+        turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+      } as unknown as Comparison
+    ]
+    arena.reads = [{ ...open, total: { scope: 'network', resets_at: null, resets_in: 600 } }]
+    const chat = getComparison('voted-id')
+    arena.events = [{ type: 'complete' }]
+    await chat.ask('Encore une question')
+    arena.events = []
+    arena.comparisons = []
+
+    await vi.waitFor(() => expect(chat.pause?.scope).toBe('network'))
+  })
+
+  it('keeps the reveal shut on a failed comparison', () => {
+    arena.comparisons = [
+      {
+        id: 'failed-id',
+        error: 'provider_error',
+        turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+      } as unknown as Comparison
+    ]
+
+    const chat = getComparison('failed-id')
+
+    expect(chat.canReveal).toBe(false)
+    arena.comparisons = []
+  })
+
+  it('leaves a refusal with no limit to the input error', async () => {
+    const comparison = {
+      id: 'voted-id',
+      turns: [{ id: 'turn-id', status: 'complete', choice: 'a_better', a: {}, b: {} }]
+    } as unknown as Comparison
+    arena.comparisons = [comparison]
+    arena.refusal = Object.assign(new ValidationError('block_cooldown'), {
+      status: 429,
+      detail: 'block_cooldown'
+    })
+
+    const chat = getComparison('voted-id')
+    await chat.ask('Encore une question')
+
+    arena.refusal = undefined
+    arena.comparisons = []
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeTruthy()
+    // The reveal stays open after this refusal too.
+    expect(chat.canReveal).toBe(true)
+  })
+  it('does not pause anyone over a pick of models paused for them', async () => {
+    arena.refusal = Object.assign(new ValidationError('expensive_allowance_spent'), {
+      status: 429,
+      detail: 'expensive_allowance_spent',
+      limit: { ...limit, llm_ids: ['expensive-id'] }
+    })
+
+    const chat = getComparison(undefined)
+    const sent = await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'custom',
+      custom_models_selection: ['expensive-id'],
+      web_search: false
+    })
+
+    arena.refusal = undefined
+    expect(sent).toBe(false)
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal?.limit.llm_ids).toEqual(['expensive-id'])
+
+    // Sending again starts afresh.
+    await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'random',
+      custom_models_selection: [],
+      web_search: false
+    })
+    expect(chat.pickRefusal).toBeUndefined()
+  })
+})
+
+describe('a refusal on a model full for the day', () => {
+  it('takes the model out of the pick for everyone, not as a pause for the person', async () => {
+    arena.refusal = Object.assign(new ValidationError('model_full_today'), {
+      status: 429,
+      detail: 'model_full_today',
+      limit: {
+        scope: null,
+        resets_at: '2026-10-14T22:00:00Z',
+        resets_in: 3600,
+        llm_ids: ['full-id']
+      }
+    })
+
+    const chat = getComparison(undefined)
+    const sent = await chat.askFirst({
+      prompt_value: 'Bonjour',
+      mode: 'custom',
+      custom_models_selection: ['full-id'],
+      web_search: false
+    })
+
+    arena.refusal = undefined
+    expect(sent).toBe(false)
+    expect(chat.pause).toBeUndefined()
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal).toMatchObject({
+      detail: 'model_full_today',
+      limit: { scope: null, llm_ids: ['full-id'] }
+    })
+  })
+})
+
+describe('a message sent with too many at once', () => {
+  it('keeps the message and asks to send it again shortly, without an input error', async () => {
+    arena.refusal = Object.assign(new ValidationError('too_many_at_once'), {
+      status: 429,
+      detail: 'too_many_at_once'
+    })
+
+    const chat = getComparison(undefined)
+    const args = {
+      prompt_value: 'Bonjour',
+      mode: 'random' as const,
+      custom_models_selection: [],
+      web_search: false
+    }
+    const sent = await chat.askFirst(args)
+
+    expect(sent).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pause).toBeUndefined()
+    expect(chat.status).not.toBe('error')
+    expect(chat.sendHint).toBe(
+      'Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes.'
+    )
+
+    arena.refusal = undefined
+    await chat.askFirst(args)
+    expect(chat.sendHint).toBeUndefined()
+  })
+})
+
+describe('a message the server fails on', () => {
+  it('keeps the message and says it did not go, without an input error', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    arena.refusal = Object.assign(new Error('Internal Server Error'), {
+      status: 500,
+      detail: 'Internal Server Error'
+    })
+
+    const chat = getComparison(undefined)
+    const args = {
+      prompt_value: 'Bonjour',
+      mode: 'random' as const,
+      custom_models_selection: [],
+      web_search: false
+    }
+    // Answered, not thrown: nothing is left spinning.
+    const sent = await chat.askFirst(args)
+
+    expect(sent).toBe(false)
+    expect(chat.loading).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal).toBeUndefined()
+    expect(chat.sendHint).toBe('Votre message n’a pas pu partir. Réessayez dans un instant.')
+    expect(error).toHaveBeenCalled()
+
+    arena.refusal = undefined
+    await chat.askFirst(args)
+    expect(chat.sendHint).toBeUndefined()
+    error.mockRestore()
   })
 })

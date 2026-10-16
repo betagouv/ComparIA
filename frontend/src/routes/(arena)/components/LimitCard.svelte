@@ -1,0 +1,66 @@
+<script lang="ts">
+  import { Icon } from '$components/dsfr'
+  import { focusOnShow } from '$lib/helpers/attachments'
+  import type { Snippet } from 'svelte'
+
+  let {
+    id,
+    icon,
+    title,
+    text,
+    focusTitle = false,
+    level = 3,
+    actions,
+    footer
+  }: {
+    id: string
+    icon: string
+    title: Snippet
+    /** One sentence under the title. */
+    text: string
+    /** It takes the place of the text box the person just sent from. */
+    focusTitle?: boolean
+    /** The title's heading level: 2 where the card is the page's main content. */
+    level?: 2 | 3
+    /** A primary button, then a secondary one. */
+    actions: Snippet
+    footer?: Snippet
+  } = $props()
+</script>
+
+<!-- Less padding on a phone, where a 16 px gutter already narrows it. -->
+<div {id} class="cl-limit-card cg-border px-4 py-6 md:px-6 md:py-8 mx-auto w-full text-center">
+  <span class="cl-limit-card__icon mb-4 mx-auto flex items-center justify-center">
+    <Icon {icon} size="md" block />
+  </span>
+  <!-- Shown before anyone sends, it is part of the page and leaves focus alone. -->
+  <svelte:element
+    this={`h${level}`}
+    class="fr-h6 mb-2! text-balance"
+    {@attach focusOnShow(() => focusTitle)}
+  >
+    {@render title()}
+  </svelte:element>
+  <p class="fr-text--sm mb-6!">{text}</p>
+
+  <div class="gap-3 flex flex-col">
+    {@render actions()}
+  </div>
+
+  {@render footer?.()}
+</div>
+
+<style>
+  .cl-limit-card {
+    max-width: 26rem;
+    background-color: var(--background-default-grey);
+  }
+
+  .cl-limit-card__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background-color: var(--background-action-low-blue-france);
+    color: var(--text-action-high-blue-france);
+  }
+</style>

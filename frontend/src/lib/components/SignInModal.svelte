@@ -7,6 +7,7 @@
   import { getComparisonsContext, updateComparisonsContext } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { signInMethods } from '$lib/signInMethods'
+  import { onMount } from 'svelte'
   import SSOSignIn from './SSOSignIn.svelte'
 
   const auth = getAuthContext()
@@ -17,6 +18,26 @@
   // Brings a visitor who signs in through the provider back to the page they
   // opened the modal from.
   const redirect = $derived(page.url.pathname + page.url.search)
+
+  // Opened from a pause card: "Fusionner" starts ticked, so signing in keeps
+  // the conversation the person is in. Any other opener keeps it unticked.
+  let mergeByDefault = $state(false)
+
+  onMount(() => {
+    const opened = (e: Event) => {
+      const opener = (e.target as Element | null)?.closest?.('[aria-controls="fr-modal-signin"]')
+      if (opener) mergeByDefault = opener.hasAttribute('data-sign-in-merge')
+    }
+    const closed = (e: Event) => {
+      if ((e.target as Element | null)?.id === 'fr-modal-signin') mergeByDefault = false
+    }
+    document.addEventListener('click', opened, true)
+    document.addEventListener('dsfr.conceal', closed, true)
+    return () => {
+      document.removeEventListener('click', opened, true)
+      document.removeEventListener('dsfr.conceal', closed, true)
+    }
+  })
 
   function closeModal() {
     const el = document.getElementById('fr-modal-signin')
@@ -60,6 +81,7 @@
               {#if tab.id === 'email'}
                 <SignInForm
                   {onSuccess}
+                  {mergeByDefault}
                   onLegalNavigate={closeModal}
                   hideHeader
                   class="py-0! px-0! min-w-0"
@@ -89,6 +111,7 @@
       <div class="-mt-12">
         <SignInForm
           {onSuccess}
+          {mergeByDefault}
           onLegalNavigate={closeModal}
           titleId="fr-modal-title-signin"
           class="min-w-0"

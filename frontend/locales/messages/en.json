@@ -135,6 +135,7 @@
                 "first": "Back to the newest",
                 "empty": "No conversation matches these filters.",
                 "hiddenPrompt": "Hidden: personal data",
+                "noExpensive": "No expensive models",
                 "open": "Open the page",
                 "previous": "Previous",
                 "nextOne": "Next",
@@ -167,7 +168,8 @@
                 "vote": "Vote: {choice}",
                 "readMore": "Read more",
                 "readLess": "Show less",
-                "versus": "{a} vs {b}"
+                "versus": "{a} vs {b}",
+                "expensivePaused": "Started without the expensive models"
             },
             "errors": {
                 "timeout": "The query took too long. Narrow the period or remove some filters.",
@@ -318,7 +320,8 @@
             "publishing": "Publishing",
             "suggestions": "Suggestions",
             "users": "Users",
-            "voteTags": "Vote tags"
+            "voteTags": "Vote tags",
+            "limits": "Limits"
         },
         "panelLink": "Admin panel",
         "promptChecks": {
@@ -804,6 +807,154 @@
             "signLabel": "Kind",
             "subtitle": "Add and manage the tags visitors attach to their vote.",
             "title": "Vote tags"
+        },
+        "limits": {
+            "applyCount": "Apply {count} changes",
+            "applyCountOne": "Apply 1 change",
+            "change": {
+                "big": "Big change: check before applying.",
+                "less": "{values} ({times} times less)",
+                "more": "{values} ({times} times more)"
+            },
+            "confirm": {
+                "back": "Back to the values",
+                "big": "Big change.",
+                "cap": "Daily cap of {name}",
+                "intro": "They reach the whole arena in less than a minute.",
+                "line": "{name}: {change}",
+                "title": "Apply these changes?"
+            },
+            "messages": {
+                "network": "That is about {count} messages in two hours for the whole network.",
+                "session": "That is about {count} messages in two hours for one person."
+            },
+            "priceAdded": "(added by this threshold)",
+            "priceRemoved": "(taken out by this threshold)",
+            "priceTag": "{name} · {price}",
+            "title": "Limits",
+            "subtitle": "What one person, and a whole network, can have the models read and write in two hours, counted from their first message. A change reaches the whole arena in less than a minute.",
+            "updated": "Last changed on {date} by {who}.",
+            "updatedAt": "{day} at {time}",
+            "updatedUnknown": "Last changed on {date}.",
+            "unit": "{value} characters",
+            "current": "Current value: {value}",
+            "isDefault": "Default",
+            "isStored": "Changed",
+            "newValue": "New value, in characters",
+            "reset": "Back to default ({value})",
+            "signedInRoom": "Someone signed in gets {times} times more: {chars} characters for all models and {usd} for expensive ones, over two hours.",
+            "apply": "Apply",
+            "applying": "Saving…",
+            "applied": "Limits saved.",
+            "cancel": "Cancel",
+            "nothingToApply": "No value has changed.",
+            "groups": {
+                "all": "All models",
+                "expensive": "Expensive models",
+                "signedIn": "Signed-in people",
+                "technical": "Technical settings"
+            },
+            "names": {
+                "all_per_session": "Per person",
+                "all_per_ip": "Per network (school, company)",
+                "expensive_per_session": "Per person",
+                "expensive_per_ip": "Per network (school, company)",
+                "expected_answer_chars": "Reserved answer length",
+                "expensive_price_out": "Price threshold",
+                "in_flight_per_network": "Messages at once",
+                "signed_in_factor": "Extra room"
+            },
+            "help": {
+                "all_per_session": "What one person can have the models read and write in two hours, all models together. The two hours start at their first message, whatever they send after. Once the limit is reached, they wait for the two hours to end before sending another message.",
+                "all_per_ip": "The same limit for a whole network, such as a school or a hospital. It stops someone who clears their cookies to start over.",
+                "expensive_per_session": "What the expensive models may cost for one person in two hours, estimated from each model's prices at four characters per token. An answer served from the cache does not count. Once the limit is reached, new conversations go on without the expensive models; the other models stay open.",
+                "expensive_per_ip": "The same limit, in dollars, for a whole network.",
+                "expected_answer_chars": "What each model should write, counted up front on each message and then replaced by the real length. Without it, messages sent all at once would pass before their answers are counted.",
+                "expensive_price_out": "A model counts as expensive once its output price, what a million tokens it writes cost, reaches this threshold. A model priced 0 never does. Each model's price is set in its own form.",
+                "in_flight_per_network": "How many messages one network may have the models answer at the same time. Past it, the message is refused and the person sends it again a few seconds later. A burst of messages sent at once can then not spend everything before their answers are counted.",
+                "signed_in_factor": "What someone signed in to an account gets: the per-person limit times this number, for all models and expensive ones alike. Their messages then count on their account, no longer on their browser. The network limits stay the same."
+            },
+            "calibrate": {
+                "button": "Calibrate",
+                "running": "Calculating…",
+                "hint": "Proposes values from the last {days} days of conversations. Nothing changes until you click “Apply”.",
+                "sample": "Conversations read: {comparisons}; messages: {turns}; over the last {days} days.",
+                "capped": "Only the latest conversations were read.",
+                "empty": "Not enough conversations in the period to propose values.",
+                "timeout": "The calculation took too long. Try again in a few minutes.",
+                "failed": "The calculation did not finish.",
+                "proposal": "Proposal: {value}",
+                "none": "No proposal: nothing was spent here in the period.",
+                "explain": {
+                    "networkNone": "A class of {size} pupils who write a lot gets through two hours without reaching it. No network would have reached it in these {days} days.",
+                    "session": "Over {days} days, {percentile} in 100 people stayed under it.",
+                    "sessionMessages": "Over {days} days, {percentile} in 100 people stayed under it. Those who reach it do so after about {messages} messages.",
+                    "network": "A class of {size} pupils who write a lot gets through two hours without reaching it. Over {days} days, networks would have gone past it in {share} of their two-hour periods.",
+                    "answer": "Half of the answers are shorter than {value} characters."
+                },
+                "few": "Too little data to trust: it takes at least 100 two-hour periods, or answers, read.",
+                "use": "Use this value"
+            },
+            "newValueUsd": "New value, in dollars",
+            "newValuePrice": "New threshold, in dollars per million output tokens",
+            "unitPrice": "{value} per million output tokens",
+            "expensiveList": "At this threshold, {count} enabled models are expensive:",
+            "expensiveNone": "At this threshold, no enabled model is expensive.",
+            "thresholdKept": "The calibration proposes no threshold: it stays the one you chose.",
+            "prices": {
+                "title": "Prices to check",
+                "intro": "What the expensive models count comes from these prices. Check them in each model's form.",
+                "line": "{name}: {in} input, {out} output per million tokens.",
+                "issues": {
+                    "free": "Priced 0: never expensive, it counts nothing.",
+                    "free_input": "Input priced 0.",
+                    "output_below_input": "Output cheaper than input: the two may have been swapped.",
+                    "very_high": "Output above $100: maybe typed in cents."
+                },
+                "none": "No price looks worth checking."
+            },
+            "expensiveOne": "At this threshold, one enabled model is expensive:",
+            "factorKept": "The calibration proposes no value here: it stays as you set it.",
+            "unitCount": "{value} messages",
+            "unitFactor": "{value} times more",
+            "newValueCount": "New value, in messages",
+            "newValueFactor": "New value, in number of times",
+            "today": {
+                "spentNoCap": "{spent}, no cap",
+                "spentOfCap": "{spent} of {cap}",
+                "title": "Today",
+                "intro": "What each model cost since midnight, Paris time, across everyone, estimated from its prices. A model that reaches its cap is full: it leaves new conversations until midnight, the ones under way go on. The cap is set on the model's form; on a model without a price, which is not counted, it has no effect.",
+                "caption": "Today's spend per model",
+                "model": "Model",
+                "spent": "Spent",
+                "noCap": "None",
+                "cache": "From the cache",
+                "cacheShare": "{share} of {count} answers",
+                "cacheShareOne": "{share} of 1 answer",
+                "noAnswer": "No answer",
+                "full": "Full until midnight",
+                "proposed": "Proposed",
+                "noProposal": "No proposal",
+                "notCounted": "No price, so this model is not counted: its cap has no effect.",
+                "empty": "No model cost anything today, and none has a cap.",
+                "failed": "Today's spend could not be read.",
+                "capsApplied": "{count} proposed caps will be applied with “Apply”.",
+                "capsAppliedOne": "1 proposed cap will be applied with “Apply”.",
+                "idle": "{count} other enabled models cost nothing today and have no cap.",
+                "idleOne": "1 other enabled model cost nothing today and has no cap.",
+                "underCent": "under {value}",
+                "proposalRule": "Proposed cap: what each expensive model stayed under on {percentile}% of the {days} whole days read, plus half.",
+                "highest": "at most {value} in one day",
+                "restsAtOnce": "Below what it already cost today: applying it makes the model full at once, for everyone."
+            },
+            "inFlightKept": "The calibration proposes no value here: it stays as you set it.",
+            "expensiveCount": "At this threshold, {count} enabled models are expensive.",
+            "priceListShow": "Show the {count} models",
+            "priceChanges": "This threshold adds {added} and takes out {removed}.",
+            "priceChangesAdded": "This threshold adds {count}.",
+            "priceChangesRemoved": "This threshold takes out {count}.",
+            "tooLow": "Enter a value of at least {value}.",
+            "tooHigh": "Enter a value of at most {value}."
         }
     },
     "arenaHome": {
@@ -848,9 +999,47 @@
                 "unavailable": "Your message could not be checked. Please try again in a few minutes."
             },
             "prompt_too_long": "Your message is longer than 20,000 characters. Please shorten it.",
-            "rate_limited": "You have sent too many requests to the most expensive models. Please try again in a few hours. Smaller models remain available.",
+            "rate_limited": "You have sent a lot of messages in the last few hours. Please try again later.",
             "retry_unavailable": "Retrying is not possible, please reload the page.",
-            "spam_detected": "This message format is not allowed. Please write in natural language."
+            "send_failed": "Your message could not be sent. Try again in a moment.",
+            "spam_detected": "This message format is not allowed. Please write in natural language.",
+            "too_many_at_once": "Many messages are leaving your network right now. Send yours again in a few seconds."
+        },
+        "limits": {
+            "mode": {
+                "justPaused": "This mode has just been paused, try again."
+            },
+            "pause": {
+                "kept": "Your message is kept: it will be back when you can write again.",
+                "models": "Discover the models",
+                "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. Until then, you can look at the leaderboard or discover the models.",
+                "ranking": "See the leaderboard",
+                "session": "You have written a lot in the last two hours. Until then, you can look at the leaderboard or discover the models.",
+                "signIn": "Sign in to write up to {times} times more.",
+                "signInButton": "Sign in",
+                "title": "You can write again at {time}",
+                "titleSoon": "You can write again within two hours",
+                "titleTomorrow": "You can write again tomorrow at {time}",
+                "why": "To keep compar:IA free for everyone, each person can send a limited number of messages every two hours. Your votes and conversations are kept.",
+                "whyLabel": "Why this pause?",
+                "whyNetwork": "To keep compar:IA free for everyone, each network can send a limited number of messages every two hours. This limit covers everyone on the network, not just you."
+            },
+            "picker": {
+                "full": "Full today",
+                "justPaused": "This model has just been paused, try again.",
+                "paused": "Paused {until}"
+            },
+            "time": {
+                "until": "until {time}",
+                "untilSoon": "for under two hours",
+                "untilTomorrow": "until tomorrow at {time}"
+            },
+            "turns": {
+                "full": "A conversation holds up to {max} messages: discover the models, then start a new one.",
+                "fullTitle": "Conversation full",
+                "last": "Last message possible in this conversation.",
+                "left": "{count} more messages possible in this conversation."
+            }
         },
         "promptWarning": {
             "edit": "Edit my message",
@@ -1406,6 +1595,10 @@
             "created_at": {
                 "label": "Created At"
             },
+            "daily_usd_cap": {
+                "help": "Most this model may cost per day, across everyone, estimated. Once reached, the model is full: it leaves new conversations until midnight, Paris time. A model with no price (input and output at 0) is not counted, so a cap on it has no effect. Empty: no cap.",
+                "label": "Daily cap (USD)"
+            },
             "endpoint_id": {
                 "help": "The LLM's endpoint information, create it first if not already available",
                 "label": "Endpoint"
@@ -1453,7 +1646,7 @@
                 "label": "Price In"
             },
             "price_out": {
-                "help": "Price per million output tokens in $.",
+                "help": "Price per million output tokens in $. At or above the threshold set on the Limits page, the LLM counts as expensive.",
                 "label": "Price Out"
             },
             "public_training_code": {
@@ -1471,10 +1664,6 @@
             "quantization": {
                 "help": "Quantization scheme applied (q4, q8, or None for full precision).",
                 "label": "Quantization"
-            },
-            "rate_limited": {
-                "help": "Apply rate limits (usually for high API costs LLMs).",
-                "label": "Rate Limited"
             },
             "release_date": {
                 "label": "Release Date"

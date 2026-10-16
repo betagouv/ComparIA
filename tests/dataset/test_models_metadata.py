@@ -22,7 +22,6 @@ def llm(
             "human_id": human_id,
             "api_model_id": f"provider/{human_id}",
             "endpoint_id": uuid4(),
-            "rate_limited": True,
             "lab_id": uuid4(),
             "lab": {
                 "id": uuid4(),
@@ -52,6 +51,7 @@ def llm(
             "inputs": ["text"],
             "price_in": 1.0,
             "price_out": 2.0,
+            "daily_usd_cap": 20.0,
         }
     )
 
@@ -91,9 +91,9 @@ def test_models_carry_metadata_but_no_internal_plumbing(tmp_path):
         "wh_per_million_token",
         "api_model_id",
         "endpoint_id",
-        "rate_limited",
         "lab_id",
         "license_id",
+        "daily_usd_cap",
         "created_at",
         "updated_at",
     ):

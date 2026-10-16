@@ -7,6 +7,7 @@ handling streaming responses, token counting, and message tracking.
 
 import asyncio
 import logging
+import random
 from contextlib import aclosing
 from datetime import datetime
 from typing import AsyncGenerator, Literal
@@ -21,6 +22,7 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
+from backend.config import settings
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
@@ -42,43 +44,44 @@ class SystemMessageRead(BaseModel):
 AnyMessageRead = LLMMessageRead | SystemMessageRead | UserMessageRead
 
 
+# A cached answer is sent in about this many chunks, this far apart.
+CACHED_CHUNKS = 15
+CACHED_CHUNK_DELAY = 0.2
+
+
 async def _stream_cached_response(
     pos: BotPos,
     turn: TurnRead,
     cached: CachedResponse,
 ) -> AsyncGenerator[LLMMessageCreate]:
     """
-    Simulate streaming from a cached response.
-
-    Chunks the cached content and yields with small delays to mimic
-    real streaming behavior for consistent UX.
+    Stream a cached answer the way a live one arrives: the first chunk a
+    moment after the call starts, then the reasoning and the content a piece
+    at a time. The browser sees each chunk and both timestamps, so a side
+    that arrived whole, or answered in no time, would read as cached.
     """
     llm_msg = LLMMessageCreate(
         created_at=datetime.now(),
-        responded_at=datetime.now(),
-        reasoning_content=cached["reasoning"].strip(),
         generation_id="cached",
         tokens=cached["output_tokens"],
         is_cached=True,
     )
     setattr(turn, f"llm_msg_{pos}", llm_msg)
+    # As long as a provider takes to send its first token.
+    await asyncio.sleep(random.uniform(0.3, 1.5))
+    llm_msg.responded_at = datetime.now()
 
-    # Simulate streaming: emit content in chunks
-    content_len = len(cached["content"])
-    chunk_size = max(20, content_len // 15)  # ~15 chunks
-    emitted = 0
-    while emitted < content_len:
-        emitted = min(emitted + chunk_size, content_len)
-        llm_msg.content = cached["content"][:emitted].strip()
-        if llm_msg.content or llm_msg.reasoning_content:
+    for field, text in (
+        ("reasoning_content", cached["reasoning"].strip()),
+        ("content", cached["content"].strip()),
+    ):
+        chunk_size = max(20, len(text) // CACHED_CHUNKS)
+        for emitted in range(chunk_size, len(text) + chunk_size, chunk_size):
+            setattr(llm_msg, field, text[:emitted])
             yield llm_msg
+            await asyncio.sleep(CACHED_CHUNK_DELAY)
 
-        await asyncio.sleep(0.2)
-
-    # Final yield with complete content and timing
-    llm_msg.content = cached["content"].strip()
     llm_msg.updated_at = datetime.now()
-
     yield llm_msg
 
 
@@ -114,9 +117,23 @@ async def bot_response_async(
     Raises:
         EmptyResponseError: If the LLM returns empty response
     """
-    # Try cache on first turn only
-    if turn_index == 0:
-        cached = get_cached_response(llm.id, turn.user_msg.content)
+    # The system prompt this comparison sends, which an admin may have edited
+    # on the model since.
+    system_msg = next(
+        (msg.content for msg in messages if isinstance(msg, SystemMessageRead)), None
+    )
+    # First turns only: follow-ups carry the whole transcript and almost never
+    # repeat. A turn with web search results answers another question than the
+    # same prompt without them, so it neither reads nor writes the cache. Nor
+    # does a fake answer: on a Redis shared with a real deploy, it would be
+    # served to people for real prompts.
+    use_cache = (
+        turn_index == 0
+        and not turn.user_msg.web_search_results
+        and not settings.MOCK_RESPONSE
+    )
+    if use_cache:
+        cached = get_cached_response(llm, system_msg, turn.user_msg.content)
         if cached:
             logger.info(
                 f"[CACHE] Serving cached response for {llm.id}",
@@ -161,7 +178,7 @@ async def bot_response_async(
             extra={"request": request},
         )
         raise EmptyResponseError(
-            f"No answer from API '{llm.endpoint.api_model_id}' for model '{llm.id}'"
+            f"No answer from API '{llm.api_model_id}' for model '{llm.id}'"
         )
 
     # Fallback: count tokens locally if API didn't provide them. Off the event
@@ -177,11 +194,12 @@ async def bot_response_async(
     # Final update with complete response and timing data
     yield llm_msg
 
-    # Store successful response in cache (first turn only)
-    if turn_index == 0:
+    if use_cache:
         store_cached_response(
-            llm.id,
+            llm,
+            system_msg,
             turn.user_msg.content,
+            turn.id,
             CachedResponse(
                 content=llm_msg.content,
                 reasoning=llm_msg.reasoning_content,
