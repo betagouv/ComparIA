@@ -233,6 +233,7 @@ describe('ViewPrompt', () => {
       const onPrompt = vi.fn(async () => {
         // Refused the first time only.
         const refused = onPrompt.mock.calls.length === 1 ? refusal(detail, scope) : undefined
+        if (refused) (arena.limits as Limits).refused(refused)
         await view.rerender({ ...props, onPrompt, pickRefusal: refused })
       })
       const view = render(ViewPrompt, { ...props, onPrompt })
@@ -257,6 +258,33 @@ describe('ViewPrompt', () => {
     }
   )
 
+  it('reads the limits once on a refused send', async () => {
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
+    const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
+    const onPrompt = vi.fn(async () => {
+      const refused = onPrompt.mock.calls.length === 1 ? refusal() : undefined
+      // As the chat service does: the refusal reads the limits again.
+      if (refused) (arena.limits as Limits).refused(refused)
+      await view.rerender({ ...props, onPrompt, pickRefusal: refused })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    await vi.waitFor(() => expect(onPrompt).toHaveBeenCalledTimes(2))
+    expect(onPrompt).toHaveBeenLastCalledWith(
+      expect.objectContaining({ custom_models_selection: ['cheap-id'] })
+    )
+    expect(read).toHaveBeenCalledOnce()
+    read.mockRestore()
+  })
+
   it('sends a saved mode emptied since as random, once', async () => {
     catalog.models = [
       { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
@@ -270,6 +298,7 @@ describe('ViewPrompt', () => {
         onPrompt.mock.calls.length === 1
           ? { ...refusal(), limit: { ...refusal().limit, llm_ids: undefined } }
           : undefined
+      if (refused) (arena.limits as Limits).refused(refused)
       await view.rerender({ ...props, onPrompt, pickRefusal: refused })
     })
     const view = render(ViewPrompt, { ...props, onPrompt })
@@ -297,6 +326,7 @@ describe('ViewPrompt', () => {
     const onPrompt = vi.fn(async () => {
       const ids = onPrompt.mock.calls.length === 1 ? ['expensive-id'] : ['other-id']
       const refused = { ...refusal(), limit: { ...refusal().limit, llm_ids: ids } }
+      ;(arena.limits as Limits).refused(refused)
       await view.rerender({ ...props, onPrompt, pickRefusal: refused })
     })
     const view = render(ViewPrompt, { ...props, onPrompt })
@@ -509,6 +539,7 @@ describe('ViewPrompt', () => {
     const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
     const onPrompt = vi.fn(async () => {
       const refused = onPrompt.mock.calls.length === 1 ? refusal() : undefined
+      if (refused) (arena.limits as Limits).refused(refused)
       await view.rerender({ ...props, onPrompt, pickRefusal: refused })
     })
     const view = render(ViewPrompt, { ...props, onPrompt })

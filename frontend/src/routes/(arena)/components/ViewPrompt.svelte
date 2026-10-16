@@ -170,11 +170,11 @@
     try {
       const refusal = await send()
       if (!refusal) return
-      // A model paused or filled between the limits read and the send: read
-      // them again, take it out, and send once more, so the person sees the
-      // comparison start. Only a second refusal is told.
+      // A model paused or filled between the limits read and the send: wait
+      // for the read the refusal started, take it out, and send once more, so
+      // the person sees the comparison start. Only a second refusal is told.
       resending = true
-      await limits.refresh()
+      await limits.reading
       dropUnavailable(refusal)
       const again = await send()
       if (again) {

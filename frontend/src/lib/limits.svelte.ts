@@ -135,8 +135,17 @@ export function createLimits(
     }
   }
 
+  // The latest read, so a caller can wait on the one a refusal started
+  // rather than read again.
+  let latest: Promise<boolean> = Promise.resolve(false)
+
   /** Reads the limits again; false when the server could not tell. */
-  async function refresh(): Promise<boolean> {
+  function refresh(): Promise<boolean> {
+    latest = load()
+    return latest
+  }
+
+  async function load(): Promise<boolean> {
     const current = ++reads
     const data = await queryLimits()
     read = true
@@ -170,6 +179,10 @@ export function createLimits(
       return read
     },
     refresh,
+    /** Settles with the latest read, as `refresh` does. */
+    get reading() {
+      return latest
+    },
     /** A message was refused on a limit: show it at once, then read the rest. */
     refused(refusal: LimitRefusalBody) {
       if (refusal.detail === 'allowance_spent') {
