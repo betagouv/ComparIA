@@ -47,6 +47,20 @@ describe('PauseNotice', () => {
     expect(view.getByRole('button', { name: 'Sign in' })).toBeInTheDocument()
   })
 
+  it.each([
+    ['fr', /fois\u00a0plus\.$/],
+    ['en', /times\u00a0more\.$/],
+    ['da', /gange\u00a0mere\.$/]
+  ])('keeps the last words of the sign-in offer together (%s)', (locale, end) => {
+    overwriteGetLocale(() => locale as 'fr')
+    const view = render(PauseNotice, { pause: session })
+
+    const offer = view.container.querySelector('.cl-pause-sign-in p')!
+    expect(offer.textContent).toMatch(end)
+    expect(offer.textContent).toMatch(/3\u00a0/)
+    expect(offer).toHaveClass('text-balance')
+  })
+
   it('offers nothing when the network spent it: signing in would not help', () => {
     const view = render(PauseNotice, { pause: { scope: 'network', resets_at: null } })
 

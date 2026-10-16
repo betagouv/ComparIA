@@ -91,7 +91,7 @@
     />
     {#if signInFactor}
       <div class="cl-pause-sign-in mt-3 pt-6">
-        <p class="fr-text--sm mb-3!">
+        <p class="fr-text--sm mb-3! text-balance">
           {m['arene.limits.pause.signIn']({ times: signInFactor })}
         </p>
         <!-- DSFR opens the sign-in modal of the arena layout and gives focus
