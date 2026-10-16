@@ -396,6 +396,7 @@ export interface LLMDailyUsage {
   resets_in: number;
   answers: number;
   cached_answers: number;
+  counted: boolean;
 }
 /**
  * LLM definition.
