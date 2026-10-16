@@ -1008,6 +1008,7 @@
                 "justPaused": "This mode has just been paused, try again."
             },
             "pause": {
+                "kept": "Your message is kept: it will be back when you can write again.",
                 "models": "Discover the models",
                 "network": "A lot of messages came from your network (school, office, organisation) in the last two hours. Until then, you can look at the leaderboard or discover the models.",
                 "ranking": "See the leaderboard",

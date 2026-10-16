@@ -1008,6 +1008,7 @@
                 "justPaused": "Ce mode vient d’être mis en pause, réessayez."
             },
             "pause": {
+                "kept": "Votre message est gardé : il reviendra quand vous pourrez écrire.",
                 "models": "Découvrir les modèles",
                 "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
                 "ranking": "Voir le classement",

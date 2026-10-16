@@ -858,6 +858,7 @@
                 "justPaused": "Denne tilstand er lige blevet sat på pause, prøv igen."
             },
             "pause": {
+                "kept": "Din besked er gemt: den kommer tilbage, når du kan skrive igen.",
                 "models": "Se modellerne",
                 "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
                 "ranking": "Se ranglisten",

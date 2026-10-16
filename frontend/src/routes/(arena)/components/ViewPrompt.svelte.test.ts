@@ -176,7 +176,7 @@ describe('ViewPrompt', () => {
     expect(view.queryByRole('textbox')).toBeNull()
     expect(
       view.getByText(
-        /^Beaucoup de messages sont partis de votre réseau .* vous pouvez voir le classement ou découvrir les modèles\.$/
+        /^Beaucoup de messages sont partis de votre réseau .* vous pouvez voir le classement ou découvrir les modèles\. Votre message est gardé : il reviendra quand vous pourrez écrire\.$/
       )
     ).toBeInTheDocument()
     expect(view.getByRole('link', { name: 'Voir le classement' })).toHaveAttribute(

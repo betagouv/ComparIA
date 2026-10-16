@@ -69,6 +69,14 @@ describe('PauseNotice', () => {
     expect(render(PauseNotice, { pause: session }).queryByText(signIn)).toBeNull()
   })
 
+  it('says a message typed before it showed is kept, only when there is one', () => {
+    const kept = /Votre message est gardé : il reviendra quand vous pourrez écrire\./
+    const view = render(PauseNotice, { pause: session, kept: true })
+    expect(view.getByText(kept)).toBeInTheDocument()
+    view.unmount()
+    expect(render(PauseNotice, { pause: session }).queryByText(kept)).toBeNull()
+  })
+
   it('keeps the time on the line of the word before it, in a balanced title', () => {
     const at = new Date()
     at.setHours(at.getHours() < 22 ? at.getHours() + 1 : at.getHours(), 24, 0, 0)

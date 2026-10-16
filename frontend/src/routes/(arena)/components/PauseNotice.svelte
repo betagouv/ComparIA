@@ -14,7 +14,8 @@
     onReveal,
     failed = false,
     focusTitle = false,
-    level = 3
+    level = 3,
+    kept = false
   }: {
     /** The whole allowance, spent: for whom, and when it lifts. */
     pause: Pick<Spent, 'scope' | 'resets_at'>
@@ -26,6 +27,8 @@
     focusTitle?: boolean
     /** 2 on the home page, where the card replaces the page's question. */
     level?: 2 | 3
+    /** A message typed before the card showed waits behind it: say it is kept. */
+    kept?: boolean
   } = $props()
 
   const reset = $derived(resetTime(pause.resets_at))
@@ -47,7 +50,12 @@
 <LimitCard
   id="pause-notice"
   icon="i-ri-hourglass-line"
-  text={m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session']()}
+  text={[
+    m[network ? 'arene.limits.pause.network' : 'arene.limits.pause.session'](),
+    kept && m['arene.limits.pause.kept']()
+  ]
+    .filter(Boolean)
+    .join(' ')}
   {focusTitle}
   {level}
 >

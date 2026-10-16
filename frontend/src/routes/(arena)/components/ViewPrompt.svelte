@@ -264,7 +264,7 @@
         <!-- The card's title is the page's question then: "Comment puis-je vous
              aider ?" would invite typing above a card that says not yet. -->
         <div class="py-10">
-          <PauseNotice {pause} focusTitle={pauseFromSend} level={2} />
+          <PauseNotice {pause} focusTitle={pauseFromSend} level={2} kept={prompt.trim() !== ''} />
         </div>
       {:else}
         <h2 class="fr-h4 mb-0! text-center">

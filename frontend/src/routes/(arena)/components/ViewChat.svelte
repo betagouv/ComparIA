@@ -214,6 +214,7 @@
           {onReveal}
           failed={!!comparator.error}
           focusTitle={comparator.pauseFromSend || sendAreaFocused}
+          kept={prompt.trim() !== ''}
         />
       {:else}
         <!-- Hidden until the limits are read: a pause would take its place. -->
