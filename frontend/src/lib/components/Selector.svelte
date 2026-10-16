@@ -11,12 +11,9 @@
   import type { ClassValue, HTMLInputAttributes } from 'svelte/elements'
 
   /**
-   * A choice with a `disabledReason` cannot be picked, but stays in the tab
-   * order with `aria-disabled`, described by its reason. A native `disabled`
-   * input would drop out of it, and screen readers in focus mode skip it, so
-   * the reason would be lost. Picking it speaks the reason instead, and sets
-   * `tried`, for the card to show the reason too: on a phone nothing else
-   * answers the tap.
+   * A choice with a `disabledReason` cannot be picked, yet looks and reads
+   * like the others until someone tries it: then the live region speaks the
+   * reason, and `tried` tells the card to show it.
    */
   interface SelectorProps {
     id: string
@@ -76,8 +73,6 @@
   function reasonProps(choice: Option): HTMLInputAttributes {
     if (!choice.disabledReason) return {}
     return {
-      'aria-disabled': 'true',
-      'aria-describedby': `${id}-${choice.value}-reason`,
       onclick: async (e: MouseEvent) => {
         e.preventDefault()
         tried = choice.value
@@ -146,7 +141,7 @@
         {@render input(choice)}
         {choice.label}
         {#if tried === choice.value}
-          <!-- Seen in the card; read out through the live region and the description. -->
+          <!-- Seen in the card; read out through the live region. -->
           <span class="cl-selector__reason fr-text--sm mb-0! mt-2 block" aria-hidden="true">
             {choice.disabledReason}
           </span>
@@ -160,11 +155,6 @@
   {/if}
 </div>
 
-{#each choices as choice (choice.value)}
-  {#if choice.disabledReason}
-    <span id="{id}-{choice.value}-reason" hidden>{choice.disabledReason}</span>
-  {/if}
-{/each}
 <!-- Present from first render: a live region only speaks what lands in it after. -->
 <p role="status" class="sr-only">{said}</p>
 
@@ -183,10 +173,8 @@
       outline-offset: 2px;
     }
 
-    /* A choice that cannot be picked never looks picked, even when it is the
-       one saved from before it paused. */
-    &:has(input:checked:not([aria-disabled='true'])),
-    &:has(input:active:not([aria-disabled='true'])) {
+    &:has(input:checked),
+    &:has(input:active) {
       border: 2px solid var(--blue-france-main-525);
       color: var(--blue-france-main-525);
       margin: 0;
@@ -194,10 +182,6 @@
 
     &:has(input:disabled) {
       filter: grayscale(100%);
-    }
-
-    &:has(input[aria-disabled='true']) {
-      cursor: not-allowed;
     }
   }
 </style>

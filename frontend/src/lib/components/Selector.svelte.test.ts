@@ -13,7 +13,7 @@ const choices = [
 ]
 
 describe('Selector', () => {
-  it('keeps a paused choice in the tab order, described by its reason', async () => {
+  it('keeps a paused choice in the tab order, read like the others until tried', async () => {
     const view = render(Selector, {
       id: 'models',
       kind: 'checkbox',
@@ -26,10 +26,9 @@ describe('Selector', () => {
     // Not `disabled`, which would take it out of the tab order.
     expect(paused).toBeEnabled()
     expect(paused.tabIndex).toBe(0)
-    expect(paused).toHaveAttribute('aria-disabled', 'true')
-    expect(paused).toHaveAccessibleDescription(
-      'Vous avez utilisé votre part de ce modèle. Il revient à 15 h 40.'
-    )
+    expect(paused).not.toHaveAttribute('aria-disabled')
+    expect(paused).not.toHaveAccessibleDescription()
+    expect(view.container).not.toHaveTextContent('Il revient')
     expectNoDanglingAriaRefs(view.container)
     await expectNoA11yViolations(view.container)
   })

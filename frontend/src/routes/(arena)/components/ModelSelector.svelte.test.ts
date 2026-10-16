@@ -55,18 +55,16 @@ describe('ModelSelector', () => {
 
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
     expect(gpt).toBeEnabled()
-    expect(gpt).toHaveAttribute('aria-disabled', 'true')
+    // Read like the others until tried.
+    expect(gpt).not.toHaveAttribute('aria-disabled')
+    expect(gpt).not.toHaveAccessibleDescription()
     expect(gpt).toHaveAccessibleName(/GPT-5 En pause · \d+\sh\s\d+/)
-    expect(gpt).toHaveAccessibleDescription(
-      /^Vous avez utilisé votre part de ce modèle\. Il revient à \d+\sh\s\d+\.$/
-    )
     expect(gpt.closest('label')!.querySelector('time')).toHaveAttribute('datetime', at)
 
     const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
     expect(gemini).toHaveAccessibleName(/Complet · revient demain/)
     // Its own icon, not the pause one.
     expect(gemini.closest('label')!.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
-    expect(gemini).toHaveAccessibleDescription(/Il revient demain\./)
 
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(gemma).not.toHaveAttribute('aria-disabled')
@@ -102,8 +100,13 @@ describe('ModelSelector', () => {
     await fireEvent.click(gpt)
 
     expect(card).toHaveTextContent(/Vous avez utilisé votre part de ce modèle\. Il revient à/)
-    // Said once: the card's name leaves it to the description.
+    // Spoken through the live region, not added to the card's name.
     expect(gpt).toHaveAccessibleName(/^Lab\/GPT-5 En pause · \d+\sh\s\d+$/)
+    await vi.waitFor(() =>
+      expect(view.getAllByRole('status', { hidden: true }).at(-1)).toHaveTextContent(
+        /^Vous avez utilisé votre part de ce modèle\. Il revient à \d+\sh\s\d+\.$/
+      )
+    )
 
     await fireEvent.click(view.getByRole('checkbox', { name: /Gemini/, hidden: true }))
     expect(card).not.toHaveTextContent(/Vous avez utilisé votre part/)
@@ -129,10 +132,11 @@ describe('ModelSelector', () => {
 
   it('tells a network it has used its share', async () => {
     const view = await openModels({ expensive: expensive('network') })
+    const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
 
-    expect(view.getByRole('checkbox', { name: /GPT-5/, hidden: true })).toHaveAccessibleDescription(
-      /^Votre réseau a utilisé sa part de ce modèle\./
-    )
+    await fireEvent.click(gpt)
+
+    expect(gpt.closest('label')).toHaveTextContent(/Votre réseau a utilisé sa part de ce modèle\./)
   })
 
   it('marks a mode with nothing left, and keeps the dialog open on it', () => {
@@ -146,14 +150,9 @@ describe('ModelSelector', () => {
     })
 
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
-    expect(mode).toHaveAttribute('aria-disabled', 'true')
+    expect(mode).not.toHaveAttribute('aria-disabled')
+    expect(mode).not.toHaveAccessibleDescription()
     expect(mode).toHaveAttribute('aria-controls', '')
-    expect(mode).toHaveAccessibleDescription(
-      /^Ce mode a besoin de modèles qui sont en pause pour vous\. Il revient à \d+\sh\s\d+\.$/
-    )
-    expect(view.getByRole('radio', { name: /Frugal/, hidden: true })).not.toHaveAttribute(
-      'aria-disabled'
-    )
     // Nothing over the list says which modes are paused.
     expect(view.container.querySelector('#modes-paused-hint')).toBeNull()
   })
