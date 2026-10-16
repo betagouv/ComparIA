@@ -4,6 +4,7 @@
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
   import { MAX_TURNS_PER_COMPARISON } from '$lib/generated/constants'
+  import { focusWithin } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PauseNotice, PromptWarningModal, RevealArea, VoteModal } from '.'
@@ -56,17 +57,6 @@
   // then takes focus too, which would otherwise fall to the page; after a
   // vote it leaves focus on the vote.
   let sendAreaFocused = $state(false)
-
-  function onSendAreaFocusOut(e: FocusEvent) {
-    const area = e.currentTarget as HTMLElement
-    const left = e.target as Node
-    if (area.contains(e.relatedTarget as Node | null)) return
-    // Some browsers send focusout when the focused text box is removed: that
-    // is the case to keep, told apart once the removal is done.
-    setTimeout(() => {
-      if (left.isConnected) sendAreaFocused = area.contains(document.activeElement)
-    })
-  }
 
   async function onPromptSubmit() {
     await runAfterAcceptance(async () => {
@@ -178,8 +168,7 @@
   {:else if !comparator.comparison.revealed}
     <div
       bind:this={footer}
-      onfocusin={() => (sendAreaFocused = true)}
-      onfocusout={onSendAreaFocusOut}
+      {@attach focusWithin((inside) => (sendAreaFocused = inside))}
       id="send-area"
       class={[
         '-bottom-24 md:bottom-0 gap-3 px-4 py-3 md:px-[20%] z-2 mt-auto flex flex-col items-center bg-linear-(--my-gradient)',

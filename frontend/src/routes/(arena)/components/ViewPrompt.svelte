@@ -10,6 +10,7 @@
     type APIModeAndPromptData,
     type PickRefusal
   } from '$lib/chatService.svelte'
+  import { focusWithin } from '$lib/helpers/attachments'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getLimitsContext, type Spent } from '$lib/limits.svelte'
@@ -50,6 +51,9 @@
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
+  // Focus sits in the form: a pause card read late takes its place and focus,
+  // which would otherwise fall to the page.
+  let formFocused = $state(false)
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
   const limits = getLimitsContext()
@@ -259,12 +263,17 @@
   </div>
 {:else}
   <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
-    <div class="fr-col-xl-8 m-auto">
+    <div class="fr-col-xl-8 m-auto" {@attach focusWithin((inside) => (formFocused = inside))}>
       {#if pause}
         <!-- The card's title is the page's question then: "Comment puis-je vous
              aider ?" would invite typing above a card that says not yet. -->
         <div class="py-10">
-          <PauseNotice {pause} focusTitle={pauseFromSend} level={2} kept={prompt.trim() !== ''} />
+          <PauseNotice
+            {pause}
+            focusTitle={pauseFromSend || formFocused}
+            level={2}
+            kept={prompt.trim() !== ''}
+          />
         </div>
       {:else}
         <h2 class="fr-h4 mb-0! text-center">

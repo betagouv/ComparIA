@@ -205,6 +205,18 @@ describe('ViewPrompt', () => {
     ).toBeInTheDocument()
   })
 
+  it('moves focus to the pause title when it replaces the text box being typed in', async () => {
+    const view = render(ViewPrompt, props)
+    const box = view.getByRole('textbox')
+    box.focus()
+    await fireEvent.input(box, { target: { value: 'Ma question' } })
+
+    // The limits read late: the card takes the box's place while focused.
+    await view.rerender({ ...props, pause: spentPause() })
+
+    expect(view.getByRole('heading', { name: /^Vous pourrez écrire à nouveau à/ })).toHaveFocus()
+  })
+
   it.each([
     ['expensive_allowance_spent' as const, 'session' as const],
     ['model_full_today' as const, null]
