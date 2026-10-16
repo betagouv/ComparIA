@@ -317,15 +317,15 @@
                 "empty": "Pas assez de conversations sur la période pour proposer des valeurs.",
                 "explain": {
                     "answer": "La moitié des réponses font moins de {value} caractères.",
-                    "network": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Sur {days} jours, les réseaux l'auraient dépassée dans {share} de leurs périodes de deux heures.",
-                    "networkNone": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Aucun réseau ne l'aurait atteinte ces {days} jours.",
+                    "network": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l’atteindre. Sur {days} jours, les réseaux l’auraient dépassée dans {share} de leurs périodes de deux heures.",
+                    "networkNone": "Une classe de {size} élèves qui écrivent beaucoup tient deux heures sans l’atteindre. Aucun réseau ne l’aurait atteinte ces {days} jours.",
                     "session": "Sur {days} jours, {percentile} personnes sur 100 sont restées en dessous.",
-                    "sessionMessages": "Sur {days} jours, {percentile} personnes sur 100 sont restées en dessous. Celles qui l'atteignent y arrivent après environ {messages} messages."
+                    "sessionMessages": "Sur {days} jours, {percentile} personnes sur 100 sont restées en dessous. Celles qui l’atteignent y arrivent après environ {messages} messages."
                 },
-                "failed": "Le calcul n'a pas abouti.",
-                "few": "Trop peu de données pour s'y fier : il faut au moins 100 périodes de deux heures, ou réponses, lues.",
+                "failed": "Le calcul n’a pas abouti.",
+                "few": "Trop peu de données pour s’y fier : il faut au moins 100 périodes de deux heures, ou réponses, lues.",
                 "hint": "Propose des valeurs à partir des conversations des {days} derniers jours. Rien ne change avant « Appliquer ».",
-                "none": "Pas de proposition : rien n'a été dépensé ici sur la période.",
+                "none": "Pas de proposition : rien n’a été dépensé ici sur la période.",
                 "proposal": "Proposition : {value}",
                 "running": "Calcul en cours…",
                 "sample": "Conversations lues : {comparisons} ; messages : {turns} ; sur les {days} derniers jours.",
@@ -333,7 +333,7 @@
             },
             "cancel": "Annuler",
             "change": {
-                "big": "Gros changement : vérifiez avant d'appliquer.",
+                "big": "Gros changement : vérifiez avant d’appliquer.",
                 "less": "{values} ({times} fois moins)",
                 "more": "{values} ({times} fois plus)"
             },
@@ -341,13 +341,13 @@
                 "back": "Revoir les valeurs",
                 "big": "Gros changement.",
                 "cap": "Plafond du jour de {name}",
-                "intro": "Ils s'appliquent à toute l'arène en moins d'une minute.",
+                "intro": "Ils s’appliquent à toute l’arène en moins d’une minute.",
                 "line": "{name} : {change}",
                 "title": "Appliquer ces changements ?"
             },
             "current": "Valeur actuelle : {value}",
             "expensiveList": "À ce seuil, {count} modèles activés sont coûteux :",
-            "expensiveNone": "À ce seuil, aucun modèle activé n'est coûteux.",
+            "expensiveNone": "À ce seuil, aucun modèle activé n’est coûteux.",
             "expensiveOne": "À ce seuil, un modèle activé est coûteux :",
             "factorKept": "La calibration ne propose pas cette valeur : elle reste celle que vous avez choisie.",
             "groups": {
@@ -357,14 +357,14 @@
                 "technical": "Réglages techniques"
             },
             "help": {
-                "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu'un qui efface ses cookies pour repartir de zéro.",
-                "all_per_session": "Ce qu'une personne peut faire lire et écrire aux modèles en deux heures, tous modèles confondus. Les deux heures partent de son premier message, quoi qu'elle envoie ensuite. Une fois la limite atteinte, elle attend la fin des deux heures pour envoyer un nouveau message.",
-                "expected_answer_chars": "Ce que chaque modèle devrait écrire, compté d'avance à chaque message puis remplacé par la vraie longueur. Sans elle, des messages envoyés tous en même temps passeraient avant que leurs réponses soient comptées.",
+                "all_per_ip": "La même limite pour tout un réseau, comme une école ou un hôpital. Elle arrête quelqu’un qui efface ses cookies pour repartir de zéro.",
+                "all_per_session": "Ce qu’une personne peut faire lire et écrire aux modèles en deux heures, tous modèles confondus. Les deux heures partent de son premier message, quoi qu’elle envoie ensuite. Une fois la limite atteinte, elle attend la fin des deux heures pour envoyer un nouveau message.",
+                "expected_answer_chars": "Ce que chaque modèle devrait écrire, compté d’avance à chaque message puis remplacé par la vraie longueur. Sans elle, des messages envoyés tous en même temps passeraient avant que leurs réponses soient comptées.",
                 "expensive_per_ip": "La même limite, en dollars, pour tout un réseau.",
-                "expensive_per_session": "Ce que les modèles coûteux peuvent coûter pour une personne en deux heures, estimé d'après le prix de chaque modèle, à quatre caractères par jeton. Une réponse servie depuis le cache ne compte pas. Une fois la limite atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts.",
-                "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu'il écrit, atteint ce seuil. Un modèle à 0 ne l'est jamais. Le prix de chaque modèle se règle dans sa fiche.",
-                "in_flight_per_network": "Combien de messages un même réseau peut faire répondre aux modèles en même temps. Au-delà, le message est refusé et la personne le renvoie quelques secondes plus tard. Une rafale de messages envoyés d'un coup ne peut donc pas tout dépenser avant que leurs réponses soient comptées.",
-                "signed_in_factor": "Ce qu'a une personne connectée à son compte : la limite par personne multipliée par ce nombre, pour tous les modèles comme pour les modèles coûteux. Ses messages comptent alors sur son compte, et non plus sur son navigateur. Les limites par réseau ne changent pas."
+                "expensive_per_session": "Ce que les modèles coûteux peuvent coûter pour une personne en deux heures, estimé d’après le prix de chaque modèle, à quatre caractères par jeton. Une réponse servie depuis le cache ne compte pas. Une fois la limite atteinte, les nouvelles conversations se font sans les modèles coûteux ; les autres modèles restent ouverts.",
+                "expensive_price_out": "Un modèle compte comme coûteux dès que son prix de sortie, ce que coûtent un million de jetons qu’il écrit, atteint ce seuil. Un modèle à 0 ne l’est jamais. Le prix de chaque modèle se règle dans sa fiche.",
+                "in_flight_per_network": "Combien de messages un même réseau peut faire répondre aux modèles en même temps. Au-delà, le message est refusé et la personne le renvoie quelques secondes plus tard. Une rafale de messages envoyés d’un coup ne peut donc pas tout dépenser avant que leurs réponses soient comptées.",
+                "signed_in_factor": "Ce qu’a une personne connectée à son compte : la limite par personne multipliée par ce nombre, pour tous les modèles comme pour les modèles coûteux. Ses messages comptent alors sur son compte, et non plus sur son navigateur. Les limites par réseau ne changent pas."
             },
             "inFlightKept": "La calibration ne propose pas cette valeur : elle reste celle que vous avez choisie.",
             "isDefault": "Par défaut",
@@ -388,15 +388,15 @@
             "newValueFactor": "Nouvelle valeur, en nombre de fois",
             "newValuePrice": "Nouveau seuil, en dollars par million de jetons écrits",
             "newValueUsd": "Nouvelle valeur, en dollars",
-            "nothingToApply": "Aucune valeur n'a changé.",
+            "nothingToApply": "Aucune valeur n’a changé.",
             "priceAdded": "(ajouté par ce seuil)",
             "priceRemoved": "(retiré par ce seuil)",
             "prices": {
                 "intro": "Ce que comptent les modèles coûteux vient de ces prix. Vérifiez-les dans la fiche de chaque modèle.",
                 "issues": {
                     "free": "Prix à 0 : jamais coûteux, il ne compte rien.",
-                    "free_input": "Prix d'entrée à 0.",
-                    "output_below_input": "Prix de sortie plus bas que le prix d'entrée : les deux sont peut-être inversés.",
+                    "free_input": "Prix d’entrée à 0.",
+                    "output_below_input": "Prix de sortie plus bas que le prix d’entrée : les deux sont peut-être inversés.",
                     "very_high": "Prix de sortie au-dessus de 100 $ : peut-être saisi en centimes."
                 },
                 "line": "{name} : {in} en entrée, {out} en sortie par million de jetons.",
@@ -406,7 +406,7 @@
             "priceTag": "{name} · {price}",
             "reset": "Revenir au défaut ({value})",
             "signedInRoom": "Une personne connectée a {times} fois plus : {chars} caractères pour tous les modèles et {usd} pour les modèles coûteux, en deux heures.",
-            "subtitle": "Ce qu'une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s'applique à toute l'arène en moins d'une minute.",
+            "subtitle": "Ce qu’une personne, et un réseau entier, peut faire lire et écrire aux modèles en deux heures, comptées à partir de son premier message. Un changement s’applique à toute l’arène en moins d’une minute.",
             "thresholdKept": "La calibration ne propose pas de seuil : il reste celui que vous avez choisi.",
             "title": "Limites",
             "today": {
@@ -415,24 +415,24 @@
                 "capsApplied": "{count} plafonds proposés seront appliqués avec « Appliquer ».",
                 "capsAppliedOne": "1 plafond proposé sera appliqué avec « Appliquer ».",
                 "caption": "Dépenses du jour par modèle",
-                "empty": "Aucun modèle n'a rien coûté aujourd'hui, et aucun n'a de plafond.",
-                "failed": "Les dépenses du jour n'ont pas pu être lues.",
-                "full": "Complet jusqu'à minuit",
+                "empty": "Aucun modèle n’a rien coûté aujourd’hui, et aucun n’a de plafond.",
+                "failed": "Les dépenses du jour n’ont pas pu être lues.",
+                "full": "Complet jusqu’à minuit",
                 "highest": "au plus {value} en un jour",
-                "idle": "{count} autres modèles activés n'ont rien coûté aujourd'hui et n'ont pas de plafond.",
-                "idleOne": "1 autre modèle activé n'a rien coûté aujourd'hui et n'a pas de plafond.",
-                "intro": "Ce que chaque modèle a coûté depuis minuit, heure de Paris, tous utilisateurs confondus, estimé d'après ses prix. Un modèle qui atteint son plafond est complet : il sort des nouvelles conversations jusqu'à minuit, celles en cours continuent. Le plafond se règle dans la fiche du modèle.",
+                "idle": "{count} autres modèles activés n’ont rien coûté aujourd’hui et n’ont pas de plafond.",
+                "idleOne": "1 autre modèle activé n’a rien coûté aujourd’hui et n’a pas de plafond.",
+                "intro": "Ce que chaque modèle a coûté depuis minuit, heure de Paris, tous utilisateurs confondus, estimé d’après ses prix. Un modèle qui atteint son plafond est complet : il sort des nouvelles conversations jusqu’à minuit, celles en cours continuent. Le plafond se règle dans la fiche du modèle.",
                 "model": "Modèle",
                 "noAnswer": "Aucune réponse",
                 "noCap": "Aucun",
                 "noProposal": "Aucun",
-                "proposalRule": "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur {percentile} % des {days} jours entiers lus, plus la moitié.",
+                "proposalRule": "Plafond proposé : ce que chaque modèle coûteux n’a pas dépassé sur {percentile} % des {days} jours entiers lus, plus la moitié.",
                 "proposed": "Proposé",
-                "restsAtOnce": "Plus bas que ce qu'il a déjà coûté aujourd'hui : l'appliquer le rend complet tout de suite, pour tout le monde.",
+                "restsAtOnce": "Plus bas que ce qu’il a déjà coûté aujourd’hui : l’appliquer le rend complet tout de suite, pour tout le monde.",
                 "spent": "Dépensé",
                 "spentNoCap": "{spent}, sans plafond",
                 "spentOfCap": "{spent} sur {cap}",
-                "title": "Aujourd'hui",
+                "title": "Aujourd’hui",
                 "underCent": "moins de {value}"
             },
             "unit": "{value} caractères",
@@ -997,14 +997,14 @@
         },
         "limits": {
             "mode": {
-                "justPaused": "Ce mode vient d'être mis en pause, réessayez."
+                "justPaused": "Ce mode vient d’être mis en pause, réessayez."
             },
             "pause": {
                 "models": "Découvrir les modèles",
                 "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
                 "ranking": "Voir le classement",
                 "session": "Vous avez beaucoup écrit ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
-                "signIn": "Connectez-vous pour écrire jusqu'à {times} fois plus.",
+                "signIn": "Connectez-vous pour écrire jusqu’à {times} fois plus.",
                 "signInButton": "Se connecter",
                 "title": "Vous pourrez écrire à nouveau à {time}",
                 "titleSoon": "Vous pourrez écrire à nouveau dans moins de deux heures",
@@ -1014,14 +1014,14 @@
                 "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."
             },
             "picker": {
-                "full": "Complet aujourd'hui",
-                "justPaused": "Ce modèle vient d'être mis en pause, réessayez.",
+                "full": "Complet aujourd’hui",
+                "justPaused": "Ce modèle vient d’être mis en pause, réessayez.",
                 "paused": "En pause {until}"
             },
             "time": {
-                "until": "jusqu'à {time}",
+                "until": "jusqu’à {time}",
                 "untilSoon": "pour moins de deux heures",
-                "untilTomorrow": "jusqu'à demain à {time}"
+                "untilTomorrow": "jusqu’à demain à {time}"
             },
             "turns": {
                 "full": "Une conversation compte au plus {max} messages : découvrez les modèles, puis commencez-en une nouvelle.",

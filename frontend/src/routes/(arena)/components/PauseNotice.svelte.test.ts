@@ -18,7 +18,7 @@ vi.mock('$lib/limits.svelte', () => ({
 }))
 
 const session = { scope: 'session' as const, resets_at: null }
-const signIn = /Connectez-vous pour écrire jusqu'à/
+const signIn = /Connectez-vous pour écrire jusqu’à/
 
 afterEach(() => {
   state.auth = { user: null }
@@ -30,7 +30,7 @@ describe('PauseNotice', () => {
   it('offers sign-in to an anonymous person who spent their own allowance', () => {
     const view = render(PauseNotice, { pause: session })
 
-    expect(view.getByText("Connectez-vous pour écrire jusqu'à 3 fois plus.")).toBeInTheDocument()
+    expect(view.getByText('Connectez-vous pour écrire jusqu’à 3 fois plus.')).toBeInTheDocument()
     // DSFR opens the arena's sign-in modal from it.
     const button = view.getByRole('button', { name: 'Se connecter' })
     expect(button).toHaveAttribute('aria-controls', 'fr-modal-signin')

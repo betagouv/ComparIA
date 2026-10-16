@@ -58,17 +58,17 @@ describe('ModelSelector', () => {
     // Still in the tab order, announced as unavailable with its note.
     expect(gpt).toBeEnabled()
     expect(gpt).toHaveAttribute('aria-disabled', 'true')
-    expect(gpt).toHaveAccessibleDescription(/^En pause jusqu'à\s\d+\sh\s\d+$/)
+    expect(gpt).toHaveAccessibleDescription(/^En pause jusqu’à\s\d+\sh\s\d+$/)
     // The card's name stays the model's.
     expect(gpt).toHaveAccessibleName('Lab/GPT-5')
     const note = card(gpt).querySelector<HTMLElement>('.cl-pause-line')!
-    expect(note).toHaveTextContent(/^En pause jusqu'à\s\d+\sh\s\d+$/)
+    expect(note).toHaveTextContent(/^En pause jusqu’à\s\d+\sh\s\d+$/)
     expect(note.querySelector('time')).toHaveAttribute('datetime', at)
 
     const gemini = view.getByRole('checkbox', { name: /Gemini/, hidden: true })
     expect(card(gemini)).toHaveClass('cl-unavailable')
     expect(gemini).toHaveAttribute('aria-disabled', 'true')
-    expect(gemini).toHaveAccessibleDescription("Complet aujourd'hui")
+    expect(gemini).toHaveAccessibleDescription('Complet aujourd’hui')
 
     const gemma = view.getByRole('checkbox', { name: /Gemma/, hidden: true })
     expect(card(gemma)).not.toHaveClass('cl-unavailable')
@@ -114,7 +114,7 @@ describe('ModelSelector', () => {
     })
     const gpt = view.getByRole('checkbox', { name: /GPT-5/, hidden: true })
 
-    expect(card(gpt)).toHaveTextContent(/En pause jusqu'à demain à 1\sh\s30/)
+    expect(card(gpt)).toHaveTextContent(/En pause jusqu’à demain à 1\sh\s30/)
   })
 
   it('greys out a mode with nothing to draw, and keeps the dialog open on it', async () => {
@@ -132,7 +132,7 @@ describe('ModelSelector', () => {
     const mode = view.getByRole('radio', { name: /David contre Goliath/, hidden: true })
     expect(card(mode)).toHaveClass('cl-unavailable')
     expect(mode).toHaveAttribute('aria-disabled', 'true')
-    expect(mode).toHaveAccessibleDescription(/^En pause jusqu'à\s\d+\sh\s\d+$/)
+    expect(mode).toHaveAccessibleDescription(/^En pause jusqu’à\s\d+\sh\s\d+$/)
     expect(mode).toHaveAttribute('aria-controls', '')
 
     await fireEvent.click(mode)
@@ -140,7 +140,7 @@ describe('ModelSelector', () => {
 
     const frugal = view.getByRole('radio', { name: /Frugal/, hidden: true })
     expect(frugal).toHaveAttribute('aria-disabled', 'true')
-    expect(card(frugal)).toHaveTextContent(/Complet aujourd'hui$/)
+    expect(card(frugal)).toHaveTextContent(/Complet aujourd’hui$/)
 
     const random = view.getByRole('radio', { name: /Aléatoire/, hidden: true })
     expect(random).not.toHaveAttribute('aria-disabled')

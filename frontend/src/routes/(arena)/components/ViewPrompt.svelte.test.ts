@@ -297,7 +297,7 @@ describe('ViewPrompt', () => {
       expect(line).not.toBeNull()
       return line!
     })
-    expect(line).toHaveTextContent(/^Ce modèle vient d'être mis en pause, réessayez\.$/)
+    expect(line).toHaveTextContent(/^Ce modèle vient d’être mis en pause, réessayez\.$/)
     expect(line).toHaveFocus()
     expect(line.querySelector('.i-ri-time-line')).not.toBeNull()
     // Twice, never more.

@@ -204,10 +204,10 @@ describe('limits page', () => {
     ).toBeInTheDocument()
     expect(
       view.getByText(
-        "Une classe de 35 élèves qui écrivent beaucoup tient deux heures sans l'atteindre. Aucun réseau ne l'aurait atteinte ces 7 jours."
+        'Une classe de 35 élèves qui écrivent beaucoup tient deux heures sans l’atteindre. Aucun réseau ne l’aurait atteinte ces 7 jours.'
       )
     ).toBeInTheDocument()
-    expect(view.getAllByText(/Trop peu de données pour s'y fier/)).toHaveLength(1)
+    expect(view.getAllByText(/Trop peu de données pour s’y fier/)).toHaveLength(1)
     expect(view.getByText(/Conversations lues : 1 ; messages : 1/)).toBeInTheDocument()
     expect(view.queryByText(/1 périodes|1 conversations/)).toBeNull()
   })
@@ -255,7 +255,7 @@ describe('limits page', () => {
       /60\s000\s000 → 600\s000 caractères \(100 fois moins\)/
     )
     expect(card('limit-all_per_ip')).toHaveTextContent(
-      "Gros changement : vérifiez avant d'appliquer."
+      'Gros changement : vérifiez avant d’appliquer.'
     )
     expect(card('limit-expensive_per_ip')).toHaveTextContent(
       /20,00\s\$ → 24,00\s\$ \(1,2 fois plus\)/

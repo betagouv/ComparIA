@@ -59,7 +59,7 @@ describe('TodayUsage', () => {
     // A model that cost nothing and has no cap is only counted.
     expect(view.queryByRole('link', { name: 'Llama 4 Scout' })).toBeNull()
     expect(
-      view.getByText("1 autre modèle activé n'a rien coûté aujourd'hui et n'a pas de plafond.")
+      view.getByText('1 autre modèle activé n’a rien coûté aujourd’hui et n’a pas de plafond.')
     ).toBeInTheDocument()
   })
 
@@ -78,7 +78,7 @@ describe('TodayUsage', () => {
     expect(row('GPT 5.5')).toHaveTextContent(/30,00\s*\$\s*au plus 21,50\s*\$ en un jour/)
     expect(
       view.getByText(
-        "Plafond proposé : ce que chaque modèle coûteux n'a pas dépassé sur 95 % des 6 jours entiers lus, plus la moitié."
+        'Plafond proposé : ce que chaque modèle coûteux n’a pas dépassé sur 95 % des 6 jours entiers lus, plus la moitié.'
       )
     ).toBeInTheDocument()
   })
@@ -100,7 +100,7 @@ describe('TodayUsage', () => {
     const view = render(TodayUsage, { usage: idle })
 
     expect(
-      view.getByText("Aucun modèle n'a rien coûté aujourd'hui, et aucun n'a de plafond.")
+      view.getByText('Aucun modèle n’a rien coûté aujourd’hui, et aucun n’a de plafond.')
     ).toBeInTheDocument()
     expect(view.queryByText(/autres modèles activés/)).toBeNull()
   })
@@ -108,6 +108,6 @@ describe('TodayUsage', () => {
   it('says so when the spend cannot be read', () => {
     const view = render(TodayUsage, { usage: null })
 
-    expect(view.getByText("Les dépenses du jour n'ont pas pu être lues.")).toBeInTheDocument()
+    expect(view.getByText('Les dépenses du jour n’ont pas pu être lues.')).toBeInTheDocument()
   })
 })
