@@ -855,10 +855,6 @@
         "limits": {
             "mode": {
                 "change": "Skift tilstand",
-                "fullMany": "{count} tilstande fulde i dag.",
-                "fullOne": "1 tilstand fuld i dag.",
-                "headerMany": "{count} tilstande sat på pause for dig {until}.",
-                "headerOne": "1 tilstand sat på pause for dig {until}.",
                 "hint": "Denne tilstand er sat på pause for dig {until}, vælg en anden.",
                 "hintFull": "Denne tilstands modeller har fået mange beskeder i dag: den kommer tilbage i morgen, vælg en anden.",
                 "reason": "Denne tilstand kræver modeller, der er sat på pause for dig. Den kommer tilbage {at}.",

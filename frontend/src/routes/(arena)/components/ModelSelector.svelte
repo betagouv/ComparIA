@@ -125,36 +125,6 @@
   let triedMode = $state<Mode>()
   let triedModel = $state<string>()
 
-  // The same line over the modes: those paused for the person first, else
-  // those full for the day.
-  const modeHeader = $derived.by(() => {
-    const all = [...pausedModes.values()]
-    const forPerson = all.filter((pause) => !pause.full)
-    if (forPerson.length) {
-      const until =
-        forPerson
-          .map((pause) => pause.until)
-          .filter((at) => at !== null)
-          .sort()[0] ?? null
-      const reset = resetTime(until)
-      return {
-        reset,
-        text: m[
-          forPerson.length > 1 ? 'arene.limits.mode.headerMany' : 'arene.limits.mode.headerOne'
-        ]({ count: forPerson.length, until: reset.until }),
-        why: m['arene.limits.mode.why']()
-      }
-    }
-    if (!all.length) return undefined
-    return {
-      icon: FULL_ICON,
-      text: m[all.length > 1 ? 'arene.limits.mode.fullMany' : 'arene.limits.mode.fullOne']({
-        count: all.length
-      }),
-      why: m['arene.limits.mode.whyFull']()
-    }
-  })
-
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
   let search = $state('')
@@ -306,10 +276,7 @@
                 <h2 id="modal-mode-selection-title" class="fr-h6 mb-3!">
                   {m['arenaHome.selectModels.question']()}
                 </h2>
-                <p class={modeHeader ? 'mb-0!' : 'mb-6!'}>{m['arenaHome.selectModels.help']()}</p>
-                {#if modeHeader}
-                  <LimitHint id="modes-paused-hint" {...modeHeader} class="mt-2 mb-6!" />
-                {/if}
+                <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
               {:else}
                 <div class="gap-3 md:flex-row flex w-full flex-col">
                   <div>

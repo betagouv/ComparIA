@@ -186,23 +186,7 @@ describe('ModelSelector', () => {
     expect(view.getByRole('radio', { name: /Frugal/, hidden: true })).not.toHaveAttribute(
       'aria-disabled'
     )
-    // Said over the list too, as for the models.
-    expect(view.container.querySelector('#modes-paused-hint')).toHaveTextContent(
-      /^1 mode en pause pour vous jusqu'à \d+\sh\s\d+\. Pourquoi \?$/
-    )
-  })
-
-  it('says how many modes are full when none is paused for the person', () => {
-    const view = render(ModelSelector, {
-      models,
-      mode: 'random',
-      modelsSelection: [],
-      paused,
-      pausedModes: new Map<Mode, ModePause>([['small-models', { until: null, full: true }]])
-    })
-
-    const hint = view.container.querySelector('#modes-paused-hint')!
-    expect(hint).toHaveTextContent(/^1 mode complet aujourd'hui\. Pourquoi \?$/)
-    expect(hint.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
+    // Nothing over the list says which modes are paused.
+    expect(view.container.querySelector('#modes-paused-hint')).toBeNull()
   })
 })
