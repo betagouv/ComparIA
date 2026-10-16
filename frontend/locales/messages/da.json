@@ -302,6 +302,152 @@
                 "title": "Vilkår"
             }
         },
+        "limits": {
+            "applyCount": "Anvend {count} ændringer",
+            "applyCountOne": "Anvend 1 ændring",
+            "change": {
+                "big": "Stor ændring: tjek før du anvender den.",
+                "less": "{values} ({times} gange mindre)",
+                "more": "{values} ({times} gange mere)"
+            },
+            "confirm": {
+                "back": "Tilbage til værdierne",
+                "big": "Stor ændring.",
+                "cap": "Dagligt loft for {name}",
+                "intro": "De gælder for hele arenaen på under et minut.",
+                "line": "{name}: {change}",
+                "title": "Anvend disse ændringer?"
+            },
+            "messages": {
+                "network": "Det svarer til omkring {count} beskeder på to timer for hele netværket.",
+                "session": "Det svarer til omkring {count} beskeder på to timer for én person."
+            },
+            "priceAdded": "(tilføjet af denne grænse)",
+            "priceRemoved": "(fjernet af denne grænse)",
+            "priceTag": "{name} · {price}",
+            "title": "Grænser",
+            "subtitle": "Hvad én person, og et helt netværk, kan få modellerne til at læse og skrive på to timer, regnet fra den første besked. En ændring gælder for hele arenaen på under et minut.",
+            "updated": "Sidst ændret {date} af {who}.",
+            "updatedAt": "{day} kl. {time}",
+            "updatedUnknown": "Sidst ændret {date}.",
+            "unit": "{value} tegn",
+            "current": "Nuværende værdi: {value}",
+            "isDefault": "Standard",
+            "isStored": "Ændret",
+            "newValue": "Ny værdi, i tegn",
+            "reset": "Tilbage til standard ({value})",
+            "signedInRoom": "En logget ind person får {times} gange mere: {chars} tegn for alle modeller og {usd} for de dyre, over to timer.",
+            "apply": "Anvend",
+            "applying": "Gemmer…",
+            "applied": "Grænserne er gemt.",
+            "cancel": "Annuller",
+            "nothingToApply": "Ingen værdi er ændret.",
+            "groups": {
+                "all": "Alle modeller",
+                "expensive": "Dyre modeller",
+                "signedIn": "Loggede ind personer",
+                "technical": "Tekniske indstillinger"
+            },
+            "names": {
+                "all_per_session": "Pr. person",
+                "all_per_ip": "Pr. netværk (skole, virksomhed)",
+                "expensive_per_session": "Pr. person",
+                "expensive_per_ip": "Pr. netværk (skole, virksomhed)",
+                "expected_answer_chars": "Reserveret svarlængde",
+                "expensive_price_out": "Prisgrænse",
+                "in_flight_per_network": "Beskeder på samme tid",
+                "signed_in_factor": "Ekstra plads"
+            },
+            "help": {
+                "all_per_session": "Hvad én person kan få modellerne til at læse og skrive på to timer, alle modeller under ét. De to timer starter ved personens første besked, uanset hvad der sendes bagefter. Når grænsen er nået, venter personen, til de to timer er gået, før en ny besked kan sendes.",
+                "all_per_ip": "Den samme grænse for et helt netværk, som en skole eller et hospital. Den stopper den, der sletter sine cookies for at starte forfra.",
+                "expensive_per_session": "Hvad de dyre modeller må koste for én person på to timer, anslået ud fra hver models priser med fire tegn pr. token. Et svar fra cachen tæller ikke. Når grænsen er nået, fortsætter nye samtaler uden de dyre modeller; de andre modeller er stadig åbne.",
+                "expensive_per_ip": "Den samme grænse, i dollars, for et helt netværk.",
+                "expected_answer_chars": "Hvad hver model forventes at skrive, regnet på forhånd ved hver besked og derefter erstattet af den rigtige længde. Uden den ville beskeder sendt på samme tid slippe igennem, før deres svar er talt med.",
+                "expensive_price_out": "En model tæller som dyr, så snart dens outputpris, hvad en million tokens, den skriver, koster, når denne grænse. En model til 0 er det aldrig. Hver models pris indstilles i dens egen formular.",
+                "in_flight_per_network": "Hvor mange beskeder ét netværk kan få modellerne til at besvare på samme tid. Derover afvises beskeden, og personen sender den igen et par sekunder senere. En byge af beskeder sendt på én gang kan så ikke bruge det hele, før deres svar er talt med.",
+                "signed_in_factor": "Hvad en person, der er logget ind på en konto, får: grænsen pr. person ganget med dette tal, for alle modeller som for de dyre. Personens beskeder tæller så på kontoen og ikke længere på browseren. Grænserne pr. netværk er de samme."
+            },
+            "calibrate": {
+                "button": "Kalibrer",
+                "running": "Beregner…",
+                "hint": "Foreslår værdier ud fra de seneste {days} dages samtaler. Intet ændres, før du klikker på “Anvend”.",
+                "sample": "Læste samtaler: {comparisons}; beskeder: {turns}; over de seneste {days} dage.",
+                "capped": "Kun de seneste samtaler blev læst.",
+                "empty": "Ikke nok samtaler i perioden til at foreslå værdier.",
+                "timeout": "Beregningen tog for lang tid. Prøv igen om et par minutter.",
+                "failed": "Beregningen blev ikke færdig.",
+                "proposal": "Forslag: {value}",
+                "none": "Intet forslag: intet blev brugt her i perioden.",
+                "explain": {
+                    "networkNone": "En klasse på {size} elever, der skriver meget, kommer igennem to timer uden at nå den. Intet netværk ville have nået den i disse {days} dage.",
+                    "session": "Over {days} dage holdt {percentile} ud af 100 personer sig under den.",
+                    "sessionMessages": "Over {days} dage holdt {percentile} ud af 100 personer sig under den. De, der når den, gør det efter omkring {messages} beskeder.",
+                    "network": "En klasse på {size} elever, der skriver meget, kommer igennem to timer uden at nå den. Over {days} dage ville netværkene være gået over den i {share} af deres perioder på to timer.",
+                    "answer": "Halvdelen af svarene er kortere end {value} tegn."
+                },
+                "few": "For få data til at stole på: der skal mindst 100 perioder på to timer, eller svar, læses.",
+                "use": "Brug denne værdi"
+            },
+            "newValueUsd": "Ny værdi, i dollars",
+            "newValuePrice": "Ny grænse, i dollars pr. million output-tokens",
+            "unitPrice": "{value} pr. million output-tokens",
+            "expensiveList": "Ved denne grænse er {count} aktiverede modeller dyre:",
+            "expensiveNone": "Ved denne grænse er ingen aktiveret model dyr.",
+            "thresholdKept": "Kalibreringen foreslår ingen grænse: den forbliver den, du har valgt.",
+            "prices": {
+                "title": "Priser at tjekke",
+                "intro": "Det, de dyre modeller tæller, kommer fra disse priser. Tjek dem i hver models formular.",
+                "line": "{name}: {in} input, {out} output pr. million tokens.",
+                "issues": {
+                    "free": "Pris 0: aldrig dyr, den tæller intet.",
+                    "free_input": "Inputpris 0.",
+                    "output_below_input": "Output billigere end input: de to er måske byttet om.",
+                    "very_high": "Output over 100 $: måske indtastet i cent."
+                },
+                "none": "Ingen pris ser ud til at skulle tjekkes."
+            },
+            "expensiveOne": "Ved denne grænse er én aktiveret model dyr:",
+            "factorKept": "Kalibreringen foreslår ingen værdi her: den forbliver, som du har indstillet den.",
+            "unitCount": "{value} beskeder",
+            "unitFactor": "{value} gange mere",
+            "newValueCount": "Ny værdi, i beskeder",
+            "newValueFactor": "Ny værdi, i antal gange",
+            "today": {
+                "spentNoCap": "{spent}, intet loft",
+                "spentOfCap": "{spent} af {cap}",
+                "title": "I dag",
+                "intro": "Hvad hver model har kostet siden midnat, Paris-tid, for alle brugere, anslået ud fra dens priser. En model, der når sit loft, er fuld: den udgår af nye samtaler indtil midnat, de igangværende fortsætter. Loftet indstilles i modellens formular.",
+                "caption": "Dagens forbrug pr. model",
+                "model": "Model",
+                "spent": "Brugt",
+                "noCap": "Intet",
+                "cache": "Fra cachen",
+                "cacheShare": "{share} af {count} svar",
+                "noAnswer": "Intet svar",
+                "full": "Fuld indtil midnat",
+                "proposed": "Foreslået",
+                "noProposal": "Intet forslag",
+                "empty": "Ingen model har kostet noget i dag, og ingen har et loft.",
+                "failed": "Dagens forbrug kunne ikke læses.",
+                "capsApplied": "{count} foreslåede lofter anvendes med “Anvend”.",
+                "capsAppliedOne": "1 foreslået loft anvendes med “Anvend”.",
+                "idle": "{count} andre aktiverede modeller har ikke kostet noget i dag og har intet loft.",
+                "idleOne": "1 anden aktiveret model har ikke kostet noget i dag og har intet loft.",
+                "underCent": "under {value}",
+                "proposalRule": "Foreslået loft: hvad hver dyr model holdt sig under på {percentile} % af de {days} hele dage, der er læst, plus halvdelen.",
+                "highest": "højst {value} på en dag",
+                "restsAtOnce": "Lavere end hvad den allerede har kostet i dag: at anvende det gør modellen fuld med det samme, for alle."
+            },
+            "inFlightKept": "Kalibreringen foreslår ingen værdi her: den forbliver, som du har indstillet den.",
+            "expensiveCount": "Ved denne grænse er {count} aktiverede modeller dyre.",
+            "priceListShow": "Vis de {count} modeller",
+            "priceChanges": "Denne grænse tilføjer {added} og fjerner {removed}.",
+            "priceChangesAdded": "Denne grænse tilføjer {count}.",
+            "priceChangesRemoved": "Denne grænse fjerner {count}.",
+            "tooLow": "Indtast en værdi på mindst {value}.",
+            "tooHigh": "Indtast en værdi på højst {value}."
+        },
         "llms": {
             "subTitle": "LLM'er, labs, licenser og endepoints.",
             "title": "LLM-datakonfiguration"
@@ -317,7 +463,8 @@
             "publishing": "Udgivelse",
             "suggestions": "Forslag",
             "users": "Brugere",
-            "voteTags": "Stemmeetiketter"
+            "voteTags": "Stemmeetiketter",
+            "limits": "Grænser"
         },
         "panelLink": "Administration",
         "promptChecks": {

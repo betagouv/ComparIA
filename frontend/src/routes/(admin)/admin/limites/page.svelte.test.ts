@@ -1,5 +1,6 @@
 import { api } from '$lib/fastapi-client'
 import type { AdminLimits, LimitsCalibration } from '$lib/generated/admin'
+import { overwriteGetLocale } from '$lib/i18n/runtime'
 import { fireEvent, render, waitFor, within } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PageProps } from './$types'
@@ -356,6 +357,21 @@ describe('limits page', () => {
         /^Dernière modification le 15 octobre 2026 à 13\sh\s30 par admin@example\.com\.$/
       )
     ).toBeInTheDocument()
+  })
+
+  it('reads in Danish on a Danish admin, the date in the same language', () => {
+    overwriteGetLocale(() => 'da')
+    const changed = new Date(2026, 9, 15, 13, 30, 40).toISOString()
+    const view = render(Page, {
+      data: { limits: { ...limits, updated_at: changed, updated_by: 'admin@example.com' }, usage }
+    } as unknown as PageProps)
+
+    expect(view.getByRole('heading', { level: 1, name: 'Grænser' })).toBeInTheDocument()
+    expect(
+      view.getByText(/^Sidst ændret 15\. oktober 2026 kl\. 13\.30 af admin@example\.com\.$/)
+    ).toBeInTheDocument()
+    expect(view.getByRole('button', { name: 'Kalibrer' })).toBeInTheDocument()
+    overwriteGetLocale(() => 'fr')
   })
 
   it('lists the expensive models with their price, marking what a new threshold adds', async () => {
