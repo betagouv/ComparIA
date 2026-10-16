@@ -1,7 +1,6 @@
 <script lang="ts" module>
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { FULL_ICON } from '$lib/limits.svelte'
   import { resetTime, spoken, type ResetTime } from './resetTime'
 
   /** Models taken out of the person's pick. */
@@ -73,12 +72,11 @@
     return new Intl.ListFormat(getLocale(), { type: 'conjunction' }).format(names)
   }
 
-  function copy(pause: PickPause): { reset: ResetTime; text: string; why: string; icon?: string } {
+  function copy(pause: PickPause): { reset: ResetTime; text: string; why: string } {
     const reset = resetTime(pause.until)
     if (pause.kind === 'mode' && pause.full) {
       return {
         reset,
-        icon: FULL_ICON,
         text: m['arene.limits.mode.hintFull'](),
         why: m['arene.limits.mode.whyFull']()
       }
@@ -108,7 +106,7 @@
     }
     if (full.length) {
       const key = TRIMMED_FULL[full.length > 1 ? 'two' : 'one'][end]
-      return { reset, icon: FULL_ICON, text: m[key]({ models: list(full) }), why: fullWhy }
+      return { reset, text: m[key]({ models: list(full) }), why: fullWhy }
     }
     // "pour votre réseau" when the network spent it, as the picker says.
     const key = (pause.network ? TRIMMED_NETWORK : TRIMMED)[paused.length > 1 ? 'two' : 'one'][end]
@@ -134,7 +132,7 @@
     focusOnShow?: boolean
   } = $props()
 
-  const { reset, text, why, icon } = $derived(copy(pause))
+  const { reset, text, why } = $derived(copy(pause))
 </script>
 
 <!-- A paused mode can only be changed, and the mode button may be far up the
@@ -144,7 +142,6 @@
   {text}
   {reset}
   {why}
-  {icon}
   {focusOnShow}
   action={pause.kind === 'mode'
     ? { label: m['arene.limits.mode.change'](), controls: 'modal-mode-selection' }

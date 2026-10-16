@@ -392,10 +392,10 @@ describe('ViewPrompt', () => {
     expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
       /^GPT-5 est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire\. Pourquoi \?$/
     )
-    // A full model has its own icon, not the pause one.
-    expect(
-      view.container.querySelector('#pick-paused-notice .i-ri-calendar-close-line')
-    ).not.toBeNull()
+    // As quiet as the text box's own hint: small grey text, no icon.
+    const notice = view.container.querySelector('#pick-paused-notice')!
+    expect(notice).toHaveClass('fr-message')
+    expect(notice.querySelector('[class*="i-ri-"]')).toBeNull()
   })
 
   it('takes a paused model out of a ?vs= link once the limits are read, back to random', async () => {
