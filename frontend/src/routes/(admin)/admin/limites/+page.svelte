@@ -141,9 +141,13 @@
       .sort((a, b) => b.price_out - a.price_out)
   })
 
-  // The proposed daily caps that would change a model's cap.
+  // Read from too few periods or answers to trust: nothing is filled or armed
+  // on its own, each proposal waits for "Utiliser cette valeur".
+  const thin = $derived(!!calibration?.proposals.some((proposal) => proposal.few))
+
+  // The proposed daily caps that would change a model's cap, not on thin data.
   const changedCaps = $derived(
-    (calibration?.daily_caps ?? []).filter(
+    (thin ? [] : (calibration?.daily_caps ?? [])).filter(
       (cap) => data.usage?.find((llm) => llm.llm_id === cap.llm_id)?.cap_usd !== cap.value
     )
   )
@@ -293,8 +297,11 @@
     calibrationError = null
     try {
       calibration = await api.request<LimitsCalibration>('/admin/limits/calibration')
-      // Shown in the fields, to apply as they are or to adjust first.
-      for (const proposal of calibration.proposals) draft[proposal.name] = String(proposal.value)
+      // Shown in the fields, to apply as they are or to adjust first. On thin
+      // data they stay beside the fields, for the admin to pick one by one.
+      if (!calibration.proposals.some((proposal) => proposal.few)) {
+        for (const proposal of calibration.proposals) draft[proposal.name] = String(proposal.value)
+      }
     } catch (error) {
       calibration = null
       calibrationError =
@@ -495,6 +502,15 @@
               {m['admin.limits.calibrate.few']()}
             </p>
           {/if}
+          {#if thin && Number(draft[name]) !== proposal.value}
+            <Button
+              variant="tertiary"
+              size="sm"
+              text={m['admin.limits.calibrate.use']()}
+              onclick={() => (draft[name] = String(proposal.value))}
+              class="mt-2"
+            />
+          {/if}
         {:else if kind === 'price'}
           <p class="fr-text--sm mb-0!">{m['admin.limits.thresholdKept']()}</p>
         {:else if kind === 'count'}
@@ -616,7 +632,7 @@
         </div>
       </Accordion>
 
-      <TodayUsage usage={data.usage} proposals={calibration?.daily_caps} />
+      <TodayUsage usage={data.usage} proposals={thin ? undefined : calibration?.daily_caps} />
 
       {#if changedCaps.length}
         <p class="fr-text--sm mb-0!" aria-live="polite">

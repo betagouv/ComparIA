@@ -212,6 +212,39 @@ describe('limits page', () => {
     expect(view.queryByText(/1 périodes|1 conversations/)).toBeNull()
   })
 
+  it('leaves the fields alone on thin data, each proposal one click away', async () => {
+    const thin = {
+      ...calibration,
+      comparisons: 23,
+      turns: 30,
+      proposals: [
+        { name: 'all_per_session', value: 4000, sample: 23, percentile: 99, few: true },
+        { name: 'expected_answer_chars', value: 600, sample: 30, percentile: 50, few: true }
+      ]
+    }
+    request.mockImplementation(async (url: string) =>
+      url === '/admin/limits/calibration' ? thin : limits
+    )
+    const view = page()
+    const field = view.container.querySelector<HTMLInputElement>('#limit-all_per_session')!
+    const before = field.value
+
+    await fireEvent.click(view.getByRole('button', { name: 'Calibrer' }))
+    await waitFor(() => expect(view.getAllByText(/Trop peu de données/)).toHaveLength(2))
+
+    // Nothing filled, nothing armed, no daily cap proposed.
+    expect(field.value).toBe(before)
+    const form = view.container.querySelector('form')!
+    expect(within(form).getByRole('button', { name: 'Appliquer' })).toBeInTheDocument()
+    expect(view.queryByRole('columnheader', { name: 'Proposé' })).toBeNull()
+
+    const card = within(field.closest<HTMLElement>('.cg-border')!)
+    await fireEvent.click(card.getByRole('button', { name: 'Utiliser cette valeur' }))
+    expect(field.value).toBe('4000')
+    expect(card.queryByRole('button', { name: 'Utiliser cette valeur' })).toBeNull()
+    expect(within(form).getByRole('button', { name: 'Appliquer 1 changement' })).toBeInTheDocument()
+  })
+
   it('spells out each typed value, and says it in messages once calibrated', async () => {
     request.mockImplementation(async (url: string) =>
       url === '/admin/limits/calibration'

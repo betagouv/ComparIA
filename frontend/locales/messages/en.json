@@ -892,7 +892,8 @@
                     "network": "A class of {size} pupils who write a lot gets through two hours without reaching it. Over {days} days, networks would have gone past it in {share} of their two-hour periods.",
                     "answer": "Half of the answers are shorter than {value} characters."
                 },
-                "few": "Too little data to trust: it takes at least 100 two-hour periods, or answers, read."
+                "few": "Too little data to trust: it takes at least 100 two-hour periods, or answers, read.",
+                "use": "Use this value"
             },
             "newValueUsd": "New value, in dollars",
             "newValuePrice": "New threshold, in dollars per million output tokens",
