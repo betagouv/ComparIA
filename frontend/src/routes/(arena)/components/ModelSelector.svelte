@@ -1,16 +1,17 @@
 <script lang="ts">
-  import { Badge, Button, Icon, Search } from '$components/dsfr'
+  import { Badge, Button, Icon, Search, Toggletip } from '$components/dsfr'
   import { AILogo } from '$components/layout'
   import Selector from '$components/Selector.svelte'
   import type { APIModeAndPromptData, Mode } from '$lib/chatService.svelte'
   import { getModeInfos } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import type { PausedLLM } from '$lib/generated/backend'
-  import { FULL_ICON, PAUSED_ICON, type Spent } from '$lib/limits.svelte'
+  import type { Spent } from '$lib/limits.svelte'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
   import type { ModePause } from './pausedModes'
-  import { TIME_SLOT, resetTime, spoken, type ResetTime } from './resetTime'
+  import type { ClassValue } from 'svelte/elements'
+  import { resetTime, spoken, type ResetTime } from './resetTime'
   import TimedText from './TimedText.svelte'
 
   let {
@@ -34,48 +35,39 @@
     pausedModes?: ReadonlyMap<Mode, ModePause>
   } = $props()
 
-  type Pause = { chip: string; icon: string; reset?: ResetTime; reason: string }
+  // Told only in the card the person tries, with "Pourquoi ?" for the rest.
+  type Pause = { text: string; reset?: ResetTime; why: string; said: string }
 
-  // "En pause · 13 h 32" on the card; the reason says the rest.
-  function chip(reset: ResetTime): string {
-    if (!reset.clock) return m['arene.limits.picker.chipSoon']()
-    return m[
-      reset.clock.tomorrow ? 'arene.limits.picker.chipTomorrow' : 'arene.limits.picker.chip'
-    ]({ time: TIME_SLOT })
+  function told(text: string, why: string, reset?: ResetTime): Pause {
+    return { text, reset, why, said: reset ? spoken(text, reset) : text }
+  }
+
+  function pausedUntil(until: string | null, why: string): Pause {
+    const reset = resetTime(until)
+    const key =
+      expensive?.scope === 'network'
+        ? 'arene.limits.picker.pausedNetwork'
+        : 'arene.limits.picker.paused'
+    return told(m[key]({ until: reset.until }), why, reset)
   }
 
   function modelPause(id: string): Pause | undefined {
     const llm = paused.get(id)
     if (!llm) return undefined
-    if (llm.reason === 'full') {
-      return {
-        chip: m['arene.limits.picker.fullBadge'](),
-        icon: FULL_ICON,
-        reason: m['arene.limits.picker.fullReason']()
-      }
-    }
-    const reset = resetTime(llm.until)
-    const reason = m[
-      expensive?.scope === 'network'
-        ? 'arene.limits.picker.pausedReasonNetwork'
-        : 'arene.limits.picker.pausedReason'
-    ]({ at: reset.at })
-    return { chip: chip(reset), icon: PAUSED_ICON, reset, reason: spoken(reason, reset) }
+    if (llm.reason === 'full')
+      return told(m['arene.limits.picker.full'](), m['arene.limits.picker.fullWhy']())
+    const network = expensive?.scope === 'network'
+    return pausedUntil(
+      llm.until,
+      m[network ? 'arene.limits.picker.whyNetwork' : 'arene.limits.picker.why']()
+    )
   }
 
   function modePause(value: Mode): Pause | undefined {
     const pause = pausedModes.get(value)
     if (!pause) return undefined
-    if (pause.full) {
-      return {
-        chip: m['arene.limits.picker.fullBadge'](),
-        icon: FULL_ICON,
-        reason: m['arene.limits.mode.reasonFull']()
-      }
-    }
-    const reset = resetTime(pause.until)
-    const reason = m['arene.limits.mode.reason']({ at: reset.at })
-    return { chip: chip(reset), icon: PAUSED_ICON, reset, reason: spoken(reason, reset) }
+    if (pause.full) return told(m['arene.limits.picker.full'](), m['arene.limits.mode.whyFull']())
+    return pausedUntil(pause.until, m['arene.limits.mode.why']())
   }
 
   // The paused card last tapped, which then shows its reason.
@@ -92,14 +84,14 @@
       .filter((llm) => !_search || llm.search.includes(_search))
       .map((llm) => {
         const pause = modelPause(llm.id!)
-        return { ...llm, label: llm.name, value: llm.id!, pause, disabledReason: pause?.reason }
+        return { ...llm, label: llm.name, value: llm.id!, pause, disabledReason: pause?.said }
       })
   })
 
   const modeChoices = $derived(
     getModeInfos().map((info) => {
       const pause = modePause(info.value)
-      return { ...info, pause, disabledReason: pause?.reason }
+      return { ...info, pause, disabledReason: pause?.said }
     })
   )
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
@@ -184,25 +176,13 @@
   {/if}
 </div>
 
-{#snippet pauseChip(pause: Pause, tried: boolean)}
-  <span class="mt-2 block">
-    <Badge size="xs" class="cl-pause-chip">
-      <Icon icon={pause.icon} size="xs" block class="me-1" />
-      <!-- One flex item, so the space before the time stays. -->
-      <span
-        >{#if pause.reset}<TimedText
-            text={pause.chip}
-            reset={pause.reset}
-          />{:else}{pause.chip}{/if}</span
-      >
-    </Badge>
-  </span>
-  {#if tried}
-    <!-- Seen in the card; read out through the live region and the description. -->
-    <span class="cl-selector__reason fr-text--sm mb-0! mt-2 block" aria-hidden="true">
-      {pause.reason}
-    </span>
-  {/if}
+<!-- Under the card the person tried, outside its label: "Pourquoi ?" is a
+     button of its own. Spoken by the selector's live region as it shows. -->
+{#snippet pauseLine(id: string, pause: Pause, className: ClassValue)}
+  <p class={['cl-pause-line fr-text--sm mb-0! relative', className]}>
+    <TimedText text={pause.text} reset={pause.reset} />
+    <Toggletip id="{id}-why" label={m['arene.limits.why']()} text={pause.why} class="ms-1" />
+  </p>
 {/snippet}
 
 <dialog aria-labelledby="modal-mode-selection-title" id="modal-mode-selection" class="fr-modal">
@@ -265,35 +245,31 @@
                 bind:tried={triedMode}
                 choices={modeChoices}
                 containerClass="flex flex-col gap-3 md:gap-4"
-                choiceClass="flex items-center p-4 text-sm text-dark-grey!"
+                choiceClass="flex flex-col text-sm text-dark-grey!"
                 onChange={(mode) => (showModelsSelection = mode === 'custom')}
               >
                 {#snippet option(opt, labelProps, input)}
-                  <label {...labelProps}>
-                    {@render input(opt, {
-                      // A paused mode is not picked, so the dialog stays open.
-                      'aria-controls':
-                        opt.value != 'custom' && !opt.pause ? 'modal-mode-selection' : ''
-                    })}
-                    <Icon
-                      icon={opt.icon}
-                      block
-                      class={['text-primary me-3', { 'cl-dimmed': !!opt.pause }]}
-                    />
-                    {#if opt.value != 'custom'}
-                      <div>
+                  <div class={labelProps.class}>
+                    <label for={labelProps.for} class="p-4 flex grow items-center">
+                      {@render input(opt, {
+                        // A paused mode is not picked, so the dialog stays open.
+                        'aria-controls':
+                          opt.value != 'custom' && !opt.pause ? 'modal-mode-selection' : ''
+                      })}
+                      <Icon icon={opt.icon} block class="text-primary me-3" />
+                      {#if opt.value != 'custom'}
                         <span>
                           <strong>{opt.label}</strong>&nbsp;: {opt.description}
                         </span>
-                        {#if opt.pause}
-                          {@render pauseChip(opt.pause, triedMode === opt.value)}
-                        {/if}
-                      </div>
-                    {:else}
-                      <strong>{opt.label}</strong>
-                      <Icon icon="i-ri-arrow-right-s-line" block size="sm" class="ms-auto" />
+                      {:else}
+                        <strong>{opt.label}</strong>
+                        <Icon icon="i-ri-arrow-right-s-line" block size="sm" class="ms-auto" />
+                      {/if}
+                    </label>
+                    {#if opt.pause && triedMode === opt.value}
+                      {@render pauseLine(`mode-${opt.value}`, opt.pause, '-mt-2 ps-13 pe-4 pb-4')}
                     {/if}
-                  </label>
+                  </div>
                 {/snippet}
               </Selector>
             {:else}
@@ -312,7 +288,7 @@
                   multiple
                   max={2}
                   containerClass="grid grid-cols-2 gap-3 md:grid-cols-3"
-                  choiceClass="text-sm p-2 md:px-4 md:py-3"
+                  choiceClass="flex flex-col text-sm"
                   onChange={toggleModelSelection}
                 >
                   {#snippet option(opt, labelProps, input)}
@@ -320,38 +296,38 @@
                       .map((k) => opt.badges[k])
                       .filter((b) => !!b)}
 
-                    <label {...labelProps}>
-                      {@render input(opt)}
-                      <!-- The logo and badges fade, the name keeps its contrast, and the
-                           chip says it in words with an icon, not by colour alone. -->
-                      <div class="text-dark-grey flex">
-                        <AILogo
-                          logo={opt.lab.logo}
-                          customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
-                          customLogoVersion={opt.lab.logo_version}
-                          alt=""
-                          class={['me-2', { 'cl-dimmed': !!opt.pause }]}
-                        />
-                        <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
-                          >{opt.name}</strong
-                        >
-                      </div>
-                      <ul
-                        class={[
-                          'fr-badges-group mt-3! md:flex! hidden!',
-                          { 'cl-dimmed': !!opt.pause }
-                        ]}
-                      >
-                        {#each modelBadges as badge, i (i)}
-                          <li>
-                            <Badge {...badge} id="{opt.value}-card-badge-{i}" size="xs" noTooltip />
-                          </li>
-                        {/each}
-                      </ul>
-                      {#if opt.pause}
-                        {@render pauseChip(opt.pause, triedModel === opt.value)}
+                    <div class={labelProps.class}>
+                      <label for={labelProps.for} class="p-2 md:px-4 md:py-3 grow">
+                        {@render input(opt)}
+                        <div class="text-dark-grey flex">
+                          <AILogo
+                            logo={opt.lab.logo}
+                            customLogoId={opt.lab.has_custom_logo ? opt.lab.id : undefined}
+                            customLogoVersion={opt.lab.logo_version}
+                            alt=""
+                            class="me-2"
+                          />
+                          <span class="organisation md:inline hidden">{opt.lab.name}/</span><strong
+                            >{opt.name}</strong
+                          >
+                        </div>
+                        <ul class="fr-badges-group mt-3! md:flex! hidden!">
+                          {#each modelBadges as badge, i (i)}
+                            <li>
+                              <Badge
+                                {...badge}
+                                id="{opt.value}-card-badge-{i}"
+                                size="xs"
+                                noTooltip
+                              />
+                            </li>
+                          {/each}
+                        </ul>
+                      </label>
+                      {#if opt.pause && triedModel === opt.value}
+                        {@render pauseLine(opt.value, opt.pause, 'px-2 pb-2 md:px-4 md:pb-3')}
                       {/if}
-                    </label>
+                    </div>
                   {/snippet}
                 </Selector>
               </div>
@@ -390,14 +366,7 @@
 </dialog>
 
 <style>
-  /* Children's classes, so out of this component's scope. */
-  #modal-mode-selection :global(.cl-dimmed) {
-    opacity: 0.5;
-    filter: grayscale(1);
-  }
-
-  #modal-mode-selection :global(.cl-pause-chip) {
-    text-transform: none;
-    font-weight: 500;
+  .cl-pause-line {
+    color: var(--text-mention-grey);
   }
 </style>

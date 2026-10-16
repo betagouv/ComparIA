@@ -999,8 +999,6 @@
                 "change": "Changer de mode",
                 "hint": "Ce mode est en pause pour vous {until}, choisissez-en un autre.",
                 "hintFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui : il revient demain, choisissez-en un autre.",
-                "reason": "Ce mode a besoin de modèles qui sont en pause pour vous. Il revient {at}.",
-                "reasonFull": "Les modèles de ce mode ont reçu beaucoup de messages aujourd'hui. Il revient demain.",
                 "why": "Il a besoin de modèles qui coûtent plus cher à faire tourner. Pour que compar:IA reste gratuit pour tous, chacun peut leur envoyer un nombre limité de messages toutes les deux heures.",
                 "whyFull": "Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Les autres modes restent ouverts."
             },
@@ -1019,14 +1017,10 @@
                 "whyNetwork": "Pour que compar:IA reste gratuit pour tous, chaque réseau peut envoyer un nombre limité de messages toutes les deux heures. Cette limite concerne tout le réseau, pas seulement vous."
             },
             "picker": {
-                "chip": "En pause · {time}",
-                "chipSoon": "En pause",
-                "chipTomorrow": "En pause · demain à {time}",
-                "fullBadge": "Complet · revient demain",
-                "fullReason": "Ce modèle a reçu beaucoup de messages aujourd'hui. Il revient demain.",
+                "full": "Complet aujourd'hui, revient demain",
                 "fullWhy": "Ce modèle a reçu beaucoup de messages aujourd'hui. Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Il revient demain ; tous les autres restent ouverts.",
-                "pausedReason": "Vous avez utilisé votre part de ce modèle. Il revient {at}.",
-                "pausedReasonNetwork": "Votre réseau a utilisé sa part de ce modèle. Il revient {at}.",
+                "paused": "En pause pour vous {until}",
+                "pausedNetwork": "En pause pour votre réseau {until}",
                 "trimmedFullOne": "{models} est complet aujourd'hui, on l'a retiré.",
                 "trimmedFullOneToRandom": "{models} est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire.",
                 "trimmedFullTwo": "{models} sont complets aujourd'hui, on les a retirés.",

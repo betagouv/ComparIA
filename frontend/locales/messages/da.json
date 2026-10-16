@@ -857,8 +857,6 @@
                 "change": "Skift tilstand",
                 "hint": "Denne tilstand er sat på pause for dig {until}, vælg en anden.",
                 "hintFull": "Denne tilstands modeller har fået mange beskeder i dag: den kommer tilbage i morgen, vælg en anden.",
-                "reason": "Denne tilstand kræver modeller, der er sat på pause for dig. Den kommer tilbage {at}.",
-                "reasonFull": "Denne tilstands modeller har fået mange beskeder i dag. Den kommer tilbage i morgen.",
                 "why": "Den kræver modeller, der koster mere at køre. For at holde compar:IA gratis for alle kan hver person sende dem et begrænset antal beskeder hver anden time.",
                 "whyFull": "For at compar:IA kan forblive gratis for alle, svarer hver model på et begrænset antal beskeder om dagen. De andre tilstande er stadig åbne."
             },
@@ -877,14 +875,10 @@
                 "whyNetwork": "For at holde compar:IA gratis for alle kan hvert netværk sende et begrænset antal beskeder hver anden time. Grænsen gælder alle på netværket, ikke kun dig."
             },
             "picker": {
-                "chip": "På pause · {time}",
-                "chipSoon": "På pause",
-                "chipTomorrow": "På pause · i morgen kl. {time}",
-                "fullBadge": "Fuld · tilbage i morgen",
-                "fullReason": "Denne model har fået mange beskeder i dag. Den kommer tilbage i morgen.",
+                "full": "Fuld i dag, tilbage i morgen",
                 "fullWhy": "Denne model har fået mange beskeder i dag. For at compar:IA kan forblive gratis for alle, svarer hver model på et begrænset antal beskeder om dagen. Den kommer tilbage i morgen; alle de andre er stadig åbne.",
-                "pausedReason": "Du har brugt din andel af denne model. Den kommer tilbage {at}.",
-                "pausedReasonNetwork": "Dit netværk har brugt sin andel af denne model. Den kommer tilbage {at}.",
+                "paused": "Sat på pause for dig {until}",
+                "pausedNetwork": "Sat på pause for dit netværk {until}",
                 "trimmedFullOne": "{models} er fuld i dag, så vi har fjernet den.",
                 "trimmedFullOneToRandom": "{models} er fuld i dag, så vi har fjernet den, og sammenligningen bliver tilfældig.",
                 "trimmedFullTwo": "{models} er fulde i dag, så vi har fjernet dem.",

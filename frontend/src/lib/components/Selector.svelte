@@ -163,7 +163,8 @@
     color: var(--text-mention-grey);
   }
 
-  .cl-selector :global(label) {
+  /* The bordered choice: the label itself, or the card around it. */
+  .cl-selector :global(.cg-border) {
     &:has(input) {
       margin: 1px;
     }

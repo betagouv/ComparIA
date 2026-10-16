@@ -999,8 +999,6 @@
                 "change": "Change mode",
                 "hint": "This mode is paused for you {until}, pick another one.",
                 "hintFull": "This mode's models have had a lot of messages today: it comes back tomorrow, pick another one.",
-                "reason": "This mode needs models that are paused for you. It comes back {at}.",
-                "reasonFull": "This mode's models have had a lot of messages today. It comes back tomorrow.",
                 "why": "It needs models that cost more to run. To keep compar:IA free for everyone, each person can send them a limited number of messages every two hours.",
                 "whyFull": "To keep compar:IA free for everyone, each model answers a limited number of messages a day. The other modes stay open."
             },
@@ -1019,14 +1017,10 @@
                 "whyNetwork": "To keep compar:IA free for everyone, each network can send a limited number of messages every two hours. This limit covers everyone on the network, not just you."
             },
             "picker": {
-                "chip": "Paused · {time}",
-                "chipSoon": "Paused",
-                "chipTomorrow": "Paused · tomorrow at {time}",
-                "fullBadge": "Full · back tomorrow",
-                "fullReason": "This model has had a lot of messages today. It comes back tomorrow.",
+                "full": "Full today, back tomorrow",
                 "fullWhy": "This model has had a lot of messages today. To keep compar:IA free for everyone, each model answers a limited number of messages a day. It comes back tomorrow; all the others stay open.",
-                "pausedReason": "You have used your share of this model. It comes back {at}.",
-                "pausedReasonNetwork": "Your network has used its share of this model. It comes back {at}.",
+                "paused": "Paused for you {until}",
+                "pausedNetwork": "Paused for your network {until}",
                 "trimmedFullOne": "{models} is full today, so we took it out.",
                 "trimmedFullOneToRandom": "{models} is full today, so we took it out and the comparison will be random.",
                 "trimmedFullTwo": "{models} are full today, so we took them out.",
