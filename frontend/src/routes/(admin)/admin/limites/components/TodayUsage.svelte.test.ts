@@ -51,7 +51,8 @@ describe('TodayUsage', () => {
     const badge = row('GPT 5.5').querySelector('.fr-badge')!
     expect(badge.querySelector('.i-ri-calendar-close-line')).not.toBeNull()
     expect(badge.className).not.toMatch(/orange|error/)
-    expect(row('GPT 5.5')).toHaveTextContent('25 % de 40')
+    // What the count is: answers, not a fraction.
+    expect(row('GPT 5.5')).toHaveTextContent('25 % de 40 réponses')
     expect(row('Gemma 4')).toHaveTextContent(/0,42\s\$, sans plafond/)
     expect(row('Gemma 4')).toHaveTextContent('Aucune réponse')
     expect(row('Gemma 4')).not.toHaveTextContent('Complet')
@@ -76,6 +77,8 @@ describe('TodayUsage', () => {
 
     expect(view.getByRole('columnheader', { name: /Proposé/ })).toBeInTheDocument()
     expect(row('GPT 5.5')).toHaveTextContent(/30,00\s*\$\s*au plus 21,50\s*\$ en un jour/)
+    // Not "Aucun", which could read as taking the cap away.
+    expect(row('Gemma 4')).toHaveTextContent('Pas de proposition')
     expect(
       view.getByText(
         'Plafond proposé : ce que chaque modèle coûteux n’a pas dépassé sur 95 % des 6 jours entiers lus, plus la moitié.'
