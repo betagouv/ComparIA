@@ -133,3 +133,10 @@ def test_the_admin_form_offers_prices_from_zero(field):
 
 def test_a_price_stored_below_zero_before_the_check_still_reads():
     assert LLMDataBase.model_validate(payload(price_out=-1)).price_out == -1
+
+
+def test_the_cap_help_says_a_model_without_a_price_is_not_counted():
+    schema = LLMDataUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+    assert "no price" in schema["properties"]["daily_usd_cap"]["description"]
+    assert "no effect" in schema["properties"]["daily_usd_cap"]["description"]
