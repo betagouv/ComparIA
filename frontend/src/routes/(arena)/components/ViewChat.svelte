@@ -236,11 +236,11 @@
             onFocus={() => window.scrollTo(0, document.body.scrollHeight)}
             class="mb-0! w-full"
           />
-          {#if comparator.busyHint}
+          {#if comparator.sendHint}
             <!-- Told like the other limits, and focused: the send did not start. -->
             <LimitHint
-              id="busy-hint"
-              text={comparator.busyHint}
+              id="send-hint"
+              text={comparator.sendHint}
               icon="i-ri-time-line"
               focusOnShow
               class="mt-2"

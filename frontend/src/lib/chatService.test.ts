@@ -353,12 +353,44 @@ describe('a message sent with too many at once', () => {
     expect(chat.promptError).toBeUndefined()
     expect(chat.pause).toBeUndefined()
     expect(chat.status).not.toBe('error')
-    expect(chat.busyHint).toBe(
+    expect(chat.sendHint).toBe(
       'Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes.'
     )
 
     arena.refusal = undefined
     await chat.askFirst(args)
-    expect(chat.busyHint).toBeUndefined()
+    expect(chat.sendHint).toBeUndefined()
+  })
+})
+
+describe('a message the server fails on', () => {
+  it('keeps the message and says it did not go, without an input error', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    arena.refusal = Object.assign(new Error('Internal Server Error'), {
+      status: 500,
+      detail: 'Internal Server Error'
+    })
+
+    const chat = getComparison(undefined)
+    const args = {
+      prompt_value: 'Bonjour',
+      mode: 'random' as const,
+      custom_models_selection: [],
+      web_search: false
+    }
+    // Answered, not thrown: nothing is left spinning.
+    const sent = await chat.askFirst(args)
+
+    expect(sent).toBe(false)
+    expect(chat.loading).toBe(false)
+    expect(chat.promptError).toBeUndefined()
+    expect(chat.pickRefusal).toBeUndefined()
+    expect(chat.sendHint).toBe('Votre message n’a pas pu partir. Réessayez dans un instant.')
+    expect(error).toHaveBeenCalled()
+
+    arena.refusal = undefined
+    await chat.askFirst(args)
+    expect(chat.sendHint).toBeUndefined()
+    error.mockRestore()
   })
 })

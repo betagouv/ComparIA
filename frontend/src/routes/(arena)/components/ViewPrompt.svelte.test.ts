@@ -318,7 +318,8 @@ describe('ViewPrompt', () => {
 
   it.each([
     ['the whole allowance spent', { pause: spentPause() }],
-    ['too many messages at once', { busyHint: 'Beaucoup de messages partent de votre réseau.' }],
+    ['too many messages at once', { sendHint: 'Beaucoup de messages partent de votre réseau.' }],
+    ['a failure on the server', { sendHint: 'Votre message n’a pas pu partir.' }],
     ['an error in the prompt', { promptError: 'Réessayez' }]
   ])('does not send again on %s', async (_, answer) => {
     catalog.models = [{ id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges }]
@@ -342,7 +343,7 @@ describe('ViewPrompt', () => {
   it('asks to send again shortly when too many messages went at once', async () => {
     const view = render(ViewPrompt, {
       ...props,
-      busyHint:
+      sendHint:
         'Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes.'
     })
 
@@ -350,7 +351,7 @@ describe('ViewPrompt', () => {
 
     // Told like the other limits, under the controls, with its own icon, and
     // focused since the send did not start.
-    const hint = view.container.querySelector<HTMLElement>('#busy-hint')!
+    const hint = view.container.querySelector<HTMLElement>('#send-hint')!
     expect(hint).toHaveTextContent(/^Beaucoup de messages partent de votre réseau en ce moment\./)
     expect(hint).toHaveFocus()
     expect(hint.querySelector('.i-ri-time-line')).not.toBeNull()

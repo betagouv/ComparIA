@@ -31,7 +31,7 @@
     pause,
     pauseFromSend = false,
     pickRefusal,
-    busyHint,
+    sendHint,
     loading,
     suggestions
   }: {
@@ -43,8 +43,8 @@
     pauseFromSend?: boolean
     /** Set when the comparison asked for models the person may not use yet. */
     pickRefusal?: PickRefusal
-    /** Set when the message just sent came with too many at once. */
-    busyHint?: string
+    /** Set when the message just sent did not start: too many at once, or the server failed. */
+    sendHint?: string
     loading: boolean
     suggestions: SuggestionCategory[]
   } = $props()
@@ -329,10 +329,10 @@
           />
 
           <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
-          {#if busyHint}
+          {#if sendHint}
             <!-- Focused: the send did not start. -->
             <div class="md:col-span-full md:order-none order-3">
-              <LimitHint id="busy-hint" text={busyHint} icon="i-ri-time-line" focusOnShow />
+              <LimitHint id="send-hint" text={sendHint} icon="i-ri-time-line" focusOnShow />
             </div>
           {:else if raced}
             <div class="md:col-span-full md:order-none order-3">

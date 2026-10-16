@@ -260,8 +260,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let promptWarnings = $state<string[]>()
   let pauseFromSend = $state(false)
   let pickRefusal = $state<PickRefusal>()
-  // The network has as many turns answering as it may: send again shortly.
-  let busy = $state(false)
+  // Why a message did not start, when sending it again shortly is the way:
+  // the network has as many turns answering as it may, or the server failed.
+  let sendHint = $state<'too_many_at_once' | 'send_failed'>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
   let warnedRequest: { url: string; body: Record<string, unknown> } | undefined
@@ -296,7 +297,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     promptError = undefined
     promptWarnings = undefined
     pickRefusal = undefined
-    busy = false
+    sendHint = undefined
     pauseFromSend = false
     const previousError = comparison?.error
     if (comparison) {
@@ -371,7 +372,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         // Not an error in what was typed: the same message goes through in
         // a few seconds, so it stays in the box and can be sent again.
         refused = true
-        busy = true
+        sendHint = 'too_many_at_once'
       } else if (err instanceof ValidationError) {
         const detail = err.errors ? err.errors[0].msg : err.message
         promptError = promptCheckMessage(arenaErrorMessage(detail))
@@ -382,8 +383,17 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         if (turn) turn.status = 'error'
       } else if (isArenaErrorKey((err as ApiError).detail)) {
         promptError = arenaErrorMessage((err as ApiError).detail as string)
+      } else if (receivedEvent && comparison) {
+        // Broke off once the turn had started: the turn tells it, with Retry.
+        console.error('[ARENA] The answer stream failed', err)
+        comparison.error = 'stream_failed'
+        if (turn) turn.status = 'error'
       } else {
-        throw err
+        // Failed on the server before anything started (a 500, the server
+        // out of reach): the text stays, and one line says it did not go.
+        console.error('[ARENA] The message could not be sent', err)
+        refused = true
+        sendHint = 'send_failed'
       }
     } finally {
       loading = false
@@ -437,9 +447,9 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     get promptError() {
       return promptError
     },
-    /** Set when a message was refused for coming with too many at once. */
-    get busyHint() {
-      return busy ? arenaErrorMessage('too_many_at_once') : undefined
+    /** Set when a message did not start: too many at once, or the server failed. */
+    get sendHint() {
+      return sendHint && arenaErrorMessage(sendHint)
     },
     set promptError(v: string | undefined) {
       promptError = v

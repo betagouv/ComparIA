@@ -14,7 +14,9 @@ const ARENA_ERRORS = {
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),
   prompt_too_long: () => m['arene.apiErrors.prompt_too_long'](),
   spam_detected: () => m['arene.apiErrors.spam_detected'](),
-  too_many_at_once: () => m['arene.apiErrors.too_many_at_once']()
+  too_many_at_once: () => m['arene.apiErrors.too_many_at_once'](),
+  // Not sent by the backend: a send that failed on the server before it started.
+  send_failed: () => m['arene.apiErrors.send_failed']()
 } as const
 
 const PROMPT_CHECK_MESSAGES = {
