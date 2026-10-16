@@ -361,9 +361,10 @@
   )
   const capNames = $derived(new Map((data.usage ?? []).map((llm) => [llm.llm_id, llm])))
   // Where a value sits on the page, since "Par personne" names two of them.
-  const places: Partial<Record<Name, string>> = Object.fromEntries(
-    groups.flatMap((group) => group.names.map((name) => [name, group.title]))
-  )
+  const places: Record<Name, string> = Object.fromEntries([
+    ...groups.flatMap((group) => group.names.map((name) => [name, group.title])),
+    ...technical.map((name) => [name, m['admin.limits.groups.technical']()])
+  ])
 
   type DsfrModal = { disclose: () => void; conceal: () => void }
   function confirmModal(): DsfrModal | undefined {
@@ -695,7 +696,7 @@
         {@const { text, big } = change(name, byName[name].value, to)}
         <li>
           {m['admin.limits.confirm.line']({
-            name: place ? `${place} · ${labels[name]}` : labels[name],
+            name: `${place} · ${labels[name]}`,
             change: text
           })}
           {#if big}&nbsp;<strong>{m['admin.limits.confirm.big']()}</strong>{/if}

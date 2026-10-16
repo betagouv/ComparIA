@@ -319,7 +319,8 @@ describe('limits page', () => {
       .map((item) => item.textContent?.replace(/\s+/g, ' ').trim())
     expect(items).toEqual([
       'Tous les modèles · Par réseau (école, entreprise) : 60 000 000 → 600 000 caractères (100 fois moins) Gros changement.',
-      'Longueur de réponse réservée : 508 → 600 caractères (1,2 fois plus)',
+      // The technical values are named by their group too.
+      'Réglages techniques · Longueur de réponse réservée : 508 → 600 caractères (1,2 fois plus)',
       'Plafond du jour de GPT 5.5 : Aucun → 3,00 $'
     ])
 
