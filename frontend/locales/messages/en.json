@@ -1023,8 +1023,7 @@
                 "fullTitle": "Conversation full",
                 "last": "Last message possible in this conversation.",
                 "left": "{count} more messages possible in this conversation."
-            },
-            "why": "Why?"
+            }
         },
         "promptWarning": {
             "edit": "Edit my message",

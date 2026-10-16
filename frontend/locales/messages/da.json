@@ -881,8 +881,7 @@
                 "fullTitle": "Samtalen er fuld",
                 "last": "Sidste mulige besked i denne samtale.",
                 "left": "{count} beskeder mere er mulige i denne samtale."
-            },
-            "why": "Hvorfor?"
+            }
         },
         "promptWarning": {
             "edit": "Rediger min besked",

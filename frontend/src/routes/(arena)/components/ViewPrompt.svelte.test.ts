@@ -214,7 +214,7 @@ describe('ViewPrompt', () => {
       expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
       expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
       // Nothing under the prompt: the model's card in the picker says why.
-      expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+      expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
       expect(underPrompt(view)).not.toMatch(UNSAID)
     }
   )
@@ -259,7 +259,7 @@ describe('ViewPrompt', () => {
     // The selector shows what is left; nothing under the prompt, nor for a
     // screen reader.
     expect(view.getByRole('button', { name: /Gemma 4\s*VS\s*Aléatoire/ })).toBeInTheDocument()
-    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
     expect(underPrompt(view)).not.toMatch(UNSAID)
     expect(view.getAllByRole('status')[0].textContent).toBe('')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeInTheDocument()
@@ -297,7 +297,7 @@ describe('ViewPrompt', () => {
 
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
     expect(localStorage.getItem('customModelsSelection')).toBe('[]')
-    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
     expect(underPrompt(view)).not.toMatch(UNSAID)
     ;(arena.limits as Limits).destroy()
   })
@@ -325,7 +325,7 @@ describe('ViewPrompt', () => {
 
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
     expect(localStorage.getItem('customModelsSelection')).toBe('[]')
-    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
     limits.destroy()
   })
 
@@ -358,7 +358,7 @@ describe('ViewPrompt', () => {
       expect(view.getByRole('radio', { name: /Aléatoire/, hidden: true })).toBeChecked()
       // Envoyer works, and nothing under the prompt tells of the mode.
       expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
-      expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+      expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
       expect(view.queryByText(/Changer de mode|choisissez-en un autre/)).toBeNull()
       expect(view.getAllByRole('status')[0].textContent).toBe('')
       // Its card in the mode list is the one place that says so.
@@ -411,7 +411,7 @@ describe('ViewPrompt', () => {
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
 
     // The draw leaves the expensive models out on its own.
-    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
     expect(view.container).not.toHaveTextContent(/en pause|\bcomplet\b/i)
     expect(view.getAllByRole('status')[0].textContent).toBe('')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
