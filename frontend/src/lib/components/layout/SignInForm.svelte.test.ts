@@ -228,6 +228,31 @@ describe('SignInForm consent', () => {
     expect(mocks.conceal).toHaveBeenCalledOnce()
   })
 
+  it('starts with "Fusionner" ticked when opened from a pause card, unticked otherwise', async () => {
+    const { container } = render(SignInModal)
+    const opener = (merge: boolean) => {
+      const button = document.createElement('button')
+      button.setAttribute('aria-controls', 'fr-modal-signin')
+      if (merge) button.setAttribute('data-sign-in-merge', '')
+      document.body.append(button)
+      return button
+    }
+    const merge = () => container.querySelector<HTMLInputElement>('#login-merge')!
+
+    await waitFor(() => expect(merge()).not.toBeNull())
+    expect(merge()).not.toBeChecked()
+
+    await fireEvent.click(opener(true))
+    expect(merge()).toBeChecked()
+
+    // Closed, then opened from the navbar: back to today's default.
+    await fireEvent(container.querySelector('#fr-modal-signin')!, new Event('dsfr.conceal'))
+    expect(merge()).not.toBeChecked()
+    await fireEvent.click(opener(true))
+    await fireEvent.click(opener(false))
+    expect(merge()).not.toBeChecked()
+  })
+
   it('hides the merge option when authentication is required', async () => {
     mocks.authContext.config.access_policy = 'sign_in_required'
     const { container } = render(SignInForm)

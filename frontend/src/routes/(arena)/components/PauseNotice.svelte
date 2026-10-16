@@ -87,11 +87,13 @@
           {m['arene.limits.pause.signIn']({ times: signInFactor })}
         </p>
         <!-- DSFR opens the sign-in modal of the arena layout and gives focus
-             back here on close. Signing in keeps the person on this page. -->
+             back here on close. Signing in keeps the person on this page, and
+             "Fusionner" starts ticked so the conversation stays theirs. -->
         <Button
           variant="tertiary"
           aria-controls="fr-modal-signin"
           data-fr-opened="false"
+          data-sign-in-merge
           class="w-full!"
         >
           <Icon icon="i-ri-login-box-line" block size="sm" class="me-1 -ms-1" />

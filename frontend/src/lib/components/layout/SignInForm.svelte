@@ -31,6 +31,7 @@
     startAtTotp = false,
     hideHeader = false,
     onChallengeExpired,
+    mergeByDefault = false,
     ...props
   }: {
     onSuccess?: () => void
@@ -45,6 +46,9 @@
      *  the host sends the visitor back to its sign-in provider button, since
      *  there is no email step to restart at. */
     onChallengeExpired?: (message: string) => void
+    /** Starts with "Fusionner" ticked: signing in then keeps the conversations
+     *  the visitor is in, as from the pause card inside one. */
+    mergeByDefault?: boolean
   } & SvelteHTMLElements['div'] = $props()
 
   const auth = getAuthContext()
@@ -54,7 +58,9 @@
   let email = $state('')
   let code = $state('')
   let totpCode = $state('')
-  let mergeComparisons = $state(false)
+  // The modal stays mounted between openings: each opening says its default,
+  // which the person can then change.
+  let mergeComparisons = $derived(mergeByDefault)
   let loading = $state(false)
   let error = $state<string>()
 
@@ -128,7 +134,7 @@
   async function signedIn() {
     const data = await api.request<{ user: AuthUser | null }>('/auth/me')
     auth.user = data.user
-    if (mergeComparisons) {
+    if (mergeComparisons && canMergeComparisons) {
       await api.request('/arena/comparison/merge', { method: 'POST' })
     }
     onSuccess?.()

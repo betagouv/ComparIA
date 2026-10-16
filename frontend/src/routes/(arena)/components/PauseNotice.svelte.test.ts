@@ -34,6 +34,8 @@ describe('PauseNotice', () => {
     // DSFR opens the arena's sign-in modal from it.
     const button = view.getByRole('button', { name: 'Se connecter' })
     expect(button).toHaveAttribute('aria-controls', 'fr-modal-signin')
+    // "Fusionner" starts ticked from here: the conversation stays the person's.
+    expect(button).toHaveAttribute('data-sign-in-merge')
   })
 
   it('says the factor in force, in the locale', () => {
