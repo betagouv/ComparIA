@@ -8,25 +8,18 @@ export const TIME_SLOT = '\u2063'
 export interface ResetTime {
   datetime?: string | null
   clock?: ReturnType<typeof clockTime>
-  /** "à 15 h 40", "demain à 1 h 30", or "dans moins de deux heures" when unknown. */
-  at: string
   /** "jusqu'à 15 h 40", "jusqu'à demain à 1 h 30", or "pour moins de deux heures". */
   until: string
 }
 
 export function resetTime(resetsAt: string | null | undefined): ResetTime {
   const clock = resetsAt ? clockTime(new Date(resetsAt), getLocale()) : undefined
-  const at = !clock
-    ? m['arene.limits.time.within']()
-    : m[clock.tomorrow ? 'arene.limits.time.tomorrowAt' : 'arene.limits.time.at']({
-        time: TIME_SLOT
-      })
   const until = !clock
     ? m['arene.limits.time.untilSoon']()
     : m[clock.tomorrow ? 'arene.limits.time.untilTomorrow' : 'arene.limits.time.until']({
         time: TIME_SLOT
       })
-  return { datetime: resetsAt, clock, at, until }
+  return { datetime: resetsAt, clock, until }
 }
 
 /** "Vous pourrez écrire à nouveau à 15 h 40", with TIME_SLOT where the time goes. */

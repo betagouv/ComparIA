@@ -899,12 +899,9 @@
                 "whyNetwork": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) til disse modeller. Grænsen gælder alle på netværket, ikke kun dig. Alle de andre modeller er stadig åbne."
             },
             "time": {
-                "at": "kl. {time}",
-                "tomorrowAt": "i morgen kl. {time}",
                 "until": "til {time}",
                 "untilSoon": "i under to timer",
-                "untilTomorrow": "til i morgen kl. {time}",
-                "within": "inden for to timer"
+                "untilTomorrow": "til i morgen kl. {time}"
             },
             "turns": {
                 "full": "En samtale rummer højst {max} beskeder: se modellerne, og start så en ny.",

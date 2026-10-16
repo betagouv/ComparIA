@@ -1041,12 +1041,9 @@
                 "whyNetwork": "A lot of messages went from your network (school, office, organisation) to these models. This limit covers everyone on the network, not just you. All the other models stay open."
             },
             "time": {
-                "at": "at {time}",
-                "tomorrowAt": "tomorrow at {time}",
                 "until": "until {time}",
                 "untilSoon": "for under two hours",
-                "untilTomorrow": "until tomorrow at {time}",
-                "within": "within two hours"
+                "untilTomorrow": "until tomorrow at {time}"
             },
             "turns": {
                 "full": "A conversation holds up to {max} messages: discover the models, then start a new one.",

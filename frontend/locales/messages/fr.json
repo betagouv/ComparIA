@@ -1041,12 +1041,9 @@
                 "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
             },
             "time": {
-                "at": "à {time}",
-                "tomorrowAt": "demain à {time}",
                 "until": "jusqu'à {time}",
                 "untilSoon": "pour moins de deux heures",
-                "untilTomorrow": "jusqu'à demain à {time}",
-                "within": "dans moins de deux heures"
+                "untilTomorrow": "jusqu'à demain à {time}"
             },
             "turns": {
                 "full": "Une conversation compte au plus {max} messages : découvrez les modèles, puis commencez-en une nouvelle.",
