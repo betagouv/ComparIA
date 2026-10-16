@@ -108,6 +108,11 @@
           {/if}
         </span>
       {/if}
+      {#if used && !used.counted && used.cap_usd !== null}
+        <span class="fr-text--xs mb-0! font-bold min-w-40 block whitespace-normal">
+          {m['admin.limits.today.notCounted']()}
+        </span>
+      {/if}
     {:else if col.id === 'release_date'}
       {toShortDate(llm.release_date, locale)}
     {:else if col.id === 'created_at' || col.id === 'updated_at'}
