@@ -48,6 +48,7 @@ def daily_usage(llms: Iterable[LLMDataEnabled]) -> list[LLMDailyUsage]:
             resets_in=day.ends_in(),
             answers=days[llm.id].answers,
             cached_answers=days[llm.id].cached,
+            counted=limits.is_counted(llm),
         )
         for llm in llms
     ]

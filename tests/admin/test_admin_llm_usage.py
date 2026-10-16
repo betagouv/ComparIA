@@ -18,11 +18,17 @@ import backend.arena.limits as limits  # noqa: E402
 from tests.admin.test_admin_limits import client  # noqa: E402
 from tests.arena.fakes import FakeRedis, fake_redis  # noqa: E402
 
-FULL, BUSY, IDLE = uuid4(), uuid4(), uuid4()
+FULL, BUSY, IDLE, FREE = uuid4(), uuid4(), uuid4(), uuid4()
 
 
-def model(llm_id, name, cap):
-    return SimpleNamespace(id=llm_id, name=name, daily_usd_cap=cap)
+def model(llm_id, name, cap, price_in=1.0, price_out=4.0):
+    return SimpleNamespace(
+        id=llm_id,
+        name=name,
+        daily_usd_cap=cap,
+        price_in=price_in,
+        price_out=price_out,
+    )
 
 
 @pytest.fixture
@@ -36,6 +42,7 @@ def usage(monkeypatch):
                 FULL: model(FULL, "Full", 2.0),
                 BUSY: model(BUSY, "Busy", None),
                 IDLE: model(IDLE, "Idle", 10.0),
+                FREE: model(FREE, "No price", 5.0, price_in=0, price_out=0),
             }
         )
 
@@ -62,7 +69,7 @@ def test_each_model_s_day_against_its_cap(usage):
 
     assert response.status_code == 200
     rows = response.json()
-    assert [row["name"] for row in rows] == ["Full", "Busy", "Idle"]
+    assert [row["name"] for row in rows] == ["Full", "Busy", "Idle", "No price"]
     assert rows[0] == {
         "llm_id": str(FULL),
         "name": "Full",
@@ -75,6 +82,7 @@ def test_each_model_s_day_against_its_cap(usage):
         "resets_in": 15 * 3600,
         "answers": 4,
         "cached_answers": 0,
+        "counted": True,
     }
     assert (rows[1]["full"], rows[1]["cap_usd"], rows[1]["cached_answers"]) == (
         False,
@@ -82,3 +90,11 @@ def test_each_model_s_day_against_its_cap(usage):
         1,
     )
     assert (rows[2]["estimated_usd"], rows[2]["full"]) == (0, False)
+
+
+def test_a_model_without_a_price_is_not_counted(usage):
+    rows = {row["name"]: row for row in client().get("/admin/llms/usage").json()}
+
+    # Its spend stays at 0, so its cap never fills.
+    assert (rows["No price"]["counted"], rows["No price"]["cap_usd"]) == (False, 5.0)
+    assert rows["Idle"]["counted"] is True

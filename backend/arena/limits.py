@@ -255,6 +255,12 @@ def is_expensive(llm: Priced) -> bool:
     return llm.price_out > 0 and llm.price_out >= setting("expensive_price_out")
 
 
+def is_counted(llm: Priced) -> bool:
+    """Whether what the model costs is counted. A model with no price, both
+    at 0, costs nothing here, so a daily cap on it never fills."""
+    return llm.price_in > 0 or llm.price_out > 0
+
+
 @dataclass(frozen=True)
 class Identity:
     """Who a message counts against: the person, and the network they send

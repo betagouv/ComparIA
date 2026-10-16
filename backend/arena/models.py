@@ -225,6 +225,9 @@ class LLMDailyUsage(BaseModel):
     # Answers given today, and how many of them came from the cache.
     answers: int
     cached_answers: int
+    # False for a model with no price: its spend stays at 0, so a cap on it
+    # has no effect.
+    counted: bool
 
 
 DailyCap = Annotated[float, Field(ge=0, le=_USD_MAX, allow_inf_nan=False)]
