@@ -441,6 +441,8 @@
                 "title": "Aujourd’hui",
                 "underCent": "moins de {value}"
             },
+            "tooHigh": "Entrez une valeur d’au plus {value}.",
+            "tooLow": "Entrez une valeur d’au moins {value}.",
             "unit": "{value} caractères",
             "unitCount": "{value} messages",
             "unitFactor": "{value} fois plus",

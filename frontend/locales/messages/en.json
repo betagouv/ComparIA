@@ -950,7 +950,9 @@
             "priceListShow": "Show the {count} models",
             "priceChanges": "This threshold adds {added} and takes out {removed}.",
             "priceChangesAdded": "This threshold adds {count}.",
-            "priceChangesRemoved": "This threshold takes out {count}."
+            "priceChangesRemoved": "This threshold takes out {count}.",
+            "tooLow": "Enter a value of at least {value}.",
+            "tooHigh": "Enter a value of at most {value}."
         }
     },
     "arenaHome": {

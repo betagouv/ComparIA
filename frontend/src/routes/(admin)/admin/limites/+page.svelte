@@ -255,6 +255,33 @@
     })
   }
 
+  // The bounds a field takes, as the API checks them.
+  function lowest(name: Name): number {
+    const kind = unit(name)
+    if (kind === 'usd') return 0.01
+    if (kind === 'count' || kind === 'factor') return 1
+    return name === 'all_per_session' || name === 'all_per_ip' ? 1 : 0
+  }
+
+  function highest(name: Name): number {
+    const kind = unit(name)
+    if (kind === 'chars' || kind === 'count') return INT_MAX
+    return kind === 'factor' ? FACTOR_MAX : USD_MAX
+  }
+
+  // Said under the field as it is typed, not first in the browser's bubble on
+  // "Appliquer": "3 000 000 → -5 caractères" would read as a change to make.
+  function outOfRange(name: Name): string | undefined {
+    const value = draft[name]
+    if (value === '' || value === null || !Number.isFinite(Number(value))) return undefined
+    const format = unit(name) === 'usd' || unit(name) === 'price' ? dollars : numbers
+    if (Number(value) < lowest(name))
+      return m['admin.limits.tooLow']({ value: format.format(lowest(name)) })
+    if (Number(value) > highest(name))
+      return m['admin.limits.tooHigh']({ value: format.format(highest(name)) })
+    return undefined
+  }
+
   // The typed value, spelled out with its unit, under the field.
   function typed(name: Name): string | undefined {
     const value = draft[name]
@@ -465,25 +492,15 @@
       inputmode={kind === 'chars' || kind === 'count' ? 'numeric' : 'decimal'}
       label={newValueLabels[kind]}
       hint={typed(name)}
+      error={outOfRange(name)}
       bind:value={draft[name] as string}
-      min={kind === 'usd'
-        ? 0.01
-        : kind === 'count' ||
-            kind === 'factor' ||
-            name === 'all_per_session' ||
-            name === 'all_per_ip'
-          ? 1
-          : 0}
-      max={kind === 'chars' || kind === 'count'
-        ? INT_MAX
-        : kind === 'factor'
-          ? FACTOR_MAX
-          : USD_MAX}
+      min={lowest(name)}
+      max={highest(name)}
       step={kind === 'chars' || kind === 'count' ? '1' : kind === 'factor' ? '0.1' : '0.01'}
       required
       groupClass="mb-0!"
     />
-    {#if to !== null}
+    {#if to !== null && !outOfRange(name)}
       {@const { text, big } = change(name, limit.value, to)}
       {@const after = kind === 'factor' ? signedInRoom(to) : inMessages(name, to)}
       <p class="fr-text--sm mt-3! mb-0! font-bold">{text}</p>

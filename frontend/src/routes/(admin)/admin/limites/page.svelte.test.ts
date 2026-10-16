@@ -385,6 +385,30 @@ describe('limits page', () => {
     expect(card).not.toHaveTextContent('La calibration ne propose pas de seuil')
   })
 
+  it('says under the field when a value is out of range, with no change line', async () => {
+    const view = page()
+    const field = view.container.querySelector<HTMLInputElement>('#limit-all_per_session')!
+    const card = within(field.closest<HTMLElement>('.cg-border')!)
+
+    await fireEvent.input(field, { target: { value: '-5' } })
+
+    expect(field).toHaveAttribute('aria-invalid', 'true')
+    expect(card.getByText('Entrez une valeur d’au moins 1.')).toBeInTheDocument()
+    expect(card.queryByText(/→/)).toBeNull()
+
+    const price = view.container.querySelector<HTMLInputElement>('#limit-expensive_price_out')!
+    await fireEvent.input(price, { target: { value: '2000000' } })
+    expect(
+      within(price.closest<HTMLElement>('.cg-border')!).getByText(
+        /^Entrez une valeur d’au plus 1\s000\s000,00\s\$\.$/
+      )
+    ).toBeInTheDocument()
+
+    await fireEvent.input(field, { target: { value: '4000' } })
+    expect(field).not.toHaveAttribute('aria-invalid')
+    expect(card.getByText(/5\s000 → 4\s000 caractères/)).toBeInTheDocument()
+  })
+
   it('folds a long list behind its count, and counts what the threshold changes', async () => {
     const many = {
       ...limits,
