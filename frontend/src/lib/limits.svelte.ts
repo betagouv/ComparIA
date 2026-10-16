@@ -9,8 +9,8 @@ import type {
 import { createContext } from 'svelte'
 import { SvelteMap } from 'svelte/reactivity'
 
-/** One icon per state, in the arena and the admin: paused for the person
- * until a time, or full for everyone until midnight. */
+/** One icon per state in the admin: paused for the person until a time, or
+ * full for everyone until midnight. The arena says it in words, on a try. */
 export const PAUSED_ICON = 'i-ri-pause-circle-line'
 export const FULL_ICON = 'i-ri-calendar-close-line'
 
