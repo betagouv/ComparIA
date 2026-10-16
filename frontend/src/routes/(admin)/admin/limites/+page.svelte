@@ -377,8 +377,13 @@
     if (!toDefault.includes(name)) toDefault = [...toDefault, name]
   }
 
+  // A value out of range is no change to make: "Appliquer" waits until every
+  // field holds one it can store.
+  const inError = $derived(data.limits.limits.some((limit) => !!outOfRange(limit.name)))
   // Each limit and each daily cap that "Appliquer" would change.
-  const changeCount = $derived(changed.length + changedCaps.length)
+  const changeCount = $derived(
+    changed.filter((name) => !outOfRange(name)).length + changedCaps.length
+  )
   const applyText = $derived(
     changeCount > 1
       ? m['admin.limits.applyCount']({ count: String(changeCount) })
@@ -403,6 +408,7 @@
   // Nothing is stored before the admin has seen every change in the dialog.
   function apply(event: SubmitEvent) {
     event.preventDefault()
+    if (inError) return
     if (!changeCount) {
       useToast(m['admin.limits.nothingToApply'](), 4000)
       return
@@ -689,7 +695,7 @@
         <Button
           type="submit"
           text={saving ? m['admin.limits.applying']() : applyText}
-          disabled={saving}
+          disabled={saving || inError}
         />
         <Button
           variant="secondary"

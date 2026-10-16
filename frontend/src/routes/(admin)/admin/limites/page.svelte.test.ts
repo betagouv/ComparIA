@@ -425,6 +425,21 @@ describe('limits page', () => {
     expect(card.getByText(/5\s000 → 4\s000 caractères/)).toBeInTheDocument()
   })
 
+  it('counts only valid changes, and holds "Appliquer" while a field is in error', async () => {
+    const view = page()
+    const form = within(view.container.querySelector('form')!)
+    const field = view.container.querySelector<HTMLInputElement>('#limit-all_per_session')!
+    const price = view.container.querySelector<HTMLInputElement>('#limit-expensive_price_out')!
+
+    await fireEvent.input(field, { target: { value: '-5' } })
+    await fireEvent.input(price, { target: { value: '12' } })
+
+    expect(form.getByRole('button', { name: 'Appliquer 1 changement' })).toBeDisabled()
+
+    await fireEvent.input(field, { target: { value: '4000' } })
+    expect(form.getByRole('button', { name: 'Appliquer 2 changements' })).toBeEnabled()
+  })
+
   it('folds a long list behind its count, and counts what the threshold changes', async () => {
     const many = {
       ...limits,
