@@ -114,11 +114,10 @@ Who = Annotated[Identity, Depends(who)]
 
 
 def limit_reached(error: Refused, request: Request) -> LimitReachedError:
-    """A limit refusal as the 429 the arena reads. A spent whole allowance is
-    logged as an error, as the rate limit always was, a refused pick as a
-    warning."""
-    log = logger.error if error.key == "allowance_spent" else logger.warning
-    log(f"Refused a message: {error}", extra={"request": request})
+    """A limit refusal as the 429 the arena reads. Logged as a warning: a
+    person who reaches their limit is the limit working, not a fault, and an
+    error would make each of them a Sentry event."""
+    logger.warning(f"Refused a message: {error}", extra={"request": request})
     return LimitReachedError(error.key, error.limit)
 
 

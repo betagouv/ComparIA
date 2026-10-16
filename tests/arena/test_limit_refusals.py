@@ -8,6 +8,7 @@ so the arena could only say "try again in a few hours".
 
 import os
 from datetime import datetime, timedelta, timezone
+from unittest.mock import Mock
 
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
@@ -17,6 +18,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.arena.limits as limits  # noqa: E402
+import backend.arena.router as router  # noqa: E402
 import backend.arena.turn_limits as turn_limits  # noqa: E402
 import backend.main as main  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
@@ -119,3 +121,18 @@ def test_no_retry_after_when_the_reset_is_unknown():
 
 def test_the_app_answers_a_limit_with_its_handler():
     assert main.app.exception_handlers[LimitReachedError] is limit_reached_handler
+
+
+@pytest.mark.parametrize("pool", ["all", "expensive"])
+def test_a_refused_send_is_logged_as_a_warning(monkeypatch, pool):
+    """Someone reaching their limit is the limit working: an error line, and a
+    Sentry event, for each of them would bury the real ones."""
+    log = Mock()
+    monkeypatch.setattr(router, "logger", log)
+
+    router.limit_reached(
+        turn_limits.limit_refusal([spent(pool, "session", 600)]), Mock()
+    )
+
+    log.warning.assert_called_once()
+    log.error.assert_not_called()
