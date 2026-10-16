@@ -1593,7 +1593,7 @@
                 "label": "Oprettet"
             },
             "daily_usd_cap": {
-                "help": "Højst hvad denne model må koste om dagen for alle brugere, anslået. Når loftet er nået, kommer modellen ikke med i nye lodtrækninger før midnat, Paris-tid. Tom: intet loft.",
+                "help": "Højst hvad denne model må koste om dagen for alle brugere, anslået. Når loftet er nået, kommer modellen ikke med i nye lodtrækninger før midnat, Paris-tid. En model uden pris (input og output på 0) tælles ikke med, så et loft på den har ingen virkning. Tom: intet loft.",
                 "label": "Dagligt loft (USD)"
             },
             "endpoint_id": {
