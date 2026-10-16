@@ -853,6 +853,9 @@
             "too_many_at_once": "Mange beskeder sendes fra dit netværk lige nu. Send din igen om et par sekunder."
         },
         "limits": {
+            "mode": {
+                "justPaused": "Denne tilstand er lige blevet sat på pause, prøv igen."
+            },
             "pause": {
                 "models": "Se modellerne",
                 "network": "Der er sendt mange beskeder fra dit netværk (skole, kontor, organisation) de seneste to timer. Indtil da kan du se ranglisten eller udforske modellerne.",
@@ -869,6 +872,7 @@
             },
             "picker": {
                 "full": "Fuld i dag",
+                "justPaused": "Denne model er lige blevet sat på pause, prøv igen.",
                 "paused": "Sat på pause {until}"
             },
             "time": {

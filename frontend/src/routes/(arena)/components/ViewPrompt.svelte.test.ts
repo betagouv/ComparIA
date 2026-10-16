@@ -1,6 +1,7 @@
 import { api } from '$lib/fastapi-client'
 import type { ArenaLimits } from '$lib/generated/backend'
-import { createLimits, type Limits } from '$lib/limits.svelte'
+import type { PickRefusal } from '$lib/chatService.svelte'
+import { createLimits, type Limits, type Spent } from '$lib/limits.svelte'
 import { fireEvent, render } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ViewPrompt from './ViewPrompt.svelte'
@@ -38,6 +39,14 @@ vi.mock('$lib/chatService.svelte', () => ({
       description: 'Deux modèles choisis au hasard'
     },
     {
+      value: 'custom',
+      icon: 'i-ri-search-line',
+      title: 'Sélection manuelle',
+      label: 'Sélection manuelle',
+      alt_label: 'Sélection manuelle',
+      description: 'Choisissez les modèles'
+    },
+    {
       value: 'small-models',
       icon: 'i-ri-leaf-line',
       title: 'Frugal',
@@ -66,6 +75,27 @@ function expensiveSpent(...ids: string[]): ArenaLimits {
     signed_in_factor: 3,
     paused_llms: ids.map((id) => ({ id, until: null, reason: 'allowance' as const }))
   }
+}
+
+// A send refused on a model paused or filled since the page read the limits.
+function refusal(
+  detail: PickRefusal['detail'] = 'expensive_allowance_spent',
+  scope: 'session' | null = 'session'
+): PickRefusal {
+  return {
+    detail,
+    limit: {
+      scope,
+      resets_at: new Date(Date.now() + 3600_000).toISOString(),
+      resets_in: 3600,
+      llm_ids: ['expensive-id']
+    }
+  }
+}
+
+function spentPause(): Spent {
+  const liftsAt = Date.now() + 3600_000
+  return { scope: 'session', resets_at: new Date(liftsAt).toISOString(), resets_in: 3600, liftsAt }
 }
 
 // What the page says outside the mode and model lists, where greyed-out
@@ -179,45 +209,135 @@ describe('ViewPrompt', () => {
     ['expensive_allowance_spent' as const, 'session' as const],
     ['model_full_today' as const, null]
   ])(
-    'takes a refused pick out of the selection, keeping the prompt (%s)',
+    'sends again, once, without a model refused as it was just paused (%s)',
     async (detail, scope) => {
-      const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
       catalog.models = [
-        { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
-        { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
+        { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+        { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
       ]
       localStorage.setItem('mode', 'custom')
       localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
-      const pickRefusal = {
-        detail,
-        limit: {
-          scope,
-          resets_at: new Date(Date.now() + 3600_000).toISOString(),
-          resets_in: 3600,
-          llm_ids: ['expensive-id']
-        }
-      }
+      const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
       const onPrompt = vi.fn(async () => {
-        await view.rerender({ ...props, onPrompt, pickRefusal })
+        // Refused the first time only.
+        const refused = onPrompt.mock.calls.length === 1 ? refusal(detail, scope) : undefined
+        await view.rerender({ ...props, onPrompt, pickRefusal: refused })
       })
       const view = render(ViewPrompt, { ...props, onPrompt })
 
       await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
       await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
 
-      await vi.waitFor(() =>
-        expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
+      await vi.waitFor(() => expect(onPrompt).toHaveBeenCalledTimes(2))
+      // The limits read again, the same message, the refused model taken out.
+      expect(read).toHaveBeenCalledWith('/arena/limits', expect.anything())
+      expect(onPrompt).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          prompt_value: 'Ma question',
+          mode: 'custom',
+          custom_models_selection: ['cheap-id']
+        })
       )
-      // Two models were picked, so one is left and the mode stays custom.
-      expect(localStorage.getItem('mode')).toBe('custom')
-      expect(view.getByRole('textbox')).toHaveValue('Ma question')
-      expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
-      expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
-      // Nothing under the prompt: the model's card in the picker says why.
+      expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
       expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
       expect(underPrompt(view)).not.toMatch(UNSAID)
+      read.mockRestore()
     }
   )
+
+  it('sends a saved mode emptied since as random, once', async () => {
+    catalog.models = [
+      { id: 'big-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'small-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
+      { id: 'other-small-id', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
+    ]
+    localStorage.setItem('mode', 'big-vs-small')
+    const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('big-id'))
+    const onPrompt = vi.fn(async () => {
+      const refused =
+        onPrompt.mock.calls.length === 1
+          ? { ...refusal(), limit: { ...refusal().limit, llm_ids: undefined } }
+          : undefined
+      await view.rerender({ ...props, onPrompt, pickRefusal: refused })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    await vi.waitFor(() => expect(onPrompt).toHaveBeenCalledTimes(2))
+    expect(onPrompt.mock.calls[0]).toEqual([expect.objectContaining({ mode: 'big-vs-small' })])
+    expect(onPrompt).toHaveBeenLastCalledWith(expect.objectContaining({ mode: 'random' }))
+    expect(view.container.querySelector('.cl-limit-hint')).toBeNull()
+    read.mockRestore()
+  })
+
+  it('says so in one line, and stops, when the send again is refused too', async () => {
+    catalog.models = [
+      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'other-id', name: 'Kimi K3', status: 'enabled', lab, badges, params: 1000 },
+      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
+    ]
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'other-id']))
+    // The read still says nothing is paused: only the refusals tell.
+    const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent())
+    const onPrompt = vi.fn(async () => {
+      const ids = onPrompt.mock.calls.length === 1 ? ['expensive-id'] : ['other-id']
+      const refused = { ...refusal(), limit: { ...refusal().limit, llm_ids: ids } }
+      await view.rerender({ ...props, onPrompt, pickRefusal: refused })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    const line = await vi.waitFor(() => {
+      const line = view.container.querySelector<HTMLElement>('#raced-hint')
+      expect(line).not.toBeNull()
+      return line!
+    })
+    expect(line).toHaveTextContent(/^Ce modèle vient d'être mis en pause, réessayez\.$/)
+    expect(line).toHaveFocus()
+    expect(line.querySelector('.i-ri-time-line')).not.toBeNull()
+    // Twice, never more.
+    expect(onPrompt).toHaveBeenCalledTimes(2)
+    expect(onPrompt).toHaveBeenLastCalledWith(
+      expect.objectContaining({ custom_models_selection: ['other-id'] })
+    )
+    // Both refused models out: the next Envoyer goes random.
+    expect(localStorage.getItem('mode')).toBe('random')
+    expect(view.getByRole('textbox')).toHaveValue('Ma question')
+    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+
+    // Gone once the person picks for themselves.
+    await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
+    expect(view.container.querySelector('#raced-hint')).toBeNull()
+    read.mockRestore()
+  })
+
+  it.each([
+    ['the whole allowance spent', { pause: spentPause() }],
+    ['too many messages at once', { busyHint: 'Beaucoup de messages partent de votre réseau.' }],
+    ['an error in the prompt', { promptError: 'Réessayez' }]
+  ])('does not send again on %s', async (_, answer) => {
+    catalog.models = [{ id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges }]
+    const read = vi.spyOn(api, 'request')
+    const onPrompt = vi.fn(async () => {
+      await view.rerender({ ...props, onPrompt, ...answer })
+    })
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+    await vi.waitFor(() => expect(onPrompt).toHaveBeenCalledOnce())
+    await new Promise((resolve) => setTimeout(resolve, 50))
+
+    expect(onPrompt).toHaveBeenCalledOnce()
+    expect(read).not.toHaveBeenCalled()
+    expect(view.container.querySelector('#raced-hint')).toBeNull()
+    read.mockRestore()
+  })
 
   it('asks to send again shortly when too many messages went at once', async () => {
     const view = render(ViewPrompt, {
@@ -369,31 +489,26 @@ describe('ViewPrompt', () => {
     }
   )
 
-  it('goes random when the refused pick empties the selection, so sending again works', async () => {
-    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
-    catalog.models = [{ id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab }]
+  it('sends again as random when the refused pick empties the selection', async () => {
+    catalog.models = [{ id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges }]
     localStorage.setItem('mode', 'custom')
     localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id']))
-    const pickRefusal = {
-      detail: 'expensive_allowance_spent' as const,
-      limit: {
-        scope: 'session' as const,
-        resets_at: new Date(Date.now() + 3600_000).toISOString(),
-        resets_in: 3600,
-        llm_ids: ['expensive-id']
-      }
-    }
+    const read = vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
     const onPrompt = vi.fn(async () => {
-      await view.rerender({ ...props, onPrompt, pickRefusal })
+      const refused = onPrompt.mock.calls.length === 1 ? refusal() : undefined
+      await view.rerender({ ...props, onPrompt, pickRefusal: refused })
     })
     const view = render(ViewPrompt, { ...props, onPrompt })
 
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
     await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
 
-    await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
+    await vi.waitFor(() => expect(onPrompt).toHaveBeenCalledTimes(2))
+    expect(onPrompt).toHaveBeenLastCalledWith(
+      expect.objectContaining({ mode: 'random', custom_models_selection: [] })
+    )
     expect(underPrompt(view)).not.toMatch(UNSAID)
-    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+    read.mockRestore()
   })
 
   it('says nothing in random mode once the expensive allowance is spent', async () => {

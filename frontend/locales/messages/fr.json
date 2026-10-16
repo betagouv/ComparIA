@@ -995,6 +995,9 @@
             "too_many_at_once": "Beaucoup de messages partent de votre réseau en ce moment. Renvoyez le vôtre dans quelques secondes."
         },
         "limits": {
+            "mode": {
+                "justPaused": "Ce mode vient d'être mis en pause, réessayez."
+            },
             "pause": {
                 "models": "Découvrir les modèles",
                 "network": "Beaucoup de messages sont partis de votre réseau (école, administration, entreprise) ces deux dernières heures. En attendant, vous pouvez voir le classement ou découvrir les modèles.",
@@ -1011,6 +1014,7 @@
             },
             "picker": {
                 "full": "Complet aujourd'hui",
+                "justPaused": "Ce modèle vient d'être mis en pause, réessayez.",
                 "paused": "En pause {until}"
             },
             "time": {

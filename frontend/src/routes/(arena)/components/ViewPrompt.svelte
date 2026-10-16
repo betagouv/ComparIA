@@ -65,6 +65,10 @@
   })
   let webSearch = $state(false)
   let submitting = $state(false)
+  // Between a refused send and the one sent again: the pending view stays.
+  let resending = $state(false)
+  // Set when the send was refused twice on models just paused or filled.
+  let raced = $state<'model' | 'mode'>()
   const modePauses = $derived(pausedModes(models, limits.paused))
   // Random too has nothing to draw: only when nearly every model is paused.
   const stuck = $derived(mode.value !== 'custom' && modePauses.has(mode.value))
@@ -138,23 +142,56 @@
     }
   }
 
+  async function send(): Promise<PickRefusal | undefined> {
+    await onPrompt({
+      mode: mode.value,
+      custom_models_selection: modelsSelection.value,
+      prompt_value: prompt,
+      web_search: webSearch
+    })
+    return pickRefusal
+  }
+
+  /** Takes out what the refusal and the limits read since say cannot be drawn. */
+  function dropUnavailable(refusal: PickRefusal) {
+    takeOut([...(refusal.limit.llm_ids ?? []), ...limits.paused.keys()])
+    if (mode.value !== 'custom' && modePauses.has(mode.value)) mode.value = 'random'
+  }
+
   async function onPromptSubmit() {
     if (loading || submitting) return
 
     submitting = true
+    raced = undefined
     try {
-      await onPrompt({
-        mode: mode.value,
-        custom_models_selection: modelsSelection.value,
-        prompt_value: prompt,
-        web_search: webSearch
-      })
-      // Take the refused models out, so sending again starts a comparison.
-      const refused = pickRefusal?.limit.llm_ids
-      if (refused?.length) takeOut(refused)
+      const refusal = await send()
+      if (!refusal) return
+      // A model paused or filled between the limits read and the send: read
+      // them again, take it out, and send once more, so the person sees the
+      // comparison start. Only a second refusal is told.
+      resending = true
+      await limits.refresh()
+      dropUnavailable(refusal)
+      const again = await send()
+      if (again) {
+        dropUnavailable(again)
+        raced = again.limit.llm_ids?.length ? 'model' : 'mode'
+      }
     } finally {
+      resending = false
       submitting = false
     }
+  }
+
+  // Changed by the person: the line about a refused send no longer fits.
+  function setMode(value: APIModeAndPromptData['mode']) {
+    mode.value = value
+    raced = undefined
+  }
+
+  function setModelsSelection(value: string[]) {
+    modelsSelection.value = value
+    raced = undefined
   }
 
   function handlePromptSelected(
@@ -197,9 +234,9 @@
 </script>
 
 <!-- Present before loading starts so assistive technology announces the state change. -->
-<p role="status" class="sr-only">{loading ? m['chatbot.loading']() : ''}</p>
+<p role="status" class="sr-only">{loading || resending ? m['chatbot.loading']() : ''}</p>
 
-{#if loading}
+{#if loading || resending}
   <div id="prompt-area" class="fr-container px-4 py-2 md:px-6 md:py-5">
     <div class="gap-2 md:gap-5 flex flex-col">
       <div class="md:flex">
@@ -259,8 +296,8 @@
 
           <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
             <ModelSelector
-              bind:mode={mode.value}
-              bind:modelsSelection={modelsSelection.value}
+              bind:mode={() => mode.value, setMode}
+              bind:modelsSelection={() => modelsSelection.value, setModelsSelection}
               {models}
               disabled={loading}
               paused={limits.paused}
@@ -296,6 +333,19 @@
             <!-- Focused: the send did not start. -->
             <div class="md:col-span-full md:order-none order-3">
               <LimitHint id="busy-hint" text={busyHint} icon="i-ri-time-line" focusOnShow />
+            </div>
+          {:else if raced}
+            <div class="md:col-span-full md:order-none order-3">
+              <LimitHint
+                id="raced-hint"
+                text={m[
+                  raced === 'model'
+                    ? 'arene.limits.picker.justPaused'
+                    : 'arene.limits.mode.justPaused'
+                ]()}
+                icon="i-ri-time-line"
+                focusOnShow
+              />
             </div>
           {/if}
         </div>
