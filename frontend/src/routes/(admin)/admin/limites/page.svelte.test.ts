@@ -48,7 +48,8 @@ const usage = [
     full: false,
     resets_in: 3600,
     answers: 4,
-    cached_answers: 0
+    cached_answers: 0,
+    counted: true
   }
 ]
 

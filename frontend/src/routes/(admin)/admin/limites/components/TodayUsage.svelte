@@ -100,6 +100,11 @@
                 spent: spent(llm.estimated_usd),
                 cap: dollars.format(llm.cap_usd)
               })}
+          {#if !llm.counted && (llm.cap_usd !== null || proposed.has(llm.llm_id))}
+            <span class="fr-text--xs mb-0! font-bold min-w-40 block whitespace-normal">
+              {m['admin.limits.today.notCounted']()}
+            </span>
+          {/if}
         {:else if col.id === 'cache'}
           {@const share = percents.format(llm.cached_answers / llm.answers)}
           {#if llm.answers > 1}

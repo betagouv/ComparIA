@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
 import TodayUsage from './TodayUsage.svelte'
 
-const day = { input_chars: 0, output_chars: 0, resets_in: 3600 }
+const day = { input_chars: 0, output_chars: 0, resets_in: 3600, counted: true }
 const usage = [
   {
     ...day,
@@ -61,6 +61,27 @@ describe('TodayUsage', () => {
     expect(view.queryByRole('link', { name: 'Llama 4 Scout' })).toBeNull()
     expect(
       view.getByText('1 autre modèle activé n’a rien coûté aujourd’hui et n’a pas de plafond.')
+    ).toBeInTheDocument()
+  })
+
+  it('says a cap on a model without a price has no effect', () => {
+    const free = {
+      ...usage[1],
+      llm_id: 'free',
+      name: 'Apertus 70B',
+      estimated_usd: 0,
+      cap_usd: 5,
+      counted: false
+    }
+    const view = render(TodayUsage, { usage: [usage[0], free] })
+
+    expect(row('Apertus 70B')).toHaveTextContent(
+      /0,00\s\$ sur 5,00\s\$\s*Sans prix, ce modèle n’est pas compté : son plafond n’a aucun effet\./
+    )
+    expect(row('GPT 5.5')).not.toHaveTextContent(/Sans prix/)
+    // Said once for every model, before anyone sets a cap.
+    expect(
+      view.getByText(/sur un modèle sans prix, qui n’est pas compté, il n’a aucun effet\.$/)
     ).toBeInTheDocument()
   })
 
