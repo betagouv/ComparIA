@@ -1,7 +1,6 @@
 <script lang="ts">
   import LegalDocument from '$components/LegalDocument.svelte'
   import MatomoOptOut from '$components/MatomoOptOut.svelte'
-  import PrivacyPolicyFallback from '$components/PrivacyPolicyFallback.svelte'
   import { SeoHead } from '$components/layout'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
@@ -28,7 +27,7 @@
         <MatomoOptOut url={data.matomoUrl} />
       {/if}
     {:else}
-      <PrivacyPolicyFallback matomoUrl={data.matomoUrl} />
+      <p class="fr-alert fr-alert--error" role="alert">{m['general.document.unavailable']()}</p>
     {/if}
   </div>
 </div>
