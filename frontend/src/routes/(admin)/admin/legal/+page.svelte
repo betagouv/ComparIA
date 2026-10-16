@@ -19,7 +19,7 @@
           <h3 class="fr-h5 fr-mb-1v">
             <a
               class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/conditions-participation')}
+              href={resolve('/admin/legal/participation')}
             >
               {m['admin.legal.hub.journeyLink']()}
             </a>
@@ -38,7 +38,7 @@
           <h3 class="fr-h5 fr-mb-1v">
             <a
               class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/conditions')}
+              href={resolve('/admin/legal/terms')}
             >
               {m['admin.legal.terms.title']()}
             </a>
@@ -49,7 +49,7 @@
           <h3 class="fr-h5 fr-mb-1v">
             <a
               class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/confidentialite')}
+              href={resolve('/admin/legal/privacy')}
             >
               {m['admin.legal.privacy.title']()}
             </a>
