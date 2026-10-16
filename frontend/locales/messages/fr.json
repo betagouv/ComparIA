@@ -1011,26 +1011,7 @@
             },
             "picker": {
                 "full": "Complet aujourd'hui",
-                "fullWhy": "Ce modèle a reçu beaucoup de messages aujourd'hui. Pour que compar:IA reste gratuit pour tous, chaque modèle répond à un nombre limité de messages par jour. Il revient demain ; tous les autres restent ouverts.",
-                "paused": "En pause {until}",
-                "trimmedFullOne": "{models} est complet aujourd'hui, on l'a retiré.",
-                "trimmedFullOneToRandom": "{models} est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire.",
-                "trimmedFullTwo": "{models} sont complets aujourd'hui, on les a retirés.",
-                "trimmedFullTwoToRandom": "{models} sont complets aujourd'hui, on les a retirés, la comparaison sera aléatoire.",
-                "trimmedMixed": "On a retiré {full} (complet aujourd'hui) et {paused} (en pause pour vous {until}).",
-                "trimmedMixedNetwork": "On a retiré {full} (complet aujourd'hui) et {paused} (en pause pour votre réseau {until}).",
-                "trimmedMixedToRandom": "On a retiré {full} (complet aujourd'hui) et {paused} (en pause pour vous {until}) : la comparaison sera aléatoire.",
-                "trimmedMixedToRandomNetwork": "On a retiré {full} (complet aujourd'hui) et {paused} (en pause pour votre réseau {until}) : la comparaison sera aléatoire.",
-                "trimmedOne": "{models} est en pause pour vous {until}, on l'a retiré.",
-                "trimmedOneNetwork": "{models} est en pause pour votre réseau {until}, on l'a retiré.",
-                "trimmedOneToRandom": "{models} est en pause pour vous {until}, on l'a retiré, la comparaison sera aléatoire.",
-                "trimmedOneToRandomNetwork": "{models} est en pause pour votre réseau {until}, on l'a retiré, la comparaison sera aléatoire.",
-                "trimmedTwo": "{models} sont en pause pour vous {until}, on les a retirés.",
-                "trimmedTwoNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés.",
-                "trimmedTwoToRandom": "{models} sont en pause pour vous {until}, on les a retirés, la comparaison sera aléatoire.",
-                "trimmedTwoToRandomNetwork": "{models} sont en pause pour votre réseau {until}, on les a retirés, la comparaison sera aléatoire.",
-                "why": "Pour que compar:IA reste gratuit pour tous, chacun peut envoyer un nombre limité de messages à ces modèles toutes les deux heures. Tous les autres restent ouverts.",
-                "whyNetwork": "Beaucoup de messages sont partis de votre réseau (établissement, administration, entreprise) vers ces modèles. Cette limite concerne tout le réseau, pas seulement vous. Tous les autres modèles restent ouverts."
+                "paused": "En pause {until}"
             },
             "time": {
                 "until": "jusqu'à {time}",

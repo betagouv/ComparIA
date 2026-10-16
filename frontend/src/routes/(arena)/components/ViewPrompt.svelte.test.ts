@@ -68,6 +68,15 @@ function expensiveSpent(...ids: string[]): ArenaLimits {
   }
 }
 
+// What the page says outside the mode and model lists, where greyed-out
+// cards carry their own notes.
+const UNSAID = /on l'a retiré|en pause|\bcomplet\b|comparaison sera aléatoire|Pourquoi/i
+function underPrompt(view: { container: HTMLElement }): string {
+  const page = view.container.cloneNode(true) as HTMLElement
+  page.querySelectorAll('dialog').forEach((dialog) => dialog.remove())
+  return page.textContent ?? ''
+}
+
 const props = {
   loading: false,
   onPrompt: vi.fn(),
@@ -166,85 +175,49 @@ describe('ViewPrompt', () => {
     ).toBeInTheDocument()
   })
 
-  it('takes a refused pick out of the selection and says why, keeping the prompt', async () => {
-    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
-    catalog.models = [
-      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
-      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
-    ]
-    localStorage.setItem('mode', 'custom')
-    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
-    const pickRefusal = {
-      detail: 'expensive_allowance_spent' as const,
-      limit: {
-        scope: 'session' as const,
-        resets_at: new Date(Date.now() + 3600_000).toISOString(),
-        resets_in: 3600,
-        llm_ids: ['expensive-id']
+  it.each([
+    ['expensive_allowance_spent' as const, 'session' as const],
+    ['model_full_today' as const, null]
+  ])(
+    'takes a refused pick out of the selection, keeping the prompt (%s)',
+    async (detail, scope) => {
+      const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
+      catalog.models = [
+        { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
+        { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
+      ]
+      localStorage.setItem('mode', 'custom')
+      localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
+      const pickRefusal = {
+        detail,
+        limit: {
+          scope,
+          resets_at: new Date(Date.now() + 3600_000).toISOString(),
+          resets_in: 3600,
+          llm_ids: ['expensive-id']
+        }
       }
+      const onPrompt = vi.fn(async () => {
+        await view.rerender({ ...props, onPrompt, pickRefusal })
+      })
+      const view = render(ViewPrompt, { ...props, onPrompt })
+
+      await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
+      await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+      await vi.waitFor(() =>
+        expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
+      )
+      // Two models were picked, so one is left and the mode stays custom.
+      expect(localStorage.getItem('mode')).toBe('custom')
+      expect(view.getByRole('textbox')).toHaveValue('Ma question')
+      expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
+      expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
+      // Nothing under the prompt: the model's card in the picker says why.
+      expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+      expect(underPrompt(view)).not.toMatch(UNSAID)
     }
-    const onPrompt = vi.fn(async () => {
-      await view.rerender({ ...props, onPrompt, pickRefusal })
-    })
-    const view = render(ViewPrompt, { ...props, onPrompt })
-
-    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
-    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
-
-    // One line, focused: nothing started, and this says why.
-    const title = view.container.querySelector<HTMLElement>('#pick-paused-notice')!
-    expect(title).toHaveFocus()
-    expect(title).toHaveTextContent(
-      /^GPT-5 est en pause pour vous jusqu'à .*, on l'a retiré\. Pourquoi \?$/
-    )
-    expect(title.querySelector('time')).toHaveAttribute('datetime', pickRefusal.limit.resets_at)
-    expect(view.queryByRole('heading', { level: 3 })).toBeNull()
-    await vi.waitFor(() =>
-      expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
-    )
-    expect(view.getByRole('textbox')).toHaveValue('Ma question')
-    expect(view.getByRole('textbox')).not.toHaveAttribute('aria-invalid', 'true')
-    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
-    // Two models were picked, so one is left and the mode stays custom.
-    expect(view.queryByText(/aléatoire/)).toBeNull()
-    // The notice sits after the send button, as it shows on screen.
-    const send = view.getByRole('button', { name: 'Envoyer' })
-    expect(send.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-  })
-
-  it('says a refused pick is full for the day, not paused for the person', async () => {
-    const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
-    catalog.models = [
-      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab },
-      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab }
-    ]
-    localStorage.setItem('mode', 'custom')
-    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
-    const pickRefusal = {
-      detail: 'model_full_today' as const,
-      limit: {
-        scope: null,
-        resets_at: new Date(Date.now() + 3600_000).toISOString(),
-        resets_in: 3600,
-        llm_ids: ['expensive-id']
-      }
-    }
-    const onPrompt = vi.fn(async () => {
-      await view.rerender({ ...props, onPrompt, pickRefusal })
-    })
-    const view = render(ViewPrompt, { ...props, onPrompt })
-
-    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
-    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
-
-    const title = view.container.querySelector<HTMLElement>('#pick-paused-notice')!
-    expect(title).toHaveFocus()
-    expect(title).toHaveTextContent(/^GPT-5 est complet aujourd'hui, on l'a retiré\. Pourquoi \?$/)
-    expect(title).not.toHaveTextContent(/pour vous/)
-    await vi.waitFor(() =>
-      expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
-    )
-  })
+  )
 
   it('asks to send again shortly when too many messages went at once', async () => {
     const view = render(ViewPrompt, {
@@ -268,10 +241,7 @@ describe('ViewPrompt', () => {
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
   })
 
-  it('takes a saved pick paused since out of the selection before anyone sends', async () => {
-    // Midday, so the hour back never falls after midnight.
-    vi.useFakeTimers({ toFake: ['Date'] })
-    vi.setSystemTime(new Date(2026, 9, 14, 12, 0))
+  it('takes a saved pick paused since out of the selection, unsaid, before anyone sends', async () => {
     catalog.models = [
       { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
       { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
@@ -282,31 +252,18 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
 
-    await view.findAllByText(/GPT-5 est en pause/)
-    const notice = view.container.querySelector('#pick-paused-notice')!
-    expect(notice).toHaveTextContent(
-      /^GPT-5 est en pause pour vous jusqu'à 13\sh\s00, on l'a retiré\. Pourquoi \?$/
-    )
-    // Not focused: nobody sent anything.
-    expect(notice).not.toHaveFocus()
-    // An hour on from midday, the countdown the server sent.
-    expect(notice.querySelector('time')).toHaveAttribute(
-      'datetime',
-      new Date(2026, 9, 14, 13, 0).toISOString()
-    )
     await vi.waitFor(() =>
       expect(localStorage.getItem('customModelsSelection')).toBe('["cheap-id"]')
     )
     expect(localStorage.getItem('mode')).toBe('custom')
-    // Told to a screen reader too: it may land after the page showed.
-    expect(view.getAllByRole('status')[0]).toHaveTextContent(/GPT-5 est en pause pour vous/)
+    // The selector shows what is left; nothing under the prompt, nor for a
+    // screen reader.
+    expect(view.getByRole('button', { name: /Gemma 4\s*VS\s*Aléatoire/ })).toBeInTheDocument()
+    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(underPrompt(view)).not.toMatch(UNSAID)
+    expect(view.getAllByRole('status')[0].textContent).toBe('')
     expect(view.getByRole('button', { name: 'Envoyer' })).toBeInTheDocument()
-
-    // Gone once the person picks for themselves.
-    await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
-    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
     ;(arena.limits as Limits).destroy()
-    vi.useRealTimers()
   })
 
   it('keeps the form out of sight until the limits are read, two seconds at most', async () => {
@@ -325,57 +282,7 @@ describe('ViewPrompt', () => {
     vi.useRealTimers()
   })
 
-  it('tells a full model and a paused one taken out of a pick each by its own reason', async () => {
-    vi.useFakeTimers({ toFake: ['Date'] })
-    vi.setSystemTime(new Date(2026, 9, 14, 12, 0))
-    catalog.models = [
-      { id: 'full-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
-      { id: 'paused-id', name: 'Kimi K3', status: 'enabled', lab, badges, params: 1000 },
-      { id: 'open-a', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 },
-      { id: 'open-b', name: 'Mistral Small', status: 'enabled', lab, badges, params: 24 }
-    ]
-    localStorage.setItem('mode', 'custom')
-    localStorage.setItem('customModelsSelection', JSON.stringify(['full-id', 'paused-id']))
-    const spent = expensiveSpent('paused-id')
-    arena.limits = createLimits({
-      ...spent,
-      signed_in_factor: 3,
-      paused_llms: [
-        ...spent.paused_llms,
-        { id: 'full-id', until: '2026-10-14T22:00:00Z', reason: 'full' }
-      ]
-    })
-
-    const view = render(ViewPrompt, props)
-
-    await view.findAllByText(/complet aujourd'hui/)
-    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /^On a retiré GPT-5 \(complet aujourd'hui\) et Kimi K3 \(en pause pour vous jusqu'à 13\sh\s00\) : la comparaison sera aléatoire\. Pourquoi \?$/
-    )
-    ;(arena.limits as Limits).destroy()
-    vi.useRealTimers()
-  })
-
-  it('says a pick is paused for the network when the network spent the allowance', async () => {
-    catalog.models = [
-      { id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab, badges, params: 1000 },
-      { id: 'cheap-id', name: 'Gemma 4', status: 'enabled', lab, badges, params: 30 }
-    ]
-    localStorage.setItem('mode', 'custom')
-    localStorage.setItem('customModelsSelection', JSON.stringify(['expensive-id', 'cheap-id']))
-    const spent = expensiveSpent('expensive-id')
-    arena.limits = createLimits({ ...spent, expensive: { ...spent.expensive!, scope: 'network' } })
-
-    const view = render(ViewPrompt, props)
-
-    await view.findAllByText(/GPT-5 est en pause/)
-    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /^GPT-5 est en pause pour votre réseau jusqu'à .*, on l'a retiré\. Pourquoi \?$/
-    )
-    ;(arena.limits as Limits).destroy()
-  })
-
-  it('says the comparison goes random when a full model empties the pick', async () => {
+  it('goes random, unsaid, when a full model empties the pick', async () => {
     catalog.models = [{ id: 'full-id', name: 'GPT-5', status: 'enabled', lab, badges }]
     localStorage.setItem('mode', 'custom')
     localStorage.setItem('customModelsSelection', JSON.stringify(['full-id']))
@@ -388,14 +295,11 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
 
-    await view.findAllByText(/complet aujourd'hui/)
-    expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-      /^GPT-5 est complet aujourd'hui, on l'a retiré, la comparaison sera aléatoire\. Pourquoi \?$/
-    )
-    // As quiet as the text box's own hint: small grey text, no icon.
-    const notice = view.container.querySelector('#pick-paused-notice')!
-    expect(notice).toHaveClass('fr-message')
-    expect(notice.querySelector('[class*="i-ri-"]')).toBeNull()
+    await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
+    expect(localStorage.getItem('customModelsSelection')).toBe('[]')
+    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
+    expect(underPrompt(view)).not.toMatch(UNSAID)
+    ;(arena.limits as Limits).destroy()
   })
 
   it('takes a paused model out of a ?vs= link once the limits are read, back to random', async () => {
@@ -415,17 +319,13 @@ describe('ViewPrompt', () => {
 
     const view = render(ViewPrompt, props)
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('custom'))
-    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
 
     vi.spyOn(api, 'request').mockResolvedValue(expensiveSpent('expensive-id'))
     await limits.refresh()
 
-    await vi.waitFor(() =>
-      expect(view.container.querySelector('#pick-paused-notice')).toHaveTextContent(
-        /GPT-5 est en pause pour vous .*, on l'a retiré, la comparaison sera aléatoire\./
-      )
-    )
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
+    expect(localStorage.getItem('customModelsSelection')).toBe('[]')
+    expect(view.container.querySelector('#pick-paused-notice, .cl-limit-hint')).toBeNull()
     limits.destroy()
   })
 
@@ -469,7 +369,7 @@ describe('ViewPrompt', () => {
     }
   )
 
-  it('says so when the refused pick empties the selection, and goes once the mode changes', async () => {
+  it('goes random when the refused pick empties the selection, so sending again works', async () => {
     const lab = { logo: '', has_custom_logo: false, id: 'lab', logo_version: 0 }
     catalog.models = [{ id: 'expensive-id', name: 'GPT-5', status: 'enabled', lab }]
     localStorage.setItem('mode', 'custom')
@@ -491,11 +391,9 @@ describe('ViewPrompt', () => {
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Ma question' } })
     await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
 
-    expect(await view.findByText(/la comparaison sera aléatoire/)).toBeInTheDocument()
     await vi.waitFor(() => expect(localStorage.getItem('mode')).toBe('random'))
-
-    await fireEvent.click(view.getByRole('radio', { name: /Frugal/, hidden: true }))
-    expect(view.container.querySelector('#pick-paused-notice')).toBeNull()
+    expect(underPrompt(view)).not.toMatch(UNSAID)
+    expect(view.getByRole('button', { name: 'Envoyer' })).toBeEnabled()
   })
 
   it('says nothing in random mode once the expensive allowance is spent', async () => {

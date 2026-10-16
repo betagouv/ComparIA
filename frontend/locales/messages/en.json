@@ -1011,26 +1011,7 @@
             },
             "picker": {
                 "full": "Full today",
-                "fullWhy": "This model has had a lot of messages today. To keep compar:IA free for everyone, each model answers a limited number of messages a day. It comes back tomorrow; all the others stay open.",
-                "paused": "Paused {until}",
-                "trimmedFullOne": "{models} is full today, so we took it out.",
-                "trimmedFullOneToRandom": "{models} is full today, so we took it out and the comparison will be random.",
-                "trimmedFullTwo": "{models} are full today, so we took them out.",
-                "trimmedFullTwoToRandom": "{models} are full today, so we took them out and the comparison will be random.",
-                "trimmedMixed": "We took out {full} (full today) and {paused} (paused for you {until}).",
-                "trimmedMixedNetwork": "We took out {full} (full today) and {paused} (paused for your network {until}).",
-                "trimmedMixedToRandom": "We took out {full} (full today) and {paused} (paused for you {until}), so the comparison will be random.",
-                "trimmedMixedToRandomNetwork": "We took out {full} (full today) and {paused} (paused for your network {until}), so the comparison will be random.",
-                "trimmedOne": "{models} is paused for you {until}, so we took it out.",
-                "trimmedOneNetwork": "{models} is paused for your network {until}, so we took it out.",
-                "trimmedOneToRandom": "{models} is paused for you {until}, so we took it out and the comparison will be random.",
-                "trimmedOneToRandomNetwork": "{models} is paused for your network {until}, so we took it out and the comparison will be random.",
-                "trimmedTwo": "{models} are paused for you {until}, so we took them out.",
-                "trimmedTwoNetwork": "{models} are paused for your network {until}, so we took them out.",
-                "trimmedTwoToRandom": "{models} are paused for you {until}, so we took them out and the comparison will be random.",
-                "trimmedTwoToRandomNetwork": "{models} are paused for your network {until}, so we took them out and the comparison will be random.",
-                "why": "To keep compar:IA free for everyone, each person can send a limited number of messages to these models every two hours. All the others stay open.",
-                "whyNetwork": "A lot of messages went from your network (school, office, organisation) to these models. This limit covers everyone on the network, not just you. All the other models stay open."
+                "paused": "Paused {until}"
             },
             "time": {
                 "until": "until {time}",

@@ -24,11 +24,6 @@
   import ModelSelector from './ModelSelector.svelte'
   import { pausedModes } from './pausedModes'
   import PauseNotice from './PauseNotice.svelte'
-  import PickPausedNotice, {
-    pickPauseSaid,
-    type PickPause,
-    type TrimmedPause
-  } from './PickPausedNotice.svelte'
 
   let {
     onPrompt,
@@ -70,33 +65,10 @@
   })
   let webSearch = $state(false)
   let submitting = $state(false)
-  // The refusal the person moved on from by changing the mode or the models.
-  let dismissedRefusal = $state.raw<PickRefusal>()
-  let toRandom = $state(false)
-  // Paused models taken out of a saved or `?vs=` selection, until the person
-  // changes the mode or the models.
-  let trimmed = $state.raw<TrimmedPause>()
-
-  function names(ids: string[]): string[] {
-    return ids
-      .map((id) => models.find((llm) => llm.id === id)?.name)
-      .filter((name): name is string => !!name)
-  }
-
   const modePauses = $derived(pausedModes(models, limits.paused))
   // Random too has nothing to draw: only when nearly every model is paused.
   const stuck = $derived(mode.value !== 'custom' && modePauses.has(mode.value))
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting || stuck)
-  const shownRefusal = $derived(pickRefusal === dismissedRefusal ? undefined : pickRefusal)
-  // Before anyone sends; a refusal, when there is one, already says it all.
-  const pickPause = $derived(shownRefusal ? undefined : trimmed)
-  // A refused send, told the same way and focused, since nothing started.
-  const refusalPause = $derived.by((): PickPause | undefined => {
-    const ids = shownRefusal?.limit.llm_ids
-    if (!ids?.length) return undefined
-    return trimmedPause(ids, toRandom, shownRefusal)
-  })
-
   // A saved mode left with nothing to draw goes back to random, unsaid: its
   // card in the mode list says why, and Envoyer works.
   $effect(() => {
@@ -105,48 +77,21 @@
     }
   })
 
-  /**
-   * Models taken out of a pick, each told by its own reason: read from the
-   * limits, and from the refusal that took them out until the limits are
-   * read again.
-   */
-  function trimmedPause(ids: string[], toRandom: boolean, refusal?: PickRefusal): TrimmedPause {
-    const isFull = (id: string) => {
-      const reason = limits.paused.get(id)?.reason
-      return reason ? reason === 'full' : refusal?.detail === 'model_full_today'
-    }
-    const told = refusal?.detail === 'expensive_allowance_spent' ? refusal.limit : limits.expensive
-    return {
-      kind: 'trimmed',
-      full: names(ids.filter(isFull)),
-      paused: names(ids.filter((id) => !isFull(id))),
-      until: told?.resets_at ?? null,
-      toRandom,
-      network: told?.scope === 'network'
-    }
-  }
-
   /** Takes models out of the selection. A custom pick left empty goes random. */
-  function takeOut(ids: string[]): boolean {
+  function takeOut(ids: string[]) {
     modelsSelection.value = modelsSelection.value.filter((id) => !ids.includes(id))
-    if (mode.value !== 'custom' || modelsSelection.value.length) return false
-    mode.value = 'random'
-    return true
+    if (mode.value === 'custom' && !modelsSelection.value.length) mode.value = 'random'
   }
   const modeInfos = getModeInfos()
   const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
-  // A saved or `?vs=` choice may hold models paused since: take them out, and
-  // say so in custom mode, where the person picked them. Not while sending:
-  // a refused pick tells and takes out its own.
+  // A saved or `?vs=` choice may hold models paused since: take them out,
+  // unsaid, as their greyed-out cards say why. Not while sending: a refused
+  // pick takes out its own.
   $effect(() => {
     const out = modelsSelection.value.filter((id) => limits.paused.has(id))
     if (!out.length || submitting) return
-    untrack(() => {
-      const custom = mode.value === 'custom'
-      const emptied = takeOut(out)
-      if (custom) trimmed = trimmedPause(out, emptied)
-    })
+    untrack(() => takeOut(out))
   })
 
   onMount(() => {
@@ -197,7 +142,6 @@
     if (loading || submitting) return
 
     submitting = true
-    toRandom = false
     try {
       await onPrompt({
         mode: mode.value,
@@ -207,23 +151,10 @@
       })
       // Take the refused models out, so sending again starts a comparison.
       const refused = pickRefusal?.limit.llm_ids
-      if (refused?.length) toRandom = takeOut(refused)
+      if (refused?.length) takeOut(refused)
     } finally {
       submitting = false
     }
-  }
-
-  // Changed by the person, not by onPromptSubmit: the refusal no longer fits.
-  function setMode(value: APIModeAndPromptData['mode']) {
-    mode.value = value
-    dismissedRefusal = pickRefusal
-    trimmed = undefined
-  }
-
-  function setModelsSelection(value: string[]) {
-    modelsSelection.value = value
-    dismissedRefusal = pickRefusal
-    trimmed = undefined
   }
 
   function handlePromptSelected(
@@ -265,11 +196,8 @@
   }
 </script>
 
-<!-- Present before loading starts so assistive technology announces the state change.
-     It also tells a selection trimmed once the limits are read, after the page shows. -->
-<p role="status" class="sr-only">
-  {loading ? m['chatbot.loading']() : pickPause ? pickPauseSaid(pickPause) : ''}
-</p>
+<!-- Present before loading starts so assistive technology announces the state change. -->
+<p role="status" class="sr-only">{loading ? m['chatbot.loading']() : ''}</p>
 
 {#if loading}
   <div id="prompt-area" class="fr-container px-4 py-2 md:px-6 md:py-5">
@@ -331,8 +259,8 @@
 
           <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
             <ModelSelector
-              bind:mode={() => mode.value, setMode}
-              bind:modelsSelection={() => modelsSelection.value, setModelsSelection}
+              bind:mode={mode.value}
+              bind:modelsSelection={modelsSelection.value}
               {models}
               disabled={loading}
               paused={limits.paused}
@@ -365,17 +293,9 @@
 
           <!-- After the send button in the DOM, and on screen too (RGAA 12.8). -->
           {#if busyHint}
-            <!-- Told like the other limits, and focused: the send did not start. -->
+            <!-- Focused: the send did not start. -->
             <div class="md:col-span-full md:order-none order-3">
               <LimitHint id="busy-hint" text={busyHint} icon="i-ri-time-line" focusOnShow />
-            </div>
-          {:else if refusalPause}
-            <div class="md:col-span-full md:order-none order-3">
-              <PickPausedNotice pause={refusalPause} focusOnShow />
-            </div>
-          {:else if pickPause}
-            <div class="md:col-span-full md:order-none order-3">
-              <PickPausedNotice pause={pickPause} />
             </div>
           {/if}
         </div>
