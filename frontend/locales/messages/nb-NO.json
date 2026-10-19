@@ -125,8 +125,8 @@
         },
         "links": {
             "accessibility": "Tilgjengelighet: ikke kompatibel",
-            "legal": "Juridisk merknad",
-            "rgesn": "Økodesign",
+            "legal_notice": "Juridisk merknad",
+            "ecodesign": "Økodesign",
             "sources": "Kildekode"
         }
     },
@@ -659,14 +659,14 @@
         "desc": "{platformName} er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
         "title": "{platformName}, arena for sammenligning av KI-chatboter",
         "titles": {
-            "accessibilite": "Tlgjengelighetserklæring",
+            "accessibility": "Tlgjengelighetserklæring",
             "arene": "Chat",
             "donnees-personnelles": "Personvernerklæring",
-            "mentions-legales": "Juridisk merknad",
+            "legal_notice": "Juridisk merknad",
             "modalites": "Vilkår for bruk",
             "modeles": "Liste over modeller",
             "ranking": "Rangering",
-            "rgesn": "Økodesign-erklæring"
+            "ecodesign": "Økodesign-erklæring"
         }
     },
     "vote": {

@@ -125,8 +125,8 @@
         },
         "links": {
             "accessibility": "Accessibilità: non conforme",
-            "legal": "Avviso legale",
-            "rgesn": "Ecodesign",
+            "legal_notice": "Avviso legale",
+            "ecodesign": "Ecodesign",
             "sources": "Codice sorgente"
         }
     },
@@ -686,14 +686,14 @@
         "desc": "{platformName} è uno strumento che consente il confronto alla cieca di diversi modelli di IA conversazionale per sensibilizzare sulle problematiche dell'IA generativa (pregiudizi, impatto ambientale) e per creare dataset sulle preferenze in francese.",
         "title": "{platformName}, il comparatore di intelligenza artificiale conversazionale",
         "titles": {
-            "accessibilite": "Dichiarazione di accessibilità",
+            "accessibility": "Dichiarazione di accessibilità",
             "arene": "Chat",
             "donnees-personnelles": "Politica sulla riservatezza",
-            "mentions-legales": "Avviso legale",
+            "legal_notice": "Avviso legale",
             "modalites": "Termini d'uso",
             "modeles": "Elenco dei modelli",
             "ranking": "Classifica",
-            "rgesn": "Dichiarazione di ecodesign"
+            "ecodesign": "Dichiarazione di ecodesign"
         }
     },
     "vote": {

@@ -2,14 +2,7 @@ import { resolve } from '$app/paths'
 import { renderInlineMarkdown } from '$components/markdown'
 import { api } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
-import {
-  DEFAULT_INFORMATIONAL_PAGES,
-  informationalPageLinkProps,
-  isInformationalPageVisible,
-  type InformationalPages,
-  type InformationalPageSurface
-} from '$lib/informational-pages'
-import type { ExternalLinkProps, InternalLinkProps } from '$lib/routing'
+import type { InternalLinkProps } from '$lib/routing'
 
 export type ConsentPresentation = {
   arena: {
@@ -69,9 +62,6 @@ type TermsResponse = {
   }
 }
 
-export type ConsentLink =
-  ({ label: string } & InternalLinkProps) | ({ label: string } & ExternalLinkProps)
-
 // Canonical paths, not the redirects they replaced: a visitor reading what
 // they are about to accept should not go through a hop. Every legal
 // destination in the app is named here so a page move has one place to land.
@@ -82,44 +72,10 @@ export const ECODESIGN_PATH = resolve('/eco-design')
 export const LEGAL_NOTICE_PATH = resolve('/legal')
 
 /** The two documents a visitor accepts, as listed beside the checkbox. */
-export function legalLinks(): ConsentLink[] {
+export function legalLinks(): ({ label: string } & InternalLinkProps)[] {
   return [
     { label: m['consent.links.terms'](), href: TERMS_PATH },
     { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH }
-  ]
-}
-
-/** Every public legal page, for the menus that list them all. */
-export function legalPageLinks(
-  pages: InformationalPages = DEFAULT_INFORMATIONAL_PAGES,
-  surface?: InformationalPageSurface
-): ConsentLink[] {
-  const fixedLinks: ConsentLink[] = [
-    { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH },
-    { label: m['consent.links.terms'](), href: TERMS_PATH }
-  ]
-  const informationalLinks = [
-    {
-      key: 'legal_notice' as const,
-      label: m['footer.links.legal'](),
-      ...informationalPageLinkProps('legal_notice', pages)
-    },
-    {
-      key: 'accessibility' as const,
-      label: m['footer.links.accessibility'](),
-      ...informationalPageLinkProps('accessibility', pages)
-    },
-    {
-      key: 'ecodesign' as const,
-      label: m['footer.links.rgesn'](),
-      ...informationalPageLinkProps('ecodesign', pages)
-    }
-  ]
-  return [
-    ...fixedLinks,
-    ...informationalLinks.filter(
-      (link) => !surface || isInformationalPageVisible(pages[link.key], surface)
-    )
   ]
 }
 

@@ -123,7 +123,7 @@
         },
         "links": {
             "accessibility": "Brister i tillgänglighet",
-            "legal": "Rättsliga meddelanden",
+            "legal_notice": "Rättsliga meddelanden",
             "sources": "Källkod"
         }
     },
@@ -570,10 +570,10 @@
         "desc": "{platformName} är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
         "title": "{platformName}, jämförelseverktyget för konversations-AI",
         "titles": {
-            "accessibilite": "Tillgänglighetspolicy",
+            "accessibility": "Tillgänglighetspolicy",
             "arene": "Chat",
             "donnees-personnelles": "Integritetspolicy",
-            "mentions-legales": "Rättsliga meddelanden",
+            "legal_notice": "Rättsliga meddelanden",
             "modalites": "Användarvillkor",
             "modeles": "Lista över modeller",
             "ranking": "Rankning"

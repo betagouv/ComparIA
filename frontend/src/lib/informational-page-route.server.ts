@@ -1,7 +1,10 @@
-import { redirect } from '@sveltejs/kit'
-import { localizedInformationalContent, type InformationalPageKey } from '$lib/informational-pages'
-import { loadInformationalPages } from '$lib/informational-pages.server'
 import { getLocale } from '$lib/i18n/runtime'
+import { loadInformationalPages } from '$lib/informational-pages.server'
+import {
+  localizedInformationalContent,
+  type InformationalPageKey
+} from '$lib/informational-pages.svelte'
+import { redirect } from '@sveltejs/kit'
 
 export async function loadInformationalPage(key: InformationalPageKey, fetcher: typeof fetch) {
   const pages = await loadInformationalPages(fetcher)

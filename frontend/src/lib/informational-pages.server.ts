@@ -1,10 +1,10 @@
 import { api } from '$lib/fastapi-client'
-import { logger } from '$lib/logger.server'
 import {
   DEFAULT_INFORMATIONAL_PAGES,
   normalizeInformationalPages,
   type InformationalPages
-} from '$lib/informational-pages'
+} from '$lib/informational-pages.svelte'
+import { logger } from '$lib/logger.server'
 
 export async function loadInformationalPages(fetcher: typeof fetch): Promise<InformationalPages> {
   try {
