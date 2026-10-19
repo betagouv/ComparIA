@@ -21,13 +21,14 @@
         content={data.privacyPolicy.content}
         locale={data.privacyPolicy.locale}
       />
-      <!-- The published policy is sanitized Markdown and cannot carry the script. -->
-      {#if data.matomoUrl}
-        <h2 id="matomo-opt-out-title">{m['general.privacy.optOutTitle']()}</h2>
-        <MatomoOptOut url={data.matomoUrl} />
-      {/if}
     {:else}
       <p class="fr-alert fr-alert--error" role="alert">{m['general.document.unavailable']()}</p>
+    {/if}
+
+    <!-- The published policy is sanitized Markdown and cannot carry the script. -->
+    {#if data.matomoUrl}
+      <h2 id="matomo-opt-out-title">{m['general.privacy.optOutTitle']()}</h2>
+      <MatomoOptOut url={data.matomoUrl} />
     {/if}
   </div>
 </div>

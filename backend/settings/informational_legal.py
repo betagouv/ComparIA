@@ -3,9 +3,12 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from backend.utils.locale import pick_locale
 from utils.database.settings import get_app_settings
 
 INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH = 200_000
+
+LegalPageKey = Literal["legal_notice", "accessibility", "ecodesign"]
 
 
 class InformationalLegalPageLink(BaseModel):
@@ -88,6 +91,28 @@ async def get_informational_legal_pages() -> InformationalLegalPages:
         return InformationalLegalPages()
     return InformationalLegalPages(
         pages=InformationalLegalPageCollection.model_validate(stored)
+    )
+
+
+class InformationalLegalPageContent(BaseModel):
+    content: str
+    locale: str
+
+
+async def get_informational_legal_page(
+    key: LegalPageKey, locale: str
+) -> InformationalLegalPageContent | None:
+    pages = (await get_informational_legal_pages()).pages
+    page = getattr(pages, key)
+    available_locale = pick_locale(locale, page.content_by_locale)
+
+    print("PAGE", key, page, available_locale)
+    if page.mode == "external" or not available_locale in page.content_by_locale:
+        return None
+
+    return InformationalLegalPageContent(
+        content=page.content_by_locale[available_locale],
+        locale=available_locale,
     )
 
 

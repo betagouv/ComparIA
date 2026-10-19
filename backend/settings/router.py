@@ -4,9 +4,10 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from backend.settings.informational_legal import (
+    InformationalLegalPageContent,
     InformationalLegalPageLinks,
-    InformationalLegalPages,
-    get_informational_legal_pages,
+    LegalPageKey,
+    get_informational_legal_page,
     get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
@@ -22,9 +23,14 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 router = APIRouter(prefix="/settings", tags=["settings"])
 
 
-@router.get("/legal/informational-pages", response_model=InformationalLegalPages)
-async def public_informational_legal_pages() -> InformationalLegalPages:
-    return await get_informational_legal_pages()
+@router.get(
+    "/legal/informational-page/{key}",
+    response_model=InformationalLegalPageContent | None,
+)
+async def public_informational_legal_pages(
+    key: LegalPageKey, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+) -> InformationalLegalPageContent | None:
+    return await get_informational_legal_page(key, locale)
 
 
 @router.get(
