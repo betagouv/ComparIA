@@ -96,6 +96,10 @@ export interface Consumption {
   energy_kwh: number;
   [k: string]: unknown;
 }
+export interface InformationalLegalPageContent {
+  content: string;
+  locale: string;
+}
 export interface InformationalLegalPageLinks {
   legal_notice?: InformationalLegalPageLink;
   accessibility?: InformationalLegalPageLink;

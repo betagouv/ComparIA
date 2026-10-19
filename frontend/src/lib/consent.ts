@@ -68,8 +68,8 @@ type TermsResponse = {
 export const TERMS_PATH = resolve('/terms')
 export const PRIVACY_POLICY_PATH = resolve('/privacy')
 export const ACCESSIBILITY_PATH = resolve('/accessibility')
-export const ECODESIGN_PATH = resolve('/eco-design')
-export const LEGAL_NOTICE_PATH = resolve('/legal')
+export const ECODESIGN_PATH = resolve('/ecodesign')
+export const LEGAL_NOTICE_PATH = resolve('/legal_notice')
 
 /** The two documents a visitor accepts, as listed beside the checkbox. */
 export function legalLinks(): ({ label: string } & InternalLinkProps)[] {
