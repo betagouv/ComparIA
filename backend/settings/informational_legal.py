@@ -8,12 +8,11 @@ from utils.database.settings import get_app_settings
 INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH = 200_000
 
 
-class InformationalLegalPage(BaseModel):
+class InformationalLegalPageLink(BaseModel):
     mode: Literal["internal", "external"] = "internal"
     external_url: str | None = None
     visible_in_legal_menu: bool = True
     visible_in_settings: bool = True
-    content_by_locale: dict[str, str] = Field(default_factory=dict)
 
     @field_validator("external_url", mode="before")
     @classmethod
@@ -36,6 +35,16 @@ class InformationalLegalPage(BaseModel):
             raise ValueError("External URL must be an absolute HTTPS URL")
         return url
 
+    @model_validator(mode="after")
+    def require_url_for_external_mode(self):
+        if self.mode == "external" and self.external_url is None:
+            raise ValueError("External URL is required in external mode")
+        return self
+
+
+class InformationalLegalPage(InformationalLegalPageLink):
+    content_by_locale: dict[str, str] = Field(default_factory=dict)
+
     @field_validator("content_by_locale")
     @classmethod
     def validate_content(cls, value: dict[str, str]) -> dict[str, str]:
@@ -50,12 +59,6 @@ class InformationalLegalPage(BaseModel):
                     f"{INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH} characters"
                 )
         return value
-
-    @model_validator(mode="after")
-    def require_url_for_external_mode(self):
-        if self.mode == "external" and self.external_url is None:
-            raise ValueError("External URL is required in external mode")
-        return self
 
 
 InformationalLegalPageAnno = Annotated[
@@ -86,3 +89,25 @@ async def get_informational_legal_pages() -> InformationalLegalPages:
     return InformationalLegalPages(
         pages=InformationalLegalPageCollection.model_validate(stored)
     )
+
+
+InformationalLegalPageLinkAnno = Annotated[
+    InformationalLegalPageLink,
+    Field(default_factory=InformationalLegalPageLink),
+]
+
+
+class InformationalLegalPageLinks(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    legal_notice: InformationalLegalPageLinkAnno
+    accessibility: InformationalLegalPageLinkAnno
+    ecodesign: InformationalLegalPageLinkAnno
+
+
+async def get_informational_legal_pages_links() -> InformationalLegalPageLinks:
+    settings = await get_app_settings()
+    stored = settings.informational_legal_pages
+    if not stored:
+        return InformationalLegalPageLinks()
+    return InformationalLegalPageLinks.model_validate(stored)

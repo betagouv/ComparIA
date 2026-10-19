@@ -1106,29 +1106,20 @@
         },
         "links": {
             "accessibility": "Accessibilité : non conforme",
-            "legal": "Mentions légales",
-            "rgesn": "Écoconception",
+            "legal_notice": "Mentions légales",
+            "ecodesign": "Écoconception",
             "sources": "Code source"
         }
     },
     "general": {
-        "a11y": {
-            "title": "Déclaration d’accessibilité"
-        },
         "document": {
             "frenchOnly": "Ce document n’est publié qu’en français pour le moment.",
             "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
             "version": "Version {version}, applicable depuis le {date}."
         },
-        "legal": {
-            "title": "Mentions légales"
-        },
         "privacy": {
             "optOutTitle": "Vous opposer à la mesure d’audience",
             "title": "Politique de confidentialité"
-        },
-        "rgesn": {
-            "title": "Déclaration d’écoconception"
         },
         "tos": {
             "title": "Modalités d’utilisation"
@@ -2072,16 +2063,16 @@
         "desc": "{platformName} est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
         "title": "{platformName}, le comparateur d'IA conversationnelles",
         "titles": {
-            "accessibilite": "Déclaration d’accessibilité",
+            "accessibility": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
             "invite": "Invitation",
             "login": "Connexion",
-            "mentions-legales": "Mentions légales",
+            "legal_notice": "Mentions légales",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
-            "rgesn": "Déclaration d’écoconception",
+            "ecodesign": "Déclaration d’écoconception",
             "settings": "Paramètres"
         }
     },

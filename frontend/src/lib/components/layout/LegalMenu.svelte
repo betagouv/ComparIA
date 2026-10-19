@@ -2,12 +2,12 @@
   import { page } from '$app/state'
   import Dropdown from '$components/Dropdown.svelte'
   import { Icon } from '$components/dsfr'
-  import { legalPageLinks } from '$lib/consent'
   import { m } from '$lib/i18n/messages'
+  import { getLegalLinksContext } from '$lib/informational-pages.svelte'
 
   const { id, expanded = true }: { id: string; expanded?: boolean } = $props()
 
-  const links = $derived(legalPageLinks(page.data.informationalPages, 'legal_menu'))
+  const links = getLegalLinksContext()
 </script>
 
 <nav class="legal-menu" aria-label={m['header.legal.title']()}>
@@ -33,7 +33,7 @@
     {/snippet}
 
     <ul class="fr-sidemenu__list">
-      {#each links as { label, ...linkProps } (linkProps.href)}
+      {#each links.legalMenuLinks as { label, ...linkProps } (linkProps.href)}
         <li class="fr-sidemenu__item">
           <a
             class="fr-sidemenu__link py-2! text-sm! font-normal!"

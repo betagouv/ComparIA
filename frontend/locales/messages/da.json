@@ -1104,8 +1104,8 @@
         },
         "links": {
             "accessibility": "Tilgængelighed: ikke i overensstemmelse",
-            "legal": "Om os",
-            "rgesn": "Bæredygtigt design",
+            "legal_notice": "Om os",
+            "ecodesign": "Bæredygtigt design",
             "sources": "Kildekode"
         }
     },
@@ -2183,16 +2183,16 @@
         "desc": "{platformName} er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
         "title": "{platformName}, arenaen for AI-chatbots",
         "titles": {
-            "accessibilite": "Erklæring om tilgængelighed",
+            "accessibility": "Erklæring om tilgængelighed",
             "arene": "Chat",
             "donnees-personnelles": "Fortrolighedspolitik",
             "invite": "Invitation",
             "login": "Log ind",
-            "mentions-legales": "Om os",
+            "legal_notice": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
             "ranking": "Rangliste",
-            "rgesn": "Erklæring om bæredygtigt design",
+            "ecodesign": "Erklæring om bæredygtigt design",
             "settings": "Indstillinger"
         }
     },

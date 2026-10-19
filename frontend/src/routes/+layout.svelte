@@ -15,6 +15,7 @@
   } from '$lib/fastapi-client'
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { provideLegalLinksContext } from '$lib/informational-pages.svelte'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { provideSurveyContext } from '$lib/survey.svelte'
@@ -51,6 +52,7 @@
 
   // svelte-ignore state_referenced_locally
   setVotesContext(data.votes)
+  provideLegalLinksContext(() => data.informationalPagesLinks)
   // svelte-ignore state_referenced_locally
   setModelsContext(data.data, getPlatformName())
 

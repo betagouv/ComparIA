@@ -8,12 +8,14 @@
   import TotpSetupModal from '$components/TotpSetupModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
-  import { legalPageLinks, resetConsent } from '$lib/consent'
+  import { resetConsent } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLegalLinksContext } from '$lib/informational-pages.svelte'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
+  const links = getLegalLinksContext()
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
   const tabs = [
@@ -233,7 +235,7 @@
               )}
             </p>
             <ul class="fr-raw-list gap-3 flex flex-col items-start">
-              {#each legalPageLinks(page.data.informationalPages, 'settings') as link (link.href)}
+              {#each links.settingsMenuLinks as link (link.href)}
                 <li><Link href={link.href} text={link.label} /></li>
               {/each}
               <li>

@@ -1106,8 +1106,8 @@
         },
         "links": {
             "accessibility": "Accessibility: non-compliant",
-            "legal": "Legal notice",
-            "rgesn": "Eco-design",
+            "legal_notice": "Legal notice",
+            "ecodesign": "Eco-design",
             "sources": "Source code"
         }
     },
@@ -2231,16 +2231,16 @@
         "desc": "{platformName} is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
         "title": "{platformName}, the AI chatbot arena",
         "titles": {
-            "accessibilite": "Accessibility statement",
+            "accessibility": "Accessibility statement",
             "arene": "Chat",
             "donnees-personnelles": "Privacy policy",
             "invite": "Invitation",
             "login": "Sign in",
-            "mentions-legales": "Legal notice",
+            "legal_notice": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",
             "ranking": "Leaderboard",
-            "rgesn": "Ecodesign statement",
+            "ecodesign": "Ecodesign statement",
             "settings": "Settings"
         }
     },

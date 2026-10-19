@@ -123,8 +123,8 @@
         },
         "links": {
             "accessibility": "Ligipääsetavus: nõuetele-mittevastav",
-            "legal": "Õigusteave",
-            "rgesn": "Ökokontseptsioon",
+            "legal_notice": "Õigusteave",
+            "ecodesign": "Ökokontseptsioon",
             "sources": "Lähtekood"
         }
     },
@@ -656,14 +656,14 @@
         "desc": "Tehisaru baromeeter on tööriist, mille abil saab erinevaid keelemudeleid pimesi võrrelda. See aitab generatiivse tehisaruga seotud teemadel (mitmekesisus, kallutatus, keskkonnamõju) teadlikkust tõsta ning väheste ressurssidega keelte jaoks eelistusandmestikke luua.",
         "title": "{platformName}, Tehisaru baromeeter",
         "titles": {
-            "accessibilite": "Ligipääsetavuse avaldus",
+            "accessibility": "Ligipääsetavuse avaldus",
             "arene": "Vestlus",
             "donnees-personnelles": "Privatsuspõhimõtted",
-            "mentions-legales": "Õigusteave",
+            "legal_notice": "Õigusteave",
             "modalites": "Kasutustingimused",
             "modeles": "Mudelite nimekiri",
             "ranking": "Edetabel",
-            "rgesn": "Ökodisaini avaldus"
+            "ecodesign": "Ökodisaini avaldus"
         }
     },
     "vote": {
