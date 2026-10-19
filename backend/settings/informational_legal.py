@@ -1,9 +1,8 @@
-from typing import Literal
+from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from utils.database.models.app_settings import default_informational_legal_pages
 from utils.database.settings import get_app_settings
 
 INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH = 200_000
@@ -59,29 +58,31 @@ class InformationalLegalPage(BaseModel):
         return self
 
 
+InformationalLegalPageAnno = Annotated[
+    InformationalLegalPage, Field(default_factory=InformationalLegalPage)
+]
+
+
 class InformationalLegalPageCollection(BaseModel):
-    legal_notice: InformationalLegalPage
-    accessibility: InformationalLegalPage
-    ecodesign: InformationalLegalPage
+    model_config = ConfigDict(extra="forbid")
+
+    legal_notice: InformationalLegalPageAnno
+    accessibility: InformationalLegalPageAnno
+    ecodesign: InformationalLegalPageAnno
 
 
 class InformationalLegalPages(BaseModel):
-    pages: InformationalLegalPageCollection
-
-
-def default_informational_pages() -> InformationalLegalPages:
-    return InformationalLegalPages(
-        pages=InformationalLegalPageCollection.model_validate(
-            default_informational_legal_pages()
-        )
-    )
+    pages: Annotated[
+        InformationalLegalPageCollection,
+        Field(default_factory=InformationalLegalPageCollection),
+    ]
 
 
 async def get_informational_legal_pages() -> InformationalLegalPages:
     settings = await get_app_settings()
     stored = settings.informational_legal_pages
     if not stored:
-        return default_informational_pages()
+        return InformationalLegalPages()
     return InformationalLegalPages(
         pages=InformationalLegalPageCollection.model_validate(stored)
     )

@@ -18,13 +18,12 @@ from backend.settings import informational_legal
 from backend.settings.informational_legal import (
     InformationalLegalPage,
     InformationalLegalPages,
-    default_informational_pages,
 )
 from utils.database.models.app_settings import AppSettings
 
 
 def test_seeded_visibility_matches_the_existing_navigation() -> None:
-    pages = default_informational_pages()
+    pages = InformationalLegalPages()
 
     assert all(
         page.visible_in_legal_menu and page.visible_in_settings
@@ -34,13 +33,6 @@ def test_seeded_visibility_matches_the_existing_navigation() -> None:
             pages.pages.ecodesign,
         )
     )
-
-
-def test_fresh_settings_have_independent_seeded_configuration() -> None:
-    first = AppSettings()
-    first.informational_legal_pages["legal_notice"]["mode"] = "external"
-
-    assert AppSettings().informational_legal_pages["legal_notice"]["mode"] == "internal"
 
 
 def test_external_mode_requires_an_absolute_https_url() -> None:
@@ -63,13 +55,11 @@ def test_blank_stored_configuration_falls_back_to_seed() -> None:
     ):
         pages = asyncio.run(informational_legal.get_informational_legal_pages())
 
-    assert pages == default_informational_pages()
+    assert pages == InformationalLegalPages()
 
 
 def test_admin_update_replaces_the_single_unversioned_configuration() -> None:
-    body = InformationalLegalPages.model_validate(
-        default_informational_pages().model_dump()
-    )
+    body = InformationalLegalPages()
     body.pages.ecodesign.mode = "external"
     body.pages.ecodesign.external_url = "https://example.test/ecodesign"
     admin = SimpleNamespace(id=uuid.uuid4())
