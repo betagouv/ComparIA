@@ -18,6 +18,7 @@ from backend.config import (
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
+    RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS,
     RATELIMIT_REPEATED_PROMPT_MIN_CHARS,
     RATELIMIT_REPEATED_PROMPT_PER_HOUR,
     RATELIMIT_SENT_WARNINGS_PER_HOUR,
@@ -203,7 +204,7 @@ def is_ratelimited(key: str, ip: str) -> bool:
     return False
 
 
-def is_repeated_prompt(text: str) -> bool:
+def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     """
     Count a long message and tell whether it was sent too often, by anyone.
 
@@ -211,8 +212,13 @@ def is_repeated_prompt(text: str) -> bool:
     replaying one prompt stays refused for as long as it keeps going. Whitespace
     and case are ignored so a trivial edit does not buy a fresh count. Fails open
     on a Redis error, like the other cooldowns.
+
+    Members of an exempt cohort (comma-separated, as the client declares it) are
+    not counted at all.
     """
     if len(text) < RATELIMIT_REPEATED_PROMPT_MIN_CHARS:
+        return False
+    if set((cohorts or "").split(",")) & set(RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS):
         return False
     try:
         digest = hashlib.sha256(" ".join(text.split()).casefold().encode()).hexdigest()

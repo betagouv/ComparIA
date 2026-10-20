@@ -286,6 +286,11 @@ RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 # many people. Set above what a class pasting the same assignment would send.
 RATELIMIT_REPEATED_PROMPT_MIN_CHARS = 500
 RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
+# Cohorts whose members legitimately send the same long prompt, such as pupils
+# of a partner programme given a prompt template. The cohort is whatever the
+# client declares (`?c=pix`), so anyone can claim it: this is a courtesy to the
+# programme, not a guarantee, and a script that sends it escapes the cap.
+RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS = ("pix",)
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

@@ -62,6 +62,17 @@ def test_short_prompts_are_never_counted():
         assert fake.store == {}
 
 
+def test_an_exempt_cohort_is_never_counted():
+    with fake_redis() as fake:
+        for _ in range(RATELIMIT_REPEATED_PROMPT_PER_HOUR * 3):
+            assert session.is_repeated_prompt(LONG, "pix") is False
+            assert session.is_repeated_prompt(LONG, "other,pix") is False
+        assert fake.store == {}
+        # The same prompt without the cohort is still counted.
+        assert session.is_repeated_prompt(LONG, "") is False
+        assert len(fake.store) == 1
+
+
 def test_different_long_prompts_have_their_own_count():
     with fake_redis():
         for _ in range(RATELIMIT_REPEATED_PROMPT_PER_HOUR + 1):
