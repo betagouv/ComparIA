@@ -29,7 +29,10 @@ def make_request(headers, peer="10.2.0.5"):
 
 @contextlib.contextmanager
 def configured(header="", hops=0):
-    original = (settings.COMPARIA_CLIENT_IP_HEADER, settings.COMPARIA_TRUSTED_PROXY_COUNT)
+    original = (
+        settings.COMPARIA_CLIENT_IP_HEADER,
+        settings.COMPARIA_TRUSTED_PROXY_COUNT,
+    )
     settings.COMPARIA_CLIENT_IP_HEADER = header
     settings.COMPARIA_TRUSTED_PROXY_COUNT = hops
     try:
@@ -56,9 +59,7 @@ def test_client_ip_header_is_ignored_when_unset():
 
 
 def test_invalid_client_ip_header_falls_back():
-    request = make_request(
-        {"X-TCP-IP": "not-an-ip", "X-Forwarded-For": "203.0.113.7"}
-    )
+    request = make_request({"X-TCP-IP": "not-an-ip", "X-Forwarded-For": "203.0.113.7"})
     with configured(header="x-tcp-ip", hops=1):
         assert get_ip(request) == "203.0.113.7"
     with configured(header="x-tcp-ip"):
