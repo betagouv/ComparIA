@@ -7,6 +7,7 @@ active arena sessions.
 
 import hashlib
 import logging
+import time
 import uuid
 from typing import Awaitable
 
@@ -204,14 +205,18 @@ def is_ratelimited(key: str, ip: str) -> bool:
     return False
 
 
+REPEATED_PROMPT_WINDOW_SECONDS = 3600
+
+
 def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     """
     Count a long message and tell whether it was sent too often, by anyone.
 
-    Every call counts, refused ones included, and pushes the hour back: a script
-    replaying one prompt stays refused for as long as it keeps going. Whitespace
-    and case are ignored so a trivial edit does not buy a fresh count. Fails open
-    on a Redis error, like the other cooldowns.
+    Counted on a sliding hour: each send is stamped, and only the stamps of the
+    last hour count. Refused calls are stamped too, so a script replaying one
+    prompt stays refused for as long as it keeps going. Whitespace and case are
+    ignored so a trivial edit does not buy a fresh count. Fails open on a Redis
+    error, like the other cooldowns.
 
     Members of an exempt cohort (comma-separated, as the client declares it) are
     not counted at all.
@@ -223,10 +228,16 @@ def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     try:
         digest = hashlib.sha256(" ".join(text.split()).casefold().encode()).hexdigest()
         key = REDIS_REPEATED_PROMPT_KEY.format(digest=digest[:32])
-        client = get_redis_client()
-        count = client.incr(key)
-        client.expire(key, 3600)
-        assert not isinstance(count, Awaitable)
+        now = time.time()
+        pipe = get_redis_client().pipeline()
+        pipe.zremrangebyscore(key, 0, now - REPEATED_PROMPT_WINDOW_SECONDS)
+        pipe.zadd(key, {uuid.uuid4().hex: now})
+        # Only the newest stamps past the cap matter: a flood keeps the set small.
+        pipe.zremrangebyrank(key, 0, -(RATELIMIT_REPEATED_PROMPT_PER_HOUR + 2))
+        pipe.zcard(key)
+        # Set in the same step as the stamp, so the key cannot outlive its window.
+        pipe.expire(key, REPEATED_PROMPT_WINDOW_SECONDS)
+        count = pipe.execute()[3]
         return int(count) > RATELIMIT_REPEATED_PROMPT_PER_HOUR
     except Exception as e:
         logger.error(f"[SESSION] Error counting repeated prompt: {e}")

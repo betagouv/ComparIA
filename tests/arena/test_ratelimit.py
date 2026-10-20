@@ -38,6 +38,7 @@ class FakeRedis:
     def __init__(self, pipelines_that_work=None):
         self.store: dict[str, int] = {}
         self.ttl: dict[str, int] = {}
+        self.zsets: dict[str, dict[str, float]] = {}
         self.pipelines_left = pipelines_that_work
 
     def set(self, key, value, ex=None, nx=False):
@@ -64,6 +65,26 @@ class FakeRedis:
 
     def incr(self, key):
         return self.incrby(key, 1)
+
+    # Sorted sets, kept apart from the counters: member -> score.
+    def zadd(self, key, mapping):
+        self.zsets.setdefault(key, {}).update(mapping)
+        return len(mapping)
+
+    def zremrangebyscore(self, key, low, high):
+        zset = self.zsets.get(key, {})
+        for member in [m for m, s in zset.items() if low <= s <= high]:
+            del zset[member]
+
+    def zremrangebyrank(self, key, start, stop):
+        zset = self.zsets.get(key, {})
+        ranked = sorted(zset, key=zset.get)
+        stop = len(ranked) + stop if stop < 0 else stop
+        for member in ranked[start : max(stop + 1, 0)]:
+            del zset[member]
+
+    def zcard(self, key):
+        return len(self.zsets.get(key, {}))
 
     def pipeline(self):
         return FakePipeline(self)
