@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getFormFields } from './form'
+import { getFormFields, getSchemaDefaults } from './form'
 
 describe('JSON-schema form fields', () => {
   it('renders calendar dates without a time control', () => {
@@ -42,5 +42,21 @@ describe('JSON-schema form fields', () => {
         expect.objectContaining({ id: 'created_at', required: false })
       ])
     )
+  })
+})
+
+describe('JSON-schema defaults', () => {
+  it('starts a new item from the defaults, false and null included', () => {
+    const defaults = getSchemaDefaults({
+      type: 'object',
+      properties: {
+        custom_selectable: { type: 'boolean', default: true },
+        rate_limited: { type: 'boolean' },
+        public: { type: 'boolean', default: false },
+        system_prompt: { type: 'string', default: null }
+      }
+    })
+
+    expect(defaults).toEqual({ custom_selectable: true, public: false, system_prompt: null })
   })
 })
