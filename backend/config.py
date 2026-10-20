@@ -105,6 +105,13 @@ class Settings(BaseSettings):
     # Set it to the real number of hops in every deployment (1 behind Caddy alone).
     COMPARIA_TRUSTED_PROXY_COUNT: int = 0
 
+    # Header an edge proxy (a WAF or CDN) sets to the real client IP, for when
+    # X-Forwarded-For only carries the edge's own address. Takes precedence over
+    # X-Forwarded-For when set and valid. Leave it empty unless the origin cannot
+    # be reached without going through that edge: anybody who can talk to the
+    # backend directly can send this header too.
+    COMPARIA_CLIENT_IP_HEADER: str = ""
+
     # Session cookies carry the Secure flag unless this is turned off for local
     # HTTP development. Never tie it to the debug flag: debug logging and cookie
     # security are separate decisions.

@@ -9,6 +9,9 @@ def get_ip(request: Request) -> str:
     """
     Resolve the client IP, reading X-Forwarded-For only behind trusted proxies.
 
+    When COMPARIA_CLIENT_IP_HEADER names a header carrying a valid IP, that wins:
+    behind a WAF, X-Forwarded-For holds the WAF's address, the same for everyone.
+
     Args:
         request: incoming request, with its headers and socket peer
 
@@ -16,6 +19,16 @@ def get_ip(request: Request) -> str:
         str: client IP, empty when nothing identifies the caller
     """
     direct_ip = request.client.host if request.client and request.client.host else ""
+
+    header = settings.COMPARIA_CLIENT_IP_HEADER
+    if header:
+        value = request.headers.get(header, "").strip()
+        try:
+            ipaddress.ip_address(value)
+        except ValueError:
+            pass
+        else:
+            return value
 
     hops = settings.COMPARIA_TRUSTED_PROXY_COUNT
     if hops <= 0:

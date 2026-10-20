@@ -105,6 +105,11 @@ config:
   ## `<apiUrl>/api/auth/oidc/callback`. Leave empty when the ingress serves the backend under /api of
   ## the app origin (the usual layout): the callback then uses appUrl. Only used by OIDC sign-in.
   apiUrl: ""
+  ## -- `COMPARIA_CLIENT_IP_HEADER`, header an edge proxy (WAF, CDN) sets to the real client IP, for
+  ## when X-Forwarded-For only carries the edge's own address. Left empty, the backend sees the
+  ## ingress pod IP and every per-IP limit is shared by all visitors. Only set it when the origin
+  ## cannot be reached without going through that edge, since anyone reaching it directly can forge it.
+  clientIpHeader: ""
   ## -- Emails promoted to the admin role on startup, created if absent. Left empty, nobody can
   ## reach /admin. Example: ["you@example.com"].
   adminEmails: []
