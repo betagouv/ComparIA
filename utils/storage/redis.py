@@ -24,6 +24,11 @@ REDIS_INSTANCE_PREFIX: Final[str] = (
 REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
 REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{key}}"
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
+# Sorted set of the times one long message was sent, by any session, in a
+# sliding hour.
+REDIS_REPEATED_PROMPT_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}repeated_prompt:{{digest}}"
+)
 REDIS_VOTE_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}count"
 REDIS_RANKING_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}rankings_and_prefs"
 REDIS_LLM_RESPONSES_KEY: Final[str] = (

@@ -45,7 +45,11 @@ def patched(module, **attributes):
 def comparison_with(turn_count: int):
     turn = SimpleNamespace(user_msg=SimpleNamespace(content="Bonjour"))
     return SimpleNamespace(
-        id=uuid4(), turns=[turn] * turn_count, llm_id_a=uuid4(), llm_id_b=uuid4()
+        id=uuid4(),
+        turns=[turn] * turn_count,
+        llm_id_a=uuid4(),
+        llm_id_b=uuid4(),
+        cohorts=None,
     )
 
 

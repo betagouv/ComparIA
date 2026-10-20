@@ -105,6 +105,13 @@ class Settings(BaseSettings):
     # Set it to the real number of hops in every deployment (1 behind Caddy alone).
     COMPARIA_TRUSTED_PROXY_COUNT: int = 0
 
+    # Header an edge proxy (a WAF or CDN) sets to the real client IP, for when
+    # X-Forwarded-For only carries the edge's own address. Takes precedence over
+    # X-Forwarded-For when set and valid. Leave it empty unless the origin cannot
+    # be reached without going through that edge: anybody who can talk to the
+    # backend directly can send this header too.
+    COMPARIA_CLIENT_IP_HEADER: str = ""
+
     # Session cookies carry the Secure flag unless this is turned off for local
     # HTTP development. Never tie it to the debug flag: debug logging and cookie
     # security are separate decisions.
@@ -270,6 +277,20 @@ RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
 # session must never meet this.
 RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
+
+# The same long message, whoever sends it, is not a conversation: it is a script
+# replaying one prompt, and it drops its cookie every time, so neither the
+# session budget nor the IP (a WAF or proxy may hide it) can see it. Counted over
+# every session together, on a sliding hour, so a script that keeps going stays
+# refused. Short prompts are left out, since suggested prompts are clicked by
+# many people. Set above what a class pasting the same assignment would send.
+RATELIMIT_REPEATED_PROMPT_MIN_CHARS = 500
+RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
+# Cohorts whose members legitimately send the same long prompt, such as pupils
+# of a partner programme given a prompt template. The cohort is whatever the
+# client declares (`?c=pix`), so anyone can claim it: this is a courtesy to the
+# programme, not a guarantee, and a script that sends it escapes the cap.
+RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS = ("pix",)
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

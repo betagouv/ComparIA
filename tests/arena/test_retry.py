@@ -58,6 +58,7 @@ def comparison(answered: bool, error=None):
         mode="random",
         llm_id_a="a",
         llm_id_b="b",
+        cohorts=None,
     )
 
 

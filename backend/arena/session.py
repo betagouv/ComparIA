@@ -5,7 +5,9 @@ Handles storing and retrieving some comparison metadata not saved in db during
 active arena sessions.
 """
 
+import hashlib
 import logging
+import time
 import uuid
 from typing import Awaitable
 
@@ -17,12 +19,16 @@ from backend.config import (
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
+    RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS,
+    RATELIMIT_REPEATED_PROMPT_MIN_CHARS,
+    RATELIMIT_REPEATED_PROMPT_PER_HOUR,
     RATELIMIT_SENT_WARNINGS_PER_HOUR,
 )
 from backend.utils.user import ip_bucket
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
+    REDIS_REPEATED_PROMPT_KEY,
     REDIS_SENT_WARNINGS_KEY,
     REDIS_UNVOTED_KEY,
     REDIS_USER_CHAR_COUNT,
@@ -197,6 +203,45 @@ def is_ratelimited(key: str, ip: str) -> bool:
         if counter and int(counter) > limit:
             return True
     return False
+
+
+REPEATED_PROMPT_WINDOW_SECONDS = 3600
+
+
+def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
+    """
+    Count a long message and tell whether it was sent too often, by anyone.
+
+    Counted on a sliding hour: each send is stamped, and only the stamps of the
+    last hour count. Refused calls are stamped too, so a script replaying one
+    prompt stays refused for as long as it keeps going. Whitespace and case are
+    ignored so a trivial edit does not buy a fresh count. Fails open on a Redis
+    error, like the other cooldowns.
+
+    Members of an exempt cohort (comma-separated, as the client declares it) are
+    not counted at all.
+    """
+    if len(text) < RATELIMIT_REPEATED_PROMPT_MIN_CHARS:
+        return False
+    if set((cohorts or "").split(",")) & set(RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS):
+        return False
+    try:
+        digest = hashlib.sha256(" ".join(text.split()).casefold().encode()).hexdigest()
+        key = REDIS_REPEATED_PROMPT_KEY.format(digest=digest[:32])
+        now = time.time()
+        pipe = get_redis_client().pipeline()
+        pipe.zremrangebyscore(key, 0, now - REPEATED_PROMPT_WINDOW_SECONDS)
+        pipe.zadd(key, {uuid.uuid4().hex: now})
+        # Only the newest stamps past the cap matter: a flood keeps the set small.
+        pipe.zremrangebyrank(key, 0, -(RATELIMIT_REPEATED_PROMPT_PER_HOUR + 2))
+        pipe.zcard(key)
+        # Set in the same step as the stamp, so the key cannot outlive its window.
+        pipe.expire(key, REPEATED_PROMPT_WINDOW_SECONDS)
+        count = pipe.execute()[3]
+        return int(count) > RATELIMIT_REPEATED_PROMPT_PER_HOUR
+    except Exception as e:
+        logger.error(f"[SESSION] Error counting repeated prompt: {e}")
+        return False
 
 
 def increment_blocked_prompts(ip: str) -> None:

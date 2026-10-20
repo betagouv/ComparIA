@@ -147,6 +147,25 @@ tests:
             name: COMPARIA_API_URL
             value: https://api.example.com
 
+  - it: omits COMPARIA_CLIENT_IP_HEADER by default
+    template: backend-deployment.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_CLIENT_IP_HEADER
+
+  - it: sets COMPARIA_CLIENT_IP_HEADER when config.clientIpHeader is set
+    template: backend-deployment.yaml
+    set:
+      config.clientIpHeader: x-tcp-ip
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: COMPARIA_CLIENT_IP_HEADER
+            value: x-tcp-ip
+
   - it: uses distinct chart and app image tags
     template: backend-deployment.yaml
     set:

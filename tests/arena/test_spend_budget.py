@@ -99,6 +99,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             mode="random",
             llm_id_a=llm_a,
             llm_id_b=llm_b,
+            cohorts=None,
         )
 
     state.comparison = comparison

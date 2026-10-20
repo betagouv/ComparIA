@@ -36,6 +36,7 @@ from backend.arena.session import (
     increment_unvoted,
     is_block_cooldown,
     is_ratelimited,
+    is_repeated_prompt,
     is_warning_cooldown,
     reserve_input_chars,
     retreive_comparison_metadata,
@@ -107,6 +108,7 @@ def charge_budget(
     llms_data: LLMsData,
     anonymous_user_hash: str,
     request: Request,
+    cohorts: str | None = None,
 ) -> None:
     """
     Spend the message's characters against the session and IP budgets before
@@ -115,6 +117,15 @@ def charge_budget(
     No refund when a model then fails: an error a client can provoke would buy
     whatever the models had already written.
     """
+    if is_repeated_prompt(text, cohorts):
+        logger.error(
+            "Same long message sent too many times by any session",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
     pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
     if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
         logger.error(
@@ -351,7 +362,12 @@ async def add_first_text(
     )
 
     charge_budget(
-        args.prompt_value, (llm_a_id, llm_b_id), llms_data, anonymous_user_hash, request
+        args.prompt_value,
+        (llm_a_id, llm_b_id),
+        llms_data,
+        anonymous_user_hash,
+        request,
+        args.cohorts,
     )
     check = (await save_prompt_check_result(check)) if check else None
 
@@ -489,6 +505,7 @@ async def add_text(
         await get_llms_data(),
         anonymous_user_hash,
         request,
+        comparison_.cohorts,
     )
     check = (await save_prompt_check_result(check)) if check else None
 
@@ -585,6 +602,7 @@ async def retry(
         await get_llms_data(),
         anonymous_user_hash,
         request,
+        comparison.cohorts,
     )
 
     await update_comparison_error(comparison, None)
