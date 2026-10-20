@@ -153,6 +153,16 @@ function parseSchema(
   throw new Error('could not parse schema')
 }
 
+// A new item starts from these, so a toggle whose default is true does not
+// render, and then save, as false.
+export function getSchemaDefaults(schema: JSONSchema): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(schema.properties ?? {})
+      .filter(([, property]) => property.default !== undefined)
+      .map(([key, property]) => [key, property.default])
+  )
+}
+
 export function getFormFields(schema: JSONSchema, i18nBaseKey: string) {
   return parseSchema(schema, '', i18nBaseKey) as AnyFormItemProps[]
 }

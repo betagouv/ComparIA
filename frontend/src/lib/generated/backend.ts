@@ -132,6 +132,10 @@ export interface APILLMData {
    */
   rate_limited: boolean;
   /**
+   * Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.
+   */
+  custom_selectable?: boolean;
+  /**
    * The lab that developed the LLM, create it first if not already available
    */
   lab_id: string;

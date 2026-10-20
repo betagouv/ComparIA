@@ -18,6 +18,11 @@ class ContextTooLongError(ValueError):
         return "Context too long."
 
 
+class UnavailableLLMsSelectionError(ValueError):
+    """Raised when a custom selection names an LLM nobody may pick: unknown,
+    disabled, or locked out of custom mode."""
+
+
 class EmptyResponseError(RuntimeError):
     """Raised when a model API returns an empty response."""
 

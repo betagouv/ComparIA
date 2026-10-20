@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import AfterValidator, model_validator
 from pydantic.networks import HttpUrl
 from pydantic_core import PydanticCustomError
-from sqlalchemy import Date
+from sqlalchemy import Date, true
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
@@ -47,6 +47,10 @@ FIELDS = {
     },
     "rate_limited": {
         "description": "Apply rate limits (usually for high API costs LLMs).",
+    },
+    "custom_selectable": {
+        "title": "Selectable in custom mode",
+        "description": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
     },
     "release_date": {},
     "knowledge_cutoff": {
@@ -117,6 +121,14 @@ class LLMDataBase(BaseDBModel):
         Field(default=None, foreign_key="llm_endpoint.id", **FIELDS["endpoint_id"]),
     ]
     rate_limited: Annotated[bool, Field(**FIELDS["rate_limited"])]  # previous "pricey"
+    custom_selectable: Annotated[
+        bool,
+        Field(
+            default=True,
+            sa_column_kwargs={"server_default": true()},
+            **FIELDS["custom_selectable"],
+        ),
+    ]
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
     knowledge_cutoff: Annotated[

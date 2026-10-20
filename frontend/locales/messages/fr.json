@@ -810,7 +810,8 @@
         "compareModels": {
             "count": "{count}/2 modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
-            "question": "Quels modèles voulez-vous comparer ?"
+            "question": "Quels modèles voulez-vous comparer ?",
+            "randomOnly": "Disponible au hasard uniquement"
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
@@ -841,6 +842,7 @@
             "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
             "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
             "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "model_unavailable": "Un des modèles choisis n’est plus disponible en sélection manuelle. Rechargez la page pour choisir parmi les modèles disponibles.",
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
                 "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
@@ -1406,6 +1408,10 @@
             "created_at": {
                 "label": "Created At"
             },
+            "custom_selectable": {
+                "help": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
+                "label": "Selectable in custom mode"
+            },
             "endpoint_id": {
                 "help": "The LLM's endpoint information, create it first if not already available",
                 "label": "Endpoint"
@@ -1449,11 +1455,11 @@
                 "label": "Params"
             },
             "price_in": {
-                "help": "Price per million input tokens in $.",
+                "help": "Price per million input tokens in USD.",
                 "label": "Price In"
             },
             "price_out": {
-                "help": "Price per million output tokens in $.",
+                "help": "Price per million output tokens in USD.",
                 "label": "Price Out"
             },
             "public_training_code": {

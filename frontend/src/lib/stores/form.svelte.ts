@@ -1,7 +1,7 @@
 import { api, ValidationError } from '$lib/fastapi-client'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { getKeys, omit } from '$lib/utils/commons'
-import { getFormFields, type JSONSchema } from '$lib/utils/form'
+import { getFormFields, getSchemaDefaults, type JSONSchema } from '$lib/utils/form'
 
 type UseFormOptions<T, K> = {
   url: string
@@ -29,7 +29,7 @@ export function useForm<T extends Record<PropertyKey, any>, K extends keyof T>({
   const items = $derived(
     getFormFields(schema, i18nKey).filter((f) => !omitKeys?.includes(f.id as K))
   )
-  mutateForm(data, true)
+  mutateForm({ ...getSchemaDefaults(schema), ...data }, true)
 
   const isDirty = $derived(JSON.stringify(form) !== savedBaseline)
 
