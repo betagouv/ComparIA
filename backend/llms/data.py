@@ -215,6 +215,17 @@ class LLMsData(BaseModel):
                 )
                 raise ValueError(f"Custom LLMs selection contains unavailable LLMs")
 
+            # The arena greys these out, so only a client skipping it gets here.
+            if locked_llms := [
+                llm_id
+                for llm_id in custom_selection
+                if not self.enabled[llm_id].custom_selectable
+            ]:
+                logger.warning(
+                    f"`custom_models_selection` with LLMs locked out of custom mode: {locked_llms}"
+                )
+                raise ValueError("Custom LLMs selection contains locked LLMs")
+
             if len(custom_selection) == 1:
                 # One model chosen by user, pair with random model
                 model_a_id = custom_selection[0]
