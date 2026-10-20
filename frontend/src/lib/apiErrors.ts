@@ -7,6 +7,7 @@ const ARENA_ERRORS = {
   block_cooldown: () => m['arene.apiErrors.block_cooldown'](),
   comparison_streaming: () => m['arene.apiErrors.comparison_streaming'](),
   max_turns_reached: () => m['arene.apiErrors.max_turns_reached'](),
+  model_unavailable: () => m['arene.apiErrors.model_unavailable'](),
   retry_unavailable: () => m['arene.apiErrors.retry_unavailable'](),
   captcha_failed: () => m['arene.apiErrors.captcha_failed'](),
   captcha_unavailable: () => m['arene.apiErrors.captcha_unavailable'](),

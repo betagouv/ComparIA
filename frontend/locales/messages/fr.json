@@ -842,6 +842,7 @@
             "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
             "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
             "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "model_unavailable": "Un des modèles choisis n’est plus disponible en sélection manuelle. Rechargez la page pour choisir parmi les modèles disponibles.",
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
                 "pii": "Votre message semble contenir des données personnelles. Les messages envoyés peuvent être publiés dans le jeu de données ouvert.",
