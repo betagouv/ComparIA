@@ -12,6 +12,7 @@ from backend.config import (
     CustomModelsSelection,
     SelectionMode,
 )
+from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.currency import CurrencyInfo, get_currency_info
 from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
 from backend.utils.countries import get_ranking
@@ -213,7 +214,9 @@ class LLMsData(BaseModel):
                 logger.error(
                     f"`custom_models_selection` with unavailable LLM ids: {unknown_llms}"
                 )
-                raise ValueError(f"Custom LLMs selection contains unavailable LLMs")
+                raise UnavailableLLMsSelectionError(
+                    "Custom LLMs selection contains unavailable LLMs"
+                )
 
             # The arena greys these out, so only a client skipping it gets here.
             if locked_llms := [
@@ -224,7 +227,9 @@ class LLMsData(BaseModel):
                 logger.warning(
                     f"`custom_models_selection` with LLMs locked out of custom mode: {locked_llms}"
                 )
-                raise ValueError("Custom LLMs selection contains locked LLMs")
+                raise UnavailableLLMsSelectionError(
+                    "Custom LLMs selection contains locked LLMs"
+                )
 
             if len(custom_selection) == 1:
                 # One model chosen by user, pair with random model

@@ -58,6 +58,7 @@ from backend.config import (
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
 )
+from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
@@ -355,7 +356,13 @@ async def add_first_text(
 
     # Select LLMs
     llms_data = await get_llms_data()
-    llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+    try:
+        llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+    except UnavailableLLMsSelectionError:
+        # An open tab still lists a model an admin has since locked or turned off.
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="model_unavailable"
+        )
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
