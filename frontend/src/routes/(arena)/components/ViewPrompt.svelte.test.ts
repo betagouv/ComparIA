@@ -57,6 +57,20 @@ describe('ViewPrompt', () => {
     expect(view.queryByRole('button', { name: 'Envoyer' })).toBeNull()
   })
 
+  it('sends random mode when manual mode has no model picked', async () => {
+    localStorage.setItem('mode', 'custom')
+    localStorage.setItem('customModelsSelection', '[]')
+    const onPrompt = vi.fn()
+    const view = render(ViewPrompt, { ...props, onPrompt })
+
+    await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Bonjour' } })
+    await fireEvent.click(view.getByRole('button', { name: 'Envoyer' }))
+
+    expect(onPrompt).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: 'random', custom_models_selection: [] })
+    )
+  })
+
   it('restores the populated form when loading stops before initialization', async () => {
     const view = render(ViewPrompt, props)
 
