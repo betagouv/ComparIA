@@ -31,7 +31,8 @@
       .map((llm) => ({
         ...llm,
         label: llm.name,
-        value: llm.id!
+        value: llm.id!,
+        disabled: llm.custom_selectable === false
       }))
   })
 
@@ -220,7 +221,10 @@
                       .map((k) => opt.badges[k])
                       .filter((b) => !!b)}
 
-                    <label {...labelProps}>
+                    <label
+                      {...labelProps}
+                      class={[labelProps.class, { 'cursor-not-allowed opacity-60': opt.disabled }]}
+                    >
                       {@render input(opt)}
                       <div class="text-dark-grey flex">
                         <AILogo
@@ -234,6 +238,11 @@
                           >{opt.name}</strong
                         >
                       </div>
+                      {#if opt.disabled}
+                        <p class="text-xs! mb-0! mt-2! text-grey">
+                          {m['arenaHome.compareModels.randomOnly']()}
+                        </p>
+                      {/if}
                       <ul class="fr-badges-group mt-3! md:flex! hidden!">
                         {#each modelBadges as badge, i (i)}
                           <li>

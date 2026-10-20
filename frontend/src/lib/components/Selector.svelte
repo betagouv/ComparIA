@@ -4,7 +4,7 @@
     Multiple extends boolean, 
     Kind extends 'checkbox' | 'radio', 
     V extends string, Value extends Kind extends 'checkbox' ? Multiple extends true ?  V[]: V : V, 
-    Option extends { value: V, label: string }
+    Option extends { value: V, label: string, disabled?: boolean }
   "
 >
   import { type Snippet } from 'svelte'
@@ -69,7 +69,9 @@
         id="{id}-{choice.value}"
         {...inputProps}
         {...props}
-        disabled={disabled || (multiple && !value.includes(choice.value) && value.length >= max)}
+        disabled={disabled ||
+          choice.disabled ||
+          (multiple && !value.includes(choice.value) && value.length >= max)}
       />
     {:else}
       <input
@@ -79,7 +81,9 @@
         id="{id}-{choice.value}"
         {...inputProps}
         {...props}
-        disabled={disabled || (multiple && !value.includes(choice.value) && value.length >= max)}
+        disabled={disabled ||
+          choice.disabled ||
+          (multiple && !value.includes(choice.value) && value.length >= max)}
       />
     {/if}
   {:else}
@@ -90,6 +94,7 @@
       id="{id}-{choice.value}"
       {...inputProps}
       {...props}
+      disabled={disabled || choice.disabled}
     />
   {/if}
 {/snippet}

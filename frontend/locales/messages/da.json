@@ -809,7 +809,8 @@
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
-            "question": "Hvilke modeller vil du gerne sammenligne?"
+            "question": "Hvilke modeller vil du gerne sammenligne?",
+            "randomOnly": "Kun tilgængelig tilfældigt"
         },
         "modelSelection": "Modelvalg",
         "prompt": {

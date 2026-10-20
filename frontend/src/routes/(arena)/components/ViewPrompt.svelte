@@ -33,12 +33,16 @@
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 
+  // Models an admin locked out of custom mode still come up at random.
+  const selectableIds = new Set(
+    models.filter((llm) => llm.custom_selectable !== false).map((llm) => llm.id)
+  )
+
   let prompt = $state('')
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
-      const availableModelIds = new Set(models.map((llm) => llm.id))
-      return parsed.filter((id) => availableModelIds.has(id))
+      return parsed.filter((id) => selectableIds.has(id))
     }
     return []
   })
@@ -53,7 +57,9 @@
     const vsParam = page.url.searchParams.get('vs')
     if (!vsParam) return
 
-    const humanIdToModel = new Map(models.map((llm) => [llm.human_id, llm.id!]))
+    const humanIdToModel = new Map(
+      models.filter((llm) => selectableIds.has(llm.id)).map((llm) => [llm.human_id, llm.id!])
+    )
     const validIds = [
       ...new Set(
         vsParam

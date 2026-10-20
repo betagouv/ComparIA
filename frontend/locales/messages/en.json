@@ -810,7 +810,8 @@
         "compareModels": {
             "count": "{count}/2 models",
             "help": "If you only choose one, the second will be selected randomly",
-            "question": "Which models would you like to compare?"
+            "question": "Which models would you like to compare?",
+            "randomOnly": "Only available at random"
         },
         "modelSelection": "Model selection",
         "prompt": {
