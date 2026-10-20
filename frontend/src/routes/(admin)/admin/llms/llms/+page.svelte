@@ -20,6 +20,7 @@
       updated_at: new Date(llm.updated_at!),
       created_at: new Date(llm.created_at!),
       id: llm.id!,
+      custom_selectable: llm.custom_selectable !== false,
       search: toSearchString([llm.human_id, llm.name, llm.id!])
     }))
   )
@@ -29,6 +30,7 @@
     { id: 'human_id', label: 'Human ID', orderable: true },
     { id: 'status', label: 'Status', orderable: true },
     { id: 'rate_limited', label: 'Rate limited', kind: 'boolean', orderable: true },
+    { id: 'custom_selectable', label: 'Custom mode', kind: 'boolean', orderable: true },
     { id: 'release_date', label: 'Release date', kind: 'date', orderable: true },
     { id: 'created_at', label: 'Added', kind: 'date', orderable: true },
     { id: 'updated_at', label: 'Updated', kind: 'date', orderable: true },
@@ -76,8 +78,8 @@
         text={status}
         variant={status === 'enabled' ? 'green' : status === 'disabled' ? 'red' : ''}
       />
-    {:else if col.id === 'rate_limited'}
-      {#if llm.rate_limited}
+    {:else if col.id === 'rate_limited' || col.id === 'custom_selectable'}
+      {#if llm[col.id]}
         <Icon icon="i-ri-check-line" class="text-success" aria-label={m['words.yes']()} />
       {:else}
         <span class="sr-only">{m['words.no']()}</span>
