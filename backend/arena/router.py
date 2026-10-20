@@ -36,6 +36,7 @@ from backend.arena.session import (
     increment_unvoted,
     is_block_cooldown,
     is_ratelimited,
+    is_repeated_prompt,
     is_warning_cooldown,
     reserve_input_chars,
     retreive_comparison_metadata,
@@ -115,6 +116,15 @@ def charge_budget(
     No refund when a model then fails: an error a client can provoke would buy
     whatever the models had already written.
     """
+    if is_repeated_prompt(text):
+        logger.error(
+            "Same long message sent too many times by any session",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
     pricey = any(llm_id in llms_data.pricey_models for llm_id in llm_ids)
     if not reserve_input_chars(anonymous_user_hash, get_ip(request), len(text), pricey):
         logger.error(

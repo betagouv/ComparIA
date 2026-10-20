@@ -271,6 +271,15 @@ RATELIMIT_PRICEY_MODELS_INPUT_PER_IP = RATELIMIT_PRICEY_MODELS_INPUT * 100
 RATELIMIT_ALL_MODELS_INPUT = RATELIMIT_PRICEY_MODELS_INPUT * 10
 RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 
+# The same long message, whoever sends it, is not a conversation: it is a script
+# replaying one prompt, and it drops its cookie every time, so neither the
+# session budget nor the IP (a WAF or proxy may hide it) can see it. Counted over
+# every session together, on a sliding hour, so a script that keeps going stays
+# refused. Short prompts are left out, since suggested prompts are clicked by
+# many people. Set above what a class pasting the same assignment would send.
+RATELIMIT_REPEATED_PROMPT_MIN_CHARS = 500
+RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
+
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an
 # IP crosses the threshold it is cooled down for the rest of the window
