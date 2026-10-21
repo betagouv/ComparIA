@@ -17,7 +17,9 @@
     description,
     items,
     form,
+    isBusy = false,
     isDirty = false,
+    stickyFooter = false,
     errors = $bindable({}),
     fieldSnippets,
     errorSnippet,
@@ -29,25 +31,26 @@
     label: string
     subLabel?: string
     description?: string
-    items: AnyFormItemProps[]
+    items?: AnyFormItemProps[]
     form: Record<string, unknown>
+    isBusy?: boolean
     isDirty?: boolean
     errors?: Record<string, string>
+    stickyFooter?: boolean
     fieldSnippets?: Record<string, Snippet>
     errorSnippet?: Snippet
-    btnSnippet?: Snippet
+    btnSnippet?: Snippet<[isBusy: boolean]>
     onSubmit: () => void
   } = $props()
 
   const anyError = $derived(toEntries(errors))
 
-  const unsavedMessage = 'You have unsaved changes. Are you sure you want to leave?'
-
   beforeNavigate((navigation) => {
     if (!isDirty) return
     // Cancelling a document-leaving navigation delegates to the browser's
     // native confirmation dialog. In-app navigation can use our own message.
-    if (navigation.type === 'leave' || !window.confirm(unsavedMessage)) navigation.cancel()
+    if (navigation.type === 'leave' || !window.confirm(m['form.unsavedChanges']()))
+      navigation.cancel()
   })
 
   onMount(() => {
@@ -71,45 +74,66 @@
   novalidate
   aria-describedby="errors-{id}"
 >
-  <h2 id="{id}-title" class="text-2xl!">
-    {label}
-    {#if subLabel}
-      <span class="text-grey text-base">{subLabel}</span>
-    {/if}
-  </h2>
+  <div class={{ 'px-4 md:px-6 py-6': stickyFooter }}>
+    <h2 id="{id}-title" class="text-3xl!">
+      {label}
+      {#if subLabel}
+        <span class="text-grey text-base">{subLabel}</span>
+      {/if}
+    </h2>
 
-  {#if description}
-    <p class="text-sm! text-grey mb-6!">{description}</p>
-  {/if}
+    {#if description}
+      <p class="text-sm! text-grey mb-6!">{description}</p>
+    {/if}
 
-  {#each items as item (item.id)}
-    {#if fieldSnippets?.[item.id]}
-      {@render fieldSnippets[item.id]()}
-    {:else}
-      <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
+    <!-- Auto form fields -->
+    {#if items}
+      {#each items as item (item.id)}
+        {#if fieldSnippets?.[item.id]}
+          {@render fieldSnippets[item.id]()}
+        {:else}
+          <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
+        {/if}
+      {/each}
     {/if}
-  {/each}
 
-  <div class="fr-messages-group mb-4" id="errors-{id}" aria-live="polite">
-    {#if errorSnippet}
-      {@render errorSnippet()}
-    {/if}
-    {#if anyError.length}
-      <ul class="fr-message fr-message--error block!">
-        The form contains errors:
-        {#each anyError as [errId, errMsg], i (i)}
-          <li class="block!">
-            <a href="#{errId}">"{items.find((item) => item.id === errId)?.label ?? errId}"</a>:
-            {errMsg}
-          </li>
-        {/each}
-      </ul>
-    {/if}
+    {@render children?.()}
+
+    <div class="fr-messages-group mb-4" id="errors-{id}" aria-live="polite">
+      {#if errorSnippet}
+        {@render errorSnippet()}
+      {/if}
+      {#if anyError.length}
+        <ul class="fr-message fr-message--error block!">
+          {m['form.containsErrors']}
+          {#each anyError as [errId, errMsg], i (i)}
+            <li class="block!">
+              <a href="#{errId}">"{items?.find((item) => item.id === errId)?.label ?? errId}"</a>:
+              {errMsg}
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </div>
   </div>
 
-  {#if btnSnippet}
-    {@render btnSnippet()}
-  {:else}
-    <Button type="submit" text={m['words.save']()} />
-  {/if}
+  <div
+    class={[
+      'py-4 flex justify-end',
+      {
+        'bottom-0 bg-white px-4 md:px-6 sticky z-501 border-t-1 border-[--grey-925-125]':
+          stickyFooter
+      }
+    ]}
+  >
+    {#if btnSnippet}
+      {@render btnSnippet(isBusy)}
+    {:else}
+      <Button
+        type="submit"
+        text={isBusy ? m['form.busy']() : m['words.save']()}
+        disabled={isBusy}
+      />
+    {/if}
+  </div>
 </form>

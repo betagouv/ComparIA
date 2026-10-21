@@ -1111,6 +1111,13 @@
             "sources": "Code source"
         }
     },
+    "form": {
+        "busy": "Enregistrement…",
+        "containsErrors": "The form contains errors:",
+        "toastError": "Données invalides",
+        "toastSuccess": "Données enregistrées avec succès",
+        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
+    },
     "general": {
         "document": {
             "frenchOnly": "Ce document n’est publié qu’en français pour le moment.",
