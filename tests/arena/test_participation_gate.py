@@ -105,6 +105,8 @@ def arena(active_document):
                 get_prompt_check=default_prompt_check,
                 create_comparison=create_comparison,
                 charge_budget=charge_budget,
+                reserve_conversation=lambda *_args, **_kwargs: True,
+                release_conversation=lambda *_args: None,
             ):
                 yield created
 

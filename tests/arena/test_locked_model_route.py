@@ -75,6 +75,10 @@ def arena(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(arena_router, "get_prompt_check", default_prompt_check)
     monkeypatch.setattr(arena_router, "create_comparison", create_comparison)
     monkeypatch.setattr(arena_router, "charge_budget", lambda *_args: None)
+    monkeypatch.setattr(
+        arena_router, "reserve_conversation", lambda *_args, **_kwargs: True
+    )
+    monkeypatch.setattr(arena_router, "release_conversation", lambda *_args: None)
 
 
 def send_first_message(selection: tuple[str, ...]) -> HTTPException:

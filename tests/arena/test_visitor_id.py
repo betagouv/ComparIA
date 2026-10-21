@@ -86,6 +86,8 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             get_prompt_check=default_prompt_check,
             create_comparison=create_comparison,
             charge_budget=charge_budget,
+            reserve_conversation=lambda *_args, **_kwargs: True,
+            release_conversation=lambda *_args: None,
         ):
             try:
                 asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))
