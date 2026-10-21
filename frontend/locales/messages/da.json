@@ -453,7 +453,18 @@
                 "invalid": "Indtast et tal mellem 0 og 1.",
                 "legend": "Tærskel"
             },
-            "title": "Beskedtjek"
+            "title": "Beskedtjek",
+            "criteria": {
+                "add": "Tilføj et kriterium",
+                "remove": "Fjern",
+                "empty": "Ingen kriterier: ingen beskeder kontrolleres.",
+                "messages": {
+                    "generic": "Generel",
+                    "self_harm": "Krise (med hjælpelinje)",
+                    "pii": "Personoplysninger"
+                },
+                "new": "Nyt kriterium"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Adgangsnøgle",

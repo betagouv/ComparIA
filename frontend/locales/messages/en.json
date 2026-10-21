@@ -454,7 +454,18 @@
                 "invalid": "Enter a number between 0 and 1.",
                 "legend": "Threshold"
             },
-            "title": "Message checks"
+            "title": "Message checks",
+            "criteria": {
+                "add": "Add a criterion",
+                "remove": "Remove",
+                "empty": "No criteria: no message is checked.",
+                "messages": {
+                    "generic": "General",
+                    "self_harm": "Distress (with helpline)",
+                    "pii": "Personal data"
+                },
+                "new": "New criterion"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Access key",

@@ -454,7 +454,18 @@
                 "invalid": "Saisissez un nombre entre 0 et 1.",
                 "legend": "Seuil"
             },
-            "title": "Vérifications des messages"
+            "title": "Vérifications des messages",
+            "criteria": {
+                "add": "Ajouter un critère",
+                "empty": "Aucun critère : aucun message n'est vérifié.",
+                "messages": {
+                    "generic": "Général",
+                    "pii": "Données personnelles",
+                    "self_harm": "Détresse (avec numéro d'aide)"
+                },
+                "new": "Nouveau critère",
+                "remove": "Retirer"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Clé d'accès",
