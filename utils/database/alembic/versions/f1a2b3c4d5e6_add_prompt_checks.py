@@ -17,7 +17,21 @@ import sqlmodel
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-from utils.database.models.prompt_check import DEFAULT_CATEGORIES, DEFAULT_MODEL
+# Frozen here: the model module has since moved to admin-written criteria.
+DEFAULT_MODEL = "mistral-moderation-latest"
+DEFAULT_CATEGORIES = {
+    "sexual": {"threshold": 0.3, "action": "warn"},
+    "selfharm": {"threshold": 0.3, "action": "warn"},
+    "hate_and_discrimination": {"threshold": 0.5, "action": "log"},
+    "violence_and_threats": {"threshold": 0.5, "action": "log"},
+    "dangerous": {"threshold": 0.5, "action": "log"},
+    "criminal": {"threshold": 0.5, "action": "log"},
+    "jailbreaking": {"threshold": 0.5, "action": "block"},
+    "pii": {"threshold": 0.5, "action": "log"},
+    "health": {"threshold": 0.5, "action": "off"},
+    "law": {"threshold": 0.5, "action": "off"},
+    "financial": {"threshold": 0.5, "action": "off"},
+}
 
 # revision identifiers, used by Alembic.
 revision: str = "f1a2b3c4d5e6"
