@@ -10,6 +10,7 @@ import base64
 import contextlib
 import json
 import sys
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -766,6 +767,157 @@ def test_a_working_call_clears_the_no_credits_flag():
     result, _ = run(config(criminal=(0.5, "block")), {"criminal": 0.9}, redis=redis)
     assert result.decision == "blocked"
     assert not redis.exists(checks.REDIS_CHECK_NO_CREDITS_KEY)
+
+
+class ZsetRedis:
+    """Enough sorted set and pipeline for the shared call slots."""
+
+    def __init__(self):
+        self.sets: dict[str, dict[str, float]] = {}
+
+    def pipeline(self):
+        return ZsetPipeline(self)
+
+    def zrem(self, key, member):
+        self.sets.get(key, {}).pop(member, None)
+
+
+class ZsetPipeline:
+    def __init__(self, redis: ZsetRedis):
+        self.redis = redis
+        self.ops: list = []
+
+    def zremrangebyscore(self, key, low, high):
+        self.ops.append(("rem", key, low, high))
+
+    def zadd(self, key, mapping):
+        self.ops.append(("add", key, mapping))
+
+    def zcard(self, key):
+        self.ops.append(("card", key))
+
+    def expire(self, key, seconds):
+        self.ops.append(("expire", key))
+
+    def execute(self):
+        results = []
+        for op, key, *args in self.ops:
+            members = self.redis.sets.setdefault(key, {})
+            if op == "rem":
+                low, high = args
+                for member, score in list(members.items()):
+                    if low <= score <= high:
+                        del members[member]
+                results.append(None)
+            elif op == "add":
+                members.update(args[0])
+                results.append(1)
+            elif op == "card":
+                results.append(len(members))
+            else:
+                results.append(True)
+        return results
+
+
+def slow_decider(delay: float, flights: list[int]):
+    """An async decision API that answers after `delay` and records how many
+    calls were in flight at once."""
+    in_flight = [0]
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        in_flight[0] += 1
+        flights.append(in_flight[0])
+        try:
+            await asyncio.sleep(delay)
+        finally:
+            in_flight[0] -= 1
+        body = json.loads(request.content)
+        answers = {key: {"type": "noul", "noul": 0.0} for key in body["questions"]}
+        return httpx.Response(200, json={"answers": answers})
+
+    return handler
+
+
+@contextlib.contextmanager
+def transport(handler, redis):
+    orig_client, orig_redis = checks.httpx.AsyncClient, checks.get_redis_client
+    checks.httpx.AsyncClient = lambda **kwargs: orig_client(
+        transport=httpx.MockTransport(handler), **kwargs
+    )
+    checks.get_redis_client = lambda: redis
+    try:
+        yield
+    finally:
+        checks.httpx.AsyncClient = orig_client
+        checks.get_redis_client = orig_redis
+
+
+def test_two_checks_at_once_share_the_call_limit():
+    """The limit is per key, not per prompt: two visitors at once must not
+    double the calls OpenRouter sees."""
+    flights: list[int] = []
+    check = config(criminal=(0.5, "log"))
+    with transport(slow_decider(0.05, flights), ZsetRedis()):
+
+        async def both():
+            texts = [f"message {i}" for i in range(checks.PARALLEL_CALLS)]
+            return await asyncio.gather(
+                checks.moderate_many(texts, check, "test-key"),
+                checks.moderate_many(texts, check, "test-key"),
+            )
+
+        first, second = asyncio.run(both())
+    assert len(first) == len(second) == checks.PARALLEL_CALLS
+    assert max(flights) == checks.PARALLEL_CALLS
+
+
+def test_a_slot_left_by_a_dead_worker_lapses():
+    redis = ZsetRedis()
+    key = checks.REDIS_CHECK_CALLS_KEY.format(key_hash=checks.hash_content("test-key"))
+    lapsed = time.time() - 1
+    redis.sets[key] = {f"dead-{i}": lapsed for i in range(checks.PARALLEL_CALLS)}
+    with transport(slow_decider(0, []), redis):
+        scores = asyncio.run(
+            checks.moderate_many(["bonjour"], config(pii=(0.5, "log")), "test-key")
+        )
+    assert scores == [{"pii": 0.0}]
+    assert redis.sets[key] == {}
+
+
+def test_a_rate_limited_call_waits_as_asked_before_its_retry():
+    calls: list[float] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(time.monotonic())
+        if len(calls) == 1:
+            return httpx.Response(429, headers={"retry-after": "0.2"})
+        return httpx.Response(200, json={"answers": {"pii": {"noul": 0.9}}})
+
+    with transport(handler, ZsetRedis()):
+        scores = asyncio.run(
+            checks.moderate_many(["bonjour"], config(pii=(0.5, "log")), "test-key")
+        )
+    assert scores == [{"pii": 0.9}]
+    assert calls[1] - calls[0] >= 0.2
+
+
+def test_a_check_that_runs_past_its_deadline_fails():
+    """The per-call timeout alone would let a long prompt wait for minutes."""
+    orig = checks.CHECK_DEADLINE
+    checks.CHECK_DEADLINE = 0.1
+    started = time.monotonic()
+    try:
+        with transport(slow_decider(1, []), ZsetRedis()):
+            asyncio.run(
+                checks.moderate_many(["bonjour"], config(pii=(0.5, "log")), "test-key")
+            )
+        raised = False
+    except TimeoutError:
+        raised = True
+    finally:
+        checks.CHECK_DEADLINE = orig
+    assert raised
+    assert time.monotonic() - started < 0.5
 
 
 def test_many_encoded_fragments_cost_a_few_calls():

@@ -31,6 +31,7 @@ admin panel shows a check that has stopped working.
 """
 
 import asyncio
+import contextlib
 import json
 import logging
 import secrets
@@ -51,6 +52,7 @@ from utils.database.models.prompt_check import (
 from utils.database.prompt_checks import get_prompt_check
 from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
+    REDIS_CHECK_CALLS_KEY,
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_KEY_REJECTED_KEY,
     REDIS_CHECK_NO_CREDITS_KEY,
@@ -70,9 +72,15 @@ logger = logging.getLogger("languia")
 
 DECISIONS_URL: Final[str] = "https://openrouter.ai/api/alpha/decisions"
 DECISION_MODELS_URL: Final[str] = "https://openrouter.ai/api/v1/models"
-# Per request. A failed request is tried once more, so a check waits at most
-# about twice this. Calls took 0.4s typically and 1.1s at worst on our bench.
+# Per request. A failed request is tried once more. Calls took 0.4s typically
+# and 1.1s at worst on our bench.
 DECISION_TIMEOUT: Final[float] = 4.0
+# For the whole check of one prompt, waiting for a free call included. The
+# longest prompt costs about thirty calls, eight rounds of four.
+CHECK_DEADLINE: Final[float] = 12.0
+# The longest a rate limited call waits before its one retry, whatever
+# Retry-After asks for: the deadline above still caps the whole check.
+RATE_LIMIT_WAIT: Final[float] = 2.0
 # How long cached scores stay reusable, i.e. how long the user has to read the
 # warning and decide.
 SCORES_TTL: Final[int] = 900
@@ -81,9 +89,12 @@ SCORES_TTL: Final[int] = 900
 # falls whole inside at least one window.
 CHUNK_CHARS: Final[int] = 8_000
 CHUNK_OVERLAP: Final[int] = 400
-# One call per window. OpenRouter rate limits a key well before a long prompt
-# runs out of windows, so they go out a few at a time.
+# Calls in flight with one key, across all requests: OpenRouter answered 429
+# to six at once on our bench. A slot lapses after SLOT_LEASE_SECONDS, so a
+# worker that dies holding one does not shrink the pool for good.
 PARALLEL_CALLS: Final[int] = 4
+SLOT_LEASE_SECONDS: Final[float] = 2 * DECISION_TIMEOUT + RATE_LIMIT_WAIT
+SLOT_WAIT_SECONDS: Final[float] = 0.05
 # How many earlier user messages a follow-up is scored with.
 CONTEXT_TURNS: Final[int] = 4
 
@@ -226,6 +237,8 @@ async def _post(
                 raise
             continue
         if response.status_code in _TRANSIENT_STATUS and attempt == 1:
+            if response.status_code == 429:
+                await asyncio.sleep(_retry_after(response))
             continue
         response.raise_for_status()
         break
@@ -237,10 +250,59 @@ async def _post(
     return {key: float(answers[key]["noul"]) for key in asked}
 
 
+def _retry_after(response: httpx.Response) -> float:
+    """How long a 429 asks us to wait, within RATE_LIMIT_WAIT."""
+    try:
+        wait = float(response.headers.get("retry-after", 1))
+    except ValueError:
+        wait = 1.0
+    return min(max(wait, 0.0), RATE_LIMIT_WAIT)
+
+
+async def _take_slot(key: str, stamp: str) -> bool:
+    """Wait for one of the PARALLEL_CALLS slots of this key. False when Redis
+    cannot say, and the call goes on held by this request's own limit only."""
+    while True:
+        try:
+            now = time.time()
+            pipe = get_redis_client().pipeline()
+            pipe.zremrangebyscore(key, 0, now)
+            pipe.zadd(key, {stamp: now + SLOT_LEASE_SECONDS})
+            pipe.zcard(key)
+            pipe.expire(key, int(SLOT_LEASE_SECONDS) + 1)
+            count = pipe.execute()[2]
+            if count <= PARALLEL_CALLS:
+                return True
+            get_redis_client().zrem(key, stamp)
+        except Exception as e:
+            logger.warning(f"[CHECKS] Cannot share the call limit: {e}")
+            return False
+        await asyncio.sleep(SLOT_WAIT_SECONDS)
+
+
+@contextlib.asynccontextmanager
+async def _slot(key: str):
+    stamp = secrets.token_hex(8)
+    taken = False
+    try:
+        taken = await _take_slot(key, stamp)
+        yield
+    finally:
+        if taken:
+            try:
+                get_redis_client().zrem(key, stamp)
+            except Exception as e:
+                logger.warning(f"[CHECKS] Cannot free a call slot: {e}")
+
+
 async def moderate_many(
     inputs: list[str], check: PromptCheck, api_key: str | UnreadableSecret
 ) -> list[dict[str, float]]:
     """Scores for each input, in order, a few calls at a time.
+
+    At most PARALLEL_CALLS calls are in flight with one key, whoever makes
+    them, and the whole lot must finish within CHECK_DEADLINE, or it fails
+    like any other call.
 
     A stored key no configured encryption key opens is a failed call, not a
     missing key: the env key is not tried in its place, and the callers count
@@ -252,10 +314,14 @@ async def moderate_many(
             UnreadableRow(PromptCheck.__tablename__, 1, "api_key").message()
         )
     gate = asyncio.Semaphore(PARALLEL_CALLS)
-    async with httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client:
+    shared = REDIS_CHECK_CALLS_KEY.format(key_hash=hash_content(api_key))
+    async with (
+        asyncio.timeout(CHECK_DEADLINE),
+        httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client,
+    ):
 
         async def one(text: str) -> dict[str, float]:
-            async with gate:
+            async with gate, _slot(shared):
                 return await _post(client, text, check, api_key)
 
         return list(await asyncio.gather(*(one(text) for text in inputs)))
