@@ -9,6 +9,7 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.utils import SUPPORTED_LOCALES
 from utils.validation import is_secure_url
 
 from .publish import PublishFrequency
@@ -78,12 +79,6 @@ def _normalize_homepage_url(value: object) -> str | None:
         raise ValueError("Homepage URL must be an absolute HTTPS URL")
     return url
 
-
-# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
-# An instance enables a subset of these. Anything outside the tuple is refused
-# rather than stored, because the frontend has no messages for it and would fall
-# back to the base locale without telling anyone.
-SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
 
 # What a new instance starts with, and what the migration backfills onto the
 # existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
