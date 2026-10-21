@@ -11,6 +11,7 @@
     titleAsBubble = false,
     stickyHeader = false,
     headerClass,
+    noPadding = false,
     header,
     children,
     ...props
@@ -22,6 +23,7 @@
     titleAsBubble?: boolean
     stickyHeader?: boolean
     headerClass?: ClassValue
+    noPadding?: boolean
     header?: Snippet
   } & SvelteHTMLElements['div'] = $props()
 
@@ -73,7 +75,7 @@
 
 <div
   {...props}
-  class={['px-4 md:px-6 py-6', props.class]}
+  class={[{ 'px-4 md:px-6 py-6': !noPadding }, props.class]}
   style="--second-header-size: {headerElemSize}px;"
 >
   {@render children?.()}

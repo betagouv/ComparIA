@@ -11,7 +11,7 @@
     ...props
   }: {
     id: string
-    value: string
+    value?: string | null
     label: string
     help?: string
     error?: string
