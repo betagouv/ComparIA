@@ -1,5 +1,4 @@
 import uuid
-from copy import deepcopy
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
