@@ -75,9 +75,13 @@ DECISION_MODELS_URL: Final[str] = "https://openrouter.ai/api/v1/models"
 # Per request. A failed request is tried once more. Calls took 0.4s typically
 # and 1.1s at worst on our bench.
 DECISION_TIMEOUT: Final[float] = 4.0
-# For the whole check of one prompt, waiting for a free call included. The
-# longest prompt costs about thirty calls, eight rounds of four.
+# For the whole check of one prompt, waiting for a free call included.
 CHECK_DEADLINE: Final[float] = 12.0
+# The most calls one prompt may cost, follow-up context included: eight rounds
+# of four. An ordinary prompt at the length limit needs 23; one that unfolds
+# into far more text (some characters fold into eighteen) is not sent at all.
+# Over it with the earlier turns only, those are left unread instead.
+MAX_CHECK_CALLS: Final[int] = 32
 # The longest a rate limited call waits before its one retry, whatever
 # Retry-After asks for: the deadline above still caps the whole check.
 RATE_LIMIT_WAIT: Final[float] = 2.0
@@ -253,7 +257,8 @@ async def _post(
 
 
 class CheckOverloaded(Exception):
-    """Our own limit ran out, not the provider: the check missed its deadline.
+    """Our own limit ran out, not the provider: the check missed its deadline,
+    or the prompt would cost more than MAX_CHECK_CALLS calls.
 
     Never counted toward the outage pause, which only a failing provider may
     open: otherwise enough traffic at once would switch a required check off.
@@ -357,7 +362,15 @@ async def moderate(
     """Score a prompt over every window and spelling of it, and, given the
     earlier user messages in `context`, read together with them."""
     own = moderation_inputs(text)
+    if len(own) > MAX_CHECK_CALLS:
+        raise CheckOverloaded(f"{len(own)} calls, over {MAX_CHECK_CALLS}")
     joined, earlier = context_inputs(text, context)
+    if len(own) + len(joined) + len(earlier) > MAX_CHECK_CALLS:
+        # The earlier turns alone can push a follow-up over: refusing it would
+        # refuse every later message of the conversation. That reading can
+        # only warn, so it is the one to go, and the message is still scored.
+        logger.warning("[CHECKS] Earlier turns over the call budget, not read")
+        joined, earlier = [], []
     scores = await moderate_many(own + joined + earlier, check, api_key)
     split = len(own) + len(joined)
     return Scores(
