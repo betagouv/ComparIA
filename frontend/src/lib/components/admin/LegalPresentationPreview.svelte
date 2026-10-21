@@ -12,14 +12,14 @@
     kind,
     title = '',
     introduction = '',
-    checkboxLabel,
-    buttonLabel = ''
+    checkbox_label,
+    button_label = ''
   }: {
     kind: 'arena' | 'sign-in'
     title?: string
     introduction?: string
-    checkboxLabel: string
-    buttonLabel?: string
+    checkbox_label: string
+    button_label?: string | null
   } = $props()
 </script>
 
@@ -49,7 +49,7 @@
       checked={true}
       disabled
       label={renderInlineMarkdown(
-        checkboxLabel || m['admin.legal.participation.checkboxPlaceholder']()
+        checkbox_label || m['admin.legal.participation.checkboxPlaceholder']()
       )}
       links={legalLinks()}
       linksClass="bg-none! no-underline!"
@@ -59,7 +59,7 @@
       <div class="flex justify-end">
         <Button type="button" disabled>
           <MarkdownInline
-            message={buttonLabel || m['admin.legal.participation.buttonPlaceholder']()}
+            message={button_label || m['admin.legal.participation.buttonPlaceholder']()}
             allowLinks={false}
           />
         </Button>
