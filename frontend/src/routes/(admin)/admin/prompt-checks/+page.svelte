@@ -1,64 +1,77 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { Alert, Button, Icon, Select, Toggle } from '$components/dsfr'
+  import { Alert, Button, Icon, Select, Textarea } from '$components/dsfr'
+  import { FormInput, type FormFieldsetItemProps, type FormInputProps } from '$components/form'
+  import Form from '$components/form/Form.svelte'
   import { PageLayout } from '$components/layout'
   import { promptCheckMessage } from '$lib/apiErrors'
   import { api } from '$lib/fastapi-client'
-  import type { PromptCheckPatch, PromptCheckStatus } from '$lib/generated/admin'
+  import type { PromptCheckCriterion, PromptCheckStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { tick } from 'svelte'
+  import { useForm } from '$lib/stores/form.svelte'
+  import type { AnyFormItemProps } from '$lib/utils/form'
   import type { PageProps } from './$types'
   import ActivityLineChart from './ActivityLineChart.svelte'
   import CategoryHistogram from './CategoryHistogram.svelte'
+  import CriterionRow, { actionTone } from './CriterionRow.svelte'
+  import { actionLabels, actionOrder, newCriterion } from './criteria'
   import type { PromptCheckDecision, PromptCheckStats, PromptCheckTry } from './types'
-
-  type Action = 'off' | 'log' | 'warn' | 'block'
-  type Saving = 'enabled' | 'model' | 'apiKey' | 'categories' | 'caps'
-  type CategoryConfig = { threshold: number; action: Action }
-  type DraftRow = { threshold: string | number; action: Action }
-  type Draft = {
-    enabled: boolean
-    model: string
-    categories: Record<string, DraftRow>
-    capPerIp: string | number
-    capSameModels: string | number
-  }
-
-  // Même plafond que le backend : une faute de frappe ne doit pas cacher une limite.
-  const MAX_CONVERSATIONS_CAP = 10_000
 
   let { data }: PageProps = $props()
 
-  // Réglées sur « ignorer » au départ plutôt qu'interdites : sur une instance
-  // santé ou juridique, agir sur elles reviendrait à refuser les messages qui
-  // font l'objet de la plateforme.
-  const offByDefault = ['health', 'law', 'financial']
+  const form = $derived(
+    useForm({
+      url: '/admin/prompt-check',
+      // The key is write-only: it is in the form, never in what the API returns.
+      data: data.check as PromptCheckStatus & { api_key?: string },
+      schema: data.schema,
+      i18nKey: 'prompt_check_upsert',
+      method: 'put',
+      omitKeys: [
+        'has_api_key',
+        'updated_at',
+        'updated_by',
+        'consecutive_failures',
+        'key_rejected',
+        'healthy',
+        'warnings_shown',
+        'default_conversations_per_ip_per_hour',
+        'default_conversations_same_models_per_ip_per_hour'
+      ],
+      onSuccess: () => invalidate('admin:prompt-check')
+    })
+  )
 
-  // Postgres returns jsonb keys ordered by length then bytes, which would
-  // scatter the frozen rows through the list. Fixed order instead, with them
-  // grouped at the end.
-  const categoryOrder = [
-    'sexual',
-    'selfharm',
-    'hate_and_discrimination',
-    'violence_and_threats',
-    'dangerous',
-    'criminal',
-    'jailbreaking',
-    'pii',
-    ...offByDefault
-  ]
+  const field = (id: string) => form.items.find((item) => item.id === id)!
+  // The schema describes a criterion as a fieldset: its fields give the labels and help.
+  const criterionFields = $derived(
+    Object.fromEntries(
+      (field('criteria') as unknown as { subProps: FormFieldsetItemProps }).subProps.subProps.map(
+        (item: AnyFormItemProps) => [item.id, item]
+      )
+    )
+  )
+  const savedKeys = $derived(data.check.criteria.map((criterion) => criterion.key))
+  const criteria = $derived((form.form.criteria ?? []) as PromptCheckCriterion[])
 
-  // Quatre teintes séparées de bout en bout : le jaune remplace l'orange DSFR,
-  // trop proche du rouge pour être distingué du refus, y compris sans daltonisme.
-  // Chaque teinte porte en plus une icône et un mot, jamais la couleur seule.
-  const actionTone: Record<Action, { color: string; icon: string }> = {
-    off: { color: 'var(--grey-425-625)', icon: 'i-ri-eye-off-line' },
-    log: { color: 'var(--info-425-625)', icon: 'i-ri-eye-line' },
-    warn: { color: 'var(--yellow-tournesol-main-731)', icon: 'i-ri-alert-line' },
-    block: { color: 'var(--error-425-625)', icon: 'i-ri-forbid-line' }
+  let confirmingRemoval = $state(false)
+  let removing = $state(false)
+
+  async function removeApiKey() {
+    removing = true
+    try {
+      await api.request('/admin/prompt-check/api-key', { method: 'delete' })
+      confirmingRemoval = false
+      await invalidate('admin:prompt-check')
+      useToast(m['admin.promptChecks.apiKey.removed'](), 5000, 'success')
+    } catch (error) {
+      useToast((error as Error).message, 6000, 'error')
+    } finally {
+      removing = false
+    }
   }
+
   const decisionTone: Record<PromptCheckDecision, string> = {
     pass: 'var(--green-emeraude-main-632)',
     logged: 'var(--info-425-625)',
@@ -67,34 +80,6 @@
     error: 'var(--purple-glycine-main-494)',
     skipped: 'var(--grey-425-625)'
   }
-
-  const actionOrder: Action[] = ['off', 'log', 'warn', 'block']
-  const actionLabels: Record<Action, string> = {
-    off: m['admin.promptChecks.actions.off'](),
-    log: m['admin.promptChecks.actions.log'](),
-    warn: m['admin.promptChecks.actions.warn'](),
-    block: m['admin.promptChecks.actions.block']()
-  }
-  const actionHelp: Record<Action, string> = {
-    off: m['admin.promptChecks.actions.help.off'](),
-    log: m['admin.promptChecks.actions.help.log'](),
-    warn: m['admin.promptChecks.actions.help.warn'](),
-    block: m['admin.promptChecks.actions.help.block']()
-  }
-  const categoryLabels: Record<string, string> = {
-    sexual: m['admin.promptChecks.categories.sexual'](),
-    hate_and_discrimination: m['admin.promptChecks.categories.hateAndDiscrimination'](),
-    violence_and_threats: m['admin.promptChecks.categories.violenceAndThreats'](),
-    dangerous: m['admin.promptChecks.categories.dangerous'](),
-    criminal: m['admin.promptChecks.categories.criminal'](),
-    selfharm: m['admin.promptChecks.categories.selfharm'](),
-    health: m['admin.promptChecks.categories.health'](),
-    financial: m['admin.promptChecks.categories.financial'](),
-    law: m['admin.promptChecks.categories.law'](),
-    pii: m['admin.promptChecks.categories.pii'](),
-    jailbreaking: m['admin.promptChecks.categories.jailbreaking']()
-  }
-
   const decisionLabels: Record<PromptCheckDecision, string> = {
     pass: m['admin.promptChecks.bench.decision.pass'](),
     logged: m['admin.promptChecks.bench.decision.logged'](),
@@ -111,25 +96,38 @@
     error: m['admin.promptChecks.stats.decision.error'](),
     skipped: m['admin.promptChecks.stats.decision.skipped']()
   }
-
-  // svelte-ignore state_referenced_locally
-  let draft = $state<Draft>(toDraft(data.check))
-  let saving = $state<Saving | null>(null)
-  let errors = $state<Record<string, string>>({})
-
-  // La clé n'est jamais renvoyée au navigateur. Quand une clé est en place, le
-  // champ laisse la place à des points : de la décoration, pas la valeur, dont
-  // la longueur n'a rien à voir avec celle de la clé.
-  const maskedKey = '•'.repeat(12)
-  let apiKey = $state('')
-  // svelte-ignore state_referenced_locally
-  let editingApiKey = $state(!data.check.has_api_key)
-  let apiKeyField = $state<HTMLInputElement | null>(null)
+  const decisionOrder: PromptCheckDecision[] = [
+    'pass',
+    'logged',
+    'warned',
+    'blocked',
+    'error',
+    'skipped'
+  ]
 
   let benchText = $state('')
   let benchRunning = $state(false)
   let benchError = $state('')
   let benchResult = $state<PromptCheckTry | null>(null)
+  // Figé au moment du test : la personne peut modifier les réglages ensuite,
+  // le panneau doit rester le compte rendu de ce qui a réellement été essayé.
+  let benchUsed = $state<PromptCheckCriterion[]>([])
+
+  const benchRows = $derived.by(() => {
+    const result = benchResult
+    if (!result) return []
+    // Criteria set to off are not asked, so they have no score.
+    return benchUsed
+      .filter((criterion) => criterion.key in result.scores)
+      .map((criterion) => ({
+        category: criterion.key,
+        label: criterion.label,
+        score: result.scores[criterion.key],
+        threshold: criterion.threshold,
+        action: criterion.action,
+        triggered: criterion.key in result.triggered
+      }))
+  })
 
   function benchMessage(result: PromptCheckTry): string {
     if (result.decision === 'error') {
@@ -139,30 +137,52 @@
     if (!result.message) return m['admin.promptChecks.bench.messageNone']()
     return promptCheckMessage(result.message)
   }
-  // Figé au moment du test : la personne peut modifier les réglages ensuite,
-  // le panneau doit rester le compte rendu de ce qui a réellement été essayé.
-  let benchUsed = $state<Record<string, CategoryConfig>>({})
 
-  // Resynchronisé chaque fois que SvelteKit recharge les données après un enregistrement.
-  $effect(() => {
-    draft = toDraft(data.check)
-    errors = {}
-    apiKey = ''
-    editingApiKey = !data.check.has_api_key
-  })
+  async function runBench() {
+    const text = benchText.trim()
+    if (text === '') {
+      benchResult = null
+      benchError = m['admin.promptChecks.bench.empty']()
+      return
+    }
 
-  const failures = $derived(data.check.consecutive_failures ?? 0)
-  const modelChanged = $derived(draft.model.trim() !== data.check.model)
-  const categories = $derived(categoryOrder.filter((category) => category in data.check.categories))
+    benchRunning = true
+    benchError = ''
+    try {
+      const used = $state.snapshot(criteria)
+      benchResult = await api.request<PromptCheckTry>('/admin/prompt-check/try', {
+        method: 'POST',
+        body: JSON.stringify({
+          text,
+          criteria: used,
+          description: form.form.description,
+          model: form.form.model
+        })
+      })
+      benchUsed = used
+    } catch (error) {
+      benchResult = null
+      benchError = (error as Error).message
+    } finally {
+      benchRunning = false
+    }
+  }
 
-  const decisionOrder: PromptCheckDecision[] = [
-    'pass',
-    'logged',
-    'warned',
-    'blocked',
-    'error',
-    'skipped'
-  ]
+  /** The stats keep the keys of the old Mistral categories: with no label, the key shows. */
+  function categoryLabel(key: string) {
+    return data.check.criteria.find((criterion) => criterion.key === key)?.label ?? key
+  }
+
+  function formatScore(value: number) {
+    // Trois décimales, jamais arrondi à la première : 0,410 contre un seuil de
+    // 0,500 est justement ce qu'un administrateur vient regarder ici.
+    return value.toFixed(3).replace('.', ',')
+  }
+
+  function percent(value: number) {
+    return Math.min(100, Math.max(0, value * 100))
+  }
+
   type StatsPeriod = PromptCheckStats['period']
   // svelte-ignore state_referenced_locally
   let stats = $state<PromptCheckStats | null>(data.stats ?? null)
@@ -176,56 +196,6 @@
     { value: '365d', label: '12 derniers mois' }
   ]
 
-  const benchRows = $derived.by(() => {
-    const result = benchResult
-    if (!result) return []
-    const known = new Set([...Object.keys(benchUsed), ...Object.keys(result.scores)])
-    const ordered = [
-      ...categoryOrder.filter((category) => known.has(category)),
-      ...[...known].filter((category) => !categoryOrder.includes(category))
-    ]
-    return ordered.map((category) => ({
-      category,
-      score: result.scores[category] ?? 0,
-      threshold: benchUsed[category]?.threshold ?? 0,
-      action: benchUsed[category]?.action ?? ('off' as Action),
-      triggered: category in result.triggered
-    }))
-  })
-
-  function config(check: PromptCheckStatus, category: string): CategoryConfig {
-    return check.categories[category] as unknown as CategoryConfig
-  }
-
-  function toDraft(check: PromptCheckStatus): Draft {
-    return {
-      enabled: check.enabled,
-      model: check.model,
-      capPerIp: String(check.conversations_per_ip_per_hour),
-      capSameModels: String(check.conversations_same_models_per_ip_per_hour),
-      categories: Object.fromEntries(
-        Object.keys(check.categories).map((category) => {
-          const { threshold, action } = config(check, category)
-          return [category, { threshold: String(threshold), action }]
-        })
-      )
-    }
-  }
-
-  function categoryLabel(category: string) {
-    return categoryLabels[category] ?? category
-  }
-
-  function formatScore(value: number) {
-    // Trois décimales, jamais arrondi à la première : 0,410 contre un seuil de
-    // 0,500 est justement ce qu'un administrateur vient regarder ici.
-    return value.toFixed(3).replace('.', ',')
-  }
-
-  function percent(value: number) {
-    return Math.min(100, Math.max(0, value * 100))
-  }
-
   async function loadStats(period: StatsPeriod) {
     statsLoading = true
     try {
@@ -235,146 +205,6 @@
     } finally {
       statsLoading = false
     }
-  }
-
-  /** Les réglages tels qu'ils sont à l'écran, modifications non enregistrées comprises. */
-  function readDraft() {
-    const categories: Record<string, CategoryConfig> = {}
-    const fieldErrors: Record<string, string> = {}
-    for (const [category, row] of Object.entries(draft.categories)) {
-      // Un champ de type number renvoie un nombre, pas la chaîne posée par toDraft.
-      const raw = String(row.threshold).trim()
-      const parsed = Number(raw)
-      if (raw === '' || Number.isNaN(parsed) || parsed < 0 || parsed > 1) {
-        fieldErrors[category] = m['admin.promptChecks.threshold.invalid']()
-      } else {
-        categories[category] = { threshold: parsed, action: row.action }
-      }
-    }
-    return { categories, fieldErrors }
-  }
-
-  async function runBench() {
-    const { categories, fieldErrors } = readDraft()
-    errors = fieldErrors
-    if (Object.keys(fieldErrors).length > 0) return
-
-    const text = benchText.trim()
-    if (text === '') {
-      benchResult = null
-      benchError = m['admin.promptChecks.bench.empty']()
-      return
-    }
-
-    benchRunning = true
-    benchError = ''
-    try {
-      const result = await api.request<PromptCheckTry>('/admin/prompt-check/try', {
-        method: 'POST',
-        body: JSON.stringify({ text, categories, model: draft.model })
-      })
-      benchUsed = categories
-      benchResult = result
-    } catch (error) {
-      benchResult = null
-      benchError = (error as Error).message
-    } finally {
-      benchRunning = false
-    }
-  }
-
-  /** Chaque enregistrement n'envoie que ses propres champs. */
-  async function patch(kind: Saving, body: PromptCheckPatch) {
-    saving = kind
-    try {
-      await api.request<PromptCheckStatus>('/admin/prompt-check', {
-        method: 'PATCH',
-        body: JSON.stringify(body)
-      })
-      useToast(m['admin.promptChecks.saved'](), 4000)
-      await invalidate('admin:prompt-check')
-      return true
-    } catch (error) {
-      useToast((error as Error).message, 6000, 'error')
-      return false
-    } finally {
-      saving = null
-    }
-  }
-
-  async function saveEnabled() {
-    const wanted = draft.enabled
-    const done = await patch('enabled', { enabled: wanted })
-    // Un interrupteur qui reste sur une position qu'il n'a pas obtenue ment.
-    if (!done) draft.enabled = !wanted
-  }
-
-  async function saveModel(event: SubmitEvent) {
-    event.preventDefault()
-    if (!modelChanged) return
-    await patch('model', { model: draft.model.trim() })
-  }
-
-  async function saveApiKey(event: SubmitEvent) {
-    event.preventDefault()
-    await patch('apiKey', { api_key: apiKey.trim() })
-  }
-
-  async function replaceApiKey() {
-    editingApiKey = true
-    await tick()
-    apiKeyField?.focus()
-  }
-
-  /**
-   * Un entier entre 0 et le plafond, null pour un champ vidé (le réglage par
-   * défaut de l'instance s'applique), undefined sinon. Un champ number renvoie
-   * un nombre, ou null une fois vidé.
-   */
-  function readCap(value: string | number | null): number | null | undefined {
-    const raw = String(value ?? '').trim()
-    if (raw === '') return null
-    const parsed = Number(raw)
-    return Number.isInteger(parsed) && parsed >= 0 && parsed <= MAX_CONVERSATIONS_CAP
-      ? parsed
-      : undefined
-  }
-
-  let capErrors = $state<{ perIp?: string; sameModels?: string }>({})
-
-  async function saveCaps(event: SubmitEvent) {
-    event.preventDefault()
-    const perIp = readCap(draft.capPerIp)
-    const sameModels = readCap(draft.capSameModels)
-    const invalid = m['admin.promptChecks.caps.invalid']()
-    capErrors = {
-      perIp: perIp === undefined ? invalid : undefined,
-      sameModels: sameModels === undefined ? invalid : undefined
-    }
-    if (perIp === undefined || sameModels === undefined) return
-
-    // Seule une limite modifiée est envoyée : l'autre continue de suivre le
-    // réglage par défaut si personne ne l'a fixée.
-    const body: PromptCheckPatch = {}
-    if (perIp !== data.check.conversations_per_ip_per_hour) {
-      body.conversations_per_ip_per_hour = perIp
-    }
-    if (sameModels !== data.check.conversations_same_models_per_ip_per_hour) {
-      body.conversations_same_models_per_ip_per_hour = sameModels
-    }
-    if (Object.keys(body).length) await patch('caps', body)
-  }
-
-  async function saveCategories(event: SubmitEvent) {
-    event.preventDefault()
-
-    const { categories, fieldErrors } = readDraft()
-    errors = fieldErrors
-    if (Object.keys(fieldErrors).length > 0) return
-
-    await patch('categories', {
-      categories: categories as unknown as PromptCheckPatch['categories']
-    })
   }
 </script>
 
@@ -390,311 +220,172 @@
   <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
       {#if data.check.key_rejected}
-        <Alert variant="error" title={m['admin.promptChecks.health.keyRejected']()} class="mb-6">
-          <p>{m['admin.promptChecks.health.keyRejectedHint']()}</p>
+        <Alert variant="error" title={m['admin.promptChecks.health.keyRejected']()}>
+          <p>
+            {data.check.required
+              ? m['admin.promptChecks.health.keyRejectedHint']()
+              : m['admin.promptChecks.health.keyRejectedHintOptional']()}
+          </p>
         </Alert>
       {:else if data.check.healthy === false}
-        <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()} class="mb-6">
-          <p>{m['admin.promptChecks.health.unhealthyHint']()}</p>
-          <p>{m['admin.promptChecks.health.failures']({ count: failures })}</p>
+        <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()}>
+          <p>
+            {data.check.required
+              ? m['admin.promptChecks.health.unhealthyHint']()
+              : m['admin.promptChecks.health.unhealthyHintOptional']()}
+          </p>
+          <p>
+            {m['admin.promptChecks.health.failures']({
+              count: data.check.consecutive_failures ?? 0
+            })}
+          </p>
         </Alert>
       {/if}
     </section>
 
-    <div id="prompt-check-settings" class="settings-panel p-4 md:p-5">
-      <h2 class="fr-h6 gap-2 mb-4! text-dark-grey flex items-center">
-        <Icon
-          icon="i-ri-shield-check-line"
-          size="sm"
-          class="text-primary shrink-0"
-          aria-hidden="true"
-        />
-        {m['admin.promptChecks.settings.title']()}
-      </h2>
+    {#snippet model()}
+      <FormInput
+        {...field('model') as FormInputProps}
+        list="prompt-check-model-options"
+        bind:value={form.form.model!}
+      />
+      <datalist id="prompt-check-model-options">
+        {#each data.models as option (option.id)}
+          <option value={option.id}>{option.name}</option>
+        {/each}
+      </datalist>
+    {/snippet}
 
-      <div class="settings-switch pb-4" onchange={saveEnabled}>
-        <Toggle
-          id="prompt-check-enabled"
-          bind:value={draft.enabled}
-          label={m['admin.promptChecks.settings.enabled']()}
-          hideCheckLabel
-          class="mb-0! pr-13! text-dark-grey font-medium"
-        />
-      </div>
-
-      <div class="gap-x-5 gap-y-4 md:grid-cols-2 mt-4 grid items-start">
-        <form id="prompt-check-model-form" onsubmit={saveModel}>
-          <label
-            class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium"
-            for="prompt-check-model"
-          >
-            {m['admin.promptChecks.model.label']()}
-          </label>
-          <div class="gap-2 flex flex-wrap items-start">
-            <input
-              id="prompt-check-model"
-              class="fr-input min-w-[12rem] flex-1"
-              bind:value={draft.model}
-              disabled={saving === 'model'}
+    {#snippet apiKey()}
+      <FormInput
+        {...field('api_key') as FormInputProps}
+        type="password"
+        placeholder={data.check.has_api_key ? '• '.repeat(20) : undefined}
+        help={data.check.has_api_key ? m['admin.endpointKey.hint']() : field('api_key').help}
+        bind:value={form.form.api_key!}
+      >
+        {#if data.check.has_api_key}
+          {#if confirmingRemoval}
+            <Button
+              id="prompt-check-api-key-remove-confirm"
+              variant="secondary"
+              text={m['admin.endpointKey.removeConfirm']()}
+              disabled={removing}
+              class="text-nowrap"
+              onclick={removeApiKey}
             />
             <Button
-              id="prompt-check-model-save"
-              type="submit"
-              variant="secondary"
-              text={saving === 'model'
-                ? m['admin.promptChecks.saving']()
-                : m['admin.promptChecks.saveModel']()}
-              disabled={saving === 'model' || !modelChanged}
+              text={m['words.back']()}
+              disabled={removing}
+              onclick={() => (confirmingRemoval = false)}
             />
-          </div>
-        </form>
-
-        <form id="prompt-check-api-key-form" onsubmit={saveApiKey}>
-          <div class="gap-2 mb-1 flex flex-wrap items-baseline justify-between">
-            {#if editingApiKey}
-              <label
-                class="fr-label mt-0! mb-0! text-sm text-dark-grey font-medium"
-                for="prompt-check-api-key"
-              >
-                {m['admin.promptChecks.apiKey.label']()}
-              </label>
-            {:else}
-              <span class="fr-label mt-0! mb-0! text-sm text-dark-grey font-medium">
-                {m['admin.promptChecks.apiKey.label']()}
-              </span>
-            {/if}
-            <span id="prompt-check-api-key-state" class="text-xs text-grey">
-              {data.check.has_api_key
-                ? m['admin.promptChecks.apiKey.set']()
-                : m['admin.promptChecks.apiKey.unset']()}
-            </span>
-          </div>
-
-          {#if editingApiKey}
-            <div class="gap-2 flex flex-wrap items-start">
-              <input
-                id="prompt-check-api-key"
-                class="fr-input min-w-[12rem] flex-1"
-                type="password"
-                autocomplete="off"
-                placeholder={m['admin.promptChecks.apiKey.placeholder']()}
-                bind:value={apiKey}
-                bind:this={apiKeyField}
-                disabled={saving === 'apiKey'}
-              />
-              <Button
-                id="prompt-check-api-key-save"
-                type="submit"
-                variant="secondary"
-                text={saving === 'apiKey'
-                  ? m['admin.promptChecks.saving']()
-                  : m['admin.promptChecks.saveApiKey']()}
-                disabled={saving === 'apiKey' || apiKey.trim() === ''}
-              />
-            </div>
           {:else}
-            <div class="gap-2 flex flex-wrap items-center">
-              <button
-                id="prompt-check-api-key-masked"
-                type="button"
-                class="fr-input mb-0! min-w-[12rem] flex-1 cursor-text text-left tracking-[0.25em] select-none"
-                aria-label="Remplacer la clé API"
-                onclick={replaceApiKey}
-              >
-                {maskedKey}
-              </button>
-              <Button
-                id="prompt-check-api-key-replace"
-                variant="secondary"
-                text={m['admin.promptChecks.apiKey.replace']()}
-                onclick={replaceApiKey}
-              />
-            </div>
-          {/if}
-        </form>
-      </div>
-    </div>
-
-    <form id="prompt-check-caps-form" onsubmit={saveCaps}>
-      <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.caps.title']()}</h2>
-      <p class="fr-text--sm text-grey mb-4!">{m['admin.promptChecks.caps.description']()}</p>
-
-      <div class="gap-x-5 gap-y-4 md:grid-cols-2 grid items-start">
-        {#each [{ key: 'perIp', id: 'prompt-check-cap-per-ip', label: m['admin.promptChecks.caps.perIp']() }, { key: 'sameModels', id: 'prompt-check-cap-same-models', label: m['admin.promptChecks.caps.sameModels']() }] as field (field.key)}
-          <div
-            class={[
-              'fr-input-group mb-0!',
-              { 'fr-input-group--error': !!capErrors[field.key as 'perIp' | 'sameModels'] }
-            ]}
-          >
-            <label class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium" for={field.id}>
-              {field.label}
-            </label>
-            <input
-              id={field.id}
-              class="fr-input w-[120px] tabular-nums"
-              type="number"
-              min="0"
-              max={MAX_CONVERSATIONS_CAP}
-              step="1"
-              bind:value={draft[field.key === 'perIp' ? 'capPerIp' : 'capSameModels']}
-              disabled={saving === 'caps'}
-              aria-describedby={`${field.id}-messages`}
+            <Button
+              id="prompt-check-api-key-remove"
+              icon="delete-bin-line"
+              text={m['admin.endpointKey.remove']()}
+              class="text-nowrap"
+              onclick={() => (confirmingRemoval = true)}
             />
-            {#if capErrors[field.key as 'perIp' | 'sameModels']}
-              <div class="fr-messages-group" id={`${field.id}-messages`} aria-live="polite">
-                <p class="fr-message fr-message--error">
-                  {capErrors[field.key as 'perIp' | 'sameModels']}
-                </p>
-              </div>
-            {/if}
-          </div>
-        {/each}
-      </div>
+          {/if}
+        {/if}
+      </FormInput>
+    {/snippet}
 
-      <Button
-        id="prompt-check-caps-save"
-        type="submit"
-        text={saving === 'caps'
-          ? m['admin.promptChecks.saving']()
-          : m['admin.promptChecks.caps.save']()}
-        disabled={saving === 'caps'}
-        class="mt-4"
+    {#snippet description()}
+      <Textarea
+        id="description"
+        label={field('description').label}
+        help={field('description').help}
+        error={form.errors['description']}
+        rows={3}
+        maxlength={2000}
+        bind:value={form.form.description!}
       />
-    </form>
+    {/snippet}
 
-    <form id="prompt-check-categories-form" onsubmit={saveCategories}>
-      <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.categoriesTitle']()}</h2>
-
-      {#if !draft.enabled}
-        <p id="prompt-check-disabled-notice" class="mb-3! text-sm text-grey">
-          {m['admin.promptChecks.settings.disabledNotice']()}
-        </p>
-      {/if}
-
-      <div
-        class={[
-          'mb-5 cg-border p-3 md:p-4 bg-[--cg-very-light-grey]',
-          { 'opacity-60': !draft.enabled }
-        ]}
-      >
-        <h3 class="text-sm mb-2! text-dark-grey font-bold">
-          {m['admin.promptChecks.actions.help.title']()}
-        </h3>
-        <ul class="gap-x-6 gap-y-2 sm:grid-cols-2 m-0! p-0! grid list-none">
-          {#each actionOrder as action (action)}
-            <li class="gap-2 text-sm flex items-start">
-              <Icon
-                icon={actionTone[action].icon}
-                size="xs"
-                class="mt-0.5 shrink-0"
-                style="color: {actionTone[action].color}"
-                aria-hidden="true"
-              />
-              <span class="text-grey">
-                <strong class="text-dark-grey">{actionLabels[action]}</strong>
-                {actionHelp[action]}
-              </span>
-            </li>
+    {#snippet criteriaList()}
+      <fieldset id="criteria" class="fr-fieldset">
+        <legend class="fr-fieldset__legend">{field('criteria').label}</legend>
+        <div class="mb-4 p-4 cg-border w-full bg-[--cg-very-light-grey]">
+          <h3 class="text-sm mb-2! text-dark-grey font-bold">
+            {m['admin.promptChecks.actions.help.title']()}
+          </h3>
+          <ul class="gap-x-6 gap-y-2 sm:grid-cols-2 m-0! p-0! grid list-none">
+            {#each actionOrder as action (action)}
+              <li class="gap-2 text-sm flex items-start">
+                <Icon
+                  icon={actionTone[action].icon}
+                  size="xs"
+                  class="mt-0.5 shrink-0"
+                  style="color: {actionTone[action].color}"
+                  aria-hidden="true"
+                />
+                <span class="text-grey">
+                  <strong class="text-dark-grey">{actionLabels[action]}</strong>
+                  {m[`admin.promptChecks.actions.help.${action}`]()}
+                </span>
+              </li>
+            {/each}
+          </ul>
+        </div>
+        <ul class="m-0! p-0! w-full list-none">
+          {#each criteria as criterion, i (i)}
+            <CriterionRow
+              id="criteria-{i}"
+              bind:criterion={criteria[i]}
+              fields={criterionFields}
+              saved={savedKeys.includes(criterion.key)}
+              takenKeys={criteria.filter((_, j) => j !== i).map((other) => other.key)}
+              errors={form.errors}
+              onremove={() => (form.form.criteria = criteria.filter((_, j) => j !== i))}
+            />
+          {:else}
+            <p id="prompt-check-criteria-empty" class="text-sm text-grey">
+              {m['admin.promptChecks.criteria.empty']()}
+            </p>
           {/each}
         </ul>
-      </div>
+        <Button
+          id="prompt-check-criteria-add"
+          variant="secondary"
+          icon="add-line"
+          text={m['admin.promptChecks.criteria.add']()}
+          onclick={() => (form.form.criteria = [...criteria, newCriterion()])}
+          class="mt-4"
+        />
+      </fieldset>
+    {/snippet}
 
-      <ul
-        id="prompt-check-categories"
-        class={['m-0! p-0! flex list-none flex-col', { 'opacity-60': !draft.enabled }]}
-        aria-label={m['admin.promptChecks.categoriesTitle']()}
-      >
-        {#each categories as category (category)}
-          <li
-            id={`prompt-check-row-${category}`}
-            class={[
-              'gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center px-1 py-3 grid',
-              'border-0 border-b border-solid border-[--border-default-grey] last:border-b-0'
-            ]}
-          >
-            <p class="mb-0! text-dark-grey min-w-0 font-medium">{categoryLabel(category)}</p>
-
-            <div class="gap-4 flex flex-wrap items-center">
-              <fieldset class="action-pills">
-                <legend class="fr-sr-only"
-                  >{m['admin.promptChecks.actions.legend']()} : {categoryLabel(category)}</legend
-                >
-                {#each actionOrder as option (option)}
-                  <input
-                    id={`prompt-check-action-${category}-${option}`}
-                    class="sr-only"
-                    type="radio"
-                    name={`prompt-check-action-${category}`}
-                    value={option}
-                    bind:group={draft.categories[category].action}
-                    disabled={saving === 'categories'}
-                  />
-                  <label
-                    for={`prompt-check-action-${category}-${option}`}
-                    style="--pill-color: {actionTone[option]
-                      .color}; --pill-soft: color-mix(in srgb, {actionTone[option]
-                      .color} 12%, transparent)"
-                  >
-                    <Icon
-                      icon={actionTone[option].icon}
-                      size="xs"
-                      class="pill-icon"
-                      aria-hidden="true"
-                    />
-                    {actionLabels[option]}
-                  </label>
-                {/each}
-              </fieldset>
-
-              <div
-                class={['fr-input-group mb-0!', { 'fr-input-group--error': !!errors[category] }]}
-              >
-                <div class="gap-2 flex items-center">
-                  <label
-                    class="fr-label text-xs! mt-0! text-grey"
-                    for={`prompt-check-threshold-${category}`}
-                  >
-                    {m['admin.promptChecks.threshold.legend']()}
-                    <span class="fr-sr-only">: {categoryLabel(category)}</span>
-                  </label>
-                  <input
-                    id={`prompt-check-threshold-${category}`}
-                    class="fr-input w-[86px] tabular-nums"
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    bind:value={draft.categories[category].threshold}
-                    disabled={saving === 'categories'}
-                    aria-describedby={`prompt-check-threshold-${category}-messages`}
-                  />
-                </div>
-                {#if errors[category]}
-                  <div
-                    class="fr-messages-group"
-                    id={`prompt-check-threshold-${category}-messages`}
-                    aria-live="polite"
-                  >
-                    <p class="fr-message fr-message--error">{errors[category]}</p>
-                  </div>
-                {/if}
-              </div>
-            </div>
-          </li>
-        {/each}
-      </ul>
-
-      <Button
-        id="prompt-check-categories-save"
-        type="submit"
-        text={saving === 'categories'
-          ? m['admin.promptChecks.saving']()
-          : m['admin.promptChecks.saveCategories']()}
-        disabled={saving === 'categories'}
-        class="mt-4"
+    {#snippet capPerIp()}
+      <FormInput
+        {...field('conversations_per_ip_per_hour') as FormInputProps}
+        placeholder={String(data.check.default_conversations_per_ip_per_hour)}
+        bind:value={form.form.conversations_per_ip_per_hour!}
       />
-    </form>
+    {/snippet}
+
+    {#snippet capSameModels()}
+      <FormInput
+        {...field('conversations_same_models_per_ip_per_hour') as FormInputProps}
+        placeholder={String(data.check.default_conversations_same_models_per_ip_per_hour)}
+        bind:value={form.form.conversations_same_models_per_ip_per_hour!}
+      />
+    {/snippet}
+
+    <Form
+      id="prompt-check-form"
+      label={m['admin.promptChecks.settings.title']()}
+      {...form}
+      fieldSnippets={{
+        model,
+        api_key: apiKey,
+        description,
+        criteria: criteriaList,
+        conversations_per_ip_per_hour: capPerIp,
+        conversations_same_models_per_ip_per_hour: capSameModels
+      }}
+    />
 
     <section id="prompt-check-bench">
       <h2 class="fr-h5 mb-1!">{m['admin.promptChecks.bench.title']()}</h2>
@@ -775,7 +466,7 @@
                 <li id={`prompt-check-bench-row-${row.category}`}>
                   <div class="gap-2 mb-1 flex flex-wrap items-baseline">
                     <span class="text-sm text-dark-grey min-w-0 font-medium flex-1"
-                      >{categoryLabel(row.category)}</span
+                      >{row.label}</span
                     >
                     <span class="text-dark-grey font-bold w-[4.25rem] text-right tabular-nums">
                       {formatScore(row.score)}
@@ -905,7 +596,7 @@
             <div class="cg-border bg-white p-5">
               <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.byCategoryTitle']()}</h3>
               <p class="text-sm mt-0! mb-4! text-grey">
-                Répartition des détections par catégorie et par résultat.
+                Répartition des détections par critère et par résultat.
               </p>
               <CategoryHistogram
                 categories={stats.by_category}
@@ -922,100 +613,18 @@
 </PageLayout>
 
 <style lang="postcss">
+  /* Same tint as the FormInput fields of the form. */
+  :global(#prompt-check-form textarea.fr-input) {
+    --border-plain-grey: var(--blue-france-main-525);
+    --background-contrast-grey: var(--blue-ecume-975-75);
+  }
+
   .historical-kpi {
     border-left: 4px solid var(--brand-primary);
-    background: linear-gradient(
-      110deg,
-      color-mix(in srgb, var(--brand-primary) 8%, var(--background-default-grey)),
-      var(--background-default-grey) 65%
-    );
   }
 
   .result-card {
     border: 1px solid color-mix(in srgb, var(--result-tone) 24%, var(--border-default-grey));
     background: color-mix(in srgb, var(--result-tone) 7%, var(--background-default-grey));
-  }
-
-  /* Même traitement que le panneau .iasummit de l'arène : un dégradé de marque
-     très doux, repris ici avec les jetons de thème pour suivre le mode sombre. */
-  .settings-panel {
-    border: 1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent);
-    border-radius: 0.75rem;
-    background: linear-gradient(
-      57deg,
-      color-mix(in srgb, var(--brand-primary) 13%, var(--background-default-grey)) 8.29%,
-      color-mix(in srgb, var(--brand-primary) 5%, var(--background-default-grey)) 36.19%,
-      var(--background-default-grey) 96.89%
-    );
-  }
-
-  :root[data-fr-theme='dark'] .settings-panel {
-    border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
-    background: linear-gradient(
-      57deg,
-      color-mix(in srgb, var(--brand-primary) 16%, var(--background-default-grey)) 8.29%,
-      color-mix(in srgb, var(--brand-primary) 7%, var(--background-default-grey)) 36.19%,
-      var(--background-default-grey) 96.89%
-    );
-  }
-
-  .settings-switch {
-    border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent);
-  }
-
-  :root[data-fr-theme='dark'] .settings-switch {
-    border-bottom-color: color-mix(in srgb, var(--brand-primary) 26%, transparent);
-  }
-
-  .action-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  .action-pills label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.625rem;
-    border: 1px solid var(--border-default-grey);
-    border-radius: 999px;
-    background: var(--background-default-grey);
-    color: var(--text-mention-grey);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .action-pills label:hover {
-    background: var(--background-default-grey-hover);
-    color: var(--text-default-grey);
-  }
-
-  .action-pills input:checked + label {
-    border-color: var(--pill-color);
-    box-shadow: inset 0 0 0 1px var(--pill-color);
-    background: var(--pill-soft);
-    color: var(--text-default-grey);
-    font-weight: 700;
-  }
-
-  .action-pills input:checked + label :global(.pill-icon),
-  .action-pills label:hover :global(.pill-icon) {
-    color: var(--pill-color);
-  }
-
-  .action-pills input:focus-visible + label {
-    outline: 2px solid var(--outline-color);
-    outline-offset: 2px;
-  }
-
-  .action-pills input:disabled + label {
-    cursor: not-allowed;
-    opacity: 0.6;
   }
 </style>

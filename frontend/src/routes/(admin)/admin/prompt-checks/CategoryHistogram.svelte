@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
   import type { PromptCheckDecision } from './types'
 
   let {
@@ -28,9 +29,12 @@
 </script>
 
 {#if rows.length === 0}
-  <p class="text-sm text-grey">Aucune catégorie ne s'est déclenchée sur la période.</p>
+  <p class="text-sm text-grey">{m['admin.promptChecks.stats.byCategoryNone']()}</p>
 {:else}
-  <ul class="gap-4 m-0! p-0! flex list-none flex-col" aria-label="Détections par catégorie">
+  <ul
+    class="gap-4 m-0! p-0! flex list-none flex-col"
+    aria-label={m['admin.promptChecks.stats.byCategoryTitle']()}
+  >
     {#each rows as row (row.category)}
       <li id={`prompt-check-stats-category-${row.category}`}>
         <div class="gap-3 mb-1.5 text-sm flex items-baseline">

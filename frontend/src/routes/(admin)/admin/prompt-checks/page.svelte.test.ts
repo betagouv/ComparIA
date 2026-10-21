@@ -1,4 +1,5 @@
-import type { PromptCheckStatus } from '$lib/generated/admin'
+import type { PromptCheckCriterion, PromptCheckStatus } from '$lib/generated/admin'
+import type { JSONSchema } from '$lib/utils/form'
 import { render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import type { PageProps } from './$types'
@@ -6,61 +7,163 @@ import Page from './+page.svelte'
 import type { PromptCheckStats, PromptCheckTry } from './types'
 
 vi.mock('$app/navigation', () => ({
-  invalidate: vi.fn()
+  invalidate: vi.fn(),
+  beforeNavigate: vi.fn()
 }))
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: vi.fn() }
+  api: { request: vi.fn() },
+  ValidationError: class extends Error {}
 }))
 
 vi.mock('$lib/helpers/useToast.svelte', () => ({
   useToast: vi.fn()
 }))
 
-const categories = {
-  sexual: { threshold: 0.3, action: 'log' },
-  selfharm: { threshold: 0.3, action: 'log' },
-  hate_and_discrimination: { threshold: 0.5, action: 'log' },
-  violence_and_threats: { threshold: 0.5, action: 'log' },
-  dangerous: { threshold: 0.5, action: 'log' },
-  criminal: { threshold: 0.5, action: 'log' },
-  jailbreaking: { threshold: 0.5, action: 'log' },
-  pii: { threshold: 0.5, action: 'warn' },
-  health: { threshold: 0.5, action: 'off' },
-  law: { threshold: 0.5, action: 'off' },
-  financial: { threshold: 0.5, action: 'off' }
-}
+// What GET /admin/prompt-check/schema returns for PromptCheckUpsert.
+const schema = {
+  type: 'object',
+  properties: {
+    enabled: { type: 'boolean', default: true, title: 'Vérification des messages' },
+    required: {
+      type: 'boolean',
+      default: true,
+      title: 'Vérification obligatoire',
+      description:
+        'Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.'
+    },
+    model: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+      default: 'perplexity/pplx-decider-v1.2-20261016',
+      title: 'Modèle de décision',
+      description: "Un modèle de décision d'OpenRouter."
+    },
+    api_key: {
+      type: 'string',
+      optional: true,
+      default: null,
+      title: 'Clé API OpenRouter',
+      description: 'Laissée vide, la vérification utilise OPENROUTER_API_KEY.'
+    },
+    description: {
+      type: 'string',
+      maxLength: 2000,
+      default:
+        "compar:IA est un service public gratuit de l'État français. Chacun peut discuter avec deux modèles d'IA anonymes et voter pour la meilleure réponse. Toute question ou tâche sincère est la bienvenue, y compris sur la santé, le droit, l'argent, le commerce ou la création, et les questions sur les modèles eux-mêmes.",
+      title: "Description de l'instance",
+      description:
+        "Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé."
+    },
+    criteria: {
+      type: 'array',
+      items: { $ref: '#/$defs/PromptCheckCriterion' },
+      default: [],
+      title: 'Critères'
+    },
+    conversations_per_ip_per_hour: {
+      type: 'integer',
+      maximum: 10000,
+      minimum: 0,
+      optional: true,
+      default: null,
+      title: 'Conversations par IP et par heure',
+      description:
+        "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance."
+    },
+    conversations_same_models_per_ip_per_hour: {
+      type: 'integer',
+      maximum: 10000,
+      minimum: 0,
+      optional: true,
+      default: null,
+      title: 'Conversations par IP et par heure avec les mêmes modèles',
+      description:
+        "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance."
+    }
+  },
+  title: 'PromptCheckUpsert',
+  $defs: {
+    PromptCheckCriterion: {
+      type: 'object',
+      properties: {
+        key: {
+          type: 'string',
+          title: 'Identifiant',
+          description:
+            'Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.'
+        },
+        label: { type: 'string', minLength: 1, maxLength: 80, title: 'Nom' },
+        question: {
+          type: 'string',
+          minLength: 1,
+          maxLength: 500,
+          title: 'Question posée au modèle',
+          description: 'Une question fermée sur le `message`, à laquelle on répond par oui ou non.'
+        },
+        yes: { type: 'string', maxLength: 1000, default: '', title: 'Compte comme oui' },
+        no: { type: 'string', maxLength: 1000, default: '', title: 'Compte comme non' },
+        threshold: { type: 'number', maximum: 1, minimum: 0, title: 'Seuil' },
+        action: { enum: ['off', 'log', 'warn', 'block'], type: 'string', title: 'Action' },
+        message: {
+          enum: ['generic', 'self_harm', 'pii'],
+          type: 'string',
+          default: 'generic',
+          title: 'Message affiché'
+        }
+      },
+      required: ['key', 'label', 'question', 'threshold', 'action'],
+      title: 'PromptCheckCriterion'
+    }
+  }
+} as unknown as JSONSchema
 
-const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
-  ({
-    enabled: true,
-    has_api_key: false,
-    model: 'mistral-moderation-latest',
-    categories: { ...categories },
-    conversations_per_ip_per_hour: 20,
-    conversations_same_models_per_ip_per_hour: 5,
-    updated_at: '2026-07-01T10:00:00',
-    consecutive_failures: 0,
-    healthy: true,
-    warnings_shown: 0,
-    ...overrides
-  }) as unknown as PromptCheckStatus
+const criterion = (
+  key: string,
+  label: string,
+  threshold: number,
+  action: PromptCheckCriterion['action'],
+  message: PromptCheckCriterion['message'] = 'generic'
+): PromptCheckCriterion => ({
+  key,
+  label,
+  question: `Le \`message\` relève-t-il de ${label} ?`,
+  yes: '',
+  no: '',
+  threshold,
+  action,
+  message
+})
+
+// Indexes 0, 1 and 2 in the field ids.
+const criteria = [
+  criterion('sexual', 'Contenu sexuel', 0.3, 'log'),
+  criterion('pii', 'Données personnelles', 0.5, 'warn', 'pii'),
+  criterion('criminal', 'Activités criminelles', 0.5, 'log')
+]
+
+const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus => ({
+  enabled: true,
+  required: true,
+  has_api_key: false,
+  model: 'perplexity/pplx-decider-v1.2-20261016',
+  description: 'Une arène publique.',
+  criteria: criteria.map((c) => ({ ...c })),
+  conversations_per_ip_per_hour: null,
+  conversations_same_models_per_ip_per_hour: 0,
+  default_conversations_per_ip_per_hour: 20,
+  default_conversations_same_models_per_ip_per_hour: 5,
+  updated_at: '2026-07-01T10:00:00',
+  consecutive_failures: 0,
+  healthy: true,
+  warnings_shown: 0,
+  ...overrides
+})
 
 const tried = (overrides: Partial<PromptCheckTry> = {}): PromptCheckTry => ({
   decision: 'warned',
-  scores: {
-    sexual: 0.01,
-    selfharm: 0.0,
-    hate_and_discrimination: 0.02,
-    violence_and_threats: 0.0,
-    dangerous: 0.0,
-    criminal: 0.41,
-    jailbreaking: 0.03,
-    pii: 0.99,
-    health: 0.7,
-    law: 0.0,
-    financial: 0.0
-  },
+  scores: { sexual: 0.01, pii: 0.99, criminal: 0.41 },
   triggered: { pii: 'warn' },
   message: 'pii',
   latency_ms: 210,
@@ -88,216 +191,202 @@ const renderPage = (status: PromptCheckStatus, pageStats: PromptCheckStats | nul
   render(Page, {
     data: {
       check: status,
-      stats: pageStats
+      schema,
+      stats: pageStats,
+      models: [{ id: 'perplexity/pplx-decider-flash-v1.2', name: 'Decider Flash V1.2' }]
     } as unknown as PageProps['data'],
     params: {} as PageProps['params']
   })
 
-const runBench = async (container: HTMLElement, text: string) => {
-  const field = container.querySelector<HTMLTextAreaElement>('#prompt-check-bench-text')!
-  field.value = text
-  field.dispatchEvent(new Event('input', { bubbles: true }))
-  container.querySelector<HTMLButtonElement>('#prompt-check-bench-run')!.click()
-  await Promise.resolve()
-  await Promise.resolve()
-}
-
-const submit = async (container: HTMLElement, form: string) => {
-  container
-    .querySelector(`#prompt-check-${form}-form`)!
-    .dispatchEvent(new Event('submit', { bubbles: true }))
-  await Promise.resolve()
+const flush = async () => {
+  for (let i = 0; i < 4; i++) await Promise.resolve()
 }
 
 const type = (container: HTMLElement, selector: string, value: string) => {
-  const field = container.querySelector<HTMLInputElement>(selector)!
+  const field = container.querySelector<HTMLInputElement | HTMLTextAreaElement>(selector)!
   field.value = value
   field.dispatchEvent(new Event('input', { bubbles: true }))
   return field
 }
 
-const sentBody = async () => {
+const pick = (container: HTMLElement, selector: string) => {
+  const radio = container.querySelector<HTMLInputElement>(selector)!
+  radio.checked = true
+  radio.dispatchEvent(new Event('change', { bubbles: true }))
+}
+
+const save = async (container: HTMLElement) => {
+  container
+    .querySelector('#prompt-check-form')!
+    .dispatchEvent(new Event('submit', { bubbles: true }))
+  await flush()
+}
+
+const mockApi = async (value: unknown) => {
   const { api } = await import('$lib/fastapi-client')
-  return JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+  vi.mocked(api.request).mockReset()
+  vi.mocked(api.request).mockResolvedValue(value)
+  return api
+}
+
+const sentBody = async (call = 0) => {
+  const { api } = await import('$lib/fastapi-client')
+  return JSON.parse(vi.mocked(api.request).mock.calls[call][1]!.body as string)
 }
 
 describe('admin prompt check page', () => {
-  it('saves a threshold the number input handed back as a number', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
+  it('draws the settings from the schema, labels included', () => {
+    const { getByText, container } = renderPage(check())
+
+    expect(getByText('Modèle de décision')).toBeInTheDocument()
+    expect(getByText('Clé API OpenRouter')).toBeInTheDocument()
+    expect(getByText("Description de l'instance")).toBeInTheDocument()
+    expect(container.querySelector<HTMLInputElement>('#model')?.value).toBe(
+      'perplexity/pplx-decider-v1.2-20261016'
+    )
+    expect(container.querySelector<HTMLTextAreaElement>('#description')?.value).toBe(
+      'Une arène publique.'
+    )
+  })
+
+  it('saves the whole form at once, without what the API only reports', async () => {
+    const api = await mockApi(check())
 
     const { container } = renderPage(check())
-    type(container, '#prompt-check-threshold-pii', '0.65')
-    await submit(container, 'categories')
+    type(container, '#criteria-1-threshold', '0.65')
+    pick(container, '#criteria-0-action-block')
+    type(container, '#description', 'Une arène santé.')
+    await save(container)
 
     expect(api.request).toHaveBeenCalledWith(
       '/admin/prompt-check',
-      expect.objectContaining({ method: 'PATCH' })
+      expect.objectContaining({ method: 'put' })
     )
     const body = await sentBody()
-    expect(body.categories.pii).toEqual({ threshold: 0.65, action: 'warn' })
-    expect(Object.keys(body.categories).length).toBe(11)
+    expect(Object.keys(body).sort()).toEqual([
+      'api_key',
+      'conversations_per_ip_per_hour',
+      'conversations_same_models_per_ip_per_hour',
+      'criteria',
+      'description',
+      'enabled',
+      'model',
+      'required'
+    ])
+    // An empty key field keeps the stored key.
+    expect(body.api_key).toBeFalsy()
+    expect(body.description).toBe('Une arène santé.')
+    expect(body.criteria[1]).toEqual({ ...criteria[1], threshold: 0.65 })
+    expect(body.criteria[0]).toEqual({ ...criteria[0], action: 'block' })
   })
 
-  it('sends the categories on their own, without the model or the key', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
+  it('sends a typed key, and leaves it out otherwise', async () => {
+    await mockApi(check({ has_api_key: true }))
 
     const { container } = renderPage(check({ has_api_key: true }))
-    await submit(container, 'categories')
+    expect(container.querySelector<HTMLInputElement>('#api_key')?.type).toBe('password')
+    type(container, '#api_key', 'nouvelle-cle')
+    await save(container)
 
-    expect(Object.keys(await sentBody())).toEqual(['categories'])
+    expect((await sentBody()).api_key).toBe('nouvelle-cle')
   })
 
-  it('shows the conversation caps in force', () => {
-    const { container } = renderPage(
-      check({ conversations_per_ip_per_hour: 40, conversations_same_models_per_ip_per_hour: 0 })
-    )
-
-    expect(container.querySelector<HTMLInputElement>('#prompt-check-cap-per-ip')!.value).toBe('40')
-    expect(container.querySelector<HTMLInputElement>('#prompt-check-cap-same-models')!.value).toBe(
-      '0'
-    )
-  })
-
-  it('sends the conversation caps on their own, as whole numbers, zero included', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
+  it('removes a stored key after a confirmation', async () => {
+    const api = await mockApi(check())
 
     const { container } = renderPage(check({ has_api_key: true }))
-    type(container, '#prompt-check-cap-per-ip', '30')
-    type(container, '#prompt-check-cap-same-models', '0')
-    await submit(container, 'caps')
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-remove')!.click()
+    await flush()
+    expect(api.request).not.toHaveBeenCalled()
+    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-remove-confirm')!.click()
+    await flush()
 
-    expect(await sentBody()).toEqual({
-      conversations_per_ip_per_hour: 30,
-      conversations_same_models_per_ip_per_hour: 0
-    })
+    expect(api.request).toHaveBeenCalledWith('/admin/prompt-check/api-key', { method: 'delete' })
   })
 
-  it('leaves the conversation cap nobody changed to the default', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
-
+  it('offers no removal when no key is stored', () => {
     const { container } = renderPage(check())
-    type(container, '#prompt-check-cap-per-ip', '30')
-    await submit(container, 'caps')
 
-    expect(await sentBody()).toEqual({ conversations_per_ip_per_hour: 30 })
+    expect(container.querySelector('#prompt-check-api-key-remove')).not.toBeInTheDocument()
   })
 
-  it('sends an emptied conversation cap as null, back to the default', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
-
+  it('offers the listed decision models without limiting the field to them', () => {
     const { container } = renderPage(check())
-    type(container, '#prompt-check-cap-same-models', '')
-    await submit(container, 'caps')
 
-    expect(await sentBody()).toEqual({ conversations_same_models_per_ip_per_hour: null })
+    expect(container.querySelector('#model')?.getAttribute('list')).toBe(
+      'prompt-check-model-options'
+    )
+    const options = [...container.querySelectorAll('#prompt-check-model-options option')]
+    expect(options.map((option) => option.getAttribute('value'))).toEqual([
+      'perplexity/pplx-decider-flash-v1.2'
+    ])
   })
 
-  it.each(['-1', '2.5', '10001'])(
-    'refuses the conversation cap %j rather than sending it',
-    async (value) => {
-      const { api } = await import('$lib/fastapi-client')
-      vi.mocked(api.request).mockReset()
-
-      const { container } = renderPage(check())
-      type(container, '#prompt-check-cap-per-ip', value)
-      await submit(container, 'caps')
-      await Promise.resolve()
-
-      expect(api.request).not.toHaveBeenCalled()
-      expect(container.querySelector('#prompt-check-cap-per-ip-messages')).not.toBeNull()
-    }
-  )
-
-  it('sends the model on its own, once it differs from the stored one', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
-
+  it('folds saved criteria and shows their action and threshold', () => {
     const { container } = renderPage(check())
-    const button = container.querySelector<HTMLButtonElement>('#prompt-check-model-save')!
-    expect(button.disabled).toBe(true)
 
-    type(container, '#prompt-check-model', 'mistral-moderation-2411')
-    await Promise.resolve()
-    expect(button.disabled).toBe(false)
-
-    await submit(container, 'model')
-    expect(await sentBody()).toEqual({ model: 'mistral-moderation-2411' })
+    const row = container.querySelector('#criteria-1')!
+    expect(row.querySelector('details')?.open).toBe(false)
+    expect(row.querySelector('summary')?.textContent?.replace(/\s+/g, ' ')).toContain(
+      'Données personnelles Prévenir Seuil 0,5'
+    )
   })
 
-  it('offers the four actions per category and preselects the stored one', () => {
+  it('offers the four actions per criterion and preselects the stored one', () => {
     const { container } = renderPage(check())
 
-    const labels = [...container.querySelectorAll('#prompt-check-row-sexual .action-pills label')]
+    const labels = [...container.querySelectorAll('#criteria-0 .action-pills label')]
       .map((label) => label.textContent?.trim())
       .filter(Boolean)
     expect(labels).toEqual(['Ignorer', 'Surveiller', 'Prévenir', 'Refuser'])
 
-    const checked = (id: string) =>
-      container.querySelector<HTMLInputElement>(`#prompt-check-action-${id}`)?.checked
-    expect(checked('sexual-log')).toBe(true)
-    expect(checked('sexual-block')).toBe(false)
-    expect(checked('pii-warn')).toBe(true)
+    const checked = (index: number, action: string) =>
+      container.querySelector<HTMLInputElement>(`#criteria-${index}-action-${action}`)?.checked
+    expect(checked(0, 'log')).toBe(true)
+    expect(checked(0, 'block')).toBe(false)
+    expect(checked(1, 'warn')).toBe(true)
   })
 
-  it('bounds every threshold field between 0 and 1', () => {
-    renderPage(check())
+  it('keeps the key of a saved criterion out of reach', () => {
+    const { container } = renderPage(check())
 
-    const field = document.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')
-    expect(field?.value).toBe('0.3')
-    expect(field?.getAttribute('min')).toBe('0')
-    expect(field?.getAttribute('max')).toBe('1')
+    expect(container.querySelector<HTMLInputElement>('#criteria-0-key')?.disabled).toBe(true)
   })
 
-  it('refuses a threshold outside 0 and 1 rather than sending it', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockClear()
-
-    const { container, getByText } = renderPage(check())
-    type(container, '#prompt-check-threshold-sexual', '1.4')
-    await submit(container, 'categories')
-
-    expect(api.request).not.toHaveBeenCalled()
-    expect(getByText('Saisissez un nombre entre 0 et 1.')).toBeInTheDocument()
-  })
-
-  it('lets the model be saved even when a threshold is out of bounds', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
+  it('adds a criterion that takes its key from its name', async () => {
+    await mockApi(check())
 
     const { container } = renderPage(check())
-    type(container, '#prompt-check-threshold-sexual', '1.4')
-    type(container, '#prompt-check-model', 'mistral-moderation-2411')
-    await submit(container, 'model')
+    container.querySelector<HTMLButtonElement>('#prompt-check-criteria-add')!.click()
+    await flush()
+    expect(container.querySelector('#criteria-3 details')?.hasAttribute('open')).toBe(true)
+    type(container, '#criteria-3-label', 'Hors sujet : pubs')
+    type(container, '#criteria-3-question', 'Le `message` est-il une publicité ?')
+    type(container, '#criteria-3-yes', 'Liens, promotions')
+    await save(container)
 
-    expect(await sentBody()).toEqual({ model: 'mistral-moderation-2411' })
+    expect((await sentBody()).criteria[3]).toEqual({
+      key: 'hors_sujet_pubs',
+      label: 'Hors sujet : pubs',
+      question: 'Le `message` est-il une publicité ?',
+      yes: 'Liens, promotions',
+      no: '',
+      threshold: 0.5,
+      action: 'log',
+      message: 'generic'
+    })
   })
 
-  it('lets the product categories be configured, seeded off rather than locked', () => {
-    const { getAllByText } = renderPage(check())
+  it('removes a criterion', async () => {
+    await mockApi(check())
 
-    for (const label of ['Santé', 'Droit', 'Finance']) {
-      expect(getAllByText(label).length).toBeGreaterThan(0)
-    }
-    const off = document.querySelector<HTMLInputElement>('#prompt-check-action-health-off')
-    expect(off).toBeInTheDocument()
-    expect(off?.checked).toBe(true)
-    expect(off?.disabled).toBe(false)
-    expect(
-      document.querySelector('#prompt-check-action-health-block')?.hasAttribute('disabled')
-    ).toBe(false)
-    expect(document.querySelector('#prompt-check-threshold-health')).toBeInTheDocument()
+    const { container } = renderPage(check())
+    container.querySelector<HTMLButtonElement>('#criteria-0-remove')!.click()
+    await flush()
+    await save(container)
+
+    const sent = (await sentBody()).criteria.map((c: PromptCheckCriterion) => c.key)
+    expect(sent).toEqual(['pii', 'criminal'])
   })
 
   it('explains what the four actions do, warning included', () => {
@@ -308,9 +397,7 @@ describe('admin prompt check page', () => {
   })
 
   it('says so when the check has stopped working, and stays quiet when it has not', () => {
-    const { getByText, queryByText, unmount } = renderPage(
-      check({ healthy: false, consecutive_failures: 7 })
-    )
+    const { getByText, unmount } = renderPage(check({ healthy: false, consecutive_failures: 7 }))
 
     expect(getByText('La vérification ne répond plus')).toBeInTheDocument()
     expect(getByText('7 échecs consécutifs')).toBeInTheDocument()
@@ -318,7 +405,39 @@ describe('admin prompt check page', () => {
 
     const healthy = renderPage(check())
     expect(healthy.queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
-    expect(queryByText('0 échecs consécutifs')).not.toBeInTheDocument()
+  })
+
+  it('says messages go through while a check that is not required fails', () => {
+    const { getByText } = renderPage(
+      check({ required: false, healthy: false, consecutive_failures: 7 })
+    )
+
+    expect(getByText(/les messages passent sans être vérifiés/)).toBeInTheDocument()
+  })
+
+  it('shows the default an empty conversation cap falls back to', async () => {
+    await mockApi(check())
+
+    const { container } = renderPage(check())
+    const perIp = container.querySelector<HTMLInputElement>('#conversations_per_ip_per_hour')!
+    expect(perIp.value).toBe('')
+    expect(perIp.placeholder).toBe('20')
+    // Zero is a cap turned off, not an empty field.
+    expect(
+      container.querySelector<HTMLInputElement>('#conversations_same_models_per_ip_per_hour')?.value
+    ).toBe('0')
+
+    await save(container)
+    const body = await sentBody()
+    expect(body.conversations_per_ip_per_hour).toBeNull()
+    expect(body.conversations_same_models_per_ip_per_hour).toBe(0)
+  })
+
+  it('offers the switch that makes the check required', () => {
+    const { getByText, container } = renderPage(check())
+
+    expect(getByText('Vérification obligatoire')).toBeInTheDocument()
+    expect(container.querySelector<HTMLInputElement>('#required')?.checked).toBe(true)
   })
 
   it('names a rejected key instead of the generic failure', () => {
@@ -326,44 +445,38 @@ describe('admin prompt check page', () => {
       check({ healthy: false, key_rejected: true, consecutive_failures: 0 })
     )
 
-    expect(getByText('Mistral refuse la clé')).toBeInTheDocument()
+    expect(getByText('OpenRouter refuse la clé')).toBeInTheDocument()
     expect(queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
   })
 
-  it('runs the bench against the on-screen rules, not the stored ones', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(tried())
+  it('runs the bench against the on-screen settings, not the stored ones', async () => {
+    const api = await mockApi(tried())
 
     const { container } = renderPage(check())
-    const threshold = container.querySelector<HTMLInputElement>('#prompt-check-threshold-pii')!
-    threshold.value = '0.65'
-    threshold.dispatchEvent(new Event('input', { bubbles: true }))
-    const action = container.querySelector<HTMLInputElement>('#prompt-check-action-sexual-block')!
-    action.checked = true
-    action.dispatchEvent(new Event('change', { bubbles: true }))
-
-    await runBench(container, 'un message à vérifier')
+    type(container, '#criteria-1-threshold', '0.65')
+    type(container, '#description', 'Une arène santé.')
+    type(container, '#prompt-check-bench-text', 'un message à vérifier')
+    container.querySelector<HTMLButtonElement>('#prompt-check-bench-run')!.click()
+    await flush()
 
     expect(api.request).toHaveBeenCalledWith(
       '/admin/prompt-check/try',
       expect.objectContaining({ method: 'POST' })
     )
-    const body = JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+    const body = await sentBody()
     expect(body.text).toBe('un message à vérifier')
-    expect(body.model).toBe('mistral-moderation-latest')
-    expect(body.categories.pii).toEqual({ threshold: 0.65, action: 'warn' })
-    expect(body.categories.sexual).toEqual({ threshold: 0.3, action: 'block' })
-    expect(Object.keys(body.categories).length).toBe(11)
+    expect(body.model).toBe('perplexity/pplx-decider-v1.2-20261016')
+    expect(body.description).toBe('Une arène santé.')
+    expect(body.criteria[1]).toEqual({ ...criteria[1], threshold: 0.65 })
   })
 
-  it('shows every category score, whether it fired or not', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(tried())
+  it('shows every criterion score, whether it fired or not', async () => {
+    await mockApi(tried())
 
     const { container, getByText } = renderPage(check())
-    await runBench(container, 'appelle Jean Dupont au 06 12 34 56 78')
+    type(container, '#prompt-check-bench-text', 'appelle Jean Dupont au 06 12 34 56 78')
+    container.querySelector<HTMLButtonElement>('#prompt-check-bench-run')!.click()
+    await flush()
 
     expect(getByText('Prévenu')).toBeInTheDocument()
     expect(getByText('Réponse en 210 ms')).toBeInTheDocument()
@@ -372,15 +485,12 @@ describe('admin prompt check page', () => {
     )
 
     const fired = container.querySelector('#prompt-check-bench-row-pii')!
+    expect(fired.textContent).toContain('Données personnelles')
     expect(fired.textContent).toContain('0,990')
-    expect(fired.textContent).toContain('0,500')
-    expect(fired.textContent).toContain('Déclenchée')
+    expect(fired.textContent).toContain('Déclenché')
 
-    // La quasi-atteinte : 0,410 contre un seuil de 0,300 dans le sens inverse,
-    // et surtout une catégorie qui n'a pas tiré reste visible avec sa note.
     const quiet = container.querySelector('#prompt-check-bench-row-criminal')!
     expect(quiet.textContent).toContain('0,410')
-    expect(quiet.textContent).toContain('0,500')
     expect(quiet.textContent).toContain('Sous le seuil')
   })
 
@@ -388,137 +498,29 @@ describe('admin prompt check page', () => {
     const { container, getByText } = renderPage(check(), stats({ total: 5 }))
 
     expect(container.querySelector('#prompt-check-stats-total')?.textContent?.trim()).toBe('5')
-    expect(getByText('Activité des messages')).toBeInTheDocument()
     expect(getByText('Détections dans le temps')).toBeInTheDocument()
 
     const blocked = container.querySelector('#prompt-check-stats-decision-blocked')?.textContent
     expect(blocked).toContain('Refusés')
     expect(blocked).toContain('4')
 
-    const passed = container.querySelector('#prompt-check-stats-decision-pass')?.textContent
-    expect(passed).toContain('Passés sans rien')
-    expect(passed).toContain('1000')
-
     const pii = container.querySelector('#prompt-check-stats-category-pii')?.textContent
     expect(pii).toContain('Données personnelles')
     expect(pii).toContain('22')
-    expect(container.querySelector('#prompt-check-stats-warnings')).not.toBeInTheDocument()
   })
 
   it('reloads all period-aligned indicators when the period changes', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(stats({ period: '30d', bucket: 'day' }))
+    const api = await mockApi(stats({ period: '30d', bucket: 'day' }))
     const { container } = renderPage(check(), stats())
     const select = container.querySelector<HTMLSelectElement>('#prompt-check-stats-period')!
     select.value = '30d'
     select.dispatchEvent(new Event('change', { bubbles: true }))
-    await Promise.resolve()
+    await flush()
 
     expect(api.request).toHaveBeenCalledWith(
       '/admin/prompt-check/stats',
       expect.objectContaining({ searchParams: { period: '30d' } })
     )
-  })
-
-  it('saves the switch as soon as it is toggled, and nothing else with it', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check())
-
-    const { container } = renderPage(check())
-    const toggle = container.querySelector<HTMLInputElement>('#prompt-check-enabled')!
-    expect(toggle.checked).toBe(true)
-    toggle.checked = false
-    toggle.dispatchEvent(new Event('change', { bubbles: true }))
-    await Promise.resolve()
-
-    expect(api.request).toHaveBeenCalledWith(
-      '/admin/prompt-check',
-      expect.objectContaining({ method: 'PATCH' })
-    )
-    expect(await sentBody()).toEqual({ enabled: false })
-  })
-
-  it('puts the switch back when the save fails', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockRejectedValue(new Error('Le serveur n’a pas répondu'))
-
-    const { container } = renderPage(check())
-    const toggle = container.querySelector<HTMLInputElement>('#prompt-check-enabled')!
-    toggle.checked = false
-    toggle.dispatchEvent(new Event('change', { bubbles: true }))
-    await Promise.resolve()
-    await Promise.resolve()
-    await Promise.resolve()
-
-    expect(toggle.checked).toBe(true)
-  })
-
-  it('says nothing is checked while the switch is off, without locking the rules', async () => {
-    const { container, getByText } = renderPage(check({ enabled: false }))
-
-    expect(
-      getByText(/aucun message n'est vérifié, quelles que soient les règles ci-dessous/)
-    ).toBeInTheDocument()
-    expect(
-      container.querySelector<HTMLInputElement>('#prompt-check-action-sexual-block')?.disabled
-    ).toBe(false)
-    expect(
-      container.querySelector<HTMLInputElement>('#prompt-check-threshold-sexual')?.disabled
-    ).toBe(false)
-  })
-
-  it('sends the key on its own, once it has been replaced', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    vi.mocked(api.request).mockReset()
-    vi.mocked(api.request).mockResolvedValue(check({ has_api_key: true }))
-
-    const { container } = renderPage(check({ has_api_key: true }))
-    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-masked')!.click()
-    await Promise.resolve()
-    type(container, '#prompt-check-api-key', 'nouvelle-cle')
-    await submit(container, 'api-key')
-
-    expect(await sentBody()).toEqual({ api_key: 'nouvelle-cle' })
-  })
-
-  it('shows a stored key as dots, with no field until replacing is chosen', async () => {
-    const { container } = renderPage(check({ has_api_key: true }))
-
-    expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
-      'Clé enregistrée'
-    )
-    const masked = container.querySelector('#prompt-check-api-key-masked')!
-    expect(masked.textContent?.trim()).toBe('••••••••••••')
-    expect(masked.tagName).toBe('BUTTON')
-    expect(masked).toHaveAttribute('aria-label', 'Remplacer la clé API')
-    expect(container.querySelector('#prompt-check-api-key')).not.toBeInTheDocument()
-
-    container.querySelector<HTMLButtonElement>('#prompt-check-api-key-replace')!.click()
-    await Promise.resolve()
-
-    const field = container.querySelector<HTMLInputElement>('#prompt-check-api-key')!
-    expect(field.value).toBe('')
-    expect(field.type).toBe('password')
-    expect(field.getAttribute('autocomplete')).toBe('off')
-    expect(container.querySelector('#prompt-check-api-key-masked')).not.toBeInTheDocument()
-
-    expect(container.querySelector('#prompt-check-api-key-clearing')).not.toBeInTheDocument()
-    expect(container.querySelector('#prompt-check-api-key-cancel')).not.toBeInTheDocument()
-    expect(container.querySelector<HTMLButtonElement>('#prompt-check-api-key-save')).toBeDisabled()
-  })
-
-  it('says when no key is stored and offers the field right away', () => {
-    const { container } = renderPage(check())
-
-    expect(container.querySelector('#prompt-check-api-key-state')?.textContent?.trim()).toBe(
-      'Aucune clé enregistrée'
-    )
-    expect(container.querySelector('#prompt-check-api-key')).toBeInTheDocument()
-    expect(container.querySelector('#prompt-check-api-key-masked')).not.toBeInTheDocument()
-    expect(container.querySelector('#prompt-check-api-key-replace')).not.toBeInTheDocument()
   })
 
   it('stays readable when the counts are missing', () => {

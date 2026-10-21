@@ -327,26 +327,19 @@
                 "help": {
                     "block": "The message is not sent.",
                     "log": "What was spotted is recorded, and the person sees nothing.",
-                    "off": "The category is not taken into account.",
+                    "off": "The criterion is not taken into account.",
                     "title": "What each action does",
                     "warn": "A window opens on sending. The person can send anyway or correct their message."
                 },
-                "legend": "Action",
                 "log": "Watch",
                 "off": "Ignore",
                 "warn": "Warn"
             },
             "apiKey": {
-                "cancel": "Cancel",
-                "label": "API key",
-                "placeholder": "New key",
-                "replace": "Replace",
-                "set": "Key saved",
-                "unset": "No key saved",
-                "willClear": "On saving, the stored key will be erased and the environment variable will take over."
+                "removed": "Key removed. The check now uses OPENROUTER_API_KEY."
             },
             "bench": {
-                "caption": "Score, threshold and result by category",
+                "caption": "Score, threshold and result by criterion",
                 "columns": {
                     "score": "Score",
                     "verdict": "Result"
@@ -356,14 +349,14 @@
                     "error": "The check did not answer",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
-                    "skipped": "Not checked, Mistral down",
+                    "skipped": "Not checked, model unavailable",
                     "warned": "Warned"
                 },
                 "decisionLegend": "Result",
                 "empty": "Write a message before running the test.",
                 "errors": {
-                    "call_failed": "The call to Mistral failed: {error}",
-                    "no_api_key": "No Mistral API key is configured: the check cannot run."
+                    "call_failed": "The call to the model failed: {error}",
+                    "no_api_key": "No OpenRouter API key is configured: the check cannot run."
                 },
                 "ignored": "Not watched",
                 "label": "Message to check",
@@ -376,69 +369,38 @@
                 "resultWaiting": "The result will appear here.",
                 "run": "Test",
                 "running": "Test running...",
-                "scoresHint": "Each bar shows the score obtained, and the vertical line marks the threshold. A score just under its threshold is the first thing to watch.",
-                "scoresTitle": "Breakdown by category",
+                "scoresHint": "Each bar shows the probability that the answer is yes, the vertical line marks the threshold. A score just under its threshold is the first thing to watch.",
+                "scoresTitle": "Breakdown by criterion",
                 "threshold": "Threshold {value}",
                 "title": "Test a message",
                 "triggered": "Triggered"
             },
-            "caps": {
-                "description": "How many conversations one IP address may start over a sliding hour, in all and with the same pair of models. These limits apply even when message verification is turned off. They are shared by everyone behind the same IP (a school, a ministry): partner cohorts (Pix) are not subject to them. 0 turns a limit off. Leave a field empty to go back to the instance default.",
-                "invalid": "Enter a whole number between 0 and 10,000.",
-                "perIp": "Conversations per IP per hour",
-                "sameModels": "Conversations per IP per hour with the same models",
-                "save": "Save the limits",
-                "title": "Conversation limits per IP"
-            },
-            "categories": {
-                "criminal": "Criminal activity",
-                "dangerous": "Dangerous acts",
-                "financial": "Finance",
-                "hateAndDiscrimination": "Hate and discrimination",
-                "health": "Health",
-                "jailbreaking": "Working around the instructions",
-                "law": "Law",
-                "pii": "Personal data",
-                "selfharm": "Self-harm and suicide",
-                "sexual": "Sexual content",
-                "violenceAndThreats": "Violence and threats"
-            },
-            "categoriesTitle": "Categories",
             "columns": {
                 "action": "Action",
-                "category": "Category",
                 "threshold": "Threshold"
             },
             "health": {
                 "failures": "{count} failures in a row",
                 "unhealthy": "The check no longer answers",
-                "unhealthyHint": "Calls to the moderation API are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
-                "keyRejected": "Mistral refuses the key",
-                "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid Mistral key below."
+                "unhealthyHint": "Calls to the decision model are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
+                "keyRejected": "OpenRouter refuses the key",
+                "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid OpenRouter key below.",
+                "unhealthyHintOptional": "Calls to the decision model are failing. The check is not required, so messages go through unchecked while it does not answer. Look at the server logs.",
+                "keyRejectedHintOptional": "The check is not required, so messages go through unchecked until the key is fixed. Paste a valid OpenRouter key below."
             },
-            "model": {
-                "label": "Moderation model"
-            },
-            "saveApiKey": "Save the key",
-            "saveCategories": "Save the categories",
-            "saved": "Check updated",
-            "saveModel": "Save the model",
-            "saving": "Saving...",
             "settings": {
-                "disabledNotice": "Check turned off: no message is checked, whatever the rules below say.",
-                "enabled": "Message checking",
                 "title": "Settings"
             },
             "stats": {
-                "byCategoryNone": "No category was triggered over the period.",
-                "byCategoryTitle": "Categories triggered",
+                "byCategoryNone": "No criterion was triggered over the period.",
+                "byCategoryTitle": "Criteria triggered",
                 "byDecisionTitle": "Results",
                 "decision": {
                     "blocked": "Refused",
                     "error": "Failed",
                     "logged": "Watched",
                     "pass": "Passed, nothing done",
-                    "skipped": "Not checked (Mistral down)",
+                    "skipped": "Not checked (model unavailable)",
                     "warned": "Warned"
                 },
                 "proceeded": "{count} sent anyway",
@@ -449,11 +411,7 @@
                 "warningsShown": "{count} shown",
                 "warningsTitle": "Warnings shown, from the start"
             },
-            "subtitle": "When a message falls into one of these categories, you decide what happens to the person: nothing, a warning they can pass, or a refusal.",
-            "threshold": {
-                "invalid": "Enter a number between 0 and 1.",
-                "legend": "Threshold"
-            },
+            "subtitle": "When a message meets one of your criteria, you decide what happens to the person: nothing, a warning they can pass, or a refusal.",
             "title": "Message checks",
             "criteria": {
                 "add": "Add a criterion",
