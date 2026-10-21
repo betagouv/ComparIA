@@ -326,14 +326,18 @@
     apiKeyField?.focus()
   }
 
-  /** Un entier entre 0 et le plafond, ou null. Un champ number renvoie un nombre. */
-  function readCap(value: string | number): number | null {
-    const raw = String(value).trim()
+  /**
+   * Un entier entre 0 et le plafond, null pour un champ vidé (le réglage par
+   * défaut de l'instance s'applique), undefined sinon. Un champ number renvoie
+   * un nombre, ou null une fois vidé.
+   */
+  function readCap(value: string | number | null): number | null | undefined {
+    const raw = String(value ?? '').trim()
+    if (raw === '') return null
     const parsed = Number(raw)
-    if (raw === '' || !Number.isInteger(parsed) || parsed < 0 || parsed > MAX_CONVERSATIONS_CAP) {
-      return null
-    }
-    return parsed
+    return Number.isInteger(parsed) && parsed >= 0 && parsed <= MAX_CONVERSATIONS_CAP
+      ? parsed
+      : undefined
   }
 
   let capErrors = $state<{ perIp?: string; sameModels?: string }>({})
@@ -344,15 +348,21 @@
     const sameModels = readCap(draft.capSameModels)
     const invalid = m['admin.promptChecks.caps.invalid']()
     capErrors = {
-      perIp: perIp === null ? invalid : undefined,
-      sameModels: sameModels === null ? invalid : undefined
+      perIp: perIp === undefined ? invalid : undefined,
+      sameModels: sameModels === undefined ? invalid : undefined
     }
-    if (perIp === null || sameModels === null) return
+    if (perIp === undefined || sameModels === undefined) return
 
-    await patch('caps', {
-      conversations_per_ip_per_hour: perIp,
-      conversations_same_models_per_ip_per_hour: sameModels
-    })
+    // Seule une limite modifiée est envoyée : l'autre continue de suivre le
+    // réglage par défaut si personne ne l'a fixée.
+    const body: PromptCheckPatch = {}
+    if (perIp !== data.check.conversations_per_ip_per_hour) {
+      body.conversations_per_ip_per_hour = perIp
+    }
+    if (sameModels !== data.check.conversations_same_models_per_ip_per_hour) {
+      body.conversations_same_models_per_ip_per_hour = sameModels
+    }
+    if (Object.keys(body).length) await patch('caps', body)
   }
 
   async function saveCategories(event: SubmitEvent) {

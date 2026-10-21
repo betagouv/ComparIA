@@ -383,7 +383,7 @@
                 "triggered": "Déclenchée"
             },
             "caps": {
-                "description": "Nombre de conversations qu'une même adresse IP peut lancer sur une heure glissante, en tout et avec la même paire de modèles. Ces limites s'appliquent même quand la vérification des messages est désactivée. Elles sont partagées par tous ceux qui sortent par la même IP (une école, un ministère) : les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite.",
+                "description": "Nombre de conversations qu'une même adresse IP peut lancer sur une heure glissante, en tout et avec la même paire de modèles. Ces limites s'appliquent même quand la vérification des messages est désactivée. Elles sont partagées par tous ceux qui sortent par la même IP (une école, un ministère) : les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite. Laissez un champ vide pour revenir à la valeur par défaut de l'instance.",
                 "invalid": "Entrez un entier entre 0 et 10 000.",
                 "perIp": "Conversations par IP et par heure",
                 "sameModels": "Conversations par IP et par heure avec les mêmes modèles",

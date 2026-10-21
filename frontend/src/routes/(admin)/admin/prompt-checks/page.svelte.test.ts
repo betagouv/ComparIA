@@ -178,7 +178,31 @@ describe('admin prompt check page', () => {
     })
   })
 
-  it.each(['-1', '2.5', '10001', ''])(
+  it('leaves the conversation cap nobody changed to the default', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check())
+    type(container, '#prompt-check-cap-per-ip', '30')
+    await submit(container, 'caps')
+
+    expect(await sentBody()).toEqual({ conversations_per_ip_per_hour: 30 })
+  })
+
+  it('sends an emptied conversation cap as null, back to the default', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockResolvedValue(check())
+
+    const { container } = renderPage(check())
+    type(container, '#prompt-check-cap-same-models', '')
+    await submit(container, 'caps')
+
+    expect(await sentBody()).toEqual({ conversations_same_models_per_ip_per_hour: null })
+  })
+
+  it.each(['-1', '2.5', '10001'])(
     'refuses the conversation cap %j rather than sending it',
     async (value) => {
       const { api } = await import('$lib/fastapi-client')

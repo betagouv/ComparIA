@@ -382,7 +382,7 @@
                 "triggered": "Udløst"
             },
             "caps": {
-                "description": "Hvor mange samtaler en IP-adresse må starte inden for en glidende time, i alt og med de samme to modeller. Grænserne gælder også, når kontrollen af beskeder er slået fra. De deles af alle bag den samme IP (en skole, et ministerium): partnerkohorter (Pix) er ikke omfattet. 0 slår en grænse fra.",
+                "description": "Hvor mange samtaler en IP-adresse må starte inden for en glidende time, i alt og med de samme to modeller. Grænserne gælder også, når kontrollen af beskeder er slået fra. De deles af alle bag den samme IP (en skole, et ministerium): partnerkohorter (Pix) er ikke omfattet. 0 slår en grænse fra. Lad et felt stå tomt for at vende tilbage til instansens standardværdi.",
                 "invalid": "Angiv et helt tal mellem 0 og 10.000.",
                 "perIp": "Samtaler pr. IP pr. time",
                 "sameModels": "Samtaler pr. IP pr. time med de samme modeller",
