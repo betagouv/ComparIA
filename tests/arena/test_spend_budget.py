@@ -354,6 +354,25 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         assert counter(state.redis, "all_ip", "testclient") == len(PROMPT)
 
 
+def test_a_sixth_conversation_with_the_same_models_is_refused_before_it_spends():
+    with arena() as state:
+        for _ in range(5):
+            start("add_first_text", state)
+        spent = counter(state.redis, "all_ip", IP)
+        calls = state.provider_calls
+
+        try:
+            start("add_first_text", state)
+        except HTTPException as error:
+            assert error.status_code == 429
+            assert error.detail == "rate_limited"
+        else:
+            raise AssertionError("the sixth conversation was not refused")
+
+        assert counter(state.redis, "all_ip", IP) == spent
+        assert state.provider_calls == calls
+
+
 if __name__ == "__main__":
     test_a_message_is_charged_before_the_models_start()
     test_a_client_that_hangs_up_has_still_paid()
@@ -363,4 +382,5 @@ if __name__ == "__main__":
     test_a_pricey_model_spends_the_pricey_budget_up_front()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
+    test_a_sixth_conversation_with_the_same_models_is_refused_before_it_spends()
     print("Spend budget cases passed.")

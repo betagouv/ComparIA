@@ -83,6 +83,11 @@ class FakeRedis:
         for member in ranked[start : max(stop + 1, 0)]:
             del zset[member]
 
+    def zrem(self, key, *members):
+        zset = self.zsets.get(key, {})
+        for member in members:
+            zset.pop(member, None)
+
     def zcard(self, key):
         return len(self.zsets.get(key, {}))
 

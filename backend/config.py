@@ -81,6 +81,12 @@ class Settings(BaseSettings):
     # source IP. The per-IP counter above only slows one attacker down; this one
     # closes the login code itself.
     AUTH_VERIFY_MAX_ATTEMPTS_PER_EMAIL: int = 10
+    # Conversations one IP may start in a sliding hour, and how many of those may
+    # use the same pair of models (0 turns a cap off). Counted per IP, so a school
+    # or a ministry behind one NAT shares them: raise them for such an instance.
+    # Members of an exempt cohort (RATELIMIT_EXEMPT_COHORTS) are never counted.
+    RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR: int = 20
+    RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR: int = 5
     # Fernet key(s) for secrets stored in the database: the admins'
     # authenticator secrets, the OIDC client secret, the endpoints' API keys,
     # the moderation key and the publishing credentials. Comma-separated to
@@ -286,11 +292,11 @@ RATELIMIT_ALL_MODELS_INPUT_PER_IP = RATELIMIT_ALL_MODELS_INPUT * 20
 # many people. Set above what a class pasting the same assignment would send.
 RATELIMIT_REPEATED_PROMPT_MIN_CHARS = 500
 RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
-# Cohorts whose members legitimately send the same long prompt, such as pupils
-# of a partner programme given a prompt template. The cohort is whatever the
+# Cohorts left out of the repeated prompt and conversation caps: pupils of a
+# partner programme are given the same prompt template and share a school IP. The cohort is whatever the
 # client declares (`?c=pix`), so anyone can claim it: this is a courtesy to the
 # programme, not a guarantee, and a script that sends it escapes the cap.
-RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS = ("pix",)
+RATELIMIT_EXEMPT_COHORTS = ("pix",)
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

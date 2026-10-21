@@ -38,6 +38,7 @@ from backend.arena.session import (
     is_ratelimited,
     is_repeated_prompt,
     is_warning_cooldown,
+    reserve_conversation,
     reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
@@ -367,6 +368,16 @@ async def add_first_text(
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
+
+    if not reserve_conversation(get_ip(request), (llm_a_id, llm_b_id), args.cohorts):
+        logger.error(
+            "Too many conversations started from this IP",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
 
     charge_budget(
         args.prompt_value,
