@@ -89,7 +89,7 @@ SCORES_TTL: Final[int] = 900
 # falls whole inside at least one window.
 CHUNK_CHARS: Final[int] = 8_000
 CHUNK_OVERLAP: Final[int] = 400
-# Calls in flight with one key, across all requests: OpenRouter answered 429
+# Calls in flight on this instance, across all requests: OpenRouter answered 429
 # to six at once on our bench. A slot lapses after SLOT_LEASE_SECONDS, so a
 # worker that dies holding one does not shrink the pool for good.
 PARALLEL_CALLS: Final[int] = 4
@@ -300,7 +300,7 @@ async def moderate_many(
 ) -> list[dict[str, float]]:
     """Scores for each input, in order, a few calls at a time.
 
-    At most PARALLEL_CALLS calls are in flight with one key, whoever makes
+    At most PARALLEL_CALLS calls are in flight on this instance, whoever makes
     them, and the whole lot must finish within CHECK_DEADLINE, or it fails
     like any other call.
 
@@ -314,14 +314,13 @@ async def moderate_many(
             UnreadableRow(PromptCheck.__tablename__, 1, "api_key").message()
         )
     gate = asyncio.Semaphore(PARALLEL_CALLS)
-    shared = REDIS_CHECK_CALLS_KEY.format(key_hash=hash_content(api_key))
     async with (
         asyncio.timeout(CHECK_DEADLINE),
         httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client,
     ):
 
         async def one(text: str) -> dict[str, float]:
-            async with gate, _slot(shared):
+            async with gate, _slot(REDIS_CHECK_CALLS_KEY):
                 return await _post(client, text, check, api_key)
 
         return list(await asyncio.gather(*(one(text) for text in inputs)))

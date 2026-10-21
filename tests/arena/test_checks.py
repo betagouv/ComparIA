@@ -853,8 +853,8 @@ def transport(handler, redis):
 
 
 def test_two_checks_at_once_share_the_call_limit():
-    """The limit is per key, not per prompt: two visitors at once must not
-    double the calls OpenRouter sees."""
+    """The limit is per instance, not per prompt: two visitors at once must
+    not double the calls OpenRouter sees."""
     flights: list[int] = []
     check = config(criminal=(0.5, "log"))
     with transport(slow_decider(0.05, flights), ZsetRedis()):
@@ -873,7 +873,7 @@ def test_two_checks_at_once_share_the_call_limit():
 
 def test_a_slot_left_by_a_dead_worker_lapses():
     redis = ZsetRedis()
-    key = checks.REDIS_CHECK_CALLS_KEY.format(key_hash=checks.hash_content("test-key"))
+    key = checks.REDIS_CHECK_CALLS_KEY
     lapsed = time.time() - 1
     redis.sets[key] = {f"dead-{i}": lapsed for i in range(checks.PARALLEL_CALLS)}
     with transport(slow_decider(0, []), redis):

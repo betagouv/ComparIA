@@ -105,11 +105,10 @@ REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_war
 REDIS_CHECK_SCORES_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{model_hash}}:{{prompt_hash}}"
 )
-# Calls to the decision model in flight with one API key, across every request,
-# worker and replica: a sorted set of call stamps scored by when they lapse.
-REDIS_CHECK_CALLS_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_calls:{{key_hash}}"
-)
+# Calls to the decision model in flight on this instance, across every request,
+# worker and replica: a sorted set of call stamps scored by when they lapse. One
+# pool, since an instance calls with one key at a time.
+REDIS_CHECK_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_calls"
 REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )
