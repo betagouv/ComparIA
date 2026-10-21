@@ -253,6 +253,7 @@ def reserve_conversation(
     ip: str,
     llm_ids: tuple[uuid.UUID, uuid.UUID],
     caps: tuple[int, int],
+    stamp: str,
     cohorts: str | None = None,
 ) -> bool:
     """
@@ -270,6 +271,7 @@ def reserve_conversation(
         llm_ids: the two models picked for the conversation
         caps: conversations allowed in the hour, in all and with the same pair of
             models; 0 turns a cap off
+        stamp: unique to the conversation, to take it back with release_conversation
         cohorts: comma-separated cohorts the client declares
 
     Returns:
@@ -277,25 +279,15 @@ def reserve_conversation(
     """
     if set((cohorts or "").split(",")) & set(RATELIMIT_EXEMPT_COHORTS):
         return True
-    bucket = ip_bucket(ip)
-    if not bucket:
+    keys = _conversation_keys(ip, llm_ids)
+    if not keys:
         return True
-    models = "-".join(sorted(str(llm_id) for llm_id in llm_ids))
-    per_ip, same_models = caps
-    budgets = [
-        (REDIS_CONVERSATIONS_IP_KEY.format(ip=bucket), per_ip),
-        (
-            REDIS_CONVERSATIONS_IP_MODELS_KEY.format(ip=bucket, models=models),
-            same_models,
-        ),
-    ]
-    budgets = [(key, cap) for key, cap in budgets if cap > 0]
+    budgets = [(key, cap) for key, cap in zip(keys, caps) if cap > 0]
     if not budgets:
         return True
     try:
         client = get_redis_client()
         now = time.time()
-        stamp = uuid.uuid4().hex
         pipe = client.pipeline()
         for key, _cap in budgets:
             pipe.zremrangebyscore(key, 0, now - CONVERSATION_WINDOW_SECONDS)
@@ -306,14 +298,38 @@ def reserve_conversation(
         counts = pipe.execute()[2::4]
         allowed = all(count <= cap for count, (_, cap) in zip(counts, budgets))
         if not allowed:
-            pipe = client.pipeline()
-            for key, _cap in budgets:
-                pipe.zrem(key, stamp)
-            pipe.execute()
+            release_conversation(ip, llm_ids, stamp)
         return allowed
     except Exception as e:
         logger.error(f"[SESSION] Error counting conversations: {e}")
         return True
+
+
+def release_conversation(
+    ip: str, llm_ids: tuple[uuid.UUID, uuid.UUID], stamp: str
+) -> None:
+    """Take back a conversation reserve_conversation counted but that did not
+    start, so the window only holds the ones that went through."""
+    try:
+        pipe = get_redis_client().pipeline()
+        for key in _conversation_keys(ip, llm_ids):
+            pipe.zrem(key, stamp)
+        pipe.execute()
+    except Exception as e:
+        logger.error(f"[SESSION] Error releasing a conversation: {e}")
+
+
+def _conversation_keys(ip: str, llm_ids: tuple[uuid.UUID, uuid.UUID]) -> list[str]:
+    """The IP's two conversation windows: all of them, then those with this pair
+    of models (in either order). Empty for a caller no IP identifies."""
+    bucket = ip_bucket(ip)
+    if not bucket:
+        return []
+    models = "-".join(sorted(str(llm_id) for llm_id in llm_ids))
+    return [
+        REDIS_CONVERSATIONS_IP_KEY.format(ip=bucket),
+        REDIS_CONVERSATIONS_IP_MODELS_KEY.format(ip=bucket, models=models),
+    ]
 
 
 def increment_blocked_prompts(ip: str) -> None:

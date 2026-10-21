@@ -304,6 +304,8 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     assert {k: v for k, v in state.redis.store.items() if v} == before, route
     assert state.created == 0, route
     assert state.provider_calls == 0, route
+    # Nor does it count as a conversation the IP started.
+    assert not any(state.redis.zsets.values()), route
     # A counter the refused message created holds nothing and must not stay in
     # Redis for ever.
     assert all(k in state.redis.ttl for k in state.redis.store if k != spent), route

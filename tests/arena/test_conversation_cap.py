@@ -27,7 +27,7 @@ A, B, C = uuid4(), uuid4(), uuid4()
 
 
 def reserve(ip, llm_ids, cohorts=None, caps=(TOTAL, SAME)):
-    return session.reserve_conversation(ip, llm_ids, caps, cohorts)
+    return session.reserve_conversation(ip, llm_ids, caps, uuid4().hex, cohorts)
 
 
 def test_sixth_conversation_with_the_same_models_is_refused():
@@ -68,6 +68,16 @@ def test_a_refused_conversation_leaves_the_window_as_it_was():
             assert reserve(IP, (A, B)) is False
         # Only the five allowed ones are stamped, on both counters.
         assert sorted(len(z) for z in fake.zsets.values()) == [SAME, SAME]
+
+
+def test_a_released_conversation_frees_its_place():
+    with fake_redis():
+        for _ in range(SAME - 1):
+            reserve(IP, (A, B))
+        assert session.reserve_conversation(IP, (A, B), (TOTAL, SAME), "last")
+        session.release_conversation(IP, (B, A), "last")
+        assert reserve(IP, (A, B)) is True
+        assert reserve(IP, (A, B)) is False
 
 
 def test_the_window_slides_over_the_hour():

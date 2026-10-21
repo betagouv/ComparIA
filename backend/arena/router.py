@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from typing import Annotated, AsyncGenerator, Sequence
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
@@ -38,6 +38,7 @@ from backend.arena.session import (
     is_ratelimited,
     is_repeated_prompt,
     is_warning_cooldown,
+    release_conversation,
     reserve_conversation,
     reserve_input_chars,
     retreive_comparison_metadata,
@@ -374,8 +375,9 @@ async def add_first_text(
     )
 
     caps = conversation_caps(await get_prompt_check())
+    conversation = uuid4().hex
     if not reserve_conversation(
-        get_ip(request), (llm_a_id, llm_b_id), caps, args.cohorts
+        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, args.cohorts
     ):
         logger.error(
             "Too many conversations started from this IP",
@@ -386,14 +388,19 @@ async def add_first_text(
             detail="rate_limited",
         )
 
-    charge_budget(
-        args.prompt_value,
-        (llm_a_id, llm_b_id),
-        llms_data,
-        anonymous_user_hash,
-        request,
-        args.cohorts,
-    )
+    try:
+        charge_budget(
+            args.prompt_value,
+            (llm_a_id, llm_b_id),
+            llms_data,
+            anonymous_user_hash,
+            request,
+            args.cohorts,
+        )
+    except HTTPException:
+        # Refused for its characters, the conversation did not start.
+        release_conversation(get_ip(request), (llm_a_id, llm_b_id), conversation)
+        raise
     check = (await save_prompt_check_result(check)) if check else None
 
     web_search_results = None
