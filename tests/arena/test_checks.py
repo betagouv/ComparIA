@@ -738,3 +738,31 @@ def test_an_optional_check_keeps_web_results_it_cannot_check():
     ):
         kept = asyncio.run(checks.drop_flagged_results(pages))
     assert kept == pages
+
+
+def test_running_out_of_credits_is_not_an_outage():
+    """A 402 means our budget ran out, not the provider: pausing would let
+    every message through unchecked while the account is empty."""
+    redis = FakeRedis()
+    for _ in range(checks.OUTAGE_AFTER_FAILURES + 2):
+        result, fake = run(config(criminal=(0.5, "block")), statuses=[402], redis=redis)
+        assert len(fake.requests) == 1
+        assert result.decision == "error"
+        assert result.block_message == checks.UNAVAILABLE_MESSAGE
+    assert not redis.exists(checks.REDIS_CHECK_PAUSED_KEY)
+    assert checks.REDIS_CHECK_FAILURES_KEY not in redis.store
+    assert redis.exists(checks.REDIS_CHECK_NO_CREDITS_KEY)
+
+
+def test_an_optional_check_lets_a_prompt_through_without_credits():
+    result, _ = run(optional(config(criminal=(0.5, "block"))), statuses=[402])
+    assert result.decision == "error"
+    assert result.block_message is None
+
+
+def test_a_working_call_clears_the_no_credits_flag():
+    redis = FakeRedis()
+    redis.set(checks.REDIS_CHECK_NO_CREDITS_KEY, "1")
+    result, _ = run(config(criminal=(0.5, "block")), {"criminal": 0.9}, redis=redis)
+    assert result.decision == "blocked"
+    assert not redis.exists(checks.REDIS_CHECK_NO_CREDITS_KEY)

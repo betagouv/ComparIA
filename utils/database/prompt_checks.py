@@ -16,6 +16,7 @@ from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_KEY_REJECTED_KEY,
+    REDIS_CHECK_NO_CREDITS_KEY,
     REDIS_CHECK_WARNINGS_KEY,
     REDIS_PROMPT_CHECK_KEY,
     get_redis_client,
@@ -93,9 +94,11 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
         # The flag describes the old key. Left set, the panel would keep
         # calling the new one rejected until a visitor's message proved it.
         try:
-            get_redis_client().delete(REDIS_CHECK_KEY_REJECTED_KEY)
+            client = get_redis_client()
+            client.delete(REDIS_CHECK_KEY_REJECTED_KEY)
+            client.delete(REDIS_CHECK_NO_CREDITS_KEY)
         except Exception as e:
-            logger.warning(f"[PROMPT CHECK] Cannot clear the rejected key flag: {e}")
+            logger.warning(f"[PROMPT CHECK] Cannot clear the key flags: {e}")
     return row
 
 
@@ -128,6 +131,10 @@ def get_consecutive_failures() -> int:
 
 def is_key_rejected() -> bool:
     return _read_counter(REDIS_CHECK_KEY_REJECTED_KEY, "rejected key flag") > 0
+
+
+def is_out_of_credits() -> bool:
+    return _read_counter(REDIS_CHECK_NO_CREDITS_KEY, "no credits flag") > 0
 
 
 # Every decision a check can reach, so a quiet week still reports each bucket

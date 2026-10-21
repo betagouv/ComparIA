@@ -227,6 +227,14 @@
               : m['admin.promptChecks.health.keyRejectedHintOptional']()}
           </p>
         </Alert>
+      {:else if data.check.out_of_credits}
+        <Alert variant="error" title={m['admin.promptChecks.health.noCredits']()}>
+          <p>
+            {data.check.required
+              ? m['admin.promptChecks.health.noCreditsHint']()
+              : m['admin.promptChecks.health.noCreditsHintOptional']()}
+          </p>
+        </Alert>
       {:else if data.check.healthy === false}
         <Alert variant="error" title={m['admin.promptChecks.health.unhealthy']()}>
           <p>

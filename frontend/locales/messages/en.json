@@ -386,7 +386,10 @@
                 "keyRejected": "OpenRouter refuses the key",
                 "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid OpenRouter key below.",
                 "unhealthyHintOptional": "Calls to the decision model are failing. The check is not required, so messages go through unchecked while it does not answer. Look at the server logs.",
-                "keyRejectedHintOptional": "The check is not required, so messages go through unchecked until the key is fixed. Paste a valid OpenRouter key below."
+                "keyRejectedHintOptional": "The check is not required, so messages go through unchecked until the key is fixed. Paste a valid OpenRouter key below.",
+                "noCredits": "OpenRouter has no credits left for this key",
+                "noCreditsHint": "Every message is refused until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
+                "noCreditsHintOptional": "The check is not required, so messages go through unchecked until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below."
             },
             "settings": {
                 "title": "Settings"

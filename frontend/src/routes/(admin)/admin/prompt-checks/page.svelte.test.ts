@@ -459,6 +459,15 @@ describe('admin prompt check page', () => {
     expect(container.querySelector<HTMLInputElement>('#required')?.checked).toBe(true)
   })
 
+  it('says the credits ran out instead of the generic failure', () => {
+    const { getByText, queryByText } = renderPage(
+      check({ healthy: false, out_of_credits: true, consecutive_failures: 0 })
+    )
+
+    expect(getByText("OpenRouter n'a plus de crédits pour cette clé")).toBeInTheDocument()
+    expect(queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
+  })
+
   it('names a rejected key instead of the generic failure', () => {
     const { getByText, queryByText } = renderPage(
       check({ healthy: false, key_rejected: true, consecutive_failures: 0 })

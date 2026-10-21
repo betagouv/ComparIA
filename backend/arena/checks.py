@@ -24,8 +24,8 @@ charged to no one. While it is up and the check is `required`, nothing reaches
 the models unchecked: a prompt whose check fails is refused, and so are web
 search results. When it is not, both go through and the failure is recorded. Being rate
 limited does not count toward the pause, so the check cannot be switched off by
-flooding us, and neither does OpenRouter refusing our key, which refuses every
-prompt until the key is fixed.
+flooding us, and neither does OpenRouter refusing our key or running out of
+credits: a required check refuses every prompt until that is fixed.
 Failures are logged at error level, sent to Sentry, and counted in Redis so the
 admin panel shows a check that has stopped working.
 """
@@ -53,6 +53,7 @@ from utils.secrets import SecretUnreadableError
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_KEY_REJECTED_KEY,
+    REDIS_CHECK_NO_CREDITS_KEY,
     REDIS_CHECK_PAUSED_KEY,
     REDIS_CHECK_SCORES_KEY,
     REDIS_CHECK_WARNING_TOKEN_KEY,
@@ -95,6 +96,9 @@ OUTAGE_PAUSE_SECONDS: Final[int] = 60
 # OpenRouter refusing our key is not an outage either: it is ours to fix, and
 # pausing would let every message through unchecked until someone noticed.
 KEY_REJECTED_STATUS = frozenset({401, 403})
+# Out of credits, on the account or the key's own limit: the provider is up,
+# our budget is not, so this is not an outage either.
+NO_CREDITS_STATUS = 402
 
 _TRANSIENT_STATUS = frozenset({429, 500, 502, 503, 504})
 
@@ -338,6 +342,7 @@ def _count_failure(failed: bool) -> bool:
         if not failed:
             client.delete(REDIS_CHECK_FAILURES_KEY)
             client.delete(REDIS_CHECK_KEY_REJECTED_KEY)
+            client.delete(REDIS_CHECK_NO_CREDITS_KEY)
             return False
         count = int(client.incr(REDIS_CHECK_FAILURES_KEY))
         if count < OUTAGE_AFTER_FAILURES:
@@ -355,13 +360,13 @@ def _count_failure(failed: bool) -> bool:
         return False
 
 
-def _mark_key_rejected() -> None:
-    """Flag the key for the admin panel. Read back by
-    `utils.database.prompt_checks.is_key_rejected`."""
+def _flag(key: str) -> None:
+    """Flag the key for the admin panel: rejected, or out of credits. Read back
+    by `utils.database.prompt_checks.is_key_rejected` and `is_out_of_credits`."""
     try:
-        get_redis_client().set(REDIS_CHECK_KEY_REJECTED_KEY, "1")
+        get_redis_client().set(key, "1")
     except Exception as e:
-        logger.error(f"[CHECKS] Error flagging the rejected key: {e}")
+        logger.error(f"[CHECKS] Error flagging {key}: {e}")
 
 
 def is_paused() -> bool:
@@ -522,7 +527,9 @@ async def run_prompt_check(
                 e.response.status_code if isinstance(e, httpx.HTTPStatusError) else None
             )
             if status_code in KEY_REJECTED_STATUS:
-                _mark_key_rejected()
+                _flag(REDIS_CHECK_KEY_REJECTED_KEY)
+            elif status_code == NO_CREDITS_STATUS:
+                _flag(REDIS_CHECK_NO_CREDITS_KEY)
             elif status_code != 429 and _count_failure(failed=True):
                 return PromptCheckResult(
                     decision="skipped", model=check.model, latency_ms=latency_ms

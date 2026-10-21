@@ -385,7 +385,10 @@
                 "keyRejected": "OpenRouter afviser nøglen",
                 "keyRejectedHint": "Alle beskeder afvises, indtil nøglen er rettet. Indsæt en gyldig OpenRouter-nøgle nedenfor.",
                 "unhealthyHintOptional": "Kald til beslutningsmodellen fejler. Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, så længe den ikke svarer. Kontrollér serverloggene.",
-                "keyRejectedHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil nøglen er rettet. Indsæt en gyldig OpenRouter-nøgle nedenfor."
+                "keyRejectedHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil nøglen er rettet. Indsæt en gyldig OpenRouter-nøgle nedenfor.",
+                "noCredits": "OpenRouter har ikke flere kreditter til denne nøgle",
+                "noCreditsHint": "Alle beskeder afvises, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor.",
+                "noCreditsHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor."
             },
             "settings": {
                 "title": "Indstillinger"

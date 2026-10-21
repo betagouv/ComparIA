@@ -361,6 +361,8 @@ class PromptCheckStatus(PromptCheckPublic):
     consecutive_failures: int = 0
     # OpenRouter refused the key: every message is refused until it is fixed.
     key_rejected: bool = False
+    # OpenRouter answered 402: the account or the key ran out of credits.
+    out_of_credits: bool = False
     healthy: bool = True
     # Warnings put in front of someone. The turns only record the people who
     # sent anyway, so this is what that number is measured against.

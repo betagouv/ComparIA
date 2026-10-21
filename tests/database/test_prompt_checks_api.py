@@ -66,6 +66,7 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
     monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
     monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda: 0)
     monkeypatch.setattr(admin_router, "is_key_rejected", lambda: False)
+    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: False)
     monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 0)
     return session
 
@@ -157,6 +158,22 @@ def test_a_rejected_key_reads_as_unhealthy(
     status = asyncio.run(admin_router.read_prompt_check())
 
     assert status.key_rejected is True
+    assert status.healthy is False
+    assert status.consecutive_failures == 0
+
+
+def test_running_out_of_credits_reads_as_unhealthy(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    async def get_prompt_check():
+        return seeded_row()
+
+    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: True)
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    assert status.out_of_credits is True
     assert status.healthy is False
     assert status.consecutive_failures == 0
 
@@ -294,7 +311,7 @@ class FlagClient:
         self.deleted.append(key)
 
 
-def test_a_new_key_clears_the_rejected_flag(
+def test_a_new_key_clears_the_rejected_and_no_credits_flags(
     db: FakeSession, invalidations: list[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     client = FlagClient()
@@ -302,7 +319,10 @@ def test_a_new_key_clears_the_rejected_flag(
 
     put_check(api_key="a-new-key")
 
-    assert client.deleted == [prompt_checks_module.REDIS_CHECK_KEY_REJECTED_KEY]
+    assert client.deleted == [
+        prompt_checks_module.REDIS_CHECK_KEY_REJECTED_KEY,
+        prompt_checks_module.REDIS_CHECK_NO_CREDITS_KEY,
+    ]
 
 
 def test_other_changes_leave_the_rejected_flag(

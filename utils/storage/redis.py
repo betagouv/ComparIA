@@ -80,12 +80,17 @@ REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 # the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.
 REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
-# Set while Mistral counts as down: the check is skipped until it expires.
+# Set while the decision model counts as down: the check is skipped until it expires.
 REDIS_CHECK_PAUSED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_paused"
-# Set when Mistral refuses our key, cleared by the next call that works or by a
+# Set when OpenRouter refuses our key, cleared by the next call that works or by a
 # new key from the admin panel.
 REDIS_CHECK_KEY_REJECTED_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_key_rejected"
+)
+# Set while OpenRouter answers 402: the account or the key ran out of credits.
+# Cleared the same way as the rejected key flag.
+REDIS_CHECK_NO_CREDITS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_no_credits"
 )
 # Warnings a session sent anyway, in a rolling hour.
 REDIS_SENT_WARNINGS_KEY: Final[str] = (
