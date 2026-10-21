@@ -1,7 +1,9 @@
-from typing import Annotated
+from typing import Annotated, Any, Generic, TypeVar
 from urllib.parse import urlsplit
 
-from pydantic import BeforeValidator
+from pydantic import BeforeValidator, RootModel, ValidationInfo, model_validator
+
+from utils.utils import SUPPORTED_LOCALES
 
 _LOOPBACK_HOSTS = {"localhost", "127.0.0.1"}
 
@@ -27,3 +29,22 @@ def is_secure_url(url: str) -> bool:
     if parts.scheme == "https":
         return bool(hostname)
     return parts.scheme == "http" and hostname in _LOOPBACK_HOSTS
+
+
+T = TypeVar("T")
+
+
+class Translatable(RootModel[dict[str, T]], Generic[T]):
+    @model_validator(mode="before")
+    @classmethod
+    def remove_empty(cls, data: Any):
+        return {locale: value for locale, value in data.items() if value}
+
+    @model_validator(mode="after")
+    def check_locales(self, info: ValidationInfo):
+        invalid_locales = set(self.root) - set(SUPPORTED_LOCALES)
+        if invalid_locales:
+            raise ValueError(f"Unsupported locale(s): {sorted(invalid_locales)}")
+
+        return self
+
