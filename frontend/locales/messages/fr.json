@@ -1503,6 +1503,74 @@
             },
             "updated_at": {
                 "label": "Updated At"
+            },
+            "Link": {
+                "text": {
+                    "label": "Text"
+                },
+                "url": {
+                    "label": "Url"
+                }
+            }
+        },
+        "prompt_check_upsert": {
+            "api_key": {
+                "help": "Laissée vide, la vérification utilise OPENROUTER_API_KEY.",
+                "label": "Clé API OpenRouter"
+            },
+            "criteria": {
+                "label": "Critères"
+            },
+            "description": {
+                "help": "Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.",
+                "label": "Description de l'instance"
+            },
+            "enabled": {
+                "label": "Vérification des messages"
+            },
+            "model": {
+                "help": "Un modèle de décision d'OpenRouter.",
+                "label": "Modèle de décision"
+            },
+            "PromptCheckCriterion": {
+                "action": {
+                    "label": "Action"
+                },
+                "key": {
+                    "help": "Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.",
+                    "label": "Identifiant"
+                },
+                "label": {
+                    "label": "Nom"
+                },
+                "message": {
+                    "label": "Message affiché"
+                },
+                "no": {
+                    "label": "Compte comme non"
+                },
+                "question": {
+                    "help": "Une question fermée sur le `message`, à laquelle on répond par oui ou non.",
+                    "label": "Question posée au modèle"
+                },
+                "threshold": {
+                    "label": "Seuil"
+                },
+                "yes": {
+                    "label": "Compte comme oui"
+                }
+            },
+            "required": {
+                "help": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.",
+                "label": "Vérification obligatoire"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure avec les mêmes modèles"
             }
         }
     },
