@@ -122,12 +122,19 @@ def chunks(text: str) -> list[str]:
 
 
 def moderation_inputs(text: str) -> list[str]:
-    """Every window of every spelling of the prompt worth scoring."""
+    """Every window of every spelling of the prompt worth scoring.
+
+    The decoded parts are read as one text, not one call each: six hundred
+    short base64 blobs would otherwise cost six hundred calls. Their windows
+    then grow with the prompt's length, like the others, and nothing is left
+    unread.
+    """
     spellings = [text]
     folded = fold(text)
     if folded.split() != text.split():
         spellings.append(folded)
-    spellings += decoded_variants(text)
+    if decoded := decoded_variants(text):
+        spellings.append("\n\n".join(decoded))
     return list(dict.fromkeys(c for spelling in spellings for c in chunks(spelling)))
 
 
