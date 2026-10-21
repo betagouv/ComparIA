@@ -5,7 +5,7 @@
   import { FormSecretInput, type FormInputProps } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import { m } from '$lib/i18n/messages'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -15,14 +15,16 @@
   const hasApiKey = $derived(!!data.formProps.data.has_api_key)
 
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/llms/endpoint',
-      ...data.formProps,
+      initialData: () => data.formProps.data,
+      schema: () => data.formProps.schema,
       omitKeys: ['updated_at', 'created_at'],
       i18nKey: 'endpoint_upsert',
       method,
       onSuccess: async (updated) => {
         await invalidate('admin:llms')
+        delete form.form['api_key']
         if (method === 'post') {
           await goto(resolve(`/admin/llms/endpoints/${updated.id}`))
         }
