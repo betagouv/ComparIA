@@ -68,6 +68,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("languia")
 
 DECISIONS_URL: Final[str] = "https://openrouter.ai/api/alpha/decisions"
+DECISION_MODELS_URL: Final[str] = "https://openrouter.ai/api/v1/models"
 # Per request. A failed request is tried once more, so a check waits at most
 # about twice this. Calls took 0.4s typically and 1.1s at worst on our bench.
 DECISION_TIMEOUT: Final[float] = 4.0
@@ -155,6 +156,25 @@ def highest(scores: Sequence[dict[str, float]]) -> dict[str, float]:
         for key, score in one.items():
             merged[key] = max(score, merged.get(key, 0.0))
     return merged
+
+
+async def list_decision_models() -> list[dict[str, str]]:
+    """The decision models OpenRouter lists, as `id` and `name`.
+
+    Empty when OpenRouter cannot be reached: the admin field still takes any
+    id typed in, so the page works without the list.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            response = await client.get(
+                DECISION_MODELS_URL, params={"output_modalities": "decisions"}
+            )
+            response.raise_for_status()
+            models = response.json()["data"]
+    except (httpx.HTTPError, KeyError, ValueError) as e:
+        logger.warning(f"[CHECKS] Cannot list decision models: {e}")
+        return []
+    return [{"id": m["id"], "name": m.get("name") or m["id"]} for m in models]
 
 
 def questions(check: PromptCheck) -> dict[str, dict]:

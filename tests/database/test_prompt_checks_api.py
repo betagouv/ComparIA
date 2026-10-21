@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -313,6 +314,49 @@ def test_other_changes_leave_the_rejected_flag(
     put_check(model="perplexity/pplx-decider-flash-v1.2")
 
     assert client.deleted == []
+
+
+def serve_models(monkeypatch: pytest.MonkeyPatch, handler) -> None:
+    client = httpx.AsyncClient
+    monkeypatch.setattr(
+        checks.httpx,
+        "AsyncClient",
+        lambda **kwargs: client(transport=httpx.MockTransport(handler), **kwargs),
+    )
+
+
+def test_the_model_list_comes_from_openrouter(monkeypatch: pytest.MonkeyPatch) -> None:
+    asked: list[httpx.URL] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        asked.append(request.url)
+        return httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "perplexity/pplx-decider-v1.2", "name": "Decider V1.2"},
+                    {"id": "liquid/d1-ultra"},
+                ]
+            },
+        )
+
+    serve_models(monkeypatch, handler)
+
+    models = asyncio.run(admin_router.read_prompt_check_models())
+
+    assert asked[0].params["output_modalities"] == "decisions"
+    assert [(m.id, m.name) for m in models] == [
+        ("perplexity/pplx-decider-v1.2", "Decider V1.2"),
+        ("liquid/d1-ultra", "liquid/d1-ultra"),
+    ]
+
+
+def test_the_model_list_is_empty_when_openrouter_is_down(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    serve_models(monkeypatch, lambda request: httpx.Response(503))
+
+    assert asyncio.run(admin_router.read_prompt_check_models()) == []
 
 
 def test_unset_conversation_caps_report_the_settings_defaults(

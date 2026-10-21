@@ -29,6 +29,7 @@ from backend.admin.services import (
 from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
+    list_decision_models,
     moderate,
     read_cached_scores,
     verdict,
@@ -752,6 +753,16 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         message=result.message,
         latency_ms=result.latency_ms,
     )
+
+
+class PromptCheckModel(BaseModel):
+    id: str
+    name: str
+
+
+@router.get("/prompt-check/models", response_model=list[PromptCheckModel])
+async def read_prompt_check_models() -> list[PromptCheckModel]:
+    return [PromptCheckModel(**model) for model in await list_decision_models()]
 
 
 class PromptCheckStats(BaseModel):
