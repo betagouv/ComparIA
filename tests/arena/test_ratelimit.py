@@ -13,6 +13,7 @@ Pytest-free: collects under pytest AND runs directly with
 import contextlib
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -120,6 +121,15 @@ class FakePipeline:
         ]
         self.calls = []
         return results
+
+
+async def default_prompt_check():
+    """The prompt check row with no conversation cap set, as the route reads it
+    when the admin left the defaults."""
+    return SimpleNamespace(
+        conversations_per_ip_per_hour=None,
+        conversations_same_models_per_ip_per_hour=None,
+    )
 
 
 @contextlib.contextmanager

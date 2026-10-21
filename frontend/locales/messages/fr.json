@@ -382,6 +382,14 @@
                 "title": "Tester un message",
                 "triggered": "Déclenchée"
             },
+            "caps": {
+                "description": "Nombre de conversations qu'une même adresse IP peut lancer sur une heure glissante, en tout et avec la même paire de modèles. Ces limites s'appliquent même quand la vérification des messages est désactivée. Elles sont partagées par tous ceux qui sortent par la même IP (une école, un ministère) : les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite.",
+                "invalid": "Entrez un entier entre 0 et 10 000.",
+                "perIp": "Conversations par IP et par heure",
+                "sameModels": "Conversations par IP et par heure avec les mêmes modèles",
+                "save": "Enregistrer les limites",
+                "title": "Limites de conversations par IP"
+            },
             "categories": {
                 "criminal": "Activités criminelles",
                 "dangerous": "Actes dangereux",
@@ -413,8 +421,8 @@
             },
             "saveApiKey": "Enregistrer la clé",
             "saveCategories": "Enregistrer les catégories",
-            "saveModel": "Enregistrer le modèle",
             "saved": "Vérification mise à jour",
+            "saveModel": "Enregistrer le modèle",
             "saving": "Enregistrement...",
             "settings": {
                 "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",

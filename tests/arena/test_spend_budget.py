@@ -37,7 +37,10 @@ from backend.config import (  # noqa: E402
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_ALL_MODELS_INPUT_PER_IP,
 )
-from tests.arena.test_ratelimit import FakeRedis  # noqa: E402
+from tests.arena.test_ratelimit import (  # noqa: E402
+    FakeRedis,
+    default_prompt_check,
+)
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
@@ -145,6 +148,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             with patched(
                 arena_router,
                 get_llms_data=get_llms_data,
+                get_prompt_check=default_prompt_check,
                 run_checks=run_checks,
                 save_prompt_check_result=save_prompt_check_result,
                 get_current_terms_acceptance_version=terms_version,

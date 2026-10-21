@@ -22,6 +22,10 @@ from .utils import AutoDatetime, ModelId
 
 PromptCheckAction = Literal["off", "log", "warn", "block"]
 
+# Upper bound of the conversation caps an admin can set, far above any real use,
+# so a typo cannot overflow the column or hide a cap that was meant to be off.
+MAX_CONVERSATIONS_CAP = 10_000
+
 DEFAULT_MODEL = "mistral-moderation-latest"
 
 # Categories returned by POST https://api.mistral.ai/v1/moderations. Kept here
@@ -123,6 +127,11 @@ class PromptCheck(SQLModel, table=True):
     # UnreadableSecret, not a str, when no configured key opens it.
     api_key: str | None = Field(default=None, sa_type=EncryptedStr)
     categories: Annotated[dict[str, dict], Field(sa_type=JSONB)] = {}
+    # Conversations one IP may start in a sliding hour, in all and with the same
+    # pair of models. Unset, the RATELIMIT_CONVERSATIONS_* settings apply; 0 turns
+    # a cap off.
+    conversations_per_ip_per_hour: int | None = Field(default=None)
+    conversations_same_models_per_ip_per_hour: int | None = Field(default=None)
     updated_at: AutoDatetime
     updated_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
 
@@ -161,6 +170,9 @@ class PromptCheckPublic(SQLModel):
     # Whether a key is stored, never the key itself.
     has_api_key: bool
     categories: dict[str, dict]
+    # What applies, whether an admin set it or the settings default does.
+    conversations_per_ip_per_hour: int
+    conversations_same_models_per_ip_per_hour: int
     updated_at: str
     updated_by: uuid.UUID | None = None
 
@@ -186,6 +198,12 @@ class PromptCheckPatch(SQLModel):
     # environment variable.
     api_key: str | None = None
     categories: dict[str, dict] | None = None
+    conversations_per_ip_per_hour: int | None = Field(
+        default=None, ge=0, le=MAX_CONVERSATIONS_CAP
+    )
+    conversations_same_models_per_ip_per_hour: int | None = Field(
+        default=None, ge=0, le=MAX_CONVERSATIONS_CAP
+    )
 
     @field_validator("categories", mode="before")
     @classmethod

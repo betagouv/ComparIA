@@ -26,6 +26,7 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from tests.arena.test_ratelimit import default_prompt_check  # noqa: E402
 
 
 @contextlib.contextmanager
@@ -82,6 +83,7 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             get_current_terms_acceptance_version=get_current_terms_acceptance_version,
             run_checks=run_checks,
             get_llms_data=get_llms_data,
+            get_prompt_check=default_prompt_check,
             create_comparison=create_comparison,
             charge_budget=charge_budget,
         ):

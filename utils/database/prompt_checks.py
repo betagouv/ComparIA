@@ -38,6 +38,21 @@ _DEFAULT = PromptCheck(
 )
 
 
+def conversation_caps(check: PromptCheck) -> tuple[int, int]:
+    """The conversation caps in force: all, then with the same pair of models.
+    What an admin set wins; otherwise the settings default applies."""
+    per_ip = check.conversations_per_ip_per_hour
+    same_models = check.conversations_same_models_per_ip_per_hour
+    return (
+        settings.RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR if per_ip is None else per_ip,
+        (
+            settings.RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR
+            if same_models is None
+            else same_models
+        ),
+    )
+
+
 @redis_cache(REDIS_PROMPT_CHECK_KEY)
 async def get_prompt_check() -> PromptCheck:
     if not settings.COMPARIA_DB_URI:

@@ -92,6 +92,7 @@ from utils.database.models.prompt_check import (
 )
 from utils.database.prompt_checks import (
     UNHEALTHY_AFTER_FAILURES,
+    conversation_caps,
     get_consecutive_failures,
     get_prompt_check,
     get_prompt_check_stats,
@@ -608,11 +609,14 @@ async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
     failures = get_consecutive_failures()
     key_rejected = is_key_rejected()
+    per_ip, same_models = conversation_caps(row)
     return PromptCheckStatus(
         enabled=row.enabled,
         has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
         model=row.model,
         categories=row.categories,
+        conversations_per_ip_per_hour=per_ip,
+        conversations_same_models_per_ip_per_hour=same_models,
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
         consecutive_failures=failures,

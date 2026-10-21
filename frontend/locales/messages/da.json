@@ -381,6 +381,14 @@
                 "title": "Test en besked",
                 "triggered": "Udløst"
             },
+            "caps": {
+                "description": "Hvor mange samtaler en IP-adresse må starte inden for en glidende time, i alt og med de samme to modeller. Grænserne gælder også, når kontrollen af beskeder er slået fra. De deles af alle bag den samme IP (en skole, et ministerium): partnerkohorter (Pix) er ikke omfattet. 0 slår en grænse fra.",
+                "invalid": "Angiv et helt tal mellem 0 og 10.000.",
+                "perIp": "Samtaler pr. IP pr. time",
+                "sameModels": "Samtaler pr. IP pr. time med de samme modeller",
+                "save": "Gem grænserne",
+                "title": "Samtalegrænser pr. IP"
+            },
             "categories": {
                 "criminal": "Kriminelle aktiviteter",
                 "dangerous": "Farlige handlinger",
@@ -412,8 +420,8 @@
             },
             "saveApiKey": "Gem nøglen",
             "saveCategories": "Gem kategorierne",
-            "saveModel": "Gem modellen",
             "saved": "Tjekket opdateret",
+            "saveModel": "Gem modellen",
             "saving": "Gemmer...",
             "settings": {
                 "disabledNotice": "Tjek deaktiveret: ingen beskeder tjekkes, uanset reglerne nedenfor.",

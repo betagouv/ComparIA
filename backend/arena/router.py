@@ -75,7 +75,11 @@ from utils.database.models import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
-from utils.database.prompt_checks import save_prompt_check_result
+from utils.database.prompt_checks import (
+    conversation_caps,
+    get_prompt_check,
+    save_prompt_check_result,
+)
 
 logger = logging.getLogger("languia")
 
@@ -369,7 +373,10 @@ async def add_first_text(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
-    if not reserve_conversation(get_ip(request), (llm_a_id, llm_b_id), args.cohorts):
+    caps = conversation_caps(await get_prompt_check())
+    if not reserve_conversation(
+        get_ip(request), (llm_a_id, llm_b_id), caps, args.cohorts
+    ):
         logger.error(
             "Too many conversations started from this IP",
             extra={"request": request},

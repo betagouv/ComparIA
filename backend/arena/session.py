@@ -23,7 +23,6 @@ from backend.config import (
     RATELIMIT_REPEATED_PROMPT_MIN_CHARS,
     RATELIMIT_REPEATED_PROMPT_PER_HOUR,
     RATELIMIT_SENT_WARNINGS_PER_HOUR,
-    settings,
 )
 from backend.utils.user import ip_bucket
 from utils.storage.redis import (
@@ -251,7 +250,10 @@ CONVERSATION_WINDOW_SECONDS = 3600
 
 
 def reserve_conversation(
-    ip: str, llm_ids: tuple[uuid.UUID, uuid.UUID], cohorts: str | None = None
+    ip: str,
+    llm_ids: tuple[uuid.UUID, uuid.UUID],
+    caps: tuple[int, int],
+    cohorts: str | None = None,
 ) -> bool:
     """
     Count a conversation an IP starts, or refuse it past the caps.
@@ -266,6 +268,8 @@ def reserve_conversation(
     Args:
         ip: caller IP
         llm_ids: the two models picked for the conversation
+        caps: conversations allowed in the hour, in all and with the same pair of
+            models; 0 turns a cap off
         cohorts: comma-separated cohorts the client declares
 
     Returns:
@@ -277,35 +281,33 @@ def reserve_conversation(
     if not bucket:
         return True
     models = "-".join(sorted(str(llm_id) for llm_id in llm_ids))
-    caps = [
-        (
-            REDIS_CONVERSATIONS_IP_KEY.format(ip=bucket),
-            settings.RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR,
-        ),
+    per_ip, same_models = caps
+    budgets = [
+        (REDIS_CONVERSATIONS_IP_KEY.format(ip=bucket), per_ip),
         (
             REDIS_CONVERSATIONS_IP_MODELS_KEY.format(ip=bucket, models=models),
-            settings.RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR,
+            same_models,
         ),
     ]
-    caps = [(key, cap) for key, cap in caps if cap > 0]
-    if not caps:
+    budgets = [(key, cap) for key, cap in budgets if cap > 0]
+    if not budgets:
         return True
     try:
         client = get_redis_client()
         now = time.time()
         stamp = uuid.uuid4().hex
         pipe = client.pipeline()
-        for key, _cap in caps:
+        for key, _cap in budgets:
             pipe.zremrangebyscore(key, 0, now - CONVERSATION_WINDOW_SECONDS)
             pipe.zadd(key, {stamp: now})
             pipe.zcard(key)
             # Set in the same step as the stamp, so the key cannot outlive its window.
             pipe.expire(key, CONVERSATION_WINDOW_SECONDS)
         counts = pipe.execute()[2::4]
-        allowed = all(count <= cap for count, (_, cap) in zip(counts, caps))
+        allowed = all(count <= cap for count, (_, cap) in zip(counts, budgets))
         if not allowed:
             pipe = client.pipeline()
-            for key, _cap in caps:
+            for key, _cap in budgets:
                 pipe.zrem(key, stamp)
             pipe.execute()
         return allowed
