@@ -86,13 +86,12 @@ from utils.database.models.auth import (
 from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
     PromptCheck,
-    PromptCheckPatch,
     PromptCheckStatus,
-    validate_categories,
+    PromptCheckUpsert,
+    validate_criteria,
 )
 from utils.database.prompt_checks import (
     UNHEALTHY_AFTER_FAILURES,
-    conversation_caps,
     get_consecutive_failures,
     get_prompt_check,
     get_prompt_check_stats,
@@ -609,20 +608,29 @@ async def remove_oidc_logo(current_user: RequiredAdmin) -> AppSettingsPublic:
 def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
     failures = get_consecutive_failures()
     key_rejected = is_key_rejected()
-    caps = conversation_caps(row)
     return PromptCheckStatus(
         enabled=row.enabled,
-        has_api_key=bool(row.api_key or settings.MISTRAL_API_KEY),
+        has_api_key=bool(row.api_key),
+        required=row.required,
         model=row.model,
-        categories=row.categories,
-        conversations_per_ip_per_hour=caps.per_ip,
-        conversations_same_models_per_ip_per_hour=caps.same_models,
+        description=row.description,
+        criteria=row.criteria,
+        conversations_per_ip_per_hour=row.conversations_per_ip_per_hour,
+        conversations_same_models_per_ip_per_hour=(
+            row.conversations_same_models_per_ip_per_hour
+        ),
         updated_at=row.updated_at.isoformat(),
         updated_by=row.updated_by,
         consecutive_failures=failures,
         key_rejected=key_rejected,
         healthy=failures < UNHEALTHY_AFTER_FAILURES and not key_rejected,
         warnings_shown=get_warnings_shown(),
+        default_conversations_per_ip_per_hour=(
+            settings.RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR
+        ),
+        default_conversations_same_models_per_ip_per_hour=(
+            settings.RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR
+        ),
     )
 
 
@@ -631,17 +639,28 @@ async def read_prompt_check() -> PromptCheckStatus:
     return _to_prompt_check_status(await get_prompt_check())
 
 
-@router.patch("/prompt-check", response_model=PromptCheckStatus)
-async def patch_prompt_check(
-    body: PromptCheckPatch,
+@router.get("/prompt-check/schema")
+async def read_prompt_check_schema():
+    return PromptCheckUpsert.model_json_schema(schema_generator=FormJsonSchema)
+
+
+@router.put("/prompt-check", response_model=PromptCheckStatus)
+async def put_prompt_check(
+    body: PromptCheckUpsert,
     current_user: RequiredAdmin,
 ) -> PromptCheckStatus:
-    patch = body.model_dump(exclude_unset=True)
-    if "api_key" in patch:
-        # Blanking the field clears the stored key and falls back to the
-        # environment variable, rather than storing an empty string.
-        patch["api_key"] = (patch["api_key"] or "").strip() or None
-    row = await update_prompt_check(patch, updated_by=current_user.id)
+    data = body.model_dump(exclude={"api_key"})
+    # A blank key keeps the stored one, as on the endpoint form.
+    if api_key := (body.api_key or "").strip():
+        data["api_key"] = api_key
+    row = await update_prompt_check(data, updated_by=current_user.id)
+    return _to_prompt_check_status(row)
+
+
+@router.delete("/prompt-check/api-key", response_model=PromptCheckStatus)
+async def delete_prompt_check_api_key(current_user: RequiredAdmin) -> PromptCheckStatus:
+    """Forget the stored key, so the check falls back to OPENROUTER_API_KEY."""
+    row = await update_prompt_check({"api_key": None}, updated_by=current_user.id)
     return _to_prompt_check_status(row)
 
 
@@ -652,16 +671,17 @@ CALL_FAILED_MESSAGE = "call_failed"
 
 class PromptCheckTryBody(BaseModel):
     """A prompt plus, when the admin is trying edits they have not saved, the
-    configuration to judge it against. Both fields fall back to the stored row."""
+    configuration to judge it against. Each field falls back to the stored row."""
 
     text: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
-    categories: dict[str, dict] | None = None
+    criteria: list[dict] | None = None
+    description: str | None = Field(default=None, max_length=2000)
     model: str | None = Field(default=None, min_length=1, max_length=100)
 
-    @field_validator("categories", mode="before")
+    @field_validator("criteria", mode="before")
     @classmethod
-    def check_categories(cls, value: object) -> dict[str, dict] | None:
-        return None if value is None else validate_categories(value)
+    def check_criteria(cls, value: object) -> list[dict] | None:
+        return None if value is None else validate_criteria(value)
 
 
 class PromptCheckTryResult(BaseModel):
@@ -670,7 +690,7 @@ class PromptCheckTryResult(BaseModel):
     triggered: dict[str, str]
     message: str | None
     latency_ms: int
-    # What the moderation call said when `decision` is "error".
+    # What the decision model said when `decision` is "error".
     error: str | None = None
 
 
@@ -680,19 +700,22 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
 
     No turn is written, no warning is counted and the failure streak is left
     alone, so trying a configuration cannot move the numbers the same page
-    reports. Scores are cached on the model and prompt text, not on the verdict, so
-    trying several thresholds on the same text costs one moderation call.
+    reports. Scores are cached on the questions and prompt text, not on the
+    verdict, so trying several thresholds on the same text costs one check.
     """
     stored = await get_prompt_check()
     check = PromptCheck(
         id=stored.id,
         model=body.model or stored.model,
-        categories=body.categories or stored.categories,
+        description=(
+            stored.description if body.description is None else body.description
+        ),
+        criteria=stored.criteria if body.criteria is None else body.criteria,
     )
 
     # A dry run ignores the on/off switch on purpose: trying a rule before
     # switching the check on is the main reason this exists.
-    api_key = stored.api_key or settings.MISTRAL_API_KEY
+    api_key = stored.api_key or settings.OPENROUTER_API_KEY
     if not api_key:
         return PromptCheckTryResult(
             decision="error",
@@ -703,10 +726,10 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         )
 
     started = time.monotonic()
-    scores = read_cached_scores(body.text, check.model)
+    scores = read_cached_scores(body.text, check)
     if scores is None:
         try:
-            scores = await moderate(body.text, check.model, api_key)
+            scores = await moderate(body.text, check, api_key)
         except Exception as e:
             return PromptCheckTryResult(
                 decision="error",
@@ -717,7 +740,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
                 error=str(e),
             )
         latency_ms = int((time.monotonic() - started) * 1000)
-        write_cached_scores(body.text, check.model, scores)
+        write_cached_scores(body.text, check, scores)
     else:
         latency_ms = 0
 

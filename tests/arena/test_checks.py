@@ -20,7 +20,9 @@ import httpx
 import backend.arena.checks as checks
 import utils.database.prompt_checks as prompt_checks
 from backend.config import settings
-from utils.database.models.prompt_check import DEFAULT_CATEGORIES, PromptCheck
+from utils.database.models.prompt_check import PromptCheck
+
+MODEL = "test/decider"
 
 
 class FakeRedis:
@@ -56,9 +58,9 @@ class FakeRedis:
         self.store[key] = value
 
 
-class FakeMistral:
-    """Records every moderation request and answers each input with a canned
-    score set, or with what `scorer` makes of its text. `statuses` lists HTTP
+class FakeDecider:
+    """Records every decision request and answers each question with a canned
+    score, or with what `scorer` makes of the message. `statuses` lists HTTP
     errors to return, one per request, before answering normally."""
 
     def __init__(self, scores=None, error=None, scorer=None, statuses=()):
@@ -75,25 +77,27 @@ class FakeMistral:
             raise self.error
         if self.statuses:
             return httpx.Response(self.statuses.pop(0))
-        results = [
-            {"category_scores": self.scorer(text) if self.scorer else self.scores}
-            for text in body["input"]
-        ]
-        return httpx.Response(200, json={"results": results})
+        text = body["state"]["message"]
+        scores = self.scorer(text) if self.scorer else self.scores
+        answers = {
+            key: {"type": "noul", "noul": scores.get(key, 0.0)}
+            for key in body["questions"]
+        }
+        return httpx.Response(200, json={"answers": answers, "model": body["model"]})
 
     @property
     def inputs(self) -> list[str]:
-        return [text for body in self.requests for text in body["input"]]
+        return [body["state"]["message"] for body in self.requests]
 
 
 @contextlib.contextmanager
 def arena(check, scores=None, error=None, redis=None, scorer=None, statuses=()):
-    fake = FakeMistral(scores, error, scorer, statuses)
+    fake = FakeDecider(scores, error, scorer, statuses)
     redis = redis if redis is not None else FakeRedis()
     orig_client = checks.httpx.AsyncClient
     orig_load = checks.get_prompt_check
     orig_redis = checks.get_redis_client
-    orig_key = settings.MISTRAL_API_KEY
+    orig_key = settings.OPENROUTER_API_KEY
 
     async def get_prompt_check():
         return check
@@ -103,26 +107,42 @@ def arena(check, scores=None, error=None, redis=None, scorer=None, statuses=()):
     )
     checks.get_prompt_check = get_prompt_check
     checks.get_redis_client = lambda: redis
-    settings.MISTRAL_API_KEY = "test-key"
+    settings.OPENROUTER_API_KEY = "test-key"
     try:
         yield fake
     finally:
         checks.httpx.AsyncClient = orig_client
         checks.get_prompt_check = orig_load
         checks.get_redis_client = orig_redis
-        settings.MISTRAL_API_KEY = orig_key
+        settings.OPENROUTER_API_KEY = orig_key
 
 
-def config(model="mistral-moderation-latest", **categories):
-    """A check with every category off except the ones named.
+def criterion(key, threshold, action, message="generic", **rest):
+    return {
+        "key": key,
+        "label": key,
+        "question": f"Is the `message` about {key}?",
+        "yes": "",
+        "no": "",
+        "threshold": threshold,
+        "action": action,
+        "message": message,
+        **rest,
+    }
 
-    Each keyword is `category=(threshold, action)`, so a test states only the
-    part of the configuration it cares about.
+
+def config(model=MODEL, **criteria):
+    """A check holding only the criteria named.
+
+    Each keyword is `key=(threshold, action)`, or `(threshold, action, message)`,
+    so a test states only the part of the configuration it cares about.
     """
-    merged = {c: {"threshold": 0.5, "action": "off"} for c in DEFAULT_CATEGORIES}
-    for category, (threshold, action) in categories.items():
-        merged[category] = {"threshold": threshold, "action": action}
-    return PromptCheck(id=1, model=model, categories=merged)
+    return PromptCheck(
+        id=1,
+        model=model,
+        description="An arena.",
+        criteria=[criterion(key, *spec) for key, spec in criteria.items()],
+    )
 
 
 def run(
@@ -159,20 +179,50 @@ def test_everything_off_makes_no_call():
     assert result is None
 
 
-def test_one_call_scores_every_category():
+def test_one_call_asks_every_criterion_that_acts():
     result, fake = run(
-        config(criminal=(0.5, "block"), pii=(0.5, "warn")),
+        config(criminal=(0.5, "block"), pii=(0.5, "warn"), health=(0.5, "off")),
         {"criminal": 1.0, "pii": 0.9, "health": 0.7},
     )
     assert len(fake.requests) == 1
-    assert fake.requests[0]["input"] == ["bonjour"]
-    assert fake.requests[0]["model"] == "mistral-moderation-latest"
+    body = fake.requests[0]
+    assert body["model"] == MODEL
+    assert body["state"] == {"plateforme": "An arena.", "message": "bonjour"}
+    # An `off` criterion cannot change anything, so it is not asked.
+    assert set(body["questions"]) == {"criminal", "pii"}
+    assert body["questions"]["pii"] == {
+        "type": "noul",
+        "instructions": "Is the `message` about pii?",
+    }
 
     record = result.model_dump()
     assert record["decision"] == "blocked"
     assert record["triggered"] == {"criminal": "block", "pii": "warn"}
-    # The never-acted-on categories are still recorded.
-    assert record["scores"]["health"] == 0.7
+    assert record["scores"] == {"criminal": 1.0, "pii": 0.9}
+
+
+def test_what_counts_as_yes_and_no_goes_with_the_question():
+    check = config()
+    check.criteria = [
+        criterion("spam", 0.5, "log", yes="Ads", no="A real question"),
+        criterion("ads", 0.5, "log", yes="Links"),
+    ]
+    _, fake = run(check, {})
+    asked = fake.requests[0]["questions"]
+    assert asked["spam"]["criteria"] == {"true": "Ads", "false": "A real question"}
+    # With one side only, it is folded into the instructions.
+    assert "criteria" not in asked["ads"]
+    assert asked["ads"]["instructions"].endswith("Oui : Links")
+
+
+def test_a_missing_answer_counts_as_a_failed_check():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"answers": {}})
+
+    with arena(config(criminal=(0.5, "block"))) as fake:
+        fake.handler = handler
+        result = asyncio.run(checks.run_prompt_check("bonjour"))
+    assert result.decision == "error"
 
 
 def test_threshold_boundary_triggers_at_equality():
@@ -184,30 +234,39 @@ def test_threshold_boundary_triggers_at_equality():
     assert result.block_message is None
 
 
-def test_selfharm_shows_the_3114_message():
-    result, _ = run(config(selfharm=(0.3, "block")), {"selfharm": 0.8})
-    assert result.block_message is checks.SELF_HARM_MESSAGE
+def test_a_self_harm_criterion_shows_the_3114_message():
+    result, _ = run(config(selfharm=(0.3, "block", "self_harm")), {"selfharm": 0.8})
+    assert result.block_message == checks.SELF_HARM_MESSAGE
 
 
-def test_pii_alone_shows_its_own_message():
-    result, _ = run(config(pii=(0.5, "warn")), {"pii": 0.92})
-    assert result.message is checks.PII_MESSAGE
+def test_the_self_harm_message_wins_over_the_others():
+    result, _ = run(
+        config(distress=(0.3, "warn", "self_harm"), contact=(0.5, "warn", "pii")),
+        {"distress": 0.8, "contact": 0.9},
+    )
+    assert result.message == checks.SELF_HARM_MESSAGE
 
 
-def test_other_categories_show_the_generic_message():
+def test_personal_data_alone_shows_its_own_message():
+    result, _ = run(config(pii=(0.5, "warn", "pii")), {"pii": 0.92})
+    assert result.message == checks.PII_MESSAGE
+
+
+def test_other_criteria_show_the_generic_message():
     result, _ = run(config(criminal=(0.5, "block")), {"criminal": 0.9})
     assert result.block_message is checks.GENERIC_MESSAGE
 
 
-def test_a_logged_category_does_not_pick_the_message():
-    """Only the categories asking for the decision explain it, so a warning on
-    pii keeps its own message even when something else is merely logged."""
+def test_a_logged_criterion_does_not_pick_the_message():
+    """Only the criteria asking for the decision explain it, so a warning on
+    personal data keeps its own message even when something else is merely
+    logged."""
     result, _ = run(
-        config(pii=(0.5, "warn"), criminal=(0.5, "log")),
+        config(pii=(0.5, "warn", "pii"), criminal=(0.5, "log")),
         {"pii": 0.92, "criminal": 0.9},
     )
     assert result.model_dump()["decision"] == "warned"
-    assert result.message is checks.PII_MESSAGE
+    assert result.message == checks.PII_MESSAGE
 
 
 def test_log_records_the_hit_without_blocking():
@@ -227,7 +286,7 @@ def test_warn_does_not_block():
 
 
 def test_a_prompt_that_cannot_be_checked_is_refused():
-    """While Mistral is up, nothing reaches the models unchecked."""
+    """While the model is up, nothing reaches the models unchecked."""
     result, _ = run(
         config(criminal=(0.5, "block")), error=httpx.TimeoutException("too slow")
     )
@@ -271,22 +330,44 @@ def test_send_anyway_reuses_the_cached_scores():
     assert record["decision"] == "warned"
 
 
-def test_tightening_a_category_applies_to_a_cached_prompt():
-    """The cache holds scores, not decisions, so an admin who moves a category
+def test_tightening_a_criterion_applies_to_a_cached_prompt():
+    """The cache holds scores, not decisions, so an admin who moves a criterion
     to block while a warning is on screen still gets the block."""
     redis = FakeRedis()
     scores = {"pii": 0.92}
 
-    result, _ = run(config(pii=(0.5, "warn")), scores, redis=redis)
+    result, _ = run(config(pii=(0.5, "warn", "pii")), scores, redis=redis)
     assert result.pending_warning
 
-    token = issued_token(redis, "bonjour", "mistral-moderation-latest")
+    token = issued_token(redis, "bonjour", MODEL)
     result, fake = run(
-        config(pii=(0.5, "block")), scores, redis=redis, warning_token=token
+        config(pii=(0.4, "block", "pii")), scores, redis=redis, warning_token=token
     )
     assert fake.requests == []
     assert result.block_message == checks.PII_MESSAGE
     assert result.model_dump()["decision"] == "blocked"
+
+
+def test_rewording_a_criterion_asks_again():
+    """Scores answer the question asked, so a cached one must not stand in for
+    a question the admin has since changed."""
+    redis = FakeRedis()
+    check = config(pii=(0.5, "warn"))
+    run(check, {"pii": 0.92}, redis=redis)
+
+    check.criteria[0]["question"] = "Does the `message` name a real person?"
+    _, fake = run(check, {"pii": 0.92}, redis=redis)
+    assert len(fake.requests) == 1
+
+
+def test_a_new_description_asks_again():
+    redis = FakeRedis()
+    check = config(pii=(0.5, "warn"))
+    run(check, {"pii": 0.92}, redis=redis)
+
+    check.description = "A health arena."
+    _, fake = run(check, {"pii": 0.92}, redis=redis)
+    assert len(fake.requests) == 1
 
 
 def test_forged_warning_token_cannot_skip_warning():
@@ -316,7 +397,7 @@ def test_warning_token_is_bound_to_prompt_and_model_and_cannot_be_replayed():
     replayed, _ = run(check, {"pii": 0.92}, redis=redis, warning_token=token)
     assert replayed.pending_warning
 
-    other_model = config(model="mistral-moderation-other", pii=(0.5, "warn"))
+    other_model = config(model="test/other-decider", pii=(0.5, "warn"))
     other_token = issued_token(redis, "bonjour", check.model)
     changed, fake = run(
         other_model, {"pii": 0.92}, redis=redis, warning_token=other_token
@@ -375,30 +456,26 @@ def test_warnings_shown_are_counted():
 
 
 def test_moderate_parses_the_response():
-    fake = FakeMistral({"pii": 1.0, "criminal": 0.0})
+    fake = FakeDecider({"pii": 1.0, "criminal": 0.0})
     orig_client = httpx.AsyncClient
-    orig_key = settings.MISTRAL_API_KEY
     checks.httpx.AsyncClient = lambda **kwargs: orig_client(
         transport=httpx.MockTransport(fake.handler), **kwargs
     )
-    settings.MISTRAL_API_KEY = "test-key"
+    check = config(model="test/decider-x", pii=(0.5, "log"), criminal=(0.5, "log"))
     try:
-        scores = asyncio.run(
-            checks.moderate("06 12 34 56 78", "mistral-moderation-x", "test-key")
-        )
+        scores = asyncio.run(checks.moderate("06 12 34 56 78", check, "test-key"))
     finally:
         checks.httpx.AsyncClient = orig_client
-        settings.MISTRAL_API_KEY = orig_key
 
     assert scores.own == {"pii": 1.0, "criminal": 0.0}
     assert scores.joined == {} and scores.earlier == {}
-    assert fake.requests[0]["model"] == "mistral-moderation-x"
+    assert fake.requests[0]["model"] == "test/decider-x"
 
 
-def flags(word, category="criminal"):
+def flags(word, key="criminal"):
     """A scorer that only reacts to `word`, like a classifier would to the
     one harmful sentence in a long text."""
-    return lambda text: {category: 0.9 if word in text else 0.0}
+    return lambda text: {key: 0.9 if word in text else 0.0}
 
 
 FILLER = "La Révolution française commence en 1789 et se termine en 1799. "
@@ -411,8 +488,7 @@ def test_a_request_buried_in_a_long_prompt_is_found():
     )
     assert result.block_message == checks.GENERIC_MESSAGE
     assert all(len(i) <= checks.CHUNK_CHARS for i in fake.inputs)
-    # Sent in parallel batches rather than one input per request.
-    assert len(fake.requests) == -(-len(fake.inputs) // checks.INPUTS_PER_REQUEST)
+    assert len(fake.inputs) > 1
 
 
 def test_windows_overlap_so_nothing_falls_between_them():
@@ -453,8 +529,8 @@ def failing_streak(redis, count):
     redis.store[checks.REDIS_CHECK_FAILURES_KEY] = count
 
 
-def test_mistral_down_pauses_the_check():
-    """After enough failures in a row Mistral counts as down: the prompt goes
+def test_the_model_down_pauses_the_check():
+    """After enough failures in a row the model counts as down: the prompt goes
     through as skipped, long or short, and the next ones make no call."""
     redis = FakeRedis()
     failing_streak(redis, checks.OUTAGE_AFTER_FAILURES - 1)
@@ -543,7 +619,7 @@ def test_a_long_prompt_that_cannot_be_checked_is_refused():
 
 
 def test_a_request_split_across_turns_is_seen_whole():
-    """Read together, the turns trip a blocking category. That asks the user
+    """Read together, the turns trip a blocking criterion. That asks the user
     to confirm rather than refusing: two harmless messages can read worse
     side by side, and a person can say so."""
     scorer = lambda text: {"dangerous": 0.9 if "pipe\n\nbomb" in text else 0.0}
@@ -627,3 +703,38 @@ def test_web_results_are_dropped_when_they_cannot_be_checked():
     with arena(config(jailbreaking=(0.5, "block")), error=httpx.ReadTimeout("slow")):
         kept = asyncio.run(checks.drop_flagged_results(pages))
     assert kept == []
+
+
+def optional(check: PromptCheck) -> PromptCheck:
+    check.required = False
+    return check
+
+
+def test_an_optional_check_lets_a_failed_prompt_through():
+    """An instance can rather be open than strict: the failure is recorded,
+    the prompt is not refused."""
+    result, _ = run(
+        optional(config(criminal=(0.5, "block"))), error=httpx.ReadTimeout("slow")
+    )
+    assert result.decision == "error"
+    assert result.block_message is None
+
+
+def test_an_optional_check_lets_a_prompt_through_on_a_rejected_key():
+    result, _ = run(optional(config(criminal=(0.5, "block"))), statuses=[401])
+    assert result.decision == "error"
+    assert result.block_message is None
+
+
+def test_an_optional_check_still_blocks_when_it_answers():
+    result, _ = run(optional(config(criminal=(0.5, "block"))), {"criminal": 0.9})
+    assert result.decision == "blocked"
+
+
+def test_an_optional_check_keeps_web_results_it_cannot_check():
+    pages = [SimpleNamespace(url="https://a.example", content="Paris")]
+    with arena(
+        optional(config(jailbreaking=(0.5, "block"))), error=httpx.ReadTimeout("slow")
+    ):
+        kept = asyncio.run(checks.drop_flagged_results(pages))
+    assert kept == pages

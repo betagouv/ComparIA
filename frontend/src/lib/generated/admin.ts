@@ -540,40 +540,88 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
-export interface PromptCheckPatch {
-  enabled?: boolean | null;
-  model?: string | null;
-  api_key?: string | null;
-  categories?: {
-    [k: string]: {
-      [k: string]: unknown;
-    };
-  } | null;
-  conversations_per_ip_per_hour?: number | null;
-  conversations_same_models_per_ip_per_hour?: number | null;
-}
 /**
  * The configuration plus how the check is faring, since a broken check
- * either refuses every message or, while Mistral counts as down, lets them
+ * either refuses every message or, while the model counts as down, lets them
  * all through unchecked.
  */
 export interface PromptCheckStatus {
-  enabled: boolean;
-  model: string;
+  enabled?: boolean;
+  /**
+   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.
+   */
+  required?: boolean;
+  /**
+   * Un modèle de décision d'OpenRouter.
+   */
+  model?: string;
   has_api_key: boolean;
-  categories: {
-    [k: string]: {
-      [k: string]: unknown;
-    };
-  };
-  conversations_per_ip_per_hour: number;
-  conversations_same_models_per_ip_per_hour: number;
+  /**
+   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   */
+  description: string;
+  criteria: PromptCheckCriterion[];
+  /**
+   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   */
+  conversations_per_ip_per_hour?: number | null;
+  /**
+   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   */
+  conversations_same_models_per_ip_per_hour?: number | null;
   updated_at: string;
   updated_by?: string | null;
   consecutive_failures?: number;
   key_rejected?: boolean;
   healthy?: boolean;
   warnings_shown?: number;
+  default_conversations_per_ip_per_hour?: number;
+  default_conversations_same_models_per_ip_per_hour?: number;
+}
+export interface PromptCheckCriterion {
+  /**
+   * Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.
+   */
+  key: string;
+  label: string;
+  /**
+   * Une question fermée sur le `message`, à laquelle on répond par oui ou non.
+   */
+  question: string;
+  yes?: string;
+  no?: string;
+  threshold: number;
+  action: "off" | "log" | "warn" | "block";
+  message?: "generic" | "self_harm" | "pii";
+  [k: string]: unknown;
+}
+export interface PromptCheckUpsert {
+  enabled?: boolean;
+  /**
+   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.
+   */
+  required?: boolean;
+  /**
+   * Un modèle de décision d'OpenRouter.
+   */
+  model?: string;
+  /**
+   * Laissée vide, la vérification utilise OPENROUTER_API_KEY.
+   */
+  api_key?: string | null;
+  /**
+   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   */
+  description?: string;
+  criteria?: PromptCheckCriterion[];
+  /**
+   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   */
+  conversations_per_ip_per_hour?: number | null;
+  /**
+   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   */
+  conversations_same_models_per_ip_per_hour?: number | null;
 }
 /**
  * 'kind' is not sent: it is read off the config, so a row cannot end up

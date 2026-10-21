@@ -27,9 +27,9 @@ from .messages import *
 from .prompt_check import (
     PromptCheck,
     PromptCheckAction,
-    PromptCheckPatch,
     PromptCheckPublic,
     PromptCheckStatus,
+    PromptCheckUpsert,
 )
 from .publish import (
     PUBLISH_DATASETS,

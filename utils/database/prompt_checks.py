@@ -7,7 +7,7 @@ from sqlmodel import col, func, select
 
 from backend.config import settings
 from utils.database.models.prompt_check import (
-    DEFAULT_CATEGORIES,
+    DEFAULT_CRITERIA,
     DEFAULT_MODEL,
     PromptCheck,
     PromptCheckResult,
@@ -26,7 +26,7 @@ from utils.storage.redis import (
 logger = logging.getLogger("comparia.db")
 
 # Consecutive failures after which the admin panel calls the check unhealthy.
-# Past a few more, Mistral counts as down and messages go through unchecked, so
+# Past a few more, the model counts as down and messages go through unchecked, so
 # the panel has to say so.
 UNHEALTHY_AFTER_FAILURES = 3
 
@@ -35,7 +35,7 @@ UNHEALTHY_AFTER_FAILURES = 3
 _DEFAULT = PromptCheck(
     id=1,
     model=DEFAULT_MODEL,
-    categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
+    criteria=[dict(c) for c in DEFAULT_CRITERIA],
 )
 
 
@@ -77,9 +77,7 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
     async with get_session() as session:
         row = await session.get(PromptCheck, 1)
         if not row:
-            row = PromptCheck(
-                id=1, categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
-            )
+            row = PromptCheck(id=1, criteria=[dict(c) for c in DEFAULT_CRITERIA])
 
         for key, value in patch.items():
             setattr(row, key, value)

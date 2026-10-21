@@ -193,7 +193,9 @@ def test_the_admin_panel_still_says_a_key_is_set():
 
 def test_moderation_fails_rather_than_sending_the_marker():
     with pytest.raises(SecretUnreadableError, match="prompt_check 1.api_key"):
-        asyncio.run(moderate("hi", "m", UnreadableSecret(token_from_a_lost_key())))
+        asyncio.run(
+            moderate("hi", PromptCheck(), UnreadableSecret(token_from_a_lost_key()))
+        )
 
 
 def test_a_destination_names_itself_when_its_credentials_cannot_be_read():
