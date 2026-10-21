@@ -250,6 +250,14 @@ async def _post(
     return {key: float(answers[key]["noul"]) for key in asked}
 
 
+class CheckOverloaded(Exception):
+    """Our own limit ran out, not the provider: the check missed its deadline.
+
+    Never counted toward the outage pause, which only a failing provider may
+    open: otherwise enough traffic at once would switch a required check off.
+    """
+
+
 def _retry_after(response: httpx.Response) -> float:
     """How long a 429 asks us to wait, within RATE_LIMIT_WAIT."""
     try:
@@ -301,8 +309,8 @@ async def moderate_many(
     """Scores for each input, in order, a few calls at a time.
 
     At most PARALLEL_CALLS calls are in flight on this instance, whoever makes
-    them, and the whole lot must finish within CHECK_DEADLINE, or it fails
-    like any other call.
+    them, and the whole lot must finish within CHECK_DEADLINE, or it raises
+    CheckOverloaded.
 
     A stored key no configured encryption key opens is a failed call, not a
     missing key: the env key is not tried in its place, and the callers count
@@ -314,16 +322,19 @@ async def moderate_many(
             UnreadableRow(PromptCheck.__tablename__, 1, "api_key").message()
         )
     gate = asyncio.Semaphore(PARALLEL_CALLS)
-    async with (
-        asyncio.timeout(CHECK_DEADLINE),
-        httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client,
-    ):
+    try:
+        async with (
+            asyncio.timeout(CHECK_DEADLINE),
+            httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client,
+        ):
 
-        async def one(text: str) -> dict[str, float]:
-            async with gate, _slot(REDIS_CHECK_CALLS_KEY):
-                return await _post(client, text, check, api_key)
+            async def one(text: str) -> dict[str, float]:
+                async with gate, _slot(REDIS_CHECK_CALLS_KEY):
+                    return await _post(client, text, check, api_key)
 
-        return list(await asyncio.gather(*(one(text) for text in inputs)))
+            return list(await asyncio.gather(*(one(text) for text in inputs)))
+    except TimeoutError as e:
+        raise CheckOverloaded(f"No answer within {CHECK_DEADLINE}s") from e
 
 
 async def moderate(
@@ -602,7 +613,11 @@ async def run_prompt_check(
                 _flag(REDIS_CHECK_KEY_REJECTED_KEY)
             elif status_code == NO_CREDITS_STATUS:
                 _flag(REDIS_CHECK_NO_CREDITS_KEY)
-            elif status_code != 429 and _count_failure(failed=True):
+            elif (
+                status_code != 429
+                and not isinstance(e, CheckOverloaded)
+                and _count_failure(failed=True)
+            ):
                 return PromptCheckResult(
                     decision="skipped", model=check.model, latency_ms=latency_ms
                 )

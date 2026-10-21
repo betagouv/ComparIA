@@ -912,7 +912,7 @@ def test_a_check_that_runs_past_its_deadline_fails():
                 checks.moderate_many(["bonjour"], config(pii=(0.5, "log")), "test-key")
             )
         raised = False
-    except TimeoutError:
+    except checks.CheckOverloaded:
         raised = True
     finally:
         checks.CHECK_DEADLINE = orig
@@ -940,3 +940,36 @@ def test_the_longest_prompt_has_a_bounded_number_of_calls():
     own = checks.moderation_inputs(text)
     joined, earlier = checks.context_inputs(text, [text] * checks.CONTEXT_TURNS)
     assert len(own) + len(joined) + len(earlier) <= 8 * checks.PARALLEL_CALLS
+
+
+def test_checks_queued_past_their_deadline_never_pause_the_check():
+    """A provider answering every call is not down, however long the queue:
+    counting our own deadline as an outage would let enough traffic at once
+    switch a required check off."""
+    redis = FakeRedis()
+    orig = checks.CHECK_DEADLINE
+    checks.CHECK_DEADLINE = 0.05
+    try:
+        for _ in range(checks.OUTAGE_AFTER_FAILURES + 2):
+            with arena(config(criminal=(0.5, "block")), redis=redis) as fake:
+                fake.handler = slow_decider(0.2, [])
+                result = asyncio.run(checks.run_prompt_check("bonjour"))
+            assert result.decision == "error"
+            assert result.block_message == checks.UNAVAILABLE_MESSAGE
+    finally:
+        checks.CHECK_DEADLINE = orig
+    assert not redis.exists(checks.REDIS_CHECK_PAUSED_KEY)
+    assert checks.REDIS_CHECK_FAILURES_KEY not in redis.store
+
+
+def test_an_optional_check_lets_a_prompt_through_past_its_deadline():
+    orig = checks.CHECK_DEADLINE
+    checks.CHECK_DEADLINE = 0.05
+    try:
+        with arena(optional(config(criminal=(0.5, "block")))) as fake:
+            fake.handler = slow_decider(0.2, [])
+            result = asyncio.run(checks.run_prompt_check("bonjour"))
+    finally:
+        checks.CHECK_DEADLINE = orig
+    assert result.decision == "error"
+    assert result.block_message is None
