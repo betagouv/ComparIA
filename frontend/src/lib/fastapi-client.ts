@@ -201,10 +201,7 @@ export class FastAPIClient {
 
     // Get svelte load function's fetch or use default
     const _fetch = options.fetch ?? fetch
-    const opts: RequestInit = omit(options as Record<PropertyKey, unknown>, [
-      'fetch',
-      'searchParams'
-    ])
+    const opts: RequestInit = omit(options, ['fetch', 'searchParams'])
 
     try {
       const response = await _fetch(url, {
