@@ -1,6 +1,7 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
+from typing import NamedTuple
 
 from sqlmodel import col, func, select
 
@@ -36,6 +37,32 @@ _DEFAULT = PromptCheck(
     model=DEFAULT_MODEL,
     categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
 )
+
+
+class ConversationCaps(NamedTuple):
+    """Conversations one IP may start in a sliding hour; 0 turns a cap off."""
+
+    per_ip: int
+    same_models: int
+
+
+def conversation_caps(check: PromptCheck) -> ConversationCaps:
+    """The conversation caps in force. What an admin set wins; otherwise the
+    settings default applies."""
+    per_ip = check.conversations_per_ip_per_hour
+    same_models = check.conversations_same_models_per_ip_per_hour
+    return ConversationCaps(
+        per_ip=(
+            settings.RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR
+            if per_ip is None
+            else per_ip
+        ),
+        same_models=(
+            settings.RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR
+            if same_models is None
+            else same_models
+        ),
+    )
 
 
 @redis_cache(REDIS_PROMPT_CHECK_KEY)

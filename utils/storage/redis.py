@@ -24,6 +24,14 @@ REDIS_INSTANCE_PREFIX: Final[str] = (
 REDIS_COMPARISON_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}comparison:{{id}}"
 REDIS_USER_CHAR_COUNT: Final[str] = f"{REDIS_INSTANCE_PREFIX}pricey_chars:{{key}}"
 REDIS_BLOCKED_COUNT_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}guardrail_blocked:{{ip}}"
+# Sorted sets of the times an IP started a conversation in a sliding hour: all
+# of them, and those with one pair of models.
+REDIS_CONVERSATIONS_IP_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}conversations_ip:{{ip}}"
+)
+REDIS_CONVERSATIONS_IP_MODELS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}conversations_ip_models:{{ip}}:{{models}}"
+)
 # Sorted set of the times one long message was sent, by any session, in a
 # sliding hour.
 REDIS_REPEATED_PROMPT_KEY: Final[str] = (

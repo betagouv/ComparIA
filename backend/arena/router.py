@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from typing import Annotated, AsyncGenerator, Sequence
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
@@ -38,6 +38,8 @@ from backend.arena.session import (
     is_ratelimited,
     is_repeated_prompt,
     is_warning_cooldown,
+    release_conversation,
+    reserve_conversation,
     reserve_input_chars,
     retreive_comparison_metadata,
     store_comparison_metadata,
@@ -74,7 +76,11 @@ from utils.database.models import (
     TurnVoteAnnotate,
     TurnVoteChoice,
 )
-from utils.database.prompt_checks import save_prompt_check_result
+from utils.database.prompt_checks import (
+    conversation_caps,
+    get_prompt_check,
+    save_prompt_check_result,
+)
 
 logger = logging.getLogger("languia")
 
@@ -368,14 +374,33 @@ async def add_first_text(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
     )
 
-    charge_budget(
-        args.prompt_value,
-        (llm_a_id, llm_b_id),
-        llms_data,
-        anonymous_user_hash,
-        request,
-        args.cohorts,
-    )
+    caps = conversation_caps(await get_prompt_check())
+    conversation = uuid4().hex
+    if not reserve_conversation(
+        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, args.cohorts
+    ):
+        logger.error(
+            "Too many conversations started from this IP",
+            extra={"request": request},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="rate_limited",
+        )
+
+    try:
+        charge_budget(
+            args.prompt_value,
+            (llm_a_id, llm_b_id),
+            llms_data,
+            anonymous_user_hash,
+            request,
+            args.cohorts,
+        )
+    except HTTPException:
+        # Refused for its characters, the conversation did not start.
+        release_conversation(get_ip(request), (llm_a_id, llm_b_id), conversation)
+        raise
     check = (await save_prompt_check_result(check)) if check else None
 
     web_search_results = None

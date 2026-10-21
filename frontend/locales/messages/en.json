@@ -382,6 +382,14 @@
                 "title": "Test a message",
                 "triggered": "Triggered"
             },
+            "caps": {
+                "description": "How many conversations one IP address may start over a sliding hour, in all and with the same pair of models. These limits apply even when message verification is turned off. They are shared by everyone behind the same IP (a school, a ministry): partner cohorts (Pix) are not subject to them. 0 turns a limit off. Leave a field empty to go back to the instance default.",
+                "invalid": "Enter a whole number between 0 and 10,000.",
+                "perIp": "Conversations per IP per hour",
+                "sameModels": "Conversations per IP per hour with the same models",
+                "save": "Save the limits",
+                "title": "Conversation limits per IP"
+            },
             "categories": {
                 "criminal": "Criminal activity",
                 "dangerous": "Dangerous acts",
@@ -413,8 +421,8 @@
             },
             "saveApiKey": "Save the key",
             "saveCategories": "Save the categories",
-            "saveModel": "Save the model",
             "saved": "Check updated",
+            "saveModel": "Save the model",
             "saving": "Saving...",
             "settings": {
                 "disabledNotice": "Check turned off: no message is checked, whatever the rules below say.",

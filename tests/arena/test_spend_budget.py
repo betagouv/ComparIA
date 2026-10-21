@@ -37,7 +37,10 @@ from backend.config import (  # noqa: E402
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_ALL_MODELS_INPUT_PER_IP,
 )
-from tests.arena.test_ratelimit import FakeRedis  # noqa: E402
+from tests.arena.test_ratelimit import (  # noqa: E402
+    FakeRedis,
+    default_prompt_check,
+)
 
 SESSION = "b" * 64
 IP = "10.0.0.1"
@@ -145,6 +148,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
             with patched(
                 arena_router,
                 get_llms_data=get_llms_data,
+                get_prompt_check=default_prompt_check,
                 run_checks=run_checks,
                 save_prompt_check_result=save_prompt_check_result,
                 get_current_terms_acceptance_version=terms_version,
@@ -300,6 +304,8 @@ def test_a_refused_message_spends_nothing_and_writes_nothing(route, state):
     assert {k: v for k, v in state.redis.store.items() if v} == before, route
     assert state.created == 0, route
     assert state.provider_calls == 0, route
+    # Nor does it count as a conversation the IP started.
+    assert not any(state.redis.zsets.values()), route
     # A counter the refused message created holds nothing and must not stay in
     # Redis for ever.
     assert all(k in state.redis.ttl for k in state.redis.store if k != spent), route
@@ -354,6 +360,25 @@ def test_a_retry_with_a_solved_captcha_goes_through_and_pays():
         assert counter(state.redis, "all_ip", "testclient") == len(PROMPT)
 
 
+def test_a_sixth_conversation_with_the_same_models_is_refused_before_it_spends():
+    with arena() as state:
+        for _ in range(5):
+            start("add_first_text", state)
+        spent = counter(state.redis, "all_ip", IP)
+        calls = state.provider_calls
+
+        try:
+            start("add_first_text", state)
+        except HTTPException as error:
+            assert error.status_code == 429
+            assert error.detail == "rate_limited"
+        else:
+            raise AssertionError("the sixth conversation was not refused")
+
+        assert counter(state.redis, "all_ip", IP) == spent
+        assert state.provider_calls == calls
+
+
 if __name__ == "__main__":
     test_a_message_is_charged_before_the_models_start()
     test_a_client_that_hangs_up_has_still_paid()
@@ -363,4 +388,5 @@ if __name__ == "__main__":
     test_a_pricey_model_spends_the_pricey_budget_up_front()
     test_a_retry_needs_a_solved_captcha()
     test_a_retry_with_a_solved_captcha_goes_through_and_pays()
+    test_a_sixth_conversation_with_the_same_models_is_refused_before_it_spends()
     print("Spend budget cases passed.")

@@ -14,10 +14,19 @@
   import type { PromptCheckDecision, PromptCheckStats, PromptCheckTry } from './types'
 
   type Action = 'off' | 'log' | 'warn' | 'block'
-  type Saving = 'enabled' | 'model' | 'apiKey' | 'categories'
+  type Saving = 'enabled' | 'model' | 'apiKey' | 'categories' | 'caps'
   type CategoryConfig = { threshold: number; action: Action }
   type DraftRow = { threshold: string | number; action: Action }
-  type Draft = { enabled: boolean; model: string; categories: Record<string, DraftRow> }
+  type Draft = {
+    enabled: boolean
+    model: string
+    categories: Record<string, DraftRow>
+    capPerIp: string | number
+    capSameModels: string | number
+  }
+
+  // Même plafond que le backend : une faute de frappe ne doit pas cacher une limite.
+  const MAX_CONVERSATIONS_CAP = 10_000
 
   let { data }: PageProps = $props()
 
@@ -192,6 +201,8 @@
     return {
       enabled: check.enabled,
       model: check.model,
+      capPerIp: String(check.conversations_per_ip_per_hour),
+      capSameModels: String(check.conversations_same_models_per_ip_per_hour),
       categories: Object.fromEntries(
         Object.keys(check.categories).map((category) => {
           const { threshold, action } = config(check, category)
@@ -313,6 +324,45 @@
     editingApiKey = true
     await tick()
     apiKeyField?.focus()
+  }
+
+  /**
+   * Un entier entre 0 et le plafond, null pour un champ vidé (le réglage par
+   * défaut de l'instance s'applique), undefined sinon. Un champ number renvoie
+   * un nombre, ou null une fois vidé.
+   */
+  function readCap(value: string | number | null): number | null | undefined {
+    const raw = String(value ?? '').trim()
+    if (raw === '') return null
+    const parsed = Number(raw)
+    return Number.isInteger(parsed) && parsed >= 0 && parsed <= MAX_CONVERSATIONS_CAP
+      ? parsed
+      : undefined
+  }
+
+  let capErrors = $state<{ perIp?: string; sameModels?: string }>({})
+
+  async function saveCaps(event: SubmitEvent) {
+    event.preventDefault()
+    const perIp = readCap(draft.capPerIp)
+    const sameModels = readCap(draft.capSameModels)
+    const invalid = m['admin.promptChecks.caps.invalid']()
+    capErrors = {
+      perIp: perIp === undefined ? invalid : undefined,
+      sameModels: sameModels === undefined ? invalid : undefined
+    }
+    if (perIp === undefined || sameModels === undefined) return
+
+    // Seule une limite modifiée est envoyée : l'autre continue de suivre le
+    // réglage par défaut si personne ne l'a fixée.
+    const body: PromptCheckPatch = {}
+    if (perIp !== data.check.conversations_per_ip_per_hour) {
+      body.conversations_per_ip_per_hour = perIp
+    }
+    if (sameModels !== data.check.conversations_same_models_per_ip_per_hour) {
+      body.conversations_same_models_per_ip_per_hour = sameModels
+    }
+    if (Object.keys(body).length) await patch('caps', body)
   }
 
   async function saveCategories(event: SubmitEvent) {
@@ -464,6 +514,54 @@
         </form>
       </div>
     </div>
+
+    <form id="prompt-check-caps-form" onsubmit={saveCaps}>
+      <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.caps.title']()}</h2>
+      <p class="fr-text--sm text-grey mb-4!">{m['admin.promptChecks.caps.description']()}</p>
+
+      <div class="gap-x-5 gap-y-4 md:grid-cols-2 grid items-start">
+        {#each [{ key: 'perIp', id: 'prompt-check-cap-per-ip', label: m['admin.promptChecks.caps.perIp']() }, { key: 'sameModels', id: 'prompt-check-cap-same-models', label: m['admin.promptChecks.caps.sameModels']() }] as field (field.key)}
+          <div
+            class={[
+              'fr-input-group mb-0!',
+              { 'fr-input-group--error': !!capErrors[field.key as 'perIp' | 'sameModels'] }
+            ]}
+          >
+            <label class="fr-label mt-0! mb-1! text-sm text-dark-grey font-medium" for={field.id}>
+              {field.label}
+            </label>
+            <input
+              id={field.id}
+              class="fr-input w-[120px] tabular-nums"
+              type="number"
+              min="0"
+              max={MAX_CONVERSATIONS_CAP}
+              step="1"
+              bind:value={draft[field.key === 'perIp' ? 'capPerIp' : 'capSameModels']}
+              disabled={saving === 'caps'}
+              aria-describedby={`${field.id}-messages`}
+            />
+            {#if capErrors[field.key as 'perIp' | 'sameModels']}
+              <div class="fr-messages-group" id={`${field.id}-messages`} aria-live="polite">
+                <p class="fr-message fr-message--error">
+                  {capErrors[field.key as 'perIp' | 'sameModels']}
+                </p>
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+
+      <Button
+        id="prompt-check-caps-save"
+        type="submit"
+        text={saving === 'caps'
+          ? m['admin.promptChecks.saving']()
+          : m['admin.promptChecks.caps.save']()}
+        disabled={saving === 'caps'}
+        class="mt-4"
+      />
+    </form>
 
     <form id="prompt-check-categories-form" onsubmit={saveCategories}>
       <h2 class="fr-h5 mb-3!">{m['admin.promptChecks.categoriesTitle']()}</h2>

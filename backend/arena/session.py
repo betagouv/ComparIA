@@ -17,9 +17,9 @@ from backend.config import (
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_ALL_MODELS_INPUT_PER_IP,
     RATELIMIT_BLOCKED_PROMPTS_PER_HOUR,
+    RATELIMIT_EXEMPT_COHORTS,
     RATELIMIT_PRICEY_MODELS_INPUT,
     RATELIMIT_PRICEY_MODELS_INPUT_PER_IP,
-    RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS,
     RATELIMIT_REPEATED_PROMPT_MIN_CHARS,
     RATELIMIT_REPEATED_PROMPT_PER_HOUR,
     RATELIMIT_SENT_WARNINGS_PER_HOUR,
@@ -28,6 +28,8 @@ from backend.utils.user import ip_bucket
 from utils.storage.redis import (
     REDIS_BLOCKED_COUNT_KEY,
     REDIS_COMPARISON_KEY,
+    REDIS_CONVERSATIONS_IP_KEY,
+    REDIS_CONVERSATIONS_IP_MODELS_KEY,
     REDIS_REPEATED_PROMPT_KEY,
     REDIS_SENT_WARNINGS_KEY,
     REDIS_UNVOTED_KEY,
@@ -205,6 +207,12 @@ def is_ratelimited(key: str, ip: str) -> bool:
     return False
 
 
+def is_exempt_cohort(cohorts: str | None) -> bool:
+    """Whether the cohorts the client declares (comma-separated) include one
+    left out of the repeated prompt and conversation caps."""
+    return bool(set((cohorts or "").split(",")) & set(RATELIMIT_EXEMPT_COHORTS))
+
+
 REPEATED_PROMPT_WINDOW_SECONDS = 3600
 
 
@@ -223,7 +231,7 @@ def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     """
     if len(text) < RATELIMIT_REPEATED_PROMPT_MIN_CHARS:
         return False
-    if set((cohorts or "").split(",")) & set(RATELIMIT_REPEATED_PROMPT_EXEMPT_COHORTS):
+    if is_exempt_cohort(cohorts):
         return False
     try:
         digest = hashlib.sha256(" ".join(text.split()).casefold().encode()).hexdigest()
@@ -242,6 +250,92 @@ def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     except Exception as e:
         logger.error(f"[SESSION] Error counting repeated prompt: {e}")
         return False
+
+
+CONVERSATION_WINDOW_SECONDS = 3600
+
+
+def reserve_conversation(
+    ip: str,
+    llm_ids: tuple[uuid.UUID, uuid.UUID],
+    caps: tuple[int, int],
+    stamp: str,
+    cohorts: str | None = None,
+) -> bool:
+    """
+    Count a conversation an IP starts, or refuse it past the caps.
+
+    Two caps run on a sliding hour: every conversation of the IP, and those with
+    the same pair of models (in either order). A conversation is stamped first
+    and taken back if it went over, so conversations sent at once each count the
+    others, and a refused one leaves the window as it was. Exempt cohorts are not
+    counted, nor is a caller no IP identifies: they would all share one bucket.
+    Fails open on a Redis error, like the other cooldowns.
+
+    Args:
+        ip: caller IP
+        llm_ids: the two models picked for the conversation
+        caps: conversations allowed in the hour, in all and with the same pair of
+            models; 0 turns a cap off
+        stamp: unique to the conversation, to take it back with release_conversation
+        cohorts: comma-separated cohorts the client declares
+
+    Returns:
+        bool: True if the conversation may start
+    """
+    if is_exempt_cohort(cohorts):
+        return True
+    keys = _conversation_keys(ip, llm_ids)
+    if not keys:
+        return True
+    budgets = [(key, cap) for key, cap in zip(keys, caps) if cap > 0]
+    if not budgets:
+        return True
+    try:
+        client = get_redis_client()
+        now = time.time()
+        pipe = client.pipeline()
+        for key, _cap in budgets:
+            pipe.zremrangebyscore(key, 0, now - CONVERSATION_WINDOW_SECONDS)
+            pipe.zadd(key, {stamp: now})
+            pipe.zcard(key)
+            # Set in the same step as the stamp, so the key cannot outlive its window.
+            pipe.expire(key, CONVERSATION_WINDOW_SECONDS)
+        counts = pipe.execute()[2::4]
+        allowed = all(count <= cap for count, (_, cap) in zip(counts, budgets))
+        if not allowed:
+            release_conversation(ip, llm_ids, stamp)
+        return allowed
+    except Exception as e:
+        logger.error(f"[SESSION] Error counting conversations: {e}")
+        return True
+
+
+def release_conversation(
+    ip: str, llm_ids: tuple[uuid.UUID, uuid.UUID], stamp: str
+) -> None:
+    """Take back a conversation reserve_conversation counted but that did not
+    start, so the window only holds the ones that went through."""
+    try:
+        pipe = get_redis_client().pipeline()
+        for key in _conversation_keys(ip, llm_ids):
+            pipe.zrem(key, stamp)
+        pipe.execute()
+    except Exception as e:
+        logger.error(f"[SESSION] Error releasing a conversation: {e}")
+
+
+def _conversation_keys(ip: str, llm_ids: tuple[uuid.UUID, uuid.UUID]) -> list[str]:
+    """The IP's two conversation windows: all of them, then those with this pair
+    of models (in either order). Empty for a caller no IP identifies."""
+    bucket = ip_bucket(ip)
+    if not bucket:
+        return []
+    models = "-".join(sorted(str(llm_id) for llm_id in llm_ids))
+    return [
+        REDIS_CONVERSATIONS_IP_KEY.format(ip=bucket),
+        REDIS_CONVERSATIONS_IP_MODELS_KEY.format(ip=bucket, models=models),
+    ]
 
 
 def increment_blocked_prompts(ip: str) -> None:

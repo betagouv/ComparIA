@@ -549,6 +549,8 @@ export interface PromptCheckPatch {
       [k: string]: unknown;
     };
   } | null;
+  conversations_per_ip_per_hour?: number | null;
+  conversations_same_models_per_ip_per_hour?: number | null;
 }
 /**
  * The configuration plus how the check is faring, since a broken check
@@ -564,6 +566,8 @@ export interface PromptCheckStatus {
       [k: string]: unknown;
     };
   };
+  conversations_per_ip_per_hour: number;
+  conversations_same_models_per_ip_per_hour: number;
   updated_at: string;
   updated_by?: string | null;
   consecutive_failures?: number;

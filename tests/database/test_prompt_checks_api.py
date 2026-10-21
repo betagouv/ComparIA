@@ -219,6 +219,58 @@ def test_write_invalidates_the_cache(db: FakeSession, invalidations: list[str]) 
     assert db.committed
 
 
+def test_unset_conversation_caps_report_the_settings_defaults(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    settings = prompt_checks_module.settings
+    monkeypatch.setattr(settings, "RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR", 20)
+    monkeypatch.setattr(
+        settings, "RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR", 5
+    )
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    assert status.conversations_per_ip_per_hour == 20
+    assert status.conversations_same_models_per_ip_per_hour == 5
+    assert db.row.conversations_per_ip_per_hour is None
+
+
+def test_patching_the_conversation_caps_stores_them_and_reports_them(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    result = patch_check(
+        PromptCheckPatch(
+            conversations_per_ip_per_hour=50,
+            conversations_same_models_per_ip_per_hour=0,
+        )
+    )
+
+    assert db.row.conversations_per_ip_per_hour == 50
+    assert db.row.conversations_same_models_per_ip_per_hour == 0
+    # Zero is a value of its own, a cap turned off, not a fall back to the default.
+    assert result.conversations_per_ip_per_hour == 50
+    assert result.conversations_same_models_per_ip_per_hour == 0
+    assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECK_KEY]
+
+
+def test_patching_other_fields_leaves_the_caps_alone(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    db.row.conversations_per_ip_per_hour = 50
+
+    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+
+    assert db.row.conversations_per_ip_per_hour == 50
+
+
+@pytest.mark.parametrize("value", [-1, 10_001])
+def test_a_conversation_cap_out_of_bounds_is_refused(value: int) -> None:
+    with pytest.raises(ValueError):
+        PromptCheckPatch(conversations_per_ip_per_hour=value)
+    with pytest.raises(ValueError):
+        PromptCheckPatch(conversations_same_models_per_ip_per_hour=value)
+
+
 class FlagClient:
     def __init__(self):
         self.deleted: list[str] = []
