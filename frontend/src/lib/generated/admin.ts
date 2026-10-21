@@ -588,6 +588,22 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
+export interface TranslatableLegalPresentation {
+  [k: string]: LegalPresentation;
+}
+export interface LegalPresentation {
+  arena: ArenaLegalPresentation;
+  sign_in: SignInLegalPresentation;
+}
+export interface ArenaLegalPresentation {
+  title: string;
+  introduction: string;
+  checkbox_label: string;
+  button_label?: string | null;
+}
+export interface SignInLegalPresentation {
+  checkbox_label: string;
+}
 /**
  * The configuration plus how the check is faring, since a broken check
  * either refuses every message or, while the model counts as down, lets them
@@ -760,25 +776,6 @@ export interface SurveyQuestionUpdate {
   };
   options: SurveyOptionWrite[];
   published: boolean;
-}
-export interface UpdateLegalPresentationBody {
-  presentation: LegalPresentation;
-}
-export interface LegalPresentation {
-  arena: ArenaLegalPresentation;
-  sign_in: SignInLegalPresentation;
-  [k: string]: unknown;
-}
-export interface ArenaLegalPresentation {
-  title: string;
-  introduction: string;
-  checkbox_label: string;
-  button_label?: string | null;
-  [k: string]: unknown;
-}
-export interface SignInLegalPresentation {
-  checkbox_label: string;
-  [k: string]: unknown;
 }
 export interface UserPublic {
   id?: string;

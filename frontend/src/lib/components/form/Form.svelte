@@ -105,7 +105,7 @@
       {/if}
       {#if anyError.length}
         <ul class="fr-message fr-message--error block!">
-          {m['form.containsErrors']}
+          {m['form.containsErrors']()}
           {#each anyError as [errId, errMsg], i (i)}
             <li class="block!">
               <a href="#{errId}">"{items?.find((item) => item.id === errId)?.label ?? errId}"</a>:

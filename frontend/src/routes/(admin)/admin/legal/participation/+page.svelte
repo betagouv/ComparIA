@@ -1,66 +1,66 @@
 <script lang="ts">
+  import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import LegalPresentationPreview from '$components/admin/LegalPresentationPreview.svelte'
   import { Button, Textarea } from '$components/dsfr'
+  import Form from '$components/form/Form.svelte'
+  import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
-  import { api } from '$lib/fastapi-client'
-  import type { LegalPresentation } from '$lib/generated/admin'
-  import { useToast } from '$lib/helpers/useToast.svelte'
+  import { getAuthContext } from '$lib/authContext.svelte'
+  import type { ArenaLegalPresentation, SignInLegalPresentation } from '$lib/generated/admin'
+  import { getLocales } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
-  import { onMount } from 'svelte'
+  import { useForm } from '$lib/stores/form.svelte'
+  import { getKeys } from '$lib/utils/commons'
+  import type { PageProps } from './$types'
 
-  let loading = $state(true)
-  let saving = $state(false)
-  let arenaTitle = $state('')
-  let arenaIntroduction = $state('')
-  let arenaCheckboxLabel = $state('')
-  let arenaButtonLabel = $state('')
-  let signInCheckboxLabel = $state('')
+  const { data }: PageProps = $props()
 
-  onMount(loadPresentation)
+  const auth = getAuthContext()
+  const locales = $derived(getLocales(auth.config.enabled_locales))
 
-  async function loadPresentation() {
-    loading = true
-    try {
-      const presentation = await api.request<LegalPresentation>('/admin/legal/presentation')
-      arenaTitle = presentation.arena.title
-      arenaIntroduction = presentation.arena.introduction
-      arenaCheckboxLabel = presentation.arena.checkbox_label
-      arenaButtonLabel = presentation.arena.button_label ?? ''
-      signInCheckboxLabel = presentation.sign_in.checkbox_label
-    } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
-    } finally {
-      loading = false
+  const form = useForm({
+    url: '/admin/legal/presentation',
+    method: 'put',
+    initialData: () => {
+      const presentations = structuredClone(data.presentations)
+      const currentLocales = getKeys(presentations)
+      const missingLocales = locales.filter((locale) => !currentLocales.includes(locale.code))
+      missingLocales.forEach((locale) => {
+        presentations[locale.code] = {
+          arena: {} as ArenaLegalPresentation,
+          sign_in: {} as SignInLegalPresentation
+        }
+      })
+      return presentations
+    },
+    onBeforeSubmit: (form) => {
+      getKeys(form).forEach((k) => {
+        // We need to clear an empty locale
+        if (!getKeys(form[k].arena).length && !getKeys(form[k].sign_in).length) {
+          delete form[k]
+        }
+      })
+      return form
+    },
+    onSuccess: async () => await invalidate('admin:participation')
+  })
+
+  function clearLocale(locale: string) {
+    form.form[locale] = {
+      arena: {} as ArenaLegalPresentation,
+      sign_in: {} as SignInLegalPresentation
     }
+    Object.keys(form.errors).forEach((k) => {
+      if (k.startsWith(locale)) delete form.errors[k]
+    })
   }
 
-  async function save(e: SubmitEvent) {
-    e.preventDefault()
-    saving = true
-    const presentation: LegalPresentation = {
-      arena: {
-        title: arenaTitle,
-        introduction: arenaIntroduction,
-        checkbox_label: arenaCheckboxLabel,
-        button_label: arenaButtonLabel || null
-      },
-      sign_in: {
-        checkbox_label: signInCheckboxLabel
-      }
-    }
-
-    try {
-      await api.request('/admin/legal/presentation', {
-        method: 'PUT',
-        body: JSON.stringify({ presentation })
-      })
-      useToast(m['admin.legal.participation.saved'](), 4000)
-    } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
-    } finally {
-      saving = false
-    }
+  function isValid(locale: string) {
+    if (!form.form[locale]) return false
+    const sections = Object.values(form.form[locale]) as object[]
+    if (sections.length != 2 || sections.some((v) => Object.keys(v).length === 0)) return false
+    return Object.values(sections[0]).length === 4 || Object.values(sections[2]).length === 1
   }
 </script>
 
@@ -68,109 +68,106 @@
   seoTitle={m['admin.legal.participation.title']()}
   title={m['admin.legal.participation.title']()}
   subtitle={m['admin.legal.participation.subtitle']()}
+  noPadding
 >
-  <p class="fr-mb-6v">
+  <p class="mb-0! px-4! md:px-6! pt-6">
     <a class="fr-link fr-icon-arrow-left-line fr-link--icon-left" href={resolve('/admin/legal')}>
       {m['admin.legal.back']()}
     </a>
   </p>
 
-  {#if loading}
-    <p role="status">{m['admin.legal.participation.loading']()}</p>
-  {:else}
-    <form onsubmit={save} class="max-w-[1200px]" aria-labelledby="journey-form-title">
-      <h2 id="journey-form-title" class="fr-h3 fr-mb-2v">
-        {m['admin.legal.participation.formTitle']()}
-      </h2>
-
-      <section aria-labelledby="arena-section-title">
-        <h3 id="arena-section-title" class="fr-h4">
-          {m['admin.legal.participation.arenaTitle']()}
-        </h3>
-        <p>{m['admin.legal.participation.arenaDescription']()}</p>
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-lg-7">
-            <Textarea
-              id="arena-presentation-title"
-              label={m['admin.legal.participation.modalTitle']()}
-              rows={2}
-              maxlength={200}
-              required
-              bind:value={arenaTitle}
-            />
-            <Textarea
-              id="arena-presentation-introduction"
-              label={m['admin.legal.participation.introduction']()}
-              help={m['admin.legal.markdownHelp']()}
-              groupClass="fr-mt-4v"
-              rows={4}
-              maxlength={2000}
-              required
-              bind:value={arenaIntroduction}
-            />
-            <Textarea
-              id="arena-presentation-checkbox"
-              label={m['admin.legal.participation.checkboxLabel']()}
-              help={m['admin.legal.markdownHelp']()}
-              groupClass="fr-mt-4v"
-              rows={5}
-              maxlength={2000}
-              required
-              bind:value={arenaCheckboxLabel}
-            />
-            <Textarea
-              id="arena-presentation-button"
-              label={m['admin.legal.participation.buttonLabel']()}
-              groupClass="fr-mt-4v"
-              rows={2}
-              maxlength={200}
-              bind:value={arenaButtonLabel}
-            />
-          </div>
-          <div class="fr-col-12 fr-col-lg-5">
-            <LegalPresentationPreview
-              kind="arena"
-              title={arenaTitle}
-              introduction={arenaIntroduction}
-              checkboxLabel={arenaCheckboxLabel}
-              buttonLabel={arenaButtonLabel}
-            />
-          </div>
-        </div>
-      </section>
-
-      <section class="fr-mt-8v" aria-labelledby="sign-in-section-title">
-        <h3 id="sign-in-section-title" class="fr-h4">
-          {m['admin.legal.participation.signInTitle']()}
-        </h3>
-        <p>{m['admin.legal.participation.signInDescription']()}</p>
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-lg-7">
-            <Textarea
-              id="sign-in-presentation-checkbox"
-              label={m['admin.legal.participation.checkboxLabel']()}
-              help={m['admin.legal.markdownHelp']()}
-              rows={5}
-              maxlength={2000}
-              required
-              bind:value={signInCheckboxLabel}
-            />
-          </div>
-          <div class="fr-col-12 fr-col-lg-5">
-            <LegalPresentationPreview kind="sign-in" checkboxLabel={signInCheckboxLabel} />
-          </div>
-        </div>
-      </section>
-
-      <div class="fr-mt-6v flex justify-end">
+  <Form id="journey" label={m['admin.legal.participation.formTitle']()} {...form} stickyFooter>
+    <FormTranslate id="journey-form" bind:value={form.form} {isValid}>
+      {#snippet subSnippet(locale)}
         <Button
-          type="submit"
-          text={saving
-            ? m['admin.legal.participation.saving']()
-            : m['admin.legal.participation.save']()}
-          disabled={saving}
+          icon="delete-bin-line"
+          text="Clear locale content"
+          size="sm"
+          class="ms-6"
+          onclick={() => clearLocale(locale)}
         />
-      </div>
-    </form>
-  {/if}
+
+        <section aria-labelledby="arena-section-title" class="mt-6">
+          <h3 id="arena-section-title" class="fr-h4">
+            {m['admin.legal.participation.arenaTitle']()}
+          </h3>
+          <p>{m['admin.legal.participation.arenaDescription']()}</p>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-lg-7">
+              <Textarea
+                id="{locale}-arena-title"
+                label={m['admin.legal.participation.modalTitle']()}
+                rows={2}
+                maxlength={200}
+                required
+                error={form.errors[`${locale}-arena-title`]}
+                bind:value={form.form[locale].arena.title}
+              />
+              <Textarea
+                id="{locale}-arena-introduction"
+                label={m['admin.legal.participation.introduction']()}
+                help={m['admin.legal.markdownHelp']()}
+                groupClass="fr-mt-4v"
+                rows={4}
+                maxlength={2000}
+                required
+                error={form.errors[`${locale}-arena-introduction`]}
+                bind:value={form.form[locale].arena.introduction}
+              />
+              <Textarea
+                id="{locale}-arena-checkbox_label"
+                label={m['admin.legal.participation.checkboxLabel']()}
+                help={m['admin.legal.markdownHelp']()}
+                groupClass="fr-mt-4v"
+                rows={5}
+                maxlength={2000}
+                required
+                error={form.errors[`${locale}-arena-checkbox_label`]}
+                bind:value={form.form[locale].arena.checkbox_label}
+              />
+              <Textarea
+                id="{locale}-arena-button_label"
+                label={m['admin.legal.participation.buttonLabel']()}
+                groupClass="fr-mt-4v"
+                rows={2}
+                maxlength={200}
+                error={form.errors[`${locale}-arena-button_label`]}
+                bind:value={form.form[locale].arena.button_label}
+              />
+            </div>
+            <div class="fr-col-12 fr-col-lg-5">
+              <LegalPresentationPreview kind="arena" {...form.form[locale].arena} />
+            </div>
+          </div>
+        </section>
+
+        <section class="fr-mt-8v" aria-labelledby="sign-in-section-title">
+          <h3 id="sign-in-section-title" class="fr-h4">
+            {m['admin.legal.participation.signInTitle']()}
+          </h3>
+          <p>{m['admin.legal.participation.signInDescription']()}</p>
+          <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-lg-7">
+              <Textarea
+                id="{locale}-sign_in-checkbox_label"
+                label={m['admin.legal.participation.checkboxLabel']()}
+                help={m['admin.legal.markdownHelp']()}
+                rows={5}
+                maxlength={2000}
+                required
+                error={form.errors[`${locale}-sign_in-checkbox_label`]}
+                bind:value={form.form[locale].sign_in.checkbox_label}
+              />
+            </div>
+            <div class="fr-col-12 fr-col-lg-5">
+              <LegalPresentationPreview
+                kind="sign-in"
+                checkbox_label={form.form[locale].sign_in.checkbox_label}
+              />
+            </div>
+          </div>
+        </section>
+      {/snippet}
+    </FormTranslate>
+  </Form>
 </PageLayout>
