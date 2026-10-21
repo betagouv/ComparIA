@@ -3,6 +3,8 @@
     type: HTMLInputElement['type']
     placeholder?: HTMLInputElement['placeholder']
     step?: HTMLInputElement['step']
+    // Id of a <datalist> suggesting values without limiting the field to them.
+    list?: string
   } & BaseFormFieldProps<'input'>
 </script>
 
@@ -17,6 +19,7 @@
     disabled,
     placeholder,
     step,
+    list,
     children,
     ...props
   }: FormInputProps & { value: string | number } & SvelteHTMLElements['div'] = $props()
@@ -25,7 +28,16 @@
 <FormField {...props} component="input">
   {#snippet formItem(fieldProps)}
     <div class="gap-3 mt-2 flex">
-      <input {...fieldProps} {type} {placeholder} {disabled} {step} bind:value class="fr-input" />
+      <input
+        {...fieldProps}
+        {type}
+        {placeholder}
+        {disabled}
+        {step}
+        {list}
+        bind:value
+        class="fr-input"
+      />
       {@render children?.()}
     </div>
   {/snippet}
