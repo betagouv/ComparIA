@@ -377,6 +377,25 @@ describe('admin prompt check page', () => {
     })
   })
 
+  it('opens a folded criterion the server refused and shows why on its field', async () => {
+    const { api, ValidationError } = await import('$lib/fastapi-client')
+    vi.mocked(api.request).mockReset()
+    vi.mocked(api.request).mockRejectedValue(
+      Object.assign(new ValidationError('invalid'), {
+        errors: [{ loc: ['body', 'criteria', 1, 'question'], msg: 'Too long' }]
+      })
+    )
+
+    const { container } = renderPage(check())
+    expect(container.querySelector('#criteria-1 details')?.hasAttribute('open')).toBe(false)
+    await save(container)
+
+    expect(container.querySelector('#criteria-1 details')?.hasAttribute('open')).toBe(true)
+    expect(container.querySelector('#criteria-1-question-messages')?.textContent).toContain(
+      'Too long'
+    )
+  })
+
   it('removes a criterion', async () => {
     await mockApi(check())
 

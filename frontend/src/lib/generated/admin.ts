@@ -613,6 +613,9 @@ export interface PromptCheckUpsert {
    * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
    */
   description?: string;
+  /**
+   * @maxItems 32
+   */
   criteria?: PromptCheckCriterion[];
   /**
    * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.

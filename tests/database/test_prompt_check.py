@@ -120,7 +120,7 @@ def test_an_admin_can_add_any_criterion():
         criteria=[criterion("off_topic", "block", yes="Ads", no="")]
     )
 
-    assert patch.model_dump(exclude_unset=True)["criteria"] == [
+    assert patch.model_dump()["criteria"] == [
         {
             "key": "off_topic",
             "label": "Off_Topic",
@@ -150,10 +150,21 @@ def test_duplicate_keys_are_rejected():
 
 
 def test_too_many_criteria_are_rejected():
-    with pytest.raises(ValidationError, match=f"At most {MAX_CRITERIA}"):
+    with pytest.raises(ValidationError, match=f"at most {MAX_CRITERIA} items"):
         PromptCheckUpsert(
             criteria=[criterion(f"c{i}") for i in range(MAX_CRITERIA + 1)]
         )
+
+
+def test_an_invalid_criterion_is_named_by_its_row():
+    """The admin form turns the location into a field id, criteria-3-question,
+    and opens that row; without the index the error lands on no field."""
+    criteria = [criterion(f"c{i}") for i in range(3)] + [
+        criterion("c3", question="x" * 501)
+    ]
+    with pytest.raises(ValidationError) as error:
+        PromptCheckUpsert(criteria=criteria)
+    assert [e["loc"] for e in error.value.errors()] == [("criteria", 3, "question")]
 
 
 @pytest.mark.parametrize("field", ["label", "question"])

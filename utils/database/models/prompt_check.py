@@ -11,7 +11,7 @@ import re
 import uuid
 from typing import Annotated, Iterable, Literal
 
-from pydantic import computed_field, field_validator
+from pydantic import AfterValidator, computed_field, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
@@ -240,18 +240,20 @@ def strongest_action(actions: Iterable[str]) -> str:
     return max(actions, key=lambda a: _ACTION_RANK[a], default="off")
 
 
-def validate_criteria(value: object) -> list[dict]:
-    if not isinstance(value, list):
-        raise ValueError("Criteria must be a list")
-    if len(value) > MAX_CRITERIA:
-        raise ValueError(f"At most {MAX_CRITERIA} criteria")
-
-    criteria = [PromptCheckCriterion.model_validate(c).model_dump() for c in value]
-    keys = [c["key"] for c in criteria]
+def unique_keys(criteria: list[PromptCheckCriterion]) -> list[PromptCheckCriterion]:
+    keys = [c.key for c in criteria]
     duplicates = sorted({k for k in keys if keys.count(k) > 1})
     if duplicates:
         raise ValueError(f"Duplicate keys: {', '.join(duplicates)}")
     return criteria
+
+
+# Validated as a typed list, so an error names its row: criteria.3.question.
+Criteria = Annotated[
+    list[PromptCheckCriterion],
+    Field(max_length=MAX_CRITERIA, **FIELDS["criteria"]),
+    AfterValidator(unique_keys),
+]
 
 
 # Read by the model next to every prompt, so it judges against what this
@@ -333,14 +335,9 @@ class PromptCheckUpsert(PromptCheckBase):
     # Write-only. Left out, the stored key stays.
     api_key: Annotated[str | None, Field(**FIELDS["api_key"])] = None
     description: Description = DEFAULT_DESCRIPTION
-    criteria: Annotated[list[PromptCheckCriterion], Field(**FIELDS["criteria"])] = []
+    criteria: Criteria = []
     conversations_per_ip_per_hour: ConversationsCap = None
     conversations_same_models_per_ip_per_hour: SameModelsCap = None
-
-    @field_validator("criteria", mode="before")
-    @classmethod
-    def check_criteria(cls, value: object) -> list[dict]:
-        return validate_criteria(value)
 
 
 class PromptCheckPublic(PromptCheckBase):

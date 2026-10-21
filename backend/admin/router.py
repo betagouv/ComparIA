@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 from backend.admin.activity import router as admin_activity_router
 from backend.admin.llms import admin_llms_router
@@ -86,10 +86,10 @@ from utils.database.models.auth import (
 )
 from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
+    Criteria,
     PromptCheck,
     PromptCheckStatus,
     PromptCheckUpsert,
-    validate_criteria,
 )
 from utils.database.prompt_checks import (
     UNHEALTHY_AFTER_FAILURES,
@@ -675,14 +675,9 @@ class PromptCheckTryBody(BaseModel):
     configuration to judge it against. Each field falls back to the stored row."""
 
     text: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
-    criteria: list[dict] | None = None
+    criteria: Criteria | None = None
     description: str | None = Field(default=None, max_length=2000)
     model: str | None = Field(default=None, min_length=1, max_length=100)
-
-    @field_validator("criteria", mode="before")
-    @classmethod
-    def check_criteria(cls, value: object) -> list[dict] | None:
-        return None if value is None else validate_criteria(value)
 
 
 class PromptCheckTryResult(BaseModel):
@@ -711,7 +706,11 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
         description=(
             stored.description if body.description is None else body.description
         ),
-        criteria=stored.criteria if body.criteria is None else body.criteria,
+        criteria=(
+            stored.criteria
+            if body.criteria is None
+            else [c.model_dump() for c in body.criteria]
+        ),
     )
 
     # A dry run ignores the on/off switch on purpose: trying a rule before
