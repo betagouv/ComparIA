@@ -207,6 +207,12 @@ def is_ratelimited(key: str, ip: str) -> bool:
     return False
 
 
+def is_exempt_cohort(cohorts: str | None) -> bool:
+    """Whether the cohorts the client declares (comma-separated) include one
+    left out of the repeated prompt and conversation caps."""
+    return bool(set((cohorts or "").split(",")) & set(RATELIMIT_EXEMPT_COHORTS))
+
+
 REPEATED_PROMPT_WINDOW_SECONDS = 3600
 
 
@@ -225,7 +231,7 @@ def is_repeated_prompt(text: str, cohorts: str | None = None) -> bool:
     """
     if len(text) < RATELIMIT_REPEATED_PROMPT_MIN_CHARS:
         return False
-    if set((cohorts or "").split(",")) & set(RATELIMIT_EXEMPT_COHORTS):
+    if is_exempt_cohort(cohorts):
         return False
     try:
         digest = hashlib.sha256(" ".join(text.split()).casefold().encode()).hexdigest()
@@ -277,7 +283,7 @@ def reserve_conversation(
     Returns:
         bool: True if the conversation may start
     """
-    if set((cohorts or "").split(",")) & set(RATELIMIT_EXEMPT_COHORTS):
+    if is_exempt_cohort(cohorts):
         return True
     keys = _conversation_keys(ip, llm_ids)
     if not keys:
