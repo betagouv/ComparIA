@@ -26,8 +26,8 @@ import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
-from utils.database.models.auth import LegalDocument  # noqa: E402
 from tests.arena.test_ratelimit import default_prompt_check  # noqa: E402
+from utils.database.models.auth import LegalDocument  # noqa: E402
 from utils.database.models.comparison import (  # noqa: E402
     LEGACY_PARTICIPATION_TERMS_VERSION,
 )
