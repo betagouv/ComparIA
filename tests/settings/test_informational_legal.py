@@ -19,7 +19,6 @@ from backend.settings.informational_legal import (
     InformationalLegalPage,
     InformationalLegalPages,
 )
-from utils.database.models.app_settings import AppSettings
 
 
 def test_seeded_visibility_matches_the_existing_navigation() -> None:

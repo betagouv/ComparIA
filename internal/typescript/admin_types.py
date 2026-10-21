@@ -6,8 +6,8 @@ from backend.activity.models import (
 )
 from backend.admin.router import (
     AdminLegalDocument,
+    LegalPresentationTranslatable,
     PublishLegalDocumentBody,
-    UpdateLegalPresentationBody,
 )
 from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
 from utils.database.models.auth import UserPublic, UserUpsert

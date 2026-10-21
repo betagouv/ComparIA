@@ -272,10 +272,10 @@ def test_admin_publication_rejects_invalid_locale():
 
 
 def test_mutable_presentation_comes_from_app_settings():
-    configured = presentation_payload(title="Parcours modifiable")
+    configured = {"fr": presentation_payload(title="Parcours modifiable")}
 
     async def app_settings():
-        return SimpleNamespace(legal_presentation=configured)
+        return SimpleNamespace(legal_presentation=configured, default_locale="fr")
 
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
@@ -290,7 +290,7 @@ def test_presentation_uses_defaults_when_not_configured():
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
 
-    assert result == legal.fallback_legal_presentation()
+    assert result == legal.fallback_legal_presentation("fr")
 
 
 def test_default_presentation_follows_the_visitor_locale():

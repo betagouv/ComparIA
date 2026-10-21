@@ -62,12 +62,12 @@ from backend.settings.legal import (
     SEEDED_TERMS_VERSION,
     DuplicateLegalDocumentError,
     InvalidEffectiveDateError,
-    LegalPresentation,
+    LegalPresentationTranslatable,
     LocaleQuery,
     OptionalLocaleQuery,
     UtcTimestamp,
     get_active_legal_document,
-    get_legal_presentation,
+    get_legal_presentations,
     list_legal_documents,
     publish_legal_document,
 )
@@ -158,10 +158,6 @@ class PublishLegalDocumentBody(BaseModel):
     content: str = Field(min_length=1, max_length=LEGAL_CONTENT_MAX_LENGTH)
     effective_at: datetime | None = None
     confirm_publication: Literal[True]
-
-
-class UpdateLegalPresentationBody(BaseModel):
-    presentation: LegalPresentation
 
 
 @router.get("/legal/informational-pages", response_model=InformationalLegalPages)
@@ -282,21 +278,21 @@ async def create_privacy_policy_publication(
     return await _publish("privacy_policy", body)
 
 
-@router.get("/legal/presentation", response_model=LegalPresentation)
-async def get_participation_presentation() -> LegalPresentation:
-    return await get_legal_presentation()
+@router.get("/legal/presentation", response_model=LegalPresentationTranslatable)
+async def get_participation_presentations() -> LegalPresentationTranslatable:
+    return await get_legal_presentations()
 
 
-@router.put("/legal/presentation", response_model=LegalPresentation)
+@router.put("/legal/presentation", response_model=LegalPresentationTranslatable)
 async def put_participation_presentation(
-    body: UpdateLegalPresentationBody,
+    body: LegalPresentationTranslatable,
     current_user: RequiredAdmin,
-) -> LegalPresentation:
+) -> LegalPresentationTranslatable:
     await update_app_settings(
-        {"legal_presentation": body.presentation.model_dump(mode="json")},
+        {"legal_presentation": body.model_dump(mode="json")},
         updated_by=current_user.id,
     )
-    return body.presentation
+    return body
 
 
 @router.get("/users", response_model=UsersPage)
