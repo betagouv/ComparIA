@@ -91,9 +91,11 @@ CHUNK_CHARS: Final[int] = 8_000
 CHUNK_OVERLAP: Final[int] = 400
 # Calls in flight on this instance, across all requests: OpenRouter answered 429
 # to six at once on our bench. A slot lapses after SLOT_LEASE_SECONDS, so a
-# worker that dies holding one does not shrink the pool for good.
+# worker that dies holding one does not shrink the pool for good. It outlives
+# the deadline, which cancels every call of a check: a live call never loses
+# its slot, whatever httpx's per-read timeout lets a slow answer take.
 PARALLEL_CALLS: Final[int] = 4
-SLOT_LEASE_SECONDS: Final[float] = 2 * DECISION_TIMEOUT + RATE_LIMIT_WAIT
+SLOT_LEASE_SECONDS: Final[float] = CHECK_DEADLINE + 3
 SLOT_WAIT_SECONDS: Final[float] = 0.05
 # How many earlier user messages a follow-up is scored with.
 CONTEXT_TURNS: Final[int] = 4
@@ -332,7 +334,16 @@ async def moderate_many(
                 async with gate, _slot(REDIS_CHECK_CALLS_KEY):
                     return await _post(client, text, check, api_key)
 
-            return list(await asyncio.gather(*(one(text) for text in inputs)))
+            # A task group, not gather: on the deadline it cancels every call
+            # and waits for each to free its slot before the check returns.
+            # The first failing call stands for the check, so the caller still
+            # reads its HTTP status.
+            try:
+                async with asyncio.TaskGroup() as group:
+                    tasks = [group.create_task(one(text)) for text in inputs]
+            except ExceptionGroup as failed:
+                raise failed.exceptions[0] from None
+            return [task.result() for task in tasks]
     except TimeoutError as e:
         raise CheckOverloaded(f"No answer within {CHECK_DEADLINE}s") from e
 

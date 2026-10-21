@@ -973,3 +973,82 @@ def test_an_optional_check_lets_a_prompt_through_past_its_deadline():
         checks.CHECK_DEADLINE = orig
     assert result.decision == "error"
     assert result.block_message is None
+
+
+def test_a_slot_outlives_the_deadline():
+    """The deadline cancels every call of a check, so a slot that outlives it
+    is never taken back from a call still running."""
+    assert checks.SLOT_LEASE_SECONDS > checks.CHECK_DEADLINE
+
+
+def test_a_missed_deadline_frees_every_slot_before_returning():
+    redis = ZsetRedis()
+    orig = checks.CHECK_DEADLINE
+    checks.CHECK_DEADLINE = 0.1
+
+    async def check_then_count():
+        try:
+            await checks.moderate_many(
+                [f"message {i}" for i in range(6)], config(pii=(0.5, "log")), "key"
+            )
+        except checks.CheckOverloaded:
+            pass
+        return len(redis.sets.get(checks.REDIS_CHECK_CALLS_KEY, {}))
+
+    try:
+        with transport(slow_decider(1, []), redis):
+            held = asyncio.run(check_then_count())
+    finally:
+        checks.CHECK_DEADLINE = orig
+    assert held == 0
+
+
+def chunked_decider(gaps: list[float], flights: list[int]):
+    """A decision API whose answer arrives in pieces, each gap shorter than
+    the read timeout, so httpx never times the call out on its own."""
+    in_flight = [0]
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        payload = json.dumps(
+            {"answers": {k: {"noul": 0.0} for k in body["questions"]}}
+        ).encode()
+        size = -(-len(payload) // len(gaps))
+
+        async def pieces():
+            in_flight[0] += 1
+            flights.append(in_flight[0])
+            try:
+                for i, gap in enumerate(gaps):
+                    await asyncio.sleep(gap)
+                    yield payload[i * size : (i + 1) * size]
+            finally:
+                in_flight[0] -= 1
+
+        return httpx.Response(200, content=pieces())
+
+    return handler
+
+
+def test_a_slow_answer_never_lets_a_fifth_call_in():
+    """A call still reading its answer keeps its slot until the deadline
+    cancels it, so a second check waits rather than going over the limit."""
+    flights: list[int] = []
+    deadline, lease = checks.CHECK_DEADLINE, checks.SLOT_LEASE_SECONDS
+    checks.CHECK_DEADLINE, checks.SLOT_LEASE_SECONDS = 0.6, 0.9
+    texts = [f"message {i}" for i in range(checks.PARALLEL_CALLS)]
+    check = config(pii=(0.5, "log"))
+
+    async def both():
+        return await asyncio.gather(
+            checks.moderate_many(texts, check, "key"),
+            checks.moderate_many(texts, check, "key"),
+            return_exceptions=True,
+        )
+
+    try:
+        with transport(chunked_decider([0.2, 0.2, 0.2, 0.2], flights), ZsetRedis()):
+            asyncio.run(both())
+    finally:
+        checks.CHECK_DEADLINE, checks.SLOT_LEASE_SECONDS = deadline, lease
+    assert max(flights) <= checks.PARALLEL_CALLS
