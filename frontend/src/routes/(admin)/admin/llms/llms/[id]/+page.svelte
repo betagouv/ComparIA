@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import Form from '$components/form/Form.svelte'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -11,9 +11,10 @@
   const id = $derived(page.params.id)
   const method = $derived(id === 'create' ? 'post' : 'put')
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/llms/llm',
-      ...data.formProps,
+      initialData: () => data.formProps.data,
+      schema: () => data.formProps.schema,
       omitKeys: ['updated_at', 'created_at'],
       i18nKey: 'llm_upsert',
       method,
