@@ -87,6 +87,7 @@ from utils.database.models.auth import (
 from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
     Criteria,
+    Description,
     PromptCheck,
     PromptCheckStatus,
     PromptCheckUpsert,
@@ -684,7 +685,7 @@ class PromptCheckTryBody(BaseModel):
 
     text: str = Field(min_length=1, max_length=BLIND_MODE_INPUT_CHAR_LEN_LIMIT)
     criteria: Criteria | None = None
-    description: str | None = Field(default=None, max_length=2000)
+    description: Description | None = None
     model: str | None = Field(default=None, min_length=1, max_length=100)
 
 

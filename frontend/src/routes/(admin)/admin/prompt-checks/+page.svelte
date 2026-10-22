@@ -276,7 +276,7 @@
         help={field('description').help}
         error={form.errors['description']}
         rows={3}
-        maxlength={2000}
+        maxlength={data.schema.properties?.description?.maxLength}
         bind:value={form.form.description!}
       />
     {/snippet}
