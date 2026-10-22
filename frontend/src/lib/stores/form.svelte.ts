@@ -27,7 +27,10 @@ type UseFormOptions<T extends object, K extends keyof T = never> = {
   initialData: () => T
   omitKeys?: K[]
   method?: 'post' | 'put'
-  onBeforeSubmit?: (form: Omit<T, K>) => Omit<T, K> | null | Promise<Omit<T, K> | null>
+  onBeforeSubmit?: (
+    form: Omit<T, K>,
+    errors: FormErrors
+  ) => Omit<T, K> | null | Promise<Omit<T, K> | null>
   onSuccess?: (form: Omit<T, K>) => void | Promise<void>
 }
 
@@ -58,8 +61,12 @@ export function useForm<T extends object, K extends keyof T = never>({
     resetFormErrors(errors)
 
     try {
-      const body = await (onBeforeSubmit?.(form) ?? form)
-      if (body === null) return
+      const body = await (onBeforeSubmit ? onBeforeSubmit(form, errors) : form)
+      // onBeforeSubmit consumer can return 'null' to prevent form submit
+      if (body === null) {
+        useToast(m['form.toastError'](), 6000, 'error')
+        return
+      }
       isBusy = true
       const updated = await api.request<T>(url, { body: JSON.stringify(body), method })
       useToast(m['form.toastSuccess'](), 5000, 'success')
