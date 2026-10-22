@@ -1,5 +1,5 @@
 /* tslint:disable */
- 
+/* eslint-disable */
 /**
 /* This file was automatically generated from pydantic models by running pydantic2ts.
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
@@ -353,6 +353,16 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface InformationalLegalPage {
+  mode?: "internal" | "external";
+  external_url?: string | null;
+  visible_in_legal_menu?: boolean;
+  visible_in_settings?: boolean;
+  content_by_locale?: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000 {
+  [k: string]: string;
 }
 /**
  * LLM definition.

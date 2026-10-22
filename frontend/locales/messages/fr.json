@@ -246,20 +246,14 @@
                 "contentLabel": "Contenu en {locale}",
                 "external": "Lien externe",
                 "externalUrl": "Adresse de la page externe",
-                "externalUrlError": "Saisissez une adresse HTTPS valide.",
                 "externalUrlHelp": "L’adresse doit commencer par https://.",
                 "internal": "Page hébergée sur {platformName}",
-                "loading": "Chargement des pages d’information…",
-                "locale": "Langue du contenu",
                 "modeLabel": "Destination",
                 "pages": {
                     "accessibility": "Déclaration d’accessibilité",
                     "ecodesign": "Écoconception",
                     "legal_notice": "Mentions légales"
                 },
-                "save": "Enregistrer les pages",
-                "saved": "Les pages d’information ont été enregistrées.",
-                "saving": "Enregistrement…",
                 "subtitle": "Choisissez où chaque page est hébergée et dans quels emplacements elle est proposée.",
                 "title": "Pages d’information",
                 "visibilityLabel": "Afficher le lien dans",
@@ -1110,6 +1104,7 @@
     "form": {
         "busy": "Enregistrement…",
         "containsErrors": "The form contains errors:",
+        "missing_default_locale": "Missing default locale content",
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
         "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
