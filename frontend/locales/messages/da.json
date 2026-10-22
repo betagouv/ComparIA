@@ -1473,6 +1473,66 @@
             "updated_at": {
                 "label": "Opdateret"
             }
+        },
+        "prompt_check_upsert": {
+            "api_key": {
+                "help": "Efterlades den tom, bruger kontrollen OPENROUTER_API_KEY.",
+                "label": "OpenRouter API-nøgle"
+            },
+            "criteria": {
+                "label": "Kriterier"
+            },
+            "description": {
+                "help": "Modellen læser den sammen med hver besked. Skriv, hvad der er velkomment her, så et helbredsspørgsmål ikke virker mistænkeligt på en sundhedsarena.",
+                "label": "Beskrivelse af instansen"
+            },
+            "enabled": {
+                "label": "Kontrol af beskeder"
+            },
+            "model": {
+                "help": "En beslutningsmodel fra OpenRouter.",
+                "label": "Beslutningsmodel"
+            },
+            "PromptCheckCriterion": {
+                "action": {
+                    "label": "Handling"
+                },
+                "key": {
+                    "help": "Statistikken tælles pr. nøgle: ændr den ikke, når kriteriet er taget i brug.",
+                    "label": "Nøgle"
+                },
+                "label": {
+                    "label": "Navn"
+                },
+                "message": {
+                    "label": "Vist besked"
+                },
+                "no": {
+                    "label": "Tæller som nej"
+                },
+                "question": {
+                    "help": "Et lukket spørgsmål om `message`, som besvares med ja eller nej.",
+                    "label": "Spørgsmål til modellen"
+                },
+                "threshold": {
+                    "label": "Tærskel"
+                },
+                "yes": {
+                    "label": "Tæller som ja"
+                }
+            },
+            "required": {
+                "help": "Når kontrollen ikke kan svare (tidsgrænse overskredet, OpenRouter overbelastet, nøgle afvist), afvises beskeden. Slået fra går den igennem uden kontrol. Under alle omstændigheder går beskeder igennem uden kontrol et minut ad gangen efter flere OpenRouter-fejl i træk.",
+                "label": "Obligatorisk kontrol"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Over en glidende time, også når kontrollen er slået fra. Deles af alle bag samme IP (en skole, et ministerium); partnerkohorter (Pix) tælles ikke med. 0 slår grænsen fra, tom går tilbage til instansens standard.",
+                "label": "Samtaler pr. IP pr. time"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "Samme grænse for ét modelpar. 0 slår den fra, tom går tilbage til instansens standard.",
+                "label": "Samtaler pr. IP pr. time med de samme modeller"
+            }
         }
     },
     "header": {

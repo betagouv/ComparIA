@@ -1474,6 +1474,66 @@
             "updated_at": {
                 "label": "Updated At"
             }
+        },
+        "prompt_check_upsert": {
+            "api_key": {
+                "help": "Left empty, the check uses OPENROUTER_API_KEY.",
+                "label": "OpenRouter API key"
+            },
+            "criteria": {
+                "label": "Criteria"
+            },
+            "description": {
+                "help": "The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.",
+                "label": "Instance description"
+            },
+            "enabled": {
+                "label": "Message check"
+            },
+            "model": {
+                "help": "A decision model from OpenRouter.",
+                "label": "Decision model"
+            },
+            "PromptCheckCriterion": {
+                "action": {
+                    "label": "Action"
+                },
+                "key": {
+                    "help": "Stats are counted by key: do not change it once the criterion is in use.",
+                    "label": "Key"
+                },
+                "label": {
+                    "label": "Name"
+                },
+                "message": {
+                    "label": "Message shown"
+                },
+                "no": {
+                    "label": "Counts as no"
+                },
+                "question": {
+                    "help": "A closed question about the `message`, answered yes or no.",
+                    "label": "Question asked to the model"
+                },
+                "threshold": {
+                    "label": "Threshold"
+                },
+                "yes": {
+                    "label": "Counts as yes"
+                }
+            },
+            "required": {
+                "help": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
+                "label": "Required check"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.",
+                "label": "Conversations per IP per hour"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.",
+                "label": "Conversations per IP per hour with the same models"
+            }
         }
     },
     "header": {
