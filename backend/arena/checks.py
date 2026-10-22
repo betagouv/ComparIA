@@ -210,14 +210,12 @@ def questions(check: PromptCheck) -> dict[str, dict]:
     """One yes/no question per criterion that can act, keyed on the criterion."""
     asked = {}
     for c in check.active_criteria:
-        question: dict = {"type": "noul", "instructions": c["question"]}
-        if c["yes"] and c["no"]:
-            question["criteria"] = {"true": c["yes"], "false": c["no"]}
-        elif c["yes"] or c["no"]:
-            question["instructions"] += (
-                f" Oui : {c['yes']}" if c["yes"] else f" Non : {c['no']}"
-            )
-        asked[c["key"]] = question
+        question: dict = {"type": "noul", "instructions": c.question}
+        if c.yes and c.no:
+            question["criteria"] = {"true": c.yes, "false": c.no}
+        elif c.yes or c.no:
+            question["instructions"] += f" Oui : {c.yes}" if c.yes else f" Non : {c.no}"
+        asked[c.key] = question
     return asked
 
 
@@ -392,16 +390,16 @@ def context_hits(check: PromptCheck, scores: Scores) -> dict[str, str]:
     later turn.
     """
     return {
-        c["key"]: "warn"
-        for c in check.criteria
-        if c["action"] == "block"
-        and scores.joined.get(c["key"], 0.0) >= c["threshold"]
-        and scores.earlier.get(c["key"], 0.0) < c["threshold"]
+        c.key: "warn"
+        for c in check.active_criteria
+        if c.action == "block"
+        and scores.joined.get(c.key, 0.0) >= c.threshold
+        and scores.earlier.get(c.key, 0.0) < c.threshold
     }
 
 
 def _message_for(check: PromptCheck, keys: set[str]) -> str:
-    messages = {c["message"] for c in check.criteria if c["key"] in keys}
+    messages = {c.message for c in check.typed_criteria if c.key in keys}
     if SELF_HARM_MESSAGE in messages:
         return SELF_HARM_MESSAGE
     if messages == {PII_MESSAGE}:
