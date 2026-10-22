@@ -156,6 +156,7 @@ const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
   default_conversations_same_models_per_ip_per_hour: 5,
   updated_at: '2026-07-01T10:00:00',
   consecutive_failures: 0,
+  no_api_key: false,
   healthy: true,
   warnings_shown: 0,
   ...overrides
@@ -466,6 +467,18 @@ describe('admin prompt check page', () => {
 
     expect(getByText("OpenRouter n'a plus de crédits pour cette clé")).toBeInTheDocument()
     expect(queryByText('La vérification ne répond plus')).not.toBeInTheDocument()
+  })
+
+  it('says the check does not run when there is no key at all', () => {
+    const { getByText } = renderPage(check({ no_api_key: true }))
+
+    expect(getByText('Aucune clé API')).toBeInTheDocument()
+  })
+
+  it('says nothing about a missing key while the check is off', () => {
+    const { queryByText } = renderPage(check({ enabled: false, no_api_key: true }))
+
+    expect(queryByText('Aucune clé API')).not.toBeInTheDocument()
   })
 
   it('names a rejected key instead of the generic failure', () => {

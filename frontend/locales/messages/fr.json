@@ -387,6 +387,8 @@
                 "noCredits": "OpenRouter n'a plus de crédits pour cette clé",
                 "noCreditsHint": "Tous les messages sont refusés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
                 "noCreditsHintOptional": "La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
+                "noKey": "Aucune clé API",
+                "noKeyHint": "Aucune clé n'est enregistrée ici et OPENROUTER_API_KEY n'est pas défini : la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire. Collez une clé OpenRouter ci-dessous.",
                 "unhealthy": "La vérification ne répond plus",
                 "unhealthyHint": "Les appels au modèle de décision échouent. Les messages sont refusés tant qu'il ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
                 "unhealthyHintOptional": "Les appels au modèle de décision échouent. La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant qu'il ne répond pas. Contrôlez les journaux du serveur."

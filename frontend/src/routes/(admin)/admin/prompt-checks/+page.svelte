@@ -34,6 +34,7 @@
         'updated_by',
         'consecutive_failures',
         'key_rejected',
+        'no_api_key',
         'healthy',
         'warnings_shown',
         'default_conversations_per_ip_per_hour',
@@ -219,7 +220,11 @@
 >
   <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
-      {#if data.check.key_rejected}
+      {#if data.check.enabled && data.check.no_api_key}
+        <Alert variant="warning" title={m['admin.promptChecks.health.noKey']()}>
+          <p>{m['admin.promptChecks.health.noKeyHint']()}</p>
+        </Alert>
+      {:else if data.check.key_rejected}
         <Alert variant="error" title={m['admin.promptChecks.health.keyRejected']()}>
           <p>
             {data.check.required

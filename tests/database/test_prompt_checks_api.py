@@ -178,6 +178,26 @@ def test_running_out_of_credits_reads_as_unhealthy(
     assert status.consecutive_failures == 0
 
 
+@pytest.mark.parametrize(
+    ("stored", "env", "missing"),
+    [(None, None, True), (None, "sk-env", False), ("sk-stored", None, False)],
+)
+def test_a_check_with_no_key_at_all_says_so(
+    db: FakeSession,
+    monkeypatch: pytest.MonkeyPatch,
+    stored: str | None,
+    env: str | None,
+    missing: bool,
+) -> None:
+    db.row.api_key = stored
+    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", env)
+
+    status = admin_router._to_prompt_check_status(db.row)
+
+    assert status.no_api_key is missing
+    assert status.has_api_key is (stored is not None)
+
+
 def test_missing_failure_key_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
     class Client:
         def get(self, key):

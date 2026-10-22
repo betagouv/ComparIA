@@ -574,6 +574,7 @@ export interface PromptCheckStatus {
   consecutive_failures?: number;
   key_rejected?: boolean;
   out_of_credits?: boolean;
+  no_api_key?: boolean;
   healthy?: boolean;
   warnings_shown?: number;
   default_conversations_per_ip_per_hour?: number;

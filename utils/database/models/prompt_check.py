@@ -363,6 +363,9 @@ class PromptCheckStatus(PromptCheckPublic):
     key_rejected: bool = False
     # OpenRouter answered 402: the account or the key ran out of credits.
     out_of_credits: bool = False
+    # No key stored and no OPENROUTER_API_KEY: the check does not run at all,
+    # required or not.
+    no_api_key: bool = False
     healthy: bool = True
     # Warnings put in front of someone. The turns only record the people who
     # sent anyway, so this is what that number is measured against.

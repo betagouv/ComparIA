@@ -185,7 +185,7 @@ make dataset-export-dry-run   # builds the datasets, sends them nowhere
 
 Each criterion has a question, an optional description of what counts as yes and as no, a threshold, an action (off, log, warn or block) and the message a visitor sees when it warns or blocks: general, self-harm (names a helpline) or personal data. Criteria can be added, edited and removed. Keep a criterion's key once it has fired: stored verdicts and the stats are counted by key. The model is picked from the decision models OpenRouter lists, or typed in. The page has a try box for testing a prompt against the settings on screen, saved or not, and stats on what has fired.
 
-The API key comes from the panel if you set it there, and from `OPENROUTER_API_KEY` otherwise. With neither, the checks pass everything through whatever their configured action says.
+The API key comes from the panel if you set it there, and from `OPENROUTER_API_KEY` otherwise. With neither, the checks pass everything through whatever their configured action says, and the page warns about it.
 
 With "Vérification obligatoire" (required) on, the default, a message the check cannot answer (a timeout, OpenRouter busy or failing, a refused key, no credits left) is refused. Off, it goes through, and the failure still shows in the stats. Either way, after five provider failures in a row the check counts OpenRouter as down and lets messages through unchecked for a minute at a time, until a call works again.
 

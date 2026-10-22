@@ -627,6 +627,7 @@ def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
         consecutive_failures=failures,
         key_rejected=key_rejected,
         out_of_credits=out_of_credits,
+        no_api_key=not (row.api_key or settings.OPENROUTER_API_KEY),
         healthy=(
             failures < UNHEALTHY_AFTER_FAILURES
             and not key_rejected
