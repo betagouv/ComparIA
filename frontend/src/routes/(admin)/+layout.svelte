@@ -38,9 +38,7 @@
       label: m['admin.nav.legal'](),
       href: '/admin/legal',
       icon: 'i-ri-file-shield-2-line',
-      isCurrent: () =>
-        page.url.pathname.startsWith('/admin/legal') ||
-        page.url.pathname === '/admin/conditions-participation'
+      isCurrent: () => page.url.pathname.startsWith('/admin/legal')
     },
     {
       label: m['admin.nav.users'](),
