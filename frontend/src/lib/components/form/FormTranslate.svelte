@@ -13,22 +13,26 @@
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
+  const auth = getAuthContext()
+
   // FIXME handle error display, form.ts integration
   let {
     id,
     value = $bindable({}),
+    locale = $bindable(auth.config.default_locale),
     subProps,
     isValid = (locale) => !!value[locale],
     subSnippet,
     ...props
   }: Omit<FormFieldsetItemProps, 'component'> & {
     value: Record<string, unknown>
+    locale?: string
     isValid?: (locale: string) => boolean
-    subSnippet?: Snippet<[string]>
+    subSnippet?: Snippet<[locale: string, label: string]>
   } = $props()
 
-  const auth = getAuthContext()
   const locales = $derived(getLocales(auth.config.enabled_locales))
+  const label = $derived(locales.find((l) => locale === l.code)!.long)
   const options = $derived(
     locales.map((locale) => ({
       value: locale.code,
@@ -36,10 +40,9 @@
       icon: isValid(locale.code) ? 'i-ri-checkbox-fill' : 'i-ri-checkbox-blank-line'
     }))
   )
-  let locale = $derived(auth.config.default_locale)
 </script>
 
-<div>
+<div class="mb-4">
   <Segmented
     {id}
     legend={m['actions.selectLanguage']()}
@@ -58,6 +61,6 @@
       errors={props.errors}
     />
   {:else}
-    {@render subSnippet?.(locale)}
+    {@render subSnippet?.(locale, label)}
   {/if}
 </div>
