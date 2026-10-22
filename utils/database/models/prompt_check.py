@@ -53,7 +53,7 @@ FIELDS = {
     "enabled": {"title": "Vérification des messages"},
     "required": {
         "title": "Vérification obligatoire",
-        "description": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.",
+        "description": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.",
     },
     "model": {
         "title": "Modèle de décision",

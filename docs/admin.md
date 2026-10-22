@@ -187,7 +187,7 @@ Each criterion has a question, an optional description of what counts as yes and
 
 The API key comes from the panel if you set it there, and from `OPENROUTER_API_KEY` otherwise. With neither, the checks pass everything through whatever their configured action says.
 
-With "Vérification obligatoire" on, the default, a message the check cannot answer (a timeout, OpenRouter busy or down, a refused key) is refused. Off, it goes through, and the failure still shows in the stats.
+With "Vérification obligatoire" (required) on, the default, a message the check cannot answer (a timeout, OpenRouter busy or failing, a refused key, no credits left) is refused. Off, it goes through, and the failure still shows in the stats. Either way, after five provider failures in a row the check counts OpenRouter as down and lets messages through unchecked for a minute at a time, until a call works again.
 
 The same page sets two limits on how many conversations one IP may start over a sliding hour: in all, and with the same pair of models. Over a limit the arena answers `rate_limited`. 0 turns a limit off, and unset they follow `RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR` (20) and `RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR` (5); emptying a field on the page goes back to them. The limits hold even when the checks are switched off. Everyone behind one IP shares them, a school or a ministry included, and the `pix` cohort is not counted (it is what the browser declares, nothing verifies it).
 

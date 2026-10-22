@@ -548,7 +548,7 @@ export interface LLMLicense {
 export interface PromptCheckStatus {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.
+   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
    */
   required?: boolean;
   /**
@@ -599,7 +599,7 @@ export interface PromptCheckCriterion {
 export interface PromptCheckUpsert {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé ou en panne), le message est refusé. Désactivée, il passe sans être vérifié.
+   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
    */
   required?: boolean;
   /**
