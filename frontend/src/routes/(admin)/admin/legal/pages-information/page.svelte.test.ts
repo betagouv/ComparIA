@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor, within } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import InformationalLegalPagesAdmin from './InformationalLegalPagesAdmin.svelte'
+import Page from './+page.svelte'
 
 const mocks = vi.hoisted(() => ({ request: vi.fn(), toast: vi.fn() }))
 vi.mock('$lib/fastapi-client', () => ({ api: { request: mocks.request } }))
@@ -41,7 +41,7 @@ describe('informational legal pages administration', () => {
   })
 
   it('shows internal content and the external URL according to the selected mode', async () => {
-    const { getByRole, queryByRole } = render(InformationalLegalPagesAdmin)
+    const { getByRole, queryByRole } = render(Page)
 
     await waitFor(() =>
       expect(getByRole('group', { name: 'Mentions légales' })).toBeInTheDocument()
@@ -58,7 +58,7 @@ describe('informational legal pages administration', () => {
   })
 
   it('saves destination, visibility and localized content together', async () => {
-    const { getByRole } = render(InformationalLegalPagesAdmin)
+    const { getByRole } = render(Page)
     await waitFor(() => expect(getByRole('button', { name: 'Enregistrer les pages' })).toBeTruthy())
 
     await fireEvent.click(
@@ -81,7 +81,7 @@ describe('informational legal pages administration', () => {
   })
 
   it('rejects an insecure external address', async () => {
-    const { getByRole, getByText } = render(InformationalLegalPagesAdmin)
+    const { getByRole, getByText } = render(Page)
     const url = await waitFor(() => getByRole('textbox', { name: /Adresse de la page externe/ }))
 
     await fireEvent.input(url, { target: { value: 'http://example.test/accessibility' } })
