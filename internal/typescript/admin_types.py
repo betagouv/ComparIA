@@ -7,6 +7,7 @@ from backend.activity.models import (
 )
 from backend.admin.router import (
     AdminLegalDocument,
+    InformationalLegalPage,
     LegalPresentationTranslatable,
     PublishLegalDocumentBody,
 )

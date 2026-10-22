@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
-from backend.admin.router import put_admin_informational_legal_pages
+from backend.admin.router import put_admin_informational_legal_page
 from backend.settings import informational_legal
 from backend.settings.informational_legal import (
     InformationalLegalPage,
@@ -26,11 +26,7 @@ def test_seeded_visibility_matches_the_existing_navigation() -> None:
 
     assert all(
         page.visible_in_legal_menu and page.visible_in_settings
-        for page in (
-            pages.pages.legal_notice,
-            pages.pages.accessibility,
-            pages.pages.ecodesign,
-        )
+        for page in (pages.legal_notice, pages.accessibility, pages.ecodesign)
     )
 
 
@@ -58,18 +54,26 @@ def test_blank_stored_configuration_falls_back_to_seed() -> None:
 
 
 def test_admin_update_replaces_the_single_unversioned_configuration() -> None:
-    body = InformationalLegalPages()
-    body.pages.ecodesign.mode = "external"
-    body.pages.ecodesign.external_url = "https://example.test/ecodesign"
+    settings = SimpleNamespace(informational_legal_pages=None)
     admin = SimpleNamespace(id=uuid.uuid4())
+    body = InformationalLegalPages()
+    body.ecodesign.mode = "external"
+    body.ecodesign.external_url = "https://example.test/ecodesign"
 
-    with patch(
-        "backend.admin.router.update_app_settings", new_callable=AsyncMock
-    ) as update:
-        returned = asyncio.run(put_admin_informational_legal_pages(body, admin))
+    with (
+        patch.object(
+            informational_legal, "get_app_settings", AsyncMock(return_value=settings)
+        ),
+        patch(
+            "backend.admin.router.update_app_settings", new_callable=AsyncMock
+        ) as update,
+    ):
+        returned = asyncio.run(
+            put_admin_informational_legal_page("ecodesign", body.ecodesign, admin)
+        )
 
-    assert returned == body
+    assert returned == body.ecodesign
     update.assert_awaited_once_with(
-        {"informational_legal_pages": body.pages.model_dump(mode="json")},
+        {"informational_legal_pages": body.model_dump(mode="json")},
         updated_by=admin.id,
     )
