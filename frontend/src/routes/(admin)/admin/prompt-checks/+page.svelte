@@ -34,6 +34,7 @@
         'updated_by',
         'consecutive_failures',
         'key_rejected',
+        'out_of_credits',
         'no_api_key',
         'healthy',
         'warnings_shown',

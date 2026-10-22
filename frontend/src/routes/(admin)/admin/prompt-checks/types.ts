@@ -1,11 +1,13 @@
+import type { PromptCheckCriterion } from '$lib/generated/admin'
+
+export type PromptCheckAction = PromptCheckCriterion['action']
+
+export type PromptCheckMessage = NonNullable<PromptCheckCriterion['message']>
+
 /**
  * Écrits à la main : ces réponses ne viennent d'aucune classe SQLModel,
  * donc le générateur ne les produit pas dans $lib/generated/admin.
  */
-
-export type PromptCheckAction = 'off' | 'log' | 'warn' | 'block'
-
-export type PromptCheckMessage = 'generic' | 'self_harm' | 'pii'
 
 /** Response of GET /admin/prompt-check/models. */
 export type PromptCheckModel = { id: string; name: string }

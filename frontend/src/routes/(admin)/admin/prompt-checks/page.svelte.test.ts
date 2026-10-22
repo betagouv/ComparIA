@@ -156,6 +156,8 @@ const check = (overrides: Partial<PromptCheckStatus> = {}): PromptCheckStatus =>
   default_conversations_same_models_per_ip_per_hour: 5,
   updated_at: '2026-07-01T10:00:00',
   consecutive_failures: 0,
+  key_rejected: false,
+  out_of_credits: false,
   no_api_key: false,
   healthy: true,
   warnings_shown: 0,
