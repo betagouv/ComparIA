@@ -1,13 +1,17 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Alert, Button, Icon, Select, Textarea } from '$components/dsfr'
-  import { FormInput, type FormFieldsetItemProps, type FormInputProps } from '$components/form'
+  import {
+    FormInput,
+    FormSecretInput,
+    type FormFieldsetItemProps,
+    type FormInputProps
+  } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import { PageLayout } from '$components/layout'
   import { promptCheckMessage } from '$lib/apiErrors'
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckCriterion, PromptCheckStatus } from '$lib/generated/admin'
-  import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { useForm } from '$lib/stores/form.svelte'
   import type { AnyFormItemProps } from '$lib/utils/form'
@@ -56,23 +60,6 @@
   )
   const savedKeys = $derived(data.check.criteria.map((criterion) => criterion.key))
   const criteria = $derived((form.form.criteria ?? []) as PromptCheckCriterion[])
-
-  let confirmingRemoval = $state(false)
-  let removing = $state(false)
-
-  async function removeApiKey() {
-    removing = true
-    try {
-      await api.request('/admin/prompt-check/api-key', { method: 'delete' })
-      confirmingRemoval = false
-      await invalidate('admin:prompt-check')
-      useToast(m['admin.promptChecks.apiKey.removed'](), 5000, 'success')
-    } catch (error) {
-      useToast((error as Error).message, 6000, 'error')
-    } finally {
-      removing = false
-    }
-  }
 
   const decisionTone: Record<PromptCheckDecision, string> = {
     pass: 'var(--green-emeraude-main-632)',
@@ -271,39 +258,15 @@
     {/snippet}
 
     {#snippet apiKey()}
-      <FormInput
+      <FormSecretInput
         {...field('api_key') as FormInputProps}
-        type="password"
-        placeholder={data.check.has_api_key ? '• '.repeat(20) : undefined}
-        help={data.check.has_api_key ? m['admin.endpointKey.hint']() : field('api_key').help}
+        stored={data.check.has_api_key}
+        removeUrl="/admin/prompt-check/api-key"
+        removedMessage={m['admin.promptChecks.apiKey.removed']()}
+        removeId="prompt-check-api-key-remove"
+        onremoved={() => invalidate('admin:prompt-check')}
         bind:value={form.form.api_key!}
-      >
-        {#if data.check.has_api_key}
-          {#if confirmingRemoval}
-            <Button
-              id="prompt-check-api-key-remove-confirm"
-              variant="secondary"
-              text={m['admin.endpointKey.removeConfirm']()}
-              disabled={removing}
-              class="text-nowrap"
-              onclick={removeApiKey}
-            />
-            <Button
-              text={m['words.back']()}
-              disabled={removing}
-              onclick={() => (confirmingRemoval = false)}
-            />
-          {:else}
-            <Button
-              id="prompt-check-api-key-remove"
-              icon="delete-bin-line"
-              text={m['admin.endpointKey.remove']()}
-              class="text-nowrap"
-              onclick={() => (confirmingRemoval = true)}
-            />
-          {/if}
-        {/if}
-      </FormInput>
+      />
     {/snippet}
 
     {#snippet description()}
