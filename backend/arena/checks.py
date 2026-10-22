@@ -684,13 +684,26 @@ async def drop_flagged_results(
     scored. If they cannot be scored they are all dropped and the prompt goes
     without them, unless the check is not `required`; they are kept unchecked
     while the model counts as down.
+
+    They share the calls of the prompts: past MAX_CHECK_CALLS, the results
+    left are dropped unread rather than delay the prompts of everyone else.
     """
     check = await get_prompt_check()
     api_key = check.api_key or settings.OPENROUTER_API_KEY
     if not check.should_run or not api_key or is_paused():
         return results
 
-    per_result = [moderation_inputs(result.content or "") for result in results]
+    per_result = []
+    for result in results:
+        inputs = moderation_inputs(result.content or "")
+        if sum(map(len, per_result)) + len(inputs) > MAX_CHECK_CALLS:
+            logger.warning(
+                f"[CHECKS] {len(results) - len(per_result)} web search result(s) "
+                "over the call budget, dropped"
+            )
+            results = results[: len(per_result)]
+            break
+        per_result.append(inputs)
     try:
         scores = await moderate_many(
             [i for inputs in per_result for i in inputs], check, api_key

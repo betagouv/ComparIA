@@ -706,6 +706,17 @@ def test_web_results_are_dropped_when_they_cannot_be_checked():
     assert kept == []
 
 
+def test_web_results_past_the_call_budget_are_dropped_unread():
+    pages = [
+        SimpleNamespace(url=f"https://{i}.example", content=f"Paris {i}")
+        for i in range(checks.MAX_CHECK_CALLS + 8)
+    ]
+    with arena(config(jailbreaking=(0.5, "block"))) as fake:
+        kept = asyncio.run(checks.drop_flagged_results(pages))
+    assert kept == pages[: checks.MAX_CHECK_CALLS]
+    assert len(fake.requests) == checks.MAX_CHECK_CALLS
+
+
 def optional(check: PromptCheck) -> PromptCheck:
     check.required = False
     return check
