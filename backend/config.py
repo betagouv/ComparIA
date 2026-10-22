@@ -27,7 +27,6 @@ class Settings(BaseSettings):
     SENTRY_SAMPLE_RATE: float = 0.1
     LINKUP_API_KEY: str | None = None
     OPENROUTER_API_KEY: str | None = None
-    MISTRAL_API_KEY: str | None = None
     HF_INFERENCE_KEY: str | None = None
     ORDBOGEN_API_KEY: str | None = None
 
@@ -321,9 +320,8 @@ RATELIMIT_SENT_WARNINGS_PER_HOUR = 15
 # ministry where hundreds of people share one IP.
 RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR = 300
 
-# Longest message a user can send, about five pages. Mistral checks a message
-# in windows of 2,000 characters, so this keeps every check to one quick
-# request, and a check that cannot finish refuses the message.
+# Longest message a user can send, about five pages. The prompt check reads a
+# message in windows of 8,000 characters, so this keeps a check to a few calls.
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 20_000
 
 # Every turn resends the whole transcript to both models, so an endless

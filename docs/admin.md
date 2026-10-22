@@ -181,11 +181,13 @@ make dataset-export-dry-run   # builds the datasets, sends them nowhere
 
 ## Prompt checks
 
-`/admin/prompt-checks` runs two checks on what people type: content safety and personal data, both against the Mistral moderation API.
+`/admin/prompt-checks` checks what people type before it reaches the models. A decision model on OpenRouter reads each message next to a short description of the instance and answers the criteria you write, one yes/no question each, with the probability of yes.
 
-For each category you choose one of four actions: off, log, warn, or block. The page has a try box for testing a prompt against the current settings, and stats on what has fired.
+Each criterion has a question, an optional description of what counts as yes and as no, a threshold, an action (off, log, warn or block) and the message a visitor sees when it warns or blocks: general, self-harm (names a helpline) or personal data. Criteria can be added, edited and removed. Keep a criterion's key once it has fired: stored verdicts and the stats are counted by key. The model is picked from the decision models OpenRouter lists, or typed in. The page has a try box for testing a prompt against the settings on screen, saved or not, and stats on what has fired.
 
-The API key comes from the panel if you set it there, and from `MISTRAL_API_KEY` otherwise. With neither, the checks pass everything through whatever their configured action says.
+The API key comes from the panel if you set it there, and from `OPENROUTER_API_KEY` otherwise. With neither, the checks pass everything through whatever their configured action says, and the page warns about it.
+
+With "Vérification obligatoire" (required) on, the default, a message the check cannot answer (a timeout, OpenRouter busy or failing, a refused key, no credits left) is refused. Off, it goes through, and the failure still shows in the stats. Either way, after five provider failures in a row the check counts OpenRouter as down and lets messages through unchecked for a minute at a time, until a call works again.
 
 The same page sets two limits on how many conversations one IP may start over a sliding hour: in all, and with the same pair of models. Over a limit the arena answers `rate_limited`. 0 turns a limit off, and unset they follow `RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR` (20) and `RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR` (5); emptying a field on the page goes back to them. The limits hold even when the checks are switched off. Everyone behind one IP shares them, a school or a ministry included, and the `pix` cohort is not counted (it is what the browser declares, nothing verifies it).
 

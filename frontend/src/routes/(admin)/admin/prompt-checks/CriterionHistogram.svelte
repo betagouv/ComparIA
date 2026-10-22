@@ -1,23 +1,24 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
   import type { PromptCheckDecision } from './types'
 
   let {
-    categories,
-    categoryLabel,
+    byCriterion,
+    criterionLabel,
     labels,
     colors
   }: {
-    categories: Record<string, Partial<Record<PromptCheckDecision, number>>>
-    categoryLabel: (category: string) => string
+    byCriterion: Record<string, Partial<Record<PromptCheckDecision, number>>>
+    criterionLabel: (key: string) => string
     labels: Record<PromptCheckDecision, string>
     colors: Record<PromptCheckDecision, string>
   } = $props()
 
   const series: PromptCheckDecision[] = ['logged', 'warned', 'blocked', 'error']
   const rows = $derived(
-    Object.entries(categories)
-      .map(([category, counts]) => ({
-        category,
+    Object.entries(byCriterion)
+      .map(([key, counts]) => ({
+        key,
         counts,
         total: series.reduce((sum, decision) => sum + (counts[decision] ?? 0), 0)
       }))
@@ -28,13 +29,16 @@
 </script>
 
 {#if rows.length === 0}
-  <p class="text-sm text-grey">Aucune catégorie ne s'est déclenchée sur la période.</p>
+  <p class="text-sm text-grey">{m['admin.promptChecks.stats.byCriterionNone']()}</p>
 {:else}
-  <ul class="gap-4 m-0! p-0! flex list-none flex-col" aria-label="Détections par catégorie">
-    {#each rows as row (row.category)}
-      <li id={`prompt-check-stats-category-${row.category}`}>
+  <ul
+    class="gap-4 m-0! p-0! flex list-none flex-col"
+    aria-label={m['admin.promptChecks.stats.byCriterionTitle']()}
+  >
+    {#each rows as row (row.key)}
+      <li id={`prompt-check-stats-criterion-${row.key}`}>
         <div class="gap-3 mb-1.5 text-sm flex items-baseline">
-          <span class="text-grey min-w-0 flex-1">{categoryLabel(row.category)}</span>
+          <span class="text-grey min-w-0 flex-1">{criterionLabel(row.key)}</span>
           <strong class="text-dark-grey tabular-nums">{row.total}</strong>
         </div>
         <div

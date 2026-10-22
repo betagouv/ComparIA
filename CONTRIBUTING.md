@@ -28,7 +28,7 @@ Copy the example env file and fill in the required values:
 cp .env.example .env
 ```
 
-Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. Set it before your first `make db-migrate`: migrations copy it onto the OpenRouter endpoint row, and from then on the key belongs to that endpoint and is edited at `/admin/llms/endpoints`. For the DA instance, change `COMPARIA_INSTANCE_NAME=da` and point `COMPARIA_DB_URI` to the DA database.
+Set `OPENROUTER_API_KEY` for real LLM calls, or uncomment `MOCK_RESPONSE=true` to skip them. Set it before your first `make db-migrate`: migrations copy it onto the OpenRouter endpoint row, and from then on the key belongs to that endpoint and is edited at `/admin/llms/endpoints`. The prompt checks still read it from the environment when no key is set at `/admin/prompt-checks`. For the DA instance, change `COMPARIA_INSTANCE_NAME=da` and point `COMPARIA_DB_URI` to the DA database.
 
 Start Postgres and Redis, then run:
 

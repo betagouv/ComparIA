@@ -327,26 +327,19 @@
                 "help": {
                     "block": "Le message n'est pas envoyé.",
                     "log": "On enregistre ce qui a été repéré, la personne ne voit rien.",
-                    "off": "La catégorie n'est pas prise en compte.",
+                    "off": "Le critère n'est pas pris en compte.",
                     "title": "Ce que fait chaque action",
                     "warn": "Une fenêtre s'ouvre à l'envoi. La personne peut envoyer quand même ou corriger son message."
                 },
-                "legend": "Action",
                 "log": "Surveiller",
                 "off": "Ignorer",
                 "warn": "Prévenir"
             },
             "apiKey": {
-                "cancel": "Annuler",
-                "label": "Clé API",
-                "placeholder": "Nouvelle clé",
-                "replace": "Remplacer",
-                "set": "Clé enregistrée",
-                "unset": "Aucune clé enregistrée",
-                "willClear": "En enregistrant, la clé stockée sera effacée et la variable d'environnement reprendra la main."
+                "removed": "Clé retirée. La vérification utilise désormais OPENROUTER_API_KEY."
             },
             "bench": {
-                "caption": "Note, seuil et résultat par catégorie",
+                "caption": "Note, seuil et résultat par critère",
                 "columns": {
                     "score": "Note",
                     "verdict": "Résultat"
@@ -356,14 +349,14 @@
                     "error": "La vérification n'a pas répondu",
                     "logged": "Surveillé",
                     "pass": "Passé sans rien",
-                    "skipped": "Pas vérifié, Mistral en panne",
+                    "skipped": "Pas vérifié, modèle indisponible",
                     "warned": "Prévenu"
                 },
                 "decisionLegend": "Résultat",
                 "empty": "Écrivez un message avant de lancer le test.",
                 "errors": {
-                    "call_failed": "L'appel à Mistral a échoué : {error}",
-                    "no_api_key": "Aucune clé API Mistral n'est configurée : la vérification ne peut pas s'exécuter."
+                    "call_failed": "L'appel au modèle a échoué : {error}",
+                    "no_api_key": "Aucune clé API OpenRouter n'est configurée : la vérification ne peut pas s'exécuter."
                 },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
@@ -376,69 +369,43 @@
                 "resultWaiting": "Le résultat s'affichera ici.",
                 "run": "Tester",
                 "running": "Test en cours...",
-                "scoresHint": "Chaque barre montre la note obtenue, le trait vertical marque le seuil. Une note juste sous son seuil est la première chose à surveiller.",
-                "scoresTitle": "Détail par catégorie",
+                "scoresHint": "Chaque barre montre la probabilité que la réponse soit oui, le trait vertical marque le seuil. Une note juste sous son seuil est la première chose à surveiller.",
+                "scoresTitle": "Détail par critère",
                 "threshold": "Seuil {value}",
                 "title": "Tester un message",
-                "triggered": "Déclenchée"
+                "triggered": "Déclenché"
             },
-            "caps": {
-                "description": "Nombre de conversations qu'une même adresse IP peut lancer sur une heure glissante, en tout et avec la même paire de modèles. Ces limites s'appliquent même quand la vérification des messages est désactivée. Elles sont partagées par tous ceux qui sortent par la même IP (une école, un ministère) : les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite. Laissez un champ vide pour revenir à la valeur par défaut de l'instance.",
-                "invalid": "Entrez un entier entre 0 et 10 000.",
-                "perIp": "Conversations par IP et par heure",
-                "sameModels": "Conversations par IP et par heure avec les mêmes modèles",
-                "save": "Enregistrer les limites",
-                "title": "Limites de conversations par IP"
-            },
-            "categories": {
-                "criminal": "Activités criminelles",
-                "dangerous": "Actes dangereux",
-                "financial": "Finance",
-                "hateAndDiscrimination": "Haine et discrimination",
-                "health": "Santé",
-                "jailbreaking": "Contournement des consignes",
-                "law": "Droit",
-                "pii": "Données personnelles",
-                "selfharm": "Automutilation et suicide",
-                "sexual": "Contenu sexuel",
-                "violenceAndThreats": "Violence et menaces"
-            },
-            "categoriesTitle": "Catégories",
             "columns": {
                 "action": "Action",
-                "category": "Catégorie",
                 "threshold": "Seuil"
             },
             "health": {
                 "failures": "{count} échecs consécutifs",
-                "keyRejected": "Mistral refuse la clé",
-                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous.",
+                "keyRejected": "OpenRouter refuse la clé",
+                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé OpenRouter valide ci-dessous.",
+                "keyRejectedHintOptional": "La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant que la clé n'est pas corrigée. Collez une clé OpenRouter valide ci-dessous.",
+                "noCredits": "OpenRouter n'a plus de crédits pour cette clé",
+                "noCreditsHint": "Tous les messages sont refusés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
+                "noCreditsHintOptional": "La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
+                "noKey": "Aucune clé API",
+                "noKeyHint": "Aucune clé n'est enregistrée ici et OPENROUTER_API_KEY n'est pas défini : la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire. Collez une clé OpenRouter ci-dessous.",
                 "unhealthy": "La vérification ne répond plus",
-                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur."
+                "unhealthyHint": "Les appels au modèle de décision échouent. Les messages sont refusés tant qu'il ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
+                "unhealthyHintOptional": "Les appels au modèle de décision échouent. La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant qu'il ne répond pas. Contrôlez les journaux du serveur."
             },
-            "model": {
-                "label": "Modèle de modération"
-            },
-            "saveApiKey": "Enregistrer la clé",
-            "saveCategories": "Enregistrer les catégories",
-            "saved": "Vérification mise à jour",
-            "saveModel": "Enregistrer le modèle",
-            "saving": "Enregistrement...",
             "settings": {
-                "disabledNotice": "Vérification désactivée : aucun message n'est vérifié, quelles que soient les règles ci-dessous.",
-                "enabled": "Vérification des messages",
                 "title": "Réglages"
             },
             "stats": {
-                "byCategoryNone": "Aucune catégorie ne s'est déclenchée sur la période.",
-                "byCategoryTitle": "Catégories déclenchées",
+                "byCriterionNone": "Aucun critère ne s'est déclenché sur la période.",
+                "byCriterionTitle": "Critères déclenchés",
                 "byDecisionTitle": "Résultats",
                 "decision": {
                     "blocked": "Refusés",
                     "error": "En échec",
                     "logged": "Surveillés",
                     "pass": "Passés sans rien",
-                    "skipped": "Non vérifiés (Mistral en panne)",
+                    "skipped": "Non vérifiés (modèle indisponible)",
                     "warned": "Prévenus"
                 },
                 "proceeded": "{count} envoyés quand même",
@@ -449,12 +416,19 @@
                 "warningsShown": "{count} affichés",
                 "warningsTitle": "Avertissements affichés, depuis le début"
             },
-            "subtitle": "Quand un message relève de l'une de ces catégories, vous décidez de ce qui arrive à la personne : rien, un avertissement qu'elle peut passer, ou un refus.",
-            "threshold": {
-                "invalid": "Saisissez un nombre entre 0 et 1.",
-                "legend": "Seuil"
-            },
-            "title": "Vérifications des messages"
+            "subtitle": "Quand un message remplit l'un de vos critères, vous décidez de ce qui arrive à la personne : rien, un avertissement qu'elle peut passer, ou un refus.",
+            "title": "Vérifications des messages",
+            "criteria": {
+                "add": "Ajouter un critère",
+                "empty": "Aucun critère : aucun message n'est vérifié.",
+                "messages": {
+                    "generic": "Général",
+                    "pii": "Données personnelles",
+                    "self_harm": "Détresse (avec numéro d'aide)"
+                },
+                "new": "Nouveau critère",
+                "remove": "Retirer"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Clé d'accès",
@@ -1503,6 +1477,74 @@
             },
             "updated_at": {
                 "label": "Updated At"
+            },
+            "Link": {
+                "text": {
+                    "label": "Text"
+                },
+                "url": {
+                    "label": "Url"
+                }
+            }
+        },
+        "prompt_check_upsert": {
+            "api_key": {
+                "help": "Laissée vide, la vérification utilise OPENROUTER_API_KEY.",
+                "label": "Clé API OpenRouter"
+            },
+            "criteria": {
+                "label": "Critères"
+            },
+            "description": {
+                "help": "Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.",
+                "label": "Description de l'instance"
+            },
+            "enabled": {
+                "label": "Vérification des messages"
+            },
+            "model": {
+                "help": "Un modèle de décision d'OpenRouter.",
+                "label": "Modèle de décision"
+            },
+            "PromptCheckCriterion": {
+                "action": {
+                    "label": "Action"
+                },
+                "key": {
+                    "help": "Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.",
+                    "label": "Identifiant"
+                },
+                "label": {
+                    "label": "Nom"
+                },
+                "message": {
+                    "label": "Message affiché"
+                },
+                "no": {
+                    "label": "Compte comme non"
+                },
+                "question": {
+                    "help": "Une question fermée sur le `message`, à laquelle on répond par oui ou non.",
+                    "label": "Question posée au modèle"
+                },
+                "threshold": {
+                    "label": "Seuil"
+                },
+                "yes": {
+                    "label": "Compte comme oui"
+                }
+            },
+            "required": {
+                "help": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.",
+                "label": "Vérification obligatoire"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure avec les mêmes modèles"
             }
         }
     },

@@ -21,7 +21,7 @@ import backend.arena.checks as checks
 from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
-    DEFAULT_CATEGORIES,
+    DEFAULT_CRITERIA,
     DEFAULT_MODEL,
     PromptCheck,
 )
@@ -44,25 +44,25 @@ class FakeRedis:
         self.store.pop(key, None)
 
 
-def stored_check(**categories) -> PromptCheck:
-    merged = {k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
-    merged.update(categories)
+def criteria_with(**changes: dict) -> list[dict]:
+    """The seeded criteria, with the named ones changed."""
+    return [c | changes.get(c["key"], {}) for c in DEFAULT_CRITERIA]
+
+
+def stored_check(**changes: dict) -> PromptCheck:
     return PromptCheck(
-        id=1, model=DEFAULT_MODEL, categories=merged, updated_at=datetime(2026, 1, 1)
+        id=1,
+        model=DEFAULT_MODEL,
+        criteria=criteria_with(**changes),
+        updated_at=datetime(2026, 1, 1),
     )
-
-
-def full_categories(**overrides: dict) -> dict[str, dict]:
-    categories = {k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
-    categories.update(overrides)
-    return categories
 
 
 @pytest.fixture
 def redis(monkeypatch: pytest.MonkeyPatch) -> FakeRedis:
     client = FakeRedis()
     monkeypatch.setattr(checks, "get_redis_client", lambda: client)
-    monkeypatch.setattr(admin_router.settings, "MISTRAL_API_KEY", "test-key")
+    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", "test-key")
     return client
 
 
@@ -78,13 +78,15 @@ def stub_moderate(
 ) -> list[tuple[str, str]]:
     calls: list[tuple[str, str]] = []
 
-    async def moderate(text: str, model: str, api_key: str) -> checks.Scores:
-        calls.append((text, model))
+    async def score_prompt(
+        text: str, check: PromptCheck, api_key: str
+    ) -> checks.Scores:
+        calls.append((text, check.model))
         if error:
             raise error
         return checks.Scores(scores)
 
-    monkeypatch.setattr(admin_router, "moderate", moderate)
+    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
     return calls
 
 
@@ -94,7 +96,7 @@ def run_try(**body):
     )
 
 
-def test_try_judges_against_unsaved_categories(
+def test_try_judges_against_unsaved_criteria(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
     """The stored row only logs pii, the unsaved edit blocks it."""
@@ -103,7 +105,7 @@ def test_try_judges_against_unsaved_categories(
 
     result = run_try(
         text="mon numero est 06 12 34 56 78",
-        categories=full_categories(pii={"threshold": 0.4, "action": "block"}),
+        criteria=criteria_with(pii={"threshold": 0.4, "action": "block"}),
     )
 
     assert result.decision == "blocked"
@@ -129,20 +131,39 @@ def test_try_uses_the_unsaved_model(
     use_stored(monkeypatch, stored_check())
     calls = stub_moderate(monkeypatch, {"pii": 0.1})
 
-    run_try(text="bonjour", model="mistral-moderation-2603")
+    run_try(text="bonjour", model="perplexity/pplx-decider-flash-v1.2")
 
-    assert calls == [("bonjour", "mistral-moderation-2603")]
+    assert calls == [("bonjour", "perplexity/pplx-decider-flash-v1.2")]
+
+
+def test_try_uses_the_unsaved_description(
+    monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
+) -> None:
+    use_stored(monkeypatch, stored_check())
+    seen: list[str] = []
+
+    async def score_prompt(
+        text: str, check: PromptCheck, api_key: str
+    ) -> checks.Scores:
+        seen.append(check.description)
+        return checks.Scores({})
+
+    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
+
+    run_try(text="bonjour", description="Arène santé.")
+
+    assert seen == ["Arène santé."]
 
 
 def test_try_reports_every_score(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
     use_stored(monkeypatch, stored_check())
-    stub_moderate(monkeypatch, {"pii": 0.9, "health": 0.7})
+    stub_moderate(monkeypatch, {"pii": 0.9, "spam": 0.7})
 
     result = run_try(text="bonjour")
 
-    assert result.scores == {"pii": 0.9, "health": 0.7}
+    assert result.scores == {"pii": 0.9, "spam": 0.7}
 
 
 def test_try_leaves_the_counters_alone(
@@ -171,11 +192,11 @@ def test_try_reuses_the_cached_scores(
 
     first = run_try(
         text="mon numero est 06 12 34 56 78",
-        categories=full_categories(pii={"threshold": 0.95, "action": "block"}),
+        criteria=criteria_with(pii={"threshold": 0.95, "action": "block"}),
     )
     second = run_try(
         text="mon numero est 06 12 34 56 78",
-        categories=full_categories(pii={"threshold": 0.4, "action": "block"}),
+        criteria=criteria_with(pii={"threshold": 0.4, "action": "block"}),
     )
 
     assert len(calls) == 1
@@ -186,7 +207,7 @@ def test_try_reuses_the_cached_scores(
 def test_try_without_an_api_key_reports_an_error(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
-    monkeypatch.setattr(admin_router.settings, "MISTRAL_API_KEY", "")
+    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", "")
     use_stored(monkeypatch, stored_check())
     calls = stub_moderate(monkeypatch, {"pii": 0.9})
 
@@ -213,12 +234,12 @@ def test_try_reports_a_failed_call(
     assert checks.REDIS_CHECK_FAILURES_KEY not in redis.store
 
 
-def test_try_rejects_an_unknown_category(
+def test_try_rejects_a_malformed_criterion(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
     with pytest.raises(Exception):
         admin_router.PromptCheckTryBody(
-            text="bonjour", categories={"not_a_category": {"threshold": 0.5}}
+            text="bonjour", criteria=[{"key": "Not A Key", "threshold": 0.5}]
         )
 
 
@@ -300,7 +321,7 @@ def test_stats_returns_historical_total_period_counts_and_timeline(
             "error": 0,
             "skipped": 0,
         },
-        "by_category": {
+        "by_criterion": {
             "pii": {
                 "pass": 0,
                 "logged": 0,
@@ -341,11 +362,11 @@ def test_stats_period_filters_charts_and_cards_but_not_historical_total(
 
     asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
-    historical, by_decision, by_category, timeline = session.queries
+    historical, by_decision, by_criterion, timeline = session.queries
     assert "prompt_check_result.created_at >=" not in historical
     assert all(
         "prompt_check_result.created_at >=" in sql
-        for sql in (by_decision, by_category, timeline)
+        for sql in (by_decision, by_criterion, timeline)
     )
     assert "date_trunc('day'" in timeline
 
@@ -375,5 +396,5 @@ def test_stats_without_a_database_are_empty(monkeypatch: pytest.MonkeyPatch) -> 
     assert stats["historical_total"] == 0
     assert stats["total"] == 0
     assert stats["by_decision"]["blocked"] == 0
-    assert stats["by_category"] == {}
+    assert stats["by_criterion"] == {}
     assert stats["timeline"] == []

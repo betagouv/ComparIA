@@ -104,7 +104,7 @@ this if you manage secrets externally (Vault, sealed-secrets, ...) — your
 Secret should provide whichever of the keys below your setup needs
 (`COMPARIA_DB_URI`, `COMPARIA_REDIS_HOST`, `ALTCHA_HMAC_KEY`, `COMPARIA_ENCRYPTION_KEY`,
 `OPENROUTER_API_KEY`, `ALBERT_KEY`, `HF_INFERENCE_KEY`, `ORDBOGEN_API_KEY`,
-`LINKUP_API_KEY`, `MISTRAL_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
+`LINKUP_API_KEY`, `SMTP_USERNAME`, `SMTP_PASSWORD`,
 `METRICS_TOKEN`). In this mode the chart cannot validate that a required key
 is present — that is your Secret's responsibility.
 
@@ -116,12 +116,11 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.redisHost`            | yes      | `COMPARIA_REDIS_HOST`                     |
 | `secrets.altchaHmacKey`        | yes      | `ALTCHA_HMAC_KEY`, e.g. `openssl rand -hex 32` |
 | `secrets.encryptionKey` | yes     | `COMPARIA_ENCRYPTION_KEY`, a Fernet key (see `values.yaml`) |
-| `secrets.openrouterApiKey`     | at least one of these four | `OPENROUTER_API_KEY` |
+| `secrets.openrouterApiKey`     | at least one of these four | `OPENROUTER_API_KEY`. Also the fallback key for prompt checks; left empty with no key set at `/admin/prompt-checks`, the checks no-op |
 | `secrets.albertKey`            | at least one of these four | `ALBERT_KEY` |
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |
 | `secrets.ordbogenApiKey`       | at least one of these four | `ORDBOGEN_API_KEY` |
 | `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, enables web search      |
-| `secrets.mistralApiKey`        | no       | `MISTRAL_API_KEY`, Mistral moderation API. Left empty, prompt checks (content safety, personal data) no-op |
 | `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
 | `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
 | `secrets.metricsToken`         | no       | `METRICS_TOKEN`, bearer token protecting `/metrics` |
