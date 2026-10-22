@@ -74,7 +74,7 @@
   novalidate
   aria-describedby="errors-{id}"
 >
-  <div class={{ 'px-4 md:px-6 py-6': stickyFooter }}>
+  <div class={{ 'px-4 md:px-6 my-6': stickyFooter }}>
     <h2 id="{id}-title" class="text-3xl!">
       {label}
       {#if subLabel}

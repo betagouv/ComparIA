@@ -9,11 +9,7 @@
   seoTitle={m['admin.legal.privacy.title']()}
   title={m['admin.legal.privacy.title']()}
   subtitle={m['admin.legal.privacy.subtitle']()}
+  backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
 >
-  <p class="fr-mb-6v">
-    <a class="fr-link fr-icon-arrow-left-line fr-link--icon-left" href={resolve('/admin/legal')}>
-      {m['admin.legal.back']()}
-    </a>
-  </p>
   <LegalDocumentAdmin kind="privacy_policy" />
 </PageLayout>
