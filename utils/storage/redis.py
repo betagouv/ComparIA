@@ -96,14 +96,14 @@ REDIS_CHECK_NO_CREDITS_KEY: Final[str] = (
 REDIS_SENT_WARNINGS_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_sent_warnings:{{session}}"
 )
-# Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
+# Warnings shown to a user, counted for as long as a criterion stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
 REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"
-# Moderation scores of one prompt, keyed by model and text. Lets a user warned about a
-# message send it anyway without paying for a second moderation call. Scores
+# Prompt check scores of one prompt, keyed by the questions asked and the text. Lets
+# a user warned about a message send it anyway without paying for a second check. Scores
 # rather than decisions, so a check tightened meanwhile still applies.
 REDIS_CHECK_SCORES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{model_hash}}:{{prompt_hash}}"
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{questions_hash}}:{{prompt_hash}}"
 )
 # Calls to the decision model in flight on this instance, across every request,
 # worker and replica: a sorted set of call stamps scored by when they lapse. One

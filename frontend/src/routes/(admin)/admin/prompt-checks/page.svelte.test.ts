@@ -180,7 +180,7 @@ const stats = (overrides: Partial<PromptCheckStats> = {}): PromptCheckStats => (
   historical_total: 1234,
   total: 1234,
   by_decision: { pass: 1000, logged: 200, warned: 30, blocked: 4, error: 0 },
-  by_category: { pii: { warned: 22 }, criminal: { blocked: 8 } },
+  by_criterion: { pii: { warned: 22 }, criminal: { blocked: 8 } },
   timeline: [
     {
       date: '2026-07-01',
@@ -547,7 +547,7 @@ describe('admin prompt check page', () => {
     expect(blocked).toContain('Refusés')
     expect(blocked).toContain('4')
 
-    const pii = container.querySelector('#prompt-check-stats-category-pii')?.textContent
+    const pii = container.querySelector('#prompt-check-stats-criterion-pii')?.textContent
     expect(pii).toContain('Données personnelles')
     expect(pii).toContain('22')
   })

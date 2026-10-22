@@ -397,8 +397,8 @@
                 "title": "Réglages"
             },
             "stats": {
-                "byCategoryNone": "Aucun critère ne s'est déclenché sur la période.",
-                "byCategoryTitle": "Critères déclenchés",
+                "byCriterionNone": "Aucun critère ne s'est déclenché sur la période.",
+                "byCriterionTitle": "Critères déclenchés",
                 "byDecisionTitle": "Résultats",
                 "decision": {
                     "blocked": "Refusés",

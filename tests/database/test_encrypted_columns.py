@@ -27,7 +27,7 @@ from sqlmodel import select  # noqa: E402
 import utils.database.models  # noqa: E402,F401 registers every table
 import utils.database.secrets as secrets_check  # noqa: E402
 from backend.admin.llms.router import _to_endpoint_public  # noqa: E402
-from backend.arena.checks import moderate  # noqa: E402
+from backend.arena.checks import score_prompt  # noqa: E402
 from backend.llms.data import LLMsData  # noqa: E402
 from utils.database.encrypted import (  # noqa: E402
     EncryptedJSONFields,
@@ -194,7 +194,7 @@ def test_the_admin_panel_still_says_a_key_is_set():
 def test_moderation_fails_rather_than_sending_the_marker():
     with pytest.raises(SecretUnreadableError, match="prompt_check 1.api_key"):
         asyncio.run(
-            moderate("hi", PromptCheck(), UnreadableSecret(token_from_a_lost_key()))
+            score_prompt("hi", PromptCheck(), UnreadableSecret(token_from_a_lost_key()))
         )
 
 

@@ -191,7 +191,7 @@ async def run_checks(
     """
     Run the spam patterns and the prompt check on a user message. Raises a 422
     (shaped like a Pydantic validation error so the frontend renders it under
-    the input) when a pattern matches or a category set to `block` refuses the
+    the input) when a pattern matches or a criterion set to `block` refuses the
     prompt, otherwise returns the verdict, to warn the user about and to
     persist on the turn.
     """

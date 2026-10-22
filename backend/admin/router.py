@@ -30,7 +30,7 @@ from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
     list_decision_models,
-    moderate,
+    score_prompt,
     read_cached_scores,
     verdict,
     write_cached_scores,
@@ -737,7 +737,7 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
     scores = read_cached_scores(body.text, check)
     if scores is None:
         try:
-            scores = await moderate(body.text, check, api_key)
+            scores = await score_prompt(body.text, check, api_key)
         except Exception as e:
             return PromptCheckTryResult(
                 decision="error",
@@ -778,7 +778,7 @@ class PromptCheckStats(BaseModel):
     historical_total: int
     total: int
     by_decision: dict[str, int]
-    by_category: dict[str, dict[str, int]]
+    by_criterion: dict[str, dict[str, int]]
     timeline: list[dict]
 
 
@@ -788,7 +788,7 @@ async def read_prompt_check_stats(
 ) -> PromptCheckStats:
     """Historical total and period-filtered activity.
 
-    `by_category` counts the turns each category triggered on, so one turn can
+    `by_criterion` counts the turns each criterion triggered on, so one turn can
     count in several. The timeline uses daily, weekly or monthly buckets based
     on the selected period.
     """

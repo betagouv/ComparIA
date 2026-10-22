@@ -139,7 +139,7 @@ def chunks(text: str) -> list[str]:
     ]
 
 
-def moderation_inputs(text: str) -> list[str]:
+def texts_to_score(text: str) -> list[str]:
     """Every window of every spelling of the prompt worth scoring.
 
     The decoded parts are read as one text, not one call each: six hundred
@@ -166,7 +166,7 @@ def context_inputs(text: str, context: Sequence[str]) -> tuple[list[str], list[s
         return [], []
     tail = "\n\n".join(earlier)[-CHUNK_CHARS:]
     joined = tail + "\n\n" + text[:CHUNK_CHARS]
-    return moderation_inputs(joined), moderation_inputs(tail)
+    return texts_to_score(joined), texts_to_score(tail)
 
 
 class Scores(NamedTuple):
@@ -311,7 +311,7 @@ async def _slot(key: str):
                 logger.warning(f"[CHECKS] Cannot free a call slot: {e}")
 
 
-async def moderate_many(
+async def score_texts(
     inputs: list[str], check: PromptCheck, api_key: str | UnreadableSecret
 ) -> list[dict[str, float]]:
     """Scores for each input, in order, a few calls at a time.
@@ -354,7 +354,7 @@ async def moderate_many(
         raise CheckOverloaded(f"No answer within {CHECK_DEADLINE}s") from e
 
 
-async def moderate(
+async def score_prompt(
     text: str,
     check: PromptCheck,
     api_key: str | UnreadableSecret,
@@ -362,7 +362,7 @@ async def moderate(
 ) -> Scores:
     """Score a prompt over every window and spelling of it, and, given the
     earlier user messages in `context`, read together with them."""
-    own = moderation_inputs(text)
+    own = texts_to_score(text)
     if len(own) > MAX_CHECK_CALLS:
         raise CheckOverloaded(f"{len(own)} calls, over {MAX_CHECK_CALLS}")
     joined, earlier = context_inputs(text, context)
@@ -372,7 +372,7 @@ async def moderate(
         # only warn, so it is the one to go, and the message is still scored.
         logger.warning("[CHECKS] Earlier turns over the call budget, not read")
         joined, earlier = [], []
-    scores = await moderate_many(own + joined + earlier, check, api_key)
+    scores = await score_texts(own + joined + earlier, check, api_key)
     split = len(own) + len(joined)
     return Scores(
         highest(scores[: len(own)]),
@@ -504,7 +504,7 @@ def _scores_cache_key(text: str, check: PromptCheck, context: Sequence[str]) -> 
     # moving a threshold keeps them while rewording a criterion does not.
     asked = json.dumps([check.model, check.description, questions(check)])
     return REDIS_CHECK_SCORES_KEY.format(
-        model_hash=hash_content(asked), prompt_hash=hash_content(keyed)
+        questions_hash=hash_content(asked), prompt_hash=hash_content(keyed)
     )
 
 
@@ -625,7 +625,7 @@ async def run_prompt_check(
         scores, latency_ms = cached, 0
     else:
         try:
-            scores = await moderate(text, check, api_key, context)
+            scores = await score_prompt(text, check, api_key, context)
         except Exception as e:
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.error(f"prompt_check_failed: {e}", extra={"request": request})
@@ -696,7 +696,7 @@ async def drop_flagged_results(
 
     per_result = []
     for result in results:
-        inputs = moderation_inputs(result.content or "")
+        inputs = texts_to_score(result.content or "")
         if sum(map(len, per_result)) + len(inputs) > MAX_CHECK_CALLS:
             logger.warning(
                 f"[CHECKS] {len(results) - len(per_result)} web search result(s) "
@@ -706,7 +706,7 @@ async def drop_flagged_results(
             break
         per_result.append(inputs)
     try:
-        scores = await moderate_many(
+        scores = await score_texts(
             [i for inputs in per_result for i in inputs], check, api_key
         )
     except Exception as e:

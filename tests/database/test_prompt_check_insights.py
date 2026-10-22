@@ -78,13 +78,15 @@ def stub_moderate(
 ) -> list[tuple[str, str]]:
     calls: list[tuple[str, str]] = []
 
-    async def moderate(text: str, check: PromptCheck, api_key: str) -> checks.Scores:
+    async def score_prompt(
+        text: str, check: PromptCheck, api_key: str
+    ) -> checks.Scores:
         calls.append((text, check.model))
         if error:
             raise error
         return checks.Scores(scores)
 
-    monkeypatch.setattr(admin_router, "moderate", moderate)
+    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
     return calls
 
 
@@ -140,11 +142,13 @@ def test_try_uses_the_unsaved_description(
     use_stored(monkeypatch, stored_check())
     seen: list[str] = []
 
-    async def moderate(text: str, check: PromptCheck, api_key: str) -> checks.Scores:
+    async def score_prompt(
+        text: str, check: PromptCheck, api_key: str
+    ) -> checks.Scores:
         seen.append(check.description)
         return checks.Scores({})
 
-    monkeypatch.setattr(admin_router, "moderate", moderate)
+    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
 
     run_try(text="bonjour", description="Arène santé.")
 
@@ -317,7 +321,7 @@ def test_stats_returns_historical_total_period_counts_and_timeline(
             "error": 0,
             "skipped": 0,
         },
-        "by_category": {
+        "by_criterion": {
             "pii": {
                 "pass": 0,
                 "logged": 0,
@@ -358,11 +362,11 @@ def test_stats_period_filters_charts_and_cards_but_not_historical_total(
 
     asyncio.run(prompt_checks_module.get_prompt_check_stats("30d"))
 
-    historical, by_decision, by_category, timeline = session.queries
+    historical, by_decision, by_criterion, timeline = session.queries
     assert "prompt_check_result.created_at >=" not in historical
     assert all(
         "prompt_check_result.created_at >=" in sql
-        for sql in (by_decision, by_category, timeline)
+        for sql in (by_decision, by_criterion, timeline)
     )
     assert "date_trunc('day'" in timeline
 
@@ -392,5 +396,5 @@ def test_stats_without_a_database_are_empty(monkeypatch: pytest.MonkeyPatch) -> 
     assert stats["historical_total"] == 0
     assert stats["total"] == 0
     assert stats["by_decision"]["blocked"] == 0
-    assert stats["by_category"] == {}
+    assert stats["by_criterion"] == {}
     assert stats["timeline"] == []

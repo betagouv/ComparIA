@@ -32,7 +32,7 @@ export type PromptCheckStats = {
   historical_total: number
   total: number
   by_decision: Partial<Record<PromptCheckDecision, number>>
-  by_category: Record<string, Partial<Record<PromptCheckDecision, number>>>
+  by_criterion: Record<string, Partial<Record<PromptCheckDecision, number>>>
   timeline: PromptCheckTimelinePoint[]
 }
 

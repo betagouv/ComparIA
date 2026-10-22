@@ -396,8 +396,8 @@
                 "title": "Indstillinger"
             },
             "stats": {
-                "byCategoryNone": "Intet kriterium blev udløst i perioden.",
-                "byCategoryTitle": "Udløste kriterier",
+                "byCriterionNone": "Intet kriterium blev udløst i perioden.",
+                "byCriterionTitle": "Udløste kriterier",
                 "byDecisionTitle": "Resultater",
                 "decision": {
                     "blocked": "Afvist",

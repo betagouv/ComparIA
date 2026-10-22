@@ -397,8 +397,8 @@
                 "title": "Settings"
             },
             "stats": {
-                "byCategoryNone": "No criterion was triggered over the period.",
-                "byCategoryTitle": "Criteria triggered",
+                "byCriterionNone": "No criterion was triggered over the period.",
+                "byCriterionTitle": "Criteria triggered",
                 "byDecisionTitle": "Results",
                 "decision": {
                     "blocked": "Refused",

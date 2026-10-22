@@ -13,7 +13,7 @@
   import type { AnyFormItemProps } from '$lib/utils/form'
   import type { PageProps } from './$types'
   import ActivityLineChart from './ActivityLineChart.svelte'
-  import CategoryHistogram from './CategoryHistogram.svelte'
+  import CriterionHistogram from './CriterionHistogram.svelte'
   import CriterionRow, { actionTone } from './CriterionRow.svelte'
   import { actionLabels, actionOrder, newCriterion } from './criteria'
   import type { PromptCheckDecision, PromptCheckStats, PromptCheckTry } from './types'
@@ -122,7 +122,7 @@
     return benchUsed
       .filter((criterion) => criterion.key in result.scores)
       .map((criterion) => ({
-        category: criterion.key,
+        key: criterion.key,
         label: criterion.label,
         score: result.scores[criterion.key],
         threshold: criterion.threshold,
@@ -171,7 +171,7 @@
   }
 
   /** The stats keep the keys of the old Mistral categories: with no label, the key shows. */
-  function categoryLabel(key: string) {
+  function criterionLabel(key: string) {
     return data.check.criteria.find((criterion) => criterion.key === key)?.label ?? key
   }
 
@@ -475,9 +475,9 @@
               class="gap-3 m-0! p-0! flex list-none flex-col"
               aria-label={m['admin.promptChecks.bench.caption']()}
             >
-              {#each benchRows as row (row.category)}
+              {#each benchRows as row (row.key)}
                 {@const tone = row.triggered ? actionTone[row.action].color : 'var(--grey-425-625)'}
-                <li id={`prompt-check-bench-row-${row.category}`}>
+                <li id={`prompt-check-bench-row-${row.key}`}>
                   <div class="gap-2 mb-1 flex flex-wrap items-baseline">
                     <span class="text-sm text-dark-grey min-w-0 font-medium flex-1"
                       >{row.label}</span
@@ -608,13 +608,13 @@
             </div>
 
             <div class="cg-border bg-white p-5">
-              <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.byCategoryTitle']()}</h3>
+              <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.byCriterionTitle']()}</h3>
               <p class="text-sm mt-0! mb-4! text-grey">
                 Répartition des détections par critère et par résultat.
               </p>
-              <CategoryHistogram
-                categories={stats.by_category}
-                {categoryLabel}
+              <CriterionHistogram
+                byCriterion={stats.by_criterion}
+                {criterionLabel}
                 labels={statsDecisionLabels}
                 colors={decisionTone}
               />

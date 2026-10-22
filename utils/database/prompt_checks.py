@@ -174,7 +174,7 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
         "historical_total": 0,
         "total": 0,
         "by_decision": {decision: 0 for decision in DECISIONS},
-        "by_category": {},
+        "by_criterion": {},
         "timeline": [],
     }
     if not settings.COMPARIA_DB_URI:
@@ -182,7 +182,7 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
 
     where = [col(PromptCheckResult.created_at) >= since] if since else []
     decision = col(PromptCheckResult.decision)
-    categories = (
+    triggered = (
         select(
             func.jsonb_object_keys(col(PromptCheckResult.triggered)).label("name"),
             decision.label("decision"),
@@ -205,15 +205,15 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
                 .group_by(decision)
             )
         ).all()
-        by_category = (
+        by_criterion = (
             await session.exec(
                 select(
-                    categories.c.name,
-                    categories.c.decision,
+                    triggered.c.name,
+                    triggered.c.decision,
                     func.count().label("count"),
                 ).group_by(
-                    categories.c.name,
-                    categories.c.decision,
+                    triggered.c.name,
+                    triggered.c.decision,
                 )
             )
         ).all()
@@ -230,10 +230,10 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
     for name, count in by_decision:
         stats["by_decision"][name] = count
     stats["total"] = sum(stats["by_decision"].values())
-    for category, name, count in by_category:
-        stats["by_category"].setdefault(
-            category, {decision: 0 for decision in DECISIONS}
-        )[name] = count
+    for key, name, count in by_criterion:
+        stats["by_criterion"].setdefault(key, {decision: 0 for decision in DECISIONS})[
+            name
+        ] = count
 
     buckets: dict[datetime, dict[str, int]] = {}
     for start, name, count in timeline:
