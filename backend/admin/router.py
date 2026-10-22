@@ -30,8 +30,8 @@ from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
     list_decision_models,
-    score_prompt,
     read_cached_scores,
+    score_prompt,
     verdict,
     write_cached_scores,
 )
