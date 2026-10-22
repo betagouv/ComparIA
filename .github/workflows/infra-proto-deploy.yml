@@ -31,9 +31,8 @@ jobs:
           password: ${{ secrets.SCW_REGISTRY_SECRET_KEY }}
 
       - name: Build and push the images
-        env:
-          BUILDX_BAKE_ENTITLEMENTS_FS: "0"
-        run: docker buildx bake -f devops/docker/docker-bake.yml --push
+        working-directory: devops/docker
+        run: docker buildx bake -f docker-bake.yml --push
 
       - name: Package and push the chart
         run: |
