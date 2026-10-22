@@ -207,14 +207,18 @@ async def list_decision_models() -> list[dict[str, str]]:
 
 
 def questions(check: PromptCheck) -> dict[str, dict]:
-    """One yes/no question per criterion that can act, keyed on the criterion."""
+    """One yes/no question per criterion that can act, keyed on the criterion.
+
+    What we add around the admin's words is in English, like the API's own
+    fields: the criteria and the description are in the instance's language.
+    """
     asked = {}
     for c in check.active_criteria:
         question: dict = {"type": "noul", "instructions": c.question}
         if c.yes and c.no:
             question["criteria"] = {"true": c.yes, "false": c.no}
         elif c.yes or c.no:
-            question["instructions"] += f" Oui : {c.yes}" if c.yes else f" Non : {c.no}"
+            question["instructions"] += f" Yes: {c.yes}" if c.yes else f" No: {c.no}"
         asked[c.key] = question
     return asked
 
@@ -233,7 +237,7 @@ async def _post(
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={
                     "model": check.model,
-                    "state": {"plateforme": check.description, "message": text},
+                    "state": {"platform": check.description, "message": text},
                     "questions": asked,
                 },
             )

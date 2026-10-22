@@ -188,7 +188,7 @@ def test_one_call_asks_every_criterion_that_acts():
     assert len(fake.requests) == 1
     body = fake.requests[0]
     assert body["model"] == MODEL
-    assert body["state"] == {"plateforme": "An arena.", "message": "bonjour"}
+    assert body["state"] == {"platform": "An arena.", "message": "bonjour"}
     # An `off` criterion cannot change anything, so it is not asked.
     assert set(body["questions"]) == {"criminal", "pii"}
     assert body["questions"]["pii"] == {
@@ -213,7 +213,7 @@ def test_what_counts_as_yes_and_no_goes_with_the_question():
     assert asked["spam"]["criteria"] == {"true": "Ads", "false": "A real question"}
     # With one side only, it is folded into the instructions.
     assert "criteria" not in asked["ads"]
-    assert asked["ads"]["instructions"].endswith("Oui : Links")
+    assert asked["ads"]["instructions"].endswith("Yes: Links")
 
 
 def test_a_missing_answer_counts_as_a_failed_check():
