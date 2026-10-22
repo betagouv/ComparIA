@@ -78,8 +78,9 @@ DECISION_TIMEOUT: Final[float] = 4.0
 # For the whole check of one prompt, waiting for a free call included.
 CHECK_DEADLINE: Final[float] = 12.0
 # The most calls one prompt may cost, follow-up context included: eight rounds
-# of four. An ordinary prompt at the length limit needs 23; one that unfolds
-# into far more text (some characters fold into eighteen) is not sent at all.
+# of four. An ordinary prompt at the length limit needs 7, twice that when its
+# folded spelling differs; one that unfolds into far more text (some
+# characters fold into eighteen) is not sent at all.
 # Over it with the earlier turns only, those are left unread instead.
 MAX_CHECK_CALLS: Final[int] = 32
 # The longest a rate limited call waits before its one retry, whatever
