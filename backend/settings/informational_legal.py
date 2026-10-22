@@ -1,19 +1,18 @@
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 from backend.utils.locale import pick_locale
 from utils.database.settings import get_app_settings
-
-INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH = 200_000
+from utils.validation import NonEmptyStr, Translatable
 
 LegalPageKey = Literal["legal_notice", "accessibility", "ecodesign"]
 
 
 class InformationalLegalPageLink(BaseModel):
     mode: Literal["internal", "external"] = "internal"
-    external_url: str | None = None
+    external_url: Annotated[NonEmptyStr | None, Field(validate_default=True)] = None
     visible_in_legal_menu: bool = True
     visible_in_settings: bool = True
 
@@ -38,30 +37,20 @@ class InformationalLegalPageLink(BaseModel):
             raise ValueError("External URL must be an absolute HTTPS URL")
         return url
 
-    @model_validator(mode="after")
-    def require_url_for_external_mode(self):
-        if self.mode == "external" and self.external_url is None:
-            raise ValueError("External URL is required in external mode")
-        return self
-
-
-class InformationalLegalPage(InformationalLegalPageLink):
-    content_by_locale: dict[str, str] = Field(default_factory=dict)
-
-    @field_validator("content_by_locale")
+    @field_validator("external_url", mode="after")
     @classmethod
-    def validate_content(cls, value: dict[str, str]) -> dict[str, str]:
-        for locale, content in value.items():
-            if not locale or len(locale) > 16:
-                raise ValueError(
-                    "Content locale must contain between 1 and 16 characters"
-                )
-            if len(content) > INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH:
-                raise ValueError(
-                    f"Content for {locale} must not exceed "
-                    f"{INFORMATIONAL_PAGE_CONTENT_MAX_LENGTH} characters"
-                )
+    def require_url_for_external_mode(
+        cls, value: str | None, info: ValidationInfo
+    ) -> str:
+        if info.data["mode"] == "external" and value is None:
+            raise ValueError("External URL is required in external mode")
         return value
+
+
+class InformationalLegalPage(InformationalLegalPageLink, extra="forbid"):
+    content_by_locale: Translatable[
+        Annotated[str, Field(min_length=1, max_length=200_000)]
+    ] = Field(default_factory=dict)
 
 
 InformationalLegalPageAnno = Annotated[
@@ -69,19 +58,10 @@ InformationalLegalPageAnno = Annotated[
 ]
 
 
-class InformationalLegalPageCollection(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class InformationalLegalPages(BaseModel, extra="forbid"):
     legal_notice: InformationalLegalPageAnno
     accessibility: InformationalLegalPageAnno
     ecodesign: InformationalLegalPageAnno
-
-
-class InformationalLegalPages(BaseModel):
-    pages: Annotated[
-        InformationalLegalPageCollection,
-        Field(default_factory=InformationalLegalPageCollection),
-    ]
 
 
 async def get_informational_legal_pages() -> InformationalLegalPages:
@@ -89,9 +69,14 @@ async def get_informational_legal_pages() -> InformationalLegalPages:
     stored = settings.informational_legal_pages
     if not stored:
         return InformationalLegalPages()
-    return InformationalLegalPages(
-        pages=InformationalLegalPageCollection.model_validate(stored)
-    )
+    return InformationalLegalPages.model_validate(stored)
+
+
+async def get_informational_legal_page(
+    key: LegalPageKey,
+) -> InformationalLegalPage | None:
+    pages = await get_informational_legal_pages()
+    return getattr(pages, key)
 
 
 class InformationalLegalPageContent(BaseModel):
@@ -99,19 +84,18 @@ class InformationalLegalPageContent(BaseModel):
     locale: str
 
 
-async def get_informational_legal_page(
+async def get_informational_legal_page_content(
     key: LegalPageKey, locale: str
 ) -> InformationalLegalPageContent | None:
-    pages = (await get_informational_legal_pages()).pages
-    page = getattr(pages, key)
-    available_locale = pick_locale(locale, page.content_by_locale)
+    page = await get_informational_legal_page(key)
+    contents = page.content_by_locale.root
+    available_locale = pick_locale(locale, contents)
 
-    print("PAGE", key, page, available_locale)
-    if page.mode == "external" or not available_locale in page.content_by_locale:
+    if page.mode == "external" or not available_locale in contents:
         return None
 
     return InformationalLegalPageContent(
-        content=page.content_by_locale[available_locale],
+        content=contents[available_locale],
         locale=available_locale,
     )
 
@@ -122,9 +106,7 @@ InformationalLegalPageLinkAnno = Annotated[
 ]
 
 
-class InformationalLegalPageLinks(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
+class InformationalLegalPageLinks(BaseModel, extra="forbid"):
     legal_notice: InformationalLegalPageLinkAnno
     accessibility: InformationalLegalPageLinkAnno
     ecodesign: InformationalLegalPageLinkAnno

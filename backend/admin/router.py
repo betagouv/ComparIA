@@ -51,7 +51,10 @@ from backend.config import (
     settings,
 )
 from backend.settings.informational_legal import (
+    InformationalLegalPage,
     InformationalLegalPages,
+    LegalPageKey,
+    get_informational_legal_page,
     get_informational_legal_pages,
 )
 from backend.settings.legal import (
@@ -160,18 +163,23 @@ class PublishLegalDocumentBody(BaseModel):
     confirm_publication: Literal[True]
 
 
-@router.get("/legal/informational-pages", response_model=InformationalLegalPages)
-async def get_admin_informational_legal_pages() -> InformationalLegalPages:
-    return await get_informational_legal_pages()
+@router.get("/legal/informational-page/{key}", response_model=InformationalLegalPage)
+async def get_admin_informational_legal_page(
+    key: LegalPageKey,
+) -> InformationalLegalPage:
+    return await get_informational_legal_page(key)
 
 
-@router.put("/legal/informational-pages", response_model=InformationalLegalPages)
-async def put_admin_informational_legal_pages(
-    body: InformationalLegalPages,
+@router.put("/legal/informational-page/{key}", response_model=InformationalLegalPage)
+async def put_admin_informational_legal_page(
+    key: LegalPageKey,
+    body: InformationalLegalPage,
     current_user: RequiredAdmin,
 ) -> InformationalLegalPages:
+    pages = await get_informational_legal_pages()
+    setattr(pages, key, body)
     await update_app_settings(
-        {"informational_legal_pages": body.pages.model_dump(mode="json")},
+        {"informational_legal_pages": pages.model_dump(mode="json")},
         updated_by=current_user.id,
     )
     return body

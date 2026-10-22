@@ -7,7 +7,7 @@ from backend.settings.informational_legal import (
     InformationalLegalPageContent,
     InformationalLegalPageLinks,
     LegalPageKey,
-    get_informational_legal_page,
+    get_informational_legal_page_content,
     get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/settings", tags=["settings"])
 async def public_informational_legal_pages(
     key: LegalPageKey, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
 ) -> InformationalLegalPageContent | None:
-    return await get_informational_legal_page(key, locale)
+    return await get_informational_legal_page_content(key, locale)
 
 
 @router.get(
