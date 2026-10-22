@@ -1,7 +1,7 @@
 """add survey
 
 Revision ID: 67fb732c509e
-Revises: c4e8a2f1b9d3
+Revises: 5e37278477e6
 Create Date: 2026-10-12 14:23:44.427467
 
 """
@@ -17,7 +17,7 @@ from utils.database.models.survey import NO_USER_SENTINEL
 
 # revision identifiers, used by Alembic.
 revision: str = "67fb732c509e"
-down_revision: Union[str, Sequence[str], None] = "c4e8a2f1b9d3"
+down_revision: Union[str, Sequence[str], None] = "5e37278477e6"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
