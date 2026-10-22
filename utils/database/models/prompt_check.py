@@ -41,6 +41,8 @@ _KEY_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,39}$")
 # triggered criterion asks for.
 _ACTION_RANK = {"off": 0, "log": 1, "warn": 2, "block": 3}
 
+# The French instance's. The migration seeds an instance in another language
+# with its own, since this one names the French State.
 DEFAULT_DESCRIPTION = (
     "compar:IA est un service public gratuit de l'État français. Chacun peut "
     "discuter avec deux modèles d'IA anonymes et voter pour la meilleure "

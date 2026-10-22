@@ -31,6 +31,12 @@ depends_on: Union[str, Sequence[str], None] = None
 # rewrite what this migration seeded.
 MODEL = "perplexity/pplx-decider-v1.2-20261016"
 DESCRIPTION = "compar:IA est un service public gratuit de l'État français. Chacun peut discuter avec deux modèles d'IA anonymes et voter pour la meilleure réponse. Toute question ou tâche sincère est la bienvenue, y compris sur la santé, le droit, l'argent, le commerce ou la création, et les questions sur les modèles eux-mêmes."
+# The fr text names the French State: an instance in another language gets its
+# own, picked from app_settings.default_locale.
+DESCRIPTIONS = {
+    "da": "AI Arenaen er en gratis tjeneste. Alle kan chatte med to anonyme AI-modeller og stemme på det bedste svar. Alle oprigtige spørgsmål og opgaver er velkomne, også om sundhed, jura, penge, handel eller kreativt arbejde, og spørgsmål om selve modellerne.",
+    "en": "A free service where anyone can chat with two anonymous AI models and vote for the better answer. Any sincere question or task is welcome, including on health, law, money, business or creative work, and questions about the models themselves.",
+}
 CRITERIA = [
     {
         "key": "selfharm",
@@ -196,6 +202,13 @@ def upgrade() -> None:
             "UPDATE prompt_check SET criteria = CAST(:criteria AS jsonb), "
             "model = :model, api_key = NULL"
         ).bindparams(criteria=json.dumps(CRITERIA), model=MODEL)
+    )
+    op.execute(
+        sa.text(
+            "UPDATE prompt_check SET description = CASE "
+            "(SELECT default_locale FROM app_settings WHERE id = 1) "
+            "WHEN 'da' THEN :da WHEN 'en' THEN :en ELSE description END"
+        ).bindparams(**DESCRIPTIONS)
     )
     op.drop_column("prompt_check", "categories")
     op.alter_column(
