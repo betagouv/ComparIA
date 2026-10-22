@@ -3,6 +3,7 @@
     type: HTMLInputElement['type']
     placeholder?: HTMLInputElement['placeholder']
     step?: HTMLInputElement['step']
+    maxlength?: HTMLInputElement['maxLength']
   } & BaseFormFieldProps<'input'>
 </script>
 

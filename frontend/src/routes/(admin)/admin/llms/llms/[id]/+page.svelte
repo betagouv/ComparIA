@@ -28,5 +28,5 @@
 </script>
 
 <div>
-  <Form {id} label="LLM" subLabel={id} {...form} />
+  <Form {id} label="LLM" subLabel={id} {...form} class="mt-6! p-6 cg-border max-w-[700px]" />
 </div>

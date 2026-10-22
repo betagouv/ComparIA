@@ -298,7 +298,7 @@ def test_sign_in_hands_back_a_challenge_when_an_authenticator_is_enrolled():
         code_hash=auth_services._hash("123456"),
         expires_at=datetime.now() + timedelta(minutes=5),
     )
-    session = FakeSession(user, [user], [login_code], [uuid.uuid4()])
+    session = FakeSession(user, [user], [login_code], [None], [uuid.uuid4()])
 
     with fake_session(session, auth_services):
         result = asyncio.run(
@@ -324,7 +324,7 @@ def test_an_invite_accepted_by_an_enrolled_admin_is_challenged_too():
         token_hash=auth_services._hash("invite"),
         expires_at=datetime.now() + timedelta(hours=1),
     )
-    session = FakeSession(user, [invite], [uuid.uuid4()])
+    session = FakeSession(user, [invite], [None], [uuid.uuid4()])
 
     with fake_session(session, auth_services):
         result = asyncio.run(
@@ -755,7 +755,11 @@ def test_the_first_factor_sets_a_challenge_cookie_and_no_session():
         )
 
     assert r.status_code == 200
-    assert r.json() == {"email": "admin@example.org", "totp_required": True}
+    assert r.json() == {
+        "email": "admin@example.org",
+        "totp_required": True,
+        "first_sign_in": False,
+    }
     assert "auth_totp_challenge" in r.cookies
     assert "auth_session" not in r.cookies
     cookies = r.headers.get_list("set-cookie")
@@ -875,12 +879,24 @@ def test_me_says_whether_the_authenticator_is_enrolled():
     async def enrolled_yes(_user_id):
         return True
 
-    with routed(get_user_from_token=whoami, has_confirmed_totp=enrolled_yes) as client:
+    async def questions_answered(**_):
+        return True
+
+    with routed(
+        get_user_from_token=whoami,
+        has_confirmed_totp=enrolled_yes,
+        signup_questions_answered=questions_answered,
+    ) as client:
         client.cookies.set("auth_session", "session-token")
         r = client.get("/auth/me")
 
     assert r.json() == {
-        "user": {"email": "admin@example.test", "role": "admin", "totp_enabled": True}
+        "user": {
+            "email": "admin@example.test",
+            "role": "admin",
+            "totp_enabled": True,
+            "questionsAnswered": True,
+        }
     }
 
 
