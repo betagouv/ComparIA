@@ -32,7 +32,7 @@ jobs:
 
       - name: Build and push the images
         working-directory: devops/docker
-        run: docker buildx bake -f docker-bake.yml --push
+        run: docker buildx bake --allow fs.read=../.. -f docker-bake.yml --push
 
       - name: Package and push the chart
         run: |
