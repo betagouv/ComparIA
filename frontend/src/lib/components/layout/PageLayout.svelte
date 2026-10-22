@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ResolvedPathname } from '$app/types'
   import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
   import { SeoHead } from '.'
@@ -9,6 +10,7 @@
     subtitle,
     bubble,
     titleAsBubble = false,
+    backLink,
     stickyHeader = false,
     headerClass,
     noPadding = false,
@@ -21,6 +23,7 @@
     subtitle?: string
     bubble?: string
     titleAsBubble?: boolean
+    backLink?: { href: ResolvedPathname; text: string }
     stickyHeader?: boolean
     headerClass?: ClassValue
     noPadding?: boolean
@@ -78,5 +81,12 @@
   class={[{ 'px-4 md:px-6 py-6': !noPadding }, props.class]}
   style="--second-header-size: {headerElemSize}px;"
 >
+  {#if backLink}
+    <p class={{ 'px-4! md:px-6! pt-6': noPadding }}>
+      <a class="fr-link fr-icon-arrow-left-line fr-link--icon-left" href={backLink.href}>
+        {backLink.text}
+      </a>
+    </p>
+  {/if}
   {@render children?.()}
 </div>

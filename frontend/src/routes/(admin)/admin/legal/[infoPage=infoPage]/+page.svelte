@@ -59,14 +59,9 @@
   seoTitle={m['admin.legal.informational.title']()}
   title={m['admin.legal.informational.title']()}
   subtitle={m['admin.legal.informational.subtitle']()}
+  backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
   noPadding
 >
-  <p class="mb-0! px-4! md:px-6! pt-6">
-    <a class="fr-link fr-icon-arrow-left-line fr-link--icon-left" href={resolve('/admin/legal')}>
-      {m['admin.legal.back']()}
-    </a>
-  </p>
-
   <Form
     id="info-page"
     label={m[`admin.legal.informational.pages.${pageKey}`]()}
