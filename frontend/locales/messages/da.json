@@ -10,6 +10,7 @@
         "modeSelection": "Vælg modeller, der skal sammenlignes",
         "modelSheet": "Modeloplysninger",
         "newWindow": "nyt vindue",
+        "priceGraphDesc": "Punktdiagram: Hver model er placeret efter sin præferencescore på den lodrette akse og sin outputpris pr. million tokens på den vandrette akse. En linje forbinder modellerne på Pareto-fronten. De samme data findes i tabelform.",
         "shareLinkLabel": "Link til deling",
         "skipToContent": "Gå til hovedindholdet",
         "suggestionCategories": "Kategorier med forslag til spørgsmål",
@@ -340,6 +341,7 @@
                 "label": "API-nøgle",
                 "placeholder": "Ny nøgle",
                 "replace": "Erstat",
+                "replaceLabel": "Erstat API-nøglen",
                 "set": "Nøgle gemt",
                 "unset": "Ingen nøgle gemt",
                 "willClear": "Når du gemmer, slettes den gemte nøgle, og miljøvariablen overtager."
@@ -429,6 +431,8 @@
                 "title": "Indstillinger"
             },
             "stats": {
+                "byCategoryAria": "Registreringer efter kategori",
+                "byCategoryDesc": "Fordeling af registreringer efter kategori og resultat.",
                 "byCategoryNone": "Ingen kategori blev udløst i perioden.",
                 "byCategoryTitle": "Udløste kategorier",
                 "byDecisionTitle": "Resultater",
@@ -440,7 +444,21 @@
                     "skipped": "Ikke kontrolleret (Mistral nede)",
                     "warned": "Advarsler"
                 },
+                "desc": "Følg registreringerne og de trufne beslutninger i den valgte periode.",
+                "heading": "Beskedaktivitet",
+                "period": {
+                    "all": "Siden starten",
+                    "days": "Sidste {count} dage",
+                    "year": "Sidste 12 måneder"
+                },
+                "periodLabel": "Vist periode",
                 "proceeded": "{count} sendt alligevel",
+                "timelineAria": "Udvikling i overvågede, advarede, afviste og fejlede beskeder",
+                "timelineCount": "beskeder verificeret",
+                "timelineDesc": "Beskeder overvåget, advaret, afvist eller fejlet i perioden.",
+                "timelineEmpty": "Ingen registreringer i denne periode.",
+                "timelineLegend": "Signaturforklaring",
+                "timelineTitle": "Registreringer over tid",
                 "title": "Aktivitet de sidste {days} dage",
                 "totalLabel": "beskeder verificeret i perioden",
                 "unavailable": "Tællerne er ikke tilgængelige i øjeblikket.",
@@ -621,7 +639,7 @@
             },
             "oidc": {
                 "buttonLabel": {
-                    "hint": "Ex. : Se connecter avec ProConnect",
+                    "hint": "F.eks. Log ind med ProConnect",
                     "label": "Knaptekst"
                 },
                 "buttonLogo": {
@@ -643,7 +661,7 @@
                     "set": "Secret gemt"
                 },
                 "issuer": {
-                    "hint": "Ex. : https://auth.example.gouv.fr",
+                    "hint": "F.eks. https://auth.example.gouv.fr",
                     "label": "Udsteder URL (issuer)",
                     "required": "Udsteder URL er påkrævet"
                 },
@@ -1998,6 +2016,49 @@
             },
             "title": "Hvordan fordeler brugernes præferencer sig?"
         },
+        "price": {
+            "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley-Terry-score) og outputpris, dvs. den vejledende pris for en million tokens genereret via udbyderens API. Priserne er dem, udbyderne offentliggør, omregnet til {currency}. Alle rangerede modeller er med, også de proprietære. Linjen forbinder de modeller, som ingen anden model slår på både score og pris: Pareto-fronten.",
+            "tabLabel": "Prisfokus",
+            "title": "Er de mest populære modeller de dyreste?",
+            "views": {
+                "graph": {
+                    "desc": "Hold musen over en model for at se dens Bradley-Terry-score (BT) samt dens input- og outputpris",
+                    "legends": {
+                        "frontier": "Pareto-front",
+                        "frontierOnly": "Vis kun fronten",
+                        "frontierSub": "Modeller, som ingen anden model slår på både score og pris",
+                        "kinds": {
+                            "open-source": "Open source",
+                            "open-weights": "Open-weight",
+                            "proprietary": "Proprietær"
+                        },
+                        "license": "Filtrer på licens"
+                    },
+                    "title": "Bradley-Terry-tilfredshedsscore (BT) kontra outputpris pr. million tokens",
+                    "tooltip": {
+                        "elo": "BT score",
+                        "license": "Licens",
+                        "onFrontier": "På Pareto-fronten",
+                        "price_in": "Inputpris (1 mio. tokens)",
+                        "price_out": "Outputpris (1 mio. tokens)"
+                    },
+                    "xLabel": "Outputpris pr. million tokens ({currency}, logaritmisk skala)",
+                    "yLabel": "Bradley-Terry-score (BT)"
+                },
+                "methodo": {
+                    "list": {
+                        "1": "<strong>Jo højere oppe i grafen en model er placeret</strong>, desto højere er dens Bradley-Terry-tilfredshedsscore. <strong>Jo længere til højre</strong>, desto mindre koster den pr. genereret token.",
+                        "2": "<strong>Øverst til højre</strong> finder man de modeller, der både er populære og billige. Linjen forbinder dem, som ingen anden model slår på begge punkter på én gang: for hver af dem kræver en bedre score en højere pris.",
+                        "3": "Prisaksen er <strong>logaritmisk</strong>: den samme afstand på aksen svarer til det samme prisforhold, fra 0,1 til 1 som fra 1 til 10. Priserne er vejledende, hentet fra udbydernes offentlige prislister, og tager ikke højde for rabatter, caching eller batchtilbud."
+                    },
+                    "subTitle": "Eksempler på læsning af grafen",
+                    "title": "Hvordan finder man den rette balance mellem opfattet performance og pris?"
+                },
+                "table": {
+                    "title": "Pristabel pr. model"
+                }
+            }
+        },
         "ranking": {
             "desc": "Denne rangering beregnes ud fra stemmer indsamlet gennem <strong>blinde sammenligninger</strong> ved hjælp af den statistiske <strong>Bradley-Terry-model</strong>. Den afspejler <strong>subjektive præferencer</strong> og bør fortolkes med forsigtighed: den måler hverken faktuel korrekthed eller modellernes samlede ydeevne.",
             "tabLabel": "Rangliste"
@@ -2017,6 +2078,8 @@
                     "n_match": "Samlet antal stemmer",
                     "name": "Model",
                     "organisation": "Organisation",
+                    "price_in": "Inputpris<br>(1 mio. tokens)",
+                    "price_out": "Outputpris<br>(1 mio. tokens)",
                     "rank": "Rang",
                     "rank_number": "Placering",
                     "release": "Udgivelsesdato",
@@ -2028,6 +2091,7 @@
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
                     "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, som ikke-analyseret (N/A).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
+                    "price": "Vejledende pris for brug via en API, pr. million tokens, omregnet til den viste valuta. Input er den forespørgsel, der sendes, output er det svar, der genereres.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",
                     "trust_range": "Interval, der angiver pålideligheden af rangordningen: jo smallere intervallet er, jo mere pålidelig er rangestimat. Der er 95% sandsynlighed for, at modellens sande rang ligger i dette spænd."

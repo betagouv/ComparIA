@@ -341,6 +341,7 @@
                 "label": "API key",
                 "placeholder": "New key",
                 "replace": "Replace",
+                "replaceLabel": "Replace the API key",
                 "set": "Key saved",
                 "unset": "No key saved",
                 "willClear": "On saving, the stored key will be erased and the environment variable will take over."
@@ -430,6 +431,8 @@
                 "title": "Settings"
             },
             "stats": {
+                "byCategoryAria": "Detections by category",
+                "byCategoryDesc": "Detections split by category and result.",
                 "byCategoryNone": "No category was triggered over the period.",
                 "byCategoryTitle": "Categories triggered",
                 "byDecisionTitle": "Results",
@@ -441,7 +444,21 @@
                     "skipped": "Not checked (Mistral down)",
                     "warned": "Warned"
                 },
+                "desc": "Follow the detections and the decisions taken over the selected period.",
+                "heading": "Message activity",
+                "period": {
+                    "all": "From the start",
+                    "days": "Last {count} days",
+                    "year": "Last 12 months"
+                },
+                "periodLabel": "Period shown",
                 "proceeded": "{count} sent anyway",
+                "timelineAria": "Trend of watched, warned, refused and failed messages",
+                "timelineCount": "messages checked",
+                "timelineDesc": "Messages watched, warned, refused or failed over the period.",
+                "timelineEmpty": "No detection over this period.",
+                "timelineLegend": "Chart legend",
+                "timelineTitle": "Detections over time",
                 "title": "Activity over the last {days} days",
                 "totalLabel": "messages checked over the period",
                 "unavailable": "The counters are not available at the moment.",
