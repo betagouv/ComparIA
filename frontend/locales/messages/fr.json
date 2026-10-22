@@ -20,13 +20,13 @@
         "accessData": "Accéder aux données",
         "contact": "Contactez-nous",
         "contactUs": "Nous contacter",
-        "copyLink": {
-            "do": "Copier le lien",
-            "done": "Lien copié dans le presse-papiers"
-        },
         "copyKey": {
             "do": "Copier la clé",
             "done": "Clé copiée"
+        },
+        "copyLink": {
+            "do": "Copier le lien",
+            "done": "Lien copié dans le presse-papiers"
         },
         "copyMessage": {
             "do": "Copier le message",
@@ -47,142 +47,142 @@
     },
     "admin": {
         "activity": {
-            "title": "Activité",
-            "subTitle": "Ce qui se passe dans l'arène : les questions posées, les modèles comparés, les votes.",
-            "tabs": {
-                "overview": "Vue d'ensemble",
-                "conversations": "Conversations"
-            },
-            "filters": {
-                "label": "Filtres",
-                "period": "Période",
-                "model": "Modèle",
-                "search": "Rechercher dans les messages",
-                "periodsShort": {
-                    "24h": "24 h",
-                    "7d": "7 j",
-                    "30d": "30 j",
-                    "90d": "90 j",
-                    "365d": "12 mois",
-                    "all": "Tout"
-                },
-                "journey": "Parcours",
-                "allModels": "Tous les modèles",
-                "allJourneys": "Tous les parcours"
-            },
-            "modes": {
-                "random": "Aléatoire",
-                "big-vs-small": "Grand contre petit",
-                "small-models": "Petits modèles",
-                "custom": "Choix manuel"
-            },
             "choices": {
                 "a_better": "A est meilleur",
                 "b_better": "B est meilleur",
-                "both_good": "Les deux sont bons",
                 "both_bad": "Les deux sont mauvais",
+                "both_good": "Les deux sont bons",
                 "idk": "Ne sait pas",
                 "none": "Pas de vote"
             },
-            "flags": {
-                "pii": "Données personnelles",
-                "spam": "Spam",
-                "error": "Erreur",
-                "archived": "Archivée",
-                "not_analyzed": "Pas encore analysée"
-            },
-            "overview": {
-                "computedAt": "Chiffres calculés à {time}",
-                "refresh": "Actualiser",
-                "metrics": {
-                    "conversations": "Conversations",
-                    "prompts": "Messages envoyés",
-                    "voteRate": "Messages votés",
-                    "commentRate": "Messages commentés",
-                    "promptsPerConversation": "Messages par conversation",
-                    "errorRate": "Conversations en erreur"
-                },
-                "ofPrompts": "{count} sur {total} messages",
-                "ofConversations": "{count} sur {total} conversations",
-                "activityTitle": "Activité dans le temps",
-                "activityChartTitle": "Conversations et messages",
-                "activityTable": "Conversations et messages par période",
-                "activityDate": "Période",
-                "funnelTitle": "Parcours",
-                "funnel": {
-                    "started": "Conversations commencées",
-                    "voted": "Avec au moins un vote",
-                    "revealed": "Modèles révélés",
-                    "continue": "{share} continuent",
-                    "dropped": "{count} s’arrêtent là"
-                },
-                "choicesTitle": "Votes",
-                "modesTitle": "Modes",
-                "empty": "Aucune conversation sur cette période.",
-                "unvoted": "Sans vote : {count} messages ({share})"
+            "conversation": {
+                "analysis": "Analyse",
+                "archived": "Archivée : {reason}",
+                "back": "Retour aux conversations",
+                "categories": "Sujets",
+                "cohort": "Cohorte",
+                "details": "Détails",
+                "error": "Erreur : {code}",
+                "keywords": "Mots-clés",
+                "languages": "Langues",
+                "mode": "Mode",
+                "no": "Non",
+                "noAnswer": "Pas de réponse : erreur ou délai dépassé.",
+                "notAnalyzed": "Cette conversation n'a pas encore été analysée.",
+                "piiWarning": "L'analyse a repéré des données personnelles dans cette conversation. Le texte est masqué.",
+                "prompt": "Message {index}",
+                "readLess": "Réduire",
+                "readMore": "Lire la suite",
+                "revealed": "Modèles révélés",
+                "show": "Afficher le texte",
+                "summary": "Résumé",
+                "systemPrompts": "Instructions système",
+                "title": "Conversation",
+                "tokens": "jetons",
+                "unknownModel": "Modèle supprimé",
+                "versus": "{a} contre {b}",
+                "vote": "Vote : {choice}",
+                "yes": "Oui"
             },
             "conversations": {
                 "caption": "Conversations",
                 "cols": {
-                    "date": "Date",
-                    "models": "Modèles",
                     "conversation": "Conversation",
-                    "journey": "Parcours"
+                    "date": "Date",
+                    "journey": "Parcours",
+                    "models": "Modèles"
                 },
                 "count": "{count} conversations",
                 "countCapped": "Plus de {count} conversations",
-                "next": "Suivantes",
-                "first": "Revenir aux plus récentes",
                 "empty": "Aucune conversation ne correspond à ces filtres.",
+                "first": "Revenir aux plus récentes",
                 "hiddenPrompt": "Masqué : données personnelles",
+                "next": "Suivantes",
+                "nextOne": "Suivante",
                 "open": "Ouvrir la page",
                 "previous": "Précédente",
-                "nextOne": "Suivante",
                 "turnsCount": "{count} messages"
             },
-            "conversation": {
-                "title": "Conversation",
-                "back": "Retour aux conversations",
-                "prompt": "Message {index}",
-                "analysis": "Analyse",
-                "notAnalyzed": "Cette conversation n'a pas encore été analysée.",
-                "summary": "Résumé",
-                "keywords": "Mots-clés",
-                "categories": "Sujets",
-                "languages": "Langues",
-                "details": "Détails",
-                "mode": "Mode",
-                "cohort": "Cohorte",
-                "revealed": "Modèles révélés",
-                "yes": "Oui",
-                "no": "Non",
-                "archived": "Archivée : {reason}",
-                "error": "Erreur : {code}",
-                "systemPrompts": "Instructions système",
-                "piiWarning": "L'analyse a repéré des données personnelles dans cette conversation. Le texte est masqué.",
-                "show": "Afficher le texte",
-                "unknownModel": "Modèle supprimé",
-                "tokens": "jetons",
-                "noAnswer": "Pas de réponse : erreur ou délai dépassé.",
-                "vote": "Vote : {choice}",
-                "readMore": "Lire la suite",
-                "readLess": "Réduire",
-                "versus": "{a} contre {b}"
-            },
             "errors": {
-                "timeout": "La requête a pris trop de temps. Réduisez la période ou retirez des filtres.",
-                "generic": "Les données n'ont pas pu être chargées."
+                "generic": "Les données n'ont pas pu être chargées.",
+                "timeout": "La requête a pris trop de temps. Réduisez la période ou retirez des filtres."
             },
-            "verdicts": {
-                "preferred": "Préférée",
-                "rejected": "Rejetée",
-                "mixed": "Avis partagés"
+            "filters": {
+                "allJourneys": "Tous les parcours",
+                "allModels": "Tous les modèles",
+                "journey": "Parcours",
+                "label": "Filtres",
+                "model": "Modèle",
+                "period": "Période",
+                "periodsShort": {
+                    "24h": "24 h",
+                    "30d": "30 j",
+                    "365d": "12 mois",
+                    "7d": "7 j",
+                    "90d": "90 j",
+                    "all": "Tout"
+                },
+                "search": "Rechercher dans les messages"
+            },
+            "flags": {
+                "archived": "Archivée",
+                "error": "Erreur",
+                "not_analyzed": "Pas encore analysée",
+                "pii": "Données personnelles",
+                "spam": "Spam"
+            },
+            "modes": {
+                "big-vs-small": "Grand contre petit",
+                "custom": "Choix manuel",
+                "random": "Aléatoire",
+                "small-models": "Petits modèles"
+            },
+            "overview": {
+                "activityChartTitle": "Conversations et messages",
+                "activityDate": "Période",
+                "activityTable": "Conversations et messages par période",
+                "activityTitle": "Activité dans le temps",
+                "choicesTitle": "Votes",
+                "computedAt": "Chiffres calculés à {time}",
+                "empty": "Aucune conversation sur cette période.",
+                "funnel": {
+                    "continue": "{share} continuent",
+                    "dropped": "{count} s’arrêtent là",
+                    "revealed": "Modèles révélés",
+                    "started": "Conversations commencées",
+                    "voted": "Avec au moins un vote"
+                },
+                "funnelTitle": "Parcours",
+                "metrics": {
+                    "commentRate": "Messages commentés",
+                    "conversations": "Conversations",
+                    "errorRate": "Conversations en erreur",
+                    "prompts": "Messages envoyés",
+                    "promptsPerConversation": "Messages par conversation",
+                    "voteRate": "Messages votés"
+                },
+                "modesTitle": "Modes",
+                "ofConversations": "{count} sur {total} conversations",
+                "ofPrompts": "{count} sur {total} messages",
+                "refresh": "Actualiser",
+                "unvoted": "Sans vote : {count} messages ({share})"
             },
             "stages": {
-                "started": "Sans vote",
-                "voted": "Votée",
+                "commented": "Commentée",
                 "revealed": "Révélée",
-                "commented": "Commentée"
+                "started": "Sans vote",
+                "voted": "Votée"
+            },
+            "subTitle": "Ce qui se passe dans l'arène : les questions posées, les modèles comparés, les votes.",
+            "tabs": {
+                "conversations": "Conversations",
+                "overview": "Vue d'ensemble"
+            },
+            "title": "Activité",
+            "verdicts": {
+                "mixed": "Avis partagés",
+                "preferred": "Préférée",
+                "rejected": "Rejetée"
             }
         },
         "endpointKey": {
@@ -411,10 +411,10 @@
             },
             "health": {
                 "failures": "{count} échecs consécutifs",
-                "unhealthy": "La vérification ne répond plus",
-                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
                 "keyRejected": "Mistral refuse la clé",
-                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous."
+                "keyRejectedHint": "Tous les messages sont refusés tant que la clé n'est pas corrigée. Collez une clé Mistral valide ci-dessous.",
+                "unhealthy": "La vérification ne répond plus",
+                "unhealthyHint": "Les appels à l'API de modération échouent. Les messages sont refusés tant qu'elle ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur."
             },
             "model": {
                 "label": "Modèle de modération"
@@ -516,17 +516,17 @@
             "nameLabel": "Nom",
             "nextRun": "Prochaine publication : {date}",
             "nextRunNever": "Aucune publication programmée.",
-            "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",
+            "publishing": "Publication…",
             "publishNow": "Publier",
             "publishStarted": "Publication démarrée",
-            "publishing": "Publication…",
             "rawWarning": "Cette destination reçoit le jeu brut, qui contient les conversations mises de côté pour données personnelles. Vérifiez qu'elle est privée.",
             "regionLabel": "Région",
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
             "repoPathLabel": "Dépôt",
+            "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
             "reviewerEndpointLabel": "Endpoint",
             "reviewerEndpointNone": "Aucun endpoint",
             "reviewerHelp": "Ce modèle analyse les conversations avant publication pour détecter les données personnelles et le spam.",
@@ -561,16 +561,16 @@
                     "label": "Mode d'accès",
                     "required": "Connexion obligatoire (sign_in_required)"
                 },
-                "domainAllowlist": {
-                    "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines.",
-                    "label": "Domaines email autorisés"
-                },
                 "authMethods": {
                     "emailCode": "Code par email",
                     "emailCodeLocked": "Testez la connexion OIDC avec succès pour pouvoir retirer ce mode de connexion.",
                     "error": "Au moins une méthode doit être activée",
                     "label": "Méthodes d'authentification",
                     "oidc": "Fournisseur d'identité (OIDC)"
+                },
+                "domainAllowlist": {
+                    "help": "Séparés par des virgules. Laisser vide pour autoriser tous les domaines.",
+                    "label": "Domaines email autorisés"
                 }
             },
             "customization": {
@@ -602,11 +602,11 @@
                 },
                 "platformName": "Nom de la plateforme",
                 "ranking": {
-                    "title": "Classement",
+                    "maxRankSpread": "Écart de rang maximum",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs.",
                     "minVotes": "Nombre minimum de votes",
                     "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
-                    "maxRankSpread": "Écart de rang maximum",
-                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs."
+                    "title": "Classement"
                 },
                 "votesObjective": "Objectif de votes"
             },
@@ -620,10 +620,6 @@
                     "label": "Langues activées"
                 }
             },
-            "save": "Enregistrer",
-            "saved": "Paramètres mis à jour",
-            "saving": "Enregistrement...",
-            "subtitle": "Configuration de l'application.",
             "oidc": {
                 "buttonLabel": {
                     "hint": "Ex. : Se connecter avec ProConnect",
@@ -674,7 +670,11 @@
                     "running": "Test en cours…"
                 },
                 "title": "Configuration OIDC"
-            }
+            },
+            "save": "Enregistrer",
+            "saved": "Paramètres mis à jour",
+            "saving": "Enregistrement...",
+            "subtitle": "Configuration de l'application."
         },
         "suggestions": {
             "actions": "Actions",
@@ -686,16 +686,15 @@
             "archive": "Archiver",
             "archiveCategory": "Archiver la catégorie",
             "archiveConfirm": "Archiver cette suggestion ? Elle ne sera plus proposée dans l’arène, mais pourra être restaurée.",
-            "archiveSuccess": "Suggestion archivée.",
             "archived": "Archivée",
-            "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
-            "categoryArchiveSuccess": "Catégorie archivée.",
-            "categoryCountSummary": "{available} disponibles sur {total} suggestions",
-            "collapseCategory": "Replier la catégorie",
+            "archiveSuccess": "Suggestion archivée.",
             "available": "Disponible",
             "cancel": "Annuler",
             "categories": "Catégories",
             "category": "Catégorie",
+            "categoryArchiveConfirm": "Archiver « {title} » et masquer ses {count} suggestions dans l’arène ? Leur statut individuel sera conservé.",
+            "categoryArchiveSuccess": "Catégorie archivée.",
+            "categoryCountSummary": "{available} disponibles sur {total} suggestions",
             "categoryCreateSuccess": "Catégorie ajoutée.",
             "categoryDeleteConfirm": "Supprimer « {title} » ?",
             "categoryDeleteConflict": "Cette catégorie contient des suggestions et ne peut pas être supprimée.",
@@ -709,6 +708,8 @@
             "categoryEmpty": "Catégorie vide",
             "categoryIcon": "Icône",
             "categoryIconPreview": "Aperçu de l’icône sélectionnée",
+            "categoryRestoreConfirm": "Restaurer « {title} » ? Seules les suggestions dont le statut est « Disponible » seront de nouveau proposées dans l’arène.",
+            "categoryRestoreSuccess": "Catégorie restaurée.",
             "categorySuggestionCount": "1 suggestion — suppression impossible",
             "categorySuggestionsCount": "{count} suggestions — suppression impossible",
             "categoryTitle": "Nom de la catégorie",
@@ -716,9 +717,8 @@
             "categoryTooltip": "Information complémentaire",
             "categoryTooltipHint": "Facultatif. Cette information sera accessible depuis une infobulle.",
             "categoryValidation": "Saisissez un nom, une description et choisissez une icône.",
-            "categoryRestoreConfirm": "Restaurer « {title} » ? Seules les suggestions dont le statut est « Disponible » seront de nouveau proposées dans l’arène.",
-            "categoryRestoreSuccess": "Catégorie restaurée.",
             "charactersMaximum": "{count} caractères maximum",
+            "collapseCategory": "Replier la catégorie",
             "confirm": "Confirmer",
             "createSuccess": "Suggestion ajoutée.",
             "delete": "Supprimer",
@@ -759,10 +759,10 @@
             "restoreCategory": "Restaurer la catégorie",
             "restoreConfirm": "Restaurer cette suggestion ? Elle sera de nouveau proposée dans l’arène.",
             "restoreSuccess": "Suggestion restaurée.",
-            "status": "Statut",
+            "resultCount": "{count} suggestions trouvées",
             "search": "Rechercher une suggestion",
             "searchFilter": "Recherche",
-            "resultCount": "{count} suggestions trouvées",
+            "status": "Statut",
             "subtitle": "Ajoutez et gérez les suggestions proposées dans l’arène.",
             "tableCaption": "Suggestions de prompts",
             "title": "Suggestions de prompts",
@@ -772,8 +772,8 @@
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
             "archive": "Masquer",
-            "archiveSuccess": "Étiquette masquée",
             "archived": "Masquée",
+            "archiveSuccess": "Étiquette masquée",
             "cancel": "Annuler",
             "colActions": "Actions",
             "colKey": "Clé",
@@ -800,9 +800,9 @@
             "labelError": "Renseignez un emoji et au moins un libellé contenant une lettre ou un chiffre.",
             "labelFor": "Libellé ({locale})",
             "labelHelp": "Sert à construire la clé publiée dans le jeu de données.",
+            "moved": "{label} déplacée en position {position} sur {total}.",
             "moveDown": "Descendre",
             "moveUp": "Monter",
-            "moved": "{label} déplacée en position {position} sur {total}.",
             "negative": "Étiquettes négatives",
             "positive": "Étiquettes positives",
             "reserved": "Livrée",
@@ -876,8 +876,8 @@
         "login": {
             "description": "Comparez les modèles d'IA conversationnelle en aveugle et contribuez à l'évaluation de l'IA en Europe.",
             "tabEmail": "Email",
-            "tabSso": "SSO",
             "tabsLabel": "Méthodes de connexion",
+            "tabSso": "SSO",
             "title": "Bienvenue sur {platformName}"
         },
         "modal": {
@@ -899,9 +899,9 @@
             },
             "info": {
                 "dataDesc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d'IA plus inclusifs.",
-                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "datasetsDesc": "Les conversations sont publiées en open data dans des jeux de données de recherche. C'est pourquoi nous vous demandons de <strong>ne jamais inclure</strong> dans vos conversations :",
                 "datasetsTitle": "Les jeux de données compar:IA",
+                "dataTitle": "Comment mes données sont-elles utilisées ?",
                 "emailPrivacy": "Votre email n'est jamais publié ni partagé avec des tiers.",
                 "neverAddress": "des adresses (postale, email)",
                 "neverName": "votre nom, prénom ou celui d'un tiers",
@@ -911,12 +911,12 @@
             },
             "merge": "Fusionner les conversations existantes avec votre compte",
             "totp": {
-                "label": "Code de l’application d’authentification",
-                "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
+                "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification.",
                 "error": "Code incorrect.",
                 "expired": "Connexion expirée, demandez un nouveau code par email.",
                 "expiredSso": "Connexion expirée, reconnectez-vous avec le fournisseur d’identité.",
-                "emailChecked": "Votre adresse email a déjà été vérifiée : il ne reste que le code de votre application d’authentification."
+                "help": "Les 6 chiffres affichés par votre application (Google Authenticator, Aegis, FreeOTP…).",
+                "label": "Code de l’application d’authentification"
             }
         },
         "oidc": {
@@ -977,39 +977,39 @@
             "tabsLabel": "Rubriques des paramètres",
             "title": "Paramètres",
             "totp": {
-                "title": "Double authentification",
-                "desc": "L’accès à l’administration demande, en plus du code reçu par email, un code d’une application d’authentification installée sur votre téléphone.",
-                "status": "Statut :",
-                "statusOn": "Activée",
-                "statusOff": "Non configurée",
-                "setup": "Configurer une application",
                 "change": "Changer d’appareil",
-                "success": "Application d’authentification activée.",
-                "required": {
-                    "title": "Configuration requise",
-                    "desc": "Configurez une application d’authentification pour accéder à l’administration."
-                },
+                "desc": "L’accès à l’administration demande, en plus du code reçu par email, un code d’une application d’authentification installée sur votre téléphone.",
                 "modal": {
-                    "title": "Configurer l’application d’authentification",
-                    "currentHelp": "Pour changer d’appareil, saisissez d’abord un code de l’application en place.",
-                    "currentLabel": "Code de l’application actuelle",
-                    "continue": "Continuer",
-                    "loading": "Préparation…",
-                    "scanHelp": "Scannez ce QR code avec votre application (Google Authenticator, Aegis, FreeOTP…), puis saisissez le code qu’elle affiche.",
-                    "qrAlt": "QR code à scanner avec votre application d’authentification",
-                    "manualKey": "Ou saisissez cette clé à la main :",
-                    "manualKeyLabel": "Clé secrète",
-                    "confirmLabel": "Code affiché par l’application",
                     "confirm": "Activer",
                     "confirming": "Vérification…",
-                    "otherSessions": "Vos autres sessions seront déconnectées.",
-                    "invalid": "Code incorrect.",
-                    "tooMany": "Trop de tentatives, réessayez dans quelques minutes.",
+                    "confirmLabel": "Code affiché par l’application",
+                    "continue": "Continuer",
+                    "currentHelp": "Pour changer d’appareil, saisissez d’abord un code de l’application en place.",
+                    "currentLabel": "Code de l’application actuelle",
                     "expired": "Ce QR code a expiré, recommencez.",
-                    "sessionExpired": "Session expirée, reconnectez-vous.",
+                    "failedTitle": "La configuration n’a pas pu démarrer",
+                    "invalid": "Code incorrect.",
+                    "loading": "Préparation…",
+                    "manualKey": "Ou saisissez cette clé à la main :",
+                    "manualKeyLabel": "Clé secrète",
+                    "otherSessions": "Vos autres sessions seront déconnectées.",
+                    "qrAlt": "QR code à scanner avec votre application d’authentification",
                     "restart": "Recommencez depuis le début.",
-                    "failedTitle": "La configuration n’a pas pu démarrer"
-                }
+                    "scanHelp": "Scannez ce QR code avec votre application (Google Authenticator, Aegis, FreeOTP…), puis saisissez le code qu’elle affiche.",
+                    "sessionExpired": "Session expirée, reconnectez-vous.",
+                    "title": "Configurer l’application d’authentification",
+                    "tooMany": "Trop de tentatives, réessayez dans quelques minutes."
+                },
+                "required": {
+                    "desc": "Configurez une application d’authentification pour accéder à l’administration.",
+                    "title": "Configuration requise"
+                },
+                "setup": "Configurer une application",
+                "status": "Statut :",
+                "statusOff": "Non configurée",
+                "statusOn": "Activée",
+                "success": "Application d’authentification activée.",
+                "title": "Double authentification"
             }
         },
         "success": "Vous êtes connecté !"
@@ -1731,12 +1731,6 @@
             "a": "Modèle A",
             "b": "Modèle B"
         },
-        "openWeight": {
-            "tooltips": {
-                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
-                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
-            }
-        },
         "opennessSovereignty": {
             "fields": {
                 "commercial_use": "Usage commercial",
@@ -1750,6 +1744,12 @@
                 "reuse": "Réutilisation des sorties"
             },
             "title": "Niveau d’ouverture"
+        },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
+                "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source »."
+            }
         },
         "performance": {
             "fields": {
@@ -2319,7 +2319,6 @@
         "yours": "Votre vote"
     },
     "words": {
-        "NA": "N/A",
         "activated": "Activé",
         "add": "Ajouter",
         "allowed": "autorisé",
@@ -2331,6 +2330,7 @@
         "deactivated": "Désactivé",
         "forbidden": "interdit",
         "loading": "Chargement",
+        "NA": "N/A",
         "new": "Nouveau",
         "no": "Non",
         "private": "privé",
