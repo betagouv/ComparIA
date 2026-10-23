@@ -1,7 +1,30 @@
+import { m } from '$lib/i18n/messages'
 import { describe, expect, it } from 'vitest'
 import { getFormFields, getSchemaDefaults } from './form'
 
 describe('JSON-schema form fields', () => {
+  it('takes labels and help from the generated messages, not the schema', () => {
+    const [field] = getFormFields(
+      {
+        type: 'object',
+        properties: { model: { type: 'string', title: 'Schema title', description: 'Schema help' } }
+      },
+      'prompt_check_upsert'
+    )
+
+    expect(field.label).toBe(m['generated.prompt_check_upsert.model.label']())
+    expect(field.help).toBe(m['generated.prompt_check_upsert.model.help']())
+  })
+
+  it('falls back to the schema when no message exists', () => {
+    const [field] = getFormFields(
+      { type: 'object', properties: { nope: { type: 'string', title: 'Schema title' } } },
+      'prompt_check_upsert'
+    )
+
+    expect(field.label).toBe('Schema title')
+  })
+
   it('renders calendar dates without a time control', () => {
     const fields = getFormFields(
       {
