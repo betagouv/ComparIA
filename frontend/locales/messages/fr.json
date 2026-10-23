@@ -194,6 +194,10 @@
             "unset": "Aucune clé"
         },
         "legal": {
+            "accessibility": {
+                "subtitle": "Informations relatives à l’accessibilité du service numérique.",
+                "title": "Déclaration d’accessibilité"
+            },
             "back": "Retour aux documents juridiques",
             "document": {
                 "backToWriting": "Revenir à la rédaction",
@@ -231,16 +235,20 @@
                 "versionLabel": "Référence de la nouvelle version",
                 "versionOn": "Version {version} du {date}"
             },
+            "ecodesign": {
+                "subtitle": "Informations relatives à la démarche d’écoconception du service.",
+                "title": "Écoconception"
+            },
             "hub": {
-                "documentsGroup": "Documents juridiques",
-                "informationalDescription": "Mentions légales, accessibilité et écoconception, hébergées sur la plateforme ou liées à un site externe.",
-                "journeyDescription": "Textes affichés avant le premier message et lors de la connexion.",
-                "journeyGroup": "Parcours d’acceptation",
-                "journeyLink": "Parcours de participation",
-                "privacyDescription": "Information relative à l’utilisation des données personnelles.",
+                "cols": {
+                    "desc": "Description",
+                    "status": "Status",
+                    "title": "Élement"
+                },
+                "published": "Publié",
                 "subtitle": "Chaque contenu dispose de son propre espace de gestion et de publication.",
-                "termsDescription": "Document dont l’acceptation est obligatoire.",
-                "title": "Documents et parcours juridiques"
+                "title": "Documents et parcours juridiques",
+                "toComplete": "À compléter"
             },
             "informational": {
                 "contentLabel": "Contenu en {locale}",
@@ -249,16 +257,13 @@
                 "externalUrlHelp": "L’adresse doit commencer par https://.",
                 "internal": "Page hébergée sur {platformName}",
                 "modeLabel": "Destination",
-                "pages": {
-                    "accessibility": "Déclaration d’accessibilité",
-                    "ecodesign": "Écoconception",
-                    "legal_notice": "Mentions légales"
-                },
-                "subtitle": "Choisissez où chaque page est hébergée et dans quels emplacements elle est proposée.",
-                "title": "Pages d’information",
                 "visibilityLabel": "Afficher le lien dans",
                 "visibleInLegalMenu": "Le menu « Légal »",
                 "visibleInSettings": "La page Paramètres"
+            },
+            "legal_notice": {
+                "subtitle": "Informations relatives à l’éditeur et à l’hébergement du service.",
+                "title": "Mentions légales"
             },
             "markdownHelp": "Mise en forme Markdown acceptée : **gras**, *italique*, [lien](https://exemple.fr).",
             "participation": {
@@ -275,21 +280,21 @@
                 "preview": "Aperçu utilisateur",
                 "signInDescription": "Cette case apparaît avant l’envoi du code de connexion et reste cochée pendant la saisie du code.",
                 "signInTitle": "À la connexion",
-                "subtitle": "Configurez les informations présentées avant le premier message et à la connexion.",
+                "subtitle": "Textes affichés avant le premier message et lors de la connexion.",
                 "title": "Parcours de participation"
             },
             "privacy": {
                 "contentLabel": "Contenu de la politique de confidentialité",
                 "draftTitle": "Nouvelle politique de confidentialité",
                 "emptyDescription": "La page publique affiche encore le contenu intégré à l’application. Publiez une première version pour la gérer depuis ce back-office.",
-                "subtitle": "Rédigez et publiez l’information relative aux traitements de données personnelles.",
+                "subtitle": "Informations relative à l’utilisation des données personnelles.",
                 "title": "Politique de confidentialité"
             },
             "terms": {
                 "contentLabel": "Contenu des conditions d’utilisation",
                 "draftTitle": "Nouvelles conditions d’utilisation",
                 "emptyDescription": "Publiez les conditions d’utilisation avant d’ouvrir l’arène au public.",
-                "subtitle": "Rédigez, vérifiez et publiez le document accepté pour participer à l’arène.",
+                "subtitle": "Document dont l’acceptation est obligatoire.",
                 "title": "Conditions d’utilisation"
             }
         },
@@ -1096,15 +1101,16 @@
         },
         "links": {
             "accessibility": "Accessibilité : non conforme",
-            "legal_notice": "Mentions légales",
             "ecodesign": "Écoconception",
+            "legal_notice": "Mentions légales",
             "sources": "Code source"
         }
     },
     "form": {
         "busy": "Enregistrement…",
-        "containsErrors": "The form contains errors:",
-        "missing_default_locale": "Missing default locale content",
+        "containsErrors": "Le formulaire contient des erreurs :",
+        "missing_default_locale": "Traduction principale manquante",
+        "missing_locales": "Traductions manquantes",
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
         "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
@@ -2064,13 +2070,13 @@
             "accessibility": "Déclaration d’accessibilité",
             "arene": "Discussion",
             "donnees-personnelles": "Politique de confidentialité",
+            "ecodesign": "Déclaration d’écoconception",
             "invite": "Invitation",
-            "login": "Connexion",
             "legal_notice": "Mentions légales",
+            "login": "Connexion",
             "modalites": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
-            "ecodesign": "Déclaration d’écoconception",
             "settings": "Paramètres"
         }
     },

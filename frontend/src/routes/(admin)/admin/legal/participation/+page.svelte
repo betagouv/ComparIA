@@ -43,7 +43,7 @@
       })
       return form
     },
-    onSuccess: async () => await invalidate('admin:participation')
+    onSuccess: async () => await invalidate('admin:legal')
   })
 
   function clearLocale(locale: string) {

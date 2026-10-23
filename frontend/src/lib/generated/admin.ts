@@ -595,6 +595,18 @@ export interface ArenaLegalPresentation {
 export interface SignInLegalPresentation {
   checkbox_label: string;
 }
+export interface LegalStatuses {
+  participation: LegalStatus;
+  terms: LegalStatus;
+  privacy: LegalStatus;
+  legal_notice: LegalStatus;
+  accessibility: LegalStatus;
+  ecodesign: LegalStatus;
+}
+export interface LegalStatus {
+  published: boolean;
+  missing_locales: boolean;
+}
 export interface PromptCheckPatch {
   enabled?: boolean | null;
   model?: string | null;

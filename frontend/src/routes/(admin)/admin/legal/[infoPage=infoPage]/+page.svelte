@@ -29,14 +29,14 @@
       method: 'put',
       initialData: () => data.page,
       onBeforeSubmit: (form, errors) => {
-        if (!form.content_by_locale[defaultLocale]) {
+        if (form.mode === 'internal' && !form.content_by_locale[defaultLocale]) {
           // FIXME show error in FormTranslate Segmented
           errors[`content_by_locale-${selectedLocale}`] = m['form.missing_default_locale']()
           return null
         }
         return form
       },
-      onSuccess: async () => await invalidate('admin:informational-page')
+      onSuccess: async () => await invalidate('admin:legal')
     })
   )
 
@@ -56,18 +56,13 @@
 </script>
 
 <PageLayout
-  seoTitle={m['admin.legal.informational.title']()}
-  title={m['admin.legal.informational.title']()}
-  subtitle={m['admin.legal.informational.subtitle']()}
+  seoTitle={m[`admin.legal.${pageKey}.title`]()}
+  title={m[`admin.legal.${pageKey}.title`]()}
+  subtitle={m[`admin.legal.${pageKey}.subtitle`]()}
   backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
   noPadding
 >
-  <Form
-    id="info-page"
-    label={m[`admin.legal.informational.pages.${pageKey}`]()}
-    {...form}
-    stickyFooter
-  >
+  <Form id="info-page" label={m[`admin.legal.${pageKey}.title`]()} {...form} stickyFooter>
     <FormRadioGroup
       id="mode"
       bind:value={form.form.mode}

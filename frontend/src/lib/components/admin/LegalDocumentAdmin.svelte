@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { invalidate } from '$app/navigation'
   import { Alert, Badge, Button, Input, Select, Textarea } from '$components/dsfr'
   import { MarkdownCode as Markdown } from '$components/markdown'
   import { tryGetAuthContext } from '$lib/authContext.svelte'
@@ -116,6 +117,7 @@
       await api.request(copy.endpoint, { method: 'POST', body: JSON.stringify(body) })
       useToast(m['admin.legal.document.published'](), 4000)
       editorOpen = false
+      await invalidate('admin:legal')
       await loadDocuments()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
