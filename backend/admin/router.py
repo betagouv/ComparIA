@@ -163,6 +163,48 @@ class PublishLegalDocumentBody(BaseModel):
     confirm_publication: Literal[True]
 
 
+class LegalStatuses(BaseModel, extra="forbid"):
+    class LegalStatus(BaseModel, extra="forbid"):
+        published: bool
+        missing_locales: bool
+
+    participation: LegalStatus
+    terms: LegalStatus
+    privacy: LegalStatus
+    legal_notice: LegalStatus
+    accessibility: LegalStatus
+    ecodesign: LegalStatus
+
+
+@router.get("/legal/status", response_model=LegalStatuses)
+async def get_admin_legal_pages_status() -> LegalStatuses:
+    settings = await get_app_settings()
+    enabled_locales = set(settings.enabled_locales)
+    status = {}
+
+    participation_locales = set((await get_legal_presentations()).root)
+    status["participation"] = {
+        "published": settings.default_locale in participation_locales,
+        "missing_locales": enabled_locales != participation_locales,
+    }
+
+    for k, page in await get_informational_legal_pages():
+        if page.mode == "internal":
+            locales = set(page.content_by_locale.root)
+            status[k] = {
+                "published": settings.default_locale in locales,
+                "missing_locales": enabled_locales != locales,
+            }
+        else:
+            status[k] = {"published": True, "missing_locales": False}
+
+    for k in ("terms", "privacy"):
+        doc = await get_active_legal_document("terms", settings.default_locale)
+        status[k] = {"published": doc is not None, "missing_locales": False}
+
+    return status
+
+
 @router.get("/legal/informational-page/{key}", response_model=InformationalLegalPage)
 async def get_admin_informational_legal_page(
     key: LegalPageKey,
