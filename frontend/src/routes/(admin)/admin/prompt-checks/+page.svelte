@@ -178,11 +178,11 @@
   let statsPeriod = $state<StatsPeriod>('all')
   let statsLoading = $state(false)
   const periodOptions: { value: StatsPeriod; label: string }[] = [
-    { value: 'all', label: 'Depuis le début' },
-    { value: '7d', label: '7 derniers jours' },
-    { value: '30d', label: '30 derniers jours' },
-    { value: '90d', label: '90 derniers jours' },
-    { value: '365d', label: '12 derniers mois' }
+    { value: 'all', label: m['admin.promptChecks.stats.periods.all']() },
+    { value: '7d', label: m['admin.promptChecks.stats.periods.7d']() },
+    { value: '30d', label: m['admin.promptChecks.stats.periods.30d']() },
+    { value: '90d', label: m['admin.promptChecks.stats.periods.90d']() },
+    { value: '365d', label: m['admin.promptChecks.stats.periods.365d']() }
   ]
 
   async function loadStats(period: StatsPeriod) {
@@ -500,14 +500,12 @@
     <section id="prompt-check-stats">
       <div class="gap-4 mb-5 flex flex-wrap items-end justify-between">
         <div>
-          <h2 class="fr-h5 mb-1!">Activité des messages</h2>
-          <p class="text-sm mb-0! text-grey">
-            Suivez les détections et les décisions prises sur la période sélectionnée.
-          </p>
+          <h2 class="fr-h5 mb-1!">{m['admin.promptChecks.stats.title']()}</h2>
+          <p class="text-sm mb-0! text-grey">{m['admin.promptChecks.stats.subtitle']()}</p>
         </div>
         <Select
           id="prompt-check-stats-period"
-          label="Période affichée"
+          label={m['admin.promptChecks.stats.periodLabel']()}
           bind:selected={statsPeriod}
           options={periodOptions}
           groupClass="mb-0! min-w-[220px]"
@@ -528,19 +526,19 @@
             <p id="prompt-check-stats-total" class="mb-1! text-dark-grey text-5xl font-bold">
               {stats.total}
             </p>
-            <p class="mb-0! text-sm text-grey">messages vérifiés sur la période</p>
+            <p class="mb-0! text-sm text-grey">{m['admin.promptChecks.stats.totalLabel']()}</p>
           </div>
 
           <div class="cg-border bg-white p-5">
             <div class="gap-3 mb-4 flex flex-wrap items-baseline justify-between">
               <div>
-                <h3 class="fr-h6 mb-1!">Détections dans le temps</h3>
+                <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.timelineTitle']()}</h3>
                 <p class="text-sm mb-0! text-grey">
-                  Messages surveillés, prévenus, refusés ou en échec sur la période.
+                  {m['admin.promptChecks.stats.timelineHint']()}
                 </p>
               </div>
               <p class="text-sm mb-0! text-grey">
-                <strong class="text-dark-grey">{stats.total}</strong> messages vérifiés
+                {m['admin.promptChecks.stats.checked']({ count: stats.total })}
               </p>
             </div>
             <ActivityLineChart
@@ -575,7 +573,7 @@
             <div class="cg-border bg-white p-5">
               <h3 class="fr-h6 mb-1!">{m['admin.promptChecks.stats.byCriterionTitle']()}</h3>
               <p class="text-sm mt-0! mb-4! text-grey">
-                Répartition des détections par critère et par résultat.
+                {m['admin.promptChecks.stats.byCriterionHint']()}
               </p>
               <CriterionHistogram
                 byCriterion={stats.by_criterion}

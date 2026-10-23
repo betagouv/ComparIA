@@ -396,9 +396,11 @@
                 "title": "Indstillinger"
             },
             "stats": {
+                "byCriterionHint": "Registreringer fordelt på kriterium og resultat.",
                 "byCriterionNone": "Intet kriterium blev udløst i perioden.",
                 "byCriterionTitle": "Udløste kriterier",
                 "byDecisionTitle": "Resultater",
+                "checked": "{count} beskeder verificeret",
                 "decision": {
                     "blocked": "Afvist",
                     "error": "Fejl",
@@ -407,8 +409,22 @@
                     "skipped": "Ikke kontrolleret (model utilgængelig)",
                     "warned": "Advarsler"
                 },
+                "periodLabel": "Viste periode",
+                "periods": {
+                    "all": "Siden starten",
+                    "7d": "Sidste 7 dage",
+                    "30d": "Sidste 30 dage",
+                    "90d": "Sidste 90 dage",
+                    "365d": "Sidste 12 måneder"
+                },
                 "proceeded": "{count} sendt alligevel",
-                "title": "Aktivitet de sidste {days} dage",
+                "subtitle": "Følg registreringerne og beslutningerne i den valgte periode.",
+                "timelineChart": "Udvikling i overvågede, advarede, afviste og fejlede beskeder",
+                "timelineHint": "Beskeder overvåget, advaret, afvist eller fejlet i perioden.",
+                "timelineLegend": "Diagramforklaring",
+                "timelineNone": "Ingen registreringer i denne periode.",
+                "timelineTitle": "Registreringer over tid",
+                "title": "Aktivitet for beskeder",
                 "totalLabel": "beskeder verificeret i perioden",
                 "unavailable": "Tællerne er ikke tilgængelige i øjeblikket.",
                 "warningsHint": "Disse to tællere følger ikke den ovenstående periode: visning af advarsler er ikke tidsstemplet, så begge tælles fra starten.",

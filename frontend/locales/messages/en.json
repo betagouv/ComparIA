@@ -397,9 +397,11 @@
                 "title": "Settings"
             },
             "stats": {
+                "byCriterionHint": "Detections split by criterion and by result.",
                 "byCriterionNone": "No criterion was triggered over the period.",
                 "byCriterionTitle": "Criteria triggered",
                 "byDecisionTitle": "Results",
+                "checked": "{count} messages checked",
                 "decision": {
                     "blocked": "Refused",
                     "error": "Failed",
@@ -408,8 +410,22 @@
                     "skipped": "Not checked (model unavailable)",
                     "warned": "Warned"
                 },
+                "periodLabel": "Period shown",
+                "periods": {
+                    "all": "From the start",
+                    "7d": "Last 7 days",
+                    "30d": "Last 30 days",
+                    "90d": "Last 90 days",
+                    "365d": "Last 12 months"
+                },
                 "proceeded": "{count} sent anyway",
-                "title": "Activity over the last {days} days",
+                "subtitle": "Follow the detections and decisions over the selected period.",
+                "timelineChart": "Messages watched, warned, refused and failed over time",
+                "timelineHint": "Messages watched, warned, refused or failed over the period.",
+                "timelineLegend": "Chart legend",
+                "timelineNone": "No detection over this period.",
+                "timelineTitle": "Detections over time",
+                "title": "Message activity",
                 "totalLabel": "messages checked over the period",
                 "unavailable": "The counters are not available at the moment.",
                 "warningsHint": "These two counters do not follow the period above: showing a warning is not timestamped, so both are counted from the start.",

@@ -397,9 +397,11 @@
                 "title": "Réglages"
             },
             "stats": {
+                "byCriterionHint": "Répartition des détections par critère et par résultat.",
                 "byCriterionNone": "Aucun critère ne s'est déclenché sur la période.",
                 "byCriterionTitle": "Critères déclenchés",
                 "byDecisionTitle": "Résultats",
+                "checked": "{count} messages vérifiés",
                 "decision": {
                     "blocked": "Refusés",
                     "error": "En échec",
@@ -408,8 +410,22 @@
                     "skipped": "Non vérifiés (modèle indisponible)",
                     "warned": "Prévenus"
                 },
+                "periodLabel": "Période affichée",
+                "periods": {
+                    "all": "Depuis le début",
+                    "7d": "7 derniers jours",
+                    "30d": "30 derniers jours",
+                    "90d": "90 derniers jours",
+                    "365d": "12 derniers mois"
+                },
                 "proceeded": "{count} envoyés quand même",
-                "title": "Activité des {days} derniers jours",
+                "subtitle": "Suivez les détections et les décisions prises sur la période sélectionnée.",
+                "timelineChart": "Évolution des messages surveillés, prévenus, refusés et en échec",
+                "timelineHint": "Messages surveillés, prévenus, refusés ou en échec sur la période.",
+                "timelineLegend": "Légende du graphique",
+                "timelineNone": "Aucune détection sur cette période.",
+                "timelineTitle": "Détections dans le temps",
+                "title": "Activité des messages",
                 "totalLabel": "messages vérifiés sur la période",
                 "unavailable": "Les compteurs ne sont pas disponibles pour le moment.",
                 "warningsHint": "Ces deux compteurs ne suivent pas la période ci-dessus : l'affichage des avertissements n'est pas horodaté, donc les deux sont comptés depuis le début.",
