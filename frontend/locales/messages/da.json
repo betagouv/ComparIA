@@ -355,7 +355,8 @@
                 "empty": "Skriv en besked, før du starter testen.",
                 "errors": {
                     "call_failed": "Kaldet til modellen mislykkedes: {error}",
-                    "no_api_key": "Der er ikke konfigureret nogen OpenRouter API-nøgle: kontrollen kan ikke køre."
+                    "no_api_key": "Der er ikke konfigureret nogen OpenRouter API-nøgle: kontrollen kan ikke køre.",
+                    "no_model": "Der er ikke valgt nogen beslutningsmodel: kontrollen kan ikke køre."
                 },
                 "ignored": "Ikke overvåget",
                 "label": "Besked at tjekke",
@@ -390,7 +391,9 @@
                 "noCreditsHint": "Alle beskeder afvises, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor.",
                 "noCreditsHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor.",
                 "noKey": "Ingen API-nøgle",
-                "noKeyHint": "Der er ikke gemt nogen nøgle her, og OPENROUTER_API_KEY er ikke sat: kontrollen kører ikke, og beskeder går igennem uden kontrol, også når den er obligatorisk. Indsæt en OpenRouter-nøgle nedenfor."
+                "noKeyHint": "Der er ikke gemt nogen nøgle her, og OPENROUTER_API_KEY er ikke sat: kontrollen kører ikke, og beskeder går igennem uden kontrol, også når den er obligatorisk. Indsæt en OpenRouter-nøgle nedenfor.",
+                "noModel": "Ingen beslutningsmodel",
+                "noModelHint": "Vælg en beslutningsmodel nedenfor: indtil der er en, kører kontrollen ikke, og beskeder går igennem uden kontrol, også når den er obligatorisk."
             },
             "settings": {
                 "title": "Indstillinger"

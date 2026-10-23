@@ -21,7 +21,9 @@ def criterion(key: str, action: str = "log", threshold: float = 0.5, **rest) -> 
 
 
 def make_check(*criteria: dict) -> PromptCheck:
-    return PromptCheck(criteria=list(criteria))
+    return PromptCheck(
+        model="perplexity/pplx-decider-v1.2-20261016", criteria=list(criteria)
+    )
 
 
 def seeded(key: str) -> dict:
@@ -32,19 +34,34 @@ def test_seeded_criteria_are_valid():
     assert PromptCheckUpsert(criteria=DEFAULT_CRITERIA).criteria is not None
 
 
+def test_a_fresh_install_starts_short():
+    """A platform adds the rules its own topic needs."""
+    assert [c["key"] for c in DEFAULT_CRITERIA] == [
+        "selfharm",
+        "jailbreaking",
+        "pii",
+        "spam",
+    ]
+
+
 def test_a_fresh_install_acts_rather_than_watches():
-    """An instance nobody has configured still refuses attempts to get round
-    the rules and asks before sending sexual or self-harm content."""
+    """Once an admin picks a model, attempts to get round the rules are
+    refused and self-harm asks before sending."""
     assert seeded("jailbreaking")["action"] == "block"
-    assert seeded("sexual")["action"] == "warn"
     assert seeded("selfharm")["action"] == "warn"
 
 
-def test_the_topic_criteria_still_only_watch():
-    """These describe subjects people are entitled to ask about, so acting on
-    them would refuse ordinary prompts."""
-    for key in ("hate_and_discrimination", "violence_and_threats", "pii", "spam"):
+def test_personal_data_and_spam_still_only_watch():
+    for key in ("pii", "spam"):
         assert seeded(key)["action"] == "log"
+
+
+def test_a_fresh_install_has_no_model_and_names_no_platform():
+    check = PromptCheck(criteria=DEFAULT_CRITERIA)
+
+    assert check.model == ""
+    assert check.should_run is False
+    assert "compar" not in check.description.lower()
 
 
 def test_the_seed_names_the_right_message():
@@ -208,3 +225,10 @@ def test_a_key_can_be_written_but_never_read_back():
     patch = PromptCheckUpsert(api_key="sk-secret")
     assert patch.api_key == "sk-secret"
     assert "api_key" not in PromptCheckPublic.model_fields
+
+
+def test_no_model_stops_the_check():
+    check = make_check(criterion("pii", "block"))
+    check.model = ""
+
+    assert check.should_run is False

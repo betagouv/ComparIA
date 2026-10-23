@@ -356,7 +356,8 @@
                 "empty": "Write a message before running the test.",
                 "errors": {
                     "call_failed": "The call to the model failed: {error}",
-                    "no_api_key": "No OpenRouter API key is configured: the check cannot run."
+                    "no_api_key": "No OpenRouter API key is configured: the check cannot run.",
+                    "no_model": "No decision model is picked: the check cannot run."
                 },
                 "ignored": "Not watched",
                 "label": "Message to check",
@@ -391,7 +392,9 @@
                 "noCreditsHint": "Every message is refused until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
                 "noCreditsHintOptional": "The check is not required, so messages go through unchecked until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
                 "noKey": "No API key",
-                "noKeyHint": "No key is stored here and OPENROUTER_API_KEY is not set: the check does not run and messages go through unchecked, even when it is required. Paste an OpenRouter key below."
+                "noKeyHint": "No key is stored here and OPENROUTER_API_KEY is not set: the check does not run and messages go through unchecked, even when it is required. Paste an OpenRouter key below.",
+                "noModel": "No decision model",
+                "noModelHint": "Pick a decision model below: until there is one, the check does not run and messages go through unchecked, even when it is required."
             },
             "settings": {
                 "title": "Settings"

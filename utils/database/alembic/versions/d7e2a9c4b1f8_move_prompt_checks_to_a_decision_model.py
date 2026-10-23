@@ -7,6 +7,11 @@ check cannot answer is refused (the behaviour so far) or let through. A stored k
 be refused by OpenRouter, so it is cleared: the check falls back to
 OPENROUTER_API_KEY. Past verdicts keep their Mistral category names.
 
+An instance already in use keeps checking: it gets the Decider model and nine
+criteria in its language. A fresh platform, with no conversation yet, gets no
+model, four criteria and a description that names no platform: its admin
+picks the model and says what the platform is for.
+
 Revision ID: d7e2a9c4b1f8
 Revises: 5e37278477e6
 Create Date: 2026-10-21 00:00:00.000000
@@ -37,6 +42,14 @@ DESCRIPTIONS = {
     "da": "AI Arenaen er en gratis tjeneste. Alle kan chatte med to anonyme AI-modeller og stemme på det bedste svar. Alle oprigtige spørgsmål og opgaver er velkomne, også om sundhed, jura, penge, handel eller kreativt arbejde, og spørgsmål om selve modellerne.",
     "en": "A free service where anyone can chat with two anonymous AI models and vote for the better answer. Any sincere question or task is welcome, including on health, law, money, business or creative work, and questions about the models themselves.",
 }
+# A fresh platform's: they name no platform, so any instance can boot with them.
+FRESH_DESCRIPTIONS = {
+    "fr": "Chacun peut discuter avec deux modèles d'IA anonymes et voter pour la meilleure réponse. Toute question ou tâche sincère est la bienvenue, y compris sur la santé, le droit, l'argent, le commerce ou la création, et les questions sur les modèles eux-mêmes.",
+    "da": "Alle kan chatte med to anonyme AI-modeller og stemme på det bedste svar. Alle oprigtige spørgsmål og opgaver er velkomne, også om sundhed, jura, penge, handel eller kreativt arbejde, og spørgsmål om selve modellerne.",
+    "en": "Anyone can chat with two anonymous AI models and vote for the better answer. Any sincere question or task is welcome, including on health, law, money, business or creative work, and questions about the models themselves.",
+}
+# A fresh platform starts short: its admin adds the rules its own topic needs.
+FRESH_KEYS = ("selfharm", "jailbreaking", "pii", "spam")
 CRITERIA = [
     {
         "key": "selfharm",
@@ -339,7 +352,7 @@ def upgrade() -> None:
             "description",
             sqlmodel.sql.sqltypes.AutoString(length=2000),
             nullable=False,
-            server_default=DESCRIPTION,
+            server_default=FRESH_DESCRIPTIONS["fr"],
         ),
     )
     op.add_column(
@@ -355,32 +368,31 @@ def upgrade() -> None:
     # the new scores sit on a different scale, so a threshold tuned for one
     # means nothing for the other. The seed keeps the same keys and actions as
     # the Mistral seed, so an instance nobody had tuned behaves the same.
+    connection = op.get_bind()
+    locale = connection.execute(
+        sa.text("SELECT default_locale FROM app_settings WHERE id = 1")
+    ).scalar()
+    fresh = not connection.execute(
+        sa.text("SELECT EXISTS (SELECT 1 FROM comparison)")
+    ).scalar()
+    texts = CRITERIA_TEXTS.get(locale, {})
+    criteria = [
+        {**criterion, **texts.get(criterion["key"], {})}
+        for criterion in CRITERIA
+        if not fresh or criterion["key"] in FRESH_KEYS
+    ]
+    if fresh:
+        model = ""
+        description = FRESH_DESCRIPTIONS.get(locale, FRESH_DESCRIPTIONS["fr"])
+    else:
+        model = MODEL
+        description = DESCRIPTIONS.get(locale, DESCRIPTION)
     op.execute(
         sa.text(
             "UPDATE prompt_check SET criteria = CAST(:criteria AS jsonb), "
-            "model = :model, api_key = NULL"
-        ).bindparams(criteria=json.dumps(CRITERIA), model=MODEL)
-    )
-    op.execute(
-        sa.text(
-            "UPDATE prompt_check SET description = CASE "
-            "(SELECT default_locale FROM app_settings WHERE id = 1) "
-            "WHEN 'da' THEN :da WHEN 'en' THEN :en ELSE description END"
-        ).bindparams(**DESCRIPTIONS)
-    )
-    op.execute(
-        sa.text(
-            "UPDATE prompt_check SET criteria = CASE "
-            "(SELECT default_locale FROM app_settings WHERE id = 1) "
-            "WHEN 'da' THEN CAST(:da AS jsonb) WHEN 'en' THEN CAST(:en AS jsonb) "
-            "ELSE criteria END"
+            "model = :model, description = :description, api_key = NULL"
         ).bindparams(
-            **{
-                locale: json.dumps(
-                    [{**criterion, **texts[criterion["key"]]} for criterion in CRITERIA]
-                )
-                for locale, texts in CRITERIA_TEXTS.items()
-            }
+            criteria=json.dumps(criteria), model=model, description=description
         )
     )
     op.drop_column("prompt_check", "categories")
@@ -388,7 +400,7 @@ def upgrade() -> None:
         "prompt_check",
         "model",
         type_=sqlmodel.sql.sqltypes.AutoString(length=100),
-        server_default=MODEL,
+        server_default="",
     )
 
 

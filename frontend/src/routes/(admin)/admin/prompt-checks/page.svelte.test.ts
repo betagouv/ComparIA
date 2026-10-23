@@ -477,6 +477,15 @@ describe('admin prompt check page', () => {
     expect(getByText('Aucune clé API')).toBeInTheDocument()
   })
 
+  it('asks for a model before anything else when there is none', () => {
+    const { getByText, queryByText } = renderPage(
+      check({ model: '', no_model: true, no_api_key: true })
+    )
+
+    expect(getByText('Aucun modèle de décision')).toBeInTheDocument()
+    expect(queryByText('Aucune clé API')).not.toBeInTheDocument()
+  })
+
   it('says nothing about a missing key while the check is off', () => {
     const { queryByText } = renderPage(check({ enabled: false, no_api_key: true }))
 

@@ -40,6 +40,7 @@
         'key_rejected',
         'out_of_credits',
         'no_api_key',
+        'no_model',
         'healthy',
         'warnings_shown',
         'default_conversations_per_ip_per_hour',
@@ -120,6 +121,7 @@
 
   function benchMessage(result: PromptCheckTry): string {
     if (result.decision === 'error') {
+      if (result.message === 'no_model') return m['admin.promptChecks.bench.errors.no_model']()
       if (result.message === 'no_api_key') return m['admin.promptChecks.bench.errors.no_api_key']()
       return m['admin.promptChecks.bench.errors.call_failed']({ error: result.error ?? '' })
     }
@@ -208,7 +210,11 @@
 >
   <div class="gap-8 mx-auto flex max-w-[1120px] flex-col">
     <section id="prompt-check-health-band" class="empty:hidden">
-      {#if data.check.enabled && data.check.no_api_key}
+      {#if data.check.enabled && data.check.no_model}
+        <Alert variant="warning" title={m['admin.promptChecks.health.noModel']()}>
+          <p>{m['admin.promptChecks.health.noModelHint']()}</p>
+        </Alert>
+      {:else if data.check.enabled && data.check.no_api_key}
         <Alert variant="warning" title={m['admin.promptChecks.health.noKey']()}>
           <p>{m['admin.promptChecks.health.noKeyHint']()}</p>
         </Alert>

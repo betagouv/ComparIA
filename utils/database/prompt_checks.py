@@ -8,7 +8,6 @@ from sqlmodel import col, func, select
 from backend.config import settings
 from utils.database.models.prompt_check import (
     DEFAULT_CRITERIA,
-    DEFAULT_MODEL,
     PromptCheck,
     PromptCheckResult,
 )
@@ -33,11 +32,7 @@ UNHEALTHY_AFTER_FAILURES = 3
 
 # Used before the migration has run and when there is no database at all, so
 # the admin panel and the arena see the same shape either way.
-_DEFAULT = PromptCheck(
-    id=1,
-    model=DEFAULT_MODEL,
-    criteria=[dict(c) for c in DEFAULT_CRITERIA],
-)
+_DEFAULT = PromptCheck(id=1, criteria=[dict(c) for c in DEFAULT_CRITERIA])
 
 
 class ConversationCaps(NamedTuple):

@@ -22,9 +22,10 @@ from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
     DEFAULT_CRITERIA,
-    DEFAULT_MODEL,
     PromptCheck,
 )
+
+MODEL = "perplexity/pplx-decider-v1.2-20261016"
 
 
 class FakeRedis:
@@ -52,7 +53,7 @@ def criteria_with(**changes: dict) -> list[dict]:
 def stored_check(**changes: dict) -> PromptCheck:
     return PromptCheck(
         id=1,
-        model=DEFAULT_MODEL,
+        model=MODEL,
         criteria=criteria_with(**changes),
         updated_at=datetime(2026, 1, 1),
     )
@@ -122,7 +123,7 @@ def test_try_falls_back_to_the_stored_configuration(
     result = run_try(text="mon numero est 06 12 34 56 78")
 
     assert result.decision == "warned"
-    assert calls == [("mon numero est 06 12 34 56 78", DEFAULT_MODEL)]
+    assert calls == [("mon numero est 06 12 34 56 78", MODEL)]
 
 
 def test_try_uses_the_unsaved_model(

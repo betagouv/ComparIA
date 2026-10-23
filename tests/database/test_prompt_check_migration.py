@@ -43,3 +43,14 @@ def test_a_translation_changes_only_the_words(locale):
         }
         # The model reads the text as `message`: every question names it.
         assert "`message`" in seeded["question"]
+
+
+def test_a_fresh_platform_starts_short_and_names_no_platform():
+    keys = {criterion["key"] for criterion in migration.CRITERIA}
+
+    assert set(migration.FRESH_KEYS) <= keys
+    assert len(migration.FRESH_KEYS) == 4
+    for locale, description in migration.FRESH_DESCRIPTIONS.items():
+        lowered = description.lower()
+        assert "compar" not in lowered and "état" not in lowered, locale
+        assert "arena" not in lowered, locale

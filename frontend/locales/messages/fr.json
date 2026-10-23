@@ -356,7 +356,8 @@
                 "empty": "Écrivez un message avant de lancer le test.",
                 "errors": {
                     "call_failed": "L'appel au modèle a échoué : {error}",
-                    "no_api_key": "Aucune clé API OpenRouter n'est configurée : la vérification ne peut pas s'exécuter."
+                    "no_api_key": "Aucune clé API OpenRouter n'est configurée : la vérification ne peut pas s'exécuter.",
+                    "no_model": "Aucun modèle de décision n'est choisi : la vérification ne peut pas s'exécuter."
                 },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
@@ -389,6 +390,8 @@
                 "noCreditsHintOptional": "La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
                 "noKey": "Aucune clé API",
                 "noKeyHint": "Aucune clé n'est enregistrée ici et OPENROUTER_API_KEY n'est pas défini : la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire. Collez une clé OpenRouter ci-dessous.",
+                "noModel": "Aucun modèle de décision",
+                "noModelHint": "Choisissez un modèle de décision ci-dessous : tant qu'il n'y en a pas, la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire.",
                 "unhealthy": "La vérification ne répond plus",
                 "unhealthyHint": "Les appels au modèle de décision échouent. Les messages sont refusés tant qu'il ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
                 "unhealthyHintOptional": "Les appels au modèle de décision échouent. La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant qu'il ne répond pas. Contrôlez les journaux du serveur."

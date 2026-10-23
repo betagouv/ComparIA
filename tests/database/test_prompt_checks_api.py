@@ -18,10 +18,11 @@ from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
     DEFAULT_CRITERIA,
-    DEFAULT_MODEL,
     PromptCheck,
     PromptCheckUpsert,
 )
+
+MODEL = "perplexity/pplx-decider-v1.2-20261016"
 
 ADMIN_ID = uuid.UUID("11111111-2222-3333-4444-555555555555")
 
@@ -29,7 +30,7 @@ ADMIN_ID = uuid.UUID("11111111-2222-3333-4444-555555555555")
 def seeded_row() -> PromptCheck:
     return PromptCheck(
         id=1,
-        model=DEFAULT_MODEL,
+        model=MODEL,
         criteria=[dict(c) for c in DEFAULT_CRITERIA],
         updated_at=datetime(2026, 1, 1),
     )
@@ -97,9 +98,9 @@ def by_key(criteria: list) -> dict[str, dict]:
 def test_reads_the_singleton_row(db: FakeSession) -> None:
     row = read_check(db)
 
-    assert row.model == DEFAULT_MODEL
+    assert row.model == MODEL
     assert row.criteria == DEFAULT_CRITERIA
-    assert by_key(row.criteria)["sexual"]["action"] == "warn"
+    assert by_key(row.criteria)["selfharm"]["action"] == "warn"
 
 
 def test_falls_back_to_the_defaults_before_the_row_exists(db: FakeSession) -> None:
@@ -129,7 +130,7 @@ def test_admin_reading_reports_health(
     assert status.healthy is False
     assert status.consecutive_failures == prompt_checks_module.UNHEALTHY_AFTER_FAILURES
     assert status.warnings_shown == 12
-    assert status.model == DEFAULT_MODEL
+    assert status.model == MODEL
 
 
 def test_a_working_check_reads_as_healthy(
@@ -226,7 +227,7 @@ def put_check(**changes):
     """Save the seeded form with `changes`, as the admin page sends it whole."""
     seeded = {
         "enabled": True,
-        "model": DEFAULT_MODEL,
+        "model": MODEL,
         "description": "Une arène.",
         "criteria": DEFAULT_CRITERIA,
     }
@@ -237,11 +238,11 @@ def put_check(**changes):
 def test_saving_replaces_the_criteria(
     db: FakeSession, invalidations: list[str]
 ) -> None:
-    result = put_check(criteria=criteria_with("sexual", threshold=0.2, action="block"))
+    result = put_check(criteria=criteria_with("pii", threshold=0.2, action="block"))
 
-    assert by_key(result.criteria)["sexual"]["action"] == "block"
+    assert by_key(result.criteria)["pii"]["action"] == "block"
     assert result.updated_by == ADMIN_ID
-    assert by_key(db.row.criteria)["sexual"]["threshold"] == 0.2
+    assert by_key(db.row.criteria)["pii"]["threshold"] == 0.2
     # Stored as plain JSON, not as pydantic objects the column cannot hold.
     assert all(isinstance(c, dict) for c in db.row.criteria)
 
