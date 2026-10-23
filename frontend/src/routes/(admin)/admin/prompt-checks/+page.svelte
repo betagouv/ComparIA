@@ -282,7 +282,9 @@
     {/snippet}
 
     {#snippet criteriaList()}
-      <fieldset id="criteria" class="fr-fieldset">
+      <!-- min-w-0: a fieldset is as wide as its content by default, and the
+           action pills pushed it past the edge of the form. -->
+      <fieldset id="criteria" class="fr-fieldset min-w-0">
         <legend class="fr-fieldset__legend">{field('criteria').label}</legend>
         <div class="mb-4 p-4 cg-border w-full bg-[--cg-very-light-grey]">
           <h3 class="text-sm mb-2! text-dark-grey font-bold">
