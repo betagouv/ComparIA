@@ -1,5 +1,5 @@
 # Multi-stage build optimisé avec buildx
-FROM public.ecr.aws/docker/library/node:26@sha256:bde0dae02f2b12d2bce5ee72b2432f0e511767b7b2dc4dd3b064df11ae422fee AS builder
+FROM public.ecr.aws/docker/library/node:26@sha256:1b84b89ada025e3b14543cbb837ffaa1c1b5273b841c5b94dd1a8f9c1d8cf7fe AS builder
 
 WORKDIR /app
 RUN npm install -g yarn@1.22.22
@@ -12,7 +12,7 @@ ENV PUBLIC_API_URL=$PUBLIC_API_URL MATOMO_ID=$MATOMO_ID MATOMO_URL=$MATOMO_URL P
 
 RUN yarn build && yarn install --production --ignore-scripts
 
-FROM public.ecr.aws/docker/library/node:26-alpine@sha256:aadf416b2cdce311a8811ba3f0608a61b77dbf997500e2eafe781b51f6a0b019 AS runtime
+FROM public.ecr.aws/docker/library/node:26-alpine@sha256:6f08a523443ddedf52941874c203475b0ad503e859ad70cb26ab8be9a517dbd5 AS runtime
 WORKDIR /app
 
 # Copier le build et les dépendances de production. The image already ships
