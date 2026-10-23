@@ -1,7 +1,27 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
+  import { Badge, Link, Table } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
   import { m } from '$lib/i18n/messages'
+  import type { PageProps } from './$types'
+
+  const { data }: PageProps = $props()
+
+  const pages = $derived(
+    (
+      ['participation', 'terms', 'privacy', 'legal_notice', 'accessibility', 'ecodesign'] as const
+    ).map((id) => ({
+      id,
+      title: m[`admin.legal.${id}.title`](),
+      desc: m[`admin.legal.${id}.subtitle`](),
+      href: resolve(`/admin/legal/${id}`),
+      status: data.status[id]
+    }))
+  )
+  const cols = (['title', 'desc', 'status'] as const).map((id) => ({
+    id,
+    label: m[`admin.legal.hub.cols.${id}`]()
+  }))
 </script>
 
 <PageLayout
@@ -9,67 +29,22 @@
   title={m['admin.legal.hub.title']()}
   subtitle={m['admin.legal.hub.subtitle']()}
 >
-  <div class="max-w-[900px]">
-    <section class="fr-mb-8v" aria-labelledby="participation-journey-group-title">
-      <h2 id="participation-journey-group-title" class="fr-h5 fr-mb-2v">
-        {m['admin.legal.hub.journeyGroup']()}
-      </h2>
-      <ul class="fr-raw-list">
-        <li class="fr-py-3v">
-          <h3 class="fr-h5 fr-mb-1v">
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/participation')}
-            >
-              {m['admin.legal.hub.journeyLink']()}
-            </a>
-          </h3>
-          <p class="fr-text--sm fr-mb-0">{m['admin.legal.hub.journeyDescription']()}</p>
-        </li>
-      </ul>
-    </section>
-
-    <section aria-labelledby="legal-documents-group-title">
-      <h2 id="legal-documents-group-title" class="fr-h5 fr-mb-2v">
-        {m['admin.legal.hub.documentsGroup']()}
-      </h2>
-      <ul class="fr-raw-list">
-        <li class="fr-py-3v">
-          <h3 class="fr-h5 fr-mb-1v">
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/terms')}
-            >
-              {m['admin.legal.terms.title']()}
-            </a>
-          </h3>
-          <p class="fr-text--sm fr-mb-0">{m['admin.legal.hub.termsDescription']()}</p>
-        </li>
-        <li class="fr-py-3v">
-          <h3 class="fr-h5 fr-mb-1v">
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/privacy')}
-            >
-              {m['admin.legal.privacy.title']()}
-            </a>
-          </h3>
-          <p class="fr-text--sm fr-mb-0">{m['admin.legal.hub.privacyDescription']()}</p>
-        </li>
-        <li class="fr-py-3v">
-          <h3 class="fr-h5 fr-mb-1v">
-            <a
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right bg-none! no-underline!"
-              href={resolve('/admin/legal/pages-information')}
-            >
-              {m['admin.legal.informational.title']()}
-            </a>
-          </h3>
-          <p class="fr-text--sm fr-mb-0">
-            {m['admin.legal.hub.informationalDescription']()}
-          </p>
-        </li>
-      </ul>
-    </section>
-  </div>
+  <Table caption={m['admin.legal.hub.title']()} hideCaption {cols} rows={pages}>
+    {#snippet cell(page, col)}
+      {#if col.id === 'title'}
+        <Link href={page.href} text={page.title} size="sm" />
+      {:else if col.id === 'status'}
+        {#if page.status.published}
+          <Badge size="sm" text={m['admin.legal.hub.published']()} variant="green" />
+          {#if page.status.missing_locales}
+            <Badge size="sm" text={m['form.missing_locales']()} variant="yellow" />
+          {/if}
+        {:else}
+          <Badge size="sm" text={m['admin.legal.hub.toComplete']()} variant="red" />
+        {/if}
+      {:else}
+        {page[col.id]}
+      {/if}
+    {/snippet}
+  </Table>
 </PageLayout>

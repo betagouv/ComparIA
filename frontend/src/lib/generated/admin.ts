@@ -614,6 +614,18 @@ export interface ArenaLegalPresentation {
 export interface SignInLegalPresentation {
   checkbox_label: string;
 }
+export interface LegalStatuses {
+  participation: LegalStatus;
+  terms: LegalStatus;
+  privacy: LegalStatus;
+  legal_notice: LegalStatus;
+  accessibility: LegalStatus;
+  ecodesign: LegalStatus;
+}
+export interface LegalStatus {
+  published: boolean;
+  missing_locales: boolean;
+}
 /**
  * The configuration plus how the check is faring, since a broken check
  * either refuses every message or, while the model counts as down, lets them
