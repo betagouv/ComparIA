@@ -46,6 +46,7 @@ export interface ActivityConversation {
     | null;
   error: ErrorDetails | null;
   turns: ActivityTurn[];
+  stopped?: ActivityStoppedMessage[];
 }
 export interface ActivityLLM {
   id: string;
@@ -94,6 +95,20 @@ export interface ActivityPromptCheck {
     [k: string]: string;
   };
   user_proceeded: boolean;
+  [k: string]: unknown;
+}
+/**
+ * A message the prompt check refused or warned about.
+ */
+export interface ActivityStoppedMessage {
+  id: string;
+  created_at: string;
+  decision: string;
+  user_proceeded: boolean;
+  criteria: string[];
+  contains_pii: boolean;
+  prompt: string;
+  comparison_id: string | null;
   [k: string]: unknown;
 }
 export interface ActivityConversationsPage {
@@ -166,6 +181,10 @@ export interface ActivityPoint {
   projected_prompts?: number | null;
   projected_votes?: number | null;
   [k: string]: unknown;
+}
+export interface ActivityStoppedMessagesPage {
+  items: ActivityStoppedMessage[];
+  next_cursor: string | null;
 }
 export interface AdminLegalDocument {
   id: string;

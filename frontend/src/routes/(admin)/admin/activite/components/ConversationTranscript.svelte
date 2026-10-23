@@ -5,6 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { CHOICE_COLORS, answerOf, label, modelName } from '../filters'
+  import StoppedVerdict from './StoppedVerdict.svelte'
   import TagChips from './TagChips.svelte'
 
   let { conversation }: { conversation: ActivityConversation } = $props()
@@ -23,6 +24,16 @@
     warned: m['admin.promptChecks.stats.decision.warned'](),
     blocked: m['admin.promptChecks.stats.decision.blocked'](),
     error: m['admin.promptChecks.stats.decision.error']()
+  }
+
+  // A follow-up the check stopped never became a turn: it shows after the
+  // turn it followed, by date.
+  function stoppedAfter(index: number) {
+    const from = conversation.turns[index].created_at
+    const to = conversation.turns[index + 1]?.created_at
+    return (conversation.stopped ?? []).filter(
+      (message) => message.created_at >= from && (!to || message.created_at < to)
+    )
   }
 </script>
 
@@ -141,5 +152,24 @@
         {/if}
       </p>
     </article>
+
+    {#each stoppedAfter(index) as message (message.id)}
+      <article
+        class="gap-2 flex flex-col items-end"
+        aria-label={m['admin.activity.stopped.notSent']()}
+      >
+        <p
+          class="mb-0! px-5 py-3 rounded-2xl cg-border bg-white md:max-w-3/4 whitespace-pre-wrap text-[--text-mention-grey]"
+        >
+          {message.prompt}
+        </p>
+        <span class="gap-2 flex items-center">
+          <span class="fr-text--xs mb-0! text-[--text-mention-grey]">
+            {m['admin.activity.stopped.notSent']()}
+          </span>
+          <StoppedVerdict {message} />
+        </span>
+      </article>
+    {/each}
   {/each}
 </div>

@@ -171,7 +171,24 @@
                 "commented": "Commentée",
                 "revealed": "Révélée",
                 "started": "Sans vote",
-                "voted": "Votée"
+                "voted": "Votée",
+                "stopped": "Refusés ou prévenus"
+            },
+            "stopped": {
+                "caption": "Messages refusés ou prévenus",
+                "cols": {
+                    "message": "Message",
+                    "verdict": "Vérification"
+                },
+                "empty": "Aucun message refusé ou prévenu sur cette période.",
+                "notSent": "Pas envoyé aux modèles",
+                "openConversation": "Voir la conversation",
+                "verdicts": {
+                    "blocked": "Refusé",
+                    "proceeded": "Prévenu, envoyé quand même",
+                    "unavailable": "Refusé, vérification indisponible",
+                    "warned": "Prévenu, pas envoyé"
+                }
             },
             "subTitle": "Ce qui se passe dans l'arène : les questions posées, les modèles comparés, les votes.",
             "tabs": {

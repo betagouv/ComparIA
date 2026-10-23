@@ -98,12 +98,14 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
 
 
 async def save_prompt_check_result(check: PromptCheckResult) -> PromptCheckResult:
+    """Insert the result, or overwrite the one it took the id of: a message
+    sent anyway replaces the record of its warning."""
     async with get_session() as session:
-        session.add(check)
+        saved = await session.merge(check)
         await session.commit()
-        await session.refresh(check)
+        await session.refresh(saved)
 
-    return check
+    return saved
 
 
 def _read_counter(key: str, what: str) -> int:

@@ -181,7 +181,24 @@
                 "started": "Ingen stemme",
                 "voted": "Stemt",
                 "revealed": "Afsløret",
-                "commented": "Kommenteret"
+                "commented": "Kommenteret",
+                "stopped": "Afvist eller advaret"
+            },
+            "stopped": {
+                "caption": "Afviste beskeder og beskeder med advarsel",
+                "cols": {
+                    "message": "Besked",
+                    "verdict": "Kontrol"
+                },
+                "empty": "Ingen beskeder blev afvist eller fik en advarsel i denne periode.",
+                "notSent": "Ikke sendt til modellerne",
+                "openConversation": "Se samtalen",
+                "verdicts": {
+                    "blocked": "Afvist",
+                    "proceeded": "Advaret, sendt alligevel",
+                    "unavailable": "Afvist, kontrol utilgængelig",
+                    "warned": "Advaret, ikke sendt"
+                }
             }
         },
         "endpointKey": {

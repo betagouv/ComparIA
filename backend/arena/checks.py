@@ -36,6 +36,7 @@ import json
 import logging
 import secrets
 import time
+import uuid
 from typing import TYPE_CHECKING, Final, NamedTuple, Sequence
 
 import httpx
@@ -553,37 +554,57 @@ def write_cached_scores(
         logger.warning(f"[CHECKS] Error caching scores: {e}")
 
 
-def issue_warning_token(text: str, model: str) -> str:
+class WarningProof(NamedTuple):
+    """A warning the user answered. `result_id` is the record written when it
+    was shown, which the message sent anyway takes over so it counts once."""
+
+    result_id: uuid.UUID | None
+
+
+def issue_warning_token(
+    text: str, model: str, result_id: uuid.UUID | None = None
+) -> str:
     """Return a short-lived, one-time proof that this prompt was warned."""
     token = secrets.token_urlsafe(32)
+    proof = {"prompt_hash": hash_content(text), "model": model}
+    if result_id:
+        proof["result_id"] = str(result_id)
     get_redis_client().setex(
         REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token),
         SCORES_TTL,
-        json.dumps({"prompt_hash": hash_content(text), "model": model}),
+        json.dumps(proof),
     )
     return token
 
 
-def consume_warning_token(text: str, model: str, token: str | None) -> bool:
+def consume_warning_token(
+    text: str, model: str, token: str | None
+) -> WarningProof | None:
     """Accept an acknowledgement only after a matching server warning."""
     if not token:
-        return False
+        return None
     key = REDIS_CHECK_WARNING_TOKEN_KEY.format(token=token)
     try:
         client = get_redis_client()
         expected = client.getdel(key)
     except Exception as e:
         logger.warning(f"[CHECKS] Error consuming warning token: {e}")
-        return False
+        return None
     if not expected:
-        return False
+        return None
     try:
         proof = json.loads(str(expected))
-        return secrets.compare_digest(
+        matches = secrets.compare_digest(
             proof["prompt_hash"], hash_content(text)
         ) and secrets.compare_digest(proof["model"], model)
+        result_id = proof.get("result_id")
+        return (
+            WarningProof(uuid.UUID(result_id) if result_id else None)
+            if matches
+            else None
+        )
     except (KeyError, TypeError, ValueError):
-        return False
+        return None
 
 
 async def run_prompt_check(
@@ -660,13 +681,17 @@ async def run_prompt_check(
         latency_ms = int((time.monotonic() - started) * 1000)
         _count_failure(failed=False)
 
-    acknowledged = consume_warning_token(text, check.model, warning_token)
+    proof = consume_warning_token(text, check.model, warning_token)
     result = verdict(check, scores, latency_ms)
+    if proof and proof.result_id:
+        # Saved over the record of the warning, so the message counts once
+        # whatever the verdict is now.
+        result.id = proof.result_id
 
     if result.decision == "warned":
         if cached is None:
             write_cached_scores(text, check, scores, context)
-        result.user_proceeded = acknowledged
+        result.user_proceeded = proof is not None
 
     logger.info(
         f"prompt_check_verdict: {result.model_dump(exclude={'id', 'created_at'})}",

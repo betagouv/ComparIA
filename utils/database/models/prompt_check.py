@@ -330,7 +330,7 @@ class PromptCheckStatus(PromptCheckPublic):
 class PromptCheckResult(SQLModel, table=True):
     """
     Prompt check result based on prompt checker.
-    Linked to a Turn if not blocked.
+    Linked to a Turn if the message was sent; otherwise it keeps the text.
     """
 
     __tablename__ = "prompt_check_result"
@@ -338,6 +338,13 @@ class PromptCheckResult(SQLModel, table=True):
     id: ModelId
     created_at: AutoDatetime
     turn_id: uuid.UUID | None = Field(default=None, foreign_key="turn.id", unique=True)
+    # Only for a message that got no turn: refused, or warned about and not
+    # sent. A turn already holds the text of the others.
+    prompt: str | None = None
+    # The conversation a refused follow-up was meant for.
+    comparison_id: uuid.UUID | None = Field(
+        default=None, foreign_key="comparison.id", ondelete="CASCADE", index=True
+    )
 
     decision: str  # pass | logged | warned | blocked | error | skipped
     model: str

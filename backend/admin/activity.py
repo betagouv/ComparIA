@@ -12,7 +12,9 @@ from backend.activity.models import (
     ActivityFilterOptions,
     ActivityFilters,
     ActivityOverview,
+    ActivityStoppedMessagesPage,
     ConversationFilters,
+    StoppedMessageFilters,
 )
 from backend.activity.services import (
     InvalidCursorError,
@@ -21,6 +23,7 @@ from backend.activity.services import (
     get_filter_options,
     get_overview,
     list_conversations,
+    list_stopped_messages,
 )
 from backend.auth.dependencies import RequiredAdmin
 from backend.errors import ActivityQueryTimeoutError
@@ -66,6 +69,23 @@ async def read_conversations(
     with _timeout_as_503():
         try:
             return await list_conversations(filters)
+        except InvalidCursorError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="invalid_cursor"
+            )
+
+
+@router.get("/stopped-messages", response_model=ActivityStoppedMessagesPage)
+async def read_stopped_messages(
+    filters: Annotated[StoppedMessageFilters, Query()], current_user: RequiredAdmin
+) -> ActivityStoppedMessagesPage:
+    """The messages the prompt check refused or warned about, newest first,
+    sent anyway or not. Their text is shown, so the opening is logged like a
+    conversation's."""
+    logger.info(f"[ADMIN] stopped messages listed by admin {current_user.id}")
+    with _timeout_as_503():
+        try:
+            return await list_stopped_messages(filters)
         except InvalidCursorError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="invalid_cursor"

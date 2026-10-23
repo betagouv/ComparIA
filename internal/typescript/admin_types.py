@@ -3,6 +3,7 @@ from backend.activity.models import (
     ActivityConversationsPage,
     ActivityFilterOptions,
     ActivityOverview,
+    ActivityStoppedMessagesPage,
 )
 from backend.admin.router import (
     AdminLegalDocument,

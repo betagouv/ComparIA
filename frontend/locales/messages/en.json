@@ -182,7 +182,24 @@
                 "started": "No vote",
                 "voted": "Voted",
                 "revealed": "Revealed",
-                "commented": "Commented"
+                "commented": "Commented",
+                "stopped": "Refused or warned"
+            },
+            "stopped": {
+                "caption": "Refused or warned messages",
+                "cols": {
+                    "message": "Message",
+                    "verdict": "Check"
+                },
+                "empty": "No message was refused or warned about over this period.",
+                "notSent": "Not sent to the models",
+                "openConversation": "See the conversation",
+                "verdicts": {
+                    "blocked": "Refused",
+                    "proceeded": "Warned, sent anyway",
+                    "unavailable": "Refused, check unavailable",
+                    "warned": "Warned, not sent"
+                }
             }
         },
         "endpointKey": {

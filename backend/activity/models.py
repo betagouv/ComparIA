@@ -121,6 +121,40 @@ class ActivityConversationRow(BaseModel):
     has_error: bool
 
 
+class StoppedMessageFilters(ActivityFilters):
+    """The period and a search: a message that got no turn has no models,
+    mode or vote to filter on."""
+
+    search: str | None = Field(default=None, min_length=3, max_length=200)
+    cursor: str | None = Field(default=None, max_length=100)
+    limit: int = Field(default=50, ge=1, le=100)
+
+
+class ActivityStoppedMessage(BaseModel):
+    """A message the prompt check refused or warned about."""
+
+    id: uuid.UUID
+    created_at: datetime
+    # blocked, warned, or error when a required check could not answer.
+    decision: str
+    # Warned and sent anyway: the message has a turn in `comparison_id`.
+    user_proceeded: bool
+    # The names of the criteria it met, as the admin wrote them.
+    criteria: list[str]
+    # It met a criterion about personal data: the panel hides the text until
+    # asked, as it does for a conversation.
+    contains_pii: bool
+    prompt: str
+    # The conversation it belongs to: the one a follow-up was meant for, or
+    # the one a message sent anyway started.
+    comparison_id: uuid.UUID | None
+
+
+class ActivityStoppedMessagesPage(BaseModel):
+    items: list[ActivityStoppedMessage]
+    next_cursor: str | None
+
+
 class ActivityConversationsPage(BaseModel):
     items: list[ActivityConversationRow]
     next_cursor: str | None
@@ -182,3 +216,6 @@ class ActivityConversation(BaseModel):
     archived_reason: ArchivedReason | None
     error: ErrorDetails | None
     turns: list[ActivityTurn]
+    # Follow-ups the check refused, or warned about without them being sent:
+    # they have no answers, so they sit between the turns by date.
+    stopped: list[ActivityStoppedMessage] = []
