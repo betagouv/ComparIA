@@ -28,6 +28,8 @@ export const PERIODS = ['24h', '7d', '30d', '90d', '365d', 'all'] as const
 export const MODES = ['random', 'big-vs-small', 'small-models', 'custom'] as const
 export const CHOICES = ['a_better', 'b_better', 'both_good', 'both_bad', 'idk'] as const
 export const FLAGS = ['pii', 'spam', 'error', 'archived', 'not_analyzed'] as const
+/** The `flag` that lists the messages the prompt check stopped instead. */
+export const STOPPED = 'stopped'
 
 export function pick(params: URLSearchParams, keys: readonly string[]): URLSearchParams {
   const picked = new URLSearchParams()
@@ -112,25 +114,35 @@ export function stageOf(row: { choices: (string | null)[]; revealed: boolean }):
 }
 
 /** The conversation filters behind each journey option, and back. */
-export const JOURNEYS = ['started', 'voted', 'commented', 'revealed'] as const
+export const JOURNEYS = ['started', 'voted', 'commented', 'revealed', 'stopped'] as const
 type Journey = (typeof JOURNEYS)[number]
 const JOURNEY_FILTERS: Record<Journey, Record<string, string>> = {
   started: { has_vote: 'false' },
   voted: { has_vote: 'true' },
   commented: { has_comment: 'true' },
-  revealed: { revealed: 'true' }
+  revealed: { revealed: 'true' },
+  // Not a stage of a conversation: the messages the prompt check refused or
+  // warned about, listed on their own since most never became one.
+  stopped: { flag: STOPPED }
 }
 
-export function journeyChanges(journey: string): Record<string, string | null> {
+export function journeyChanges(
+  journey: string,
+  params: URLSearchParams
+): Record<string, string | null> {
+  const flag = params.get('flag')
   return {
     has_vote: null,
     has_comment: null,
     revealed: null,
+    // Leaving the stopped messages drops their flag; another flag stays.
+    flag: flag === STOPPED ? null : flag,
     ...JOURNEY_FILTERS[journey as Journey]
   }
 }
 
 export function journeyOf(params: URLSearchParams): string {
+  if (params.get('flag') === STOPPED) return 'stopped'
   if (params.get('revealed') === 'true') return 'revealed'
   if (params.get('has_comment') === 'true') return 'commented'
   if (params.get('has_vote') === 'false') return 'started'

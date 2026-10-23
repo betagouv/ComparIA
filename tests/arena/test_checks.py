@@ -11,6 +11,7 @@ import contextlib
 import json
 import sys
 import time
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -1097,3 +1098,30 @@ def test_earlier_turns_over_the_budget_are_left_unread_not_refused():
     )
     assert result.decision == "pass"
     assert fake.inputs == ["Et ensuite ?"]
+
+
+def test_a_message_sent_anyway_takes_over_the_record_of_its_warning():
+    """So the warning and the message sent after it count once."""
+    redis = FakeRedis()
+    check = config(pii=(0.5, "warn"))
+    record = uuid.uuid4()
+    run(check, {"pii": 0.92}, redis=redis)
+    with arena(check, redis=redis):
+        token = checks.issue_warning_token("bonjour", check.model, record)
+
+    sent, fake = run(check, {"pii": 0.92}, redis=redis, warning_token=token)
+
+    assert fake.requests == []
+    assert sent.user_proceeded is True
+    assert sent.id == record
+
+
+def test_an_old_token_without_a_record_is_still_accepted():
+    redis = FakeRedis()
+    check = config(pii=(0.5, "warn"))
+    run(check, {"pii": 0.92}, redis=redis)
+    token = issued_token(redis, "bonjour", check.model)
+
+    sent, _ = run(check, {"pii": 0.92}, redis=redis, warning_token=token)
+
+    assert sent.user_proceeded is True

@@ -8,7 +8,7 @@
   import { untrack } from 'svelte'
   import type { ActivityConversationRow } from '$lib/generated/admin'
   import { toRelativeTime } from '$lib/utils/data'
-  import { ConversationModal, JourneyTrack, VerdictMark } from '../components'
+  import { ConversationModal, JourneyTrack, StoppedVerdict, VerdictMark } from '../components'
   import {
     FLAGS,
     JOURNEYS,
@@ -77,6 +77,9 @@
   }
 
   const total = $derived(data.conversations?.total)
+
+  // Text met by a personal data criterion stays hidden until asked for.
+  let shownPrompts = $state<string[]>([])
 </script>
 
 <section
@@ -96,12 +99,86 @@
     hideLabel
     options={journeyOptions}
     selected={journeyOf(params)}
-    onchange={(event) => update(journeyChanges(event.currentTarget.value))}
+    onchange={(event) => update(journeyChanges(event.currentTarget.value, params))}
     groupClass="mb-0!"
   />
 </section>
 
-{#if !data.conversations}
+{#if data.stopped}
+  {#if data.stopped.items.length === 0}
+    <p class="text-grey">{m['admin.activity.stopped.empty']()}</p>
+  {:else}
+    <table class="activity-table w-full">
+      <caption class="sr-only">{m['admin.activity.stopped.caption']()}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="w-28 max-md:hidden">
+            {m['admin.activity.conversations.cols.date']()}
+          </th>
+          <th scope="col">{m['admin.activity.stopped.cols.message']()}</th>
+          <th scope="col" class="w-56 max-md:w-36">{m['admin.activity.stopped.cols.verdict']()}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.stopped.items as message (message.id)}
+          {@const hidden = message.contains_pii && !shownPrompts.includes(message.id)}
+          <tr class="stopped-row">
+            <td class="max-md:hidden">
+              <time
+                class="fr-text--xs mb-0! whitespace-nowrap text-[--text-mention-grey]"
+                datetime={message.created_at}
+              >
+                {toRelativeTime(new Date(message.created_at), locale)}
+              </time>
+            </td>
+            <td>
+              {#if hidden}
+                <button
+                  type="button"
+                  class="fr-text--sm mb-0! text-start text-[--text-mention-grey] italic"
+                  onclick={() => (shownPrompts = [...shownPrompts, message.id])}
+                >
+                  {m['admin.activity.conversations.hiddenPrompt']()} ·
+                  {m['admin.activity.conversation.show']()}
+                </button>
+              {:else}
+                <p class="fr-text--sm mb-0! line-clamp-3 break-words whitespace-pre-wrap">
+                  {message.prompt}
+                </p>
+              {/if}
+              {#if message.comparison_id}
+                <a class="fr-link fr-text--xs mt-1" href={detailHref(message.comparison_id)}>
+                  {m['admin.activity.stopped.openConversation']()}
+                </a>
+              {/if}
+            </td>
+            <td><StoppedVerdict {message} /></td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  {/if}
+
+  <nav class="gap-3 mt-4 flex justify-end" aria-label={m['admin.activity.stopped.caption']()}>
+    {#if params.get('cursor')}
+      <Button
+        variant="secondary"
+        size="sm"
+        text={m['admin.activity.conversations.first']()}
+        onclick={() => update({})}
+      />
+    {/if}
+    {#if data.stopped.next_cursor}
+      <Button
+        size="sm"
+        icon="arrow-right-line"
+        iconPos="right"
+        text={m['admin.activity.conversations.next']()}
+        onclick={() => update({ cursor: data.stopped!.next_cursor })}
+      />
+    {/if}
+  </nav>
+{:else if !data.conversations}
   <Alert variant="error" title={data.error ?? m['admin.activity.errors.generic']()} />
 {:else}
   {#if total != null}
@@ -253,8 +330,11 @@
     border-bottom: 1px solid var(--border-default-grey);
     vertical-align: middle;
   }
-  .activity-table tbody tr {
+  .activity-table tbody tr:not(.stopped-row) {
     cursor: pointer;
+  }
+  .activity-table .stopped-row td {
+    vertical-align: top;
   }
   .activity-table tbody tr:hover {
     background-color: var(--background-default-grey-hover);

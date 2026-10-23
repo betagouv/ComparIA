@@ -629,6 +629,7 @@ def _to_prompt_check_status(row: PromptCheck) -> PromptCheckStatus:
         key_rejected=key_rejected,
         out_of_credits=out_of_credits,
         no_api_key=not (row.api_key or settings.OPENROUTER_API_KEY),
+        no_model=not row.model,
         healthy=(
             failures < UNHEALTHY_AFTER_FAILURES
             and not key_rejected
@@ -676,6 +677,7 @@ async def delete_prompt_check_api_key(current_user: RequiredAdmin) -> PromptChec
 
 # Keys the admin page translates, like the verdict messages from `checks`.
 NO_API_KEY_MESSAGE = "no_api_key"
+NO_MODEL_MESSAGE = "no_model"
 CALL_FAILED_MESSAGE = "call_failed"
 
 
@@ -725,12 +727,17 @@ async def try_prompt_check(body: PromptCheckTryBody) -> PromptCheckTryResult:
     # A dry run ignores the on/off switch on purpose: trying a rule before
     # switching the check on is the main reason this exists.
     api_key = stored.api_key or settings.OPENROUTER_API_KEY
-    if not api_key:
+    missing = (
+        NO_MODEL_MESSAGE
+        if not check.model
+        else NO_API_KEY_MESSAGE if not api_key else None
+    )
+    if missing:
         return PromptCheckTryResult(
             decision="error",
             scores={},
             triggered={},
-            message=NO_API_KEY_MESSAGE,
+            message=missing,
             latency_ms=0,
         )
 

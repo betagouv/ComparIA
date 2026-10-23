@@ -8,7 +8,6 @@ from sqlmodel import col, func, select
 from backend.config import settings
 from utils.database.models.prompt_check import (
     DEFAULT_CRITERIA,
-    DEFAULT_MODEL,
     PromptCheck,
     PromptCheckResult,
 )
@@ -33,11 +32,7 @@ UNHEALTHY_AFTER_FAILURES = 3
 
 # Used before the migration has run and when there is no database at all, so
 # the admin panel and the arena see the same shape either way.
-_DEFAULT = PromptCheck(
-    id=1,
-    model=DEFAULT_MODEL,
-    criteria=[dict(c) for c in DEFAULT_CRITERIA],
-)
+_DEFAULT = PromptCheck(id=1, criteria=[dict(c) for c in DEFAULT_CRITERIA])
 
 
 class ConversationCaps(NamedTuple):
@@ -103,12 +98,14 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
 
 
 async def save_prompt_check_result(check: PromptCheckResult) -> PromptCheckResult:
+    """Insert the result, or overwrite the one it took the id of: a message
+    sent anyway replaces the record of its warning."""
     async with get_session() as session:
-        session.add(check)
+        saved = await session.merge(check)
         await session.commit()
-        await session.refresh(check)
+        await session.refresh(saved)
 
-    return check
+    return saved
 
 
 def _read_counter(key: str, what: str) -> int:

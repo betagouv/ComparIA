@@ -182,7 +182,24 @@
                 "started": "No vote",
                 "voted": "Voted",
                 "revealed": "Revealed",
-                "commented": "Commented"
+                "commented": "Commented",
+                "stopped": "Refused or warned"
+            },
+            "stopped": {
+                "caption": "Refused or warned messages",
+                "cols": {
+                    "message": "Message",
+                    "verdict": "Check"
+                },
+                "empty": "No message was refused or warned about over this period.",
+                "notSent": "Not sent to the models",
+                "openConversation": "See the conversation",
+                "verdicts": {
+                    "blocked": "Refused",
+                    "proceeded": "Warned, sent anyway",
+                    "unavailable": "Refused, check unavailable",
+                    "warned": "Warned, not sent"
+                }
             }
         },
         "endpointKey": {
@@ -356,7 +373,8 @@
                 "empty": "Write a message before running the test.",
                 "errors": {
                     "call_failed": "The call to the model failed: {error}",
-                    "no_api_key": "No OpenRouter API key is configured: the check cannot run."
+                    "no_api_key": "No OpenRouter API key is configured: the check cannot run.",
+                    "no_model": "No decision model is picked: the check cannot run."
                 },
                 "ignored": "Not watched",
                 "label": "Message to check",
@@ -391,15 +409,19 @@
                 "noCreditsHint": "Every message is refused until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
                 "noCreditsHintOptional": "The check is not required, so messages go through unchecked until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
                 "noKey": "No API key",
-                "noKeyHint": "No key is stored here and OPENROUTER_API_KEY is not set: the check does not run and messages go through unchecked, even when it is required. Paste an OpenRouter key below."
+                "noKeyHint": "No key is stored here and OPENROUTER_API_KEY is not set: the check does not run and messages go through unchecked, even when it is required. Paste an OpenRouter key below.",
+                "noModel": "No decision model",
+                "noModelHint": "Pick a decision model below: until there is one, the check does not run and messages go through unchecked, even when it is required."
             },
             "settings": {
                 "title": "Settings"
             },
             "stats": {
+                "byCriterionHint": "Detections split by criterion and by result.",
                 "byCriterionNone": "No criterion was triggered over the period.",
                 "byCriterionTitle": "Criteria triggered",
                 "byDecisionTitle": "Results",
+                "checked": "{count} messages checked",
                 "decision": {
                     "blocked": "Refused",
                     "error": "Failed",
@@ -408,8 +430,22 @@
                     "skipped": "Not checked (model unavailable)",
                     "warned": "Warned"
                 },
+                "periodLabel": "Period shown",
+                "periods": {
+                    "all": "From the start",
+                    "7d": "Last 7 days",
+                    "30d": "Last 30 days",
+                    "90d": "Last 90 days",
+                    "365d": "Last 12 months"
+                },
                 "proceeded": "{count} sent anyway",
-                "title": "Activity over the last {days} days",
+                "subtitle": "Follow the detections and decisions over the selected period.",
+                "timelineChart": "Messages watched, warned, refused and failed over time",
+                "timelineHint": "Messages watched, warned, refused or failed over the period.",
+                "timelineLegend": "Chart legend",
+                "timelineNone": "No detection over this period.",
+                "timelineTitle": "Detections over time",
+                "title": "Message activity",
                 "totalLabel": "messages checked over the period",
                 "unavailable": "The counters are not available at the moment.",
                 "warningsHint": "These two counters do not follow the period above: showing a warning is not timestamped, so both are counted from the start.",

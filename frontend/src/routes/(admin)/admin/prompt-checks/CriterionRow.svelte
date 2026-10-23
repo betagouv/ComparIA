@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import { Button, Icon, Textarea } from '$components/dsfr'
-  import { FormInput, FormSelect, type FormInputProps } from '$components/form'
+  import { FormField, FormInput, FormSelect, type FormInputProps } from '$components/form'
   import type { PromptCheckCriterion } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
   import type { AnyFormItemProps } from '$lib/utils/form'
@@ -89,15 +89,21 @@
         {...input('key', { disabled: saved, required: !saved })}
         bind:value={criterion.key}
       />
-      <FormInput {...input('question')} bind:value={criterion.question} />
+      <!-- A question runs to a sentence or two: one line would cut it off. -->
+      <FormField {...fields.question} id="{id}-question" {errors} component="input">
+        {#snippet formItem(fieldProps)}
+          <textarea {...fieldProps} class="fr-input mt-2" rows={2} bind:value={criterion.question}
+          ></textarea>
+        {/snippet}
+      </FormField>
 
-      <div class="gap-x-4 md:grid-cols-2 grid">
+      <div class="gap-x-4 md:grid-cols-2 mb-6 grid">
         {#each ['yes', 'no'] as const as field (field)}
           <Textarea
             id="{id}-{field}"
             label={fields[field].label}
             error={errors[`${id}-${field}`]}
-            rows={2}
+            rows={5}
             bind:value={criterion[field]!}
           />
         {/each}
@@ -162,6 +168,21 @@
 
   .criterion summary::-webkit-details-marker {
     display: none;
+  }
+
+  /* The DSFR fields are content-box: at full width, their padding pushed the
+     text boxes and the select past the edge of their column. */
+  .criterion :global(.fr-input),
+  .criterion :global(.fr-select) {
+    box-sizing: border-box;
+  }
+
+  /* Grows with its text where the browser can, so none of it hides behind a
+     scrollbar; elsewhere it keeps its rows and can be dragged taller. */
+  .criterion :global(textarea.fr-input) {
+    field-sizing: content;
+    min-height: 3lh;
+    resize: vertical;
   }
 
   .criterion summary:hover {
