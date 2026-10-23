@@ -22,6 +22,8 @@ import re
 
 import numpy as np
 
+from utils.ranking.bradley_terry import Interval
+
 # --------------------------------------------------------------------------- #
 # Style feature extraction
 # --------------------------------------------------------------------------- #
@@ -249,7 +251,7 @@ def bootstrap_style_controlled(
     style_b: np.ndarray,
     n_samples: int = 500,
     ridge: float = 1e-3,
-) -> tuple[dict[str, tuple[float, float, float]], dict[str, float]]:
+) -> tuple[dict[str, Interval], dict[str, float]]:
     """
     Style-controlled ratings with bootstrap confidence intervals.
 
@@ -260,8 +262,8 @@ def bootstrap_style_controlled(
     that model's percentile.
 
     Returns:
-        (ci_by_model, style_coefficients) where ci_by_model maps model -> (point,
-        lower_2.5, upper_97.5).
+        (ci_by_model, style_coefficients) where ci_by_model maps model -> its
+        Interval.
     """
     if not battles:
         return {}, {f: 0.0 for f in STYLE_FEATURES}
@@ -290,7 +292,9 @@ def bootstrap_style_controlled(
     lowers = np.nanpercentile(all_elos, 2.5, axis=0)
     uppers = np.nanpercentile(all_elos, 97.5, axis=0)
     ci = {
-        models[i]: (float(point_elo[i]), float(lowers[i]), float(uppers[i]))
+        models[i]: Interval(
+            float(point_elo[i]), float(lowers[i]), float(uppers[i]), all_elos[:, i]
+        )
         for i in range(n_models)
     }
     return ci, dict(zip(STYLE_FEATURES, gamma.tolist()))
