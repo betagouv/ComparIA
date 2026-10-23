@@ -9,6 +9,7 @@ from backend.admin.router import (
     AdminLegalDocument,
     InformationalLegalPage,
     LegalPresentationTranslatable,
+    LegalStatuses,
     PublishLegalDocumentBody,
 )
 from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
