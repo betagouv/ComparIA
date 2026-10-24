@@ -194,6 +194,9 @@
             "unset": "No key"
         },
         "legal": {
+            "accessibility": {
+                "title": "Accessibility statement"
+            },
             "back": "Back to legal documents",
             "document": {
                 "backToWriting": "Back to writing",
@@ -231,40 +234,26 @@
                 "versionLabel": "Reference for the new version",
                 "versionOn": "Version {version} of {date}"
             },
+            "ecodesign": {
+                "title": "Ecodesign"
+            },
             "hub": {
-                "documentsGroup": "Legal documents",
-                "informationalDescription": "Legal notice, accessibility and ecodesign, hosted on the platform or linked to an external website.",
-                "journeyDescription": "Texts shown before the first message and at sign-in.",
-                "journeyGroup": "Acceptance journey",
-                "journeyLink": "Participation journey",
-                "privacyDescription": "Information about the use of personal data.",
                 "subtitle": "Each piece of content has its own space for editing and publishing.",
-                "termsDescription": "Document that must be accepted.",
                 "title": "Legal documents and journeys"
             },
             "informational": {
                 "contentLabel": "Content in {locale}",
                 "external": "External link",
                 "externalUrl": "External page address",
-                "externalUrlError": "Enter a valid HTTPS address.",
                 "externalUrlHelp": "The address must start with https://.",
                 "internal": "Page hosted on {platformName}",
-                "loading": "Loading information pages…",
-                "locale": "Content language",
                 "modeLabel": "Destination",
-                "pages": {
-                    "accessibility": "Accessibility statement",
-                    "ecodesign": "Ecodesign",
-                    "legal_notice": "Legal notice"
-                },
-                "save": "Save pages",
-                "saved": "Information pages saved.",
-                "saving": "Saving…",
-                "subtitle": "Choose where each page is hosted and where its link is displayed.",
-                "title": "Information pages",
                 "visibilityLabel": "Display the link in",
                 "visibleInLegalMenu": "The Legal menu",
                 "visibleInSettings": "The Settings page"
+            },
+            "legal_notice": {
+                "title": "Legal notice"
             },
             "markdownHelp": "Markdown formatting is supported: **bold**, *italics*, [link](https://example.com).",
             "participation": {
@@ -277,29 +266,25 @@
                 "formTitle": "Edit the journey",
                 "introduction": "Introductory text",
                 "introductionPlaceholder": "The introductory text will appear here.",
-                "loading": "Loading the journey…",
                 "modalTitle": "Window title",
                 "preview": "User preview",
-                "save": "Save the journey",
-                "saved": "The participation journey has been saved.",
-                "saving": "Saving…",
                 "signInDescription": "This checkbox appears before the sign-in code is sent and stays ticked while the code is entered.",
                 "signInTitle": "At sign-in",
-                "subtitle": "Set up the information shown before the first message and at sign-in.",
+                "subtitle": "Texts shown before the first message and at sign-in.",
                 "title": "Participation journey"
             },
             "privacy": {
                 "contentLabel": "Content of the privacy policy",
                 "draftTitle": "New privacy policy",
                 "emptyDescription": "The public page still shows the content built into the application. Publish a first version to manage it from this back office.",
-                "subtitle": "Write and publish the information about how personal data is handled.",
+                "subtitle": "Information about the use of personal data.",
                 "title": "Privacy policy"
             },
             "terms": {
                 "contentLabel": "Content of the terms of use",
                 "draftTitle": "New terms of use",
                 "emptyDescription": "Publish the terms of use before opening the arena to the public.",
-                "subtitle": "Write, review and publish the document accepted in order to take part in the arena.",
+                "subtitle": "Document that must be accepted.",
                 "title": "Terms of use"
             }
         },
@@ -1112,186 +1097,14 @@
         }
     },
     "general": {
-        "a11y": {
-            "desc": "This accessibility statement applies to the <strong>{domain}</strong> website.",
-            "disclaimer": "<strong>{platformName}</strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
-            "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
-            "improveDelay": "We try to respond within 2 business days.",
-            "improveDesc": "If you cannot reach a piece of content or a service, you can contact the manager of {domain} to be pointed to an accessible alternative or to get the content in another form.",
-            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
-            "improveTitle": "Improvement and contact",
-            "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
-            "remedyAdvocateAdress": "Send a letter by post (free, do not put a stamp): Defender of Rights - Free response 71120 75342 Paris CEDEX 07",
-            "remedyDelegateAdvocate": "Contact the <a {linkProps}>Defender of Rights representative in your region</a>",
-            "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
-            "remedyList": "You can :",
-            "remedyTitle": "Appeal",
-            "stateDesc": "The {domain} website is not compliant with RGAA 4.1. The site has <strong>not yet been audited</strong>. It was however designed to be accessible to as many people as possible. You should therefore be able to:",
-            "stateNavigate": "navigate all pages of the site using a keyboard",
-            "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
-            "stateScreenReader": "view the website with a screen reader.",
-            "stateTitle": "Compliance Status",
-            "title": "Accessibility statement"
-        },
         "document": {
             "frenchOnly": "This document is only published in French for now.",
             "unavailable": "This document is not available right now. Please try again later.",
             "version": "Version {version}, in effect since {date}."
         },
-        "legal": {
-            "a11yDesc": "Compliance with digital accessibility standards is a future goal, but we strive to make this site accessible to everyone.",
-            "a11yTitle": "Accessibility",
-            "directorDesc": "Mr. Romain Delassus, Head of the Digital Department at the Ministry of Culture",
-            "directorTitle": "Director of the publication",
-            "editorDesc": "This site is published by the French Ministry of Culture, 182 Rue Saint-Honoré, 75001 Paris",
-            "editorTitle": "Published",
-            "hostingDesc": "This site is hosted by OVH SAS (<a {linkProps}>https://www.ovh.com</a>), whose registered office is located at 2 Rue Kellermann, 59100 Roubaix, France.",
-            "hostingTitle": "Hosting of the site",
-            "reportA11y": "If you encounter an accessibility issue preventing you from accessing any content or functionality on the site, please let us know.",
-            "reportA11yDesc": "To learn more about the State’s digital accessibility policy: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
-            "reportDesc": "If you do not receive a prompt response from us, you have the right to submit your complaint or a request for referral to the Defender of Rights.",
-            "reportTitle": "Report a problem",
-            "securityCertif": "The site is protected by an electronic certificate, represented in most browsers by a padlock. This protection helps ensure the confidentiality of exchanges.",
-            "securityNoMail": "Under no circumstances will the services associated with the platform be the source of emails asking for the input of personal information.",
-            "securityTitle": "Security",
-            "sources": "Unless otherwise stated, all texts on this site are under the <a {etalabLinkProps}>Etalab Open 2.0 license</a>. The source code of this application is freely reusable and accessible on <a {githubLinkProps}>GitHub</a>.",
-            "title": "Legal notice"
-        },
         "privacy": {
-            "cookiesBannerDesc": "It's true, you didn't have to click on a block covering half of the page to say that you agree to the use of cookies -even if you don't know what that means!",
-            "cookiesBannerNoNeed": "Nothing exceptional, no special treatment related to a .gouv.fr domain. We simply respect the law, which states that certain audience tracking tools, properly configured to respect privacy, are exempt from prior authorization.",
-            "cookiesBannerTitle": "Why doesn't this site display a cookie consent banner?",
-            "cookiesBannerTools": "We use <a {matomoLinkProps}>Matomo</a>, a <a {libreLinkProps}>free</a> tool, configured to comply with the CNIL's \"Cookies\" <a {cnilLinkProps}>recommendation</a>. This means that your IP address, for example, is anonymized before being recorded. It is therefore impossible to associate your visits to this site with your person.",
-            "cookiesDesc": "This website places a small text file (a \"cookie\") on your computer when you visit it. This allows us to measure the number of visits and understand which pages are the most viewed.",
-            "cookiesDescMore": "You can opt out of tracking your browsing on this website. This will protect your privacy, but it will also prevent the owner from learning from your actions and creating a better experience for you and other users.",
-            "cookiesTitle": "Cookies and Consent",
-            "dataAccessDatasets": "User dialogue and preference data are distributed under Etalab's Open License 2.0 on the Hugging Face platform as well as on Data.gouv.fr through the Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "dataAccessDesc": "Of course! The site's usage statistics are freely accessible at <a {linkProps}>stats.beta.gouv.fr</a>.",
-            "dataAccessTitle": "I contribute to enriching your data, can I access it?",
-            "dataExtraCountry": "Destination country: France",
-            "dataExtraHost": "Subcontractor: OVH",
-            "dataExtraTitle": "Who helps us process the data?",
-            "dataExtraWarranty": "Guarantees: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
-            "dataExtraWhat": "Processing carried out: Accommodation",
-            "dataRespDesc": "The French Ministry of Culture's digital department is responsible for processing your personal data.",
-            "dataRespTitle": "Who is responsible for data processing?",
-            "dataTimeDesc": "Data relating to users and their conversations with models are retained from the time the preference vote is recorded.",
-            "dataTimeTitle": "How long do we keep this data?",
-            "dataUseDesc": "In any case, the publisher commits to implementing means to ensure the anonymization of dialogue data before making it publicly available.",
-            "dataUseTitle": "What processing is done on the conversation data?",
-            "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
             "optOutTitle": "Opting out of audience measurement",
-            "privacyData": "The data collected on the site are as follows:",
-            "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
-            "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
-            "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
-            "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
-            "privacyTitle": "Do we process personal data?",
-            "tallyData": "When you fill out one of these forms, the data you enter is transmitted to and hosted by Tally (Tally BV, Belgium). Tally is committed to not using your data for commercial purposes and to complying with the GDPR. For more information, please see Tally's <a {tallyPrivacyLinkProps}>Privacy Policy</a>.",
-            "tallyDesc": "This site uses <a {tallyLinkProps}>Tally</a>, an online form creation service, for two features:",
-            "tallyFeedback": "The \"Your opinion\" form allows us to collect your feedback on the service",
-            "tallyNewsletter": "The newsletter (newsletter) subscription form compar:IA",
-            "tallyTitle": "Tally Forms",
             "title": "Privacy policy"
-        },
-        "rgesn": {
-            "1": {
-                "1": "The compar:IA website provides easy and free access to a wide variety of conversational AI models, raising public awareness of the various challenges of generative AI: diversity, bias, and environmental impact. Furthermore, the datasets of questions and preferences compiled are shared as open source under the MIT/Etalab 2.0 license.",
-                "2": "The target users of the Compar:IA service were identified by conducting user interviews and a preliminary phase of needs investigation.",
-                "3": "Thus, all citizens are concerned as potential users, but particularly teachers, pupils, students, workshop facilitators, AI trainers, as well as researchers (computer science, AI, humanities and social sciences) and companies interested in analyzing or using open-source shared datasets. Accordingly, the digital service meets their needs through the following features: testing and comparing models for free, and using open-source shared data.",
-                "4": "The compar:IA service is part of an eco-design approach aimed at reducing environmental impacts. To this end, this declaration was drafted within the framework of the implementation of the General Eco-design Framework for Digital Services (RGESN, version 2024). The RGESN, produced by Arcep and Arcom, in collaboration with ADEME, DINUM, CNIL, and Inria, is available on the <a {linkProps}>Arcep website</a>.",
-                "title": "Purpose of this service"
-            },
-            "2": {
-                "1": "Eco-design of digital services is an approach aimed at reducing and limiting the environmental impacts of a service from its design phase and throughout its life cycle.",
-                "2": {
-                    "1": "Designing more sustainable digital services to extend the lifespan of devices;",
-                    "2": "Promote an approach based on environmental sobriety in response to user attention capture strategies, in line with international environmental objectives;",
-                    "3": "Reduce the IT resources used, optimize data traffic and the use of digital infrastructure;",
-                    "4": "Increase the level of transparency on the environmental footprint of the digital service.",
-                    "title": "Its implementation pursues four main objectives:"
-                },
-                "3": {
-                    "1": "Limit the size of a page",
-                    "2": "Limit the complexity of a page",
-                    "3": "Limit the number of server requests",
-                    "4": "Limit the energy consumption required to host the service",
-                    "title": "In practical terms, eco-design translates into a set of best practices to be followed before, during, and after the creation or improvement of a service, enabling, in particular:"
-                },
-                "4": "This is a process of continuous and collective improvement.",
-                "title": "What is eco-design?"
-            },
-            "3": {
-                "1": {
-                    "1": "Simplifying the user experience: navigation paths are optimized and centered around the essential features of the Compar:IA service (arena of models to test, datasets, ranking) with regular user testing.",
-                    "2": "Raising awareness among users about the ecological footprint of the service: highlighting energy impact indicators on questions asked to AI; promoting \"frugal\" uses, with a mode dedicated to querying \"small\" conversational AI models whose environmental impact is smaller.",
-                    "3": "Use of State Design System (DSFR) interface components: they are accessible and their footprint is minimal.",
-                    "4": "The most intuitive navigation possible to reduce the time spent finding information.",
-                    "5": "Mobile-first design: all content is viewable on mobile devices. The site adapts to all screen sizes.",
-                    "6": "Exclusion of video integration on the site.",
-                    "title": "The main challenge is to ensure that the compar:IA service works on the oldest possible user devices, under varying connectivity conditions. Several measures were implemented during the design phase, including:"
-                },
-                "title": "Strategy implemented and objectives regarding the reduction or limitation of environmental impacts"
-            },
-            "4": {
-                "1": "The self-assessment, conducted between May and October 2025 by the product team (two people were responsible for reviewing and validating all criteria), covered all pages of the site. The tools used to evaluate certain technical indicators were the browser's developer tools' \"network\" inspector, the <a {greenitLinkProps}>Green IT Analysis</a> extension, and the <a {ecoindexLinkProps}>EcoIndex</a> tool.",
-                "title": "RGESN Diagnosis"
-            },
-            "5": {
-                "1": {
-                    "1": "Progress score in the implementation of the RGESN, as of 10/12/2025: 89%",
-                    "title": "The self-diagnosis gives a compliance rate with the <a {linkProps}>RGESN</a> (general ecodesign reference) of 89%."
-                },
-                "2": "The digital service compar:IA aims to improve this progress score to reach 95% by 2027.",
-                "3": {
-                    "1": "Strategy: 100%",
-                    "2": "Specifications: 78%",
-                    "3": "Architecture: 100%",
-                    "4": "User Experience and Interface (UX/UI): 100%",
-                    "5": "Contents: 67%",
-                    "6": "Frontend: 82%",
-                    "7": "Backend: 64%",
-                    "8": "Hosting: 90%",
-                    "9": "Algorithms: 100%",
-                    "title": "Score by theme:"
-                },
-                "4": {
-                    "date": "December 10, 2025",
-                    "title": "RGESN Audit Table"
-                },
-                "title": "Score in the implementation of the framework"
-            },
-            "6": {
-                "1": "The site is designed to be accessible for any mobile device dating from 2017 or later.",
-                "2": "Minimum connection required for comfortable access and use of the service: 3G on mobile and 512 Kbps on fixed connection.",
-                "3": "The site is designed for different screen sizes (minimum 320 pixels wide).",
-                "4": "The site is not accessible via the Internet Explorer browser. ",
-                "title": "Minimum requirements to access the site"
-            },
-            "7": {
-                "1": "Design the service with a design review and a code review, one of the objectives of which is to reduce the environmental impacts of each feature (criterion 2.1)",
-                "2": "Implement data retention periods for the purpose of deletion or archiving: regular deletion of logs in the \"S3\" file server and the database (Postgres) in particular.",
-                "3": {
-                    "1": "Maximum number of server requests per screen: 40",
-                    "2": "Maximum resource size per screen: 600 KB",
-                    "title": "To adhere to a maximum weight and a limit on the number of requests per screen (criterion 6.1):"
-                },
-                "4": "Convert the illustrations to WebP, AVIF, JPEG XL or a more efficient image format for raster images (criterion 5.1).",
-                "5": "Allow the possibility to interrupt inference (loading of responses) during model comparison.",
-                "6": "EcoIndex analysis scores demonstrate a significant discrepancy in impact measurements, with some pages receiving scores of up to E or F (relatively large page weight, complexity, and number of requests); the challenge now is to understand these results more precisely on a case-by-case basis, despite the good practices implemented, in order to identify further improvements.",
-                "desc": "Several improvements have been or are still being identified, including:",
-                "title": "Improvements identified"
-            },
-            "8": {
-                "1": "Stylesheet trimmed from 3.27 MB to 1.46 MB, which is 239 KB less after compression on each page: the service no longer carries the design system's 1,047 icons, only the twenty-five it uses.",
-                "2": "Removal of 344 KB of public files that no page called for.",
-                "3": "Session recording stopped: it watched mouse movements and page changes for the whole visit, producing recordings nobody looked at. Page counting is kept.",
-                "4": "Measured on 13 August 2026 on the chat screen: 111 requests and 1,152 KB. The service is still above the limits it set itself above, 40 requests and 600 KB per screen. The largest remaining item is the translation file, which carries all five languages on every page.",
-                "desc": "Since publication, the following corrections have been made to the arena:",
-                "title": "Improvements made"
-            },
-            "desc": "published on December 11, 2025",
-            "title": "Ecodesign statement"
         },
         "tos": {
             "title": "Terms of use"
