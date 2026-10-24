@@ -16,10 +16,7 @@
 
   const { params }: PageProps = $props()
 
-  const kindKey = $derived(params.legalDoc as 'terms' | 'privacy')
-  const kind = $derived<AdminLegalDocument['kind']>(
-    kindKey === 'privacy' ? 'privacy_policy' : kindKey
-  )
+  const kind = $derived(params.legalDoc as AdminLegalDocument['kind'])
 
   // The locales the instance serves, so a document can be published in each.
   const auth = tryGetAuthContext()
@@ -39,25 +36,14 @@
   let effectiveAt = $state('')
   let confirmed = $state(false)
 
-  const copy = $derived(
-    kind === 'terms'
-      ? {
-          endpoint: '/admin/legal/terms',
-          publicPage: TERMS_PATH,
-          title: m['admin.legal.terms.title'](),
-          contentLabel: m['admin.legal.terms.contentLabel'](),
-          draftTitle: m['admin.legal.terms.draftTitle'](),
-          emptyDescription: m['admin.legal.terms.emptyDescription']()
-        }
-      : {
-          endpoint: '/admin/legal/privacy-policy',
-          publicPage: PRIVACY_POLICY_PATH,
-          title: m['admin.legal.privacy.title'](),
-          contentLabel: m['admin.legal.privacy.contentLabel'](),
-          draftTitle: m['admin.legal.privacy.draftTitle'](),
-          emptyDescription: m['admin.legal.privacy.emptyDescription']()
-        }
-  )
+  const copy = $derived({
+    endpoint: `/admin/legal/${kind}`,
+    publicPage: kind === 'terms' ? TERMS_PATH : PRIVACY_POLICY_PATH,
+    title: m[`admin.legal.${kind}.title`](),
+    contentLabel: m[`admin.legal.${kind}.contentLabel`](),
+    draftTitle: m[`admin.legal.${kind}.draftTitle`](),
+    emptyDescription: m[`admin.legal.${kind}.emptyDescription`]()
+  })
 
   const scheduledDocuments = $derived(
     documents.filter(
@@ -136,9 +122,9 @@
 </script>
 
 <PageLayout
-  seoTitle={m[`admin.legal.${kindKey}.title`]()}
-  title={m[`admin.legal.${kindKey}.title`]()}
-  subtitle={m[`admin.legal.${kindKey}.subtitle`]()}
+  seoTitle={m[`admin.legal.${kind}.title`]()}
+  title={m[`admin.legal.${kind}.title`]()}
+  subtitle={m[`admin.legal.${kind}.subtitle`]()}
   backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
 >
   <section class="max-w-[1000px]" aria-label={copy.title}>

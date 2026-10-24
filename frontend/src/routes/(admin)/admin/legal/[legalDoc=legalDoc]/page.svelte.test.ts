@@ -1,3 +1,4 @@
+import type { AdminLegalDocument } from '$lib/generated/admin'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PageData } from './$types'
@@ -27,7 +28,7 @@ function publishedBody(endpoint: string) {
   return JSON.parse(call?.[1]?.body as string)
 }
 
-function renderPage(key: 'terms' | 'privacy') {
+function renderPage(key: AdminLegalDocument['kind']) {
   return render(Page, {
     data: {} as unknown as PageData,
     params: { legalDoc: key }
@@ -105,14 +106,14 @@ describe('Legal document administration', () => {
 
   it('publishes a first privacy policy only after explicit confirmation', async () => {
     mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-      if (path === '/admin/legal/privacy-policy' && options?.method === 'POST') {
+      if (path === '/admin/legal/privacy_policy' && options?.method === 'POST') {
         return Promise.resolve({ ...activeTerms, kind: 'privacy_policy' })
       }
-      if (path === '/admin/legal/privacy-policy') return Promise.resolve([])
+      if (path === '/admin/legal/privacy_policy') return Promise.resolve([])
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })
 
-    const { getByRole } = renderPage('privacy')
+    const { getByRole } = renderPage('privacy_policy')
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune version publiée' })).toBeTruthy()
     )
@@ -131,11 +132,11 @@ describe('Legal document administration', () => {
 
     await waitFor(() =>
       expect(mocks.request).toHaveBeenCalledWith(
-        '/admin/legal/privacy-policy',
+        '/admin/legal/privacy_policy',
         expect.objectContaining({ method: 'POST' })
       )
     )
-    expect(publishedBody('/admin/legal/privacy-policy')).toMatchObject({
+    expect(publishedBody('/admin/legal/privacy_policy')).toMatchObject({
       version: '2026.1',
       locale: 'fr',
       content: '# Confidentialité\n\nTexte **important**.',

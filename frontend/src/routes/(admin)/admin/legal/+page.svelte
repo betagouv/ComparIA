@@ -9,7 +9,14 @@
 
   const pages = $derived(
     (
-      ['participation', 'terms', 'privacy', 'legal_notice', 'accessibility', 'ecodesign'] as const
+      [
+        'participation',
+        'terms',
+        'privacy_policy',
+        'legal_notice',
+        'accessibility',
+        'ecodesign'
+      ] as const
     ).map((id) => ({
       id,
       title: m[`admin.legal.${id}.title`](),

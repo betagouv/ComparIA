@@ -12,7 +12,7 @@
 
 <div class="py-10 lg:py-15">
   <div class="fr-container">
-    <h1 id="politique-de-confidentialite">{m['general.privacy.title']()}</h1>
+    <h1 id="politique-de-confidentialite">{m['general.privacy_policy.title']()}</h1>
 
     {#if data.privacyPolicy}
       <LegalDocument
@@ -27,7 +27,7 @@
 
     <!-- The published policy is sanitized Markdown and cannot carry the script. -->
     {#if data.matomoUrl}
-      <h2 id="matomo-opt-out-title">{m['general.privacy.optOutTitle']()}</h2>
+      <h2 id="matomo-opt-out-title">{m['general.privacy_policy.optOutTitle']()}</h2>
       <MatomoOptOut url={data.matomoUrl} />
     {/if}
   </div>

@@ -128,7 +128,7 @@
         }
     },
     "general": {
-        "privacy": {
+        "privacy_policy": {
             "optOutTitle": "Avstå från besöksmätning",
             "title": "Integritetspolicy"
         },

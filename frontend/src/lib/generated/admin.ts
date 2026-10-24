@@ -617,7 +617,7 @@ export interface SignInLegalPresentation {
 export interface LegalStatuses {
   participation: LegalStatus;
   terms: LegalStatus;
-  privacy: LegalStatus;
+  privacy_policy: LegalStatus;
   legal_notice: LegalStatus;
   accessibility: LegalStatus;
   ecodesign: LegalStatus;
