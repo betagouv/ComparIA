@@ -7,11 +7,9 @@
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import { getAuthContext, getPlatformName } from '$lib/authContext.svelte'
+  import type { InformationalPageKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
-  import type {
-    InformationalPageKey,
-    InformationalPageSurface
-  } from '$lib/informational-pages.svelte'
+  import type { InformationalPageSurface } from '$lib/informational-pages.svelte'
   import { useForm } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
@@ -19,7 +17,7 @@
 
   const auth = getAuthContext()
   const platformName = getPlatformName()
-  const pageKey = $derived(params.infoPage as InformationalPageKey)
+  const pageKey = $derived(params.infoPage as InformationalPageKeys)
   const defaultLocale = $derived(auth.config.default_locale)
   let selectedLocale = $derived(defaultLocale)
 

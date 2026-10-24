@@ -1,4 +1,4 @@
-import type { AdminLegalDocument } from '$lib/generated/admin'
+import type { LegalDocumentKeys } from '$lib/generated/constants'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PageData } from './$types'
@@ -28,7 +28,7 @@ function publishedBody(endpoint: string) {
   return JSON.parse(call?.[1]?.body as string)
 }
 
-function renderPage(key: AdminLegalDocument['kind']) {
+function renderPage(key: LegalDocumentKeys) {
   return render(Page, {
     data: {} as unknown as PageData,
     params: { legalDoc: key }

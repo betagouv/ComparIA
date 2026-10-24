@@ -4,27 +4,22 @@ import type {
   InformationalLegalPageLink,
   InformationalLegalPageLinks
 } from '$lib/generated/backend'
+import { INFORMATIONAL_PAGE_KEYS, type InformationalPageKeys } from '$lib/generated/constants'
 import { m } from '$lib/i18n/messages'
 import type { AnyLinkProps, ExternalHref } from '$lib/routing'
 import { getExternalLinkProps } from '$lib/routing'
 import { createContext } from 'svelte'
 
-export type InformationalPageKey = keyof InformationalLegalPageLinks
 export type InformationalPageSurface = 'legal_menu' | 'settings'
 
-const INFORMATIONAL_PAGE_KEYS = [
-  'legal_notice',
-  'accessibility',
-  'ecodesign'
-] as const satisfies InformationalPageKey[]
-export const INFORMATIONAL_PAGE_PATHS: Record<InformationalPageKey, ResolvedPathname> = {
+export const INFORMATIONAL_PAGE_PATHS: Record<InformationalPageKeys, ResolvedPathname> = {
   legal_notice: LEGAL_NOTICE_PATH,
   accessibility: ACCESSIBILITY_PATH,
   ecodesign: ECODESIGN_PATH
 }
 
 export function informationalPageLinkProps(
-  key: InformationalPageKey,
+  key: InformationalPageKeys,
   links: InformationalLegalPageLinks
 ): AnyLinkProps {
   const link = links[key]!
