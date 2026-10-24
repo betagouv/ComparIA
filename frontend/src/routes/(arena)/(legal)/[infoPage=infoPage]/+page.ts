@@ -1,12 +1,12 @@
 import { api } from '$lib/fastapi-client'
 import type { InformationalLegalPageContent } from '$lib/generated/backend'
+import type { InformationalPageKeys } from '$lib/generated/constants'
 import { getLocale } from '$lib/i18n/runtime'
-import type { InformationalPageKey } from '$lib/informational-pages.svelte'
 import { error, redirect } from '@sveltejs/kit'
 import type { PageLoad } from './$types'
 
 export const load: PageLoad = async ({ params, parent, fetch }) => {
-  const infoPageKey = params.infoPage as InformationalPageKey
+  const infoPageKey = params.infoPage as InformationalPageKeys
   const link = (await parent()).informationalPagesLinks[infoPageKey]
 
   if (!link) error(404)

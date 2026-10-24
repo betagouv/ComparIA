@@ -1,4 +1,4 @@
-import type { InformationalPageKey } from '$lib/informational-pages.svelte'
+import type { InformationalPageKeys } from '$lib/generated/constants'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { PageData } from './$types'
@@ -37,7 +37,7 @@ const pages = {
   }
 }
 
-function renderPage(key: InformationalPageKey) {
+function renderPage(key: InformationalPageKeys) {
   return render(Page, {
     data: { page: pages[key] } as unknown as PageData,
     params: { infoPage: key }

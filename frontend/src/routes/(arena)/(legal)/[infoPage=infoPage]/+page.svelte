@@ -1,14 +1,14 @@
 <script lang="ts">
   import { SeoHead } from '$components/layout'
   import { MarkdownCode as Markdown, stripLeadingTitle } from '$components/markdown'
+  import type { InformationalPageKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import type { InformationalPageKey } from '$lib/informational-pages.svelte'
   import type { PageProps } from './$types'
 
   const { data, params }: PageProps = $props()
 
-  const title = $derived<string>(m[`seo.titles.${params.infoPage as InformationalPageKey}`]())
+  const title = $derived<string>(m[`seo.titles.${params.infoPage as InformationalPageKeys}`]())
 </script>
 
 <SeoHead {title} />

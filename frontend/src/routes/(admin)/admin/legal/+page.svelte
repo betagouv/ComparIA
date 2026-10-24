@@ -2,22 +2,14 @@
   import { resolve } from '$app/paths'
   import { Badge, Link, Table } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
+  import { INFORMATIONAL_PAGE_KEYS, LEGAL_DOCUMENT_KEYS } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
 
   const pages = $derived(
-    (
-      [
-        'participation',
-        'terms',
-        'privacy_policy',
-        'legal_notice',
-        'accessibility',
-        'ecodesign'
-      ] as const
-    ).map((id) => ({
+    (['participation', ...LEGAL_DOCUMENT_KEYS, ...INFORMATIONAL_PAGE_KEYS] as const).map((id) => ({
       id,
       title: m[`admin.legal.${id}.title`](),
       desc: m[`admin.legal.${id}.subtitle`](),

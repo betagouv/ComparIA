@@ -4,7 +4,9 @@ from typing import get_args
 from pydantic2ts import generate_typescript_defs
 
 from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
+from backend.settings.informational_legal import LegalPageKey
 from internal.archs import get_archs
+from utils.database.models.auth import LegalDocumentKind
 from utils.database.models.llms.constants import LLMArchKind
 from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
@@ -45,6 +47,8 @@ def generate_frontend_constants() -> None:
         "ENERGY_CLASSES": list(ENERGY_CLASSES),
         "ARCHS": archs,
         "MAYBE_ARCHS": [f"maybe-{a}" for a in archs if a != "na"],
+        "INFORMATIONAL_PAGE_KEYS": list(get_args(LegalPageKey)),
+        "LEGAL_DOCUMENT_KEYS": list(get_args(LegalDocumentKind)),
     }
 
     file_lines = [f"export const {k} = {v} as const" for k, v in constants.items()] + [

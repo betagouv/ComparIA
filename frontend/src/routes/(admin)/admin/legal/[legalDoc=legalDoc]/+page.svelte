@@ -8,6 +8,7 @@
   import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import { api } from '$lib/fastapi-client'
   import type { AdminLegalDocument, PublishLegalDocumentBody } from '$lib/generated/admin'
+  import type { LegalDocumentKeys } from '$lib/generated/constants'
   import { getLocales } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
@@ -16,7 +17,7 @@
 
   const { params }: PageProps = $props()
 
-  const kind = $derived(params.legalDoc as AdminLegalDocument['kind'])
+  const kind = $derived(params.legalDoc as LegalDocumentKeys)
 
   // The locales the instance serves, so a document can be published in each.
   const auth = tryGetAuthContext()
