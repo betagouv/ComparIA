@@ -32,7 +32,7 @@ describe('privacy policy page load', () => {
       privacyPolicy: document,
       matomoUrl: 'https://stats.example.org'
     })
-    expect(request).toHaveBeenCalledWith('/settings/legal/privacy-policy', {
+    expect(request).toHaveBeenCalledWith('/settings/legal/privacy_policy', {
       fetch,
       searchParams: { locale: 'fr' }
     })

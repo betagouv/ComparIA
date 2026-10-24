@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
   try {
     return {
-      privacyPolicy: await api.request<PublicLegalDocument>('/settings/legal/privacy-policy', {
+      privacyPolicy: await api.request<PublicLegalDocument>('/settings/legal/privacy_policy', {
         fetch,
         searchParams: { locale: getLocale() }
       }),

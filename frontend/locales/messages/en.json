@@ -273,7 +273,7 @@
                 "subtitle": "Texts shown before the first message and at sign-in.",
                 "title": "Participation journey"
             },
-            "privacy": {
+            "privacy_policy": {
                 "contentLabel": "Content of the privacy policy",
                 "draftTitle": "New privacy policy",
                 "emptyDescription": "The public page still shows the content built into the application. Publish a first version to manage it from this back office.",
@@ -1060,7 +1060,6 @@
         "close": "Close without sending",
         "confirm": "Confirm",
         "links": {
-            "privacy": "Privacy policy",
             "terms": "Terms of use"
         },
         "loadFailed": "The terms of use could not be loaded.",
@@ -1101,10 +1100,6 @@
             "frenchOnly": "This document is only published in French for now.",
             "unavailable": "This document is not available right now. Please try again later.",
             "version": "Version {version}, in effect since {date}."
-        },
-        "privacy": {
-            "optOutTitle": "Opting out of audience measurement",
-            "title": "Privacy policy"
         },
         "tos": {
             "title": "Terms of use"

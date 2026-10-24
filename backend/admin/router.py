@@ -170,7 +170,7 @@ class LegalStatuses(BaseModel, extra="forbid"):
 
     participation: LegalStatus
     terms: LegalStatus
-    privacy: LegalStatus
+    privacy_policy: LegalStatus
     legal_notice: LegalStatus
     accessibility: LegalStatus
     ecodesign: LegalStatus
@@ -198,8 +198,8 @@ async def get_admin_legal_pages_status() -> LegalStatuses:
         else:
             status[k] = {"published": True, "missing_locales": False}
 
-    for k in ("terms", "privacy"):
-        doc = await get_active_legal_document("terms", settings.default_locale)
+    for k in ("terms", "privacy_policy"):
+        doc = await get_active_legal_document(k, settings.default_locale)
         status[k] = {"published": doc is not None, "missing_locales": False}
 
     return status
@@ -302,7 +302,7 @@ async def create_terms_publication(
     return await _publish("terms", body)
 
 
-@router.get("/legal/privacy-policy", response_model=list[AdminLegalDocument])
+@router.get("/legal/privacy_policy", response_model=list[AdminLegalDocument])
 async def get_privacy_policy_publications(
     locale: OptionalLocaleQuery = None,
 ) -> list[AdminLegalDocument]:
@@ -310,7 +310,7 @@ async def get_privacy_policy_publications(
     return [_to_admin_legal_document(document) for document in documents]
 
 
-@router.get("/legal/privacy-policy/current", response_model=AdminLegalDocument)
+@router.get("/legal/privacy_policy/current", response_model=AdminLegalDocument)
 async def get_current_privacy_policy(
     locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
 ) -> AdminLegalDocument:
@@ -318,7 +318,7 @@ async def get_current_privacy_policy(
 
 
 @router.post(
-    "/legal/privacy-policy",
+    "/legal/privacy_policy",
     response_model=AdminLegalDocument,
     status_code=status.HTTP_201_CREATED,
 )

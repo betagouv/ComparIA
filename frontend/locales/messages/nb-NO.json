@@ -131,7 +131,7 @@
         }
     },
     "general": {
-        "privacy": {
+        "privacy_policy": {
             "optOutTitle": "Reserver deg mot besøksmåling",
             "title": "Personvernerklæring"
         },

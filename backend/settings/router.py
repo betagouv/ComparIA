@@ -98,7 +98,7 @@ async def public_terms(
     )
 
 
-@router.get("/legal/privacy-policy", response_model=PublicLegalDocument)
+@router.get("/legal/privacy_policy", response_model=PublicLegalDocument)
 async def public_privacy_policy(
     request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
 ):

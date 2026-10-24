@@ -272,7 +272,7 @@
                 "subtitle": "Tekster vist før den første besked og ved login.",
                 "title": "Deltagelsesforløb"
             },
-            "privacy": {
+            "privacy_policy": {
                 "contentLabel": "Indhold af privatlivspolitikken",
                 "draftTitle": "Ny privatlivspolitik",
                 "emptyDescription": "Den offentlige side viser stadig indholdet, der er indbygget i applikationen. Udgiv en første version for at administrere den fra dette administrationsområde.",
@@ -1058,7 +1058,7 @@
         "close": "Luk uden at sende",
         "confirm": "Bekræft",
         "links": {
-            "privacy": "Privatlivspolitik",
+            "privacy_policy": "Privatlivspolitik",
             "terms": "Brugsvilkår"
         },
         "loadFailed": "Brugsvilkårene kunne ikke indlæses.",
@@ -1100,7 +1100,7 @@
             "unavailable": "Dette dokument er ikke tilgængeligt for øjeblikket. Prøv venligst igen senere.",
             "version": "Version {version}, gældende fra {date}."
         },
-        "privacy": {
+        "privacy_policy": {
             "optOutTitle": "Fravælg måling af besøg",
             "title": "Fortrolighedspolitik"
         },

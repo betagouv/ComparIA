@@ -283,7 +283,7 @@
                 "subtitle": "Textes affichés avant le premier message et lors de la connexion.",
                 "title": "Parcours de participation"
             },
-            "privacy": {
+            "privacy_policy": {
                 "contentLabel": "Contenu de la politique de confidentialité",
                 "draftTitle": "Nouvelle politique de confidentialité",
                 "emptyDescription": "La page publique affiche encore le contenu intégré à l’application. Publiez une première version pour la gérer depuis ce back-office.",
@@ -1070,7 +1070,7 @@
         "close": "Fermer sans envoyer",
         "confirm": "Confirmer",
         "links": {
-            "privacy": "Politique de confidentialité",
+            "privacy_policy": "Politique de confidentialité",
             "terms": "Conditions générales d’utilisation"
         },
         "loadFailed": "Les conditions d’utilisation n’ont pas pu être chargées.",
@@ -1121,7 +1121,7 @@
             "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
             "version": "Version {version}, applicable depuis le {date}."
         },
-        "privacy": {
+        "privacy_policy": {
             "optOutTitle": "Vous opposer à la mesure d’audience",
             "title": "Politique de confidentialité"
         },

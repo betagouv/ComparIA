@@ -66,7 +66,7 @@ type TermsResponse = {
 // they are about to accept should not go through a hop. Every legal
 // destination in the app is named here so a page move has one place to land.
 export const TERMS_PATH = resolve('/terms')
-export const PRIVACY_POLICY_PATH = resolve('/privacy')
+export const PRIVACY_POLICY_PATH = resolve('/privacy_policy')
 export const ACCESSIBILITY_PATH = resolve('/accessibility')
 export const ECODESIGN_PATH = resolve('/ecodesign')
 export const LEGAL_NOTICE_PATH = resolve('/legal_notice')
@@ -75,7 +75,7 @@ export const LEGAL_NOTICE_PATH = resolve('/legal_notice')
 export function legalLinks(): ({ label: string } & InternalLinkProps)[] {
   return [
     { label: m['consent.links.terms'](), href: TERMS_PATH },
-    { label: m['consent.links.privacy'](), href: PRIVACY_POLICY_PATH }
+    { label: m['consent.links.privacy_policy'](), href: PRIVACY_POLICY_PATH }
   ]
 }
 
