@@ -135,7 +135,7 @@
             "optOutTitle": "Reserver deg mot besøksmåling",
             "title": "Personvernerklæring"
         },
-        "tos": {
+        "terms": {
             "title": "Vilkår for bruk"
         }
     },
@@ -497,9 +497,9 @@
         "titles": {
             "accessibility": "Tlgjengelighetserklæring",
             "arene": "Chat",
-            "donnees-personnelles": "Personvernerklæring",
+            "privacy_policy": "Personvernerklæring",
             "legal_notice": "Juridisk merknad",
-            "modalites": "Vilkår for bruk",
+            "terms": "Vilkår for bruk",
             "modeles": "Liste over modeller",
             "ranking": "Rangering",
             "ecodesign": "Økodesign-erklæring"

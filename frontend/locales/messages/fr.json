@@ -1125,7 +1125,7 @@
             "optOutTitle": "Vous opposer à la mesure d’audience",
             "title": "Politique de confidentialité"
         },
-        "tos": {
+        "terms": {
             "title": "Modalités d’utilisation"
         }
     },
@@ -2069,12 +2069,12 @@
         "titles": {
             "accessibility": "Déclaration d’accessibilité",
             "arene": "Discussion",
-            "donnees-personnelles": "Politique de confidentialité",
+            "privacy_policy": "Politique de confidentialité",
             "ecodesign": "Déclaration d’écoconception",
             "invite": "Invitation",
             "legal_notice": "Mentions légales",
             "login": "Connexion",
-            "modalites": "Modalités d’utilisation",
+            "terms": "Modalités d’utilisation",
             "modeles": "Liste des modèles",
             "ranking": "Classement",
             "settings": "Paramètres"

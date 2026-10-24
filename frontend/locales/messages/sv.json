@@ -132,7 +132,7 @@
             "optOutTitle": "Avstå från besöksmätning",
             "title": "Integritetspolicy"
         },
-        "tos": {
+        "terms": {
             "title": "Användarvillkor"
         }
     },
@@ -504,9 +504,9 @@
         "titles": {
             "accessibility": "Tillgänglighetspolicy",
             "arene": "Chat",
-            "donnees-personnelles": "Integritetspolicy",
+            "privacy_policy": "Integritetspolicy",
             "legal_notice": "Rättsliga meddelanden",
-            "modalites": "Användarvillkor",
+            "terms": "Användarvillkor",
             "modeles": "Lista över modeller",
             "ranking": "Rankning"
         }

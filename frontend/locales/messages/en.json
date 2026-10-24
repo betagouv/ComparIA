@@ -1101,7 +1101,7 @@
             "unavailable": "This document is not available right now. Please try again later.",
             "version": "Version {version}, in effect since {date}."
         },
-        "tos": {
+        "terms": {
             "title": "Terms of use"
         }
     },
@@ -2041,11 +2041,11 @@
         "titles": {
             "accessibility": "Accessibility statement",
             "arene": "Chat",
-            "donnees-personnelles": "Privacy policy",
+            "privacy_policy": "Privacy policy",
             "invite": "Invitation",
             "login": "Sign in",
             "legal_notice": "Legal notice",
-            "modalites": "Terms of use",
+            "terms": "Terms of use",
             "modeles": "Model list",
             "ranking": "Leaderboard",
             "ecodesign": "Ecodesign statement",
