@@ -95,7 +95,7 @@ describe('informational legal pages administration', () => {
 
     await fireEvent.click(getByRole('button', { name: 'Enregistrer' }))
 
-    expect(getByText('Missing default locale content')).toBeInTheDocument()
+    expect(getByText('Traduction principale manquante')).toBeInTheDocument()
     expect(mocks.request).not.toHaveBeenCalledWith('/admin/legal/informational-page')
   })
 })

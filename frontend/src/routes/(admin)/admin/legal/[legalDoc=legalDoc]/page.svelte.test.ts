@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import LegalDocumentAdmin from './LegalDocumentAdmin.svelte'
+import type { PageData } from './$types'
+import Page from './+page.svelte'
 
 const activeTerms = {
   id: '11111111-1111-4111-8111-111111111111',
@@ -26,6 +27,13 @@ function publishedBody(endpoint: string) {
   return JSON.parse(call?.[1]?.body as string)
 }
 
+function renderPage(key: 'terms' | 'privacy') {
+  return render(Page, {
+    data: {} as unknown as PageData,
+    params: { legalDoc: key }
+  })
+}
+
 describe('Legal document administration', () => {
   beforeEach(() => {
     mocks.request.mockReset()
@@ -41,7 +49,7 @@ describe('Legal document administration', () => {
   })
 
   it('edits the terms without exposing journey copy fields', async () => {
-    const { getByRole, queryByRole } = render(LegalDocumentAdmin, { kind: 'terms' })
+    const { getByRole, queryByRole } = renderPage('terms')
     await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
     await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
 
@@ -58,20 +66,20 @@ describe('Legal document administration', () => {
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })
 
-    const { getByRole } = render(LegalDocumentAdmin, { kind: 'terms' })
+    const { getByRole } = renderPage('terms')
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Conditions d’exemple en vigueur' })).toBeTruthy()
     )
   })
 
   it('hides the warning once real terms are published', async () => {
-    const { getByRole, queryByRole } = render(LegalDocumentAdmin, { kind: 'terms' })
+    const { getByRole, queryByRole } = renderPage('terms')
     await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
     expect(queryByRole('heading', { name: 'Conditions d’exemple en vigueur' })).toBeNull()
   })
 
   it('publishes new terms without coupling them to the participation journey', async () => {
-    const { getByRole } = render(LegalDocumentAdmin, { kind: 'terms' })
+    const { getByRole } = renderPage('terms')
     await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
     await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
     await fireEvent.input(getByRole('textbox', { name: /Contenu des conditions/ }), {
@@ -104,7 +112,7 @@ describe('Legal document administration', () => {
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })
 
-    const { getByRole } = render(LegalDocumentAdmin, { kind: 'privacy_policy' })
+    const { getByRole } = renderPage('privacy')
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune version publiée' })).toBeTruthy()
     )
