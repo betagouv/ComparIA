@@ -1116,7 +1116,7 @@
             "optOutTitle": "Fravælg måling af besøg",
             "title": "Fortrolighedspolitik"
         },
-        "tos": {
+        "terms": {
             "title": "Brugsbetingelser"
         }
     },
@@ -2116,11 +2116,11 @@
         "titles": {
             "accessibility": "Erklæring om tilgængelighed",
             "arene": "Chat",
-            "donnees-personnelles": "Fortrolighedspolitik",
+            "privacy_policy": "Fortrolighedspolitik",
             "invite": "Invitation",
             "login": "Log ind",
             "legal_notice": "Om os",
-            "modalites": "Brugsbetingelser",
+            "terms": "Brugsbetingelser",
             "modeles": "Modelliste",
             "ranking": "Rangliste",
             "ecodesign": "Erklæring om bæredygtigt design",

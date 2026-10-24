@@ -1,5 +1,6 @@
 import { render } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
+import type { PageData } from './$types'
 import Page from './+page.svelte'
 
 const policy = {
@@ -12,7 +13,10 @@ const policy = {
 }
 
 function optOuts(data: { privacyPolicy: typeof policy | null; matomoUrl: string | null }) {
-  const { container } = render(Page, { data } as never)
+  const { container } = render(Page, {
+    data: data as unknown as PageData,
+    params: { legalDoc: 'privacy_policy' }
+  })
   return {
     divs: container.querySelectorAll('#matomo-opt-out'),
     scripts: [...container.querySelectorAll('script')].map((script) => script.src)

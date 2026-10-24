@@ -135,7 +135,7 @@
             "optOutTitle": "Opporsi alla misurazione delle visite",
             "title": "Politica sulla riservatezza"
         },
-        "tos": {
+        "terms": {
             "title": "Termini d'uso"
         }
     },
@@ -524,9 +524,9 @@
         "titles": {
             "accessibility": "Dichiarazione di accessibilità",
             "arene": "Chat",
-            "donnees-personnelles": "Politica sulla riservatezza",
+            "privacy_policy": "Politica sulla riservatezza",
             "legal_notice": "Avviso legale",
-            "modalites": "Termini d'uso",
+            "terms": "Termini d'uso",
             "modeles": "Elenco dei modelli",
             "ranking": "Classifica",
             "ecodesign": "Dichiarazione di ecodesign"

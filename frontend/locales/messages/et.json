@@ -132,7 +132,7 @@
         "privacy_policy": {
             "title": "Privaatsuseeskirjad"
         },
-        "tos": {
+        "terms": {
             "title": "Kasutustingimused"
         }
     },
@@ -494,9 +494,9 @@
         "titles": {
             "accessibility": "Ligipääsetavuse avaldus",
             "arene": "Vestlus",
-            "donnees-personnelles": "Privatsuspõhimõtted",
+            "privacy_policy": "Privatsuspõhimõtted",
             "legal_notice": "Õigusteave",
-            "modalites": "Kasutustingimused",
+            "terms": "Kasutustingimused",
             "modeles": "Mudelite nimekiri",
             "ranking": "Edetabel",
             "ecodesign": "Ökodisaini avaldus"
