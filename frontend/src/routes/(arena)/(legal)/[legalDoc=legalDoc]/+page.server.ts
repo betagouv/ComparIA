@@ -4,9 +4,9 @@ import type { PublicLegalDocument } from '$lib/generated/backend'
 import type { LegalDocumentKeys } from '$lib/generated/constants'
 import { getLocale } from '$lib/i18n/runtime'
 import { logger } from '$lib/logger.server'
-import type { PageLoad } from './$types'
+import type { PageServerLoad } from './$types'
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ params, fetch }) => {
   const legalDocKey = params.legalDoc as LegalDocumentKeys
   // Only known at runtime, like in hooks.server.ts. Without it no audience is
   // measured, so there is nothing to opt out of.

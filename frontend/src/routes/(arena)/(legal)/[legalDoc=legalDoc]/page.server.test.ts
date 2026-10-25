@@ -1,6 +1,6 @@
 import type { LegalDocumentKeys } from '$lib/generated/constants'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { load } from './+page'
+import { load } from './+page.server'
 
 const { request, env } = vi.hoisted(() => ({
   request: vi.fn(),
