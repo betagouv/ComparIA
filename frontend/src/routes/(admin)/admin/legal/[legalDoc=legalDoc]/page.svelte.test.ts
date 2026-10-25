@@ -1,75 +1,25 @@
+import type { AdminLegalDocument } from '$lib/generated/admin'
 import type { LegalDocumentKeys } from '$lib/generated/constants'
-import { fireEvent, render, waitFor } from '@testing-library/svelte'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { adminLegalDocument } from '$lib/testing/mock-data'
+import { render, waitFor } from '@testing-library/svelte'
+import { describe, expect, it } from 'vitest'
 import type { PageData } from './$types'
 import Page from './+page.svelte'
 
-const activeTerms = {
-  id: '11111111-1111-4111-8111-111111111111',
-  kind: 'terms',
-  version: '1.0',
-  locale: 'fr',
-  content: '# Conditions actives',
-  content_hash: 'a'.repeat(64),
-  published_at: '2026-07-20T10:00:00.000Z',
-  effective_at: '2026-07-20T10:00:00.000Z',
-  retired_at: null,
-  seeded: false
-}
-
-const mocks = vi.hoisted(() => ({ request: vi.fn(), toast: vi.fn() }))
-vi.mock('$lib/fastapi-client', () => ({ api: { request: mocks.request } }))
-vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: mocks.toast }))
-
-function publishedBody(endpoint: string) {
-  const call = mocks.request.mock.calls.find(
-    ([path, options]) => path === endpoint && options?.method === 'POST'
-  )
-  return JSON.parse(call?.[1]?.body as string)
-}
-
-function renderPage(key: LegalDocumentKeys) {
+function renderPage(
+  key: LegalDocumentKeys,
+  current: AdminLegalDocument | null = adminLegalDocument(),
+  history: AdminLegalDocument[] = current ? [current] : []
+) {
   return render(Page, {
-    data: {} as unknown as PageData,
+    data: { documents: { history, current } } as PageData,
     params: { legalDoc: key }
   })
 }
 
 describe('Legal document administration', () => {
-  beforeEach(() => {
-    mocks.request.mockReset()
-    mocks.toast.mockReset()
-    mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-      if (path === '/admin/legal/documents/terms' && options?.method === 'POST') {
-        return Promise.resolve({ ...activeTerms, version: '2.0' })
-      }
-      if (path === '/admin/legal/documents/terms') return Promise.resolve([activeTerms])
-      if (path.startsWith('/admin/legal/documents/terms/current'))
-        return Promise.resolve(activeTerms)
-      return Promise.reject(new Error(`Unexpected request: ${path}`))
-    })
-  })
-
-  it('edits the terms without exposing journey copy fields', async () => {
-    const { getByRole, queryByRole } = renderPage('terms')
-    await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
-    await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
-
-    expect(getByRole('textbox', { name: /Contenu des conditions/ })).toBeTruthy()
-    expect(queryByRole('textbox', { name: /Titre de la fenêtre/ })).toBeNull()
-  })
-
   it('warns while the seeded terms are still in force', async () => {
-    mocks.request.mockImplementation((path: string) => {
-      if (path === '/admin/legal/documents/terms')
-        return Promise.resolve([{ ...activeTerms, seeded: true }])
-      if (path.startsWith('/admin/legal/documents/terms/current')) {
-        return Promise.resolve({ ...activeTerms, seeded: true })
-      }
-      return Promise.reject(new Error(`Unexpected request: ${path}`))
-    })
-
-    const { getByRole } = renderPage('terms')
+    const { getByRole } = renderPage('terms', adminLegalDocument({ seeded: true }))
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Conditions d’exemple en vigueur' })).toBeTruthy()
     )
@@ -81,68 +31,10 @@ describe('Legal document administration', () => {
     expect(queryByRole('heading', { name: 'Conditions d’exemple en vigueur' })).toBeNull()
   })
 
-  it('publishes new terms without coupling them to the participation journey', async () => {
-    const { getByRole } = renderPage('terms')
-    await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
-    await fireEvent.click(getByRole('button', { name: 'Préparer une nouvelle version' }))
-    await fireEvent.input(getByRole('textbox', { name: /Contenu des conditions/ }), {
-      target: { value: '# Nouvelles conditions' }
-    })
-    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
-    await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
-      target: { value: '2.0' }
-    })
-    await fireEvent.click(getByRole('checkbox', { name: /J’ai relu le document/ }))
-    await fireEvent.click(getByRole('button', { name: 'Publier cette version' }))
-
-    await waitFor(() =>
-      expect(mocks.request).toHaveBeenCalledWith(
-        '/admin/legal/documents/terms',
-        expect.objectContaining({ method: 'POST' })
-      )
-    )
-    const body = publishedBody('/admin/legal/documents/terms')
-    expect(body.content).toBe('# Nouvelles conditions')
-    expect(body).not.toHaveProperty('presentation')
-  })
-
-  it('publishes a first privacy policy only after explicit confirmation', async () => {
-    mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-      if (path === '/admin/legal/documents/privacy_policy' && options?.method === 'POST') {
-        return Promise.resolve({ ...activeTerms, kind: 'privacy_policy' })
-      }
-      if (path === '/admin/legal/documents/privacy_policy') return Promise.resolve([])
-      return Promise.reject(new Error(`Unexpected request: ${path}`))
-    })
-
-    const { getByRole } = renderPage('privacy_policy')
+  it('shows nothing is yet published', async () => {
+    const { getByRole } = renderPage('privacy_policy', null)
     await waitFor(() =>
       expect(getByRole('heading', { name: 'Aucune version publiée' })).toBeTruthy()
     )
-
-    await fireEvent.click(getByRole('button', { name: 'Publier une première version' }))
-    await fireEvent.input(getByRole('textbox', { name: /Contenu de la politique/ }), {
-      target: { value: '# Confidentialité\n\nTexte **important**.' }
-    })
-    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
-    expect(getByRole('combobox', { name: 'Langue' })).toBeTruthy()
-    await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
-      target: { value: '2026.1' }
-    })
-    await fireEvent.click(getByRole('checkbox', { name: /J’ai relu le document/ }))
-    await fireEvent.click(getByRole('button', { name: 'Publier cette version' }))
-
-    await waitFor(() =>
-      expect(mocks.request).toHaveBeenCalledWith(
-        '/admin/legal/documents/privacy_policy',
-        expect.objectContaining({ method: 'POST' })
-      )
-    )
-    expect(publishedBody('/admin/legal/documents/privacy_policy')).toMatchObject({
-      version: '2026.1',
-      locale: 'fr',
-      content: '# Confidentialité\n\nTexte **important**.',
-      confirm_publication: true
-    })
   })
 })

@@ -1,3 +1,4 @@
+import type { AdminLegalDocument } from '$lib/generated/admin'
 import type {
   InformationalLegalPageLink,
   InformationalLegalPageLinks
@@ -18,3 +19,19 @@ export const informationalLegalPageLinks: Required<InformationalLegalPageLinks> 
   accessibility: informationalLegalPageLink(),
   ecodesign: informationalLegalPageLink()
 }
+
+export const adminLegalDocument = (
+  data: Partial<AdminLegalDocument> = {}
+): Required<AdminLegalDocument> => ({
+  id: '11111111-1111-4111-8111-111111111111',
+  kind: 'terms',
+  version: '1.0',
+  locale: 'fr',
+  content: '# Conditions actives',
+  content_hash: 'a'.repeat(64),
+  published_at: '2026-07-20T10:00:00.000Z',
+  effective_at: '2026-07-20T10:00:00.000Z',
+  retired_at: null,
+  seeded: false,
+  ...data
+})
