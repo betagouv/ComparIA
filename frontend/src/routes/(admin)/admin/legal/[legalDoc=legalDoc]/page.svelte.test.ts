@@ -40,11 +40,12 @@ describe('Legal document administration', () => {
     mocks.request.mockReset()
     mocks.toast.mockReset()
     mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-      if (path === '/admin/legal/terms' && options?.method === 'POST') {
+      if (path === '/admin/legal/documents/terms' && options?.method === 'POST') {
         return Promise.resolve({ ...activeTerms, version: '2.0' })
       }
-      if (path === '/admin/legal/terms') return Promise.resolve([activeTerms])
-      if (path.startsWith('/admin/legal/terms/current')) return Promise.resolve(activeTerms)
+      if (path === '/admin/legal/documents/terms') return Promise.resolve([activeTerms])
+      if (path.startsWith('/admin/legal/documents/terms/current'))
+        return Promise.resolve(activeTerms)
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })
   })
@@ -60,8 +61,9 @@ describe('Legal document administration', () => {
 
   it('warns while the seeded terms are still in force', async () => {
     mocks.request.mockImplementation((path: string) => {
-      if (path === '/admin/legal/terms') return Promise.resolve([{ ...activeTerms, seeded: true }])
-      if (path.startsWith('/admin/legal/terms/current')) {
+      if (path === '/admin/legal/documents/terms')
+        return Promise.resolve([{ ...activeTerms, seeded: true }])
+      if (path.startsWith('/admin/legal/documents/terms/current')) {
         return Promise.resolve({ ...activeTerms, seeded: true })
       }
       return Promise.reject(new Error(`Unexpected request: ${path}`))
@@ -95,21 +97,21 @@ describe('Legal document administration', () => {
 
     await waitFor(() =>
       expect(mocks.request).toHaveBeenCalledWith(
-        '/admin/legal/terms',
+        '/admin/legal/documents/terms',
         expect.objectContaining({ method: 'POST' })
       )
     )
-    const body = publishedBody('/admin/legal/terms')
+    const body = publishedBody('/admin/legal/documents/terms')
     expect(body.content).toBe('# Nouvelles conditions')
     expect(body).not.toHaveProperty('presentation')
   })
 
   it('publishes a first privacy policy only after explicit confirmation', async () => {
     mocks.request.mockImplementation((path: string, options?: RequestInit) => {
-      if (path === '/admin/legal/privacy_policy' && options?.method === 'POST') {
+      if (path === '/admin/legal/documents/privacy_policy' && options?.method === 'POST') {
         return Promise.resolve({ ...activeTerms, kind: 'privacy_policy' })
       }
-      if (path === '/admin/legal/privacy_policy') return Promise.resolve([])
+      if (path === '/admin/legal/documents/privacy_policy') return Promise.resolve([])
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })
 
@@ -132,11 +134,11 @@ describe('Legal document administration', () => {
 
     await waitFor(() =>
       expect(mocks.request).toHaveBeenCalledWith(
-        '/admin/legal/privacy_policy',
+        '/admin/legal/documents/privacy_policy',
         expect.objectContaining({ method: 'POST' })
       )
     )
-    expect(publishedBody('/admin/legal/privacy_policy')).toMatchObject({
+    expect(publishedBody('/admin/legal/documents/privacy_policy')).toMatchObject({
       version: '2026.1',
       locale: 'fr',
       content: '# Confidentialité\n\nTexte **important**.',

@@ -38,7 +38,7 @@
   let confirmed = $state(false)
 
   const copy = $derived({
-    endpoint: `/admin/legal/${kind}`,
+    endpoint: `/admin/legal/documents/${kind}`,
     publicPage: kind === 'terms' ? TERMS_PATH : PRIVACY_POLICY_PATH,
     title: m[`admin.legal.${kind}.title`](),
     contentLabel: m[`admin.legal.${kind}.contentLabel`](),
