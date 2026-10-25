@@ -276,56 +276,33 @@ async def _publish(
     return _to_admin_legal_document(document)
 
 
-@router.get("/legal/terms", response_model=list[AdminLegalDocument])
-async def get_terms_publications(
+@router.get("/legal/documents/{key}", response_model=list[AdminLegalDocument])
+async def get_legal_doc_publications(
+    key: LegalDocumentKind,
     locale: OptionalLocaleQuery = None,
 ) -> list[AdminLegalDocument]:
-    documents = await list_legal_documents("terms", locale)
+    documents = await list_legal_documents(key, locale)
     return [_to_admin_legal_document(document) for document in documents]
 
 
-@router.get("/legal/terms/current", response_model=AdminLegalDocument)
-async def get_current_terms(
+@router.get("/legal/documents/{key}/current", response_model=AdminLegalDocument)
+async def get_legal_doc_current(
+    key: LegalDocumentKind,
     locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
 ) -> AdminLegalDocument:
-    return await _current_legal_document("terms", locale)
+    return await _current_legal_document(key, locale)
 
 
 @router.post(
-    "/legal/terms",
+    "/legal/documents/{key}",
     response_model=AdminLegalDocument,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_terms_publication(
+async def create_legal_doc_publication(
+    key: LegalDocumentKind,
     body: PublishLegalDocumentBody,
 ) -> AdminLegalDocument:
-    return await _publish("terms", body)
-
-
-@router.get("/legal/privacy_policy", response_model=list[AdminLegalDocument])
-async def get_privacy_policy_publications(
-    locale: OptionalLocaleQuery = None,
-) -> list[AdminLegalDocument]:
-    documents = await list_legal_documents("privacy_policy", locale)
-    return [_to_admin_legal_document(document) for document in documents]
-
-
-@router.get("/legal/privacy_policy/current", response_model=AdminLegalDocument)
-async def get_current_privacy_policy(
-    locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
-) -> AdminLegalDocument:
-    return await _current_legal_document("privacy_policy", locale)
-
-
-@router.post(
-    "/legal/privacy_policy",
-    response_model=AdminLegalDocument,
-    status_code=status.HTTP_201_CREATED,
-)
-async def create_privacy_policy_publication(
-    body: PublishLegalDocumentBody,
-) -> AdminLegalDocument:
-    return await _publish("privacy_policy", body)
+    return await _publish(key, body)
 
 
 @router.get("/legal/presentation", response_model=LegalPresentationTranslatable)
