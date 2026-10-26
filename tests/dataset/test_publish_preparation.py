@@ -38,6 +38,12 @@ def exercise_export(monkeypatch, tmp_path, datasets):
     monkeypatch.setattr(run, "process_datasets", build)
     monkeypatch.setattr(run, "publish", lambda *args: events.append("publish"))
 
+    async def record_sending(sent_to):
+        assert sent_to == [destination]
+        events.append("record")
+
+    monkeypatch.setattr(run, "record_sending", record_sending)
+
     asyncio.run(
         run._export(
             datasets,
@@ -54,9 +60,14 @@ def test_open_publication_prepares_before_building(monkeypatch, tmp_path):
     assert exercise_export(monkeypatch, tmp_path, ["normal"]) == [
         "prepare",
         "build",
+        "record",
         "publish",
     ]
 
 
 def test_raw_only_publication_skips_analysis(monkeypatch, tmp_path):
-    assert exercise_export(monkeypatch, tmp_path, ["raw"]) == ["build", "publish"]
+    assert exercise_export(monkeypatch, tmp_path, ["raw"]) == [
+        "build",
+        "record",
+        "publish",
+    ]

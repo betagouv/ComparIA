@@ -8,6 +8,7 @@ which is what a kill or a crash looks like from outside.
 
 import logging
 import uuid
+from typing import NamedTuple
 
 from sqlmodel import and_, col, desc, func, or_, select
 
@@ -71,6 +72,7 @@ async def finish_run(
     error: str | None = None,
     published: int | None = None,
     held_back: int | None = None,
+    reserved: int | None = None,
 ) -> None:
     async with get_session() as session:
         run = await session.get(PublishRun, run_id)
@@ -81,16 +83,31 @@ async def finish_run(
         run.error = error[:_ERROR_MAX] if error else None
         run.published = published
         run.held_back = held_back
+        run.reserved = reserved
         session.add(run)
         await session.commit()
 
 
-async def open_dataset_counts() -> tuple[int, int]:
-    """How many comparisons the open dataset published, and how many it held back."""
+class DatasetCounts(NamedTuple):
+    published: int
+    reserved: int
+    # Neither published nor reserved.
+    held_back: int
+
+
+async def dataset_counts() -> DatasetCounts:
     counts = await get_db_comparisons_counts(
-        {"published": PUBLISHABLE, "total": col(Comparison.id) != None}  # noqa: E711
+        {
+            "published": PUBLISHABLE,
+            "reserved": RESERVED,
+            "total": col(Comparison.id) != None,  # noqa: E711
+        }
     )
-    return counts["published"], counts["total"] - counts["published"]
+    return DatasetCounts(
+        published=counts["published"],
+        reserved=counts["reserved"],
+        held_back=counts["total"] - counts["published"] - counts["reserved"],
+    )
 
 
 async def last_run() -> PublishRun | None:

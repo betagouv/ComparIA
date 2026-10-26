@@ -19,8 +19,9 @@ from .publish import (
     NotEnoughDiskError,
     enabled_destinations,
     publish,
+    record_sending,
 )
-from .runs import finish_run, open_dataset_counts, start_run
+from .runs import dataset_counts, finish_run, start_run
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -97,11 +98,17 @@ async def main(
         raise
     else:
         if run_id:
-            # Only a run that rebuilt the open dataset can say what it holds
-            # back. One that sent the raw dataset alone leaves the figures
-            # blank rather than quoting numbers it did not produce.
-            counts = await open_dataset_counts() if "normal" in built else (None, None)
-            await finish_run(run_id, published=counts[0], held_back=counts[1])
+            # A run only quotes the figures of the datasets it rebuilt. One
+            # that sent the raw dataset alone leaves them blank rather than
+            # quoting numbers it did not produce.
+            counts = await dataset_counts()
+            open_built = "normal" in built
+            await finish_run(
+                run_id,
+                published=counts.published if open_built else None,
+                held_back=counts.held_back if open_built else None,
+                reserved=counts.reserved if "reserved" in built else None,
+            )
     finally:
         # The parquet files are the run's, not the instance's: they are what
         # was just published, and they are large. Only the directories a build
@@ -159,6 +166,9 @@ async def _export(
     logger.info("Finished processing all datasets.")
 
     if destinations:
+        # Once built, before the first upload: a run that fails half way may
+        # still have sent some files.
+        await record_sending(destinations)
         publish(destinations, built)
 
     return built

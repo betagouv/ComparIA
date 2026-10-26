@@ -11,13 +11,14 @@ import logging
 import uuid
 from pathlib import Path
 
-from sqlmodel import col, select
+from sqlmodel import col, select, update
 
 from utils.database.models.publish import (
     HuggingFaceConfig,
     PublishDestination,
     S3Config,
 )
+from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.secrets import SecretUnreadableError
 
@@ -76,6 +77,21 @@ async def enabled_destinations(
             query = query.where(col(PublishDestination.id) == destination_id)
         rows = await session.exec(query.order_by(col(PublishDestination.created_at)))
         return list(rows.all())
+
+
+async def record_sending(destinations: list[PublishDestination]) -> None:
+    """
+    Note that every comparison created until now may have left for these
+    destinations. Whether a comparison can still be reserved for a partner
+    depends on it, see utils/dataset/reservation.py.
+    """
+    async with get_session() as session:
+        await session.exec(
+            update(PublishDestination)
+            .where(col(PublishDestination.id).in_([d.id for d in destinations]))
+            .values(sent_until=utc_now())
+        )
+        await session.commit()
 
 
 def _built_files(
