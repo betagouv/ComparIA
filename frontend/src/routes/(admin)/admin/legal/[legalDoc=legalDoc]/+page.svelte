@@ -128,7 +128,7 @@
             id: l,
             label: locales[l].long,
             content: activeDocument.content[l],
-            class: 'bg-[--green-tilleul-verveine-975-75] bg-very-light-grey'
+            class: 'bg-[--green-tilleul-verveine-975-75]'
           }))}
           markdown
           class="mt-4"

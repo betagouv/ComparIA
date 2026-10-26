@@ -6,7 +6,7 @@
   import Form from '$components/form/Form.svelte'
   import FormCheckbox from '$components/form/FormCheckbox.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
-  import { MarkdownCode as Markdown } from '$components/markdown'
+  import UserPreview from '$components/UserPreview.svelte'
   import { getAuthContext } from '$lib/authContext.svelte'
   import type { PublishLegalDocumentBody } from '$lib/generated/admin'
   import type { LegalDocumentKeys } from '$lib/generated/constants'
@@ -64,7 +64,7 @@
   novalidate={false}
 >
   {#if step === 'write'}
-    <div class="lg:grid-cols-2 gap-4 grid">
+    <UserPreview id="legal-doc-preview" content={currentContent}>
       <FormTranslate
         id="content_by_locale"
         bind:value={form.form.content}
@@ -83,18 +83,7 @@
           />
         {/snippet}
       </FormTranslate>
-
-      <aside class="" aria-label={m['admin.legal.document.preview']()}>
-        <p class="fr-label fr-mb-2v">{m['admin.legal.document.preview']()}</p>
-        <div class="fr-p-4w bg-[--background-contrast-grey]">
-          {#if currentContent}
-            <Markdown message={currentContent} sanitize_html variant="document" />
-          {:else}
-            <p class="fr-text--sm">{m['admin.legal.document.previewEmpty']()}</p>
-          {/if}
-        </div>
-      </aside>
-    </div>
+    </UserPreview>
   {:else}
     <FormInput
       id="version"
