@@ -3,6 +3,7 @@
 Skipped where Postgres is not installed.
 """
 
+import asyncio
 import os
 import sys
 import uuid
@@ -22,7 +23,7 @@ from utils.database.models import Comparison  # noqa: E402
 from utils.database.models.publish import (  # noqa: E402
     PublishDestination,
     PublishDestinationUpsert,
-    PublishRun,
+    PublishSending,
 )
 from utils.database.models.utils import utc_now  # noqa: E402
 from utils.database.session import get_session  # noqa: E402
@@ -33,16 +34,10 @@ from utils.dataset.runs import dataset_counts  # noqa: E402
 SHAREABLE = {"llm_analyzed": True, "contains_pii": False}
 
 
-async def add_destination(datasets: list[str], sent_until: datetime | None) -> None:
+async def add_sending(dataset: str, sent_until: datetime | None) -> None:
     async with get_session() as session:
         session.add(
-            PublishDestination(
-                name="/".join(datasets),
-                kind="s3",
-                config={"kind": "s3", "endpoint": "s3.example.org", "bucket": "b"},
-                datasets=datasets,
-                sent_until=sent_until,
-            )
+            PublishSending(dataset=dataset, started_at=utc_now(), sent_until=sent_until)
         )
         await session.commit()
 
@@ -96,9 +91,9 @@ def test_what_the_open_dataset_may_have_sent_cannot_be_reserved(database):
             llms, created_at=now - timedelta(hours=2), **SHAREABLE
         )
         after = await add_comparison(llms, created_at=now, **SHAREABLE)
-        await add_destination(["normal"], utc_now() - timedelta(hours=1))
+        await add_sending("normal", utc_now() - timedelta(hours=1))
         # Only the open dataset counts: the raw one never goes public.
-        await add_destination(["raw"], utc_now())
+        await add_sending("raw", utc_now())
 
         with pytest.raises(CannotReserveError) as refused:
             await reservation.reserve(before)
@@ -108,16 +103,81 @@ def test_what_the_open_dataset_may_have_sent_cannot_be_reserved(database):
     database(scenario)
 
 
-def test_nothing_can_be_reserved_while_a_run_is_going(database):
+def test_nothing_can_be_reserved_while_the_open_dataset_is_sent(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
-        async with get_session() as session:
-            session.add(PublishRun(started_at=utc_now()))
-            await session.commit()
+        sending = await reservation.start_sending(["normal"])
 
         with pytest.raises(CannotReserveError) as refused:
             await reservation.reserve(comparison_id)
         assert refused.value.reason == "publishing"
+
+        # Once done, it was sent before it was reserved.
+        await reservation.finish_sending(sending)
+        with pytest.raises(CannotReserveError) as refused:
+            await reservation.reserve(comparison_id)
+        assert refused.value.reason == "published"
+
+    database(scenario)
+
+
+def test_a_run_waits_for_a_reservation_to_land_before_it_reads(database):
+    async def scenario():
+        async with get_session() as session:
+            # What reserve() holds from its check to its write.
+            await reservation._lock(session)
+            starting = asyncio.create_task(reservation.start_sending(["normal"]))
+            await asyncio.sleep(0.3)
+            assert not starting.done()
+            await session.commit()
+        await asyncio.wait_for(starting, timeout=5)
+
+    database(scenario)
+
+
+def test_what_was_sent_is_remembered_once_the_destination_is_gone(database):
+    async def scenario():
+        comparison_id = await add_comparison(
+            await add_llms(),
+            created_at=datetime.now() - timedelta(hours=1),
+            **SHAREABLE,
+        )
+        async with get_session() as session:
+            destination = PublishDestination(
+                name="Hub",
+                kind="s3",
+                config={"kind": "s3", "endpoint": "s3.example.org", "bucket": "b"},
+                datasets=["normal"],
+            )
+            destination_id = destination.id
+            session.add(destination)
+            await session.commit()
+        await reservation.finish_sending(await reservation.start_sending(["normal"]))
+        async with get_session() as session:
+            await session.delete(await session.get(PublishDestination, destination_id))
+            await session.commit()
+
+        with pytest.raises(CannotReserveError) as refused:
+            await reservation.reserve(comparison_id)
+        assert refused.value.reason == "published"
+
+    database(scenario)
+
+
+def test_a_run_that_died_is_closed_as_if_it_sent_everything(database):
+    async def scenario():
+        comparison_id = await add_comparison(
+            await add_llms(),
+            created_at=datetime.now() - timedelta(hours=1),
+            **SHAREABLE,
+        )
+        await reservation.start_sending(["normal"])
+        await reservation.finish_sending()
+        state = await reservation.reservation_state()
+        assert not state.publishing
+        with pytest.raises(CannotReserveError) as refused:
+            await reservation.reserve(comparison_id)
+        assert refused.value.reason == "published"
 
     database(scenario)
 
@@ -127,7 +187,7 @@ def test_reserving_again_keeps_the_first_date(database):
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
         first = await reservation.reserve(comparison_id)
         # Even once the open dataset went out: it was reserved by then.
-        await add_destination(["normal"], utc_now())
+        await add_sending("normal", utc_now())
         assert await reservation.reserve(comparison_id) == first
 
     database(scenario)
@@ -146,7 +206,7 @@ def test_the_counts_say_what_the_partner_already_has(database):
         llms = await add_llms()
         sent, kept = [await add_comparison(llms, **SHAREABLE) for _ in range(2)]
         await reservation.reserve(sent)
-        await add_destination(["reserved"], utc_now())
+        await add_sending("reserved", utc_now())
         await reservation.reserve(kept)
 
         assert await reservation.reserved_counts() == (2, 1)

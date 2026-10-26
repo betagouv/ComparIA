@@ -19,8 +19,8 @@ from .publish import (
     NotEnoughDiskError,
     enabled_destinations,
     publish,
-    record_sending,
 )
+from .reservation import finish_sending, start_sending
 from .runs import dataset_counts, finish_run, start_run
 
 logger = logging.getLogger("comparia.dataset")
@@ -162,14 +162,18 @@ async def _export(
 
     check_free_disk(export_base_path)
 
-    built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
-    logger.info("Finished processing all datasets.")
+    # Before the first comparison is read, and whether or not the run is
+    # recorded: reserving for a partner relies on it, see reservation.py.
+    sending = await start_sending(datasets) if destinations else []
+    try:
+        built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
+        logger.info("Finished processing all datasets.")
 
-    if destinations:
-        # Once built, before the first upload: a run that fails half way may
-        # still have sent some files.
-        await record_sending(destinations)
-        publish(destinations, built)
+        if destinations:
+            publish(destinations, built)
+    finally:
+        if sending:
+            await finish_sending(sending)
 
     return built
 

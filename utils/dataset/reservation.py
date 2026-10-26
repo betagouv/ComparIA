@@ -8,20 +8,31 @@ leaves for a public place, keeps it like any other.
 
 Reserving is meant to last. Undoing it puts the comparison back in the open
 dataset at the next run, which spoils it for a partner who already has it.
+
+What was ever sent is kept in publish_sending, apart from the destinations an
+admin can edit or delete. A run records each dataset there before it reads a
+single comparison, and closes it once done. A reservation checks that history
+and writes in one transaction, holding the same lock a run holds to record its
+start: either the reservation lands first and the run reads the comparison as
+reserved, or the run is recorded first and the reservation sees it going.
 """
 
 import uuid
 from datetime import UTC, datetime
 from typing import Literal, NamedTuple, Protocol
 
-from sqlalchemy import false
+from sqlalchemy import false, text
 from sqlmodel import col, func, select, update
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from utils.database.models import Comparison
-from utils.database.models.publish import PublishDataset, PublishDestination
+from utils.database.models.publish import PublishDataset, PublishSending
+from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 
-from .runs import last_run
+# Not the publish job's, which a run holds from start to end: a reservation
+# only has to wait for a run to record its start.
+LOCK_KEY = 8_147_232
 
 # Why a comparison cannot be reserved. Machine-readable: the admin panel
 # translates them.
@@ -42,8 +53,8 @@ class Reservable(Protocol):
 
 
 class ReservationState(NamedTuple):
-    # Whether a run is under way. It may be reading a comparison as not
-    # reserved, to send it with the open dataset.
+    # Whether a run is sending the open dataset. It may be reading a
+    # comparison as not reserved.
     publishing: bool
     # What the open dataset and the partner may have received, on the scale
     # of Comparison.created_at.
@@ -81,23 +92,71 @@ def _as_local(value: datetime | None) -> datetime | None:
     return value.replace(tzinfo=UTC).astimezone().replace(tzinfo=None)
 
 
-async def _sent_until(dataset: PublishDataset) -> datetime | None:
-    async with get_session() as session:
-        sent_until = await session.exec(
-            select(func.max(col(PublishDestination.sent_until))).where(
-                col(PublishDestination.datasets).contains([dataset])
-            )
+async def _lock(session: AsyncSession) -> None:
+    # Released with the transaction.
+    await session.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": LOCK_KEY})
+
+
+async def _sending(
+    session: AsyncSession, dataset: PublishDataset
+) -> tuple[bool, datetime | None]:
+    """Whether a run is sending the dataset now, and until when it ever sent it."""
+    sending, sent_until = (
+        await session.exec(
+            select(
+                func.bool_or(col(PublishSending.sent_until).is_(None)),
+                func.max(col(PublishSending.sent_until)),
+            ).where(col(PublishSending.dataset) == dataset)
         )
-        return _as_local(sent_until.one())
+    ).one()
+    return bool(sending), _as_local(sent_until)
+
+
+async def _state(session: AsyncSession) -> ReservationState:
+    publishing, open_sent_until = await _sending(session, "normal")
+    sending_reserved, reserved_sent_until = await _sending(session, "reserved")
+    return ReservationState(
+        publishing=publishing,
+        open_sent_until=open_sent_until,
+        # A run sending the reserved dataset may take anything reserved so far.
+        reserved_sent_until=datetime.now() if sending_reserved else reserved_sent_until,
+    )
 
 
 async def reservation_state() -> ReservationState:
-    run = await last_run()
-    return ReservationState(
-        publishing=run is not None and run.finished_at is None,
-        open_sent_until=await _sent_until("normal"),
-        reserved_sent_until=await _sent_until("reserved"),
+    """For display: reserve() checks again, under the lock."""
+    async with get_session() as session:
+        return await _state(session)
+
+
+async def start_sending(datasets: list[PublishDataset]) -> list[uuid.UUID]:
+    """Record, before a run reads any comparison, the datasets it may send."""
+    async with get_session() as session:
+        await _lock(session)
+        sendings = [
+            PublishSending(dataset=dataset, started_at=utc_now())
+            for dataset in datasets
+        ]
+        ids = [sending.id for sending in sendings]
+        session.add_all(sendings)
+        await session.commit()
+        return ids
+
+
+async def finish_sending(ids: list[uuid.UUID] | None = None) -> None:
+    """
+    Close a run's sendings once it is over, however it ended: a run that
+    failed half way may still have sent some files. Without ids, close every
+    sending left open, by a run whose process died.
+    """
+    query = update(PublishSending).where(
+        col(PublishSending.sent_until).is_(None)
+        if ids is None
+        else col(PublishSending.id).in_(ids)
     )
+    async with get_session() as session:
+        await session.exec(query.values(sent_until=utc_now()))
+        await session.commit()
 
 
 async def reserve(comparison_id: uuid.UUID) -> datetime | None:
@@ -106,8 +165,9 @@ async def reserve(comparison_id: uuid.UUID) -> datetime | None:
     comparison. Reserving it again keeps the first date: that is the one that
     tells whether a run sent it.
     """
-    state = await reservation_state()
     async with get_session() as session:
+        await _lock(session)
+        state = await _state(session)
         comparison = await session.get(Comparison, comparison_id)
         if comparison is None:
             return None
