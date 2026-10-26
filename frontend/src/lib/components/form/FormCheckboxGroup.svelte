@@ -15,7 +15,7 @@
     disabled,
     options,
     ...props
-  }: FormCheckboxGroupProps & { value?: string[] } = $props()
+  }: Omit<FormCheckboxGroupProps, 'component'> & { value?: string[] } = $props()
 
   function onToggle(option: string, checked: boolean) {
     value = checked ? [...(value ?? []), option] : (value ?? []).filter((v) => v !== option)

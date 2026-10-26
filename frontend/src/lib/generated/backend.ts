@@ -96,6 +96,22 @@ export interface Consumption {
   energy_kwh: number;
   [k: string]: unknown;
 }
+export interface InformationalLegalPageContent {
+  content: string;
+  locale: string;
+}
+export interface InformationalLegalPageLinks {
+  legal_notice?: InformationalLegalPageLink;
+  accessibility?: InformationalLegalPageLink;
+  ecodesign?: InformationalLegalPageLink;
+}
+export interface InformationalLegalPageLink {
+  mode?: "internal" | "external";
+  external_url?: string | null;
+  visible_in_legal_menu?: boolean;
+  visible_in_settings?: boolean;
+  [k: string]: unknown;
+}
 export interface LLMList {
   data_timestamp: number | null;
   models: APILLMData[];

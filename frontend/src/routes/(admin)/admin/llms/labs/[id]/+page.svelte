@@ -7,7 +7,7 @@
   import { AILogo } from '$components/layout'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
   const { data }: PageProps = $props()
@@ -18,9 +18,10 @@
   let hasCustomLogo = $derived(data.formProps.data.has_custom_logo)
   let logoVersion = $derived(data.formProps.data.logo_version)
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/llms/lab',
-      ...data.formProps,
+      initialData: () => data.formProps.data,
+      schema: () => data.formProps.schema,
       omitKeys: ['updated_at', 'created_at'],
       i18nKey: 'lab_upsert',
       method,
