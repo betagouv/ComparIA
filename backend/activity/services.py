@@ -484,6 +484,7 @@ async def list_conversations(
                     col(Comparison.archived),
                     _has_error(),
                     col(Comparison.reserved_at),
+                    col(Comparison.first_reserved_at),
                 )
                 .where(*page_where)
                 .order_by(col(Comparison.created_at).desc(), col(Comparison.id).desc())
@@ -555,6 +556,7 @@ async def list_conversations(
         archived,
         has_error,
         reserved_at,
+        first_reserved_at,
     ) in comparisons:
         comparison_turns = by_comparison.get(id, [])
         tags_a = dict.fromkeys(tag for turn in comparison_turns for tag in turn[2])
@@ -583,7 +585,8 @@ async def list_conversations(
                 archived=bool(archived),
                 has_error=bool(has_error),
                 reserved_at=reserved_at,
-                reserved_sent=reservations.sent(reserved_at),
+                reserved_sent=bool(reserved_at)
+                and reservations.sent(first_reserved_at),
             )
         )
 

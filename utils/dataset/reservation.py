@@ -85,12 +85,15 @@ class ReservationState(NamedTuple):
             return "not_analyzed"
         return None
 
-    def sent(self, reserved_at: datetime | None) -> bool:
-        """Whether the partner may already have this reserved comparison."""
+    def sent(self, first_reserved_at: datetime | None) -> bool:
+        """
+        Whether the partner may already have this comparison: it was reserved
+        before a run sent the reserved dataset, if not since.
+        """
         return bool(
-            reserved_at
+            first_reserved_at
             and self.reserved_sent_until
-            and reserved_at <= self.reserved_sent_until
+            and first_reserved_at <= self.reserved_sent_until
         )
 
 
@@ -217,8 +220,7 @@ async def _finish_sending(ids: list[uuid.UUID] | None = None) -> None:
 async def reserve(comparison_id: uuid.UUID) -> datetime | None:
     """
     The date the comparison was reserved on, or None when there is no such
-    comparison. Reserving it again keeps the first date: that is the one that
-    tells whether a run sent it.
+    comparison. Reserving it again keeps the date.
     """
     async with get_session() as session:
         await _lock(session)
@@ -231,6 +233,8 @@ async def reserve(comparison_id: uuid.UUID) -> datetime | None:
         if reason := state.block(comparison):
             raise CannotReserveError(reason)
         reserved_at = comparison.reserved_at = datetime.now()
+        if comparison.first_reserved_at is None:
+            comparison.first_reserved_at = reserved_at
         session.add(comparison)
         await session.commit()
         return reserved_at
@@ -275,7 +279,7 @@ class ReservedCounts(NamedTuple):
 
 async def reserved_counts() -> ReservedCounts:
     sent_until = (await reservation_state()).reserved_sent_until
-    sent = col(Comparison.reserved_at) <= sent_until if sent_until else false()
+    sent = col(Comparison.first_reserved_at) <= sent_until if sent_until else false()
     async with get_session() as session:
         counts = await session.exec(
             select(func.count(), func.count().filter(sent)).where(
