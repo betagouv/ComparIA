@@ -150,11 +150,6 @@ class PublishDestinationBase(BaseDBModel):
     # When the last run for this destination started, whatever came of it. A
     # failed run counts as the run of its occurrence: no retry before the next.
     last_run_started_at: OptionalDatetime = None
-    # Every comparison created before this may have left with a run. Set once
-    # the datasets are built, before anything is sent: a comparison created
-    # while a run builds can still be in it, and a run that fails half way
-    # may still have sent some files.
-    sent_until: OptionalDatetime = None
 
 
 class PublishDestination(PublishDestinationBase, table=True):
@@ -267,6 +262,22 @@ class PublishRun(BaseDBModel, table=True):
     published: int | None = None
     # What the reserved dataset carried, null for a run that did not build it.
     reserved: int | None = None
+
+
+class PublishSending(BaseDBModel, table=True):
+    """
+    One dataset a run read and sent, kept whatever later happens to the
+    destinations: whether a comparison can still be reserved for a partner
+    depends on everything ever sent. See utils/dataset/reservation.py.
+    """
+
+    __tablename__ = "publish_sending"
+
+    dataset: Annotated[PublishDataset, Field(sa_type=String, index=True)]
+    started_at: Datetime
+    # Null while the run reads and sends. Every comparison created before it
+    # may have left.
+    sent_until: OptionalDatetime = None
 
 
 class AdminPublishRun(SQLModel):
