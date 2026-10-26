@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
+  import { page } from '$app/state'
   import { PageLayout } from '$components/layout'
   import type { LegalDocumentKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
@@ -13,6 +14,7 @@
   title={m[`admin.legal.${kind}.title`]()}
   subtitle={m[`admin.legal.${kind}.subtitle`]()}
   backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
+  noPadding={page.url.pathname.includes('create')}
 >
   {@render children()}
 </PageLayout>
