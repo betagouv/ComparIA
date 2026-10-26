@@ -211,8 +211,6 @@
                 "inForce": "In force",
                 "leave": "Leave without publishing",
                 "prepare": "Prepare a new version",
-                "preview": "Preview",
-                "previewEmpty": "The preview will appear here.",
                 "publicPage": "View the public page",
                 "publish": "Publish this version",
                 "publishing": "Publishing…",
@@ -258,7 +256,6 @@
                 "introduction": "Introductory text",
                 "introductionPlaceholder": "The introductory text will appear here.",
                 "modalTitle": "Window title",
-                "preview": "User preview",
                 "signInDescription": "This checkbox appears before the sign-in code is sent and stays ticked while the code is entered.",
                 "signInTitle": "At sign-in",
                 "subtitle": "Texts shown before the first message and at sign-in.",
@@ -1085,6 +1082,10 @@
             "ecodesign": "Eco-design",
             "sources": "Source code"
         }
+    },
+    "form": {
+        "preview": "Preview",
+        "previewEmpty": "The preview will appear here."
     },
     "general": {
         "document": {

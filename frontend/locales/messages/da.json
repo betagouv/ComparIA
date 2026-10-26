@@ -210,8 +210,6 @@
                 "inForce": "I kraft",
                 "leave": "Forlad uden at offentliggøre",
                 "prepare": "Forbered en ny version",
-                "preview": "Forhåndsvisning",
-                "previewEmpty": "Forhåndsvisningen vises her.",
                 "publicPage": "Se den offentlige side",
                 "publish": "Publicer denne version",
                 "publishing": "Publicering…",
@@ -257,7 +255,6 @@
                 "introduction": "Introduktionstekst",
                 "introductionPlaceholder": "Introduktionsteksten vil blive vist her.",
                 "modalTitle": "Vinduets titel",
-                "preview": "Brugerforhåndsvisning",
                 "signInDescription": "Denne afkrydsningsboks vises før login-koden sendes og forbliver markeret under indtastningen af koden.",
                 "signInTitle": "Ved login",
                 "subtitle": "Tekster vist før den første besked og ved login.",
@@ -1084,6 +1081,10 @@
             "ecodesign": "Bæredygtigt design",
             "sources": "Kildekode"
         }
+    },
+    "form": {
+        "preview": "Forhåndsvisning",
+        "previewEmpty": "Forhåndsvisningen vises her."
     },
     "general": {
         "document": {
