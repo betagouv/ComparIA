@@ -215,8 +215,6 @@
                 "publishing": "Publicering…",
                 "read": "Se den gældende version",
                 "scheduled": "Planlagte publikationer",
-                "seededDescription": "De indstillinger, der blev installeret ved platformens opstart, er stadig dem, som besøgende accepterer. Publicer dine egne vilkår.",
-                "seededTitle": "Eksempler på gældende vilkår",
                 "version": "Version {version}",
                 "versionHelp": "For eksempel 2026.2. Denne reference skal være unik.",
                 "versionLabel": "Reference for den nye version",

@@ -81,17 +81,6 @@
   <h2 class="fr-h4">{m['admin.legal.document.read']()}</h2>
 
   {#if activeDocument}
-    {#if activeDocument.seeded}
-      <Alert
-        title={m['admin.legal.document.seededTitle']()}
-        variant="warning"
-        class="fr-mb-4v"
-        role="status"
-      >
-        <p>{m['admin.legal.document.seededDescription']()}</p>
-      </Alert>
-    {/if}
-
     <div class="gap-4 flex flex-col">
       <div class="cg-border p-6 shadow-md">
         <div class="gap-3 md:flex-row md:items-start md:justify-between flex flex-col">

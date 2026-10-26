@@ -31,6 +31,5 @@ export const adminLegalDocument = (
   published_at: '2026-07-20T10:00:00.000Z',
   effective_at: '2026-07-20T10:00:00.000Z',
   retired_at: null,
-  seeded: false,
   ...data
 })

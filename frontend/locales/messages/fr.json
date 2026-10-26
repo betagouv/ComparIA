@@ -217,8 +217,6 @@
                 "publishing": "Publication…",
                 "read": "Consulter la version en vigueur",
                 "scheduled": "Publications programmées",
-                "seededDescription": "Les conditions installées à l’initialisation de la plateforme sont encore celles acceptées par les visiteurs. Publiez vos propres conditions d’utilisation.",
-                "seededTitle": "Conditions d’exemple en vigueur",
                 "version": "Version {version}",
                 "versionHelp": "Par exemple 2026.2. Cette référence doit être unique.",
                 "versionLabel": "Référence de la nouvelle version",

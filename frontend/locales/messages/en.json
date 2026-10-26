@@ -216,8 +216,6 @@
                 "publishing": "Publishing…",
                 "read": "Read the version in force",
                 "scheduled": "Scheduled publications",
-                "seededDescription": "The terms installed when the platform was set up are still the ones visitors accept. Publish your own terms of use.",
-                "seededTitle": "Example terms in force",
                 "version": "Version {version}",
                 "versionHelp": "For example 2026.2. This reference must be unique.",
                 "versionLabel": "Reference for the new version",

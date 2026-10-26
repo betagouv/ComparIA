@@ -23,13 +23,6 @@ function renderPage(
 }
 
 describe('Legal document administration', () => {
-  it('warns while the seeded terms are still in force', async () => {
-    const { getByRole } = renderPage('terms', adminLegalDocument({ seeded: true }))
-    await waitFor(() =>
-      expect(getByRole('heading', { name: 'Conditions d’exemple en vigueur' })).toBeTruthy()
-    )
-  })
-
   it('hides the warning once real terms are published', async () => {
     const { getByRole, queryByRole } = renderPage('terms')
     await waitFor(() => expect(getByRole('heading', { name: 'Version 1.0' })).toBeTruthy())
