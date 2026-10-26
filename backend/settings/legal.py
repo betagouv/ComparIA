@@ -1,4 +1,5 @@
 import hashlib
+import json
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
@@ -27,7 +28,6 @@ _LOCALE_QUERY = Query(
     min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
 )
 LocaleQuery = Annotated[str, _LOCALE_QUERY]
-OptionalLocaleQuery = Annotated[str | None, _LOCALE_QUERY]
 
 
 def _stamp_utc(value: datetime) -> datetime:
@@ -184,8 +184,11 @@ class InvalidEffectiveDateError(ValueError):
     pass
 
 
-def legal_document_hash(content: str) -> str:
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+def legal_document_hash(content: dict[str, str]) -> str:
+    dumped_content = json.dumps(
+        content, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.sha256(dumped_content.encode("utf-8")).hexdigest()
 
 
 def normalize_effective_at(
@@ -207,29 +210,24 @@ def normalize_effective_at(
     return effective
 
 
-async def list_legal_documents(
-    kind: LegalDocumentKind, language: str | None = None
-) -> list[LegalDocument]:
+async def list_legal_documents(kind: LegalDocumentKind) -> list[LegalDocument]:
     async with get_session() as session:
-        statement = select(LegalDocument).where(LegalDocument.kind == kind)
-        if language:
-            statement = statement.where(LegalDocument.language == language)
         result = await session.exec(
-            statement.order_by(LegalDocument.effective_at.desc()).limit(100)
+            select(LegalDocument)
+            .where(LegalDocument.kind == kind)
+            .order_by(LegalDocument.effective_at.desc())
+            .limit(100)
         )
         return list(result.all())
 
 
-async def get_active_legal_document(
-    kind: LegalDocumentKind, language: str
-) -> LegalDocument | None:
+async def get_active_legal_document(kind: LegalDocumentKind) -> LegalDocument | None:
     now = utc_now()
     async with get_session() as session:
         result = await session.exec(
             select(LegalDocument)
             .where(
                 LegalDocument.kind == kind,
-                LegalDocument.language == language,
                 LegalDocument.effective_at <= now,
                 LegalDocument.retired_at.is_(None),
             )
@@ -242,8 +240,7 @@ async def publish_legal_document(
     *,
     kind: LegalDocumentKind,
     version: str,
-    language: str,
-    content: str,
+    content: dict[str, str],
     effective_at: datetime | None,
 ) -> LegalDocument:
     """Publish an immutable document and retire the active one when immediate.
@@ -253,14 +250,6 @@ async def publish_legal_document(
     """
     label = kind.replace("_", " ")
     version = version.strip()
-    language = language.strip()
-    if not 1 <= len(version) <= LEGAL_VERSION_MAX_LENGTH:
-        raise ValueError("version must contain between 1 and 64 characters")
-    if not LEGAL_LOCALE_PATTERN.fullmatch(language):
-        raise ValueError("language must be a valid locale")
-    if not 1 <= len(content) <= LEGAL_CONTENT_MAX_LENGTH:
-        raise ValueError("content must contain between 1 and 100000 characters")
-
     now = utc_now()
     normalized_effective_at = normalize_effective_at(effective_at, now)
     digest = legal_document_hash(content)
@@ -270,7 +259,6 @@ async def publish_legal_document(
             select(LegalDocument).where(
                 LegalDocument.kind == kind,
                 LegalDocument.version == version,
-                LegalDocument.language == language,
             )
         )
         existing = existing_result.first()
@@ -289,7 +277,6 @@ async def publish_legal_document(
         document = LegalDocument(
             kind=kind,
             version=version,
-            language=language,
             content=content,
             content_hash=digest,
             effective_at=normalized_effective_at,
@@ -299,7 +286,6 @@ async def publish_legal_document(
                 select(LegalDocument)
                 .where(
                     LegalDocument.kind == kind,
-                    LegalDocument.language == language,
                     LegalDocument.effective_at <= normalized_effective_at,
                     LegalDocument.retired_at.is_(None),
                 )

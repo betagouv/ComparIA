@@ -26,7 +26,7 @@ from sqlmodel import and_, col, or_, select
 
 from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
-from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
+from backend.settings.legal import get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
 from utils.database.models import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -226,7 +226,7 @@ async def get_survey_respondent_answers() -> dict[str, RespondentAnswers]:
     most recently answered one wins deterministically.
     """
     async with get_session() as session:
-        active_terms = await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE)
+        active_terms = await get_active_legal_document("terms")
         publishable_versions = publishable_survey_terms_versions(
             active_terms.version if active_terms else None
         )

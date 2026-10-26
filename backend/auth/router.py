@@ -266,7 +266,7 @@ def _reject_cross_site(request: Request) -> None:
 
 
 async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
-    document = await get_active_legal_document("terms", assertion.locale)
+    document = await get_active_legal_document("terms")
     if (
         not document
         or document.version != assertion.terms_version
@@ -1100,6 +1100,7 @@ async def accept_consent(
     await record_user_consent(
         user.id,
         document,
+        body.consent.locale,
         body.consent.accepted_at,
         request.cookies.get("auth_session"),
     )
@@ -1131,7 +1132,7 @@ async def accept_anonymous_consent(
 
     document = await _validated_terms(body.consent)
     await record_anonymous_consent(
-        anonymous_user_hash, document, body.consent.accepted_at
+        anonymous_user_hash, document, body.consent.locale, body.consent.accepted_at
     )
 
 

@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
 from backend.config import settings
-from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE, get_active_legal_document
+from backend.settings.legal import get_active_legal_document
 from backend.survey.services import carry_over_anonymous, delete_for_user
 from utils.database.models.auth import (
     AnonymousConsentLog,
@@ -537,6 +537,7 @@ async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:
 async def record_user_consent(
     user_id: uuid.UUID,
     document: LegalDocument,
+    locale: str,
     accepted_at: datetime,
     auth_session_token: str | None,
 ) -> None:
@@ -560,7 +561,7 @@ async def record_user_consent(
                 document_id=document.id,
                 terms_version=document.version,
                 document_hash=document.content_hash,
-                language=document.language,
+                language=locale,
                 client_accepted_at=as_naive_utc(accepted_at),
                 ip="not_collected",
             )
@@ -571,6 +572,7 @@ async def record_user_consent(
 async def record_anonymous_consent(
     anonymous_user_hash: str,
     document: LegalDocument,
+    locale: str,
     accepted_at: datetime,
 ) -> None:
     async with get_session() as session:
@@ -580,7 +582,7 @@ async def record_anonymous_consent(
                 document_id=document.id,
                 terms_version=document.version,
                 document_hash=document.content_hash,
-                language=document.language,
+                language=locale,
                 client_accepted_at=as_naive_utc(accepted_at),
             )
         )
@@ -643,13 +645,13 @@ async def get_current_terms_acceptance_version(
     """
     record = await _latest_terms_consent(user_id, anonymous_user_hash)
     if record:
-        document = await get_active_legal_document("terms", record.language)
+        document = await get_active_legal_document("terms")
         if document and record.document_id == document.id:
             return document.version
     # "Is anything published" is answered in the default language only. Retiring
     # the French terms while another language stays published would open the
     # gate for everyone. Only French is seeded today.
-    if not await get_active_legal_document("terms", DEFAULT_LEGAL_LANGUAGE):
+    if not await get_active_legal_document("terms"):
         return LEGACY_PARTICIPATION_TERMS_VERSION
     return None
 

@@ -56,7 +56,7 @@ def arena(monkeypatch: pytest.MonkeyPatch) -> None:
     async def get_session():
         yield FakeSession()
 
-    async def get_active_legal_document(_kind, _language):
+    async def get_active_legal_document(_kind):
         return None
 
     async def run_checks(*_args, **_kwargs):
