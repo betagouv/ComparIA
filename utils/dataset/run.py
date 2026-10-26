@@ -20,7 +20,7 @@ from .publish import (
     enabled_destinations,
     publish,
 )
-from .reservation import finish_sending, start_sending
+from .reservation import sending
 from .runs import dataset_counts, finish_run, start_run
 
 logger = logging.getLogger("comparia.dataset")
@@ -164,16 +164,12 @@ async def _export(
 
     # Before the first comparison is read, and whether or not the run is
     # recorded: reserving for a partner relies on it, see reservation.py.
-    sending = await start_sending(datasets) if destinations else []
-    try:
+    async with sending(datasets if destinations else []):
         built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
         logger.info("Finished processing all datasets.")
 
         if destinations:
             publish(destinations, built)
-    finally:
-        if sending:
-            await finish_sending(sending)
 
     return built
 

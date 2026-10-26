@@ -4,6 +4,7 @@ import asyncio
 import os
 import sys
 import uuid
+from contextlib import asynccontextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -38,17 +39,14 @@ def exercise_export(monkeypatch, tmp_path, datasets):
     monkeypatch.setattr(run, "process_datasets", build)
     monkeypatch.setattr(run, "publish", lambda *args: events.append("publish"))
 
-    async def start_sending(sent):
+    @asynccontextmanager
+    async def sending(sent):
         assert sent == datasets
         events.append("start")
-        return ["sending"]
-
-    async def finish_sending(ids):
-        assert ids == ["sending"]
+        yield
         events.append("finish")
 
-    monkeypatch.setattr(run, "start_sending", start_sending)
-    monkeypatch.setattr(run, "finish_sending", finish_sending)
+    monkeypatch.setattr(run, "sending", sending)
 
     asyncio.run(
         run._export(

@@ -31,7 +31,7 @@ from utils.database.session import (
 )
 from utils.logger import configure_logger
 
-from .reservation import finish_sending
+from .reservation import close_abandoned_sendings
 from .run import main as run
 from .runs import close_unfinished_run
 from .schedule import previous_run_at
@@ -117,10 +117,7 @@ async def tick(now: datetime | None = None) -> None:
             try:
                 # With the lock ours, a run still open cannot be anyone's.
                 await close_unfinished_run(ORPHAN_RUN_ERROR)
-                # FIXME a run started by hand holds no lock: one going right
-                # now has its sending closed early, and closes it again when
-                # done.
-                await finish_sending()
+                await close_abandoned_sendings()
                 await _run_due(now)
             finally:
                 await _release_lock(connection)

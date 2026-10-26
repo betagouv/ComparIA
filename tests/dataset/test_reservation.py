@@ -106,14 +106,12 @@ def test_what_the_open_dataset_may_have_sent_cannot_be_reserved(database):
 def test_nothing_can_be_reserved_while_the_open_dataset_is_sent(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
-        sending = await reservation.start_sending(["normal"])
-
-        with pytest.raises(CannotReserveError) as refused:
-            await reservation.reserve(comparison_id)
-        assert refused.value.reason == "publishing"
+        async with reservation.sending(["normal"]):
+            with pytest.raises(CannotReserveError) as refused:
+                await reservation.reserve(comparison_id)
+            assert refused.value.reason == "publishing"
 
         # Once done, it was sent before it was reserved.
-        await reservation.finish_sending(sending)
         with pytest.raises(CannotReserveError) as refused:
             await reservation.reserve(comparison_id)
         assert refused.value.reason == "published"
@@ -126,7 +124,7 @@ def test_a_run_waits_for_a_reservation_to_land_before_it_reads(database):
         async with get_session() as session:
             # What reserve() holds from its check to its write.
             await reservation._lock(session)
-            starting = asyncio.create_task(reservation.start_sending(["normal"]))
+            starting = asyncio.create_task(reservation._start_sending(["normal"]))
             await asyncio.sleep(0.3)
             assert not starting.done()
             await session.commit()
@@ -152,7 +150,8 @@ def test_what_was_sent_is_remembered_once_the_destination_is_gone(database):
             destination_id = destination.id
             session.add(destination)
             await session.commit()
-        await reservation.finish_sending(await reservation.start_sending(["normal"]))
+        async with reservation.sending(["normal"]):
+            pass
         async with get_session() as session:
             await session.delete(await session.get(PublishDestination, destination_id))
             await session.commit()
@@ -171,8 +170,9 @@ def test_a_run_that_died_is_closed_as_if_it_sent_everything(database):
             created_at=datetime.now() - timedelta(hours=1),
             **SHAREABLE,
         )
-        await reservation.start_sending(["normal"])
-        await reservation.finish_sending()
+        # Recorded, then the process died without holding the lock any more.
+        await reservation._start_sending(["normal"])
+        await reservation.close_abandoned_sendings()
         state = await reservation.reservation_state()
         assert not state.publishing
         with pytest.raises(CannotReserveError) as refused:
