@@ -4,7 +4,8 @@ Build the ComparIA datasets from PostgreSQL.
 This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
-3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
+3. Filters out archived, errored, not analyzed, reserved and specific cohorts (Pix, do-not-track) for the public dataset
+   Keeps only reserved comparisons, among those safe to share, for the reserved dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
 
 Sending the result to the configured destinations is publish.py's business.
@@ -41,7 +42,7 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
-from .runs import PUBLISHABLE
+from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -90,7 +91,11 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
+            {
+                "normal": PUBLISHABLE,
+                "raw": col(Comparison.id) != None,
+                "reserved": RESERVED,
+            }
         )
 
         for dataset, count in counts.items():
@@ -98,6 +103,21 @@ async def count_dataset_rows(datasets: list[Datasets]):
     except Exception as e:
         logger.error(f"An error occurred while counting rows.")
         raise
+
+
+def _shareable(extra_meta: dict) -> bool:
+    # The mirror of runs.SHAREABLE.
+    return bool(
+        not extra_meta["cohorts"]
+        and not extra_meta["contains_pii"]
+        and extra_meta["llm_analyzed"] is True
+    )
+
+
+def _reserved(row: dict) -> bool:
+    # The mirror of runs.RESERVED.
+    extra_meta = row["extra_metadata"]
+    return extra_meta["reserved_at"] is not None and _shareable(extra_meta)
 
 
 def _conso(llm: LLMData | None, msg: LLMMessage | None) -> float | None:
@@ -246,12 +266,11 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     extra_meta = DatasetComparisonExtraMetadata.model_validate(comp).model_dump()
 
     excluded = bool(
-        extra_meta["cohorts"]
+        not _shareable(extra_meta)
+        or extra_meta["reserved_at"] is not None
         or extra_meta["archived"] is not False
-        or extra_meta["contains_pii"]
         or extra_meta["contains_spam"]
         or extra_meta["error"] is not None
-        or extra_meta["llm_analyzed"] is not True
     )
     comparison_id = str(comp.id)
 
@@ -333,6 +352,7 @@ def _reference_rows() -> list[dict]:
                 "archived": False,
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
+                "reserved_at": datetime(2024, 1, 1),
             },
         }
     ]
@@ -350,6 +370,15 @@ def _build_exporters(
                 name,
                 export_base_path / name,
                 keep=lambda row: not row["excluded"],
+                drop_columns=("excluded", "extra_metadata"),
+                schema_rows=schema_rows,
+            )
+        elif dataset == "reserved":
+            # The open dataset's columns, so a partner's code reads both.
+            exporters[dataset] = StreamingDatasetExporter(
+                name,
+                export_base_path / name,
+                keep=_reserved,
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
             )

@@ -18,9 +18,10 @@ from utils.validation import NonEmptyStr
 
 from .utils import BaseDBModel, Datetime, OptionalDatetime, utc_now
 
-# The two datasets a run produces. Code, not configuration: a destination picks
-# which of them it receives, it cannot invent a third.
-PublishDataset = Literal["normal", "raw"]
+# The datasets a run produces. Code, not configuration: a destination picks
+# which of them it receives, it cannot invent another. "reserved" holds what
+# admins set aside for a partner, see utils/dataset/reservation.py.
+PublishDataset = Literal["normal", "raw", "reserved"]
 PUBLISH_DATASETS: tuple[PublishDataset, ...] = get_args(PublishDataset)
 
 PublishKind = Literal["huggingface", "s3"]
@@ -36,7 +37,8 @@ _REPO_PATH = re.compile(r"^[\w.-]+/[\w.-]+$")
 
 class HuggingFaceConfigPublic(SQLModel):
     kind: Literal["huggingface"] = "huggingface"
-    # The raw dataset is pushed to '{repo_path}-raw'.
+    # The raw and reserved datasets are pushed to '{repo_path}-raw' and
+    # '{repo_path}-reserved'.
     repo_path: NonEmptyStr
 
     @field_validator("repo_path")
@@ -200,6 +202,10 @@ class PublishDestinationUpsert(SQLModel):
             raise ValueError("a destination needs at least one dataset")
         if len(set(value)) != len(value):
             raise ValueError("a dataset can only be listed once")
+        # A partner's evaluation is worthless once its comparisons are public,
+        # and the open dataset usually goes to a public repository.
+        if {"normal", "reserved"} <= set(value):
+            raise ValueError("the open and reserved datasets go to different places")
         return value
 
 

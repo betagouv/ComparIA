@@ -6,6 +6,7 @@ from typing import Literal
 
 import cyclopts
 
+from utils.database.models.publish import PUBLISH_DATASETS
 from utils.database.session import use_export_engine
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
@@ -57,7 +58,7 @@ async def main(
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
     dataset: str
-        Specific dataset to export (normal, raw). Default: all
+        Specific dataset to export (normal, raw, reserved). Default: all
     dry_run: bool
         Build the datasets locally and send them nowhere
     count: bool
@@ -72,7 +73,7 @@ async def main(
         Send only to this destination. Used by per-destination schedules and
         the manual publish action in the admin panel.
     """
-    datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
+    datasets: list[Datasets] = list(PUBLISH_DATASETS) if dataset == "all" else [dataset]
 
     # Before the first query: this process reads against a database that is
     # serving the arena.

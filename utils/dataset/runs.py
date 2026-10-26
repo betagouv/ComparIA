@@ -22,12 +22,24 @@ logger = logging.getLogger("comparia.dataset")
 # Longer than the whole error, and the panel shows it as it is.
 _ERROR_MAX = 2_000
 
-# What the open dataset keeps: everything analysis cleared. The mirror of
-# compute.py's own filter, and of DatasetComparison.excluded.
-PUBLISHABLE = and_(
-    col(Comparison.archived) == False,  # noqa: E712
+# What may leave the instance at all, for the public or for a partner: analysed,
+# nothing personal, nothing from a cohort that asked us to keep it. The mirror
+# of compute.py's own filter.
+SHAREABLE = and_(
     col(Comparison.llm_analyzed) == True,  # noqa: E712
     col(Comparison.contains_pii) != True,  # noqa: E712
+    # A NULL is what an ordinary visitor's comparison holds, and
+    # 'cohorts IN (NULL, '')' is never true of it.
+    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
+)
+
+# What the open dataset keeps: everything analysis cleared that no admin
+# reserved. The mirror of compute.py's own filter, and of
+# DatasetComparison.excluded.
+PUBLISHABLE = and_(
+    SHAREABLE,
+    col(Comparison.reserved_at).is_(None),
+    col(Comparison.archived) == False,  # noqa: E712
     col(Comparison.contains_spam) != True,  # noqa: E712
     # A comparison that went well stores the JSON value null, not SQL NULL,
     # and both mean the same thing to the exporter. Comparing the column to
@@ -37,10 +49,11 @@ PUBLISHABLE = and_(
         col(Comparison.error).is_(None),
         func.jsonb_typeof(col(Comparison.error)) == "null",
     ),
-    # Same trap as the error column: 'cohorts IN (NULL, '')' is never true of
-    # a NULL, which is what an ordinary visitor's comparison holds.
-    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
 )
+
+# What the reserved dataset keeps. Spam, errors and archived comparisons go
+# too: the partner judges them for itself.
+RESERVED = and_(SHAREABLE, col(Comparison.reserved_at).is_not(None))
 
 
 async def start_run() -> uuid.UUID:

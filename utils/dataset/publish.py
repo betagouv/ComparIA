@@ -29,6 +29,14 @@ logger = logging.getLogger("comparia.dataset")
 LOCAL_NAMES: dict[Datasets, str] = {
     "normal": "comparisons",
     "raw": "comparisons-raw",
+    "reserved": "comparisons-reserved",
+}
+
+# What a dataset's repository adds to the configured path on Hugging Face.
+_HF_REPO_SUFFIXES: dict[Datasets, str] = {
+    "normal": "",
+    "raw": "-raw",
+    "reserved": "-reserved",
 }
 
 # Files a build produces, as suffixes of the base name.
@@ -89,7 +97,7 @@ def _built_files(
 
 
 def _hf_repo(config: HuggingFaceConfig, dataset: Datasets) -> str:
-    return config.repo_path + ("-raw" if dataset == "raw" else "")
+    return config.repo_path + _HF_REPO_SUFFIXES[dataset]
 
 
 def _push_to_huggingface(
