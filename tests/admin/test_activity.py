@@ -294,6 +294,37 @@ def test_the_list_filters_on_what_was_said_and_how_it_was_voted(activity):
     assert by_revealed == [revealed]
 
 
+def test_the_list_says_what_can_be_reserved_and_filters_on_it(activity):
+    from utils.dataset.reservation import reserve
+
+    async def scenario():
+        llms = await add_llms()
+        cleared = {"llm_analyzed": True, "contains_pii": False}
+        reserved = await add_comparison(llms, **cleared)
+        await reserve(reserved)
+        # Archived by analysis after it was reserved: still listed as reserved.
+        archived = await add_comparison(llms, **cleared, archived=True)
+        await reserve(archived)
+        pix = await add_comparison(llms, **cleared, cohorts="pix")
+        page = await services.list_conversations(ConversationFilters())
+        only_reserved = await services.list_conversations(
+            ConversationFilters(reserved=True)
+        )
+        not_reserved = await services.list_conversations(
+            ConversationFilters(reserved=False)
+        )
+        return reserved, archived, pix, page, only_reserved, not_reserved
+
+    reserved, archived, pix, page, only_reserved, not_reserved = activity(scenario)
+
+    rows = {row.id: row for row in page.items}
+    assert rows[reserved].reserved_at and rows[reserved].reserve_block is None
+    assert not rows[reserved].reserved_sent
+    assert rows[pix].reserve_block == "cohort"
+    assert {row.id for row in only_reserved.items} == {reserved, archived}
+    assert [row.id for row in not_reserved.items] == [pix]
+
+
 def test_a_conversation_reads_in_full_without_who_wrote_it(activity):
     async def scenario():
         llms = await add_llms()

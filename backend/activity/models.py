@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from backend.config import SelectionMode, TurnChoice
 from backend.statistics.projection import Bucket
 from utils.database.models.comparison import ArchivedReason, ErrorDetails
+from utils.dataset.reservation import ReserveBlock
 
 ActivityPeriod = Literal["24h", "7d", "30d", "90d", "365d", "all"]
 ActivityBucket = Bucket
@@ -38,6 +39,7 @@ class ConversationFilters(ActivityFilters):
     revealed: bool | None = None
     category: str | None = Field(default=None, max_length=100)
     flag: ActivityFlag | None = None
+    reserved: bool | None = None
     search: str | None = Field(default=None, min_length=3, max_length=200)
     # The last row of the previous page, as handed back in `next_cursor`.
     cursor: str | None = Field(default=None, max_length=100)
@@ -119,6 +121,11 @@ class ActivityConversationRow(BaseModel):
     contains_spam: bool
     archived: bool
     has_error: bool
+    reserved_at: datetime | None
+    # Why it cannot be reserved, for one that is not.
+    reserve_block: ReserveBlock | None = None
+    # Whether a run may have sent it to the partner, for one that is reserved.
+    reserved_sent: bool
 
 
 class ActivityConversationsPage(BaseModel):
@@ -128,6 +135,10 @@ class ActivityConversationsPage(BaseModel):
     # number costs a full scan and tells an admin nothing more.
     total: int | None
     total_capped: bool
+
+
+class ActivityReservation(BaseModel):
+    reserved_at: datetime
 
 
 class ActivityAnswer(BaseModel):

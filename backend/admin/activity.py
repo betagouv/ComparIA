@@ -12,6 +12,7 @@ from backend.activity.models import (
     ActivityFilterOptions,
     ActivityFilters,
     ActivityOverview,
+    ActivityReservation,
     ConversationFilters,
 )
 from backend.activity.services import (
@@ -23,7 +24,8 @@ from backend.activity.services import (
     list_conversations,
 )
 from backend.auth.dependencies import RequiredAdmin
-from backend.errors import ActivityQueryTimeoutError
+from backend.errors import ActivityQueryTimeoutError, ReserveBlockedError
+from utils.dataset.reservation import CannotReserveError, reserve, unreserve
 
 logger = logging.getLogger("languia")
 
@@ -86,3 +88,36 @@ async def read_conversation(
     if conversation is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     return conversation
+
+
+@router.put(
+    "/conversations/{comparison_id}/reservation", response_model=ActivityReservation
+)
+async def reserve_conversation(
+    comparison_id: uuid.UUID, current_user: RequiredAdmin
+) -> ActivityReservation:
+    try:
+        reserved_at = await reserve(comparison_id)
+    except CannotReserveError as exc:
+        raise ReserveBlockedError(exc.reason)
+    if reserved_at is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    logger.info(
+        f"[ADMIN] conversation {comparison_id} reserved by admin {current_user.id}"
+    )
+    return ActivityReservation(reserved_at=reserved_at)
+
+
+@router.delete(
+    "/conversations/{comparison_id}/reservation",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def unreserve_conversation(
+    comparison_id: uuid.UUID, current_user: RequiredAdmin
+) -> None:
+    if not await unreserve(comparison_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # The next run publishes it: keep a trace of who decided so.
+    logger.info(
+        f"[ADMIN] conversation {comparison_id} unreserved by admin {current_user.id}"
+    )
