@@ -58,16 +58,12 @@ from backend.settings.informational_legal import (
     get_informational_legal_pages,
 )
 from backend.settings.legal import (
-    DEFAULT_LEGAL_LANGUAGE,
     LEGAL_CONTENT_MAX_LENGTH,
-    LEGAL_LOCALE_PATTERN,
     LEGAL_VERSION_MAX_LENGTH,
     SEEDED_TERMS_VERSION,
     DuplicateLegalDocumentError,
     InvalidEffectiveDateError,
     LegalPresentationTranslatable,
-    LocaleQuery,
-    OptionalLocaleQuery,
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentations,
