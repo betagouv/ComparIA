@@ -148,6 +148,11 @@ class PublishDestinationBase(BaseDBModel):
     # When the last run for this destination started, whatever came of it. A
     # failed run counts as the run of its occurrence: no retry before the next.
     last_run_started_at: OptionalDatetime = None
+    # Every comparison created before this may have left with a run. Set once
+    # the datasets are built, before anything is sent: a comparison created
+    # while a run builds can still be in it, and a run that fails half way
+    # may still have sent some files.
+    sent_until: OptionalDatetime = None
 
 
 class PublishDestination(PublishDestinationBase, table=True):
