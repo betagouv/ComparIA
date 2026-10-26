@@ -21,7 +21,7 @@
     children,
     ...props
   }: Omit<FormInputProps, 'component'> & {
-    value: string | number | null
+    value?: string | number | null
   } & SvelteHTMLElements['div'] = $props()
 </script>
 
