@@ -190,8 +190,9 @@ export interface AdminLegalDocument {
   id: string;
   kind: "terms" | "privacy_policy";
   version: string;
-  locale: string;
-  content: string;
+  content: {
+    [k: string]: string;
+  };
   content_hash: string;
   published_at: string;
   effective_at: string;
@@ -745,10 +746,12 @@ export interface S3ConfigInput {
 }
 export interface PublishLegalDocumentBody {
   version: string;
-  locale: string;
-  content: string;
+  content: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000;
   effective_at?: string | null;
   confirm_publication: true;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000 {
+  [k: string]: string;
 }
 export interface SuggestionArchiveUpdate {
   archived: boolean;

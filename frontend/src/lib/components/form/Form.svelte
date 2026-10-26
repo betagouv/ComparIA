@@ -38,7 +38,6 @@
     isDirty?: boolean
     errors?: Record<string, string>
     stickyFooter?: boolean
-    novalidate?: boolean
     fieldSnippets?: Record<string, Snippet>
     errorSnippet?: Snippet
     btnSnippet?: Snippet<[isBusy: boolean]>

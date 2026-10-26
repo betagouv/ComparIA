@@ -2,9 +2,14 @@ import type { AdminLegalDocument } from '$lib/generated/admin'
 import type { LegalDocumentKeys } from '$lib/generated/constants'
 import { adminLegalDocument } from '$lib/testing/mock-data'
 import { render, waitFor } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { PageData } from './$types'
 import Page from './+page.svelte'
+
+vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/authContext.svelte')>()),
+  getAuthContext: () => ({ config: { default_locale: 'fr', enabled_locales: ['fr', 'en'] } })
+}))
 
 function renderPage(
   key: LegalDocumentKeys,

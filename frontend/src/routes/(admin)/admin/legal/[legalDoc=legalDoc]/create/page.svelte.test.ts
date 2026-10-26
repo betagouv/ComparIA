@@ -7,12 +7,19 @@ import type { PageData } from './$types'
 import Page from './+page.svelte'
 
 const mocks = vi.hoisted(() => ({ request: vi.fn() }))
-vi.mock('$lib/fastapi-client', () => ({ api: { request: mocks.request } }))
+vi.mock('$lib/fastapi-client', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/fastapi-client')>()),
+  api: { request: mocks.request }
+}))
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: vi.fn() }))
+vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/authContext.svelte')>()),
+  getAuthContext: () => ({ config: { default_locale: 'fr' } })
+}))
 
 function publishedBody(endpoint: string) {
   const call = mocks.request.mock.calls.find(
-    ([path, options]) => path === endpoint && options?.method === 'POST'
+    ([path, options]) => path === endpoint && options?.method === 'post'
   )
   return JSON.parse(call?.[1]?.body as string)
 }
@@ -42,8 +49,7 @@ describe('Legal document administration', () => {
     await fireEvent.input(getByRole('textbox', { name: /Contenu de la politique/ }), {
       target: { value: '# Confidentialité\n\nTexte **important**.' }
     })
-    await fireEvent.click(getByRole('button', { name: 'Continuer vers « Vérifier et publier »' }))
-    expect(getByRole('combobox', { name: 'Langue' })).toBeTruthy()
+    await fireEvent.click(getByRole('button', { name: 'Continuer' }))
     await fireEvent.input(getByRole('textbox', { name: /Référence de la nouvelle version/ }), {
       target: { value: '2026.1' }
     })
@@ -53,13 +59,12 @@ describe('Legal document administration', () => {
     await waitFor(() =>
       expect(mocks.request).toHaveBeenCalledWith(
         '/admin/legal/documents/privacy_policy',
-        expect.objectContaining({ method: 'POST' })
+        expect.objectContaining({ method: 'post' })
       )
     )
     expect(publishedBody('/admin/legal/documents/privacy_policy')).toMatchObject({
       version: '2026.1',
-      locale: 'fr',
-      content: '# Confidentialité\n\nTexte **important**.',
+      content: { fr: '# Confidentialité\n\nTexte **important**.' },
       confirm_publication: true
     })
   })
