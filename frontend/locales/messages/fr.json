@@ -167,6 +167,29 @@
                 "refresh": "Actualiser",
                 "unvoted": "Sans vote : {count} messages ({share})"
             },
+            "reservation": {
+                "any": "Réservées ou non",
+                "badge": "Réservée",
+                "cancel": "Annuler",
+                "column": "Réservation",
+                "label": "Réservation",
+                "notReserved": "Non réservées",
+                "reserve": "Réserver",
+                "reserveLabel": "Réserver pour un partenaire : {prompt}",
+                "reserved": "Réservées pour un partenaire",
+                "unreserve": "Ne plus réserver",
+                "unreserveConfirm": "Ne plus réserver",
+                "unreserveLabel": "Ne plus réserver : {prompt}",
+                "unreserveTitle": "Remettre cette conversation dans le jeu ouvert ?",
+                "unreserveWarning": "Le partenaire l'a déjà reçue. La publier gâche son évaluation."
+            },
+            "reserveBlocks": {
+                "cohort": "Cohorte",
+                "not_analyzed": "Pas encore analysée",
+                "pii": "Données personnelles",
+                "published": "Déjà publiée",
+                "publishing": "Publication en cours"
+            },
             "stages": {
                 "commented": "Commentée",
                 "revealed": "Révélée",
