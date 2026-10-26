@@ -21,9 +21,7 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
       matomoUrl
     }
   } catch (error) {
-    // Nothing published yet, or the backend is down: the page says so instead of
-    // erroring, but this is still logged since a fresh install should have a
-    // seeded document and a persistent failure here needs attention.
+    // Nothing published yet, or the backend is down: the page says so instead of erroring
     logger.warn(`Failed to load published ${legalDocKey}`, { error: `${error}` })
     return { doc: null, matomoUrl }
   }
