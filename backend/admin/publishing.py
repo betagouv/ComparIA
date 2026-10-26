@@ -1,14 +1,17 @@
+import logging
 import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
 
+from backend.auth.dependencies import RequiredAdmin
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
     AdminPublishRun,
     AdminPublishStatus,
+    AdminReleasedReservations,
     MissingSecretError,
     PublishDestination,
     PublishDestinationUpsert,
@@ -17,8 +20,11 @@ from utils.database.models.publish import (
 )
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
+from utils.dataset.reservation import reserved_counts, unreserve_all
 from utils.dataset.runs import last_run, recent_runs
 from utils.dataset.schedule import next_run_at
+
+logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
 
@@ -62,9 +68,24 @@ def _to_admin_destination(row: PublishDestination) -> AdminPublishDestination:
 @router.get("/status", response_model=AdminPublishStatus)
 async def get_status() -> AdminPublishStatus:
     runs = await recent_runs()
+    reserved = await reserved_counts()
     return AdminPublishStatus(
         runs=[AdminPublishRun.model_validate(run.model_dump()) for run in runs],
+        reserved=reserved.reserved,
+        reserved_sent=reserved.sent,
     )
+
+
+@router.delete("/reservations", response_model=AdminReleasedReservations)
+async def release_reservations(
+    current_user: RequiredAdmin,
+) -> AdminReleasedReservations:
+    """Every reserved comparison goes back to the open dataset at the next run."""
+    released = await unreserve_all()
+    logger.info(
+        f"[ADMIN] {released} reserved conversations released by admin {current_user.id}"
+    )
+    return AdminReleasedReservations(released=released)
 
 
 @router.get("/destinations", response_model=AdminPublishDestinationsResponse)

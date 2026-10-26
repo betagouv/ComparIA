@@ -283,3 +283,10 @@ class AdminPublishStatus(SQLModel):
     # Shared across destinations: a run says what was published, while each
     # destination owns only its schedule.
     runs: list[AdminPublishRun]
+    # Reserved now, and how many of those a run already sent to the partner.
+    reserved: int
+    reserved_sent: int
+
+
+class AdminReleasedReservations(SQLModel):
+    released: int
