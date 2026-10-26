@@ -21,6 +21,7 @@
     isDirty = false,
     stickyFooter = false,
     errors = $bindable({}),
+    novalidate = true,
     fieldSnippets,
     errorSnippet,
     btnSnippet,
@@ -37,6 +38,7 @@
     isDirty?: boolean
     errors?: Record<string, string>
     stickyFooter?: boolean
+    novalidate?: boolean
     fieldSnippets?: Record<string, Snippet>
     errorSnippet?: Snippet
     btnSnippet?: Snippet<[isBusy: boolean]>
@@ -71,7 +73,7 @@
     event.preventDefault()
     onSubmit()
   }}
-  novalidate
+  {novalidate}
   aria-describedby="errors-{id}"
 >
   <div class={{ 'px-4 md:px-6 my-6': stickyFooter }}>
@@ -119,7 +121,7 @@
 
   <div
     class={[
-      'py-4 flex justify-end',
+      'py-4 gap-4 flex justify-end',
       {
         'bottom-0 bg-white px-4 md:px-6 sticky z-501 border-t-1 border-[--grey-925-125]':
           stickyFooter
