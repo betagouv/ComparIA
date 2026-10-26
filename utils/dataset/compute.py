@@ -4,7 +4,8 @@ Build the ComparIA datasets from PostgreSQL.
 This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
-3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
+3. Filters out archived, errored, not analyzed, reserved and specific cohorts (Pix, do-not-track) for the public dataset
+   Keeps only reserved comparisons, among those safe to share, for the reserved dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
 
 Sending the result to the configured destinations is publish.py's business.
@@ -17,6 +18,7 @@ Required env vars: COMPARIA_DB_URI
 
 import json
 import logging
+import shutil
 from datetime import datetime
 from pathlib import Path
 from uuid import UUID
@@ -41,7 +43,8 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
-from .runs import PUBLISHABLE
+from .reservation import reserved_ids
+from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -90,7 +93,11 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
+            {
+                "normal": PUBLISHABLE,
+                "raw": col(Comparison.id) != None,
+                "reserved": RESERVED,
+            }
         )
 
         for dataset, count in counts.items():
@@ -98,6 +105,21 @@ async def count_dataset_rows(datasets: list[Datasets]):
     except Exception as e:
         logger.error(f"An error occurred while counting rows.")
         raise
+
+
+def _shareable(extra_meta: dict) -> bool:
+    # The mirror of runs.SHAREABLE.
+    return bool(
+        not extra_meta["cohorts"]
+        and not extra_meta["contains_pii"]
+        and extra_meta["llm_analyzed"] is True
+    )
+
+
+def _reserved(row: dict) -> bool:
+    # The mirror of runs.RESERVED.
+    extra_meta = row["extra_metadata"]
+    return extra_meta["reserved_at"] is not None and _shareable(extra_meta)
 
 
 def _conso(llm: LLMData | None, msg: LLMMessage | None) -> float | None:
@@ -246,12 +268,11 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     extra_meta = DatasetComparisonExtraMetadata.model_validate(comp).model_dump()
 
     excluded = bool(
-        extra_meta["cohorts"]
+        not _shareable(extra_meta)
+        or extra_meta["reserved_at"] is not None
         or extra_meta["archived"] is not False
-        or extra_meta["contains_pii"]
         or extra_meta["contains_spam"]
         or extra_meta["error"] is not None
-        or extra_meta["llm_analyzed"] is not True
     )
     comparison_id = str(comp.id)
 
@@ -333,9 +354,16 @@ def _reference_rows() -> list[dict]:
                 "archived": False,
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
+                "reserved_at": datetime(2024, 1, 1),
             },
         }
     ]
+
+
+def _clear(export_dir: Path) -> None:
+    # A build that keeps no row writes no parquet. One left from an earlier
+    # build would then be sent as this one's, with comparisons reserved since.
+    shutil.rmtree(export_dir, ignore_errors=True)
 
 
 def _build_exporters(
@@ -345,11 +373,21 @@ def _build_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter] = {}
     for dataset in datasets:
         name = LOCAL_NAMES[dataset]
+        _clear(export_base_path / name)
         if dataset == "normal":
             exporters[dataset] = StreamingDatasetExporter(
                 name,
                 export_base_path / name,
                 keep=lambda row: not row["excluded"],
+                drop_columns=("excluded", "extra_metadata"),
+                schema_rows=schema_rows,
+            )
+        elif dataset == "reserved":
+            # The open dataset's columns, so a partner's code reads both.
+            exporters[dataset] = StreamingDatasetExporter(
+                name,
+                export_base_path / name,
+                keep=_reserved,
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
             )
@@ -412,6 +450,7 @@ def _write_normal_from_raw_parquet(
     raw_parquet_path: Path,
     repo_name: str,
     export_dir: Path,
+    reserved_ids: list[str],
 ) -> int:
     """
     Regenerate the normal dataset from the raw parquet without hitting the DB.
@@ -419,6 +458,8 @@ def _write_normal_from_raw_parquet(
     converting large nested columns to Python objects.
     Sample files are written from the first 1000 filtered rows (not random,
     but fast and memory-bounded).
+    The raw parquet says what was excluded when it was built, which knows
+    nothing of what was reserved since: `reserved_ids` leaves those out too.
     """
     import pyarrow as pa
     import pyarrow.compute as pc
@@ -437,7 +478,17 @@ def _write_normal_from_raw_parquet(
 
     for batch in reader.iter_batches(batch_size=10_000):
         table = pa.Table.from_batches([batch])
-        table = table.filter(pc.equal(table.column("excluded"), False))
+        table = table.filter(
+            pc.and_(
+                pc.equal(table.column("excluded"), False),
+                pc.invert(
+                    pc.is_in(
+                        table.column("comparison_id"),
+                        value_set=pa.array(reserved_ids, type=pa.string()),
+                    )
+                ),
+            )
+        )
         table = table.drop(DROP_COLS)
         metadata_index = table.schema.get_field_index("metadata")
         metadata = table.column(metadata_index)
@@ -619,7 +670,10 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_name = LOCAL_NAMES["normal"]
         normal_export_dir = export_base_path / normal_name
-        _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
+        _clear(normal_export_dir)
+        _write_normal_from_raw_parquet(
+            raw_parquet_path, normal_name, normal_export_dir, await reserved_ids()
+        )
         await write_vote_tags_vocabulary(normal_export_dir)
         await write_models_metadata(normal_export_dir)
         return {"normal": normal_export_dir}

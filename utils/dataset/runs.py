@@ -8,6 +8,7 @@ which is what a kill or a crash looks like from outside.
 
 import logging
 import uuid
+from typing import NamedTuple
 
 from sqlmodel import and_, col, desc, func, or_, select
 
@@ -22,12 +23,24 @@ logger = logging.getLogger("comparia.dataset")
 # Longer than the whole error, and the panel shows it as it is.
 _ERROR_MAX = 2_000
 
-# What the open dataset keeps: everything analysis cleared. The mirror of
-# compute.py's own filter, and of DatasetComparison.excluded.
-PUBLISHABLE = and_(
-    col(Comparison.archived) == False,  # noqa: E712
+# What may leave the instance at all, for the public or for a partner: analysed,
+# nothing personal, nothing from a cohort that asked us to keep it. The mirror
+# of compute.py's own filter.
+SHAREABLE = and_(
     col(Comparison.llm_analyzed) == True,  # noqa: E712
     col(Comparison.contains_pii) != True,  # noqa: E712
+    # A NULL is what an ordinary visitor's comparison holds, and
+    # 'cohorts IN (NULL, '')' is never true of it.
+    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
+)
+
+# What the open dataset keeps: everything analysis cleared that no admin
+# reserved. The mirror of compute.py's own filter, and of
+# DatasetComparison.excluded.
+PUBLISHABLE = and_(
+    SHAREABLE,
+    col(Comparison.reserved_at).is_(None),
+    col(Comparison.archived) == False,  # noqa: E712
     col(Comparison.contains_spam) != True,  # noqa: E712
     # A comparison that went well stores the JSON value null, not SQL NULL,
     # and both mean the same thing to the exporter. Comparing the column to
@@ -37,10 +50,11 @@ PUBLISHABLE = and_(
         col(Comparison.error).is_(None),
         func.jsonb_typeof(col(Comparison.error)) == "null",
     ),
-    # Same trap as the error column: 'cohorts IN (NULL, '')' is never true of
-    # a NULL, which is what an ordinary visitor's comparison holds.
-    or_(col(Comparison.cohorts).is_(None), col(Comparison.cohorts) == ""),
 )
+
+# What the reserved dataset keeps. Spam, errors and archived comparisons go
+# too: the partner judges them for itself.
+RESERVED = and_(SHAREABLE, col(Comparison.reserved_at).is_not(None))
 
 
 async def start_run() -> uuid.UUID:
@@ -58,6 +72,7 @@ async def finish_run(
     error: str | None = None,
     published: int | None = None,
     held_back: int | None = None,
+    reserved: int | None = None,
 ) -> None:
     async with get_session() as session:
         run = await session.get(PublishRun, run_id)
@@ -68,16 +83,31 @@ async def finish_run(
         run.error = error[:_ERROR_MAX] if error else None
         run.published = published
         run.held_back = held_back
+        run.reserved = reserved
         session.add(run)
         await session.commit()
 
 
-async def open_dataset_counts() -> tuple[int, int]:
-    """How many comparisons the open dataset published, and how many it held back."""
+class DatasetCounts(NamedTuple):
+    published: int
+    reserved: int
+    # Neither published nor reserved.
+    held_back: int
+
+
+async def dataset_counts() -> DatasetCounts:
     counts = await get_db_comparisons_counts(
-        {"published": PUBLISHABLE, "total": col(Comparison.id) != None}  # noqa: E711
+        {
+            "published": PUBLISHABLE,
+            "reserved": RESERVED,
+            "total": col(Comparison.id) != None,  # noqa: E711
+        }
     )
-    return counts["published"], counts["total"] - counts["published"]
+    return DatasetCounts(
+        published=counts["published"],
+        reserved=counts["reserved"],
+        held_back=counts["total"] - counts["published"] - counts["reserved"],
+    )
 
 
 async def last_run() -> PublishRun | None:

@@ -6,6 +6,7 @@ from typing import Literal
 
 import cyclopts
 
+from utils.database.models.publish import PUBLISH_DATASETS
 from utils.database.session import use_export_engine
 from utils.logger import configure_logger
 from utils.utils import UTILS_DIR
@@ -19,7 +20,8 @@ from .publish import (
     enabled_destinations,
     publish,
 )
-from .runs import finish_run, open_dataset_counts, start_run
+from .reservation import sending
+from .runs import dataset_counts, finish_run, start_run
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -57,7 +59,7 @@ async def main(
     export_base_path: str
         Directory for local export (default: utils/local_dataset)
     dataset: str
-        Specific dataset to export (normal, raw). Default: all
+        Specific dataset to export (normal, raw, reserved). Default: all
     dry_run: bool
         Build the datasets locally and send them nowhere
     count: bool
@@ -72,7 +74,7 @@ async def main(
         Send only to this destination. Used by per-destination schedules and
         the manual publish action in the admin panel.
     """
-    datasets: list[Datasets] = ["normal", "raw"] if dataset == "all" else [dataset]
+    datasets: list[Datasets] = list(PUBLISH_DATASETS) if dataset == "all" else [dataset]
 
     # Before the first query: this process reads against a database that is
     # serving the arena.
@@ -96,11 +98,17 @@ async def main(
         raise
     else:
         if run_id:
-            # Only a run that rebuilt the open dataset can say what it holds
-            # back. One that sent the raw dataset alone leaves the figures
-            # blank rather than quoting numbers it did not produce.
-            counts = await open_dataset_counts() if "normal" in built else (None, None)
-            await finish_run(run_id, published=counts[0], held_back=counts[1])
+            # A run only quotes the figures of the datasets it rebuilt. One
+            # that sent the raw dataset alone leaves them blank rather than
+            # quoting numbers it did not produce.
+            counts = await dataset_counts()
+            open_built = "normal" in built
+            await finish_run(
+                run_id,
+                published=counts.published if open_built else None,
+                held_back=counts.held_back if open_built else None,
+                reserved=counts.reserved if "reserved" in built else None,
+            )
     finally:
         # The parquet files are the run's, not the instance's: they are what
         # was just published, and they are large. Only the directories a build
@@ -154,11 +162,14 @@ async def _export(
 
     check_free_disk(export_base_path)
 
-    built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
-    logger.info("Finished processing all datasets.")
+    # Before the first comparison is read, and whether or not the run is
+    # recorded: reserving for a partner relies on it, see reservation.py.
+    async with sending(datasets if destinations else []):
+        built = await process_datasets(datasets, export_base_path, use_cache=use_cache)
+        logger.info("Finished processing all datasets.")
 
-    if destinations:
-        publish(destinations, built)
+        if destinations:
+            publish(destinations, built)
 
     return built
 

@@ -21,6 +21,7 @@ from utils.database.models import Comparison, Turn, UserMessage
 from utils.database.models.llms import LLMData
 from utils.database.models.utils import escape_like
 from utils.database.session import get_activity_session
+from utils.dataset.reservation import reservation_state
 from utils.storage.redis import REDIS_ADMIN_ACTIVITY_KEY, get_redis_client
 
 from .models import (
@@ -132,9 +133,14 @@ def _bucket_label(value: datetime, bucket: ActivityBucket) -> str:
 
 def _keeps_archived(filters: ActivityFilters) -> bool:
     # Analysis archives what it flags, so asking for flagged conversations
-    # means asking for archived ones.
+    # means asking for archived ones. A reserved one stays reserved when
+    # analysis archives it.
     flag = getattr(filters, "flag", None)
-    return filters.include_archived or flag in ("pii", "spam", "archived")
+    return (
+        filters.include_archived
+        or flag in ("pii", "spam", "archived")
+        or bool(getattr(filters, "reserved", None))
+    )
 
 
 def _scope(filters: ActivityFilters) -> list[Any]:
@@ -428,6 +434,8 @@ def _conversation_conditions(filters: ConversationFilters) -> list[Any]:
         where.append(col(Comparison.archived).is_(True))
     elif filters.flag == "not_analyzed":
         where.append(col(Comparison.llm_analyzed).is_not(True))
+    if filters.reserved is not None:
+        where.append(col(Comparison.reserved_at).is_not(None) == filters.reserved)
     if filters.search:
         where.append(
             exists(
@@ -448,6 +456,7 @@ def _conversation_conditions(filters: ConversationFilters) -> list[Any]:
 async def list_conversations(
     filters: ConversationFilters,
 ) -> ActivityConversationsPage:
+    reservations = await reservation_state()
     where = _conversation_conditions(filters)
     page_where = list(where)
     if filters.cursor:
@@ -474,6 +483,8 @@ async def list_conversations(
                     col(Comparison.contains_spam),
                     col(Comparison.archived),
                     _has_error(),
+                    col(Comparison.reserved_at),
+                    col(Comparison.first_reserved_at),
                 )
                 .where(*page_where)
                 .order_by(col(Comparison.created_at).desc(), col(Comparison.id).desc())
@@ -544,6 +555,8 @@ async def list_conversations(
         contains_spam,
         archived,
         has_error,
+        reserved_at,
+        first_reserved_at,
     ) in comparisons:
         comparison_turns = by_comparison.get(id, [])
         tags_a = dict.fromkeys(tag for turn in comparison_turns for tag in turn[2])
@@ -571,8 +584,15 @@ async def list_conversations(
                 contains_spam=bool(contains_spam),
                 archived=bool(archived),
                 has_error=bool(has_error),
+                reserved_at=reserved_at,
+                reserved_sent=bool(reserved_at)
+                and reservations.sent(first_reserved_at),
             )
         )
+
+    for item in items:
+        if item.reserved_at is None:
+            item.reserve_block = reservations.block(item)
 
     last = comparisons[-1] if comparisons else None
     return ActivityConversationsPage(

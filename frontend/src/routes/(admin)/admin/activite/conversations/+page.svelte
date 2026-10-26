@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
+  import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Alert, Button, Search, Select } from '$components/dsfr'
+  import { Alert, Badge, Button, Modal, Search, Select } from '$components/dsfr'
+  import { api, type ApiError } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { untrack } from 'svelte'
   import type { ActivityConversationRow } from '$lib/generated/admin'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { toRelativeTime } from '$lib/utils/data'
-  import { ConversationModal, JourneyTrack, VerdictMark } from '../components'
+  import { ConversationModal, JourneyTrack, Reservation, VerdictMark } from '../components'
   import {
     FLAGS,
     JOURNEYS,
@@ -50,6 +52,12 @@
     ...JOURNEYS.map((value) => ({ value, label: label('stages', value) }))
   ]
 
+  const reservedOptions = [
+    { value: '', label: m['admin.activity.reservation.any']() },
+    { value: 'true', label: m['admin.activity.reservation.reserved']() },
+    { value: 'false', label: m['admin.activity.reservation.notReserved']() }
+  ]
+
   let selected = $state<number | null>(null)
 
   // Icons rather than badges, named in the tooltip and the accessible label.
@@ -77,6 +85,51 @@
   }
 
   const total = $derived(data.conversations?.total)
+
+  let reserving = $state<string>()
+  let toUnreserve = $state<ActivityConversationRow>()
+
+  async function setReserved(row: ActivityConversationRow, reserved: boolean) {
+    reserving = row.id
+    try {
+      await api.request(`/admin/activity/conversations/${row.id}/reservation`, {
+        method: reserved ? 'PUT' : 'DELETE'
+      })
+      await invalidate('admin:activity:conversations')
+    } catch (error) {
+      // The backend names why it refused, the list may be out of date.
+      const { status, detail } = error as ApiError
+      useToast(
+        status === 409 && typeof detail === 'string'
+          ? label('reserveBlocks', detail)
+          : m['admin.activity.errors.generic'](),
+        6000,
+        'error'
+      )
+    } finally {
+      reserving = undefined
+    }
+  }
+
+  function unreserveModal(action: 'disclose' | 'conceal') {
+    const element = document.getElementById('fr-modal-unreserve')
+    // @ts-expect-error - DSFR is globally available
+    if (element) window.dsfr(element).modal[action]()
+  }
+
+  // Unreserving puts the conversation in the next open dataset: once the
+  // partner has it, that spoils their evaluation, so ask first.
+  function unreserve(row: ActivityConversationRow) {
+    if (!row.reserved_sent) return setReserved(row, false)
+    toUnreserve = row
+    unreserveModal('disclose')
+  }
+
+  async function confirmUnreserve() {
+    unreserveModal('conceal')
+    if (toUnreserve) await setReserved(toUnreserve, false)
+    toUnreserve = undefined
+  }
 </script>
 
 <section
@@ -97,6 +150,15 @@
     options={journeyOptions}
     selected={journeyOf(params)}
     onchange={(event) => update(journeyChanges(event.currentTarget.value))}
+    groupClass="mb-0!"
+  />
+  <Select
+    id="activity-reserved"
+    label={m['admin.activity.reservation.label']()}
+    hideLabel
+    options={reservedOptions}
+    selected={params.get('reserved') ?? ''}
+    onchange={(event) => update({ reserved: event.currentTarget.value || null })}
     groupClass="mb-0!"
   />
 </section>
@@ -131,12 +193,15 @@
           <th scope="col" class="w-40 max-md:w-32">
             {m['admin.activity.conversations.cols.journey']()}
           </th>
+          <th scope="col" class="w-44 max-md:w-32">
+            {m['admin.activity.reservation.column']()}
+          </th>
         </tr>
       </thead>
       <tbody>
         {#each data.conversations.items as row, index (row.id)}
           {@const flags = flagsOf(row)}
-          <tr onclick={() => (selected = index)}>
+          <tr onclick={() => (selected = index)} class={{ reserved: !!row.reserved_at }}>
             <td class="max-md:hidden">
               <time
                 class="fr-text--xs mb-0! whitespace-nowrap text-[--text-mention-grey]"
@@ -165,6 +230,14 @@
               <p
                 class="fr-text--xs mb-0! mt-0.5 gap-2 flex items-center text-[--text-mention-grey]"
               >
+                {#if row.reserved_at}
+                  <Badge
+                    size="xs"
+                    variant="purple"
+                    text={m['admin.activity.reservation.badge']()}
+                    noTooltip
+                  />
+                {/if}
                 {#if row.turns > 1}
                   <span class="whitespace-nowrap">
                     {m['admin.activity.conversations.turnsCount']({ count: row.turns })}
@@ -206,6 +279,14 @@
             <td>
               <JourneyTrack stage={stageOf(row)} />
             </td>
+            <td onclick={(event) => event.stopPropagation()}>
+              <Reservation
+                {row}
+                busy={reserving === row.id}
+                onreserve={() => setReserved(row, true)}
+                onunreserve={() => unreserve(row)}
+              />
+            </td>
           </tr>
         {/each}
       </tbody>
@@ -235,6 +316,27 @@
   </nav>
 {/if}
 
+<Modal
+  id="fr-modal-unreserve"
+  titleId="fr-modal-title-unreserve"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
+>
+  <h2 id="fr-modal-title-unreserve" class="fr-modal__title">
+    {m['admin.activity.reservation.unreserveTitle']()}
+  </h2>
+  <p>{m['admin.activity.reservation.unreserveWarning']()}</p>
+
+  <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
+    <Button
+      variant="secondary"
+      text={m['admin.activity.reservation.cancel']()}
+      onclick={() => unreserveModal('conceal')}
+    />
+    <Button text={m['admin.activity.reservation.unreserveConfirm']()} onclick={confirmUnreserve} />
+  </div>
+</Modal>
+
 <style>
   .activity-table {
     border-collapse: collapse;
@@ -258,5 +360,8 @@
   }
   .activity-table tbody tr:hover {
     background-color: var(--background-default-grey-hover);
+  }
+  .activity-table tbody tr.reserved {
+    background-color: var(--background-alt-purple-glycine);
   }
 </style>

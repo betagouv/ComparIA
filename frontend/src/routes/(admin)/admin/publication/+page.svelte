@@ -1,5 +1,6 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
+  import { resolve } from '$app/paths'
   import {
     Alert,
     Badge,
@@ -26,7 +27,7 @@
   const refetch = () => invalidate('admin:publishing')
 
   type Kind = 'huggingface' | 's3'
-  type Dataset = 'normal' | 'raw'
+  type Dataset = AdminPublishDestination['datasets'][number]
   type Frequency = AdminPublishDestination['publish_frequency']
 
   const destinations = $derived(data.destinations.destinations)
@@ -63,9 +64,11 @@
   let formKind = $state<Kind>('huggingface')
   let wantsOpen = $state(true)
   let wantsRaw = $state(false)
+  let wantsReserved = $state(false)
   const formDatasets = $derived([
     ...(wantsOpen ? (['normal'] as Dataset[]) : []),
-    ...(wantsRaw ? (['raw'] as Dataset[]) : [])
+    ...(wantsRaw ? (['raw'] as Dataset[]) : []),
+    ...(wantsReserved ? (['reserved'] as Dataset[]) : [])
   ])
   let formEnabled = $state(true)
   let formFrequency = $state<Frequency>('off')
@@ -98,6 +101,7 @@
     formKind = 'huggingface'
     wantsOpen = true
     wantsRaw = false
+    wantsReserved = false
     formEnabled = true
     formFrequency = 'off'
     formRepoPath = ''
@@ -119,6 +123,7 @@
     formKind = destination.kind
     wantsOpen = destination.datasets.includes('normal')
     wantsRaw = destination.datasets.includes('raw')
+    wantsReserved = destination.datasets.includes('reserved')
     formEnabled = destination.enabled
     formFrequency = destination.publish_frequency
     // The secrets never come back from the API, so their fields start empty
@@ -178,6 +183,10 @@
     event.preventDefault()
     if (!formDatasets.length) {
       formError = m['admin.publishing.datasetsError']()
+      return
+    }
+    if (wantsOpen && wantsReserved) {
+      formError = m['admin.publishing.datasetsConflict']()
       return
     }
 
@@ -282,8 +291,11 @@
     return `${config.bucket}${prefix ? `/${prefix}` : ''} · ${config.endpoint}`
   }
 
-  const datasetLabel = (dataset: string) =>
-    dataset === 'raw' ? m['admin.publishing.datasetRaw']() : m['admin.publishing.datasetNormal']()
+  const datasets = {
+    normal: { label: m['admin.publishing.datasetNormal'](), variant: 'blue-ecume' },
+    raw: { label: m['admin.publishing.datasetRaw'](), variant: 'orange' },
+    reserved: { label: m['admin.publishing.datasetReserved'](), variant: 'purple' }
+  } as const
 
   const frequencyLabel = (frequency: Frequency) =>
     ({
@@ -327,13 +339,22 @@
   function runResult(run: AdminPublishStatus['runs'][number]) {
     if (run.finished_at === null) return m['admin.publishing.historyPending']()
     if (!run.succeeded) return m['admin.publishing.historyNoDataset']()
-    if (run.published === null || run.held_back === null) {
-      return m['admin.publishing.runCountsUnknown']()
-    }
-    return m['admin.publishing.runCounts']({
-      published: run.published,
-      heldBack: run.held_back
-    })
+    const counts =
+      run.published === null || run.held_back === null
+        ? m['admin.publishing.runCountsUnknown']()
+        : m['admin.publishing.runCounts']({ published: run.published, heldBack: run.held_back })
+    return run.reserved === null
+      ? counts
+      : `${counts} ${m['admin.publishing.runReserved']({ reserved: run.reserved })}`
+  }
+
+  async function releaseReserved() {
+    const count = status.reserved
+    const done = await run(
+      () => api.request('/admin/publishing/reservations', { method: 'DELETE' }),
+      m['admin.publishing.releaseSuccess']({ count })
+    )
+    if (done) closeModal('fr-modal-release-reserved')
   }
 </script>
 
@@ -415,11 +436,7 @@
         {:else if col.id === 'datasets'}
           <span class="gap-1 flex flex-wrap">
             {#each row.datasets as dataset (dataset)}
-              <Badge
-                size="sm"
-                text={datasetLabel(dataset)}
-                variant={dataset === 'raw' ? 'orange' : 'blue-ecume'}
-              />
+              <Badge size="sm" text={datasets[dataset].label} variant={datasets[dataset].variant} />
             {/each}
           </span>
         {:else if col.id === 'frequency'}
@@ -506,6 +523,33 @@
         {m['admin.publishing.noDestinations']()}
       </p>
     {/if}
+  </section>
+
+  <section class="mb-10">
+    <h2 class="fr-h6 mb-2!">{m['admin.publishing.reservedTitle']()}</h2>
+    <p class="fr-text--sm text-grey mb-2!">{m['admin.publishing.reservedHelp']()}</p>
+    <p class="fr-text--sm mb-2!">
+      {m['admin.publishing.reservedCount']({ count: status.reserved, sent: status.reserved_sent })}
+    </p>
+    <div class="gap-x-4 gap-y-2 flex flex-wrap items-center">
+      <a
+        class="fr-link fr-text--sm"
+        href={resolve('/admin/activite/conversations?period=all&reserved=true')}
+      >
+        {m['admin.publishing.reservedSee']()}
+      </a>
+      <!-- Not the main use: reserving is meant to last. -->
+      {#if status.reserved}
+        <Button
+          size="sm"
+          variant="tertiary-no-outline"
+          text={m['admin.publishing.releaseAll']()}
+          disabled={busy}
+          aria-controls="fr-modal-release-reserved"
+          data-fr-opened="false"
+        />
+      {/if}
+    </div>
   </section>
 
   <section>
@@ -642,11 +686,22 @@
         label={m['admin.publishing.datasetRaw']()}
         help={m['admin.publishing.datasetRawHelp']()}
       />
+      <Checkbox
+        id="destination-dataset-reserved"
+        bind:checked={wantsReserved}
+        label={m['admin.publishing.datasetReserved']()}
+        help={m['admin.publishing.datasetReservedHelp']()}
+      />
     </fieldset>
 
     {#if wantsRaw}
       <Alert title={m['admin.publishing.datasetRaw']()} variant="warning" class="my-4">
         <p class="fr-text--sm mb-0!">{m['admin.publishing.rawWarning']()}</p>
+      </Alert>
+    {/if}
+    {#if wantsReserved}
+      <Alert title={m['admin.publishing.datasetReserved']()} variant="warning" class="my-4">
+        <p class="fr-text--sm mb-0!">{m['admin.publishing.reservedWarning']()}</p>
       </Alert>
     {/if}
 
@@ -704,6 +759,32 @@
       onclick={() => closeModal('fr-modal-destination-delete')}
     />
     <Button text={m['admin.publishing.delete']()} disabled={busy} onclick={confirmDelete} />
+  </div>
+</Modal>
+
+<Modal
+  id="fr-modal-release-reserved"
+  titleId="fr-modal-title-release-reserved"
+  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
+  contentClass="md:pt-4! mb-6!"
+>
+  <h2 id="fr-modal-title-release-reserved" class="fr-modal__title">
+    {m['admin.publishing.releaseTitle']({ count: status.reserved })}
+  </h2>
+  <p>{m['admin.publishing.releaseWarning']({ sent: status.reserved_sent })}</p>
+
+  <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
+    <Button
+      variant="secondary"
+      text={m['admin.publishing.cancel']()}
+      disabled={busy}
+      onclick={() => closeModal('fr-modal-release-reserved')}
+    />
+    <Button
+      text={m['admin.publishing.releaseConfirm']()}
+      disabled={busy}
+      onclick={releaseReserved}
+    />
   </div>
 </Modal>
 

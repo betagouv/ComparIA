@@ -105,6 +105,14 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
     archived_at: OptionalDatetime = None
 
+    # Set aside for a partner's evaluation: kept out of the open dataset and
+    # sent to the destinations receiving the reserved one. The date tells
+    # whether a reserved run has already sent it. See utils/dataset/reservation.py.
+    reserved_at: OptionalDatetime = None
+    # Kept when it is unreserved: a partner who received it keeps it, and
+    # reserving it again must still say so.
+    first_reserved_at: OptionalDatetime = None
+
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
     turns: list[Turn] = Relationship(

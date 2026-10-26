@@ -23,7 +23,7 @@ from utils.database.models import (
 )
 from utils.database.models.llms.constants import LLMStatus
 
-# Same two datasets a destination subscribes to, kept in one place so the two
+# Same datasets a destination subscribes to, kept in one place so the two
 # lists cannot drift apart.
 Datasets = PublishDataset
 
@@ -76,6 +76,7 @@ class DatasetComparisonExtraMetadata(SQLModel):
     archived: bool | None = None
     archived_reason: ArchivedReason | None
     archived_at: datetime | None
+    reserved_at: datetime | None = None
 
 
 class DatasetTurn(SQLModel):
@@ -213,6 +214,7 @@ class DatasetComparison(SQLModel):
         if any(
             [
                 bool(self.extra_metadata_.cohorts),
+                self.extra_metadata_.reserved_at is not None,
                 self.extra_metadata_.archived is not False,
                 bool(self.extra_metadata_.contains_pii),
                 bool(self.extra_metadata_.contains_spam),

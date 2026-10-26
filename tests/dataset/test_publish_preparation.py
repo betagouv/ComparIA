@@ -4,6 +4,7 @@ import asyncio
 import os
 import sys
 import uuid
+from contextlib import asynccontextmanager
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -38,6 +39,15 @@ def exercise_export(monkeypatch, tmp_path, datasets):
     monkeypatch.setattr(run, "process_datasets", build)
     monkeypatch.setattr(run, "publish", lambda *args: events.append("publish"))
 
+    @asynccontextmanager
+    async def sending(sent):
+        assert sent == datasets
+        events.append("start")
+        yield
+        events.append("finish")
+
+    monkeypatch.setattr(run, "sending", sending)
+
     asyncio.run(
         run._export(
             datasets,
@@ -53,10 +63,17 @@ def exercise_export(monkeypatch, tmp_path, datasets):
 def test_open_publication_prepares_before_building(monkeypatch, tmp_path):
     assert exercise_export(monkeypatch, tmp_path, ["normal"]) == [
         "prepare",
+        "start",
         "build",
         "publish",
+        "finish",
     ]
 
 
 def test_raw_only_publication_skips_analysis(monkeypatch, tmp_path):
-    assert exercise_export(monkeypatch, tmp_path, ["raw"]) == ["build", "publish"]
+    assert exercise_export(monkeypatch, tmp_path, ["raw"]) == [
+        "start",
+        "build",
+        "publish",
+        "finish",
+    ]

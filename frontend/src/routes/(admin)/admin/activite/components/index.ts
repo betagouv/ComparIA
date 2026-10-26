@@ -4,6 +4,7 @@ export { default as ConversationTranscript } from './ConversationTranscript.svel
 export { default as FilterBar } from './FilterBar.svelte'
 export { default as Funnel } from './Funnel.svelte'
 export { default as JourneyTrack } from './JourneyTrack.svelte'
+export { default as Reservation } from './Reservation.svelte'
 export { default as StackedBar } from './StackedBar.svelte'
 export { default as TagChips } from './TagChips.svelte'
 export { default as VerdictMark } from './VerdictMark.svelte'
