@@ -23,49 +23,43 @@
   } = $props()
 </script>
 
-<aside
-  class="fr-p-4w bg-[--background-contrast-grey]"
-  aria-label={m['admin.legal.participation.preview']()}
->
-  <p class="fr-text--sm fr-text--bold fr-mb-3v">{m['admin.legal.participation.preview']()}</p>
-  <div class="fr-card fr-card--shadow fr-p-4w bg-white">
-    {#if kind === 'arena'}
-      <h3 class="fr-h4 text-primary!">
-        <MarkdownInline message={title || m['admin.legal.participation.modalTitle']()} />
-      </h3>
-      <div class="fr-text--sm">
-        <Markdown
-          message={introduction || m['admin.legal.participation.introductionPlaceholder']()}
-          sanitize_html
+<div class="fr-card fr-card--shadow fr-p-4w bg-white">
+  {#if kind === 'arena'}
+    <h3 class="fr-h4 text-primary!">
+      <MarkdownInline message={title || m['admin.legal.participation.modalTitle']()} />
+    </h3>
+    <div class="fr-text--sm">
+      <Markdown
+        message={introduction || m['admin.legal.participation.introductionPlaceholder']()}
+        sanitize_html
+      />
+    </div>
+  {:else}
+    <h3 class="fr-h4 text-primary!">{m['auth.modal.email.title']()}</h3>
+    <Input id="preview-email" label="Email" value="personne@exemple.fr" disabled />
+  {/if}
+
+  <Checkbox
+    id={`preview-${kind}-consent`}
+    checked={true}
+    disabled
+    label={renderInlineMarkdown(
+      checkbox_label || m['admin.legal.participation.checkboxPlaceholder']()
+    )}
+    links={legalLinks()}
+    linksClass="bg-none! no-underline!"
+  />
+
+  {#if kind === 'arena'}
+    <div class="flex justify-end">
+      <Button type="button" disabled>
+        <MarkdownInline
+          message={button_label || m['admin.legal.participation.buttonPlaceholder']()}
+          allowLinks={false}
         />
-      </div>
-    {:else}
-      <h3 class="fr-h4 text-primary!">{m['auth.modal.email.title']()}</h3>
-      <Input id="preview-email" label="Email" value="personne@exemple.fr" disabled />
-    {/if}
-
-    <Checkbox
-      id={`preview-${kind}-consent`}
-      checked={true}
-      disabled
-      label={renderInlineMarkdown(
-        checkbox_label || m['admin.legal.participation.checkboxPlaceholder']()
-      )}
-      links={legalLinks()}
-      linksClass="bg-none! no-underline!"
-    />
-
-    {#if kind === 'arena'}
-      <div class="flex justify-end">
-        <Button type="button" disabled>
-          <MarkdownInline
-            message={button_label || m['admin.legal.participation.buttonPlaceholder']()}
-            allowLinks={false}
-          />
-        </Button>
-      </div>
-    {:else}
-      <Button type="button" text={m['auth.modal.email.submit']()} disabled class="w-full!" />
-    {/if}
-  </div>
-</aside>
+      </Button>
+    </div>
+  {:else}
+    <Button type="button" text={m['auth.modal.email.submit']()} disabled class="w-full!" />
+  {/if}
+</div>

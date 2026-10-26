@@ -6,6 +6,7 @@
   import Form from '$components/form/Form.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
+  import UserPreview from '$components/UserPreview.svelte'
   import { getAuthContext, getPlatformName } from '$lib/authContext.svelte'
   import type { InformationalPageKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
@@ -51,6 +52,8 @@
       form.form.visible_in_settings = value.includes('settings')
     }
   })
+
+  const currentContent = $derived(form.form.content_by_locale[selectedLocale]?.trim())
 </script>
 
 <PageLayout
@@ -82,22 +85,24 @@
         bind:value={form.form.external_url}
       />
     {:else}
-      <FormTranslate
-        id="content_by_locale"
-        bind:value={form.form.content_by_locale}
-        bind:locale={selectedLocale}
-      >
-        {#snippet subSnippet(locale, label)}
-          <Textarea
-            id="content_by_locale-{locale}"
-            label={m['admin.legal.informational.contentLabel']({ locale: label })}
-            help={m['admin.legal.markdownHelp']()}
-            rows={12}
-            error={form.errors[`content_by_locale-${locale}`]}
-            bind:value={form.form.content_by_locale[locale]}
-          />
-        {/snippet}
-      </FormTranslate>
+      <UserPreview id="info-page-preview" content={currentContent} class="mb-4">
+        <FormTranslate
+          id="content_by_locale"
+          bind:value={form.form.content_by_locale}
+          bind:locale={selectedLocale}
+        >
+          {#snippet subSnippet(locale, label)}
+            <Textarea
+              id="content_by_locale-{locale}"
+              label={m['admin.legal.informational.contentLabel']({ locale: label })}
+              help={m['admin.legal.markdownHelp']()}
+              rows={12}
+              error={form.errors[`content_by_locale-${locale}`]}
+              bind:value={form.form.content_by_locale[locale]}
+            />
+          {/snippet}
+        </FormTranslate>
+      </UserPreview>
     {/if}
 
     <FormCheckboxGroup

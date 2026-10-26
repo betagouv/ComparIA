@@ -6,6 +6,7 @@
   import Form from '$components/form/Form.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
+  import UserPreview from '$components/UserPreview.svelte'
   import { getAuthContext } from '$lib/authContext.svelte'
   import type { ArenaLegalPresentation, SignInLegalPresentation } from '$lib/generated/admin'
   import { getLocales } from '$lib/global.svelte'
@@ -86,81 +87,83 @@
           <h3 id="arena-section-title" class="fr-h4">
             {m['admin.legal.participation.arenaTitle']()}
           </h3>
-          <p>{m['admin.legal.participation.arenaDescription']()}</p>
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-7">
-              <Textarea
-                id="{locale}-arena-title"
-                label={m['admin.legal.participation.modalTitle']()}
-                rows={2}
-                maxlength={200}
-                required
-                error={form.errors[`${locale}-arena-title`]}
-                bind:value={form.form[locale].arena.title}
-              />
-              <Textarea
-                id="{locale}-arena-introduction"
-                label={m['admin.legal.participation.introduction']()}
-                help={m['admin.legal.markdownHelp']()}
-                groupClass="fr-mt-4v"
-                rows={4}
-                maxlength={2000}
-                required
-                error={form.errors[`${locale}-arena-introduction`]}
-                bind:value={form.form[locale].arena.introduction}
-              />
-              <Textarea
-                id="{locale}-arena-checkbox_label"
-                label={m['admin.legal.participation.checkboxLabel']()}
-                help={m['admin.legal.markdownHelp']()}
-                groupClass="fr-mt-4v"
-                rows={5}
-                maxlength={2000}
-                required
-                error={form.errors[`${locale}-arena-checkbox_label`]}
-                bind:value={form.form[locale].arena.checkbox_label}
-              />
-              <Textarea
-                id="{locale}-arena-button_label"
-                label={m['admin.legal.participation.buttonLabel']()}
-                groupClass="fr-mt-4v"
-                rows={2}
-                maxlength={200}
-                error={form.errors[`${locale}-arena-button_label`]}
-                bind:value={form.form[locale].arena.button_label}
-              />
-            </div>
-            <div class="fr-col-12 fr-col-lg-5">
+
+          <UserPreview id="journey-arena-preview" ratio="sm">
+            <p>{m['admin.legal.participation.arenaDescription']()}</p>
+
+            <Textarea
+              id="{locale}-arena-title"
+              label={m['admin.legal.participation.modalTitle']()}
+              rows={2}
+              maxlength={200}
+              required
+              error={form.errors[`${locale}-arena-title`]}
+              bind:value={form.form[locale].arena.title}
+            />
+            <Textarea
+              id="{locale}-arena-introduction"
+              label={m['admin.legal.participation.introduction']()}
+              help={m['admin.legal.markdownHelp']()}
+              groupClass="fr-mt-4v"
+              rows={4}
+              maxlength={2000}
+              required
+              error={form.errors[`${locale}-arena-introduction`]}
+              bind:value={form.form[locale].arena.introduction}
+            />
+            <Textarea
+              id="{locale}-arena-checkbox_label"
+              label={m['admin.legal.participation.checkboxLabel']()}
+              help={m['admin.legal.markdownHelp']()}
+              groupClass="fr-mt-4v"
+              rows={5}
+              maxlength={2000}
+              required
+              error={form.errors[`${locale}-arena-checkbox_label`]}
+              bind:value={form.form[locale].arena.checkbox_label}
+            />
+            <Textarea
+              id="{locale}-arena-button_label"
+              label={m['admin.legal.participation.buttonLabel']()}
+              groupClass="fr-mt-4v"
+              rows={2}
+              maxlength={200}
+              error={form.errors[`${locale}-arena-button_label`]}
+              bind:value={form.form[locale].arena.button_label}
+            />
+
+            {#snippet contentSnippet()}
               <LegalPresentationPreview kind="arena" {...form.form[locale].arena} />
-            </div>
-          </div>
+            {/snippet}
+          </UserPreview>
         </section>
 
         <section class="fr-mt-8v" aria-labelledby="sign-in-section-title">
           <h3 id="sign-in-section-title" class="fr-h4">
             {m['admin.legal.participation.signInTitle']()}
           </h3>
-          <p>{m['admin.legal.participation.signInDescription']()}</p>
-          <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-lg-7">
-              <Textarea
-                id="{locale}-sign_in-checkbox_label"
-                label={m['admin.legal.participation.checkboxLabel']()}
-                help={m['admin.legal.markdownHelp']()}
-                rows={5}
-                maxlength={2000}
-                required
-                error={form.errors[`${locale}-sign_in-checkbox_label`]}
-                bind:value={form.form[locale].sign_in.checkbox_label}
-              />
-            </div>
-            <div class="fr-col-12 fr-col-lg-5">
+
+          <UserPreview id="journey-sign-in-preview" ratio="sm">
+            <p>{m['admin.legal.participation.signInDescription']()}</p>
+
+            <Textarea
+              id="{locale}-sign_in-checkbox_label"
+              label={m['admin.legal.participation.checkboxLabel']()}
+              help={m['admin.legal.markdownHelp']()}
+              rows={5}
+              maxlength={2000}
+              required
+              error={form.errors[`${locale}-sign_in-checkbox_label`]}
+              bind:value={form.form[locale].sign_in.checkbox_label}
+            />
+
+            {#snippet contentSnippet()}
               <LegalPresentationPreview
                 kind="sign-in"
                 checkbox_label={form.form[locale].sign_in.checkbox_label}
               />
-            </div>
-          </div>
+            {/snippet}
+          </UserPreview>
         </section>
       {/snippet}
     </FormTranslate>
