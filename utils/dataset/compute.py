@@ -18,6 +18,7 @@ Required env vars: COMPARIA_DB_URI
 
 import json
 import logging
+import shutil
 from datetime import datetime
 from pathlib import Path
 from uuid import UUID
@@ -359,6 +360,12 @@ def _reference_rows() -> list[dict]:
     ]
 
 
+def _clear(export_dir: Path) -> None:
+    # A build that keeps no row writes no parquet. One left from an earlier
+    # build would then be sent as this one's, with comparisons reserved since.
+    shutil.rmtree(export_dir, ignore_errors=True)
+
+
 def _build_exporters(
     datasets: list[Datasets], export_base_path: Path
 ) -> dict[Datasets, StreamingDatasetExporter]:
@@ -366,6 +373,7 @@ def _build_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter] = {}
     for dataset in datasets:
         name = LOCAL_NAMES[dataset]
+        _clear(export_base_path / name)
         if dataset == "normal":
             exporters[dataset] = StreamingDatasetExporter(
                 name,
@@ -662,6 +670,7 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_name = LOCAL_NAMES["normal"]
         normal_export_dir = export_base_path / normal_name
+        _clear(normal_export_dir)
         _write_normal_from_raw_parquet(
             raw_parquet_path, normal_name, normal_export_dir, await reserved_ids()
         )

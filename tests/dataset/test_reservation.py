@@ -308,3 +308,56 @@ def test_a_destination_cannot_receive_both_open_and_reserved():
     assert PublishDestinationUpsert(
         name="x", config=config, datasets=["raw", "reserved"]
     )
+
+
+def test_a_cached_rebuild_that_keeps_nothing_sends_nothing(tmp_path, monkeypatch):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from utils.dataset import compute
+    from utils.dataset.publish import DestinationError, _built_files
+
+    raw_dir = tmp_path / "comparisons-raw"
+    raw_dir.mkdir()
+    pq.write_table(
+        pa.table(
+            {
+                "comparison_id": ["reserved since"],
+                "excluded": [False],
+                "extra_metadata": [{"archived": False}],
+                "metadata": [{"mode": "random"}],
+            }
+        ),
+        raw_dir / "comparisons-raw.parquet",
+    )
+    # What an earlier build left, with the comparison in it.
+    stale = tmp_path / "comparisons"
+    stale.mkdir()
+    (stale / "comparisons.parquet").write_bytes(b"stale")
+
+    async def reserved():
+        return ["reserved since"]
+
+    async def nothing(export_dir):
+        export_dir.mkdir(parents=True, exist_ok=True)
+
+    monkeypatch.setattr(compute, "reserved_ids", reserved)
+    monkeypatch.setattr(compute, "write_vote_tags_vocabulary", nothing)
+    monkeypatch.setattr(compute, "write_models_metadata", nothing)
+
+    built = asyncio.run(compute.process_datasets(["normal"], tmp_path, use_cache=True))
+
+    with pytest.raises(DestinationError):
+        _built_files(built["normal"], "normal", "public")
+
+
+def test_a_build_starts_from_an_empty_folder(tmp_path):
+    from utils.dataset import compute
+
+    stale = tmp_path / "comparisons-reserved"
+    stale.mkdir()
+    (stale / "comparisons-reserved.parquet").write_bytes(b"stale")
+
+    compute._build_exporters(["reserved"], tmp_path)
+
+    assert not (stale / "comparisons-reserved.parquet").exists()
