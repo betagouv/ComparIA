@@ -111,7 +111,11 @@ def _push_to_huggingface(
     published = repo_id.split("/")[-1]
 
     api = HfApi(token=config.token)
-    api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
+    # Only the open dataset is meant for everyone. A repository that already
+    # exists keeps its visibility: this only decides how a new one starts.
+    api.create_repo(
+        repo_id, repo_type="dataset", private=dataset != "normal", exist_ok=True
+    )
 
     operations: list = [
         CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(path))
