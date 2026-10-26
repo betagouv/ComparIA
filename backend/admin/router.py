@@ -3,7 +3,7 @@ import time
 import uuid
 from datetime import datetime
 from types import SimpleNamespace
-from typing import Literal
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field
@@ -110,6 +110,7 @@ from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
+from utils.validation import Translatable
 
 logger = logging.getLogger("languia")
 
@@ -142,8 +143,7 @@ class AdminLegalDocument(BaseModel):
     id: uuid.UUID
     kind: LegalDocumentKind
     version: str
-    locale: str
-    content: str
+    content: dict[str, str]
     content_hash: str
     published_at: UtcTimestamp
     effective_at: UtcTimestamp
@@ -155,12 +155,9 @@ class PublishLegalDocumentBody(BaseModel):
     version: str = Field(
         min_length=1, max_length=LEGAL_VERSION_MAX_LENGTH, pattern=r"^\S(?:.*\S)?$"
     )
-    locale: str = Field(
-        min_length=2,
-        max_length=16,
-        pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$",
-    )
-    content: str = Field(min_length=1, max_length=LEGAL_CONTENT_MAX_LENGTH)
+    content: Translatable[
+        Annotated[str, Field(min_length=1, max_length=LEGAL_CONTENT_MAX_LENGTH)]
+    ]
     effective_at: datetime | None = None
     confirm_publication: Literal[True]
 
@@ -201,8 +198,12 @@ async def get_admin_legal_pages_status() -> LegalStatuses:
             status[k] = {"published": True, "missing_locales": False}
 
     for k in ("terms", "privacy_policy"):
-        doc = await get_active_legal_document(k, settings.default_locale)
-        status[k] = {"published": doc is not None, "missing_locales": False}
+        doc = await get_active_legal_document(k)
+        locales = set(doc.content) if doc else set()
+        status[k] = {
+            "published": settings.default_locale in locales,
+            "missing_locales": enabled_locales != locales,
+        }
 
     return status
 
@@ -234,7 +235,6 @@ def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
         id=row.id,
         kind=row.kind,
         version=row.version,
-        locale=row.language,
         content=row.content,
         content_hash=row.content_hash,
         published_at=row.published_at,
@@ -244,14 +244,12 @@ def _to_admin_legal_document(row: LegalDocument) -> AdminLegalDocument:
     )
 
 
-async def _current_legal_document(
-    kind: LegalDocumentKind, locale: str
-) -> AdminLegalDocument:
-    document = await get_active_legal_document(kind, locale)
+async def _current_legal_document(kind: LegalDocumentKind) -> AdminLegalDocument:
+    document = await get_active_legal_document(kind)
     if not document:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No active document is available for this locale",
+            detail=f"No active '{kind}' document found",
         )
     return _to_admin_legal_document(document)
 
@@ -263,8 +261,7 @@ async def _publish(
         document = await publish_legal_document(
             kind=kind,
             version=body.version,
-            language=body.locale,
-            content=body.content,
+            content=body.content.root,
             effective_at=body.effective_at,
         )
     except DuplicateLegalDocumentError as exc:
@@ -281,18 +278,14 @@ async def _publish(
 @router.get("/legal/documents/{key}", response_model=list[AdminLegalDocument])
 async def get_legal_doc_publications(
     key: LegalDocumentKind,
-    locale: OptionalLocaleQuery = None,
 ) -> list[AdminLegalDocument]:
-    documents = await list_legal_documents(key, locale)
+    documents = await list_legal_documents(key)
     return [_to_admin_legal_document(document) for document in documents]
 
 
 @router.get("/legal/documents/{key}/current", response_model=AdminLegalDocument)
-async def get_legal_doc_current(
-    key: LegalDocumentKind,
-    locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE,
-) -> AdminLegalDocument:
-    return await _current_legal_document(key, locale)
+async def get_legal_doc_current(key: LegalDocumentKind) -> AdminLegalDocument:
+    return await _current_legal_document(key)
 
 
 @router.post(

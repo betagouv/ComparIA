@@ -39,8 +39,7 @@ from utils.database.models.utils import utc_now  # noqa: E402
 DOCUMENT = LegalDocument(
     kind="terms",
     version="2026.07",
-    language="fr",
-    content="Conditions publiées",
+    content={"fr": "Conditions publiées"},
     content_hash="a" * 64,
     effective_at=datetime(2026, 7, 1),
 )
@@ -51,7 +50,7 @@ def evidence(**overrides):
         "terms_version": DOCUMENT.version,
         "terms_hash": DOCUMENT.content_hash,
         "accepted_at": datetime.now(timezone.utc).isoformat(),
-        "locale": DOCUMENT.language,
+        "locale": "fr",
         "legal_information_acknowledged": True,
     }
     value.update(overrides)
@@ -117,7 +116,7 @@ def patched(module, **attributes):
 
 @contextlib.contextmanager
 def active_terms(document):
-    async def get_active_legal_document(_kind, _language):
+    async def get_active_legal_document(_kind):
         return document
 
     with patched(auth_services, get_active_legal_document=get_active_legal_document):
@@ -232,7 +231,7 @@ def test_recorded_times_agree_with_the_browser_acceptance():
     with fake_session(session):
         asyncio.run(
             auth_services.record_user_consent(
-                User(email="a@b.fr").id, DOCUMENT, accepted_at, None
+                User(email="a@b.fr").id, DOCUMENT, "fr", accepted_at, None
             )
         )
 
@@ -248,7 +247,7 @@ def test_an_aware_acceptance_time_is_stored_on_the_utc_now_scale():
     with fake_session(session):
         asyncio.run(
             auth_services.record_anonymous_consent(
-                "b" * 64, DOCUMENT, datetime.now(timezone(timedelta(hours=3)))
+                "b" * 64, DOCUMENT, "fr", datetime.now(timezone(timedelta(hours=3)))
             )
         )
 
@@ -264,7 +263,9 @@ def test_anonymous_acceptance_records_the_document_it_saw():
     accepted_at = datetime(2026, 7, 27, 8, 0, 0)
     with fake_session(session):
         asyncio.run(
-            auth_services.record_anonymous_consent("b" * 64, DOCUMENT, accepted_at)
+            auth_services.record_anonymous_consent(
+                "b" * 64, DOCUMENT, "fr", accepted_at
+            )
         )
 
     log = next(
@@ -272,7 +273,7 @@ def test_anonymous_acceptance_records_the_document_it_saw():
     )
     assert log.document_id == DOCUMENT.id
     assert log.terms_version == DOCUMENT.version
-    assert log.language == DOCUMENT.language
+    assert log.language == "fr"
     assert log.client_accepted_at == accepted_at
 
 
@@ -425,8 +426,7 @@ def test_acceptance_of_a_retired_document_no_longer_counts():
         document_id=LegalDocument(
             kind="terms",
             version="2026.06",
-            language="fr",
-            content="Anciennes conditions",
+            content={"fr": "Anciennes conditions"},
             content_hash="d" * 64,
             effective_at=datetime(2026, 6, 1),
         ).id,
