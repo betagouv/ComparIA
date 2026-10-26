@@ -182,6 +182,66 @@ def test_a_run_that_died_is_closed_as_if_it_sent_everything(database):
     database(scenario)
 
 
+def test_a_run_still_going_is_not_closed_for_dead(database):
+    async def scenario():
+        comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
+        # Started by hand, so the publish job's own lock says nothing of it.
+        async with reservation.sending(["normal"]):
+            await reservation.close_abandoned_sendings()
+            assert (await reservation.reservation_state()).publishing
+            with pytest.raises(CannotReserveError) as refused:
+                await reservation.reserve(comparison_id)
+            assert refused.value.reason == "publishing"
+
+    database(scenario)
+
+
+def test_reserving_after_unreserving_remembers_the_partner_has_it(database):
+    async def scenario():
+        comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
+        await reservation.reserve(comparison_id)
+        await add_sending("reserved", utc_now())
+        await reservation.unreserve(comparison_id)
+        await reservation.reserve(comparison_id)
+
+        async with get_session() as session:
+            comparison = await session.get(Comparison, comparison_id)
+            assert comparison
+            first_reserved_at = comparison.first_reserved_at
+        state = await reservation.reservation_state()
+        assert state.sent(first_reserved_at)
+        assert await reservation.reserved_counts() == (1, 1)
+
+    database(scenario)
+
+
+def test_a_cached_rebuild_leaves_out_what_was_reserved_since(tmp_path):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from utils.dataset import compute
+
+    raw_path = tmp_path / "raw.parquet"
+    pq.write_table(
+        pa.table(
+            {
+                "comparison_id": ["kept", "reserved since"],
+                "excluded": [False, False],
+                "extra_metadata": [{"archived": False}, {"archived": False}],
+                "metadata": [{"mode": "random"}, {"mode": "random"}],
+            }
+        ),
+        raw_path,
+    )
+
+    compute._write_normal_from_raw_parquet(
+        raw_path, "dataset", tmp_path / "out", ["reserved since"]
+    )
+
+    exported = pq.read_table(tmp_path / "out" / "dataset.parquet")
+    assert exported.column("comparison_id").to_pylist() == ["kept"]
+
+
 def test_reserving_again_keeps_the_first_date(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
