@@ -254,6 +254,8 @@ class PublishRun(BaseDBModel, table=True):
     # model, or its configuration, broke.
     held_back: int | None = None
     published: int | None = None
+    # What the reserved dataset carried, null for a run that did not build it.
+    reserved: int | None = None
 
 
 class AdminPublishRun(SQLModel):
@@ -263,6 +265,7 @@ class AdminPublishRun(SQLModel):
     error: str | None
     held_back: int | None
     published: int | None
+    reserved: int | None
 
 
 class AdminPublishStatus(SQLModel):
