@@ -47,4 +47,3 @@ class Translatable(RootModel[dict[str, T]], Generic[T]):
             raise ValueError(f"Unsupported locale(s): {sorted(invalid_locales)}")
 
         return self
-
