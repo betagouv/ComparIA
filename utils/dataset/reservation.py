@@ -259,6 +259,14 @@ async def unreserve_all() -> int:
         return result.rowcount
 
 
+async def reserved_ids() -> list[str]:
+    async with get_session() as session:
+        ids = await session.exec(
+            select(Comparison.id).where(col(Comparison.reserved_at).is_not(None))
+        )
+        return [str(comparison_id) for comparison_id in ids.all()]
+
+
 class ReservedCounts(NamedTuple):
     reserved: int
     # Of those, how many the partner may already have.

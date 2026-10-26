@@ -53,6 +53,7 @@ def test_rows_from_an_old_raw_cache_receive_the_legacy_marker():
             pa.table(
                 {
                     "response_id": ["historical-response"],
+                    "comparison_id": ["historical-comparison"],
                     "excluded": [False],
                     "extra_metadata": [{"archived": False}],
                     "metadata": [{"mode": "random"}],
@@ -61,7 +62,7 @@ def test_rows_from_an_old_raw_cache_receive_the_legacy_marker():
             raw_path,
         )
 
-        compute._write_normal_from_raw_parquet(raw_path, "dataset", output)
+        compute._write_normal_from_raw_parquet(raw_path, "dataset", output, [])
         exported = pq.read_table(output / "dataset.parquet")
 
     assert "participation_terms_version" not in exported.column_names

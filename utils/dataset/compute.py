@@ -42,6 +42,7 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
+from .reservation import reserved_ids
 from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
@@ -441,6 +442,7 @@ def _write_normal_from_raw_parquet(
     raw_parquet_path: Path,
     repo_name: str,
     export_dir: Path,
+    reserved_ids: list[str],
 ) -> int:
     """
     Regenerate the normal dataset from the raw parquet without hitting the DB.
@@ -448,6 +450,8 @@ def _write_normal_from_raw_parquet(
     converting large nested columns to Python objects.
     Sample files are written from the first 1000 filtered rows (not random,
     but fast and memory-bounded).
+    The raw parquet says what was excluded when it was built, which knows
+    nothing of what was reserved since: `reserved_ids` leaves those out too.
     """
     import pyarrow as pa
     import pyarrow.compute as pc
@@ -466,7 +470,17 @@ def _write_normal_from_raw_parquet(
 
     for batch in reader.iter_batches(batch_size=10_000):
         table = pa.Table.from_batches([batch])
-        table = table.filter(pc.equal(table.column("excluded"), False))
+        table = table.filter(
+            pc.and_(
+                pc.equal(table.column("excluded"), False),
+                pc.invert(
+                    pc.is_in(
+                        table.column("comparison_id"),
+                        value_set=pa.array(reserved_ids, type=pa.string()),
+                    )
+                ),
+            )
+        )
         table = table.drop(DROP_COLS)
         metadata_index = table.schema.get_field_index("metadata")
         metadata = table.column(metadata_index)
@@ -648,7 +662,9 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_name = LOCAL_NAMES["normal"]
         normal_export_dir = export_base_path / normal_name
-        _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
+        _write_normal_from_raw_parquet(
+            raw_parquet_path, normal_name, normal_export_dir, await reserved_ids()
+        )
         await write_vote_tags_vocabulary(normal_export_dir)
         await write_models_metadata(normal_export_dir)
         return {"normal": normal_export_dir}
