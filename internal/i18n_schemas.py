@@ -4,6 +4,7 @@ from utils.database.models.llms import (
     LLMLabUpsert,
     LLMLicenseUpsert,
 )
+from utils.database.models.prompt_check import PromptCheckUpsert
 from utils.utils import (
     FRONTEND_MAIN_I18N_FILE,
     FormJsonSchema,
@@ -31,6 +32,9 @@ def get_schema_i18n(schema, refs):
                 data[ref] = get_schema_i18n(refs[ref], refs)
             else:
                 data[k] = get_property_i18n(v)
+                if ref := v.get("items", {}).get("$ref"):
+                    ref = ref.split("/")[-1]
+                    data[ref] = get_schema_i18n(refs[ref], refs)
     else:
         data[k] = get_property_i18n(schema)
 
@@ -43,6 +47,7 @@ def generate_admin_schemas_i18n():
         "license_upsert": LLMLicenseUpsert,
         "lab_upsert": LLMLabUpsert,
         "llm_upsert": LLMDataUpsert,
+        "prompt_check_upsert": PromptCheckUpsert,
     }
     schemas = {
         k: model.model_json_schema(schema_generator=FormJsonSchema)

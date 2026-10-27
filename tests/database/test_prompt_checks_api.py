@@ -6,19 +6,21 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 
+import httpx
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
+import backend.arena.checks as checks
 from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
-    DEFAULT_CATEGORIES,
+    DEFAULT_CRITERIA,
     DEFAULT_MODEL,
     PromptCheck,
-    PromptCheckPatch,
+    PromptCheckUpsert,
 )
 
 ADMIN_ID = uuid.UUID("11111111-2222-3333-4444-555555555555")
@@ -28,7 +30,7 @@ def seeded_row() -> PromptCheck:
     return PromptCheck(
         id=1,
         model=DEFAULT_MODEL,
-        categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
+        criteria=[dict(c) for c in DEFAULT_CRITERIA],
         updated_at=datetime(2026, 1, 1),
     )
 
@@ -64,6 +66,7 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
     monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
     monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda: 0)
     monkeypatch.setattr(admin_router, "is_key_rejected", lambda: False)
+    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: False)
     monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 0)
     return session
 
@@ -81,18 +84,22 @@ def read_check(db: FakeSession) -> PromptCheck:
     return asyncio.run(prompt_checks_module.get_prompt_check.__wrapped__())
 
 
-def full_categories(**overrides: dict) -> dict[str, dict]:
-    categories = {k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
-    categories.update(overrides)
-    return categories
+def criteria_with(key: str, **changes) -> list[dict]:
+    return [c | changes if c["key"] == key else dict(c) for c in DEFAULT_CRITERIA]
+
+
+def by_key(criteria: list) -> dict[str, dict]:
+    """Stored rows hold dicts, API responses hold PromptCheckCriterion."""
+    rows = [c if isinstance(c, dict) else c.model_dump() for c in criteria]
+    return {c["key"]: c for c in rows}
 
 
 def test_reads_the_singleton_row(db: FakeSession) -> None:
     row = read_check(db)
 
     assert row.model == DEFAULT_MODEL
-    assert set(row.categories) == set(DEFAULT_CATEGORIES)
-    assert row.categories["sexual"] == {"threshold": 0.3, "action": "warn"}
+    assert row.criteria == DEFAULT_CRITERIA
+    assert by_key(row.criteria)["sexual"]["action"] == "warn"
 
 
 def test_falls_back_to_the_defaults_before_the_row_exists(db: FakeSession) -> None:
@@ -100,7 +107,7 @@ def test_falls_back_to_the_defaults_before_the_row_exists(db: FakeSession) -> No
 
     row = read_check(db)
 
-    assert row.categories == DEFAULT_CATEGORIES
+    assert row.criteria == DEFAULT_CRITERIA
 
 
 def test_admin_reading_reports_health(
@@ -155,6 +162,42 @@ def test_a_rejected_key_reads_as_unhealthy(
     assert status.consecutive_failures == 0
 
 
+def test_running_out_of_credits_reads_as_unhealthy(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    async def get_prompt_check():
+        return seeded_row()
+
+    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: True)
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    assert status.out_of_credits is True
+    assert status.healthy is False
+    assert status.consecutive_failures == 0
+
+
+@pytest.mark.parametrize(
+    ("stored", "env", "missing"),
+    [(None, None, True), (None, "sk-env", False), ("sk-stored", None, False)],
+)
+def test_a_check_with_no_key_at_all_says_so(
+    db: FakeSession,
+    monkeypatch: pytest.MonkeyPatch,
+    stored: str | None,
+    env: str | None,
+    missing: bool,
+) -> None:
+    db.row.api_key = stored
+    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", env)
+
+    status = admin_router._to_prompt_check_status(db.row)
+
+    assert status.no_api_key is missing
+    assert status.has_api_key is (stored is not None)
+
+
 def test_missing_failure_key_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
     class Client:
         def get(self, key):
@@ -175,100 +218,109 @@ def test_unreachable_redis_counts_as_healthy(monkeypatch: pytest.MonkeyPatch) ->
     assert prompt_checks_module.get_warnings_shown() == 0
 
 
-def patch_check(body: PromptCheckPatch):
-    class CurrentUser:
-        id = ADMIN_ID
-
-    return asyncio.run(admin_router.patch_prompt_check(body, CurrentUser()))
+class CurrentUser:
+    id = ADMIN_ID
 
 
-def test_patching_categories_replaces_them(
+def put_check(**changes):
+    """Save the seeded form with `changes`, as the admin page sends it whole."""
+    seeded = {
+        "enabled": True,
+        "model": DEFAULT_MODEL,
+        "description": "Une arène.",
+        "criteria": DEFAULT_CRITERIA,
+    }
+    body = PromptCheckUpsert(**(seeded | changes))
+    return asyncio.run(admin_router.put_prompt_check(body, CurrentUser()))
+
+
+def test_saving_replaces_the_criteria(
     db: FakeSession, invalidations: list[str]
 ) -> None:
-    categories = full_categories(sexual={"threshold": 0.2, "action": "block"})
+    result = put_check(criteria=criteria_with("sexual", threshold=0.2, action="block"))
 
-    result = patch_check(PromptCheckPatch(categories=categories))
-
-    assert result.categories["sexual"] == {"threshold": 0.2, "action": "block"}
+    assert by_key(result.criteria)["sexual"]["action"] == "block"
     assert result.updated_by == ADMIN_ID
-    assert db.row.categories["sexual"] == {"threshold": 0.2, "action": "block"}
+    assert by_key(db.row.criteria)["sexual"]["threshold"] == 0.2
+    # Stored as plain JSON, not as pydantic objects the column cannot hold.
+    assert all(isinstance(c, dict) for c in db.row.criteria)
 
 
-def test_unset_fields_are_left_alone(db: FakeSession, invalidations: list[str]) -> None:
-    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+def test_saving_sets_every_field(db: FakeSession, invalidations: list[str]) -> None:
+    put_check(enabled=False, model="perplexity/pplx-decider-flash-v1.2")
 
-    assert db.row.model == "mistral-moderation-2603"
-    assert db.row.categories == DEFAULT_CATEGORIES
+    assert db.row.enabled is False
+    assert db.row.model == "perplexity/pplx-decider-flash-v1.2"
+    assert db.row.description == "Une arène."
 
 
-def test_patching_seeds_the_row_when_there_is_none(
+@pytest.mark.parametrize("api_key", [None, "", "  "])
+def test_a_blank_key_keeps_the_stored_one(
+    db: FakeSession, invalidations: list[str], api_key: str | None
+) -> None:
+    db.row.api_key = "sk-stored"
+
+    result = put_check(api_key=api_key)
+
+    assert db.row.api_key == "sk-stored"
+    assert result.has_api_key is True
+
+
+def test_a_typed_key_replaces_the_stored_one(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    db.row.api_key = "sk-stored"
+
+    put_check(api_key=" sk-new ")
+
+    assert db.row.api_key == "sk-new"
+
+
+def test_removing_the_key_falls_back_to_the_environment(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    db.row.api_key = "sk-stored"
+
+    result = asyncio.run(admin_router.delete_prompt_check_api_key(CurrentUser()))
+
+    assert db.row.api_key is None
+    assert result.has_api_key is False
+    assert db.row.criteria == DEFAULT_CRITERIA
+
+
+def test_saving_seeds_the_row_when_there_is_none(
     db: FakeSession, invalidations: list[str]
 ) -> None:
     db.row = None
 
-    result = patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+    result = put_check(model="perplexity/pplx-decider-flash-v1.2")
 
-    assert result.model == "mistral-moderation-2603"
-    assert set(result.categories) == set(DEFAULT_CATEGORIES)
+    assert result.model == "perplexity/pplx-decider-flash-v1.2"
+    assert by_key(result.criteria) == by_key(DEFAULT_CRITERIA)
 
 
 def test_write_invalidates_the_cache(db: FakeSession, invalidations: list[str]) -> None:
-    patch_check(PromptCheckPatch(model=DEFAULT_MODEL))
+    put_check()
 
     assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECK_KEY]
     assert db.committed
 
 
-def test_unset_conversation_caps_report_the_settings_defaults(
-    db: FakeSession, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    settings = prompt_checks_module.settings
-    monkeypatch.setattr(settings, "RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR", 20)
-    monkeypatch.setattr(
-        settings, "RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR", 5
-    )
+def test_the_form_schema_holds_the_criteria() -> None:
+    schema = asyncio.run(admin_router.read_prompt_check_schema())
 
-    status = asyncio.run(admin_router.read_prompt_check())
-
-    assert status.conversations_per_ip_per_hour == 20
-    assert status.conversations_same_models_per_ip_per_hour == 5
-    assert db.row.conversations_per_ip_per_hour is None
-
-
-def test_patching_the_conversation_caps_stores_them_and_reports_them(
-    db: FakeSession, invalidations: list[str]
-) -> None:
-    result = patch_check(
-        PromptCheckPatch(
-            conversations_per_ip_per_hour=50,
-            conversations_same_models_per_ip_per_hour=0,
-        )
-    )
-
-    assert db.row.conversations_per_ip_per_hour == 50
-    assert db.row.conversations_same_models_per_ip_per_hour == 0
-    # Zero is a value of its own, a cap turned off, not a fall back to the default.
-    assert result.conversations_per_ip_per_hour == 50
-    assert result.conversations_same_models_per_ip_per_hour == 0
-    assert invalidations == [prompt_checks_module.REDIS_PROMPT_CHECK_KEY]
-
-
-def test_patching_other_fields_leaves_the_caps_alone(
-    db: FakeSession, invalidations: list[str]
-) -> None:
-    db.row.conversations_per_ip_per_hour = 50
-
-    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
-
-    assert db.row.conversations_per_ip_per_hour == 50
-
-
-@pytest.mark.parametrize("value", [-1, 10_001])
-def test_a_conversation_cap_out_of_bounds_is_refused(value: int) -> None:
-    with pytest.raises(ValueError):
-        PromptCheckPatch(conversations_per_ip_per_hour=value)
-    with pytest.raises(ValueError):
-        PromptCheckPatch(conversations_same_models_per_ip_per_hour=value)
+    assert list(schema["properties"]) == [
+        "enabled",
+        "required",
+        "model",
+        "api_key",
+        "description",
+        "criteria",
+        "conversations_per_ip_per_hour",
+        "conversations_same_models_per_ip_per_hour",
+    ]
+    criterion = schema["$defs"]["PromptCheckCriterion"]["properties"]
+    assert criterion["action"]["enum"] == ["off", "log", "warn", "block"]
 
 
 class FlagClient:
@@ -279,15 +331,18 @@ class FlagClient:
         self.deleted.append(key)
 
 
-def test_a_new_key_clears_the_rejected_flag(
+def test_a_new_key_clears_the_rejected_and_no_credits_flags(
     db: FakeSession, invalidations: list[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     client = FlagClient()
     monkeypatch.setattr(prompt_checks_module, "get_redis_client", lambda: client)
 
-    patch_check(PromptCheckPatch(api_key="a-new-key"))
+    put_check(api_key="a-new-key")
 
-    assert client.deleted == [prompt_checks_module.REDIS_CHECK_KEY_REJECTED_KEY]
+    assert client.deleted == [
+        prompt_checks_module.REDIS_CHECK_KEY_REJECTED_KEY,
+        prompt_checks_module.REDIS_CHECK_NO_CREDITS_KEY,
+    ]
 
 
 def test_other_changes_leave_the_rejected_flag(
@@ -296,6 +351,97 @@ def test_other_changes_leave_the_rejected_flag(
     client = FlagClient()
     monkeypatch.setattr(prompt_checks_module, "get_redis_client", lambda: client)
 
-    patch_check(PromptCheckPatch(model="mistral-moderation-2603"))
+    put_check(model="perplexity/pplx-decider-flash-v1.2")
 
     assert client.deleted == []
+
+
+def serve_models(monkeypatch: pytest.MonkeyPatch, handler) -> None:
+    client = httpx.AsyncClient
+    monkeypatch.setattr(
+        checks.httpx,
+        "AsyncClient",
+        lambda **kwargs: client(transport=httpx.MockTransport(handler), **kwargs),
+    )
+
+
+def test_the_model_list_comes_from_openrouter(monkeypatch: pytest.MonkeyPatch) -> None:
+    asked: list[httpx.URL] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        asked.append(request.url)
+        return httpx.Response(
+            200,
+            json={
+                "data": [
+                    {"id": "perplexity/pplx-decider-v1.2", "name": "Decider V1.2"},
+                    {"id": "liquid/d1-ultra"},
+                ]
+            },
+        )
+
+    serve_models(monkeypatch, handler)
+
+    models = asyncio.run(admin_router.read_prompt_check_models())
+
+    assert asked[0].params["output_modalities"] == "decisions"
+    assert [(m.id, m.name) for m in models] == [
+        ("perplexity/pplx-decider-v1.2", "Decider V1.2"),
+        ("liquid/d1-ultra", "liquid/d1-ultra"),
+    ]
+
+
+def test_the_model_list_is_empty_when_openrouter_is_down(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    serve_models(monkeypatch, lambda request: httpx.Response(503))
+
+    assert asyncio.run(admin_router.read_prompt_check_models()) == []
+
+
+def test_unset_conversation_caps_report_the_settings_defaults(
+    db: FakeSession, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    settings = admin_router.settings
+    monkeypatch.setattr(settings, "RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR", 20)
+    monkeypatch.setattr(
+        settings, "RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR", 5
+    )
+
+    status = asyncio.run(admin_router.read_prompt_check())
+
+    # Empty in the form, with the default it falls back to beside it.
+    assert status.conversations_per_ip_per_hour is None
+    assert status.default_conversations_per_ip_per_hour == 20
+    assert status.default_conversations_same_models_per_ip_per_hour == 5
+
+
+def test_saving_the_conversation_caps_stores_them(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    result = put_check(
+        conversations_per_ip_per_hour=50, conversations_same_models_per_ip_per_hour=0
+    )
+
+    assert db.row.conversations_per_ip_per_hour == 50
+    # Zero is a value of its own, a cap turned off, not a fall back to the default.
+    assert db.row.conversations_same_models_per_ip_per_hour == 0
+    assert result.conversations_same_models_per_ip_per_hour == 0
+
+
+def test_an_emptied_cap_goes_back_to_the_default(
+    db: FakeSession, invalidations: list[str]
+) -> None:
+    db.row.conversations_per_ip_per_hour = 50
+
+    put_check(conversations_per_ip_per_hour=None)
+
+    assert db.row.conversations_per_ip_per_hour is None
+
+
+@pytest.mark.parametrize("value", [-1, 10_001])
+def test_a_conversation_cap_out_of_bounds_is_refused(value: int) -> None:
+    with pytest.raises(ValueError):
+        PromptCheckUpsert(conversations_per_ip_per_hour=value)
+    with pytest.raises(ValueError):
+        PromptCheckUpsert(conversations_same_models_per_ip_per_hour=value)

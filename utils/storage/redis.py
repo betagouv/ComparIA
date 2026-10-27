@@ -80,26 +80,35 @@ REDIS_PROMPT_CHECK_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check"
 # the admin panel. A check that quietly stops working looks exactly like a
 # check that passes everything, so the count has to be visible.
 REDIS_CHECK_FAILURES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_failures"
-# Set while Mistral counts as down: the check is skipped until it expires.
+# Set while the decision model counts as down: the check is skipped until it expires.
 REDIS_CHECK_PAUSED_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_paused"
-# Set when Mistral refuses our key, cleared by the next call that works or by a
+# Set when OpenRouter refuses our key, cleared by the next call that works or by a
 # new key from the admin panel.
 REDIS_CHECK_KEY_REJECTED_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_key_rejected"
+)
+# Set while OpenRouter answers 402: the account or the key ran out of credits.
+# Cleared the same way as the rejected key flag.
+REDIS_CHECK_NO_CREDITS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_no_credits"
 )
 # Warnings a session sent anyway, in a rolling hour.
 REDIS_SENT_WARNINGS_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_sent_warnings:{{session}}"
 )
-# Warnings shown to a user, counted for as long as a category stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
+# Warnings shown to a user, counted for as long as a criterion stays on 'warn'. Denominator of the 'user_proceeded' flag stored on
 # the turn: without it, only the people who sent anyway leave a trace.
 REDIS_CHECK_WARNINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_warnings"
-# Moderation scores of one prompt, keyed by model and text. Lets a user warned about a
-# message send it anyway without paying for a second moderation call. Scores
+# Prompt check scores of one prompt, keyed by the questions asked and the text. Lets
+# a user warned about a message send it anyway without paying for a second check. Scores
 # rather than decisions, so a check tightened meanwhile still applies.
 REDIS_CHECK_SCORES_KEY: Final[str] = (
-    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{model_hash}}:{{prompt_hash}}"
+    f"{REDIS_INSTANCE_PREFIX}prompt_check_scores:{{questions_hash}}:{{prompt_hash}}"
 )
+# Calls to the decision model in flight on this instance, across every request,
+# worker and replica: a sorted set of call stamps scored by when they lapse. One
+# pool, since an instance calls with one key at a time.
+REDIS_CHECK_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_calls"
 REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )

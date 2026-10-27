@@ -326,26 +326,19 @@
                 "help": {
                     "block": "Meddelelsen sendes ikke.",
                     "log": "Det, der er opdaget, registreres, personen ser intet.",
-                    "off": "Kategorien tages ikke i betragtning.",
+                    "off": "Kriteriet tages ikke i betragtning.",
                     "title": "Hvad hver handling gør",
                     "warn": "Et vindue åbnes ved afsendelse. Personen kan stadig sende eller rette sin besked."
                 },
-                "legend": "Handling",
                 "log": "Overvåg",
                 "off": "Ignorér",
                 "warn": "Advarsel"
             },
             "apiKey": {
-                "cancel": "Annuller",
-                "label": "API-nøgle",
-                "placeholder": "Ny nøgle",
-                "replace": "Erstat",
-                "set": "Nøgle gemt",
-                "unset": "Ingen nøgle gemt",
-                "willClear": "Når du gemmer, slettes den gemte nøgle, og miljøvariablen overtager."
+                "removed": "Nøglen er fjernet. Kontrollen bruger nu OPENROUTER_API_KEY."
             },
             "bench": {
-                "caption": "Score, tærskel og resultat pr. kategori",
+                "caption": "Score, tærskel og resultat pr. kriterium",
                 "columns": {
                     "score": "Score",
                     "verdict": "Resultat"
@@ -355,14 +348,14 @@
                     "error": "Kontrollen svarede ikke",
                     "logged": "Overvåget",
                     "pass": "Bestået uden handling",
-                    "skipped": "Ikke kontrolleret, Mistral nede",
+                    "skipped": "Ikke kontrolleret, model utilgængelig",
                     "warned": "Advaret"
                 },
                 "decisionLegend": "Resultat",
                 "empty": "Skriv en besked, før du starter testen.",
                 "errors": {
-                    "call_failed": "Kaldet til Mistral mislykkedes: {error}",
-                    "no_api_key": "Der er ikke konfigureret nogen Mistral API-nøgle: kontrollen kan ikke køre."
+                    "call_failed": "Kaldet til modellen mislykkedes: {error}",
+                    "no_api_key": "Der er ikke konfigureret nogen OpenRouter API-nøgle: kontrollen kan ikke køre."
                 },
                 "ignored": "Ikke overvåget",
                 "label": "Besked at tjekke",
@@ -375,69 +368,43 @@
                 "resultWaiting": "Resultatet vises her.",
                 "run": "Test",
                 "running": "Test i gang...",
-                "scoresHint": "Hver bjælke viser den opnåede score, og den lodrette linje markerer grænsen. En score lige under grænsen er det første, du skal holde øje med.",
-                "scoresTitle": "Detaljer efter kategori",
+                "scoresHint": "Hver bjælke viser sandsynligheden for, at svaret er ja, den lodrette streg markerer tærsklen. En score lige under sin tærskel er det første, man skal holde øje med.",
+                "scoresTitle": "Detaljer efter kriterium",
                 "threshold": "Grænse {value}",
                 "title": "Test en besked",
                 "triggered": "Udløst"
             },
-            "caps": {
-                "description": "Hvor mange samtaler en IP-adresse må starte inden for en glidende time, i alt og med de samme to modeller. Grænserne gælder også, når kontrollen af beskeder er slået fra. De deles af alle bag den samme IP (en skole, et ministerium): partnerkohorter (Pix) er ikke omfattet. 0 slår en grænse fra. Lad et felt stå tomt for at vende tilbage til instansens standardværdi.",
-                "invalid": "Angiv et helt tal mellem 0 og 10.000.",
-                "perIp": "Samtaler pr. IP pr. time",
-                "sameModels": "Samtaler pr. IP pr. time med de samme modeller",
-                "save": "Gem grænserne",
-                "title": "Samtalegrænser pr. IP"
-            },
-            "categories": {
-                "criminal": "Kriminelle aktiviteter",
-                "dangerous": "Farlige handlinger",
-                "financial": "Finans",
-                "hateAndDiscrimination": "Had og diskrimination",
-                "health": "Sundhed",
-                "jailbreaking": "Omgåelse af instruktioner",
-                "law": "Jura",
-                "pii": "Personoplysninger",
-                "selfharm": "Selvskade og selvmord",
-                "sexual": "Seksuelt indhold",
-                "violenceAndThreats": "Vold og trusler"
-            },
-            "categoriesTitle": "Kategorier",
             "columns": {
                 "action": "Handling",
-                "category": "Kategori",
                 "threshold": "Tærskel"
             },
             "health": {
                 "failures": "{count} fejl i træk",
                 "unhealthy": "Tjekket svarer ikke længere",
-                "unhealthyHint": "Kald til moderations-API'en fejler. Beskeder afvises, så længe den ikke svarer, og efter nogle flere fejl går de igennem uden tjek et minut ad gangen. Kontrollér serverloggene.",
-                "keyRejected": "Mistral afviser nøglen",
-                "keyRejectedHint": "Alle beskeder afvises, indtil nøglen er rettet. Indsæt en gyldig Mistral-nøgle nedenfor."
+                "unhealthyHint": "Kald til beslutningsmodellen fejler. Beskeder afvises, så længe den ikke svarer, og efter nogle flere fejl går de igennem uden tjek et minut ad gangen. Kontrollér serverloggene.",
+                "keyRejected": "OpenRouter afviser nøglen",
+                "keyRejectedHint": "Alle beskeder afvises, indtil nøglen er rettet. Indsæt en gyldig OpenRouter-nøgle nedenfor.",
+                "unhealthyHintOptional": "Kald til beslutningsmodellen fejler. Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, så længe den ikke svarer. Kontrollér serverloggene.",
+                "keyRejectedHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil nøglen er rettet. Indsæt en gyldig OpenRouter-nøgle nedenfor.",
+                "noCredits": "OpenRouter har ikke flere kreditter til denne nøgle",
+                "noCreditsHint": "Alle beskeder afvises, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor.",
+                "noCreditsHintOptional": "Kontrollen er ikke obligatorisk, så beskeder går igennem uden tjek, indtil kontoen eller nøglens grænse er fyldt op. Tilføj kreditter på OpenRouter, eller indsæt en anden nøgle nedenfor.",
+                "noKey": "Ingen API-nøgle",
+                "noKeyHint": "Der er ikke gemt nogen nøgle her, og OPENROUTER_API_KEY er ikke sat: kontrollen kører ikke, og beskeder går igennem uden kontrol, også når den er obligatorisk. Indsæt en OpenRouter-nøgle nedenfor."
             },
-            "model": {
-                "label": "Moderationsmodel"
-            },
-            "saveApiKey": "Gem nøglen",
-            "saveCategories": "Gem kategorierne",
-            "saved": "Tjekket opdateret",
-            "saveModel": "Gem modellen",
-            "saving": "Gemmer...",
             "settings": {
-                "disabledNotice": "Tjek deaktiveret: ingen beskeder tjekkes, uanset reglerne nedenfor.",
-                "enabled": "Beskedtjek",
                 "title": "Indstillinger"
             },
             "stats": {
-                "byCategoryNone": "Ingen kategori blev udløst i perioden.",
-                "byCategoryTitle": "Udløste kategorier",
+                "byCriterionNone": "Intet kriterium blev udløst i perioden.",
+                "byCriterionTitle": "Udløste kriterier",
                 "byDecisionTitle": "Resultater",
                 "decision": {
                     "blocked": "Afvist",
                     "error": "Fejl",
                     "logged": "Overvåget",
                     "pass": "Godkendt uden handling",
-                    "skipped": "Ikke kontrolleret (Mistral nede)",
+                    "skipped": "Ikke kontrolleret (model utilgængelig)",
                     "warned": "Advarsler"
                 },
                 "proceeded": "{count} sendt alligevel",
@@ -448,12 +415,19 @@
                 "warningsShown": "{count} vist",
                 "warningsTitle": "Viste advarsler siden starten"
             },
-            "subtitle": "Når en besked falder ind under en af disse kategorier, bestemmer du, hvad der sker med personen: intet, en advarsel, som personen kan overse, eller en afvisning.",
-            "threshold": {
-                "invalid": "Indtast et tal mellem 0 og 1.",
-                "legend": "Tærskel"
-            },
-            "title": "Beskedtjek"
+            "subtitle": "Når en besked opfylder et af dine kriterier, bestemmer du, hvad der sker med personen: intet, en advarsel, som personen kan overse, eller en afvisning.",
+            "title": "Beskedtjek",
+            "criteria": {
+                "add": "Tilføj et kriterium",
+                "remove": "Fjern",
+                "empty": "Ingen kriterier: ingen beskeder kontrolleres.",
+                "messages": {
+                    "generic": "Generel",
+                    "self_harm": "Krise (med hjælpelinje)",
+                    "pii": "Personoplysninger"
+                },
+                "new": "Nyt kriterium"
+            }
         },
         "publishing": {
             "accessKeyLabel": "Adgangsnøgle",
@@ -1498,6 +1472,66 @@
             },
             "updated_at": {
                 "label": "Opdateret"
+            }
+        },
+        "prompt_check_upsert": {
+            "api_key": {
+                "help": "Efterlades den tom, bruger kontrollen OPENROUTER_API_KEY.",
+                "label": "OpenRouter API-nøgle"
+            },
+            "criteria": {
+                "label": "Kriterier"
+            },
+            "description": {
+                "help": "Modellen læser den sammen med hver besked. Skriv, hvad der er velkomment her, så et helbredsspørgsmål ikke virker mistænkeligt på en sundhedsarena.",
+                "label": "Beskrivelse af instansen"
+            },
+            "enabled": {
+                "label": "Kontrol af beskeder"
+            },
+            "model": {
+                "help": "En beslutningsmodel fra OpenRouter.",
+                "label": "Beslutningsmodel"
+            },
+            "PromptCheckCriterion": {
+                "action": {
+                    "label": "Handling"
+                },
+                "key": {
+                    "help": "Statistikken tælles pr. nøgle: ændr den ikke, når kriteriet er taget i brug.",
+                    "label": "Nøgle"
+                },
+                "label": {
+                    "label": "Navn"
+                },
+                "message": {
+                    "label": "Vist besked"
+                },
+                "no": {
+                    "label": "Tæller som nej"
+                },
+                "question": {
+                    "help": "Et lukket spørgsmål om `message`, som besvares med ja eller nej.",
+                    "label": "Spørgsmål til modellen"
+                },
+                "threshold": {
+                    "label": "Tærskel"
+                },
+                "yes": {
+                    "label": "Tæller som ja"
+                }
+            },
+            "required": {
+                "help": "Når kontrollen ikke kan svare (tidsgrænse overskredet, OpenRouter overbelastet, nøgle afvist), afvises beskeden. Slået fra går den igennem uden kontrol. Under alle omstændigheder går beskeder igennem uden kontrol et minut ad gangen efter flere OpenRouter-fejl i træk.",
+                "label": "Obligatorisk kontrol"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Over en glidende time, også når kontrollen er slået fra. Deles af alle bag samme IP (en skole, et ministerium); partnerkohorter (Pix) tælles ikke med. 0 slår grænsen fra, tom går tilbage til instansens standard.",
+                "label": "Samtaler pr. IP pr. time"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "Samme grænse for ét modelpar. 0 slår den fra, tom går tilbage til instansens standard.",
+                "label": "Samtaler pr. IP pr. time med de samme modeller"
             }
         }
     },

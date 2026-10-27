@@ -7,7 +7,7 @@ from sqlmodel import col, func, select
 
 from backend.config import settings
 from utils.database.models.prompt_check import (
-    DEFAULT_CATEGORIES,
+    DEFAULT_CRITERIA,
     DEFAULT_MODEL,
     PromptCheck,
     PromptCheckResult,
@@ -16,6 +16,7 @@ from utils.database.session import get_session
 from utils.storage.redis import (
     REDIS_CHECK_FAILURES_KEY,
     REDIS_CHECK_KEY_REJECTED_KEY,
+    REDIS_CHECK_NO_CREDITS_KEY,
     REDIS_CHECK_WARNINGS_KEY,
     REDIS_PROMPT_CHECK_KEY,
     get_redis_client,
@@ -26,7 +27,7 @@ from utils.storage.redis import (
 logger = logging.getLogger("comparia.db")
 
 # Consecutive failures after which the admin panel calls the check unhealthy.
-# Past a few more, Mistral counts as down and messages go through unchecked, so
+# Past a few more, the model counts as down and messages go through unchecked, so
 # the panel has to say so.
 UNHEALTHY_AFTER_FAILURES = 3
 
@@ -35,7 +36,7 @@ UNHEALTHY_AFTER_FAILURES = 3
 _DEFAULT = PromptCheck(
     id=1,
     model=DEFAULT_MODEL,
-    categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()},
+    criteria=[dict(c) for c in DEFAULT_CRITERIA],
 )
 
 
@@ -77,9 +78,7 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
     async with get_session() as session:
         row = await session.get(PromptCheck, 1)
         if not row:
-            row = PromptCheck(
-                id=1, categories={k: dict(v) for k, v in DEFAULT_CATEGORIES.items()}
-            )
+            row = PromptCheck(id=1, criteria=[dict(c) for c in DEFAULT_CRITERIA])
 
         for key, value in patch.items():
             setattr(row, key, value)
@@ -95,9 +94,11 @@ async def update_prompt_check(patch: dict, updated_by: uuid.UUID) -> PromptCheck
         # The flag describes the old key. Left set, the panel would keep
         # calling the new one rejected until a visitor's message proved it.
         try:
-            get_redis_client().delete(REDIS_CHECK_KEY_REJECTED_KEY)
+            client = get_redis_client()
+            client.delete(REDIS_CHECK_KEY_REJECTED_KEY)
+            client.delete(REDIS_CHECK_NO_CREDITS_KEY)
         except Exception as e:
-            logger.warning(f"[PROMPT CHECK] Cannot clear the rejected key flag: {e}")
+            logger.warning(f"[PROMPT CHECK] Cannot clear the key flags: {e}")
     return row
 
 
@@ -130,6 +131,10 @@ def get_consecutive_failures() -> int:
 
 def is_key_rejected() -> bool:
     return _read_counter(REDIS_CHECK_KEY_REJECTED_KEY, "rejected key flag") > 0
+
+
+def is_out_of_credits() -> bool:
+    return _read_counter(REDIS_CHECK_NO_CREDITS_KEY, "no credits flag") > 0
 
 
 # Every decision a check can reach, so a quiet week still reports each bucket
@@ -169,7 +174,7 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
         "historical_total": 0,
         "total": 0,
         "by_decision": {decision: 0 for decision in DECISIONS},
-        "by_category": {},
+        "by_criterion": {},
         "timeline": [],
     }
     if not settings.COMPARIA_DB_URI:
@@ -177,7 +182,7 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
 
     where = [col(PromptCheckResult.created_at) >= since] if since else []
     decision = col(PromptCheckResult.decision)
-    categories = (
+    triggered = (
         select(
             func.jsonb_object_keys(col(PromptCheckResult.triggered)).label("name"),
             decision.label("decision"),
@@ -200,15 +205,15 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
                 .group_by(decision)
             )
         ).all()
-        by_category = (
+        by_criterion = (
             await session.exec(
                 select(
-                    categories.c.name,
-                    categories.c.decision,
+                    triggered.c.name,
+                    triggered.c.decision,
                     func.count().label("count"),
                 ).group_by(
-                    categories.c.name,
-                    categories.c.decision,
+                    triggered.c.name,
+                    triggered.c.decision,
                 )
             )
         ).all()
@@ -225,10 +230,10 @@ async def get_prompt_check_stats(period: str = "all") -> dict:
     for name, count in by_decision:
         stats["by_decision"][name] = count
     stats["total"] = sum(stats["by_decision"].values())
-    for category, name, count in by_category:
-        stats["by_category"].setdefault(
-            category, {decision: 0 for decision in DECISIONS}
-        )[name] = count
+    for key, name, count in by_criterion:
+        stats["by_criterion"].setdefault(key, {decision: 0 for decision in DECISIONS})[
+            name
+        ] = count
 
     buckets: dict[datetime, dict[str, int]] = {}
     for start, name, count in timeline:

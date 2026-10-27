@@ -19,7 +19,7 @@ from utils.database.models.llms import (
     LLMLabPublic,
     LLMLicense,
 )
-from utils.database.models.prompt_check import PromptCheckPatch, PromptCheckStatus
+from utils.database.models.prompt_check import PromptCheckStatus, PromptCheckUpsert
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,

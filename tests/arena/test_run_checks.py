@@ -123,7 +123,7 @@ def test_sending_a_warned_prompt_anyway_is_charged_to_the_session():
     assert charged == ["session:sess-a"]
 
 
-def test_a_check_skipped_while_mistral_is_down_is_not_charged():
+def test_a_check_skipped_while_the_model_is_down_is_not_charged():
     skipped = PromptCheckResult(decision="skipped", model="m", latency_ms=0)
     outcome, charged = check("bonjour", skipped)
     assert outcome is skipped
@@ -139,8 +139,8 @@ def test_showing_a_warning_is_not_charged():
 
 
 def test_a_prompt_that_could_not_be_checked_is_refused_but_not_charged():
-    """The failure is ours: a school must not cool down because Mistral was
-    slow."""
+    """The failure is ours: a school must not cool down because the decision
+    model was slow."""
     unchecked = PromptCheckResult(
         decision="error", model="m", latency_ms=2500, message="unavailable"
     )
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     test_a_clean_prompt_is_not_charged()
     test_a_block_is_charged()
     test_sending_a_warned_prompt_anyway_is_charged_to_the_session()
-    test_a_check_skipped_while_mistral_is_down_is_not_charged()
+    test_a_check_skipped_while_the_model_is_down_is_not_charged()
     test_showing_a_warning_is_not_charged()
     test_a_prompt_that_could_not_be_checked_is_refused_but_not_charged()
     test_a_message_over_the_limit_is_refused_before_any_check()
