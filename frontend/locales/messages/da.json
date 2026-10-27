@@ -828,6 +828,7 @@
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
+            "noneSelected": "Ingen model valgt: du sammenligner to tilfældige modeller.",
             "question": "Hvilke modeller vil du gerne sammenligne?",
             "randomOnly": "Kun tilgængelig tilfældigt"
         },
