@@ -393,7 +393,7 @@
             <div class="gap-4 flex items-center">
               {#if oidcHasButtonLogo}
                 <img
-                  src={api.getUrl('/auth/config/oidc/logo', { v: oidcLogoVersion.toString() })}
+                  src={api.getPublicUrl('/auth/config/oidc/logo', { v: oidcLogoVersion.toString() })}
                   alt=""
                   class="h-[32px] border border-[--border-default-grey]"
                 />

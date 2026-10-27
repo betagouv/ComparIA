@@ -23,7 +23,7 @@ export function signInMethods(config: Partial<AuthConfig> | undefined) {
     emailEnabled,
     bothMethods: oidcEnabled && emailEnabled,
     oidcLabel: config?.oidc_button_label || m['auth.oidc.buttonFallback'](),
-    oidcLogoUrl: config?.oidc_has_button_logo ? api.getUrl('/auth/config/oidc/logo') : null,
+    oidcLogoUrl: config?.oidc_has_button_logo ? api.getPublicUrl('/auth/config/oidc/logo') : null,
     tabs
   }
 }

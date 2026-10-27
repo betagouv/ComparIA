@@ -82,7 +82,7 @@
   >
     <img
       src={auth.config?.has_custom_logo
-        ? api.getUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
+        ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
         : '/orgs/comparia.png'}
       aria-hidden="true"
       alt=""

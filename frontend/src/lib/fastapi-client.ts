@@ -34,6 +34,19 @@ function getBackendUrl(): string {
   }
 }
 
+// Base for URLs the browser loads itself (img src, links). Unlike
+// getBackendUrl, it never uses PUBLIC_API_LOCAL_URL: a URL rendered during SSR
+// stays in the page after hydration, and the browser cannot reach an
+// in-cluster address.
+function getPublicBackendUrl(): string {
+  if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
+    return (publicEnv.PUBLIC_API_URL || 'http://localhost:8008') + '/api'
+  }
+  // Same origin as the page in production, so a relative path works on both
+  // server and client.
+  return '/api'
+}
+
 /**
  * SSE event types from backend
  */
@@ -147,6 +160,15 @@ export class FastAPIClient {
       url.search = new URLSearchParams(searchParams).toString()
     }
     return url.href
+  }
+
+  /**
+   * URL of an endpoint for the browser to load (img src, links). Safe to
+   * render during SSR, unlike getUrl.
+   */
+  getPublicUrl(path: string, searchParams?: SearchParams): string {
+    const query = searchParams ? `?${new URLSearchParams(searchParams)}` : ''
+    return `${getPublicBackendUrl()}${path}${query}`
   }
 
   async parseErrorResponse(
