@@ -1,33 +1,21 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
-  import { resolve } from '$app/paths'
-  import {
-    Alert,
-    Badge,
-    Button,
-    Checkbox,
-    Icon,
-    Input,
-    Modal,
-    Select,
-    Table,
-    Toggle
-  } from '$components/dsfr'
+  import { Badge, Button, Icon, Modal, Table } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
   import { api, type ApiError } from '$lib/fastapi-client'
-  import type { AdminPublishDestination, AdminPublishStatus } from '$lib/generated/admin'
+  import type { AdminPublishDestination } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
-  import { untrack } from 'svelte'
   import type { PageProps } from './$types'
+  import { DestinationForm, Overview, ReservationManagement, ReviewerSettings } from './components'
+  import { formatDate, runStatus, runVariant, type Run } from './components/format'
+  import { closeModal } from './components/modal'
 
   let { data }: PageProps = $props()
 
   const refetch = () => invalidate('admin:publishing')
 
-  type Kind = 'huggingface' | 's3'
-  type Dataset = AdminPublishDestination['datasets'][number]
   type Frequency = AdminPublishDestination['publish_frequency']
 
   const destinations = $derived(data.destinations.destinations)
@@ -53,162 +41,22 @@
 
   let busy = $state(false)
   let publishing = $state<string>()
-  let reviewerEndpointId = $state(untrack(() => data.settings.analysis_endpoint_id ?? ''))
-  let reviewerModel = $state(untrack(() => data.settings.analysis_model ?? ''))
-  let reviewerError = $state<string>()
-  let formError = $state<string>()
-  let editing = $state<AdminPublishDestination>()
   let toDelete = $state<AdminPublishDestination>()
-
-  let formName = $state('')
-  let formKind = $state<Kind>('huggingface')
-  let wantsOpen = $state(true)
-  let wantsRaw = $state(false)
-  let wantsReserved = $state(false)
-  const formDatasets = $derived([
-    ...(wantsOpen ? (['normal'] as Dataset[]) : []),
-    ...(wantsRaw ? (['raw'] as Dataset[]) : []),
-    ...(wantsReserved ? (['reserved'] as Dataset[]) : [])
-  ])
-  let formEnabled = $state(true)
-  let formFrequency = $state<Frequency>('off')
-  let formRepoPath = $state('')
-  let formToken = $state('')
-  let formEndpoint = $state('')
-  let formBucket = $state('')
-  let formRegion = $state('')
-  let formPrefix = $state('')
-  let formSecure = $state(true)
-  let formAccessKey = $state('')
-  let formSecretKey = $state('')
-
-  function discloseModal(id: string) {
-    const element = document.getElementById(id)
-    // @ts-expect-error - DSFR is globally available
-    if (element) window.dsfr(element).modal.disclose()
-  }
-
-  function closeModal(id: string) {
-    const element = document.getElementById(id)
-    // @ts-expect-error - DSFR is globally available
-    if (element) window.dsfr(element).modal.conceal()
-  }
-
-  function openAdd() {
-    editing = undefined
-    formError = undefined
-    formName = ''
-    formKind = 'huggingface'
-    wantsOpen = true
-    wantsRaw = false
-    wantsReserved = false
-    formEnabled = true
-    formFrequency = 'off'
-    formRepoPath = ''
-    formEndpoint = ''
-    formBucket = ''
-    formRegion = ''
-    formPrefix = ''
-    formSecure = true
-    formToken = ''
-    formAccessKey = ''
-    formSecretKey = ''
-    discloseModal('fr-modal-destination')
-  }
-
-  function openEdit(destination: AdminPublishDestination) {
-    editing = destination
-    formError = undefined
-    formName = destination.name
-    formKind = destination.kind
-    wantsOpen = destination.datasets.includes('normal')
-    wantsRaw = destination.datasets.includes('raw')
-    wantsReserved = destination.datasets.includes('reserved')
-    formEnabled = destination.enabled
-    formFrequency = destination.publish_frequency
-    // The secrets never come back from the API, so their fields start empty
-    // and an empty field means 'keep the one already stored'.
-    formToken = ''
-    formAccessKey = ''
-    formSecretKey = ''
-    const config = destination.config as Record<string, unknown>
-    formRepoPath = String(config.repo_path ?? '')
-    formEndpoint = String(config.endpoint ?? '')
-    formBucket = String(config.bucket ?? '')
-    formRegion = String(config.region ?? '')
-    formPrefix = String(config.prefix ?? '')
-    formSecure = config.secure !== false
-    discloseModal('fr-modal-destination')
-  }
+  let form = $state<ReturnType<typeof DestinationForm>>()
 
   async function run(action: () => Promise<unknown>, success: string) {
     busy = true
-    formError = undefined
     try {
       await action()
       useToast(success, 4000)
       await refetch()
       return true
     } catch (error) {
-      const { message } = error as ApiError
-      formError = message
-      useToast(message, 6000, 'error')
+      useToast((error as ApiError).message, 6000, 'error')
       return false
     } finally {
       busy = false
     }
-  }
-
-  function configPayload() {
-    if (formKind === 'huggingface') {
-      return {
-        kind: 'huggingface',
-        repo_path: formRepoPath.trim(),
-        ...(formToken.trim() ? { token: formToken.trim() } : {})
-      }
-    }
-    return {
-      kind: 's3',
-      endpoint: formEndpoint.trim(),
-      bucket: formBucket.trim(),
-      region: formRegion.trim() || null,
-      prefix: formPrefix.trim(),
-      secure: formSecure,
-      ...(formAccessKey.trim() ? { access_key: formAccessKey.trim() } : {}),
-      ...(formSecretKey.trim() ? { secret_key: formSecretKey.trim() } : {})
-    }
-  }
-
-  async function submit(event: SubmitEvent) {
-    event.preventDefault()
-    if (!formDatasets.length) {
-      formError = m['admin.publishing.datasetsError']()
-      return
-    }
-    if (wantsOpen && wantsReserved) {
-      formError = m['admin.publishing.datasetsConflict']()
-      return
-    }
-
-    const body = JSON.stringify({
-      name: formName.trim(),
-      config: configPayload(),
-      datasets: formDatasets,
-      enabled: formEnabled,
-      publish_frequency: formFrequency
-    })
-    const target = editing
-    const done = await run(
-      () =>
-        target
-          ? api.request(`/admin/publishing/destinations/${target.id}`, {
-              method: 'PUT',
-              body
-            })
-          : api.request('/admin/publishing/destinations', { method: 'POST', body }),
-      target ? m['admin.publishing.editSuccess']() : m['admin.publishing.createSuccess']()
-    )
-    if (done) closeModal('fr-modal-destination')
   }
 
   async function publishNow(destination: AdminPublishDestination) {
@@ -223,33 +71,6 @@
       useToast((error as ApiError).message, 8000, 'error')
     } finally {
       publishing = undefined
-    }
-  }
-
-  async function saveReviewer(event?: SubmitEvent) {
-    event?.preventDefault()
-    reviewerError = undefined
-    const model = reviewerModel.trim()
-    if ((reviewerEndpointId && !model) || (!reviewerEndpointId && model)) {
-      reviewerError = m['admin.publishing.reviewerIncomplete']()
-      return
-    }
-    busy = true
-    try {
-      await api.request('/admin/settings', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          analysis_endpoint_id: reviewerEndpointId || null,
-          analysis_model: model || null
-        })
-      })
-      reviewerModel = model
-      useToast(m['admin.publishing.reviewerSuccess'](), 4000)
-      await refetch()
-    } catch (error) {
-      reviewerError = (error as ApiError).message
-    } finally {
-      busy = false
     }
   }
 
@@ -313,21 +134,7 @@
     return hours < 48 ? `${hours} h` : `${Math.floor(hours / 24)} d`
   }
 
-  function formatDate(value: string | null) {
-    if (!value) return ''
-    // The API answers in UTC; an administrator reads their own clock.
-    const date = new Date(value.endsWith('Z') ? value : `${value}Z`)
-    return date.toLocaleString('fr-FR')
-  }
-
-  function runStatus(run: AdminPublishStatus['runs'][number]) {
-    if (run.finished_at === null) return m['admin.publishing.historyRunning']()
-    return run.succeeded
-      ? m['admin.publishing.historySucceeded']()
-      : m['admin.publishing.historyFailed']()
-  }
-
-  function runDetails(run: AdminPublishStatus['runs'][number]) {
+  function runDetails(run: Run) {
     if (run.finished_at === null) return m['admin.publishing.historyPending']()
     if (!run.error) return m['admin.publishing.historyNoError']()
     if (run.error === 'No rows produced, aborting export') {
@@ -336,7 +143,7 @@
     return m['admin.publishing.historyTechnicalError']()
   }
 
-  function runResult(run: AdminPublishStatus['runs'][number]) {
+  function runResult(run: Run) {
     if (run.finished_at === null) return m['admin.publishing.historyPending']()
     if (!run.succeeded) return m['admin.publishing.historyNoDataset']()
     const counts =
@@ -347,15 +154,6 @@
       ? counts
       : `${counts} ${m['admin.publishing.runReserved']({ reserved: run.reserved })}`
   }
-
-  async function releaseReserved() {
-    const count = status.reserved
-    const done = await run(
-      () => api.request('/admin/publishing/reservations', { method: 'DELETE' }),
-      m['admin.publishing.releaseSuccess']({ count })
-    )
-    if (done) closeModal('fr-modal-release-reserved')
-  }
 </script>
 
 <PageLayout
@@ -363,42 +161,7 @@
   title={m['admin.publishing.title']()}
   subtitle={m['admin.publishing.subtitle']()}
 >
-  <section class="mb-10">
-    <h2 class="fr-h6 mb-2!">{m['admin.publishing.reviewerTitle']()}</h2>
-    <p class="fr-text--sm text-grey mb-4!">
-      {m['admin.publishing.reviewerHelp']()}
-      {m['admin.publishing.reviewerModelHelp']()}
-    </p>
-
-    <form onsubmit={saveReviewer}>
-      <div class="gap-4 md:grid-cols-2 grid">
-        <Select
-          id="reviewer-endpoint"
-          bind:selected={reviewerEndpointId}
-          label={m['admin.publishing.reviewerEndpointLabel']()}
-          options={[
-            { value: '', label: m['admin.publishing.reviewerEndpointNone']() },
-            ...data.endpoints
-              .filter((endpoint) => endpoint.id)
-              .map((endpoint) => ({ value: endpoint.id!, label: endpoint.name }))
-          ]}
-        />
-        <Input
-          id="reviewer-model"
-          bind:value={reviewerModel}
-          label={m['admin.publishing.reviewerModelLabel']()}
-        />
-      </div>
-
-      {#if reviewerError}
-        <p class="fr-error-text" aria-live="polite">{reviewerError}</p>
-      {/if}
-
-      <div class="flex justify-start">
-        <Button type="submit" text={m['admin.publishing.reviewerSave']()} disabled={busy} />
-      </div>
-    </form>
-  </section>
+  <Overview {status} {destinations} />
 
   <section class="mb-10">
     <Table
@@ -420,7 +183,7 @@
           class="md:ms-auto"
           aria-controls="fr-modal-destination"
           data-fr-opened="false"
-          onclick={openAdd}
+          onclick={() => form?.open()}
         />
       {/snippet}
 
@@ -482,7 +245,7 @@
               disabled={busy}
               aria-controls="fr-modal-destination"
               data-fr-opened="false"
-              onclick={() => openEdit(row)}
+              onclick={() => form?.open(row)}
             >
               <Icon icon="i-ri-edit-line" />
             </Button>
@@ -526,33 +289,6 @@
   </section>
 
   <section class="mb-10">
-    <h2 class="fr-h6 mb-2!">{m['admin.publishing.reservedTitle']()}</h2>
-    <p class="fr-text--sm text-grey mb-2!">{m['admin.publishing.reservedHelp']()}</p>
-    <p class="fr-text--sm mb-2!">
-      {m['admin.publishing.reservedCount']({ count: status.reserved, sent: status.reserved_sent })}
-    </p>
-    <div class="gap-x-4 gap-y-2 flex flex-wrap items-center">
-      <a
-        class="fr-link fr-text--sm"
-        href={resolve('/admin/activite/conversations?period=all&reserved=true')}
-      >
-        {m['admin.publishing.reservedSee']()}
-      </a>
-      <!-- Not the main use: reserving is meant to last. -->
-      {#if status.reserved}
-        <Button
-          size="sm"
-          variant="tertiary-no-outline"
-          text={m['admin.publishing.releaseAll']()}
-          disabled={busy}
-          aria-controls="fr-modal-release-reserved"
-          data-fr-opened="false"
-        />
-      {/if}
-    </div>
-  </section>
-
-  <section>
     <h2 class="fr-h6">{m['admin.publishing.lastRun']()}</h2>
 
     {#if !status.runs.length}
@@ -569,11 +305,7 @@
           {#if col.id === 'date'}
             {formatDate(run.finished_at ?? run.started_at)}
           {:else if col.id === 'status'}
-            <Badge
-              size="sm"
-              text={runStatus(run)}
-              variant={run.finished_at === null ? 'blue-ecume' : run.succeeded ? 'green' : 'orange'}
-            />
+            <Badge size="sm" text={runStatus(run)} variant={runVariant(run)} />
           {:else if col.id === 'details'}
             <span class="fr-text--sm">{runDetails(run)}</span>
           {:else if col.id === 'result'}
@@ -583,162 +315,13 @@
       </Table>
     {/if}
   </section>
+
+  <ReviewerSettings settings={data.settings} endpoints={data.endpoints} onsaved={refetch} />
+
+  <ReservationManagement {status} onreleased={refetch} />
 </PageLayout>
 
-<Modal
-  id="fr-modal-destination"
-  titleId="fr-modal-title-destination"
-  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
-  contentClass="md:pt-4! mb-6!"
->
-  <h2 id="fr-modal-title-destination" class="fr-modal__title">
-    {editing ? m['admin.publishing.editTitle']() : m['admin.publishing.addTitle']()}
-  </h2>
-
-  <form onsubmit={submit}>
-    <Input
-      id="destination-name"
-      bind:value={formName}
-      label={m['admin.publishing.nameLabel']()}
-      maxlength={100}
-    />
-
-    <Select
-      id="destination-kind"
-      bind:selected={formKind}
-      label={m['admin.publishing.kindLabel']()}
-      options={[
-        { value: 'huggingface', label: m['admin.publishing.kindHuggingface']() },
-        { value: 's3', label: m['admin.publishing.kindS3']() }
-      ]}
-    />
-
-    {#if formKind === 'huggingface'}
-      <Input
-        id="destination-repo-path"
-        bind:value={formRepoPath}
-        label={m['admin.publishing.repoPathLabel']()}
-        help={m['admin.publishing.repoPathHelp']()}
-      />
-      <Input
-        id="destination-token"
-        bind:value={formToken}
-        type="password"
-        label={m['admin.publishing.tokenLabel']()}
-        help={editing ? m['admin.publishing.tokenKeep']() : m['admin.publishing.tokenHelp']()}
-      />
-    {:else}
-      <Input
-        id="destination-endpoint"
-        bind:value={formEndpoint}
-        label={m['admin.publishing.endpointLabel']()}
-        help={m['admin.publishing.endpointHelp']()}
-      />
-      <Input
-        id="destination-bucket"
-        bind:value={formBucket}
-        label={m['admin.publishing.bucketLabel']()}
-      />
-      <Input
-        id="destination-region"
-        bind:value={formRegion}
-        label={m['admin.publishing.regionLabel']()}
-      />
-      <Input
-        id="destination-prefix"
-        bind:value={formPrefix}
-        label={m['admin.publishing.prefixLabel']()}
-        help={m['admin.publishing.prefixHelp']()}
-      />
-      <Toggle
-        id="destination-secure"
-        bind:value={formSecure}
-        label={m['admin.publishing.secureLabel']()}
-      />
-      <Input
-        id="destination-access-key"
-        bind:value={formAccessKey}
-        label={m['admin.publishing.accessKeyLabel']()}
-        help={editing ? m['admin.publishing.secretKeep']() : undefined}
-      />
-      <Input
-        id="destination-secret-key"
-        bind:value={formSecretKey}
-        type="password"
-        label={m['admin.publishing.secretKeyLabel']()}
-        help={editing ? m['admin.publishing.secretKeep']() : undefined}
-      />
-    {/if}
-
-    <fieldset class="fr-fieldset mb-0">
-      <legend class="fr-fieldset__legend fr-text--regular">
-        {m['admin.publishing.datasetsLabel']()}
-      </legend>
-      <Checkbox
-        id="destination-dataset-normal"
-        bind:checked={wantsOpen}
-        label={m['admin.publishing.datasetNormal']()}
-        help={m['admin.publishing.datasetNormalHelp']()}
-      />
-      <Checkbox
-        id="destination-dataset-raw"
-        bind:checked={wantsRaw}
-        label={m['admin.publishing.datasetRaw']()}
-        help={m['admin.publishing.datasetRawHelp']()}
-      />
-      <Checkbox
-        id="destination-dataset-reserved"
-        bind:checked={wantsReserved}
-        label={m['admin.publishing.datasetReserved']()}
-        help={m['admin.publishing.datasetReservedHelp']()}
-      />
-    </fieldset>
-
-    {#if wantsRaw}
-      <Alert title={m['admin.publishing.datasetRaw']()} variant="warning" class="my-4">
-        <p class="fr-text--sm mb-0!">{m['admin.publishing.rawWarning']()}</p>
-      </Alert>
-    {/if}
-    {#if wantsReserved}
-      <Alert title={m['admin.publishing.datasetReserved']()} variant="warning" class="my-4">
-        <p class="fr-text--sm mb-0!">{m['admin.publishing.reservedWarning']()}</p>
-      </Alert>
-    {/if}
-
-    <Select
-      id="destination-publish-frequency"
-      bind:selected={formFrequency}
-      label={m['admin.publishing.frequencyLabel']()}
-      help={formFrequency === 'off' ? undefined : m['admin.publishing.firstRunHelp']()}
-      options={[
-        { value: 'off', label: m['admin.publishing.frequencyOff']() },
-        { value: 'daily', label: m['admin.publishing.frequencyDaily']() },
-        { value: 'weekly', label: m['admin.publishing.frequencyWeekly']() },
-        { value: 'monthly', label: m['admin.publishing.frequencyMonthly']() }
-      ]}
-    />
-
-    <Toggle
-      id="destination-enabled"
-      bind:value={formEnabled}
-      label={m['admin.publishing.enabledLabel']()}
-    />
-
-    {#if formError}
-      <p class="fr-error-text" aria-live="polite">{formError}</p>
-    {/if}
-
-    <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
-      <Button
-        type="button"
-        variant="secondary"
-        text={m['admin.publishing.cancel']()}
-        onclick={() => closeModal('fr-modal-destination')}
-      />
-      <Button type="submit" disabled={busy} text={m['admin.publishing.save']()} />
-    </div>
-  </form>
-</Modal>
+<DestinationForm bind:this={form} onsaved={refetch} />
 
 <Modal
   id="fr-modal-destination-delete"
@@ -759,32 +342,6 @@
       onclick={() => closeModal('fr-modal-destination-delete')}
     />
     <Button text={m['admin.publishing.delete']()} disabled={busy} onclick={confirmDelete} />
-  </div>
-</Modal>
-
-<Modal
-  id="fr-modal-release-reserved"
-  titleId="fr-modal-title-release-reserved"
-  headerClass="md:absolute! md:top-4 md:right-8 md:z-10 md:p-0!"
-  contentClass="md:pt-4! mb-6!"
->
-  <h2 id="fr-modal-title-release-reserved" class="fr-modal__title">
-    {m['admin.publishing.releaseTitle']({ count: status.reserved })}
-  </h2>
-  <p>{m['admin.publishing.releaseWarning']({ sent: status.reserved_sent })}</p>
-
-  <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
-    <Button
-      variant="secondary"
-      text={m['admin.publishing.cancel']()}
-      disabled={busy}
-      onclick={() => closeModal('fr-modal-release-reserved')}
-    />
-    <Button
-      text={m['admin.publishing.releaseConfirm']()}
-      disabled={busy}
-      onclick={releaseReserved}
-    />
   </div>
 </Modal>
 
