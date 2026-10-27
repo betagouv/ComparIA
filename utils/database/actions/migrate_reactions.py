@@ -81,7 +81,7 @@ async def migrate_reactions(
                 break
 
             for row in raw_rows:
-                pair_id: str | None = row["conversation_pair_id"]
+                pair_id = row["conversation_pair_id"]
                 msg_rank = row["msg_rank"]
                 model_pos: str | None = row["model_pos"]
 
