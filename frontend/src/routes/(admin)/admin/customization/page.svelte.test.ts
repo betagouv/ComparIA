@@ -18,7 +18,7 @@ const votes = { count: 148, objective: 300_000 }
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => auth }))
 vi.mock('$lib/global.svelte', () => ({ getVotesContext: () => votes }))
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: vi.fn(), getUrl: (path: string) => path }
+  api: { request: vi.fn(), getPublicUrl: (path: string) => path }
 }))
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: vi.fn() }))
 

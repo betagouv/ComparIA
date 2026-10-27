@@ -13,7 +13,11 @@ vi.mock('$lib/auth.svelte', () => ({
 }))
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: mocks.request, getUrl: (path: string) => path }
+  api: {
+    request: mocks.request,
+    getUrl: (path: string) => path,
+    getPublicUrl: (path: string) => path
+  }
 }))
 
 vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
