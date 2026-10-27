@@ -171,7 +171,24 @@
                 "commented": "Commentée",
                 "revealed": "Révélée",
                 "started": "Sans vote",
-                "voted": "Votée"
+                "voted": "Votée",
+                "stopped": "Refusés ou prévenus"
+            },
+            "stopped": {
+                "caption": "Messages refusés ou prévenus",
+                "cols": {
+                    "message": "Message",
+                    "verdict": "Vérification"
+                },
+                "empty": "Aucun message refusé ou prévenu sur cette période.",
+                "notSent": "Pas envoyé aux modèles",
+                "openConversation": "Voir la conversation",
+                "verdicts": {
+                    "blocked": "Refusé",
+                    "proceeded": "Prévenu, envoyé quand même",
+                    "unavailable": "Refusé, vérification indisponible",
+                    "warned": "Prévenu, pas envoyé"
+                }
             },
             "subTitle": "Ce qui se passe dans l'arène : les questions posées, les modèles comparés, les votes.",
             "tabs": {
@@ -356,7 +373,8 @@
                 "empty": "Écrivez un message avant de lancer le test.",
                 "errors": {
                     "call_failed": "L'appel au modèle a échoué : {error}",
-                    "no_api_key": "Aucune clé API OpenRouter n'est configurée : la vérification ne peut pas s'exécuter."
+                    "no_api_key": "Aucune clé API OpenRouter n'est configurée : la vérification ne peut pas s'exécuter.",
+                    "no_model": "Aucun modèle de décision n'est choisi : la vérification ne peut pas s'exécuter."
                 },
                 "ignored": "Non surveillée",
                 "label": "Message à vérifier",
@@ -389,6 +407,8 @@
                 "noCreditsHintOptional": "La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant que le compte ou la limite de la clé n'est pas rechargé. Ajoutez des crédits sur OpenRouter ou collez une autre clé ci-dessous.",
                 "noKey": "Aucune clé API",
                 "noKeyHint": "Aucune clé n'est enregistrée ici et OPENROUTER_API_KEY n'est pas défini : la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire. Collez une clé OpenRouter ci-dessous.",
+                "noModel": "Aucun modèle de décision",
+                "noModelHint": "Choisissez un modèle de décision ci-dessous : tant qu'il n'y en a pas, la vérification ne tourne pas et les messages passent sans être vérifiés, même si elle est obligatoire.",
                 "unhealthy": "La vérification ne répond plus",
                 "unhealthyHint": "Les appels au modèle de décision échouent. Les messages sont refusés tant qu'il ne répond pas, puis, après quelques échecs de plus, passent sans vérification une minute à la fois. Contrôlez les journaux du serveur.",
                 "unhealthyHintOptional": "Les appels au modèle de décision échouent. La vérification n'étant pas obligatoire, les messages passent sans être vérifiés tant qu'il ne répond pas. Contrôlez les journaux du serveur."
@@ -397,9 +417,11 @@
                 "title": "Réglages"
             },
             "stats": {
+                "byCriterionHint": "Répartition des détections par critère et par résultat.",
                 "byCriterionNone": "Aucun critère ne s'est déclenché sur la période.",
                 "byCriterionTitle": "Critères déclenchés",
                 "byDecisionTitle": "Résultats",
+                "checked": "{count} messages vérifiés",
                 "decision": {
                     "blocked": "Refusés",
                     "error": "En échec",
@@ -408,8 +430,22 @@
                     "skipped": "Non vérifiés (modèle indisponible)",
                     "warned": "Prévenus"
                 },
+                "periodLabel": "Période affichée",
+                "periods": {
+                    "all": "Depuis le début",
+                    "7d": "7 derniers jours",
+                    "30d": "30 derniers jours",
+                    "90d": "90 derniers jours",
+                    "365d": "12 derniers mois"
+                },
                 "proceeded": "{count} envoyés quand même",
-                "title": "Activité des {days} derniers jours",
+                "subtitle": "Suivez les détections et les décisions prises sur la période sélectionnée.",
+                "timelineChart": "Évolution des messages surveillés, prévenus, refusés et en échec",
+                "timelineHint": "Messages surveillés, prévenus, refusés ou en échec sur la période.",
+                "timelineLegend": "Légende du graphique",
+                "timelineNone": "Aucune détection sur cette période.",
+                "timelineTitle": "Détections dans le temps",
+                "title": "Activité des messages",
                 "totalLabel": "messages vérifiés sur la période",
                 "unavailable": "Les compteurs ne sont pas disponibles pour le moment.",
                 "warningsHint": "Ces deux compteurs ne suivent pas la période ci-dessus : l'affichage des avertissements n'est pas horodaté, donc les deux sont comptés depuis le début.",

@@ -187,6 +187,7 @@ async def run_checks(
     warning_token: str | None = None,
     context: Sequence[str] = (),
     session: str = "",
+    comparison_id: UUID | None = None,
 ) -> PromptCheckResult | None:
     """
     Run the spam patterns and the prompt check on a user message. Raises a 422
@@ -220,6 +221,9 @@ async def run_checks(
         # each other.
         increment_sent_warnings(session)
     if result and result.block_message:
+        # It never becomes a turn: its record keeps the text, for the admin.
+        result.prompt = text
+        result.comparison_id = comparison_id
         result = await save_prompt_check_result(result)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -234,14 +238,21 @@ async def run_checks(
     return result
 
 
-def warning_response(result: PromptCheckResult, text: str) -> StreamingResponse:
+async def warning_response(
+    result: PromptCheckResult, text: str, comparison_id: UUID | None = None
+) -> StreamingResponse:
     """
-    Stream a single 'warning' event and stop. Nothing is created and no model is
-    called: the browser asks the user to confirm, and sends the prompt again with
-    the one-time `warning_token` if they go ahead.
+    Stream a single 'warning' event and stop. No turn is created and no model
+    is called: the browser asks the user to confirm, and sends the prompt again
+    with the one-time `warning_token` if they go ahead. The warning is recorded
+    with the text, so the admin can read a message nobody sent; sent anyway, the
+    message takes that record over.
     """
     count_warning_shown()
-    token = issue_warning_token(text, result.model)
+    result.prompt = text
+    result.comparison_id = comparison_id
+    result = await save_prompt_check_result(result)
+    token = issue_warning_token(text, result.model, result.id)
     warnings = [{"kind": "prompt_check", "message": result.message or ""}]
 
     async def event_stream() -> AsyncGenerator[str]:
@@ -358,7 +369,7 @@ async def add_first_text(
         session=anonymous_user_hash,
     )
     if check and check.pending_warning:
-        return warning_response(check, args.prompt_value)
+        return await warning_response(check, args.prompt_value)
 
     # Select LLMs
     llms_data = await get_llms_data()
@@ -527,9 +538,10 @@ async def add_text(
         args.warning_token,
         context=[turn.user_msg.content for turn in comparison_.turns],
         session=anonymous_user_hash,
+        comparison_id=comparison_.id,
     )
     if check and check.pending_warning:
-        return warning_response(check, args.message)
+        return await warning_response(check, args.message, comparison_.id)
 
     charge_budget(
         args.message,

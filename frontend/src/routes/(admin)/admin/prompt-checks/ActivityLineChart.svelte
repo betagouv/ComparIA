@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
   import type { PromptCheckDecision, PromptCheckTimelinePoint } from './types'
 
   let {
@@ -60,7 +61,10 @@
 </script>
 
 <figure class="m-0!">
-  <div class="gap-x-5 gap-y-2 mb-4 flex flex-wrap" aria-label="Légende du graphique">
+  <div
+    class="gap-x-5 gap-y-2 mb-4 flex flex-wrap"
+    aria-label={m['admin.promptChecks.stats.timelineLegend']()}
+  >
     {#each series as decision (decision)}
       <span class="gap-2 text-xs text-grey flex items-center">
         <span class="size-2.5 rounded-full" style="background: {colors[decision]}"></span>
@@ -71,14 +75,14 @@
 
   {#if points.length === 0}
     <div class="h-56 text-sm text-grey flex items-center justify-center">
-      Aucune détection sur cette période.
+      {m['admin.promptChecks.stats.timelineNone']()}
     </div>
   {:else}
     <svg
       viewBox={`0 0 ${width} ${height}`}
       class="h-auto w-full overflow-visible"
       role="img"
-      aria-label="Évolution des messages surveillés, prévenus, refusés et en échec"
+      aria-label={m['admin.promptChecks.stats.timelineChart']()}
     >
       {#each [0, 0.5, 1] as ratio (ratio)}
         {@const tickY = top + plotHeight - ratio * plotHeight}

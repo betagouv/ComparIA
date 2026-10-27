@@ -19,7 +19,12 @@ from backend.config import settings
 from backend.statistics.projection import bucket_share, day_share, project
 from utils.database.models import Comparison, Turn, UserMessage
 from utils.database.models.llms import LLMData
+from utils.database.models.prompt_check import (
+    PromptCheckCriterion,
+    PromptCheckResult,
+)
 from utils.database.models.utils import escape_like
+from utils.database.prompt_checks import get_prompt_check
 from utils.database.session import get_activity_session
 from utils.storage.redis import REDIS_ADMIN_ACTIVITY_KEY, get_redis_client
 
@@ -35,9 +40,12 @@ from .models import (
     ActivityOverview,
     ActivityPoint,
     ActivityPromptCheck,
+    ActivityStoppedMessage,
+    ActivityStoppedMessagesPage,
     ActivityTotals,
     ActivityTurn,
     ConversationFilters,
+    StoppedMessageFilters,
 )
 
 logger = logging.getLogger("languia")
@@ -662,4 +670,117 @@ async def get_conversation(comparison_id: uuid.UUID) -> ActivityConversation | N
             archived_reason=comparison.archived_reason,
             error=comparison.error,
             turns=turns,
+            stopped=await _stopped_in(session, comparison.id),
         )
+
+
+# The messages a check stopped or warned about: what the activity panel lists
+# under "refused or warned". Mirrors the index of the same name.
+_STOPPED = or_(
+    col(PromptCheckResult.decision).in_(("warned", "blocked")),
+    and_(
+        col(PromptCheckResult.decision) == "error",
+        col(PromptCheckResult.message).is_not(None),
+    ),
+)
+
+
+async def _criteria() -> dict[str, PromptCheckCriterion]:
+    """The criteria as the admin wrote them, by key."""
+    check = await get_prompt_check()
+    return {c.key: c for c in check.typed_criteria}
+
+
+def _stopped_message(
+    row: Any, criteria: dict[str, PromptCheckCriterion]
+) -> ActivityStoppedMessage:
+    met = [criteria.get(key) for key in row.triggered or {}]
+    return ActivityStoppedMessage(
+        id=row.id,
+        created_at=row.created_at,
+        decision=row.decision,
+        user_proceeded=row.user_proceeded,
+        # A criterion since removed keeps its key.
+        criteria=[c.label if c else key for c, key in zip(met, row.triggered or {})],
+        contains_pii=any(c and c.message == "pii" for c in met),
+        prompt=row.text or "",
+        comparison_id=row.comparison,
+    )
+
+
+def _stopped_select() -> Any:
+    text = func.coalesce(col(PromptCheckResult.prompt), col(UserMessage.content))
+    return (
+        sa_select(
+            col(PromptCheckResult.id),
+            col(PromptCheckResult.created_at),
+            col(PromptCheckResult.decision),
+            col(PromptCheckResult.user_proceeded),
+            col(PromptCheckResult.triggered),
+            text.label("text"),
+            func.coalesce(
+                col(PromptCheckResult.comparison_id), col(Turn.comparison_id)
+            ).label("comparison"),
+        )
+        .select_from(PromptCheckResult)
+        .outerjoin(Turn, col(Turn.id) == col(PromptCheckResult.turn_id))
+        .outerjoin(UserMessage, col(UserMessage.turn_id) == col(Turn.id))
+    ), text
+
+
+async def list_stopped_messages(
+    filters: StoppedMessageFilters,
+) -> ActivityStoppedMessagesPage:
+    """Newest first, paged like the conversations."""
+    start, end, _ = resolve_range(filters, datetime.now())
+    query, text = _stopped_select()
+    where = [_STOPPED, *_between(col(PromptCheckResult.created_at), start, end)]
+    if filters.search:
+        where.append(text.ilike(f"%{escape_like(filters.search)}%", escape="\\"))
+    if filters.cursor:
+        created_at, result_id = decode_cursor(filters.cursor)
+        where.append(
+            tuple_(col(PromptCheckResult.created_at), col(PromptCheckResult.id))
+            < tuple_(literal(created_at), literal(result_id))
+        )
+
+    async with _session() as session:
+        rows = (
+            await session.execute(
+                query.where(*where)
+                .order_by(
+                    col(PromptCheckResult.created_at).desc(),
+                    col(PromptCheckResult.id).desc(),
+                )
+                .limit(filters.limit + 1)
+            )
+        ).all()
+
+    has_more = len(rows) > filters.limit
+    rows = rows[: filters.limit]
+    criteria = await _criteria()
+    last = rows[-1] if rows else None
+    return ActivityStoppedMessagesPage(
+        items=[_stopped_message(row, criteria) for row in rows],
+        next_cursor=(
+            encode_cursor(last.created_at, last.id) if has_more and last else None
+        ),
+    )
+
+
+async def _stopped_in(
+    session: AsyncSession, comparison_id: uuid.UUID
+) -> list[ActivityStoppedMessage]:
+    """The follow-ups of a conversation that never became a turn."""
+    query, _ = _stopped_select()
+    rows = (
+        await session.execute(
+            query.where(
+                _STOPPED,
+                col(PromptCheckResult.comparison_id) == comparison_id,
+                col(PromptCheckResult.turn_id).is_(None),
+            ).order_by(col(PromptCheckResult.created_at))
+        )
+    ).all()
+    criteria = await _criteria() if rows else {}
+    return [_stopped_message(row, criteria) for row in rows]
