@@ -6,7 +6,7 @@ import Page from './+page.svelte'
 vi.mock('$lib/fastapi-client', () => ({
   api: {
     request: vi.fn(),
-    getUrl: vi.fn((path: string, searchParams?: Record<string, string>) =>
+    getPublicUrl: vi.fn((path: string, searchParams?: Record<string, string>) =>
       searchParams ? `${path}?${new URLSearchParams(searchParams)}` : path
     )
   }

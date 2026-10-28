@@ -17,7 +17,7 @@ vi.mock('$lib/auth.svelte', () => ({
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: vi.fn() }))
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: mocks.request, getUrl: (path: string) => path }
+  api: { request: mocks.request, getPublicUrl: (path: string) => path }
 }))
 
 vi.mock('$lib/i18n/runtime', async (importOriginal) => ({

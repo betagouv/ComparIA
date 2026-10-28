@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { signInMethods } from './signInMethods'
 
 vi.mock('$lib/fastapi-client', () => ({
-  api: { getUrl: (path: string) => path }
+  api: { getPublicUrl: (path: string) => path }
 }))
 
 describe('signInMethods', () => {

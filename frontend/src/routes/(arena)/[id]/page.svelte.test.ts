@@ -22,7 +22,7 @@ vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
   tryGetAuthContext: () => mocks.authContext
 }))
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: () => new Promise(() => {}), getUrl: (path: string) => path }
+  api: { request: () => new Promise(() => {}), getPublicUrl: (path: string) => path }
 }))
 vi.mock('$lib/chatService.svelte', () => ({
   getComparison: (comparisonId: string) => ({

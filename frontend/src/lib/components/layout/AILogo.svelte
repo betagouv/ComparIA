@@ -28,7 +28,9 @@
 {#if customLogoId}
   <img
     {...props}
-    src={api.getUrl(`/models/labs/${customLogoId}/logo`, { v: customLogoVersion ?? '' })}
+    src={api.getPublicUrl(`/models/labs/${encodeURIComponent(customLogoId)}/logo`, {
+      v: customLogoVersion ?? ''
+    })}
     class={['object-contain', sizeClass, props.class]}
   />
 {:else if logo?.includes('.')}
