@@ -233,8 +233,7 @@ def conversation_text(comparison: Comparison) -> str:
         if system := getattr(comparison, f"system_msg_{side}"):
             parts.append(f"[system {side}]: {system}")
     for turn in comparison.turns:
-        # The read model, not the table one: only it merges the results, and
-        # reads them back from the dicts the database returns.
+        # The read model, not the table one: only it merges the results.
         user = UserMessageRead.model_validate(turn.user_msg, from_attributes=True)
         content = user.model_dump(
             include={"content"}, context={"merge_web_search": True}

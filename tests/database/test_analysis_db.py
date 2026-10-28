@@ -27,6 +27,7 @@ from sqlalchemy.orm import selectinload  # noqa: E402
 from sqlmodel import col, select  # noqa: E402
 from sqlmodel.ext.asyncio.session import AsyncSession  # noqa: E402
 
+import utils.dataset.compute as compute  # noqa: E402
 from tests.database.test_partner_cohorts_db import add_model  # noqa: E402
 from utils.database.models import Comparison, Turn  # noqa: E402
 from utils.database.models.dataset_check import (  # noqa: E402
@@ -51,6 +52,13 @@ TRUNCATE = text(
 LLM_ID = None
 NOW = datetime(2026, 10, 5, 12, 0)
 MODEL = "test/decider"
+WEB_SEARCH_RESULT = {
+    "type": "text",
+    "name": "Annuaire",
+    "url": "https://example.org",
+    "content": "Jean Dupont, jean.dupont@example.org",
+    "favicon": "",
+}
 SCORES = json.dumps({"model": MODEL, "scores": {"pii": 0.0, "spam": 0.0}})
 
 
@@ -138,7 +146,13 @@ async def fetch(get_session, comparison_id) -> Comparison:
         return (
             await session.exec(
                 select(Comparison)
-                .options(selectinload(Comparison.turns).selectinload(Turn.user_msg))
+                .options(
+                    selectinload(Comparison.turns).options(
+                        selectinload(Turn.user_msg),
+                        selectinload(Turn.llm_msg_a),
+                        selectinload(Turn.llm_msg_b),
+                    )
+                )
                 .where(col(Comparison.id) == comparison_id)
             )
         ).one()
@@ -209,18 +223,26 @@ def test_the_analysis_reads_the_web_search_results_stored(monkeypatch):
     async def scenario(execute, get_session):
         comparison_id = await add(
             execute,
-            web_search=[
-                {
-                    "type": "text",
-                    "name": "Annuaire",
-                    "url": "https://example.org",
-                    "content": "Jean Dupont, jean.dupont@example.org",
-                    "favicon": "",
-                }
-            ],
+            web_search=[WEB_SEARCH_RESULT],
         )
         row = await fetch(get_session, comparison_id)
         assert "jean.dupont@example.org" in llm_analyze.conversation_text(row)
+
+    run(scenario, monkeypatch)
+
+
+def test_the_dataset_exports_the_web_search_results_stored(monkeypatch):
+    async def no_llms():
+        return {}
+
+    monkeypatch.setattr(compute, "get_llms_data", no_llms)
+    monkeypatch.setattr(compute, "get_llms_human_ids", no_llms)
+
+    async def scenario(execute, get_session):
+        comparison_id = await add(execute, web_search=[WEB_SEARCH_RESULT])
+        row = await fetch(get_session, comparison_id)
+        [exported] = await compute.comparison_to_turns(row)
+        assert "jean.dupont@example.org" in json.dumps(exported, default=str)
 
     run(scenario, monkeypatch)
 
