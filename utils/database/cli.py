@@ -6,6 +6,7 @@ from utils.logger import configure_logger
 
 from .actions import (
     analysis_reapply,
+    analysis_rescore,
     analysis_shadow,
     archive_blacklisted_grok,
     archive_corrupted,
@@ -53,6 +54,7 @@ cli_db.command(log_archived)
 cli_db.command(llm_analyze)
 cli_db.command(analysis_shadow, name="analysis-shadow")
 cli_db.command(analysis_reapply, name="analysis-reapply")
+cli_db.command(analysis_rescore, name="analysis-rescore")
 cli_db.command(backfill_pii_spam)
 cli_db.command(seed_admins, name="seed-admins")
 cli_db.command(purge_inactive, name="purge-inactive")
