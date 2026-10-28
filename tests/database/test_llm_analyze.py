@@ -296,6 +296,31 @@ def test_a_failure_then_an_answer_is_analyzed(monkeypatch):
     assert analyzer.failed == []
 
 
+def test_a_rescored_comparison_that_fails_keeps_what_it_had(monkeypatch):
+    decider = Decider(statuses=[500] * (2 * llm_analyze.MAX_RETRIES))
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis(), keep_on_failure=True)
+    comp = comparison(("a", "b", "c"))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    assert updates == []
+    assert analyzer.failed == [str(comp.id)]
+
+
+def test_a_rescore_counts_the_comparisons_it_holds_back(monkeypatch):
+    decider = Decider(scorer({"pii": 0.9}))
+    analyzer = llm_analyze.Analyzer(analysis(), keep_on_failure=True)
+    for _ in range(2):
+        run(
+            analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+            decider,
+            monkeypatch,
+            [],
+        )
+
+    assert (analyzer.analyzed, analyzer.held) == (2, 2)
+
+
 def test_a_refused_key_stops_the_run(monkeypatch):
     for status in (401, 402):
         decider = Decider(statuses=[status])
