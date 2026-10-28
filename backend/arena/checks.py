@@ -37,7 +37,7 @@ import logging
 import secrets
 import time
 import uuid
-from typing import TYPE_CHECKING, Final, NamedTuple, Sequence
+from typing import TYPE_CHECKING, Final, NamedTuple, Protocol, Sequence
 
 import httpx
 import sentry_sdk
@@ -207,14 +207,25 @@ async def list_decision_models() -> list[dict[str, str]]:
     return [{"id": m["id"], "name": m.get("name") or m["id"]} for m in models]
 
 
-def questions(check: PromptCheck) -> dict[str, dict]:
-    """One yes/no question per criterion that can act, keyed on the criterion.
+class Question(Protocol):
+    @property
+    def key(self) -> str: ...
+    @property
+    def question(self) -> str: ...
+    @property
+    def yes(self) -> str: ...
+    @property
+    def no(self) -> str: ...
+
+
+def ask(criteria: Sequence[Question]) -> dict[str, dict]:
+    """One yes/no question per criterion, keyed on the criterion.
 
     What we add around the admin's words is in English, like the API's own
     fields: the criteria and the description are in the instance's language.
     """
     asked = {}
-    for c in check.active_criteria:
+    for c in criteria:
         question: dict = {"type": "noul", "instructions": c.question}
         if c.yes and c.no:
             question["criteria"] = {"true": c.yes, "false": c.no}
@@ -224,21 +235,53 @@ def questions(check: PromptCheck) -> dict[str, dict]:
     return asked
 
 
+def questions(check: PromptCheck) -> dict[str, dict]:
+    """The questions of the criteria that can act."""
+    return ask(check.active_criteria)
+
+
+class CallLimits(NamedTuple):
+    """How one kind of caller shares the decision model."""
+
+    # Redis pool of the calls in flight, and how many it holds.
+    slot_key: str
+    parallel: int
+    # For a whole batch of inputs, waiting for a free call included.
+    deadline: float
+    lease: float
+    # The longest a rate limited call waits before its retry. None waits as
+    # long as Retry-After asks: the deadline still caps it.
+    rate_limit_wait: float | None
+
+
+def arena_limits() -> CallLimits:
+    # Read on each call, so a test that moves the deadline moves it here too.
+    return CallLimits(
+        REDIS_CHECK_CALLS_KEY,
+        PARALLEL_CALLS,
+        CHECK_DEADLINE,
+        SLOT_LEASE_SECONDS,
+        RATE_LIMIT_WAIT,
+    )
+
+
 async def _post(
     client: httpx.AsyncClient,
     text: str,
-    check: PromptCheck,
+    model: str,
+    description: str,
+    asked: dict[str, dict],
     api_key: str,
+    rate_limit_wait: float | None = RATE_LIMIT_WAIT,
 ) -> dict[str, float]:
-    asked = questions(check)
     for attempt in (1, 2):
         try:
             response = await client.post(
                 DECISIONS_URL,
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={
-                    "model": check.model,
-                    "state": {"platform": check.description, "message": text},
+                    "model": model,
+                    "state": {"platform": description, "message": text},
                     "questions": asked,
                 },
             )
@@ -248,7 +291,7 @@ async def _post(
             continue
         if response.status_code in _TRANSIENT_STATUS and attempt == 1:
             if response.status_code == 429:
-                await asyncio.sleep(_retry_after(response))
+                await asyncio.sleep(_retry_after(response, rate_limit_wait))
             continue
         response.raise_for_status()
         break
@@ -269,28 +312,29 @@ class CheckOverloaded(Exception):
     """
 
 
-def _retry_after(response: httpx.Response) -> float:
-    """How long a 429 asks us to wait, within RATE_LIMIT_WAIT."""
+def _retry_after(response: httpx.Response, cap: float | None) -> float:
+    """How long a 429 asks us to wait, within `cap` when there is one."""
     try:
         wait = float(response.headers.get("retry-after", 1))
     except ValueError:
         wait = 1.0
-    return min(max(wait, 0.0), RATE_LIMIT_WAIT)
+    wait = max(wait, 0.0)
+    return wait if cap is None else min(wait, cap)
 
 
-async def _take_slot(key: str, stamp: str) -> bool:
-    """Wait for one of the PARALLEL_CALLS slots of this key. False when Redis
+async def _take_slot(key: str, stamp: str, parallel: int, lease: float) -> bool:
+    """Wait for one of the `parallel` slots of this key. False when Redis
     cannot say, and the call goes on held by this request's own limit only."""
     while True:
         try:
             now = time.time()
             pipe = get_redis_client().pipeline()
             pipe.zremrangebyscore(key, 0, now)
-            pipe.zadd(key, {stamp: now + SLOT_LEASE_SECONDS})
+            pipe.zadd(key, {stamp: now + lease})
             pipe.zcard(key)
-            pipe.expire(key, int(SLOT_LEASE_SECONDS) + 1)
+            pipe.expire(key, int(lease) + 1)
             count = pipe.execute()[2]
-            if count <= PARALLEL_CALLS:
+            if count <= parallel:
                 return True
             get_redis_client().zrem(key, stamp)
         except Exception as e:
@@ -300,11 +344,12 @@ async def _take_slot(key: str, stamp: str) -> bool:
 
 
 @contextlib.asynccontextmanager
-async def _slot(key: str):
+async def _slot(limits: CallLimits):
+    key = limits.slot_key
     stamp = secrets.token_hex(8)
     taken = False
     try:
-        taken = await _take_slot(key, stamp)
+        taken = await _take_slot(key, stamp, limits.parallel, limits.lease)
         yield
     finally:
         if taken:
@@ -332,16 +377,45 @@ async def score_texts(
         raise SecretUnreadableError(
             UnreadableRow(PromptCheck.__tablename__, 1, "api_key").message()
         )
-    gate = asyncio.Semaphore(PARALLEL_CALLS)
+    return await ask_model(
+        inputs,
+        check.model,
+        check.description,
+        questions(check),
+        api_key,
+        arena_limits(),
+    )
+
+
+async def ask_model(
+    inputs: list[str],
+    model: str,
+    description: str,
+    asked: dict[str, dict],
+    api_key: str,
+    limits: CallLimits,
+) -> list[dict[str, float]]:
+    """Scores for each input, in order, with at most `limits.parallel` calls
+    in flight on this instance for the same pool, all within
+    `limits.deadline`, or it raises CheckOverloaded."""
+    gate = asyncio.Semaphore(limits.parallel)
     try:
         async with (
-            asyncio.timeout(CHECK_DEADLINE),
+            asyncio.timeout(limits.deadline),
             httpx.AsyncClient(timeout=DECISION_TIMEOUT) as client,
         ):
 
             async def one(text: str) -> dict[str, float]:
-                async with gate, _slot(REDIS_CHECK_CALLS_KEY):
-                    return await _post(client, text, check, api_key)
+                async with gate, _slot(limits):
+                    return await _post(
+                        client,
+                        text,
+                        model,
+                        description,
+                        asked,
+                        api_key,
+                        limits.rate_limit_wait,
+                    )
 
             # A task group, not gather: on the deadline it cancels every call
             # and waits for each to free its slot before the check returns.
@@ -354,7 +428,7 @@ async def score_texts(
                 raise failed.exceptions[0] from None
             return [task.result() for task in tasks]
     except TimeoutError as e:
-        raise CheckOverloaded(f"No answer within {CHECK_DEADLINE}s") from e
+        raise CheckOverloaded(f"No answer within {limits.deadline}s") from e
 
 
 async def score_prompt(
