@@ -20,7 +20,7 @@ from enum import Enum
 from typing import Final, NamedTuple
 
 import httpx
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, func, or_
 from sqlmodel import col
 
 from backend.arena.checks import (
@@ -59,6 +59,14 @@ TO_ANALYZE_CONDITION = and_(
     col(Comparison.archived) == False,
     col(Comparison.llm_analyzed) == None,
     NO_COHORT,
+)
+
+
+# Rows written before the column made None a SQL NULL hold the JSON value
+# null, which 'IS NOT NULL' takes for scores: only an object holds them. The
+# coalesce keeps `~SCORED` true of a SQL NULL.
+SCORED = (
+    func.coalesce(func.jsonb_typeof(col(Comparison.analysis_scores)), "") == "object"
 )
 
 
