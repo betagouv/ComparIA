@@ -20,6 +20,7 @@ from utils.database.models.auth import (  # noqa: F401
     User,
     UserTotp,
 )
+from utils.database.models.dataset_check import DatasetCheck  # noqa: F401
 from utils.database.models.llms import (  # noqa: F401
     LLMData,
     LLMEndpoint,

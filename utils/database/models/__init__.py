@@ -22,6 +22,7 @@ from .comparison import (
     ErrorCode,
     ErrorDetails,
 )
+from .dataset_check import DatasetCheck, DatasetCheckPublic, DatasetCheckUpsert
 from .exchange_rate import ExchangeRate
 from .messages import *
 from .prompt_check import (
