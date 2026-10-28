@@ -43,7 +43,7 @@ Then sign in with an email code and set the app up again from `/settings`.
 
 **Vue d'ensemble** opens on the journey as a funnel: conversations started, those with at least one vote, those where the models were revealed, with the share that goes on at each step. Each step, and each group that stopped before the next one, opens the matching conversations. Under it sit the message counts, the activity over time, and the share of each vote and mode. Prompt checks have their own page under Vérifications. The counts are kept for five minutes; the link at the bottom computes them again. The period still under way is drawn as an estimate of what it will hold once full, read from how a typical day fills up, rather than as the drop its partial count would show.
 
-**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects, keywords and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
+**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none; keywords only show on conversations analysed before the decision model. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
 
 To try the panel at the size of a real instance on a debug database:
 
@@ -178,6 +178,26 @@ To check a run before trusting it with credentials:
 ```bash
 make dataset-export-dry-run   # builds the datasets, sends them nowhere
 ```
+
+### Analysis before publishing
+
+Before a run builds the open dataset, the decision model of the prompt checks reads each new conversation, the visitor's messages and both answers. It answers the exclusion criteria set on `/admin/publication` (personal data and spam to start with), one question per topic and one per language. A conversation that reaches the threshold of any exclusion criterion stays out of the open dataset; it still goes to the raw one. Topics and languages are tagged from their own thresholds, and a conversation with no topic over the threshold is tagged `Other`. The languages asked about are the instance's own, a few common ones, and "other". Partner cohorts (Pix) are never sent.
+
+A long conversation is read in windows of 8,000 characters, and each question keeps its highest score. One over about 300,000 characters is not sent and counts as failed. A conversation the model cannot score after three tries is marked failed and is never published. A refused key or no credits stops the run.
+
+The key comes from the panel, then from the prompt checks, then from `OPENROUTER_API_KEY`. With no model set, nothing is analysed, so no new conversation is published. The page has a test box for a pasted conversation, against the settings on screen, saved or not.
+
+Every score is kept on the conversation (`analysis_scores`). `short_summary` and `keywords` are no longer written: conversations analysed before keep theirs, newer ones publish `null`.
+
+Three commands help tune it:
+
+```bash
+make db-analysis-shadow SAMPLE=500   # scores conversations the old chat model analysed and compares, writes nothing
+make db-analysis-reapply             # what the current thresholds would change on scored conversations; COMMIT=1 writes it
+make db-analysis-rescore             # how many published conversations the model would score again; COMMIT=1 does it
+```
+
+Rescoring gives the published conversations the old chat model analysed, or that another decision model scored, new topics, languages and scores, and holds back those that reach an exclusion criterion. `EVERY=1` scores all published conversations, which a new criterion needs: reapplying only works with the criteria a conversation was scored on. Held conversations are left alone and one the model cannot score keeps what it had, so rescoring never publishes anything that was not. Stopped and run again, it skips the conversations already done (not with `EVERY=1`). A conversation flagged for personal data is deleted 30 days after the analysis, so loosening a rule only releases what is still there.
 
 ## Prompt checks
 
