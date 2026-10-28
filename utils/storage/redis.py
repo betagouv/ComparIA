@@ -109,6 +109,9 @@ REDIS_CHECK_SCORES_KEY: Final[str] = (
 # worker and replica: a sorted set of call stamps scored by when they lapse. One
 # pool, since an instance calls with one key at a time.
 REDIS_CHECK_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_calls"
+# The same, for the publish run's analysis: its own pool, so a run never takes
+# calls from visitors' prompt checks.
+REDIS_ANALYSIS_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}analysis_calls"
 REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )
