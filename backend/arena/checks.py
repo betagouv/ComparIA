@@ -300,7 +300,19 @@ async def _post(
     missing = set(asked) - set(answers)
     if missing:
         raise ValueError(f"No answer for {', '.join(sorted(missing))}")
-    return {key: float(answers[key]["noul"]) for key in asked}
+    return {key: _probability(key, answers[key]) for key in asked}
+
+
+def _probability(key: str, answer) -> float:
+    """The answer's probability of yes, or ValueError: a negative score would
+    read as clean, and NaN never reaches a threshold nor fits in JSON."""
+    value = answer.get("noul") if isinstance(answer, dict) else None
+    # bool is an int to Python, and NaN fails both comparisons.
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"No probability for {key}: {value!r}")
+    if not 0 <= value <= 1:
+        raise ValueError(f"Probability for {key} out of [0, 1]: {value!r}")
+    return float(value)
 
 
 class CheckOverloaded(Exception):

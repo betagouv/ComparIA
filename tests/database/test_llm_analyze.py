@@ -86,7 +86,8 @@ class Decider:
             key: {"type": "noul", "noul": self.scorer(key, text)}
             for key in body["questions"]
         }
-        return httpx.Response(200, json={"answers": answers})
+        # Not json=: httpx refuses NaN, which a provider may still send.
+        return httpx.Response(200, content=json.dumps({"answers": answers}))
 
 
 def run(coro, decider: Decider, monkeypatch, updates=None):
@@ -222,6 +223,20 @@ def test_the_web_search_results_are_read_as_published():
         )
     ]
     assert "jean.dupont@example.org" in llm_analyze.conversation_text(comp)
+
+
+@pytest.mark.parametrize("value", [-0.2, 1.5, float("nan"), float("inf"), "0.5", True])
+def test_an_answer_that_is_not_a_probability_fails_the_comparison(monkeypatch, value):
+    decider = Decider(lambda key, text: value if key == "pii" else 0.0)
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    run(
+        analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+        decider,
+        monkeypatch,
+        updates,
+    )
+    assert isinstance(updates[0][1], ComparisonLLMAnalysisFailedUpdate)
 
 
 def test_the_folded_spelling_shares_the_comparisons_deadline(monkeypatch):
