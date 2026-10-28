@@ -34,8 +34,6 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   secondary_color_light: '#A558A0',
   secondary_color_dark: '#D176CF',
   homepage_url: null,
-  analysis_endpoint_id: null,
-  analysis_model: null,
   publish_frequency: 'off',
   publish_hour: 3,
   publish_timezone: 'UTC',

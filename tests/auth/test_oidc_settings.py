@@ -58,8 +58,6 @@ def _settings_row(**overrides):
         logo=None,
         logo_version=None,
         logo_content_type=None,
-        analysis_endpoint_id=None,
-        analysis_model=None,
         publish_frequency="off",
         publish_hour=3,
         publish_timezone="UTC",

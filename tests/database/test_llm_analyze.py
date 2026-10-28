@@ -1,14 +1,16 @@
 """
-Unit tests for Config.analyze_comparison's error handling: a single
-unanalyzable comparison must never take down the worker processing it.
+Unit tests for the publish run's analysis on the decision model (mocked HTTP,
+no DB, no Redis).
 
     uv run pytest tests/database/test_llm_analyze.py
 """
 
 import asyncio
+import json
 import os
 import sys
 import uuid
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -16,156 +18,376 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-import litellm  # noqa: E402
+import httpx  # noqa: E402
+import pytest  # noqa: E402
+from linkup import LinkupSearchTextResult  # noqa: E402
 
-from utils.database.actions.llm_analyze import (  # noqa: E402
-    AnalysisModel,
-    Config,
-    LLMAnalysisFailed,
-)
+import backend.arena.checks as checks  # noqa: E402
+from utils.database.models import Comparison, Turn  # noqa: E402
 from utils.database.models.comparison import (  # noqa: E402
-    Comparison,
     ComparisonLLMAnalysisFailedUpdate,
     ComparisonLLMAnalysisUpdate,
 )
+from utils.database.models.dataset_check import (  # noqa: E402
+    DEFAULT_CRITERIA,
+    DatasetCheck,
+)
+from utils.database.models.messages import LLMMessage, UserMessage  # noqa: E402
 
 # The package exports a function of the same name, which shadows the module.
+import utils.database.actions.llm_analyze  # noqa: E402, F401  isort:skip
+
 llm_analyze = sys.modules["utils.database.actions.llm_analyze"]
 
-
-def moderation_block() -> litellm.exceptions.APIError:
-    """What a provider content-moderation block surfaces as, e.g. Gemini's
-    PROHIBITED_CONTENT or OpenRouter's own prompt-injection filter."""
-    return litellm.exceptions.APIError(
-        status_code=403,
-        message="Gemini blocked the request: PROHIBITED_CONTENT",
-        llm_provider="openrouter",
-        model="google/gemini-flash",
-    )
+T0 = datetime(2026, 1, 1)
+REAL_CLIENT = httpx.AsyncClient
 
 
-def comparison() -> Comparison:
-    return Comparison(
+def comparison(*exchanges: tuple[str, str, str]) -> Comparison:
+    c = Comparison(
         ip="127.0.0.1", mode="random", llm_id_a=uuid.uuid4(), llm_id_b=uuid.uuid4()
     )
+    turns = []
+    for user, a, b in exchanges:
+        t = Turn(created_at=T0)
+        t.user_msg = UserMessage(content=user, created_at=T0)
+        t.llm_msg_a = LLMMessage(content=a, created_at=T0, is_cached=False)
+        t.llm_msg_b = LLMMessage(content=b, created_at=T0, is_cached=False)
+        turns.append(t)
+    c.turns = turns
+    return c
 
 
-def analyzer() -> Config:
-    config = Config(AnalysisModel(model="openrouter/x", api_base=None, api_key="k"))
-    # Config.failed_analysis is a class-level default shared across instances;
-    # give each test its own list so results don't leak between tests.
-    config.failed_analysis = []
-    return config
+def analysis(**overrides) -> "llm_analyze.Analysis":
+    check = DatasetCheck(
+        id=1, model="test/decider", criteria=[dict(c) for c in DEFAULT_CRITERIA]
+    )
+    for key, value in overrides.items():
+        setattr(check, key, value)
+    return llm_analyze.analysis_for(check, "test-key", "fr", ["da", "en", "fr"])
 
 
-def run_with(monkeypatch, outcomes: list):
-    """
-    Drive analyze_comparison with a scripted sequence of _analyze() outcomes
-    (exceptions to raise, or a ComparisonLLMAnalysisUpdate to return), one per
-    call, in order.
-    """
-    calls = []
+class Decider:
+    """Answers each question with what `scorer` makes of (key, message), or
+    with the next of `statuses` while any are left."""
 
-    async def fake_analyze(self, prompt):
-        calls.append(prompt)
-        outcome = outcomes[len(calls) - 1]
-        if isinstance(outcome, Exception):
-            raise outcome
-        return outcome
+    def __init__(self, scorer=lambda key, text: 0.0, statuses=()):
+        self.scorer = scorer
+        self.statuses = list(statuses)
+        self.requests: list[dict] = []
 
-    updates = []
-
-    async def fake_update_comparison(comparison_id, data):
-        updates.append((comparison_id, data))
-
-    monkeypatch.setattr(Config, "_analyze", fake_analyze)
-    monkeypatch.setattr(llm_analyze, "update_comparison", fake_update_comparison)
-
-    config = analyzer()
-    comp = comparison()
-    exc = None
-    try:
-        asyncio.run(config.analyze_comparison(comp))
-    except Exception as e:
-        exc = e
-    return config, comp, updates, exc, len(calls)
+    def handler(self, request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        self.requests.append(body)
+        if self.statuses:
+            return httpx.Response(self.statuses.pop(0))
+        text = body["state"]["message"]
+        answers = {
+            key: {"type": "noul", "noul": self.scorer(key, text)}
+            for key in body["questions"]
+        }
+        # Not json=: httpx refuses NaN, which a provider may still send.
+        return httpx.Response(200, content=json.dumps({"answers": answers}))
 
 
-def test_exhausted_provider_error_marks_failed_and_keeps_worker_alive(monkeypatch):
-    config, comp, updates, exc, call_count = run_with(
-        monkeypatch, [moderation_block()] * (Config.MAX_RETRIES + 1)
+def run(coro, decider: Decider, monkeypatch, updates=None):
+    monkeypatch.setattr(
+        checks.httpx,
+        "AsyncClient",
+        lambda **kwargs: REAL_CLIENT(
+            transport=httpx.MockTransport(decider.handler), **kwargs
+        ),
     )
 
-    assert exc is None, f"analyze_comparison should not raise, raised {exc!r}"
-    assert call_count == Config.MAX_RETRIES + 1
-    assert len(updates) == 1
-    updated_id, data = updates[0]
-    assert updated_id == comp.id
-    assert isinstance(data, ComparisonLLMAnalysisFailedUpdate)
-    assert str(comp.id) in config.failed_analysis
+    def no_redis():
+        raise ConnectionError("no redis in tests")
+
+    monkeypatch.setattr(checks, "get_redis_client", no_redis)
+    monkeypatch.setattr(llm_analyze, "RETRY_DELAY", 0)
+    if updates is not None:
+
+        async def fake_update(comparison_id, data):
+            updates.append((comparison_id, data))
+
+        monkeypatch.setattr(llm_analyze, "update_comparison", fake_update)
+    return asyncio.run(coro)
 
 
-def test_exhausted_bad_llm_response_marks_failed_same_as_before(monkeypatch):
-    config, comp, updates, exc, call_count = run_with(
-        monkeypatch, [LLMAnalysisFailed("bad json")] * (Config.MAX_RETRIES + 1)
+def scorer(scores: dict[str, float]):
+    return lambda key, text: scores.get(key, 0.0)
+
+
+def test_a_clean_comparison_gets_topics_and_languages(monkeypatch):
+    decider = Decider(
+        scorer(
+            {
+                "category_food_drink_cooking": 0.9,
+                "category_health_wellness_medicine": 0.4,
+                "language_fr": 0.95,
+                "pii": 0.1,
+            }
+        )
+    )
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    comp = comparison(("Une recette de crêpes ?", "Voici...", "Il faut..."))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    assert len(decider.requests) == 1
+    asked = decider.requests[0]["questions"]
+    # 2 criteria, 17 topics, 9 languages and "other".
+    assert len(asked) == 2 + 17 + 10
+    assert "[user]: Une recette de crêpes ?" in decider.requests[0]["state"]["message"]
+    [(comparison_id, data)] = updates
+    assert comparison_id == comp.id
+    assert isinstance(data, ComparisonLLMAnalysisUpdate)
+    assert data.categories == ["Food & Drink & Cooking"]
+    assert data.languages == ["fr"]
+    assert not data.archived
+    assert data.analysis_scores["model"] == "test/decider"
+    assert data.analysis_scores["scores"]["pii"] == 0.1
+    assert "short_summary" not in data.model_dump()
+
+
+def test_personal_data_in_an_answer_archives_it(monkeypatch):
+    decider = Decider(lambda key, text: 0.8 if key == "pii" and "06 12" in text else 0)
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    comp = comparison(("Mon voisin ?", "Jean Dupont, 06 12 34 56 78", "Je ne sais pas"))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    data = updates[0][1]
+    assert data.contains_pii and not data.contains_spam
+    assert data.archived and data.archived_reason == "pii"
+    # No topic reached the threshold.
+    assert data.categories == ["Other"]
+
+
+def test_the_threshold_is_the_admins(monkeypatch):
+    decider = Decider(scorer({"spam": 0.35}))
+    criteria = [dict(c) for c in DEFAULT_CRITERIA]
+    for c in criteria:
+        c["threshold"] = 0.4
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis(criteria=criteria))
+    run(
+        analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+        decider,
+        monkeypatch,
+        updates,
+    )
+    assert not updates[0][1].contains_spam
+
+
+def test_a_long_comparison_is_read_in_windows_and_keeps_its_highest(monkeypatch):
+    filler = "Parlons de cuisine. " * 1000
+    decider = Decider(
+        lambda key, text: 0.9 if key == "spam" and "ACHETEZ" in text else 0
+    )
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    comp = comparison((filler + "ACHETEZ ICI", "ok", "ok"))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    assert len(decider.requests) > 2
+    assert updates[0][1].contains_spam
+
+
+def test_a_folded_spelling_is_scored_on_the_exclusion_criteria_only(monkeypatch):
+    decider = Decider(
+        lambda key, text: 0.9 if key == "spam" and "viagra" in text else 0
+    )
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    run(
+        analyzer.analyze_comparison(comparison(("v1agra pas cher", "non", "non"))),
+        decider,
+        monkeypatch,
+        updates,
     )
 
-    assert exc is None
-    assert call_count == Config.MAX_RETRIES + 1
-    assert len(updates) == 1
+    assert len(decider.requests) == 2
+    assert set(decider.requests[1]["questions"]) == {"pii", "spam"}
+    assert updates[0][1].contains_spam
+
+
+def test_the_web_search_results_are_read_as_published():
+    comp = comparison(("Qui contacter ?", "Voici", "Voilà"))
+    comp.turns[0].user_msg.web_search_results = [
+        LinkupSearchTextResult(
+            type="text",
+            name="Annuaire",
+            url="https://example.org",
+            favicon="",
+            content="Jean Dupont, jean.dupont@example.org",
+        )
+    ]
+    assert "jean.dupont@example.org" in llm_analyze.conversation_text(comp)
+
+
+@pytest.mark.parametrize("value", [-0.2, 1.5, float("nan"), float("inf"), "0.5", True])
+def test_an_answer_that_is_not_a_probability_fails_the_comparison(monkeypatch, value):
+    decider = Decider(lambda key, text: value if key == "pii" else 0.0)
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    run(
+        analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+        decider,
+        monkeypatch,
+        updates,
+    )
     assert isinstance(updates[0][1], ComparisonLLMAnalysisFailedUpdate)
-    assert str(comp.id) in config.failed_analysis
 
 
-def test_unexpected_error_still_propagates(monkeypatch):
-    config, comp, updates, exc, call_count = run_with(
-        monkeypatch, [RuntimeError("bug")]
+def test_the_folded_spelling_shares_the_comparisons_deadline(monkeypatch):
+    async def slow(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(0.035)
+        return Decider().handler(request)
+
+    monkeypatch.setattr(
+        checks.httpx,
+        "AsyncClient",
+        lambda **kwargs: REAL_CLIENT(transport=httpx.MockTransport(slow), **kwargs),
+    )
+    monkeypatch.setattr(
+        checks, "get_redis_client", lambda: (_ for _ in ()).throw(ConnectionError())
+    )
+    limits = llm_analyze.LIMITS._replace(deadline=0.05)
+    text = llm_analyze.conversation_text(comparison(("v1agra pas cher", "non", "non")))
+    with pytest.raises(checks.CheckOverloaded):
+        asyncio.run(llm_analyze.score_comparison(text, analysis(), limits))
+
+
+def test_a_question_with_no_score_never_reaches_a_zero_threshold():
+    criteria = analysis().criteria
+    for c in criteria:
+        c.threshold = 0.0
+    data = llm_analyze.update_from_scores(
+        {"category_sports": 0.0}, "m", criteria, 0.0, 0.0
+    )
+    assert not data.contains_pii and not data.contains_spam
+    # "Other" is what a comparison gets when no topic is found, never one more.
+    assert data.categories == ["Sports"]
+
+
+def test_a_comparison_too_long_to_send_is_failed_without_a_call(monkeypatch):
+    decider = Decider()
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    huge = "x" * (checks.CHUNK_CHARS * (llm_analyze.MAX_WINDOWS + 2))
+    comp = comparison((huge, "", ""))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    assert decider.requests == []
+    assert isinstance(updates[0][1], ComparisonLLMAnalysisFailedUpdate)
+    assert analyzer.failed == [str(comp.id)]
+
+
+def test_a_failing_model_marks_the_comparison_failed_after_three_tries(monkeypatch):
+    # Each try is a request and its own retry.
+    decider = Decider(statuses=[500] * (2 * llm_analyze.MAX_RETRIES))
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    comp = comparison(("a", "b", "c"))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
+    assert len(decider.requests) == 2 * llm_analyze.MAX_RETRIES
+    assert isinstance(updates[0][1], ComparisonLLMAnalysisFailedUpdate)
+
+
+def test_a_failure_then_an_answer_is_analyzed(monkeypatch):
+    decider = Decider(scorer({"language_en": 0.9}), statuses=[500, 500])
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis())
+    run(
+        analyzer.analyze_comparison(comparison(("hi", "hello", "hey"))),
+        decider,
+        monkeypatch,
+        updates,
     )
 
-    assert isinstance(exc, RuntimeError)
-    assert call_count == 1
+    assert isinstance(updates[0][1], ComparisonLLMAnalysisUpdate)
+    assert updates[0][1].languages == ["en"]
+    assert analyzer.failed == []
+
+
+def test_a_rescored_comparison_that_fails_keeps_what_it_had(monkeypatch):
+    decider = Decider(statuses=[500] * (2 * llm_analyze.MAX_RETRIES))
+    updates: list = []
+    analyzer = llm_analyze.Analyzer(analysis(), keep_on_failure=True)
+    comp = comparison(("a", "b", "c"))
+    run(analyzer.analyze_comparison(comp), decider, monkeypatch, updates)
+
     assert updates == []
-    assert config.failed_analysis == []
+    assert analyzer.failed == [str(comp.id)]
 
 
-def test_transient_provider_error_then_success_is_recorded_as_analyzed(monkeypatch):
-    success = ComparisonLLMAnalysisUpdate(
-        contains_pii=False,
-        contains_spam=False,
-        short_summary="a short summary",
-        keywords=[],
-        categories=[],
-        languages=["en"],
-    )
-    config, comp, updates, exc, call_count = run_with(
-        monkeypatch, [moderation_block(), success]
-    )
+def test_a_rescore_counts_the_comparisons_it_holds_back(monkeypatch):
+    decider = Decider(scorer({"pii": 0.9}))
+    analyzer = llm_analyze.Analyzer(analysis(), keep_on_failure=True)
+    for _ in range(2):
+        run(
+            analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+            decider,
+            monkeypatch,
+            [],
+        )
 
-    assert exc is None
-    assert call_count == 2
-    assert len(updates) == 1
-    updated_id, data = updates[0]
-    assert updated_id == comp.id
-    assert data is success
-    assert config.failed_analysis == []
+    assert (analyzer.analyzed, analyzer.held) == (2, 2)
+
+
+def test_a_refused_key_stops_the_run(monkeypatch):
+    for status in (401, 402):
+        decider = Decider(statuses=[status])
+        updates: list = []
+        analyzer = llm_analyze.Analyzer(analysis())
+        try:
+            run(
+                analyzer.analyze_comparison(comparison(("a", "b", "c"))),
+                decider,
+                monkeypatch,
+                updates,
+            )
+        except llm_analyze.AnalysisStopped as e:
+            assert str(status) in str(e)
+        else:
+            raise AssertionError("expected AnalysisStopped")
+        assert updates == []
+
+
+def test_languages_follow_the_instance():
+    codes = llm_analyze.language_codes("da", ["da", "en", "nb-NO", "sv"])
+    assert codes[:4] == ["da", "en", "nb", "sv"]
+    assert len(codes) == len(set(codes))
+    assert "fr" in codes and "zh" in codes
+
+
+def test_reapplying_scores_moves_with_the_thresholds():
+    scores = {"pii": 0.35, "category_sports": 0.55, "language_en": 0.6}
+    criteria = analysis().criteria
+    strict = llm_analyze.update_from_scores(scores, "m", criteria, 0.5, 0.5)
+    assert strict.contains_pii and strict.categories == ["Sports"]
+    for c in criteria:
+        c.threshold = 0.5
+    loose = llm_analyze.update_from_scores(scores, "m", criteria, 0.6, 0.7)
+    assert not loose.contains_pii
+    assert loose.categories == ["Other"] and loose.languages == []
 
 
 def run_pipeline(monkeypatch, total: int, analyze):
-    """Wire analyze_comparisons to a fake DB stream of `total` comparisons and
-    the given analyze_comparison; returns the list counting comparisons produced."""
     produced = []
 
     async def fake_stream(_filters):
         for _ in range(total):
             produced.append(1)
-            yield comparison()
+            yield comparison(("a", "b", "c"))
 
-    async def fake_model():
-        return AnalysisModel(model="openrouter/x", api_base=None, api_key="k")
+    async def fake_analysis():
+        return analysis()
 
     monkeypatch.setattr(llm_analyze, "get_db_comparisons_stream", fake_stream)
-    monkeypatch.setattr(llm_analyze, "get_analysis_model", fake_model)
-    monkeypatch.setattr(Config, "analyze_comparison", analyze)
+    monkeypatch.setattr(llm_analyze, "get_analysis", fake_analysis)
+    monkeypatch.setattr(llm_analyze.Analyzer, "analyze_comparison", analyze)
     return produced
 
 
@@ -188,15 +410,20 @@ def test_backlog_is_not_loaded_in_memory_faster_than_workers_consume_it(monkeypa
         return len(produced)
 
     assert asyncio.run(scenario()) == total
-    assert seen_while_blocked[0] <= Config.WORKERS + Config.QUEUE_SIZE + 1
+    assert seen_while_blocked[0] <= llm_analyze.WORKERS + llm_analyze.QUEUE_SIZE + 1
 
 
-def test_a_crashing_worker_does_not_hang_the_run(monkeypatch):
+def test_a_stopped_run_raises_and_does_not_hang(monkeypatch):
     async def scenario():
         async def analyze(self, comp):
-            raise RuntimeError("bug")
+            raise llm_analyze.AnalysisStopped("key refused")
 
         run_pipeline(monkeypatch, 200, analyze)
         await asyncio.wait_for(llm_analyze.analyze_comparisons(), timeout=5)
 
-    asyncio.run(scenario())
+    try:
+        asyncio.run(scenario())
+    except llm_analyze.AnalysisStopped:
+        pass
+    else:
+        raise AssertionError("expected AnalysisStopped")

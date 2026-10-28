@@ -18,7 +18,7 @@
   import type { PageProps } from './$types'
   import ActivityLineChart from './ActivityLineChart.svelte'
   import CriterionHistogram from './CriterionHistogram.svelte'
-  import CriterionRow, { actionTone } from './CriterionRow.svelte'
+  import ActionCriterionRow, { actionTone } from './ActionCriterionRow.svelte'
   import { actionLabels, actionOrder, newCriterion } from './criteria'
   import type { PromptCheckDecision, PromptCheckStats, PromptCheckTry } from './types'
 
@@ -316,7 +316,7 @@
         </div>
         <ul class="m-0! p-0! w-full list-none">
           {#each criteria as criterion, i (i)}
-            <CriterionRow
+            <ActionCriterionRow
               id="criteria-{i}"
               bind:criterion={criteria[i]}
               fields={criterionFields}

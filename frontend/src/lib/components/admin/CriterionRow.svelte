@@ -1,24 +1,10 @@
-<script module lang="ts">
-  import type { PromptCheckCriterion as Criterion } from '$lib/generated/admin'
-
-  // Four tints far apart: yellow replaces the DSFR orange, too close to red to
-  // tell apart from a refusal, colour blind or not. Each tint also carries an
-  // icon and a word, never the colour alone.
-  export const actionTone: Record<Criterion['action'], { color: string; icon: string }> = {
-    off: { color: 'var(--grey-425-625)', icon: 'i-ri-eye-off-line' },
-    log: { color: 'var(--info-425-625)', icon: 'i-ri-eye-line' },
-    warn: { color: 'var(--yellow-tournesol-main-731)', icon: 'i-ri-alert-line' },
-    block: { color: 'var(--error-425-625)', icon: 'i-ri-forbid-line' }
-  }
-</script>
-
-<script lang="ts">
+<script lang="ts" generics="T extends CriterionFields">
   import { Button, Icon, Textarea } from '$components/dsfr'
-  import { FormField, FormInput, FormSelect, type FormInputProps } from '$components/form'
-  import type { PromptCheckCriterion } from '$lib/generated/admin'
+  import { FormField, FormInput, type FormInputProps } from '$components/form'
   import { m } from '$lib/i18n/messages'
   import type { AnyFormItemProps } from '$lib/utils/form'
-  import { actionLabels, actionOrder, keyFrom } from './criteria'
+  import type { Snippet } from 'svelte'
+  import { keyFrom, type CriterionFields } from './criteria'
 
   let {
     criterion = $bindable(),
@@ -27,9 +13,11 @@
     saved,
     takenKeys,
     errors,
-    onremove
+    onremove,
+    tag,
+    settings
   }: {
-    criterion: PromptCheckCriterion
+    criterion: T
     id: string
     fields: Record<string, AnyFormItemProps>
     // A saved criterion keeps its key: stored verdicts and the stats count by it.
@@ -37,13 +25,11 @@
     takenKeys: string[]
     errors: Record<string, string>
     onremove: () => void
+    // What each check adds: shown next to the name on the folded row, and
+    // the fields under yes and no.
+    tag: Snippet
+    settings: Snippet
   } = $props()
-
-  const messageOptions = [
-    { value: 'generic', label: m['admin.promptChecks.criteria.messages.generic']() },
-    { value: 'self_harm', label: m['admin.promptChecks.criteria.messages.self_harm']() },
-    { value: 'pii', label: m['admin.promptChecks.criteria.messages.pii']() }
-  ]
 
   const name = $derived(criterion.label || criterion.key)
   const hasError = $derived(Object.keys(errors).some((key) => key.startsWith(`${id}-`)))
@@ -69,13 +55,7 @@
         {name || m['admin.promptChecks.criteria.new']()}
       </span>
       <span class="gap-1 text-xs text-grey flex shrink-0 items-center">
-        <Icon
-          icon={actionTone[criterion.action].icon}
-          size="xs"
-          style="color: {actionTone[criterion.action].color}"
-          aria-hidden="true"
-        />
-        {actionLabels[criterion.action]}
+        {@render tag()}
       </span>
       <span class="text-xs text-grey w-[5.5rem] shrink-0 text-right tabular-nums">
         {fields.threshold.label}
@@ -109,44 +89,7 @@
         {/each}
       </div>
 
-      <fieldset class="action-pills fr-fieldset mb-6!">
-        <legend class="fr-label w-full">
-          {fields.action.label}<span class="fr-sr-only"> : {name}</span>
-        </legend>
-        {#each actionOrder as option (option)}
-          <input
-            id="{id}-action-{option}"
-            class="sr-only"
-            type="radio"
-            name="{id}-action"
-            value={option}
-            bind:group={criterion.action}
-          />
-          <label
-            for="{id}-action-{option}"
-            style="--pill-color: {actionTone[option]
-              .color}; --pill-soft: color-mix(in srgb, {actionTone[option].color} 12%, transparent)"
-          >
-            <Icon icon={actionTone[option].icon} size="xs" class="pill-icon" aria-hidden="true" />
-            {actionLabels[option]}
-          </label>
-        {/each}
-      </fieldset>
-
-      <div class="gap-x-4 md:grid-cols-2 grid">
-        <FormInput
-          {...input('threshold', { type: 'number', step: '0.05' })}
-          bind:value={criterion.threshold}
-        />
-        <FormSelect
-          {...fields.message}
-          id="{id}-message"
-          component="select"
-          options={messageOptions}
-          {errors}
-          bind:value={criterion.message as string}
-        />
-      </div>
+      {@render settings()}
 
       <Button
         id="{id}-remove"
@@ -200,52 +143,5 @@
 
   .criterion[open] :global(.chevron) {
     transform: rotate(90deg);
-  }
-
-  .action-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  .action-pills label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.25rem 0.625rem;
-    border: 1px solid var(--border-default-grey);
-    border-radius: 999px;
-    background: var(--background-default-grey);
-    color: var(--text-mention-grey);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-
-  .action-pills label:hover {
-    background: var(--background-default-grey-hover);
-    color: var(--text-default-grey);
-  }
-
-  .action-pills input:checked + label {
-    border-color: var(--pill-color);
-    box-shadow: inset 0 0 0 1px var(--pill-color);
-    background: var(--pill-soft);
-    color: var(--text-default-grey);
-    font-weight: 700;
-  }
-
-  .action-pills input:checked + label :global(.pill-icon),
-  .action-pills label:hover :global(.pill-icon) {
-    color: var(--pill-color);
-  }
-
-  .action-pills input:focus-visible + label {
-    outline: 2px solid var(--outline-color);
-    outline-offset: 2px;
   }
 </style>

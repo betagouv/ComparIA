@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field
 
 from backend.admin.activity import router as admin_activity_router
+from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
@@ -84,7 +85,6 @@ from utils.database.models.auth import (
     UserPublic,
     UserUpsert,
 )
-from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
     Criteria,
     Description,
@@ -118,6 +118,7 @@ router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
+router.include_router(admin_dataset_check_router)
 
 
 class UsersPage(BaseModel):
@@ -434,8 +435,6 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         secondary_color_light=row.secondary_color_light,
         secondary_color_dark=row.secondary_color_dark,
         homepage_url=row.homepage_url,
-        analysis_endpoint_id=row.analysis_endpoint_id,
-        analysis_model=row.analysis_model,
         publish_frequency=row.publish_frequency,
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
@@ -485,13 +484,6 @@ async def patch_settings(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Default locale must be part of the enabled locales",
             )
-    if body.analysis_endpoint_id:
-        async with get_session() as session:
-            if not await session.get(LLMEndpoint, body.analysis_endpoint_id):
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="Unknown LLM endpoint",
-                )
     patch = body.model_dump(exclude_unset=True)
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")

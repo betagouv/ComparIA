@@ -99,6 +99,12 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     keywords: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
     categories: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
     languages: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
+    # Every score the decision model gave and the model id, so a threshold can
+    # move later without asking the model again. None before the decision model,
+    # stored as SQL NULL: the JSON value null would pass 'IS NOT NULL'.
+    analysis_scores: Annotated[dict | None, Field(sa_type=JSONB(none_as_null=True))] = (
+        None
+    )
 
     # archived metadata
     archived: bool | None = None
@@ -183,10 +189,10 @@ class ComparisonLLMAnalysisUpdate(SQLModel):
     llm_analyzed: Literal[True] = True
     contains_pii: bool
     contains_spam: bool
-    short_summary: str
-    keywords: list[str]
+    # short_summary and keywords are no longer written: old rows keep theirs.
     categories: list[str]
     languages: list[str]
+    analysis_scores: dict
 
     @computed_field  # type: ignore[prop-decorator]
     @property
