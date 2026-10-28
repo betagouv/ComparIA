@@ -189,10 +189,10 @@ class ComparisonLLMAnalysisUpdate(SQLModel):
     llm_analyzed: Literal[True] = True
     contains_pii: bool
     contains_spam: bool
-    short_summary: str
-    keywords: list[str]
+    # short_summary and keywords are no longer written: old rows keep theirs.
     categories: list[str]
     languages: list[str]
+    analysis_scores: dict
 
     @computed_field  # type: ignore[prop-decorator]
     @property
