@@ -45,6 +45,7 @@ from utils.database.models.messages import UserMessageRead
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
+from utils.dataset.runs import PUBLISHABLE
 from utils.secrets import SecretUnreadableError
 from utils.storage.redis import REDIS_ANALYSIS_CALLS_KEY
 
@@ -68,6 +69,17 @@ TO_ANALYZE_CONDITION = and_(
 SCORED = (
     func.coalesce(func.jsonb_typeof(col(Comparison.analysis_scores)), "") == "object"
 )
+
+
+def rescore_condition(model: str, every: bool = False):
+    """Published comparisons the chat model analysed or another decision model
+    scored, or all published ones with `every`. Only what the open dataset
+    takes, so a rescore never publishes what was not."""
+    if every:
+        return PUBLISHABLE
+    # NULL whether the column is SQL NULL, JSON null or has no model.
+    scored_by = col(Comparison.analysis_scores)["model"].astext
+    return and_(PUBLISHABLE, scored_by.is_distinct_from(model))
 
 
 WORKERS: Final[int] = 2
@@ -408,10 +420,13 @@ def stopping_status(exc: Exception) -> int | None:
 
 
 class Analyzer:
-    def __init__(self, analysis: Analysis):
+    def __init__(self, analysis: Analysis, keep_on_failure: bool = False):
         self.analysis = analysis
+        # A rescored row was already published: failing it would pull it out.
+        self.keep_on_failure = keep_on_failure
         self.failed: list[str] = []
         self.analyzed = 0
+        self.held = 0
 
     async def analyze_comparison(self, comparison: Comparison) -> None:
         text = conversation_text(comparison)
@@ -443,6 +458,7 @@ class Analyzer:
         )
         await update_comparison(comparison.id, data)
         self.analyzed += 1
+        self.held += data.archived
         logger.info(
             f"Analyzed Comparison '{comparison.id}': pii={data.contains_pii} "
             f"spam={data.contains_spam} categories={data.categories} "
@@ -450,9 +466,15 @@ class Analyzer:
         )
 
     async def _fail(self, comparison: Comparison, exc: Exception) -> None:
+        self.failed.append(str(comparison.id))
+        if self.keep_on_failure:
+            logger.error(
+                f"Could not score Comparison '{comparison.id}' again, keeping "
+                f"what it had: {exc!r}"
+            )
+            return
         # Kept out of the dataset: llm_analyzed False is never published.
         await update_comparison(comparison.id, ComparisonLLMAnalysisFailedUpdate())
-        self.failed.append(str(comparison.id))
         logger.error(
             f"Could not analyze Comparison '{comparison.id}', setting "
             f"'llm_analyzed' to False: {exc!r}"
@@ -470,18 +492,24 @@ async def worker(analyzer: Analyzer, queue: asyncio.Queue[Comparison | None]):
             queue.task_done()
 
 
-async def analyze_comparisons() -> Analyzer:
+async def analyze_comparisons(rescore: bool = False, every: bool = False) -> Analyzer:
     """
-    Stream the comparisons to analyze to a few workers. A comparison that
-    cannot be scored is marked failed and the run goes on; any other error,
-    a refused key included, cancels every worker and is raised.
+    Stream the comparisons to analyze, or to score again with `rescore`, to a
+    few workers. A comparison that cannot be scored is marked failed (kept as
+    it was when rescoring) and the run goes on; any other error, a refused key
+    included, cancels every worker and is raised.
     """
-    analyzer = Analyzer(await get_analysis())
+    analyzer = Analyzer(await get_analysis(), keep_on_failure=rescore)
+    condition = (
+        rescore_condition(analyzer.analysis.model, every)
+        if rescore
+        else TO_ANALYZE_CONDITION
+    )
     queue: asyncio.Queue[Comparison | None] = asyncio.Queue(maxsize=QUEUE_SIZE)
     workers = [asyncio.create_task(worker(analyzer, queue)) for _ in range(WORKERS)]
 
     async def produce():
-        async for comp in get_db_comparisons_stream([TO_ANALYZE_CONDITION]):
+        async for comp in get_db_comparisons_stream([condition]):
             await queue.put(comp)
         for _ in workers:
             await queue.put(None)

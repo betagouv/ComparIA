@@ -167,6 +167,44 @@ def test_reapply_leaves_rows_without_scores_alone(monkeypatch):
     run(scenario, monkeypatch)
 
 
+def test_rescore_takes_only_what_the_open_dataset_publishes(monkeypatch):
+    async def scenario(execute, get_session):
+        expected = {
+            await add(execute),
+            await add(execute, scores="'null'::jsonb"),
+            await add(
+                execute,
+                scores="""'{"model": "old/decider", "scores": {}}'::jsonb""",
+            ),
+        }
+        await add(execute, scores=f"'{SCORES}'::jsonb")
+        await add(execute, contains_pii=True)
+        await add(execute, archived=True, archived_reason="spam", contains_spam=True)
+        await add(execute, cohorts="pix")
+
+        async with get_session() as session:
+            picked = set(
+                (
+                    await session.exec(
+                        select(Comparison.id).where(
+                            llm_analyze.rescore_condition(MODEL)
+                        )
+                    )
+                ).all()
+            )
+            every = (
+                await session.exec(
+                    select(Comparison.id).where(
+                        llm_analyze.rescore_condition(MODEL, every=True)
+                    )
+                )
+            ).all()
+        assert picked == expected
+        assert len(every) == 4
+
+    run(scenario, monkeypatch)
+
+
 def test_the_analysis_reads_the_web_search_results_stored(monkeypatch):
     async def scenario(execute, get_session):
         comparison_id = await add(
