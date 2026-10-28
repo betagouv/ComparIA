@@ -675,16 +675,16 @@ wheels = [
 
 [[package]]
 name = "ecologits"
-version = "0.10.2"
+version = "0.11.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "pydantic" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3f/7b/a8af782f0305bd08f6c61614680f9c4a70e4c30831bba435d5bab603bac4/ecologits-0.10.2.tar.gz", hash = "sha256:cdbd1f67a82d4008c6bb2d3373912f5f58fba4eedb25531972544b950bab5332", size = 1020789, upload-time = "2026-06-04T17:31:08.75Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/99/a2/89d5266c93e43f6f5267453fbabbe0554fe39145a36491a263c3994bcf41/ecologits-0.11.3.tar.gz", hash = "sha256:8887d7ac04a8368e73363f911a814f3a643e51bc0ead9da31179bd2cc03f5964", size = 1095300, upload-time = "2026-10-14T18:38:50.358Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/06/6b/a6d8354a9816401f52f5a8a08b038cf525b40f2b4efddda41d72eb392eb4/ecologits-0.10.2-py3-none-any.whl", hash = "sha256:d98973a196566f640c8b213f371b44b6d0b11a4b49a9551d3771fee77ac798d7", size = 50769, upload-time = "2026-06-04T17:31:09.999Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/51/2fa567b39b22d6bda8b7ae8e8738e9aeeac53131616223c5693feea38397/ecologits-0.11.3-py3-none-any.whl", hash = "sha256:c477b77a95c65abbc0ed475b62708ce64ada871b675df0261f345296b0a6facd", size = 57689, upload-time = "2026-10-14T18:38:48.686Z" },
 ]
 
 [[package]]
@@ -1551,10 +1551,10 @@ devops = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.19.1" },
-    { name = "altcha", specifier = ">=1.0.0,<2.0.0" },
+    { name = "altcha", specifier = ">=1.0.0,<3.0.0" },
     { name = "async-lru", specifier = ">=2.3.0" },
     { name = "cryptography", specifier = ">=46.0.5" },
-    { name = "ecologits", specifier = "==0.10.2" },
+    { name = "ecologits", specifier = "==0.11.3" },
     { name = "fastapi", specifier = ">=0.133.0" },
     { name = "google-auth", specifier = ">=2.48.0" },
     { name = "httpx", specifier = ">=0.28.1" },
