@@ -290,8 +290,6 @@ export interface AppSettingsPatch {
   homepage_url?: string | null;
   enabled_locales?: string[] | null;
   default_locale?: string | null;
-  analysis_endpoint_id?: string | null;
-  analysis_model?: string | null;
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
@@ -314,8 +312,6 @@ export interface AppSettingsPublic {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
-  analysis_endpoint_id: string | null;
-  analysis_model: string | null;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   publish_hour: number;
   publish_timezone: string;
@@ -343,6 +339,83 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface DatasetCheckPublic {
+  /**
+   * Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.
+   */
+  model?: string;
+  has_api_key: boolean;
+  /**
+   * Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.
+   */
+  description: string;
+  criteria: DatasetCheckCriterion[];
+  category_threshold: number;
+  language_threshold: number;
+  no_api_key?: boolean;
+  no_model?: boolean;
+  updated_at: string;
+  updated_by?: string | null;
+}
+export interface DatasetCheckCriterion {
+  /**
+   * Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.
+   */
+  key: string;
+  label: string;
+  /**
+   * Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.
+   */
+  question: string;
+  yes?: string;
+  no?: string;
+  threshold: number;
+  /**
+   * Données personnelles ou spam : le drapeau publié et le motif d'archivage.
+   */
+  reason?: "pii" | "spam";
+  [k: string]: unknown;
+}
+export interface DatasetCheckTryResult {
+  published: boolean;
+  excluded_by: string[];
+  categories: string[];
+  languages: string[];
+  scores: {
+    [k: string]: number;
+  };
+  latency_ms: number;
+  message?: string | null;
+  error?: string | null;
+}
+export interface DatasetCheckUpsert {
+  /**
+   * Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.
+   */
+  model?: string;
+  /**
+   * Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.
+   */
+  api_key?: string | null;
+  /**
+   * Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.
+   */
+  description?: string;
+  /**
+   * Une conversation qui atteint le seuil d'un critère n'est pas publiée.
+   *
+   * @maxItems 32
+   */
+  criteria?: DatasetCheckCriterion[];
+  /**
+   * Un thème est attribué à partir de ce score. Aucun atteint : « Other ».
+   */
+  category_threshold?: number;
+  /**
+   * Une langue est attribuée à partir de ce score.
+   */
+  language_threshold?: number;
 }
 /**
  * LLM definition.

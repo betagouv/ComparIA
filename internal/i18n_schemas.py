@@ -1,3 +1,4 @@
+from utils.database.models.dataset_check import DatasetCheckUpsert
 from utils.database.models.llms import (
     LLMDataUpsert,
     LLMEndpointUpsert,
@@ -48,6 +49,7 @@ def generate_admin_schemas_i18n():
         "lab_upsert": LLMLabUpsert,
         "llm_upsert": LLMDataUpsert,
         "prompt_check_upsert": PromptCheckUpsert,
+        "dataset_check_upsert": DatasetCheckUpsert,
     }
     schemas = {
         k: model.model_json_schema(schema_generator=FormJsonSchema)
