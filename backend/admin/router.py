@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field
 
 from backend.admin.activity import router as admin_activity_router
+from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
@@ -117,6 +118,7 @@ router.include_router(admin_llms_router)
 router.include_router(admin_suggestions_router)
 router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
+router.include_router(admin_dataset_check_router)
 
 
 class UsersPage(BaseModel):
