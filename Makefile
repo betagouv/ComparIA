@@ -91,6 +91,10 @@ db-analysis-reapply: ## Recompute analysis flags and tags from stored scores wit
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db analysis-reapply $(if $(COMMIT),--commit)
 
+db-analysis-rescore: ## Score published comparisons again with the dataset check's decision model (all of them with EVERY=1); dry run unless COMMIT=1 (requires COMPARIA_DB_URI)
+	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
+	./comparia-cli db analysis-rescore $(if $(COMMIT),--commit) $(if $(EVERY),--every)
+
 db-purge-inactive: ## Warn then erase accounts unused for MONTHS (default 24); dry run unless APPLY=1 (requires COMPARIA_DB_URI)
 	@if [ -z "$$COMPARIA_DB_URI" ]; then echo "Error: COMPARIA_DB_URI is not set"; exit 1; fi
 	./comparia-cli db purge-inactive --months $(or $(MONTHS),24) $(if $(filter 1 true yes,$(APPLY)),--apply)
