@@ -504,10 +504,10 @@
     binaryen "130.0.0"
     fflate "^0.8.3"
 
-"@lobehub/icons-static-svg@^1.98.0":
-  version "1.98.0"
-  resolved "https://registry.yarnpkg.com/@lobehub/icons-static-svg/-/icons-static-svg-1.98.0.tgz#e35453837baaed94900c4ce99a56f82229fb9f7d"
-  integrity sha512-soyLV2g74ujV+9BBymPwXrorJ+kQsEz7WvVd4uzhN2wZnd4Jbyc2FsmyjZBosGaufOirCs1RGJQlLe6l9bjwLg==
+"@lobehub/icons-static-svg@^1.99.0":
+  version "1.99.0"
+  resolved "https://registry.yarnpkg.com/@lobehub/icons-static-svg/-/icons-static-svg-1.99.0.tgz#c6764a90f4b06aa1fc86544c8c7c9f51d2bbf953"
+  integrity sha512-RvWbFoE/CbZ3PhMbkXhs62r+2DX0343ihcE1IwpvnckxQ7DL5+tFaaZTEVz1F8njFI4VSJLyvp6wRhFYynFRgA==
 
 "@mermaid-js/parser@^1.2.0":
   version "1.2.0"
@@ -3318,10 +3318,10 @@ katex@^0.16.45:
   dependencies:
     commander "^8.3.0"
 
-katex@^0.19.0:
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/katex/-/katex-0.19.0.tgz#b69c8cbcfc8c331be3f4f6e606b02b7146501ec7"
-  integrity sha512-v6Tznz3zJ7u3niRCoDTsumM2+HA2XXcCu+WAacCeHD2z3p9A9Ks987o5FzfTGBN0e8A0vjEgIDvLbICrXpdw/Q==
+katex@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/katex/-/katex-0.19.1.tgz#ba2685811cdbffc54dfb7d55bd440c6cc6bb8795"
+  integrity sha512-jG8uKntjSEcm2EpQOh0XturpPuuC9r3Sq5HLHdsFdWZT27E672SF19QEi+of0/YeOy15lDgRhKvr5614uRrEfA==
   dependencies:
     commander "^15.0.0"
 
