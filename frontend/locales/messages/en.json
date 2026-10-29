@@ -597,6 +597,12 @@
                     "title": "Platform colors"
                 },
                 "discard": "Discard changes",
+                "home": {
+                    "hint": "These texts replace the ones on the arena home page. Leave a field empty to keep the default text.",
+                    "promptPlaceholderLabel": "Prompt field text",
+                    "title": "Arena home page",
+                    "titleLabel": "Title"
+                },
                 "homepageUrl": {
                     "hint": "This address opens when someone selects the logo or the platform name. Leave empty to use the local home page.",
                     "invalid": "Enter a full HTTPS URL.",

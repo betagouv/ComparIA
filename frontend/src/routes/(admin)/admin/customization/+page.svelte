@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
+  import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
@@ -25,6 +26,10 @@
   let secondaryColorLight = $state('')
   let secondaryColorDark = $state('')
   let homepageUrl = $state('')
+  // Keyed by locale, a locale left empty keeps the built-in text.
+  let homeTitle = $state<Record<string, string>>({})
+  let homePromptPlaceholder = $state<Record<string, string>>({})
+  let loadedHomeTexts = { title: {}, promptPlaceholder: {} }
   let loadedValues = $state({
     votesObjective: '',
     rankingMinVotes: '',
@@ -60,6 +65,7 @@
       secondaryColorLight = data.secondary_color_light
       secondaryColorDark = data.secondary_color_dark
       homepageUrl = data.homepage_url ?? ''
+      setHomeTexts(data)
       loadedValues = {
         ...currentValues(),
         votesObjective,
@@ -73,6 +79,12 @@
   }
 
   onMount(load)
+
+  function setHomeTexts(data: AppSettingsPublic) {
+    loadedHomeTexts = { title: data.home_title, promptPlaceholder: data.home_prompt_placeholder }
+    homeTitle = { ...data.home_title }
+    homePromptPlaceholder = { ...data.home_prompt_placeholder }
+  }
 
   function currentValues() {
     return {
@@ -126,6 +138,8 @@
     secondaryColorLight = loadedValues.secondaryColorLight
     secondaryColorDark = loadedValues.secondaryColorDark
     homepageUrl = loadedValues.homepageUrl
+    homeTitle = { ...loadedHomeTexts.title }
+    homePromptPlaceholder = { ...loadedHomeTexts.promptPlaceholder }
     errors = {}
   }
 
@@ -143,7 +157,9 @@
         primary_color_dark: primaryColorDark.toUpperCase(),
         secondary_color_light: secondaryColorLight.toUpperCase(),
         secondary_color_dark: secondaryColorDark.toUpperCase(),
-        homepage_url: homepageUrl || null
+        homepage_url: homepageUrl || null,
+        home_title: $state.snapshot(homeTitle),
+        home_prompt_placeholder: $state.snapshot(homePromptPlaceholder)
       }
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
         method: 'PATCH',
@@ -159,6 +175,7 @@
       secondaryColorLight = saved.secondary_color_light
       secondaryColorDark = saved.secondary_color_dark
       homepageUrl = saved.homepage_url ?? ''
+      setHomeTexts(saved)
       loadedValues = {
         ...currentValues(),
         votesObjective,
@@ -172,7 +189,9 @@
         primary_color_dark: saved.primary_color_dark,
         secondary_color_light: saved.secondary_color_light,
         secondary_color_dark: saved.secondary_color_dark,
-        homepage_url: saved.homepage_url
+        homepage_url: saved.homepage_url,
+        home_title: saved.home_title,
+        home_prompt_placeholder: saved.home_prompt_placeholder
       })
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
@@ -286,6 +305,33 @@
         </div>
         <p class="fr-hint-text mt-1!">{m['admin.settings.customization.logo.hint']()}</p>
       </div>
+
+      <fieldset class="mt-8! p-0 border-0">
+        <legend class="fr-h4">{m['admin.settings.customization.home.title']()}</legend>
+        <p class="fr-hint-text mt-0!">{m['admin.settings.customization.home.hint']()}</p>
+        <div class="gap-6 flex flex-col">
+          <FormTranslate
+            id="settings-home-title"
+            bind:value={homeTitle}
+            subProps={{
+              component: 'input',
+              type: 'text',
+              id: 'input',
+              label: m['admin.settings.customization.home.titleLabel']()
+            }}
+          />
+          <FormTranslate
+            id="settings-home-prompt-placeholder"
+            bind:value={homePromptPlaceholder}
+            subProps={{
+              component: 'input',
+              type: 'text',
+              id: 'input',
+              label: m['admin.settings.customization.home.promptPlaceholderLabel']()
+            }}
+          />
+        </div>
+      </fieldset>
 
       <fieldset class="mt-8! p-0 border-0">
         <legend class="fr-h4">{m['admin.settings.customization.colors.title']()}</legend>

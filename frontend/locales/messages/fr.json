@@ -597,6 +597,12 @@
                     "title": "Couleurs de la plateforme"
                 },
                 "discard": "Annuler les modifications",
+                "home": {
+                    "hint": "Ces textes remplacent ceux de l’accueil de l’arène. Laissez un champ vide pour garder le texte par défaut.",
+                    "promptPlaceholderLabel": "Texte du champ de requête",
+                    "title": "Accueil de l’arène",
+                    "titleLabel": "Titre"
+                },
                 "homepageUrl": {
                     "hint": "Cette adresse est ouverte lorsqu’une personne sélectionne le logo ou le nom de la plateforme. Laissez vide pour utiliser l’accueil local.",
                     "invalid": "Saisissez une URL HTTPS complète.",
