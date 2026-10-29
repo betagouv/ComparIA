@@ -5,6 +5,7 @@ import type {
   FormFieldsetListProps,
   FormInputProps,
   FormSelectProps,
+  FormTextareaProps,
   FormToggleProps
 } from '$components/form'
 import { getKeys, tryI18n } from '$lib/utils/commons'
@@ -23,6 +24,7 @@ export type JSONSchema = BaseJSONSchema & {
 
 export type AnyFormItemComponent =
   | 'input'
+  | 'textarea'
   | 'select'
   | 'toggle'
   | 'checkbox'
@@ -47,6 +49,7 @@ export type Option<T> = { value: T; label: string }
 
 export type AnyFormItemProps =
   | FormInputProps
+  | FormTextareaProps
   | FormSelectProps
   | FormToggleProps
   | FormCheckboxProps

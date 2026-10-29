@@ -7,6 +7,8 @@
 
 {#if props.component === 'input'}
   <components.FormInput {...props} bind:value />
+{:else if props.component === 'textarea'}
+  <components.FormTextarea {...props} bind:value />
 {:else if props.component === 'select'}
   <components.FormSelect {...props} bind:value />
 {:else if props.component === 'toggle'}
