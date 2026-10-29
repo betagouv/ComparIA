@@ -3,7 +3,7 @@ from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import ValidationInfo, field_validator
+from pydantic import StringConstraints, ValidationInfo, field_validator
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
@@ -12,8 +12,9 @@ from utils.i18n import (
     DEFAULT_ENABLED_LOCALES,
     DEFAULT_LOCALE,
     SupportedLocale,
+    TranslatableRaw,
 )
-from utils.validation import is_secure_url
+from utils.validation import Translatable, is_secure_url
 
 from .publish import PublishFrequency
 from .utils import AutoDatetime, logo_version
@@ -83,6 +84,13 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
+# One arena home text, in one locale. Long enough for a sentence, short
+# enough to stay a heading.
+HomeText = Annotated[str, StringConstraints(max_length=200)]
+# The warning strip above the home, inline Markdown: a few sentences at most.
+HomeBanner = Annotated[str, StringConstraints(max_length=1000)]
+
+
 class AppSettings(SQLModel, table=True):
     """Singleton row (id=1) holding product settings editable from the admin panel."""
 
@@ -117,6 +125,12 @@ class AppSettings(SQLModel, table=True):
         default=SECONDARY_COLOR_DARK_DEFAULT, max_length=7
     )
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    # Arena home wording, keyed by locale. A locale left out takes the text of
+    # the closest locale written, as pick_translation does, then the built-in one.
+    home_title: Annotated[TranslatableRaw[str], Field(sa_type=JSONB)] = {}
+    home_prompt_placeholder: Annotated[TranslatableRaw[str], Field(sa_type=JSONB)] = {}
+    # No built-in text: with no locale written, the home shows no banner.
+    home_banner: Annotated[TranslatableRaw[str], Field(sa_type=JSONB)] = {}
     # The model that reads whole comparisons before publication and says
     # whether they hold personal information or spam. It is not the arena's
     # input guardrail: different check, different provider, its own setting.
@@ -177,6 +191,9 @@ class AppSettingsPublic(SQLModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    home_title: TranslatableRaw[str]
+    home_prompt_placeholder: TranslatableRaw[str]
+    home_banner: TranslatableRaw[str]
     analysis_endpoint_id: uuid.UUID | None
     analysis_model: str | None
     publish_frequency: PublishFrequency
@@ -215,6 +232,9 @@ class AppSettingsPatch(SQLModel):
     secondary_color_light: str | None = None
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    home_title: Translatable[HomeText] | None = None
+    home_prompt_placeholder: Translatable[HomeText] | None = None
+    home_banner: Translatable[HomeBanner] | None = None
     enabled_locales: list[SupportedLocale] | None = None
     default_locale: SupportedLocale | None = None
     analysis_endpoint_id: uuid.UUID | None = None
@@ -308,6 +328,22 @@ class AppSettingsPatch(SQLModel):
     @classmethod
     def normalize_homepage_url(cls, value: object) -> str | None:
         return _normalize_homepage_url(value)
+
+    @field_validator(
+        "home_title", "home_prompt_placeholder", "home_banner", mode="before"
+    )
+    @classmethod
+    def strip_home_texts(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("Home texts cannot be null")
+        # Trimmed here so that Translatable drops a text left blank rather than
+        # store "".
+        if isinstance(value, dict):
+            return {
+                locale: text.strip() if isinstance(text, str) else text
+                for locale, text in value.items()
+            }
+        return value
 
     @field_validator("enabled_locales")
     @classmethod
