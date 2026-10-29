@@ -107,6 +107,9 @@ class AuthConfig(BaseModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    home_title: dict[str, str]
+    home_prompt_placeholder: dict[str, str]
+    home_banner: dict[str, str]
     platform_url: str
     has_custom_logo: bool
     # Goes in the logo URL, so the browser can keep the file for a year.
@@ -292,6 +295,9 @@ async def get_config() -> AuthConfig:
         secondary_color_light=app_settings.secondary_color_light,
         secondary_color_dark=app_settings.secondary_color_dark,
         homepage_url=app_settings.homepage_url,
+        home_title=app_settings.home_title,
+        home_prompt_placeholder=app_settings.home_prompt_placeholder,
+        home_banner=app_settings.home_banner,
         platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
         logo_version=app_settings.logo_version,

@@ -4,7 +4,7 @@ from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import ValidationInfo, field_validator
+from pydantic import StringConstraints, ValidationInfo, field_validator
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
@@ -122,6 +122,22 @@ def default_informational_legal_pages() -> dict[str, dict[str, object]]:
     return deepcopy(DEFAULT_INFORMATIONAL_LEGAL_PAGES)
 
 
+# One arena home text, in one locale. Long enough for a sentence, short
+# enough to stay a heading.
+HomeText = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)]
+# The warning strip above the home, inline Markdown: a few sentences at most.
+HomeBanner = Annotated[str, StringConstraints(strip_whitespace=True, max_length=1000)]
+
+
+# Keeps only the texts an admin actually wrote: an empty field means the
+# built-in wording, so it is dropped rather than stored as "".
+def _drop_empty_home_texts(value: dict[str, str | None]) -> dict[str, str]:
+    unknown = sorted(set(value) - set(SUPPORTED_LOCALES))
+    if unknown:
+        raise ValueError(f"Unsupported locales: {', '.join(unknown)}")
+    return {locale: text for locale, text in value.items() if text}
+
+
 def _check_enabled_locales(value: list[str]) -> list[str]:
     if not value:
         raise ValueError("At least one locale must be enabled")
@@ -160,6 +176,12 @@ class AppSettings(SQLModel, table=True):
         default=SECONDARY_COLOR_DARK_DEFAULT, max_length=7
     )
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    # Arena home wording, keyed by locale. A locale left out falls back to the
+    # built-in translation.
+    home_title: Annotated[dict[str, str], Field(sa_type=JSONB)] = {}
+    home_prompt_placeholder: Annotated[dict[str, str], Field(sa_type=JSONB)] = {}
+    # No built-in text: a locale left out shows no banner at all.
+    home_banner: Annotated[dict[str, str], Field(sa_type=JSONB)] = {}
     # The model that reads whole comparisons before publication and says
     # whether they hold personal information or spam. It is not the arena's
     # input guardrail: different check, different provider, its own setting.
@@ -219,6 +241,9 @@ class AppSettingsPublic(SQLModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    home_title: dict[str, str]
+    home_prompt_placeholder: dict[str, str]
+    home_banner: dict[str, str]
     analysis_endpoint_id: uuid.UUID | None
     analysis_model: str | None
     publish_frequency: PublishFrequency
@@ -256,6 +281,9 @@ class AppSettingsPatch(SQLModel):
     secondary_color_light: str | None = None
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
+    home_title: dict[str, HomeText | None] | None = None
+    home_prompt_placeholder: dict[str, HomeText | None] | None = None
+    home_banner: dict[str, HomeBanner | None] | None = None
     enabled_locales: list[str] | None = None
     default_locale: str | None = None
     analysis_endpoint_id: uuid.UUID | None = None
@@ -349,6 +377,20 @@ class AppSettingsPatch(SQLModel):
     @classmethod
     def normalize_homepage_url(cls, value: object) -> str | None:
         return _normalize_homepage_url(value)
+
+    @field_validator(
+        "home_title", "home_prompt_placeholder", "home_banner", mode="before"
+    )
+    @classmethod
+    def home_texts_not_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("Home texts cannot be null")
+        return value
+
+    @field_validator("home_title", "home_prompt_placeholder", "home_banner")
+    @classmethod
+    def drop_empty_home_texts(cls, value: dict[str, str | None]) -> dict[str, str]:
+        return _drop_empty_home_texts(value)
 
     @field_validator("enabled_locales")
     @classmethod

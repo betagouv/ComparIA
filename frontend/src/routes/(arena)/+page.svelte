@@ -6,7 +6,14 @@
   import { m } from '$lib/i18n/messages'
   import type { PageProps } from './$types'
   import { shouldShowInitialPrompt } from './arenaPageState'
-  import { ErrorDisplay, PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
+  import {
+    ErrorDisplay,
+    HomeBanner,
+    PromptWarningModal,
+    TOSModal,
+    ViewChat,
+    ViewPrompt
+  } from './components'
 
   let { data }: PageProps = $props()
 
@@ -70,6 +77,7 @@
   {/snippet}
 
   {#if showInitialPrompt}
+    <HomeBanner />
     <!-- The stream died after /add_first_text opened but before the first turn
          rendered: ViewPrompt has no turn to attach the error to, so surface it
          here and let the user resend the prompt they still have typed. -->

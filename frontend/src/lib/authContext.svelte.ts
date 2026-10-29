@@ -21,6 +21,12 @@ export interface AuthConfig {
   secondary_color_light: string
   secondary_color_dark: string
   homepage_url: string | null
+  // Arena home wording keyed by locale, set from the admin panel. A missing
+  // locale falls back to the built-in translation.
+  home_title: Record<string, string>
+  home_prompt_placeholder: Record<string, string>
+  // Inline Markdown warning above the home, no built-in fallback.
+  home_banner: Record<string, string>
   enabled_locales: string[]
   default_locale: string
   // OIDC method description for the login page. `oidc_enabled` is derived

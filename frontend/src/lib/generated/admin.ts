@@ -288,6 +288,15 @@ export interface AppSettingsPatch {
   secondary_color_light?: string | null;
   secondary_color_dark?: string | null;
   homepage_url?: string | null;
+  home_title?: {
+    [k: string]: string | null;
+  } | null;
+  home_prompt_placeholder?: {
+    [k: string]: string | null;
+  } | null;
+  home_banner?: {
+    [k: string]: string | null;
+  } | null;
   enabled_locales?: string[] | null;
   default_locale?: string | null;
   analysis_endpoint_id?: string | null;
@@ -314,6 +323,15 @@ export interface AppSettingsPublic {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
+  home_title: {
+    [k: string]: string;
+  };
+  home_prompt_placeholder: {
+    [k: string]: string;
+  };
+  home_banner: {
+    [k: string]: string;
+  };
   analysis_endpoint_id: string | null;
   analysis_model: string | null;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
