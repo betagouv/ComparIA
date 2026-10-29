@@ -79,7 +79,7 @@ from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
-from utils.i18n import SupportedLocale
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
     REDIS_ANONYMOUS_CONSENT_REQ,
@@ -109,6 +109,9 @@ class AuthConfig(BaseModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
+    home_title: TranslatableRaw[str]
+    home_prompt_placeholder: TranslatableRaw[str]
+    home_banner: TranslatableRaw[str]
     platform_url: str
     has_custom_logo: bool
     # Goes in the logo URL, so the browser can keep the file for a year.
@@ -292,6 +295,9 @@ async def get_config() -> AuthConfig:
         secondary_color_light=app_settings.secondary_color_light,
         secondary_color_dark=app_settings.secondary_color_dark,
         homepage_url=app_settings.homepage_url,
+        home_title=app_settings.home_title,
+        home_prompt_placeholder=app_settings.home_prompt_placeholder,
+        home_banner=app_settings.home_banner,
         platform_url=settings.COMPARIA_APP_URL,
         has_custom_logo=app_settings.logo is not None,
         logo_version=app_settings.logo_version,
