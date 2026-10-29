@@ -128,4 +128,20 @@ describe('admin customization page', () => {
       home_prompt_placeholder: { en: 'Ask your health question' }
     })
   })
+
+  it('stops the home texts at the length the backend accepts', async () => {
+    const { container } = render(Page)
+    await waitFor(() =>
+      expect(container.querySelector('#settings-home-title-input')).not.toBeNull()
+    )
+    expect(container.querySelector('#settings-home-title-input')!.getAttribute('maxlength')).toBe(
+      '200'
+    )
+    expect(
+      container.querySelector('#settings-home-prompt-placeholder-input')!.getAttribute('maxlength')
+    ).toBe('200')
+    expect(container.querySelector('#settings-home-banner-input')!.getAttribute('maxlength')).toBe(
+      '1000'
+    )
+  })
 })

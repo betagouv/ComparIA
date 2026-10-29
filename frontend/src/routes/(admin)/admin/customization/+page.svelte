@@ -26,6 +26,10 @@
   let secondaryColorLight = $state('')
   let secondaryColorDark = $state('')
   let homepageUrl = $state('')
+  // Same limits as HomeText and HomeBanner in app_settings.py: past them the
+  // backend refuses the whole save.
+  const HOME_TEXT_MAX_LENGTH = 200
+  const HOME_BANNER_MAX_LENGTH = 1000
   // Keyed by locale, a locale left empty keeps the built-in text.
   let homeTitle = $state<Record<string, string>>({})
   let homePromptPlaceholder = $state<Record<string, string>>({})
@@ -326,6 +330,7 @@
               component: 'input',
               type: 'text',
               id: 'input',
+              maxlength: HOME_TEXT_MAX_LENGTH,
               label: m['admin.settings.customization.home.titleLabel']()
             }}
           />
@@ -336,6 +341,7 @@
               component: 'input',
               type: 'text',
               id: 'input',
+              maxlength: HOME_TEXT_MAX_LENGTH,
               label: m['admin.settings.customization.home.promptPlaceholderLabel']()
             }}
           />
@@ -346,6 +352,7 @@
               component: 'textarea',
               id: 'input',
               rows: 4,
+              maxlength: HOME_BANNER_MAX_LENGTH,
               label: m['admin.settings.customization.home.bannerLabel'](),
               help: m['admin.settings.customization.home.bannerHint']()
             }}
