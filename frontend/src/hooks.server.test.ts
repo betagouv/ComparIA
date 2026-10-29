@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { request, privateEnv } = vi.hoisted(() => ({
+const { request, countRequest, privateEnv } = vi.hoisted(() => ({
   request: vi.fn(),
+  countRequest: vi.fn(),
   privateEnv: { AUTH_ACCESS_POLICY: 'sign_in_required' } as Record<string, string>
 }))
 
@@ -12,11 +13,11 @@ vi.mock('$lib/i18n/runtime', () => ({ defineCustomServerStrategy: () => {} }))
 vi.mock('$lib/i18n/server', () => ({ paraglideMiddleware: () => {} }))
 vi.mock('$lib/logger.server', () => ({ logger: { error: () => {}, info: () => {} } }))
 vi.mock('$lib/metrics', () => ({
-  httpRequestCounter: { inc: () => {} },
+  httpRequestCounter: { inc: countRequest },
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle, handleFetch } = await import('./hooks.server')
+const { authWallHandle, handleFetch, metricsHandle } = await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
@@ -129,5 +130,29 @@ describe('server-side API requests', () => {
     } as never)
 
     expect(await response.text()).toBe('')
+  })
+})
+
+describe('request metrics', () => {
+  async function count(path: string, routeId: string | null) {
+    countRequest.mockReset()
+    const event = {
+      url: new URL(`http://arene.test${path}`),
+      route: { id: routeId },
+      request: new Request(`http://arene.test${path}`)
+    } as never
+    await metricsHandle({ event, resolve } as never)
+    return countRequest.mock.calls[0][0]
+  }
+
+  it('labels a request with its route, not its path', async () => {
+    expect(await count('/invite/abc123', '/invite/[token]')).toMatchObject({
+      route: '/invite/[token]'
+    })
+  })
+
+  it('puts every unmatched path under one label', async () => {
+    expect(await count('/x/random-1', null)).toMatchObject({ route: 'unmatched' })
+    expect(await count('/invite/abc123/x', null)).toMatchObject({ route: 'unmatched' })
   })
 })
