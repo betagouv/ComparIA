@@ -25,6 +25,8 @@ export interface AuthConfig {
   // locale falls back to the built-in translation.
   home_title: Record<string, string>
   home_prompt_placeholder: Record<string, string>
+  // Inline Markdown warning above the home, no built-in fallback.
+  home_banner: Record<string, string>
   enabled_locales: string[]
   default_locale: string
   // OIDC method description for the login page. `oidc_enabled` is derived
