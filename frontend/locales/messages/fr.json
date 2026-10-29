@@ -598,6 +598,8 @@
                 },
                 "discard": "Annuler les modifications",
                 "home": {
+                    "bannerHint": "Affiché en haut de l’accueil. Laissez vide pour ne pas en afficher. **Texte** pour mettre en gras, [texte](https://…) pour un lien.",
+                    "bannerLabel": "Bandeau d’avertissement",
                     "hint": "Ces textes remplacent ceux de l’accueil de l’arène. Laissez un champ vide pour garder le texte par défaut.",
                     "promptPlaceholderLabel": "Texte du champ de requête",
                     "title": "Accueil de l’arène",

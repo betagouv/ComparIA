@@ -29,7 +29,8 @@
   // Keyed by locale, a locale left empty keeps the built-in text.
   let homeTitle = $state<Record<string, string>>({})
   let homePromptPlaceholder = $state<Record<string, string>>({})
-  let loadedHomeTexts = { title: {}, promptPlaceholder: {} }
+  let homeBanner = $state<Record<string, string>>({})
+  let loadedHomeTexts = { title: {}, promptPlaceholder: {}, banner: {} }
   let loadedValues = $state({
     votesObjective: '',
     rankingMinVotes: '',
@@ -81,9 +82,14 @@
   onMount(load)
 
   function setHomeTexts(data: AppSettingsPublic) {
-    loadedHomeTexts = { title: data.home_title, promptPlaceholder: data.home_prompt_placeholder }
+    loadedHomeTexts = {
+      title: data.home_title,
+      promptPlaceholder: data.home_prompt_placeholder,
+      banner: data.home_banner
+    }
     homeTitle = { ...data.home_title }
     homePromptPlaceholder = { ...data.home_prompt_placeholder }
+    homeBanner = { ...data.home_banner }
   }
 
   function currentValues() {
@@ -140,6 +146,7 @@
     homepageUrl = loadedValues.homepageUrl
     homeTitle = { ...loadedHomeTexts.title }
     homePromptPlaceholder = { ...loadedHomeTexts.promptPlaceholder }
+    homeBanner = { ...loadedHomeTexts.banner }
     errors = {}
   }
 
@@ -159,7 +166,8 @@
         secondary_color_dark: secondaryColorDark.toUpperCase(),
         homepage_url: homepageUrl || null,
         home_title: $state.snapshot(homeTitle),
-        home_prompt_placeholder: $state.snapshot(homePromptPlaceholder)
+        home_prompt_placeholder: $state.snapshot(homePromptPlaceholder),
+        home_banner: $state.snapshot(homeBanner)
       }
       const saved = await api.request<AppSettingsPublic>('/admin/settings', {
         method: 'PATCH',
@@ -191,7 +199,8 @@
         secondary_color_dark: saved.secondary_color_dark,
         homepage_url: saved.homepage_url,
         home_title: saved.home_title,
-        home_prompt_placeholder: saved.home_prompt_placeholder
+        home_prompt_placeholder: saved.home_prompt_placeholder,
+        home_banner: saved.home_banner
       })
       useToast(m['admin.settings.saved'](), 4000)
     } catch (err) {
@@ -328,6 +337,17 @@
               type: 'text',
               id: 'input',
               label: m['admin.settings.customization.home.promptPlaceholderLabel']()
+            }}
+          />
+          <FormTranslate
+            id="settings-home-banner"
+            bind:value={homeBanner}
+            subProps={{
+              component: 'textarea',
+              id: 'input',
+              rows: 4,
+              label: m['admin.settings.customization.home.bannerLabel'](),
+              help: m['admin.settings.customization.home.bannerHint']()
             }}
           />
         </div>

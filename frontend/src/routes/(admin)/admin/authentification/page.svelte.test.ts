@@ -31,6 +31,7 @@ const base: AppSettingsPublic = {
   homepage_url: null,
   home_title: {},
   home_prompt_placeholder: {},
+  home_banner: {},
   analysis_endpoint_id: null,
   analysis_model: null,
   publish_frequency: 'off',

@@ -598,6 +598,8 @@
                 },
                 "discard": "Annuller ændringer",
                 "home": {
+                    "bannerHint": "Vises øverst på forsiden. Lad feltet være tomt for ikke at vise et. **Tekst** for fed, [tekst](https://…) for et link.",
+                    "bannerLabel": "Advarselsbanner",
                     "hint": "Disse tekster erstatter dem på arenaens forside. Lad et felt være tomt for at beholde standardteksten.",
                     "promptPlaceholderLabel": "Tekst i beskedfeltet",
                     "title": "Arenaens forside",

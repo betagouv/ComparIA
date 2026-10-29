@@ -598,6 +598,8 @@
                 },
                 "discard": "Discard changes",
                 "home": {
+                    "bannerHint": "Shown at the top of the home page. Leave empty to show none. **Text** for bold, [text](https://…) for a link.",
+                    "bannerLabel": "Warning banner",
                     "hint": "These texts replace the ones on the arena home page. Leave a field empty to keep the default text.",
                     "promptPlaceholderLabel": "Prompt field text",
                     "title": "Arena home page",
