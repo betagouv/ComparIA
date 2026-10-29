@@ -169,6 +169,14 @@ async def add_comparison_turn(
         )
         new_turn_id = db_turn.id
         session.add(db_turn)
+        # The analysis that clears a comparison for the open dataset read the
+        # turns it had then. Ask for a new one, or this turn is published
+        # unchecked.
+        await session.exec(
+            update(Comparison)
+            .where(col(Comparison.id) == comparison_id)
+            .values(llm_analyzed=None)
+        )
         await session.commit()
 
     comparison = ComparisonRead.model_validate(
