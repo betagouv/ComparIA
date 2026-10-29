@@ -5,7 +5,9 @@
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
@@ -30,6 +32,13 @@
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
+
+  const authConfig = getAuthContext().config
+  const locales = getLocalesContext()
+  const homeTitle = locales.pickTranslation(authConfig.home_title) || m['arenaHome.title']()
+  const homePromptPlaceholder =
+    locales.pickTranslation(authConfig.home_prompt_placeholder) ||
+    m['arenaHome.prompt.placeholder']()
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 
@@ -184,7 +193,7 @@
   <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
     <div class="fr-col-xl-8 m-auto">
       <h2 class="fr-h4 mb-0! text-center">
-        {m['arenaHome.title']()}
+        {homeTitle}
       </h2>
       <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
         <div class="md:order-none md:col-span-full order-1">
@@ -193,7 +202,7 @@
             bind:el={promptEl}
             bind:value={prompt}
             label={m['arenaHome.prompt.label']()}
-            placeholder={m['arenaHome.prompt.placeholder']()}
+            placeholder={homePromptPlaceholder}
             bind:error={promptError}
             disabled={loading}
             submitDisabled={disabled}
