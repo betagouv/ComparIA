@@ -2,6 +2,7 @@
   export type FormTextareaProps = {
     placeholder?: HTMLTextAreaElement['placeholder']
     rows?: number
+    maxlength?: HTMLTextAreaElement['maxLength']
   } & BaseFormFieldProps<'textarea'>
 </script>
 
@@ -14,6 +15,7 @@
     disabled,
     placeholder,
     rows = 4,
+    maxlength,
     ...props
   }: FormTextareaProps & { value: string } = $props()
 </script>
@@ -21,8 +23,14 @@
 <!-- DSFR styles a textarea as an input group. -->
 <FormField {...props} component="input">
   {#snippet formItem(fieldProps)}
-    <textarea {...fieldProps} {placeholder} {disabled} {rows} bind:value class="fr-input mt-2"
-    ></textarea>
+    <textarea
+      {...fieldProps}
+      {placeholder}
+      {disabled}
+      {rows}
+      {maxlength}
+      bind:value
+      class="fr-input mt-2"></textarea>
   {/snippet}
 </FormField>
 
