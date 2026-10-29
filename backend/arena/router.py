@@ -298,6 +298,19 @@ async def get_comparison(
 
 ComparisonAnno = Annotated[ComparisonRead, Depends(get_comparison)]
 
+
+async def get_unrevealed_comparison(comparison: ComparisonAnno) -> ComparisonRead:
+    """Once the models are named, a new turn or vote is cast knowing which is
+    which, and would still count in the ranking."""
+    if comparison.revealed:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="comparison_revealed"
+        )
+    return comparison
+
+
+UnrevealedComparisonAnno = Annotated[ComparisonRead, Depends(get_unrevealed_comparison)]
+
 # FIXME log Comparison session data (ip, portal, cohorts, conv id) in routes?
 
 
@@ -492,7 +505,7 @@ async def add_first_text(
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
 async def add_text(
-    comparison_: ComparisonAnno,
+    comparison_: UnrevealedComparisonAnno,
     args: AddTextBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
@@ -587,7 +600,7 @@ async def add_text(
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
 )
 async def retry(
-    comparison: ComparisonAnno,
+    comparison: UnrevealedComparisonAnno,
     args: RetryBody,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
@@ -679,7 +692,7 @@ async def retry(
 
 @router.post("/vote/{comparison_id}")
 async def vote(
-    comparison: ComparisonAnno,
+    comparison: UnrevealedComparisonAnno,
     vote: TurnVoteChoice | TurnVoteAnnotate,
     anonymous_user_hash: RequiredAnomymous,
     request: Request,
