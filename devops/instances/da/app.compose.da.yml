@@ -10,6 +10,7 @@ services:
       PUBLIC_API_LOCAL_URL: "http://backend-da:80"
       PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8002}"
       PUBLIC_API_DEV_MODE: "true"
+      METRICS_TOKEN:
     ports:
       - "127.0.0.1:3002:3000"
     mem_limit: 512m
