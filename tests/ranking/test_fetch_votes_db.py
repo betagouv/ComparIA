@@ -15,7 +15,7 @@ import contextlib
 import os
 import sys
 import uuid
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -102,14 +102,25 @@ async def seed_model(execute):
     )
 
 
-async def add_vote(execute, choice, cohorts=None, contains_pii=None, archived=None):
+async def add_vote(
+    execute,
+    choice,
+    cohorts=None,
+    contains_pii=None,
+    archived=None,
+    revealed_at=None,
+    turn_created_at=None,
+):
     comparison_id = uuid.uuid4()
     await execute(
         "INSERT INTO comparison (id, created_at, updated_at, ip, "
         "participation_terms_version, cohorts, contains_pii, archived, mode, "
-        "revealed, llm_id_a, llm_id_b) VALUES (:id, now(), now(), '203.0.113.7', "
-        "'1', :cohorts, :pii, :archived, 'random', false, :llm, :llm)",
+        "revealed, revealed_at, llm_id_a, llm_id_b) VALUES (:id, now(), now(), "
+        "'203.0.113.7', '1', :cohorts, :pii, :archived, 'random', "
+        ":revealed, :revealed_at, :llm, :llm)",
         id=comparison_id,
+        revealed=revealed_at is not None,
+        revealed_at=revealed_at,
         cohorts=cohorts,
         pii=contains_pii,
         archived=archived,
@@ -118,8 +129,10 @@ async def add_vote(execute, choice, cohorts=None, contains_pii=None, archived=No
     await execute(
         "INSERT INTO turn (id, created_at, updated_at, comparison_id, choice, "
         "keyword_annotations_a, keyword_annotations_b) "
-        "VALUES (:id, now(), now(), :comparison, :choice, '[]', '[]')",
+        "VALUES (:id, coalesce(:created_at, now()), now(), :comparison, :choice, "
+        "'[]', '[]')",
         id=uuid.uuid4(),
+        created_at=turn_created_at,
         comparison=comparison_id,
         choice=choice,
     )
@@ -151,4 +164,22 @@ def test_a_vote_flagged_as_personal_stays_out_even_when_not_archived():
 def test_an_archived_vote_stays_out():
     assert counted(
         [{"choice": "a_better"}, {"choice": "b_better", "archived": True}]
+    ) == ["a_better"]
+
+
+def test_a_turn_started_after_the_reveal_stays_out():
+    revealed_at = datetime(2026, 10, 1, 12, tzinfo=timezone.utc)
+    assert counted(
+        [
+            {
+                "choice": "a_better",
+                "revealed_at": revealed_at,
+                "turn_created_at": revealed_at - timedelta(minutes=5),
+            },
+            {
+                "choice": "b_better",
+                "revealed_at": revealed_at,
+                "turn_created_at": revealed_at + timedelta(minutes=5),
+            },
+        ]
     ) == ["a_better"]
