@@ -220,7 +220,7 @@ const maintenanceHandle: Handle = async ({ event, resolve }) => {
 }
 
 // Metrics middleware
-const metricsHandle: Handle = async ({ event, resolve }) => {
+export const metricsHandle: Handle = async ({ event, resolve }) => {
   // Skip metrics endpoint itself
   if (event.url.pathname === '/metrics') {
     return resolve(event)
@@ -232,7 +232,9 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
 
   const labels = {
     method: event.request.method,
-    route: event.route?.id || event.url.pathname,
+    // Never the raw path: each label value is a series kept for the life of
+    // the process, so anyone sending random URLs would grow it until it dies.
+    route: event.route?.id ?? 'unmatched',
     status: response.status.toString()
   }
 

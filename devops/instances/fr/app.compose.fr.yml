@@ -10,6 +10,7 @@ services:
       PUBLIC_API_LOCAL_URL: "http://backend-fr:80"
       PUBLIC_API_URL: "${PUBLIC_API_URL:-http://localhost:8001}"
       PUBLIC_API_DEV_MODE: "true"
+      METRICS_TOKEN:
     ports:
       - "127.0.0.1:3001:3000"
     mem_limit: 512m
