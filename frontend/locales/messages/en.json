@@ -47,6 +47,29 @@
     },
     "admin": {
         "activity": {
+            "reservation": {
+                "any": "Reserved or not",
+                "badge": "Reserved",
+                "cancel": "Cancel",
+                "column": "Reservation",
+                "label": "Reservation",
+                "notReserved": "Not reserved",
+                "reserve": "Reserve",
+                "reserveLabel": "Reserve for a partner: {prompt}",
+                "reserved": "Reserved for a partner",
+                "unreserve": "Unreserve",
+                "unreserveConfirm": "Unreserve",
+                "unreserveLabel": "Unreserve: {prompt}",
+                "unreserveTitle": "Put this conversation back in the open dataset?",
+                "unreserveWarning": "The partner already has it. Publishing it spoils their evaluation."
+            },
+            "reserveBlocks": {
+                "cohort": "Cohort",
+                "not_analyzed": "Not analyzed yet",
+                "pii": "Personal data",
+                "published": "Already published",
+                "publishing": "A publication is running"
+            },
             "title": "Activity",
             "subTitle": "What happens in the arena: the questions asked, the models compared, the votes.",
             "tabs": {
