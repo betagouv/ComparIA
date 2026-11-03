@@ -9,6 +9,9 @@
     error,
     variant = 'normal',
     groupClass,
+    // Never left out: once a page has radio buttons, DSFR's modal takes an
+    // input with no type for one of them and throws as the modal opens.
+    type = 'text',
     ...props
   }: {
     id: string
@@ -31,6 +34,7 @@
   <input
     {...props}
     bind:value
+    {type}
     {id}
     aria-invalid={error ? 'true' : undefined}
     aria-describedby="input-{id}-messages"
