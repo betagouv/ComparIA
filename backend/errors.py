@@ -124,3 +124,19 @@ class ActivityQueryTimeoutError(HTTPException):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="activity_query_timeout",
         )
+
+
+class ReserveBlockedError(HTTPException):
+    """A comparison that cannot go to a partner. The detail is the reason, as
+    utils/dataset/reservation.py names it."""
+
+    def __init__(self, reason: str) -> None:
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=reason)
+
+
+class UnreserveUnconfirmedError(HTTPException):
+    """Unreserving what the partner may already have, unconfirmed: the page
+    asks the admin, then sends the request again."""
+
+    def __init__(self) -> None:
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail="partner_has_it")
