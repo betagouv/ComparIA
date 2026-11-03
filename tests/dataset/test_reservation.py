@@ -52,6 +52,19 @@ async def reserved_at(comparison_id: uuid.UUID) -> datetime | None:
         return comparison.reserved_at
 
 
+def extra(**fields) -> dict:
+    """A raw parquet row's extra_metadata, clear for the open dataset."""
+    return {
+        "cohorts": None,
+        "error": None,
+        "llm_analyzed": True,
+        "contains_pii": False,
+        "contains_spam": False,
+        "archived": False,
+        "reserved_at": None,
+    } | fields
+
+
 @pytest.mark.parametrize(
     "fields, reason",
     [
@@ -216,6 +229,38 @@ def test_reserving_after_unreserving_remembers_the_partner_has_it(database):
         assert await reservation.reserved_counts() == (1, 1)
 
     database(scenario)
+
+
+def test_a_cached_rebuild_follows_the_reservations_of_now(tmp_path):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    from utils.dataset import compute
+
+    raw_path = tmp_path / "raw.parquet"
+    pq.write_table(
+        pa.table(
+            {
+                "comparison_id": ["kept", "reserved since", "released since", "spam"],
+                "excluded": [False, False, True, True],
+                "extra_metadata": [
+                    extra(),
+                    extra(),
+                    extra(reserved_at=datetime(2026, 1, 1)),
+                    extra(contains_spam=True),
+                ],
+                "metadata": [{"mode": "random"}] * 4,
+            }
+        ),
+        raw_path,
+    )
+
+    compute._write_normal_from_raw_parquet(
+        raw_path, "dataset", tmp_path / "out", ["reserved since"]
+    )
+
+    exported = pq.read_table(tmp_path / "out" / "dataset.parquet")
+    assert exported.column("comparison_id").to_pylist() == ["kept", "released since"]
 
 
 def test_unreserving_what_the_partner_has_takes_a_confirmation(database):

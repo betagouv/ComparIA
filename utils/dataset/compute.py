@@ -42,6 +42,7 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
+from .reservation import reserved_ids
 from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
@@ -445,6 +446,7 @@ def _write_normal_from_raw_parquet(
     raw_parquet_path: Path,
     repo_name: str,
     export_dir: Path,
+    reserved_ids: list[str],
 ) -> int:
     """
     Regenerate the normal dataset from the raw parquet without hitting the DB.
@@ -452,6 +454,9 @@ def _write_normal_from_raw_parquet(
     converting large nested columns to Python objects.
     Sample files are written from the first 1000 filtered rows (not random,
     but fast and memory-bounded).
+    Reservations come from `reserved_ids`, what is reserved now, rather than
+    from the `excluded` column: that one says what was reserved when the raw
+    parquet was built, and would hold back what was released since.
     """
     import pyarrow as pa
     import pyarrow.compute as pc
@@ -463,6 +468,7 @@ def _write_normal_from_raw_parquet(
     export_dir.mkdir(exist_ok=True)
     parquet_path = export_dir / f"{repo_name}.parquet"
 
+    reserved_now = pa.array(reserved_ids, type=pa.string())
     reader = pq.ParquetFile(raw_parquet_path)
     writer: pq.ParquetWriter | None = None
     sample_batches: list[pa.Table] = []
@@ -470,7 +476,12 @@ def _write_normal_from_raw_parquet(
 
     for batch in reader.iter_batches(batch_size=10_000):
         table = pa.Table.from_batches([batch])
-        table = table.filter(pc.equal(table.column("excluded"), False))
+        # The metadata is small: the large columns stay in Arrow.
+        held_back = pa.array(
+            [_held_back(meta) for meta in table.column("extra_metadata").to_pylist()]
+        )
+        reserved = pc.is_in(table.column("comparison_id"), value_set=reserved_now)
+        table = table.filter(pc.invert(pc.or_(held_back, reserved)))
         table = table.drop(DROP_COLS)
         metadata_index = table.schema.get_field_index("metadata")
         metadata = table.column(metadata_index)
@@ -652,7 +663,9 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_name = LOCAL_NAMES["normal"]
         normal_export_dir = export_base_path / normal_name
-        _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
+        _write_normal_from_raw_parquet(
+            raw_parquet_path, normal_name, normal_export_dir, await reserved_ids()
+        )
         await write_vote_tags_vocabulary(normal_export_dir)
         await write_models_metadata(normal_export_dir)
         return {"normal": normal_export_dir}
