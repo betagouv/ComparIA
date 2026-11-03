@@ -75,5 +75,8 @@
     "sanitize-html": "^2.18.1",
     "winston": "^3.19.0",
     "winston-loki": "^6.1.7"
+  },
+  "resolutions": {
+    "mermaid/katex": "^0.19.0"
   }
 }
