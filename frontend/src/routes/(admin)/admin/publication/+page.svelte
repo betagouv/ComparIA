@@ -9,7 +9,7 @@
   import type { TableCol } from '$lib/utils/data'
   import type { PageProps } from './$types'
   import DatasetVoterIds from '$components/admin/DatasetVoterIds.svelte'
-  import { DatasetCheck, DestinationForm } from './components'
+  import { DatasetCheck, DestinationForm, Overview } from './components'
   import { formatDate, runStatus, runVariant, type Run } from './components/format'
   import { closeModal } from './components/modal'
 
@@ -147,13 +147,13 @@
   function runResult(run: Run) {
     if (run.finished_at === null) return m['admin.publishing.historyPending']()
     if (!run.succeeded) return m['admin.publishing.historyNoDataset']()
-    if (run.published === null || run.held_back === null) {
-      return m['admin.publishing.runCountsUnknown']()
-    }
-    return m['admin.publishing.runCounts']({
-      published: run.published,
-      heldBack: run.held_back
-    })
+    const counts =
+      run.published === null || run.held_back === null
+        ? m['admin.publishing.runCountsUnknown']()
+        : m['admin.publishing.runCounts']({ published: run.published, heldBack: run.held_back })
+    return run.reserved === null
+      ? counts
+      : `${counts} ${m['admin.publishing.runReserved']({ reserved: run.reserved })}`
   }
 </script>
 
@@ -162,13 +162,7 @@
   title={m['admin.publishing.title']()}
   subtitle={m['admin.publishing.subtitle']()}
 >
-  <section class="mb-10">
-    <h2 class="fr-h6 mb-2!">{m['admin.publishing.datasetCheck.title']()}</h2>
-    <p class="fr-text--sm text-grey mb-4!">{m['admin.publishing.datasetCheck.help']()}</p>
-    <DatasetCheck check={data.datasetCheck} schema={data.datasetCheckSchema} models={data.models} />
-  </section>
-
-  <DatasetVoterIds enabled={data.settings.dataset_voter_ids} onSaved={refetch} />
+  <Overview {status} {destinations} />
 
   <section class="mb-10">
     <Table
@@ -295,7 +289,7 @@
     {/if}
   </section>
 
-  <section>
+  <section class="mb-10">
     <h2 class="fr-h6">{m['admin.publishing.lastRun']()}</h2>
 
     {#if !status.runs.length}
@@ -322,6 +316,15 @@
       </Table>
     {/if}
   </section>
+
+  <section class="mb-10">
+    <h2 class="fr-h6 mb-2!">{m['admin.publishing.settingsTitle']()}</h2>
+    <h3 class="fr-text--md font-bold mb-1!">{m['admin.publishing.datasetCheck.title']()}</h3>
+    <p class="fr-text--sm text-grey mb-4!">{m['admin.publishing.datasetCheck.help']()}</p>
+    <DatasetCheck check={data.datasetCheck} schema={data.datasetCheckSchema} models={data.models} />
+  </section>
+
+  <DatasetVoterIds enabled={data.settings.dataset_voter_ids} onSaved={refetch} />
 </PageLayout>
 
 <DestinationForm bind:this={form} onsaved={refetch} />
