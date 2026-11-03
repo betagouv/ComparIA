@@ -264,6 +264,22 @@ class PublishRun(BaseDBModel, table=True):
     reserved: int | None = None
 
 
+class PublishSending(BaseDBModel, table=True):
+    """
+    One dataset a run read and sent, kept whatever later happens to the
+    destinations: whether a comparison can still be reserved for a partner
+    depends on everything ever sent. See utils/dataset/reservation.py.
+    """
+
+    __tablename__ = "publish_sending"
+
+    dataset: Annotated[PublishDataset, Field(sa_type=String, index=True)]
+    started_at: Datetime
+    # Null while the run reads and sends. Every comparison created before it
+    # may have left.
+    sent_until: OptionalDatetime = None
+
+
 class AdminPublishRun(SQLModel):
     started_at: datetime
     finished_at: datetime | None
