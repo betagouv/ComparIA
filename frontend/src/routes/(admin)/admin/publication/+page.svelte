@@ -112,8 +112,11 @@
     return `${config.bucket}${prefix ? `/${prefix}` : ''} · ${config.endpoint}`
   }
 
-  const datasetLabel = (dataset: string) =>
-    dataset === 'raw' ? m['admin.publishing.datasetRaw']() : m['admin.publishing.datasetNormal']()
+  const datasets = {
+    normal: { label: m['admin.publishing.datasetNormal'](), variant: 'blue-ecume' },
+    raw: { label: m['admin.publishing.datasetRaw'](), variant: 'orange' },
+    reserved: { label: m['admin.publishing.datasetReserved'](), variant: 'purple' }
+  } as const
 
   const frequencyLabel = (frequency: Frequency) =>
     ({
@@ -196,11 +199,7 @@
         {:else if col.id === 'datasets'}
           <span class="gap-1 flex flex-wrap">
             {#each row.datasets as dataset (dataset)}
-              <Badge
-                size="sm"
-                text={datasetLabel(dataset)}
-                variant={dataset === 'raw' ? 'orange' : 'blue-ecume'}
-              />
+              <Badge size="sm" text={datasets[dataset].label} variant={datasets[dataset].variant} />
             {/each}
           </span>
         {:else if col.id === 'frequency'}

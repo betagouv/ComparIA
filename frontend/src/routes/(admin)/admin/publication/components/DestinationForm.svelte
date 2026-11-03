@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Alert, Button, Checkbox, Input, Modal, Select, Toggle } from '$components/dsfr'
+  import { Button, Checkbox, Input, Modal, Select, Toggle } from '$components/dsfr'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminPublishDestination } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
@@ -11,19 +11,23 @@
   type Kind = 'huggingface' | 's3'
   type Dataset = AdminPublishDestination['datasets'][number]
   type Frequency = AdminPublishDestination['publish_frequency']
+  // The open and reserved datasets never go to the same place, so a
+  // destination picks one of them. Raw comes on top, or alone.
+  type Main = 'normal' | 'reserved' | 'none'
 
   const MODAL_ID = 'fr-modal-destination'
 
   let busy = $state(false)
   let editing = $state<AdminPublishDestination>()
+  let datasetsError = $state<string>()
   let formError = $state<string>()
 
   let name = $state('')
   let kind = $state<Kind>('huggingface')
-  let wantsOpen = $state(true)
+  let main = $state<Main>('normal')
   let wantsRaw = $state(false)
   const datasets = $derived<Dataset[]>([
-    ...(wantsOpen ? (['normal'] as const) : []),
+    ...(main === 'none' ? [] : [main]),
     ...(wantsRaw ? (['raw'] as const) : [])
   ])
   let enabled = $state(true)
@@ -38,14 +42,39 @@
   let accessKey = $state('')
   let secretKey = $state('')
 
+  const mainOptions = [
+    {
+      value: 'normal',
+      label: m['admin.publishing.datasetNormal'](),
+      help: m['admin.publishing.datasetNormalHelp']()
+    },
+    {
+      value: 'reserved',
+      label: m['admin.publishing.datasetReserved'](),
+      help: m['admin.publishing.datasetReservedHelp']()
+    },
+    {
+      value: 'none',
+      label: m['admin.publishing.datasetNone'](),
+      help: m['admin.publishing.datasetNoneHelp']()
+    }
+  ] as const
+
   /** Open the form on a destination, or empty to add one. */
   export function open(destination?: AdminPublishDestination) {
     editing = destination
+    datasetsError = undefined
     formError = undefined
     const config = (destination?.config ?? {}) as Record<string, unknown>
     name = destination?.name ?? ''
     kind = destination?.kind ?? 'huggingface'
-    wantsOpen = destination?.datasets.includes('normal') ?? true
+    main = !destination
+      ? 'normal'
+      : destination.datasets.includes('normal')
+        ? 'normal'
+        : destination.datasets.includes('reserved')
+          ? 'reserved'
+          : 'none'
     wantsRaw = destination?.datasets.includes('raw') ?? false
     enabled = destination?.enabled ?? true
     frequency = destination?.publish_frequency ?? 'off'
@@ -86,8 +115,9 @@
   async function submit(event: SubmitEvent) {
     event.preventDefault()
     formError = undefined
-    if (!datasets.length) {
-      formError = m['admin.publishing.datasetsError']()
+    datasetsError = datasets.length ? undefined : m['admin.publishing.datasetsError']()
+    if (datasetsError) {
+      document.getElementById('destination-dataset-normal')?.focus()
       return
     }
 
@@ -203,29 +233,52 @@
       />
     {/if}
 
-    <fieldset class="fr-fieldset mb-0">
-      <legend class="fr-fieldset__legend fr-text--regular">
+    <fieldset
+      class={['fr-fieldset', { 'fr-fieldset--error': !!datasetsError }]}
+      aria-labelledby="destination-datasets-legend destination-datasets-messages"
+    >
+      <legend class="fr-fieldset__legend fr-text--regular" id="destination-datasets-legend">
         {m['admin.publishing.datasetsLabel']()}
+        <span class="fr-hint-text">{m['admin.publishing.datasetsHelp']()}</span>
       </legend>
-      <Checkbox
-        id="destination-dataset-normal"
-        bind:checked={wantsOpen}
-        label={m['admin.publishing.datasetNormal']()}
-        help={m['admin.publishing.datasetNormalHelp']()}
-      />
-      <Checkbox
-        id="destination-dataset-raw"
-        bind:checked={wantsRaw}
-        label={m['admin.publishing.datasetRaw']()}
-        help={m['admin.publishing.datasetRawHelp']()}
-      />
+      {#each mainOptions as option (option.value)}
+        <div class="fr-fieldset__element">
+          <div class="fr-radio-group">
+            <input
+              id={`destination-dataset-${option.value}`}
+              name="destination-dataset"
+              type="radio"
+              value={option.value}
+              bind:group={main}
+            />
+            <label class="fr-label" for={`destination-dataset-${option.value}`}>
+              {option.label}
+              <span class="fr-hint-text">{option.help}</span>
+            </label>
+          </div>
+        </div>
+      {/each}
+      <div class="fr-fieldset__element mt-2">
+        <Checkbox
+          id="destination-dataset-raw"
+          bind:checked={wantsRaw}
+          label={m['admin.publishing.datasetRaw']()}
+          help={m['admin.publishing.datasetRawHelp']()}
+        />
+      </div>
+      <div class="fr-messages-group" id="destination-datasets-messages" aria-live="polite">
+        {#if datasetsError}
+          <p class="fr-message fr-message--error">{datasetsError}</p>
+        {/if}
+        <!-- Who may see it is what matters once the dataset is chosen. -->
+        {#if main === 'reserved'}
+          <p class="fr-message fr-message--warning">{m['admin.publishing.reservedWarning']()}</p>
+        {/if}
+        {#if wantsRaw}
+          <p class="fr-message fr-message--warning">{m['admin.publishing.rawWarning']()}</p>
+        {/if}
+      </div>
     </fieldset>
-
-    {#if wantsRaw}
-      <Alert title={m['admin.publishing.datasetRaw']()} variant="warning" class="my-4">
-        <p class="fr-text--sm mb-0!">{m['admin.publishing.rawWarning']()}</p>
-      </Alert>
-    {/if}
 
     <Select
       id="destination-publish-frequency"
