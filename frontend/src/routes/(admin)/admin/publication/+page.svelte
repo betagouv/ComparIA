@@ -8,7 +8,7 @@
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
   import type { PageProps } from './$types'
-  import { DestinationForm, Overview, ReviewerSettings } from './components'
+  import { DestinationForm, Overview, ReservationManagement, ReviewerSettings } from './components'
   import { formatDate, runStatus, runVariant, type Run } from './components/format'
   import { closeModal } from './components/modal'
 
@@ -317,6 +317,8 @@
   </section>
 
   <ReviewerSettings settings={data.settings} endpoints={data.endpoints} onsaved={refetch} />
+
+  <ReservationManagement {status} onreleased={refetch} />
 </PageLayout>
 
 <DestinationForm bind:this={form} onsaved={refetch} />
