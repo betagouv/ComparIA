@@ -184,6 +184,7 @@ def check_reference_schema(failures):
         archived=False,
         archived_reason="spam",
         archived_at=datetime(2024, 1, 1),
+        reserved_at=datetime(2024, 1, 1),
     )
     real = pa.Table.from_pandas(
         pd.DataFrame(fix.comparison_to_turns(full)), preserve_index=False
@@ -251,6 +252,7 @@ def check_temporal_nulls(failures):
                 "archived": False,
                 "archived_reason": None,
                 "archived_at": None,
+                "reserved_at": None,
             },
         }
 

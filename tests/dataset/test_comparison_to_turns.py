@@ -163,6 +163,7 @@ def comparison(
     archived=None,
     archived_reason=None,
     archived_at=None,
+    reserved_at=None,
 ):
     c = Comparison(ip="0.0.0.0", mode=mode, llm_id_a=llm_id_a, llm_id_b=llm_id_b)
     c.custom_models_selection = custom_models_selection
@@ -177,6 +178,7 @@ def comparison(
     c.archived = archived
     c.archived_reason = archived_reason
     c.archived_at = archived_at
+    c.reserved_at = reserved_at
     c.system_msg_a = sys_a
     c.system_msg_b = sys_b
     c.turns = turns
@@ -308,6 +310,14 @@ def equivalent_cases():
         archived=False,
         contains_pii=False,
         contains_spam=False,
+    )
+    yield "excluded: reserved", comparison(
+        [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
+        llm_analyzed=True,
+        archived=False,
+        contains_pii=False,
+        contains_spam=False,
+        reserved_at=T0,
     )
 
     # voted_at set -> time_to_vote = voted_at - max(updated_at_a, updated_at_b).

@@ -4,7 +4,7 @@ Build the ComparIA datasets from PostgreSQL.
 This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
-3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
+3. Filters out archived, errored, not analyzed, reserved and specific cohorts (Pix, do-not-track) for the public dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
 
 Sending the result to the configured destinations is publish.py's business.
@@ -98,6 +98,25 @@ async def count_dataset_rows(datasets: list[Datasets]):
     except Exception as e:
         logger.error(f"An error occurred while counting rows.")
         raise
+
+
+def _shareable(extra_meta: dict) -> bool:
+    # The mirror of runs.SHAREABLE.
+    return bool(
+        not extra_meta["cohorts"]
+        and not extra_meta["contains_pii"]
+        and extra_meta["llm_analyzed"] is True
+    )
+
+
+def _held_back(extra_meta: dict) -> bool:
+    """Whether the open dataset leaves a comparison out, a reservation aside."""
+    return bool(
+        not _shareable(extra_meta)
+        or extra_meta["archived"] is not False
+        or extra_meta["contains_spam"]
+        or extra_meta["error"] is not None
+    )
 
 
 def _conso(llm: LLMData | None, msg: LLMMessage | None) -> float | None:
@@ -245,14 +264,7 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     }
     extra_meta = DatasetComparisonExtraMetadata.model_validate(comp).model_dump()
 
-    excluded = bool(
-        extra_meta["cohorts"]
-        or extra_meta["archived"] is not False
-        or extra_meta["contains_pii"]
-        or extra_meta["contains_spam"]
-        or extra_meta["error"] is not None
-        or extra_meta["llm_analyzed"] is not True
-    )
+    excluded = _held_back(extra_meta) or extra_meta["reserved_at"] is not None
     comparison_id = str(comp.id)
 
     return [
@@ -333,6 +345,7 @@ def _reference_rows() -> list[dict]:
                 "archived": False,
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
+                "reserved_at": datetime(2024, 1, 1),
             },
         }
     ]
