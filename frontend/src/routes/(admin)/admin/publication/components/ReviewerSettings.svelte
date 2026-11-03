@@ -50,7 +50,8 @@
 </script>
 
 <section class="mb-10">
-  <h2 class="fr-h6 mb-2!">{m['admin.publishing.reviewerTitle']()}</h2>
+  <h2 class="fr-h6 mb-2!">{m['admin.publishing.settingsTitle']()}</h2>
+  <h3 class="fr-text--md font-bold mb-1!">{m['admin.publishing.reviewerTitle']()}</h3>
   <p class="fr-text--sm text-grey mb-4!">
     {m['admin.publishing.reviewerHelp']()}
     {m['admin.publishing.reviewerModelHelp']()}
@@ -81,7 +82,12 @@
     {/if}
 
     <div class="flex justify-start">
-      <Button type="submit" text={m['admin.publishing.reviewerSave']()} disabled={busy} />
+      <Button
+        type="submit"
+        variant="secondary"
+        text={m['admin.publishing.reviewerSave']()}
+        disabled={busy}
+      />
     </div>
   </form>
 </section>
