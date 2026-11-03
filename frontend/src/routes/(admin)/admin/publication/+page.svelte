@@ -9,7 +9,7 @@
   import type { TableCol } from '$lib/utils/data'
   import type { PageProps } from './$types'
   import DatasetVoterIds from '$components/admin/DatasetVoterIds.svelte'
-  import { DatasetCheck, DestinationForm, Overview } from './components'
+  import { DatasetCheck, DestinationForm, Overview, ReservationManagement } from './components'
   import { formatDate, runStatus, runVariant, type Run } from './components/format'
   import { closeModal } from './components/modal'
 
@@ -325,6 +325,8 @@
   </section>
 
   <DatasetVoterIds enabled={data.settings.dataset_voter_ids} onSaved={refetch} />
+
+  <ReservationManagement {status} onreleased={refetch} />
 </PageLayout>
 
 <DestinationForm bind:this={form} onsaved={refetch} />
