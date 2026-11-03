@@ -6,22 +6,31 @@ seen it, so a reserved comparison stays out of the open dataset and goes to
 the destinations receiving the reserved one. The raw dataset, which never
 leaves for a public place, keeps it like any other.
 
+Reserving is meant to last. Undoing it puts the comparison back in the open
+dataset at the next run, which spoils it for a partner who already has it.
+
 What was ever sent is kept in publish_sending, apart from the destinations an
 admin can edit or delete. A run records each dataset there before it reads a
-single comparison, and closes it once done.
+single comparison, and closes it once done. A reservation checks that history
+and writes in one transaction, holding the same lock a run holds to record its
+start: either the reservation lands first and the run reads the comparison as
+reserved, or the run is recorded first and the reservation sees it going.
 """
 
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
+from typing import Literal, NamedTuple, Protocol
 
-from sqlalchemy import text
+from sqlalchemy import false, text
 from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
 from sqlalchemy.pool import NullPool
-from sqlmodel import col, update
+from sqlmodel import col, func, select, update
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.config import settings
+from utils.database.models import Comparison
 from utils.database.models.publish import PublishDataset, PublishSending
 from utils.database.models.utils import utc_now
 from utils.database.session import _async_url, get_session
@@ -36,10 +45,106 @@ LOCK_KEY = 8_147_232
 # holds it belongs to a run that died.
 ALIVE_LOCK_KEY = 8_147_233
 
+# Why a comparison cannot be reserved. Machine-readable: the admin panel
+# translates them.
+ReserveBlock = Literal["publishing", "published", "pii", "cohort", "not_analyzed"]
+
+
+class CannotReserveError(Exception):
+    def __init__(self, reason: ReserveBlock):
+        self.reason = reason
+        super().__init__(reason)
+
+
+class PartnerMayHaveItError(Exception):
+    """Unreserving what a run may have sent the partner, without saying so."""
+
+
+class Reservable(Protocol):
+    created_at: datetime
+    cohorts: str | None
+    llm_analyzed: bool | None
+    contains_pii: bool | None
+
+
+class ReservationState(NamedTuple):
+    # Whether a run is sending the open dataset. It may be reading a
+    # comparison as not reserved.
+    publishing: bool
+    # What the open dataset and the partner may have received, on the scale
+    # of Comparison.created_at.
+    open_sent_until: datetime | None
+    reserved_sent_until: datetime | None
+
+    def block(self, comparison: Reservable) -> ReserveBlock | None:
+        if self.publishing:
+            return "publishing"
+        if self.open_sent_until and comparison.created_at <= self.open_sent_until:
+            return "published"
+        if comparison.contains_pii:
+            return "pii"
+        if comparison.cohorts:
+            return "cohort"
+        if comparison.llm_analyzed is not True:
+            return "not_analyzed"
+        return None
+
+    def sent(self, first_reserved_at: datetime | None) -> bool:
+        """
+        Whether the partner may already have this comparison: it was reserved
+        before a run sent the reserved dataset, if not since.
+        """
+        return bool(
+            first_reserved_at
+            and self.reserved_sent_until
+            and first_reserved_at <= self.reserved_sent_until
+        )
+
+
+def _as_local(value: datetime | None) -> datetime | None:
+    # sent_until is naive UTC, created_at and reserved_at the host's local
+    # time (AutoDatetime). Comparing them as they are would let through what
+    # a run sent up to a few hours earlier, on a host that is not on UTC.
+    if value is None:
+        return None
+    return value.replace(tzinfo=UTC).astimezone().replace(tzinfo=None)
+
 
 async def _lock(session: AsyncSession) -> None:
     # Released with the transaction.
     await session.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": LOCK_KEY})
+
+
+async def _sending(
+    session: AsyncSession, dataset: PublishDataset
+) -> tuple[bool, datetime | None]:
+    """Whether a run is sending the dataset now, and until when it ever sent it."""
+    sending, sent_until = (
+        await session.exec(
+            select(
+                func.bool_or(col(PublishSending.sent_until).is_(None)),
+                func.max(col(PublishSending.sent_until)),
+            ).where(col(PublishSending.dataset) == dataset)
+        )
+    ).one()
+    return bool(sending), _as_local(sent_until)
+
+
+async def _state(session: AsyncSession) -> ReservationState:
+    publishing, open_sent_until = await _sending(session, "normal")
+    sending_reserved, reserved_sent_until = await _sending(session, "reserved")
+    return ReservationState(
+        publishing=publishing,
+        open_sent_until=open_sent_until,
+        # A run sending the reserved dataset may take anything reserved so far.
+        reserved_sent_until=datetime.now() if sending_reserved else reserved_sent_until,
+    )
+
+
+async def reservation_state() -> ReservationState:
+    """For display: reserve() checks again, under the lock."""
+    async with get_session() as session:
+        return await _state(session)
 
 
 @asynccontextmanager
@@ -114,3 +219,98 @@ async def _finish_sending(ids: list[uuid.UUID] | None = None) -> None:
     async with get_session() as session:
         await session.exec(query.values(sent_until=utc_now()))
         await session.commit()
+
+
+async def reserve(comparison_id: uuid.UUID) -> datetime | None:
+    """
+    The date the comparison was reserved on, or None when there is no such
+    comparison. Reserving it again keeps the date.
+    """
+    async with get_session() as session:
+        await _lock(session)
+        state = await _state(session)
+        comparison = await session.get(Comparison, comparison_id)
+        if comparison is None:
+            return None
+        if comparison.reserved_at is not None:
+            return comparison.reserved_at
+        if reason := state.block(comparison):
+            raise CannotReserveError(reason)
+        reserved_at = comparison.reserved_at = datetime.now()
+        if comparison.first_reserved_at is None:
+            comparison.first_reserved_at = reserved_at
+        session.add(comparison)
+        await session.commit()
+        return reserved_at
+
+
+async def unreserve(comparison_id: uuid.UUID, confirmed: bool = False) -> bool:
+    """
+    Whether there was such a comparison. The next run publishes it, which
+    spoils it for a partner who already has it: that takes `confirmed`, as the
+    page an admin clicked on may predate the run that sent it.
+    """
+    async with get_session() as session:
+        # Against a reserved run starting: it either sends the comparison
+        # still reserved, which this sees, or reads it unreserved.
+        await _lock(session)
+        comparison = await session.get(Comparison, comparison_id)
+        if comparison is None:
+            return False
+        if comparison.reserved_at is None:
+            return True
+        state = await _state(session)
+        if not confirmed and state.sent(comparison.first_reserved_at):
+            raise PartnerMayHaveItError
+        comparison.reserved_at = None
+        session.add(comparison)
+        await session.commit()
+        return True
+
+
+async def unreserve_all(confirmed_sent: int) -> int:
+    """
+    How many were reserved. `confirmed_sent` is how many the admin was told
+    the partner may have: a run that sent more since needs them told again.
+    """
+    async with get_session() as session:
+        await _lock(session)
+        if (await _counts(session)).sent > confirmed_sent:
+            raise PartnerMayHaveItError
+        result = await session.exec(
+            update(Comparison)
+            .where(col(Comparison.reserved_at).is_not(None))
+            .values(reserved_at=None)
+        )
+        await session.commit()
+        return result.rowcount
+
+
+async def reserved_ids() -> list[str]:
+    async with get_session() as session:
+        ids = await session.exec(
+            select(Comparison.id).where(col(Comparison.reserved_at).is_not(None))
+        )
+        return [str(comparison_id) for comparison_id in ids.all()]
+
+
+class ReservedCounts(NamedTuple):
+    reserved: int
+    # Of those, how many the partner may already have.
+    sent: int
+
+
+async def _counts(session: AsyncSession) -> ReservedCounts:
+    sent_until = (await _state(session)).reserved_sent_until
+    sent = col(Comparison.first_reserved_at) <= sent_until if sent_until else false()
+    counts = await session.exec(
+        select(func.count(), func.count().filter(sent)).where(
+            col(Comparison.reserved_at).is_not(None)
+        )
+    )
+    return ReservedCounts(*counts.one())
+
+
+async def reserved_counts() -> ReservedCounts:
+    async with get_session() as session:
+        return await _counts(session)
