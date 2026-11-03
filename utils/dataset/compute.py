@@ -5,6 +5,7 @@ This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
 3. Filters out archived, errored, not analyzed, reserved and specific cohorts (Pix, do-not-track) for the public dataset
+   Keeps only reserved comparisons, among those safe to share, for the reserved dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
 
 Sending the result to the configured destinations is publish.py's business.
@@ -41,7 +42,7 @@ from .models import (
     Datasets,
 )
 from .publish import LOCAL_NAMES
-from .runs import PUBLISHABLE
+from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -90,7 +91,11 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
+            {
+                "normal": PUBLISHABLE,
+                "raw": col(Comparison.id) != None,
+                "reserved": RESERVED,
+            }
         )
 
         for dataset, count in counts.items():
@@ -117,6 +122,12 @@ def _held_back(extra_meta: dict) -> bool:
         or extra_meta["contains_spam"]
         or extra_meta["error"] is not None
     )
+
+
+def _reserved(row: dict) -> bool:
+    # The mirror of runs.RESERVED.
+    extra_meta = row["extra_metadata"]
+    return extra_meta["reserved_at"] is not None and _shareable(extra_meta)
 
 
 def _conso(llm: LLMData | None, msg: LLMMessage | None) -> float | None:
@@ -363,6 +374,15 @@ def _build_exporters(
                 name,
                 export_base_path / name,
                 keep=lambda row: not row["excluded"],
+                drop_columns=("excluded", "extra_metadata"),
+                schema_rows=schema_rows,
+            )
+        elif dataset == "reserved":
+            # The open dataset's columns, so a partner's code reads both.
+            exporters[dataset] = StreamingDatasetExporter(
+                name,
+                export_base_path / name,
+                keep=_reserved,
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
             )

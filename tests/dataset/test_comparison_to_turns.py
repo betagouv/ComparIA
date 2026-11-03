@@ -539,5 +539,44 @@ def test_model_id_values():
         assert got == expected, f"{name}: got {got!r}, expected {expected!r}"
 
 
+def _datasets(comp: Comparison) -> set[str]:
+    """The datasets this comparison's rows go to."""
+    row = comparison_to_turns(comp)[0]
+    keeps = {
+        "normal": not row["excluded"],
+        "raw": True,
+        "reserved": compute._reserved(row),
+    }
+    return {dataset for dataset, kept in keeps.items() if kept}
+
+
+def reserved_routing_cases():
+    one_turn = [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))]
+    cleared = dict(
+        llm_analyzed=True, archived=False, contains_pii=False, contains_spam=False
+    )
+    yield "cleared", comparison(one_turn, **cleared), {"normal", "raw"}
+    yield "reserved", comparison(one_turn, **cleared, reserved_at=T0), {
+        "raw",
+        "reserved",
+    }
+    # The partner judges spam and errors for itself.
+    yield "reserved spam", comparison(
+        one_turn, **cleared | {"contains_spam": True, "archived": True}, reserved_at=T0
+    ), {"raw", "reserved"}
+    # Flagged after it was reserved: it goes nowhere outside.
+    yield "reserved, then pii", comparison(
+        one_turn, **cleared | {"contains_pii": True}, reserved_at=T0
+    ), {"raw"}
+    yield "reserved, cohort", comparison(
+        one_turn, **cleared, cohorts="pix", reserved_at=T0
+    ), {"raw"}
+
+
+def test_reserved_routing():
+    for name, comp, expected in reserved_routing_cases():
+        assert _datasets(comp) == expected, name
+
+
 if __name__ == "__main__":
     run()
