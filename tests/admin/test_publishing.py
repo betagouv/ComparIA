@@ -219,3 +219,55 @@ def test_the_next_scheduled_run_comes_from_the_shared_schedule(database):
         ) == next_run_at("weekly", before)
 
     database(with_pause(scenario))
+
+
+def test_the_reserved_dataset_cannot_go_where_the_open_one_goes(database):
+    async def scenario():
+        async with client() as api:
+            await create(api, name="Open")
+            response = await api.post(
+                "/publishing/destinations", json=payload(datasets=["reserved"])
+            )
+            assert response.status_code == 422, response.text
+            # Another bucket is fine.
+            await create(
+                api,
+                datasets=["reserved"],
+                config=CONFIG | SECRETS | {"bucket": "private"},
+            )
+
+    database(with_pause(scenario))
+
+
+def test_a_destination_cannot_switch_to_the_reserved_dataset_in_place(database):
+    async def scenario():
+        async with client() as api:
+            created = await create(api)
+            response = await api.put(
+                f"/publishing/destinations/{created['id']}",
+                json=payload(datasets=["reserved"]),
+            )
+            assert response.status_code == 422, response.text
+            assert (await stored(created["id"])).datasets == ["normal"]
+
+    database(with_pause(scenario))
+
+
+def test_hugging_face_keeps_the_reserved_dataset_in_its_own_repository(database):
+    async def scenario():
+        hf = {"kind": "huggingface", "repo_path": "org/arena", "token": "t"}
+        async with client() as api:
+            created = await create(api, config=hf)
+            response = await api.put(
+                f"/publishing/destinations/{created['id']}",
+                json=payload(config=hf, datasets=["reserved"]),
+            )
+            assert response.status_code == 200, response.text
+            # Named after the reserved repository, the open one would land in it.
+            response = await api.post(
+                "/publishing/destinations",
+                json=payload(config=hf | {"repo_path": "org/arena-reserved"}),
+            )
+            assert response.status_code == 422, response.text
+
+    database(with_pause(scenario))
