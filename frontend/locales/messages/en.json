@@ -169,6 +169,29 @@
                 "refresh": "Refresh",
                 "unvoted": "No vote: {count} messages ({share})"
             },
+            "reservation": {
+                "any": "Reserved or not",
+                "badge": "Reserved",
+                "cancel": "Cancel",
+                "column": "Reservation",
+                "label": "Reservation",
+                "notReserved": "Not reserved",
+                "reserve": "Reserve",
+                "reserved": "Reserved for a partner",
+                "reserveLabel": "Reserve for a partner: {prompt}",
+                "unreserve": "Unreserve",
+                "unreserveConfirm": "Unreserve",
+                "unreserveLabel": "Unreserve: {prompt}",
+                "unreserveTitle": "Put this conversation back in the open dataset?",
+                "unreserveWarning": "The partner already has it. Publishing it spoils their evaluation."
+            },
+            "reserveBlocks": {
+                "cohort": "Cohort",
+                "not_analyzed": "Not analyzed yet",
+                "pii": "Personal data",
+                "published": "Already published",
+                "publishing": "A publication is running"
+            },
             "stages": {
                 "commented": "Commented",
                 "revealed": "Revealed",

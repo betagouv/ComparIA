@@ -21,6 +21,7 @@ export const CONVERSATION_FILTERS = [
   'revealed',
   'category',
   'flag',
+  'reserved',
   'search'
 ] as const
 
