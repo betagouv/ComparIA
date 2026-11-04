@@ -85,7 +85,7 @@ It also sets two leaderboard thresholds: the votes a model needs before it is ra
 
 `/admin/locales` sets which languages the instance offers and which one it defaults to. The default has to be one of the enabled ones.
 
-Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/database/models/app_settings.py`.
+Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/utils.py`.
 
 ## Authentication
 
