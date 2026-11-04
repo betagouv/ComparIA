@@ -8,7 +8,7 @@ from fastapi import Query
 from pydantic import BaseModel, Field, PlainSerializer, field_validator
 from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import select
+from sqlmodel import col, select
 
 from backend.utils.locale import BASE_LOCALE, pick_locale
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
@@ -75,73 +75,75 @@ LegalPresentationTranslatable = Translatable[LegalPresentation]
 # What visitors read until an admin writes their own copy. The admin copy is
 # stored in one language, so an instance serving several should write it in
 # the one it defaults to.
-FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = LegalPresentationTranslatable(
-    {
-        "fr": {
-            "arena": {
-                "title": "Avant de commencer",
-                "introduction": (
-                    "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
-                    "aucune donnée sensible ou permettant d’identifier une personne."
-                ),
-                "checkbox_label": (
-                    "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
-                    "comprends que participer implique le traitement de mes messages par "
-                    "des modèles d’IA et la réutilisation des conversations et votes pour "
-                    "l’évaluation, la recherche et la production de jeux de données."
-                ),
-                "button_label": "C’est parti",
+FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
+    LegalPresentationTranslatable.model_validate(
+        {
+            "fr": {
+                "arena": {
+                    "title": "Avant de commencer",
+                    "introduction": (
+                        "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
+                        "aucune donnée sensible ou permettant d’identifier une personne."
+                    ),
+                    "checkbox_label": (
+                        "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
+                        "comprends que participer implique le traitement de mes messages par "
+                        "des modèles d’IA et la réutilisation des conversations et votes pour "
+                        "l’évaluation, la recherche et la production de jeux de données."
+                    ),
+                    "button_label": "C’est parti",
+                },
+                "sign_in": {
+                    "checkbox_label": (
+                        "J’ai pris connaissance de l’utilisation de mes données et j’accepte "
+                        "les conditions générales d’utilisation."
+                    ),
+                },
             },
-            "sign_in": {
-                "checkbox_label": (
-                    "J’ai pris connaissance de l’utilisation de mes données et j’accepte "
-                    "les conditions générales d’utilisation."
-                ),
+            "en": {
+                "arena": {
+                    "title": "Before you start",
+                    "introduction": (
+                        "Your messages are sent to the AI models being compared. Do not "
+                        "enter sensitive data or anything that identifies a person."
+                    ),
+                    "checkbox_label": (
+                        "I have read and accept the terms of use. I understand that taking "
+                        "part means AI models process my messages, and that conversations "
+                        "and votes are reused for evaluation, research and datasets."
+                    ),
+                    "button_label": "Let’s go",
+                },
+                "sign_in": {
+                    "checkbox_label": (
+                        "I have read how my data is used and I accept the terms of use."
+                    ),
+                },
             },
-        },
-        "en": {
-            "arena": {
-                "title": "Before you start",
-                "introduction": (
-                    "Your messages are sent to the AI models being compared. Do not "
-                    "enter sensitive data or anything that identifies a person."
-                ),
-                "checkbox_label": (
-                    "I have read and accept the terms of use. I understand that taking "
-                    "part means AI models process my messages, and that conversations "
-                    "and votes are reused for evaluation, research and datasets."
-                ),
-                "button_label": "Let’s go",
+            "da": {
+                "arena": {
+                    "title": "Før du starter",
+                    "introduction": (
+                        "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
+                        "ikke følsomme oplysninger eller noget, der kan identificere en "
+                        "person."
+                    ),
+                    "checkbox_label": (
+                        "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
+                        "deltagelse indebærer, at AI-modeller behandler mine beskeder, og at "
+                        "samtaler og stemmer genbruges til evaluering, forskning og datasæt."
+                    ),
+                    "button_label": "Kom i gang",
+                },
+                "sign_in": {
+                    "checkbox_label": (
+                        "Jeg har læst, hvordan mine data bruges, og jeg accepterer "
+                        "vilkårene for brug."
+                    ),
+                },
             },
-            "sign_in": {
-                "checkbox_label": (
-                    "I have read how my data is used and I accept the terms of use."
-                ),
-            },
-        },
-        "da": {
-            "arena": {
-                "title": "Før du starter",
-                "introduction": (
-                    "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
-                    "ikke følsomme oplysninger eller noget, der kan identificere en "
-                    "person."
-                ),
-                "checkbox_label": (
-                    "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
-                    "deltagelse indebærer, at AI-modeller behandler mine beskeder, og at "
-                    "samtaler og stemmer genbruges til evaluering, forskning og datasæt."
-                ),
-                "button_label": "Kom i gang",
-            },
-            "sign_in": {
-                "checkbox_label": (
-                    "Jeg har læst, hvordan mine data bruges, og jeg accepterer "
-                    "vilkårene for brug."
-                ),
-            },
-        },
-    }
+        }
+    )
 )
 
 
@@ -149,7 +151,7 @@ def fallback_legal_presentation(locale: str = BASE_LOCALE) -> LegalPresentation:
     return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
 
 
-async def get_legal_presentations() -> LegalPresentation:
+async def get_legal_presentations() -> LegalPresentationTranslatable:
     """Return all configured locales or default ones."""
     app_settings = await get_app_settings()
     if app_settings.legal_presentation:
@@ -212,7 +214,7 @@ async def list_legal_documents(kind: LegalDocumentKind) -> list[LegalDocument]:
         result = await session.exec(
             select(LegalDocument)
             .where(LegalDocument.kind == kind)
-            .order_by(LegalDocument.effective_at.desc())
+            .order_by(col(LegalDocument.effective_at).desc())
             .limit(100)
         )
         return list(result.all())
@@ -226,9 +228,9 @@ async def get_active_legal_document(kind: LegalDocumentKind) -> LegalDocument | 
             .where(
                 LegalDocument.kind == kind,
                 LegalDocument.effective_at <= now,
-                LegalDocument.retired_at.is_(None),
+                col(LegalDocument.retired_at).is_(None),
             )
-            .order_by(LegalDocument.effective_at.desc())
+            .order_by(col(LegalDocument.effective_at).desc())
         )
         return result.first()
 
@@ -284,7 +286,7 @@ async def publish_legal_document(
                 .where(
                     LegalDocument.kind == kind,
                     LegalDocument.effective_at <= normalized_effective_at,
-                    LegalDocument.retired_at.is_(None),
+                    col(LegalDocument.retired_at).is_(None),
                 )
                 .with_for_update()
             )

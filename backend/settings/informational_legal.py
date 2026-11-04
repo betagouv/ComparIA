@@ -41,7 +41,7 @@ class InformationalLegalPageLink(BaseModel):
     @classmethod
     def require_url_for_external_mode(
         cls, value: str | None, info: ValidationInfo
-    ) -> str:
+    ) -> str | None:
         if info.data["mode"] == "external" and value is None:
             raise ValueError("External URL is required in external mode")
         return value
@@ -67,14 +67,12 @@ class InformationalLegalPages(BaseModel, extra="forbid"):
 async def get_informational_legal_pages() -> InformationalLegalPages:
     settings = await get_app_settings()
     stored = settings.informational_legal_pages
-    if not stored:
-        return InformationalLegalPages()
     return InformationalLegalPages.model_validate(stored)
 
 
 async def get_informational_legal_page(
     key: LegalPageKey,
-) -> InformationalLegalPage | None:
+) -> InformationalLegalPage:
     pages = await get_informational_legal_pages()
     return getattr(pages, key)
 
@@ -115,6 +113,4 @@ class InformationalLegalPageLinks(BaseModel, extra="forbid"):
 async def get_informational_legal_pages_links() -> InformationalLegalPageLinks:
     settings = await get_app_settings()
     stored = settings.informational_legal_pages
-    if not stored:
-        return InformationalLegalPageLinks()
     return InformationalLegalPageLinks.model_validate(stored)

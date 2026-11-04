@@ -22,7 +22,7 @@ from backend.settings.informational_legal import (
 
 
 def test_seeded_visibility_matches_the_existing_navigation() -> None:
-    pages = InformationalLegalPages()
+    pages = InformationalLegalPages.model_validate({})
 
     assert all(
         page.visible_in_legal_menu and page.visible_in_settings
@@ -43,20 +43,20 @@ def test_external_mode_requires_an_absolute_https_url() -> None:
     assert page.external_url == "https://example.test/legal"
 
 
-def test_blank_stored_configuration_falls_back_to_seed() -> None:
-    settings = SimpleNamespace(informational_legal_pages=None)
+def test_blank_stored_configuration_falls_back_to_default() -> None:
+    settings = SimpleNamespace(informational_legal_pages={})
     with patch.object(
         informational_legal, "get_app_settings", AsyncMock(return_value=settings)
     ):
         pages = asyncio.run(informational_legal.get_informational_legal_pages())
 
-    assert pages == InformationalLegalPages()
+    assert pages == InformationalLegalPages.model_validate({})
 
 
 def test_admin_update_replaces_the_single_unversioned_configuration() -> None:
-    settings = SimpleNamespace(informational_legal_pages=None)
+    settings = SimpleNamespace(informational_legal_pages={})
     admin = SimpleNamespace(id=uuid.uuid4())
-    body = InformationalLegalPages()
+    body = InformationalLegalPages.model_validate({})
     body.ecodesign.mode = "external"
     body.ecodesign.external_url = "https://example.test/ecodesign"
 
