@@ -32,7 +32,12 @@ def upgrade() -> None:
         sa.column("language", sa.String()),
         sa.column("content", sa.Text()),
         sa.column("content_json", sa.JSON()),
+        sa.column("published_at", sa.DateTime()),
     )
+    consent_tables = [
+        sa.table(name, sa.column("document_id", sa.Uuid()))
+        for name in ("auth_consent_log", "anonymous_consent_log")
+    ]
 
     # Add a temporary JSON column while the existing content is still text.
     op.add_column(
@@ -48,7 +53,7 @@ def upgrade() -> None:
                 documents.c.version,
                 documents.c.language,
                 documents.c.content,
-            )
+            ).order_by(documents.c.published_at, documents.c.id)
         )
         .mappings()
         .all()
@@ -60,7 +65,7 @@ def upgrade() -> None:
         grouped.setdefault(key, []).append(row)
 
     for group in grouped.values():
-        # Keep one row and combine all its translations into that row.
+        # Keep the first published row and combine all translations into it.
         keep = group[0]
         translations = {row["language"]: row["content"] for row in group}
 
@@ -72,6 +77,13 @@ def upgrade() -> None:
 
         duplicate_ids = [row["id"] for row in group[1:]]
         if duplicate_ids:
+            # Acceptances of a translation now point at the merged document.
+            for consents in consent_tables:
+                bind.execute(
+                    sa.update(consents)
+                    .where(consents.c.document_id.in_(duplicate_ids))
+                    .values(document_id=keep["id"])
+                )
             bind.execute(sa.delete(documents).where(documents.c.id.in_(duplicate_ids)))
 
     op.drop_constraint(

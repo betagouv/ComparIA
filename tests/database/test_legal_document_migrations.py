@@ -101,3 +101,52 @@ def test_starter_terms_someone_accepted_are_kept(migrate):
             {"id": STARTER_TERMS_ID},
         ).scalar_one()
     assert kept == 1
+
+
+def _insert_terms(connection, version, language, content, published_at):
+    document_id = uuid.uuid4()
+    connection.execute(
+        text("""
+            INSERT INTO legal_document (
+                id, kind, version, language, content, content_hash,
+                published_at, effective_at
+            )
+            VALUES (
+                :id, 'terms', :version, :language, :content, :hash,
+                :published_at, :published_at
+            )
+            """),
+        {
+            "id": document_id,
+            "version": version,
+            "language": language,
+            "content": content,
+            "hash": language * 32,
+            "published_at": published_at,
+        },
+    )
+    return document_id
+
+
+def test_merging_translations_keeps_their_acceptances(migrate):
+    engine = migrate("67fb732c509e")
+    with engine.begin() as connection:
+        french = _insert_terms(
+            connection, "v1", "fr", "Conditions", datetime(2026, 1, 1)
+        )
+        english = _insert_terms(connection, "v1", "en", "Terms", datetime(2026, 1, 2))
+        _insert_anonymous_consent(connection, english, "en" * 32, "en")
+
+    migrate("0783a14a0418")
+
+    with engine.connect() as connection:
+        documents = connection.execute(
+            text("SELECT id, content FROM legal_document WHERE version = 'v1'")
+        ).all()
+        accepted = connection.execute(
+            text("SELECT document_id FROM anonymous_consent_log")
+        ).scalar_one()
+    assert [(row.id, row.content) for row in documents] == [
+        (french, {"fr": "Conditions", "en": "Terms"})
+    ]
+    assert accepted == french
