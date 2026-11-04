@@ -1,15 +1,21 @@
+import logging
 import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import col, select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
+from backend.auth.dependencies import RequiredAdmin
+from backend.errors import UnreserveUnconfirmedError
 from utils.database.models.publish import (
     AdminPublishDestination,
     AdminPublishDestinationsResponse,
     AdminPublishRun,
     AdminPublishStatus,
+    AdminReleasedReservations,
     MissingSecretError,
+    PublishDataset,
     PublishDestination,
     PublishDestinationUpsert,
     PublishFrequency,
@@ -17,8 +23,16 @@ from utils.database.models.publish import (
 )
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
+from utils.dataset.publish import HF_REPO_SUFFIXES
+from utils.dataset.reservation import (
+    PartnerMayHaveItError,
+    reserved_counts,
+    unreserve_all,
+)
 from utils.dataset.runs import last_run, recent_runs
 from utils.dataset.schedule import next_run_at
+
+logger = logging.getLogger("languia")
 
 router = APIRouter(prefix="/publishing", tags=["publishing"])
 
@@ -37,6 +51,45 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         detail=f"'{exc.field}' is required for this kind of destination",
     )
+
+
+def _place(config: dict, dataset: PublishDataset) -> tuple[str, ...]:
+    # Who can read it is set per repository on Hugging Face, and usually per
+    # bucket on S3, whatever the prefix.
+    if config["kind"] == "huggingface":
+        return (
+            "huggingface",
+            (config["repo_path"] + HF_REPO_SUFFIXES[dataset]).lower(),
+        )
+    return ("s3", config["endpoint"].lower(), config["bucket"])
+
+
+async def _check_reserved_apart(
+    session: AsyncSession, body: PublishDestinationUpsert
+) -> None:
+    """
+    Refuse to send the reserved dataset where the open one goes, or went
+    before this edit: that place is likely public. Called before an edited
+    row changes, so its stored state counts as one of the others.
+    """
+    config = body.config.model_dump()
+    destinations = (await session.exec(select(PublishDestination))).all()
+    for main, other in (("reserved", "normal"), ("normal", "reserved")):
+        if main not in body.datasets:
+            continue
+        place = _place(config, main)
+        if any(
+            _place(row.config, other) == place
+            for row in destinations
+            if other in row.datasets
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "The open and reserved datasets go to different places: "
+                    "pick another repository or bucket"
+                ),
+            )
 
 
 def _frequency_activated(
@@ -62,9 +115,30 @@ def _to_admin_destination(row: PublishDestination) -> AdminPublishDestination:
 @router.get("/status", response_model=AdminPublishStatus)
 async def get_status() -> AdminPublishStatus:
     runs = await recent_runs()
+    reserved = await reserved_counts()
     return AdminPublishStatus(
         runs=[AdminPublishRun.model_validate(run.model_dump()) for run in runs],
+        reserved=reserved.reserved,
+        reserved_sent=reserved.sent,
     )
+
+
+@router.delete("/reservations", response_model=AdminReleasedReservations)
+async def release_reservations(
+    current_user: RequiredAdmin, sent: int
+) -> AdminReleasedReservations:
+    """
+    Every reserved comparison goes back to the open dataset at the next run.
+    `sent` is how many of them the admin was warned the partner has.
+    """
+    try:
+        released = await unreserve_all(confirmed_sent=sent)
+    except PartnerMayHaveItError:
+        raise UnreserveUnconfirmedError()
+    logger.info(
+        f"[ADMIN] {released} reserved conversations released by admin {current_user.id}"
+    )
+    return AdminReleasedReservations(released=released)
 
 
 @router.get("/destinations", response_model=AdminPublishDestinationsResponse)
@@ -89,6 +163,7 @@ async def add_destination(body: PublishDestinationUpsert) -> AdminPublishDestina
         raise _missing_secret(exc) from exc
 
     async with get_session() as session:
+        await _check_reserved_apart(session, body)
         row = PublishDestination(
             name=body.name,
             kind=body.config.kind,
@@ -114,6 +189,7 @@ async def update_destination(
         if not row:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
+        await _check_reserved_apart(session, body)
         previous_frequency = row.publish_frequency
         try:
             config = config_to_store(body.config, row.config)
