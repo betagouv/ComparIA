@@ -85,7 +85,10 @@
       <ul class="fr-message fr-message--error block!">
         The form contains errors:
         {#each anyError as [errId, errMsg], i (i)}
-          <li class="block!"><a href="#{errId}">"{errId}"</a>: {errMsg}</li>
+          <li class="block!">
+            {#if errId}<a href="#{errId}">"{errId}"</a>:
+            {/if}{errMsg}
+          </li>
         {/each}
       </ul>
     </div>
