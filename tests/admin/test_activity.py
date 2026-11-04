@@ -311,6 +311,8 @@ def test_the_list_says_what_can_be_reserved_and_filters_on_it(activity):
         archived = await add_comparison(llms, **cleared, archived=True)
         await reserve(archived)
         pix = await add_comparison(llms, **cleared, cohorts="pix")
+        waiting = await add_comparison(llms, llm_analyzed=None)
+        failed = await add_comparison(llms, llm_analyzed=False)
         page = await services.list_conversations(ConversationFilters())
         only_reserved = await services.list_conversations(
             ConversationFilters(reserved=True)
@@ -318,16 +320,29 @@ def test_the_list_says_what_can_be_reserved_and_filters_on_it(activity):
         not_reserved = await services.list_conversations(
             ConversationFilters(reserved=False)
         )
-        return reserved, archived, pix, page, only_reserved, not_reserved
+        return (
+            reserved,
+            archived,
+            pix,
+            waiting,
+            failed,
+            page,
+            only_reserved,
+            not_reserved,
+        )
 
-    reserved, archived, pix, page, only_reserved, not_reserved = activity(scenario)
+    reserved, archived, pix, waiting, failed, page, only_reserved, not_reserved = (
+        activity(scenario)
+    )
 
     rows = {row.id: row for row in page.items}
     assert rows[reserved].reserved_at and rows[reserved].reserve_block is None
     assert not rows[reserved].reserved_sent
     assert rows[pix].reserve_block == "cohort"
+    assert rows[waiting].reserve_block is None
+    assert rows[failed].reserve_block == "analysis_failed"
     assert {row.id for row in only_reserved.items} == {reserved, archived}
-    assert [row.id for row in not_reserved.items] == [pix]
+    assert {row.id for row in not_reserved.items} == {pix, waiting, failed}
 
 
 def test_a_conversation_reads_in_full_without_who_wrote_it(activity):

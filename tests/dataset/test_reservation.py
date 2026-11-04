@@ -71,7 +71,7 @@ def extra(**fields) -> dict:
         ({"contains_pii": True, "llm_analyzed": True}, "pii"),
         ({**SHAREABLE, "cohorts": "pix"}, "cohort"),
         ({**SHAREABLE, "cohorts": "do-not-track"}, "cohort"),
-        ({"contains_pii": False}, "not_analyzed"),
+        ({"llm_analyzed": False, "contains_pii": False}, "analysis_failed"),
     ],
 )
 def test_what_cannot_leave_cannot_be_reserved(database, fields, reason):
@@ -81,6 +81,25 @@ def test_what_cannot_leave_cannot_be_reserved(database, fields, reason):
             await reservation.reserve(comparison_id)
         assert refused.value.reason == reason
         assert await reserved_at(comparison_id) is None
+
+    database(scenario)
+
+
+def test_a_comparison_waiting_for_analysis_can_be_reserved(database):
+    async def scenario():
+        comparison_id = await add_comparison(await add_llms())
+        assert await reservation.reserve(comparison_id)
+
+        # Held for the partner, who only receives it once analysis clears it.
+        assert (await dataset_counts()).reserved == 0
+        async with get_session() as session:
+            comparison = await session.get(Comparison, comparison_id)
+            assert comparison
+            comparison.llm_analyzed = True
+            comparison.contains_pii = False
+            session.add(comparison)
+            await session.commit()
+        assert (await dataset_counts()).reserved == 1
 
     database(scenario)
 
