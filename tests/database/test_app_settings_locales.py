@@ -9,12 +9,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
-from utils.database.models.app_settings import (
-    DEFAULT_ENABLED_LOCALES,
-    SUPPORTED_LOCALES,
-    AppSettings,
-    AppSettingsPatch,
-)
+from utils.database.models.app_settings import AppSettings, AppSettingsPatch
+from utils.i18n import DEFAULT_ENABLED_LOCALES, SUPPORTED_LOCALES
 
 
 def test_a_fresh_instance_only_enables_the_well_translated_locales() -> None:
