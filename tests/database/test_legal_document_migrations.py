@@ -34,6 +34,8 @@ def migrate(postgres_uri, monkeypatch):
     )
     uri = f"postgresql://test@/{name}?host={host}"
     monkeypatch.setattr(settings, "COMPARIA_DB_URI", uri)
+    # The default locale migration reads the environment, and CI has no .env.
+    monkeypatch.setenv("COMPARIA_INSTANCE_NAME", "fr")
 
     # No ini file: the app's logging setup stays as the other tests expect it.
     config = Config()
