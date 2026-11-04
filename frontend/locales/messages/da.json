@@ -212,6 +212,7 @@
         },
         "legal": {
             "accessibility": {
+                "subtitle": "Oplysninger om den digitale tjenestes tilgængelighed.",
                 "title": "Tilgængelighedserklæring"
             },
             "back": "Til juridiske dokumenter",
@@ -239,11 +240,19 @@
                 "versionOn": "Version {version} af {date}"
             },
             "ecodesign": {
+                "subtitle": "Oplysninger om tjenestens arbejde med miljøvenligt design.",
                 "title": "Bæredygtigt design"
             },
             "hub": {
+                "cols": {
+                    "desc": "Beskrivelse",
+                    "status": "Status",
+                    "title": "Element"
+                },
+                "published": "Publiceret",
                 "subtitle": "Hvert indhold har sit eget område til administration og udgivelse.",
-                "title": "Juridiske dokumenter og forløb"
+                "title": "Juridiske dokumenter og forløb",
+                "toComplete": "Skal udfyldes"
             },
             "informational": {
                 "contentLabel": "Indholdet på {locale}",
@@ -257,6 +266,7 @@
                 "visibleInSettings": "Siden Indstillinger"
             },
             "legal_notice": {
+                "subtitle": "Oplysninger om udgiveren og hostingen af tjenesten.",
                 "title": "Juridiske meddelelser"
             },
             "markdownHelp": "Understøttet Markdown-formatering: **fed**, *kursiv*, [link](https://example.com).",
@@ -305,6 +315,7 @@
             "promptChecks": "Tjek",
             "publishing": "Udgivelse",
             "suggestions": "Forslag",
+            "survey": "Spørgeskema",
             "users": "Brugere",
             "voteTags": "Stemmeetiketter"
         },
@@ -1093,8 +1104,15 @@
         }
     },
     "form": {
+        "busy": "Gemmer…",
+        "containsErrors": "Formularen indeholder fejl:",
+        "missing_default_locale": "Hovedoversættelse mangler",
+        "missing_locales": "Manglende oversættelser",
         "preview": "Forhåndsvisning",
-        "previewEmpty": "Forhåndsvisningen vises her."
+        "previewEmpty": "Forhåndsvisningen vises her.",
+        "toastError": "Ugyldige data",
+        "toastSuccess": "Data gemt",
+        "unsavedChanges": "Du har ændringer, der ikke er gemt. Er du sikker på, at du vil forlade siden?"
     },
     "general": {
         "document": {
@@ -2155,6 +2173,113 @@
         "overview": "Overblik",
         "title": "Platformens statistik"
     },
+    "survey": {
+        "admin": {
+            "active": "Aktiv",
+            "addDesc": "Forslag: »Hvilken aldersgruppe tilhører du?«, »Hvad er dit køn?«, »Hvad er din beskæftigelse?«, …",
+            "addOption": "Tilføj en mulighed",
+            "addTitle": "Tilføj et spørgsmål",
+            "answersLabel": "svar",
+            "archive": "Arkiver",
+            "archived": "Arkiveret",
+            "archiveSuccess": "Spørgsmål arkiveret",
+            "cancel": "Annuller",
+            "colActions": "Handlinger",
+            "colLabel": "Spørgsmål",
+            "colOrder": "Rækkefølge",
+            "colRequired": "Obligatorisk",
+            "colRespondents": "Respondenter",
+            "colStatus": "Status",
+            "createSuccess": "Spørgsmål tilføjet",
+            "defaultLabelError": "Udfyld som minimum teksten på {locale}, for spørgsmålet og for hver mulighed.",
+            "delete": "Slet",
+            "deleteConfirm": "Slette »{label}«?",
+            "deleteSuccess": "Spørgsmål slettet",
+            "deleteWarning": "Ingen svar er knyttet til det, så handlingen kan ikke fortrydes.",
+            "dragHint": "Træk rækken for at flytte den.",
+            "edit": "Rediger",
+            "editSuccess": "Spørgsmål opdateret",
+            "editTitle": "Rediger spørgsmålet",
+            "emptyTrigger": "Ingen aktive spørgsmål her.",
+            "inputTypeCheckboxGroup": "Flere valg (afkrydsningsfelter)",
+            "inputTypeLabel": "Svartype",
+            "inputTypeSelect": "Ét valg (rulleliste)",
+            "inUseError": "Der findes allerede svar på dette spørgsmål. Arkiver det i stedet for at slette det.",
+            "keyFrozen": "Publiceret nøgle: {key}. Den ændres ikke, selv hvis teksten rettes.",
+            "keyPreview": "Publiceret nøgle: {key}",
+            "labelError": "Angiv mindst én tekst med et bogstav eller et tal for spørgsmålet og for hver mulighed.",
+            "labelFor": "Spørgsmålets tekst",
+            "missingTranslation": "Manglende oversættelse: {locales}",
+            "moved": "{label} flyttet til position {position} af {total}.",
+            "moveDown": "Ned",
+            "moveUp": "Op",
+            "noAnswersYet": "Ingen svar endnu.",
+            "notPublished": "Ikke publiceret",
+            "optionArchivedHint": "Når en mulighed fjernes, arkiveres den i stedet for at blive slettet: eksisterende svar peger stadig på den.",
+            "optionCount": "{count} muligheder",
+            "optionLabelFor": "Mulighedens tekst",
+            "optionN": "Mulighed {index}",
+            "optionsError": "Et spørgsmål skal have mindst to muligheder.",
+            "optionsLegend": "Muligheder",
+            "optionsTitle": "Svarmuligheder",
+            "publishAction": "Publicer",
+            "published": "Publiceret",
+            "publishedHelp": "Svar på et publiceret spørgsmål eksporteres til det offentlige datasæt sammen med samtalernes tekst.",
+            "publishSuccess": "Spørgsmål publiceret",
+            "removeOption": "Fjern denne mulighed",
+            "required": "Svar påkrævet",
+            "requiredHelp": "Et obligatorisk spørgsmål blokerer oprettelsen af kontoen, indtil det er besvaret. Uden det stilles spørgsmålet, men det kan lades tomt.",
+            "respondentCount": "Respondenter: {count}",
+            "restore": "Gendan",
+            "restoreSuccess": "Spørgsmål gendannet",
+            "revisionN": "revision {revision}",
+            "save": "Gem",
+            "statsIntro": "Respondenter i alt: {count}.",
+            "statsTitle": "Svar",
+            "subtitle": "Konfigurer de spørgsmål, der stilles ved tilmelding og efter en stemme, og tjek hvor identificerende svarene er, før de publiceres.",
+            "title": "Spørgeskema",
+            "unpublishAction": "Afpublicer",
+            "unpublishSuccess": "Spørgsmål afpubliceret"
+        },
+        "afterVote": {
+            "description": "Dine svar er frivillige og hjælper os med bedre at forstå, hvem der bruger compar:IA.",
+            "dismiss": "Senere",
+            "submit": "Send mine svar",
+            "submitFailed": "Afsendelsen mislykkedes. Dine svar blev ikke gemt, du kan prøve igen.",
+            "title": "Et par spørgsmål for at lære dig bedre at kende"
+        },
+        "card": {
+            "cta": "Besvar {count} spørgsmål",
+            "desc": "Hjælp os med at forstå dig bedre ved at besvare et par anonyme spørgsmål.",
+            "optional": "Frivilligt · ~30 sek.",
+            "title": "{platformName}-spørgeskema"
+        },
+        "profile": {
+            "clear": "Ryd dette svar",
+            "description": "Disse svar er frivillige. Du kan ændre eller rydde dem når som helst.",
+            "loadFailed": "Spørgeskemaet kunne ikke indlæses.",
+            "loading": "Indlæser spørgeskemaet…",
+            "noAnswerOption": "Intet svar",
+            "saved": "Svar gemt.",
+            "saveFailed": "Svarene kunne ikke gemmes. Prøv igen om et øjeblik.",
+            "saving": "Gemmer…",
+            "title": "Dine svar på spørgeskemaet"
+        },
+        "question": {
+            "chooseOption": "Vælg en mulighed",
+            "required": "Dette spørgsmål kræver et svar."
+        },
+        "required": {
+            "description": "For at fortsætte med at chatte og stemme skal du besvare spørgsmålene markeret med en stjerne (*). Du kan ændre dine svar når som helst i dine indstillinger.",
+            "title": "Et svar er nødvendigt for at fortsætte"
+        },
+        "signup": {
+            "description": "Spørgsmål markeret med en stjerne (*) er obligatoriske. Dine svar hjælper os med at vide, hvem der deltager i compar:IA, og du kan ændre dem når som helst i dine indstillinger.",
+            "optional": " (valgfrit)",
+            "reloadNeeded": "Spørgeskemaet kunne ikke indlæses. Genindlæs siden, og prøv igen.",
+            "title": "Sidste trin: et par spørgsmål om dig"
+        }
+    },
     "vote": {
         "choices": {
             "negative": {
@@ -2198,6 +2323,7 @@
         "back": "Tilbage",
         "cancel": "Annuller",
         "close": "Luk",
+        "continue": "Fortsæt",
         "deactivated": "Deaktiveret",
         "forbidden": "forbudt",
         "loading": "Indlæser",
@@ -2208,6 +2334,7 @@
         "random": "Tilfældig",
         "regenerate": "Regenerer",
         "remove": "Slet",
+        "required": "Obligatorisk",
         "reset": "Nulstil",
         "restart": "Start forfra",
         "retry": "Prøv igen",
