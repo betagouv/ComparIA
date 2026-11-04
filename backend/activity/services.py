@@ -587,7 +587,7 @@ async def list_conversations(
                 comment=comments[0] if comments else None,
                 revealed=revealed,
                 categories=categories or [],
-                llm_analyzed=bool(llm_analyzed),
+                llm_analyzed=llm_analyzed,
                 contains_pii=bool(contains_pii),
                 contains_spam=bool(contains_spam),
                 archived=bool(archived),

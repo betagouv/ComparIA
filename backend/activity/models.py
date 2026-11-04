@@ -116,7 +116,8 @@ class ActivityConversationRow(BaseModel):
     comment: str | None
     revealed: bool
     categories: list[str]
-    llm_analyzed: bool
+    # None until analysis ran, False when it failed.
+    llm_analyzed: bool | None
     contains_pii: bool
     contains_spam: bool
     archived: bool

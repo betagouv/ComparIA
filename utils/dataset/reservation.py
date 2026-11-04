@@ -47,7 +47,7 @@ ALIVE_LOCK_KEY = 8_147_233
 
 # Why a comparison cannot be reserved. Machine-readable: the admin panel
 # translates them.
-ReserveBlock = Literal["publishing", "published", "pii", "cohort", "not_analyzed"]
+ReserveBlock = Literal["publishing", "published", "pii", "cohort", "analysis_failed"]
 
 
 class CannotReserveError(Exception):
@@ -85,8 +85,11 @@ class ReservationState(NamedTuple):
             return "pii"
         if comparison.cohorts:
             return "cohort"
-        if comparison.llm_analyzed is not True:
-            return "not_analyzed"
+        # Not analysed yet is fine: the run that sends the reserved dataset
+        # analyses first, and only sends what comes out clear. Analysis fails
+        # once and for all.
+        if comparison.llm_analyzed is False:
+            return "analysis_failed"
         return None
 
     def sent(self, first_reserved_at: datetime | None) -> bool:
