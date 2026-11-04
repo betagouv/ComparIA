@@ -2,10 +2,13 @@ from fastapi import APIRouter, Query
 
 from backend.vote_tags.services import list_public_vote_tags
 from utils.database.models.vote_tag import PublicVoteTagsResponse
+from utils.i18n import DEFAULT_LOCALE
 
 router = APIRouter(prefix="/vote-tags", tags=["vote-tags"])
 
 
 @router.get("", response_model=PublicVoteTagsResponse)
-async def get_vote_tags(locale: str = Query(default="fr")) -> PublicVoteTagsResponse:
+async def get_vote_tags(
+    locale: str = Query(default=DEFAULT_LOCALE),
+) -> PublicVoteTagsResponse:
     return await list_public_vote_tags(locale)

@@ -1,6 +1,6 @@
 from collections.abc import Collection
 
-BASE_LOCALE = "fr"
+from utils.i18n import DEFAULT_LOCALE
 
 
 def pick_locale(locale: str | None, available: Collection[str]) -> str:
@@ -12,4 +12,4 @@ def pick_locale(locale: str | None, available: Collection[str]) -> str:
         language = locale.split("-")[0]
         if language in available:
             return language
-    return BASE_LOCALE
+    return DEFAULT_LOCALE

@@ -8,7 +8,7 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from utils.i18n import DEFAULT_ENABLED_LOCALES, SUPPORTED_LOCALES
+from utils.i18n import DEFAULT_ENABLED_LOCALES, DEFAULT_LOCALE, SUPPORTED_LOCALES
 from utils.validation import is_secure_url
 
 from .publish import PublishFrequency
@@ -152,7 +152,7 @@ class AppSettings(SQLModel, table=True):
     enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
         DEFAULT_ENABLED_LOCALES
     )
-    default_locale: str = Field(default="fr")
+    default_locale: str = Field(default=DEFAULT_LOCALE)
     auth_methods: Annotated[list[str], Field(sa_type=JSONB)] = list(["email_code"])
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
