@@ -184,8 +184,8 @@
                 "unreserveWarning": "Le partenaire l'a déjà reçue. La publier gâche son évaluation."
             },
             "reserveBlocks": {
+                "analysis_failed": "Échec de l'analyse",
                 "cohort": "Cohorte",
-                "not_analyzed": "Pas encore analysée",
                 "pii": "Données personnelles",
                 "published": "Déjà publiée",
                 "publishing": "Publication en cours"

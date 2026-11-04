@@ -64,8 +64,8 @@
                 "unreserveWarning": "The partner already has it. Publishing it spoils their evaluation."
             },
             "reserveBlocks": {
+                "analysis_failed": "Analysis failed",
                 "cohort": "Cohort",
-                "not_analyzed": "Not analyzed yet",
                 "pii": "Personal data",
                 "published": "Already published",
                 "publishing": "A publication is running"

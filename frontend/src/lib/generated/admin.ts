@@ -133,13 +133,13 @@ export interface ActivityConversationRow {
   comment: string | null;
   revealed: boolean;
   categories: string[];
-  llm_analyzed: boolean;
+  llm_analyzed: boolean | null;
   contains_pii: boolean;
   contains_spam: boolean;
   archived: boolean;
   has_error: boolean;
   reserved_at: string | null;
-  reserve_block?: ("publishing" | "published" | "pii" | "cohort" | "not_analyzed") | null;
+  reserve_block?: ("publishing" | "published" | "pii" | "cohort" | "analysis_failed") | null;
   reserved_sent: boolean;
   [k: string]: unknown;
 }
