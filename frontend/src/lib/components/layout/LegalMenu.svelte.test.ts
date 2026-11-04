@@ -1,17 +1,27 @@
+import { ACCESSIBILITY_PATH, ECODESIGN_PATH, PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
+import ContextWrapper from '$lib/testing/ContextWrapper.svelte'
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
 import LegalMenu from './LegalMenu.svelte'
-import { PRIVACY_POLICY_PATH, TERMS_PATH, ECODESIGN_PATH, ACCESSIBILITY_PATH } from '$lib/consent'
 
 // The menu reads its links from the consent module, which pulls in the api client.
 vi.mock('$lib/fastapi-client', () => ({ api: { request: vi.fn() } }))
+
+function getWrappedComponent(id: string = 'legal-menu-desktop') {
+  return render(ContextWrapper, {
+    props: {
+      Component: LegalMenu,
+      props: { id }
+    }
+  })
+}
 
 const trigger = (id: string) =>
   document.querySelector<HTMLButtonElement>(`[aria-controls="dropdown-${id}"]`)!
 
 describe('LegalMenu', () => {
   it('lists the public legal pages', async () => {
-    const { getByRole } = render(LegalMenu, { id: 'legal-menu-desktop' })
+    const { getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: /Légal/ }))
 
@@ -28,7 +38,7 @@ describe('LegalMenu', () => {
   })
 
   it('closes on a click outside', async () => {
-    const { getByRole } = render(LegalMenu, { id: 'legal-menu-desktop' })
+    const { getByRole } = getWrappedComponent()
     const button = getByRole('button', { name: /Légal/ })
 
     await fireEvent.click(button)
@@ -39,7 +49,7 @@ describe('LegalMenu', () => {
   })
 
   it('closes on escape from inside the menu and takes focus back', async () => {
-    const { getByRole } = render(LegalMenu, { id: 'legal-menu-desktop' })
+    const { getByRole } = getWrappedComponent()
     const button = getByRole('button', { name: /Légal/ })
 
     await fireEvent.click(button)
@@ -50,8 +60,8 @@ describe('LegalMenu', () => {
   })
 
   it('keeps the desktop and mobile copies apart', async () => {
-    render(LegalMenu, { id: 'legal-menu-desktop' })
-    render(LegalMenu, { id: 'legal-menu-mobile' })
+    getWrappedComponent()
+    getWrappedComponent('legal-menu-mobile')
 
     const desktop = trigger('legal-menu-desktop')
     const mobile = trigger('legal-menu-mobile')

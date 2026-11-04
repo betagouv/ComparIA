@@ -12,6 +12,10 @@ import { sequence } from '@sveltejs/kit/hooks'
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
+// Cookies the backend identifies a visitor by. Server-side requests go to the
+// API's internal origin, where the browser's cookies are not sent on their own.
+const FORWARDED_COOKIES = ['auth_session', 'anonymous_session']
+
 export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
   const apiOrigins = [
     publicEnv.PUBLIC_API_LOCAL_URL,
@@ -22,16 +26,19 @@ export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
     .map((url) => new URL(url!).origin)
 
   const requestUrl = new URL(request.url)
-  const session = event.cookies.get('auth_session')
-  if (
-    session &&
-    requestUrl.pathname.startsWith('/api/') &&
-    apiOrigins.includes(requestUrl.origin)
-  ) {
+  if (requestUrl.pathname.startsWith('/api/') && apiOrigins.includes(requestUrl.origin)) {
     const headers = new Headers(request.headers)
-    const existingCookies = headers.get('cookie')
-    if (!existingCookies?.split('; ').some((cookie) => cookie.startsWith('auth_session='))) {
-      headers.set('cookie', [existingCookies, `auth_session=${session}`].filter(Boolean).join('; '))
+    const existingCookies = headers.get('cookie')?.split('; ').filter(Boolean) ?? []
+    // The anonymous session is the visitor's identity for everything they do
+    // signed out (their answers, what they were already asked). Without it the
+    // backend mints a fresh one for every server-side request.
+    const forwarded = FORWARDED_COOKIES.flatMap((name) => {
+      const value = event.cookies.get(name)
+      const present = existingCookies.some((cookie) => cookie.startsWith(`${name}=`))
+      return value && !present ? [`${name}=${value}`] : []
+    })
+    if (forwarded.length) {
+      headers.set('cookie', [...existingCookies, ...forwarded].join('; '))
       request = new Request(request, { headers })
     }
   }

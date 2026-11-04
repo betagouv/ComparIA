@@ -176,7 +176,7 @@ The frontend uses [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-i
 Translation files live in `frontend/locales/messages/`. There are more files there than there are supported locales, because a language only counts once it appears in two lists, which have to agree:
 
 - `locales` in `frontend/comparia.inlang/settings.json`
-- `SUPPORTED_LOCALES` in `utils/database/models/app_settings.py`
+- `SUPPORTED_LOCALES` in `utils/utils.py`
 
 To add one: copy `fr.json`, translate it, add the code to both lists, then enable it for your instance at `/admin/locales`.
 

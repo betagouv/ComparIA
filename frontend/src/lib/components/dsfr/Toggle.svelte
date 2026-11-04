@@ -2,12 +2,14 @@
   import { m } from '$lib/i18n/messages'
   import type { Snippet } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
+  import Tooltip from './Tooltip.svelte'
 
   type ToggleProps = {
     id: string
     value: boolean
     label?: string
     help?: string
+    tooltip?: string
     labelPos?: 'left' | 'right'
     hideCheckLabel?: boolean
     checkedLabel?: string
@@ -24,6 +26,7 @@
     value = $bindable(),
     label,
     help,
+    tooltip,
     labelPos = 'left',
     hideCheckLabel = false,
     checkedLabel = m['words.activated'](),
@@ -55,6 +58,9 @@
   {#if !inline}
     <div aria-hidden="true" class={['fr-label w-full', props.class]}>
       {#if label}{label}{:else}{@render children?.()}{/if}
+      {#if tooltip}
+        <Tooltip id="{id}-tooltip" text={tooltip} size="sm" class="mt-1" />
+      {/if}
     </div>
   {/if}
   <label
@@ -63,7 +69,12 @@
     class={['fr-toggle__label', ...(!inline ? ['max-w-[2.5rem]!'] : [props.class])]}
   >
     {#if label}
-      <div class={['block', { 'sr-only': !inline }]}>{label}</div>
+      <div class={['block', { 'sr-only': !inline }]}>
+        {label}
+        {#if tooltip}
+          <Tooltip id="{id}-tooltip" text={tooltip} size="sm" class="mt-1" />
+        {/if}
+      </div>
     {:else}
       {@render children?.()}
     {/if}
