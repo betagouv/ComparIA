@@ -7,7 +7,12 @@
   import type { Archs } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { rankClassLabel, type BotModelWithData, type Commons } from '$lib/models'
+  import {
+    ENERGY_CLASS_COLORS,
+    rankClassLabel,
+    type BotModelWithData,
+    type Commons
+  } from '$lib/models'
   import { sortIfDefined, toShortDate } from '$lib/utils/data'
 
   type ColKind =
@@ -16,6 +21,7 @@
     | 'elo'
     | 'trust_range'
     | 'n_match'
+    | 'energy_class'
     | 'consumption'
     | 'price_in'
     | 'price_out'
@@ -76,16 +82,30 @@
         { id: 'rank', tooltip: m['ranking.table.data.tooltips.rank']() },
         { id: 'name' },
         { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
-        { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
+        // Opt-in columns stay out of the general ranking, which keeps the
+        // essentials (#787): the rank range shows on hover over the score,
+        // the lab is in the logo and the model card, and energy is a label
+        // rather than a figure more precise than the estimate behind it.
+        // The focus tabs ask for the ones they need, and the download keeps
+        // them all.
+        {
+          id: 'trust_range',
+          tooltip: m['ranking.table.data.tooltips.trust_range'](),
+          optIn: true
+        },
         { id: 'n_match' },
-        { id: 'consumption', tooltip: m['ranking.table.data.tooltips.consumption']() },
-        // Opt-in: the general ranking stays as it is, the price tab asks for them.
+        { id: 'energy_class', tooltip: m['ranking.table.data.tooltips.energy_class']() },
+        {
+          id: 'consumption',
+          tooltip: m['ranking.table.data.tooltips.consumption'](),
+          optIn: true
+        },
         { id: 'price_in', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'price_out', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
-        { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
+        { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch'](), optIn: true },
         { id: 'release' },
-        { id: 'organisation' },
+        { id: 'organisation', optIn: true },
         { id: 'license' }
       ] as const
     )
@@ -118,6 +138,19 @@
   // ramp, which is what lets the ramp span its full range and stay readable.
   const classShade = (rankClass: string) =>
     `background: var(--brand-rank-${rankClass}); color: var(--brand-rank-${rankClass}-text)`
+
+  // Where the rank could land in 95% of bootstrap rounds, read on hover over
+  // the score rather than in a column of its own.
+  const rankRange = (model: BotModelWithData) =>
+    m['ranking.table.data.rankRange']({
+      best: model.data.rank - model.data.trust_range[0],
+      worst: model.data.rank + model.data.trust_range[1]
+    })
+
+  // Shown, but with a rank still too loose to read much into: greyed out.
+  const greySpread = $derived(commons.greyRankSpread)
+  const isUncertain = (model: BotModelWithData) =>
+    greySpread !== undefined && Math.max(...model.data.trust_range) > greySpread
 
   $effect(() => {
     if (orderingCol === undefined) {
@@ -175,6 +208,7 @@
           case 'elo':
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
+          case 'energy_class':
           case 'consumption': {
             const aProprietary = a.license.kind === 'proprietary'
             const bProprietary = b.license.kind === 'proprietary'
@@ -213,6 +247,7 @@
   {id}
   {cols}
   rows={sortedRows}
+  rowAttributes={(model) => (isUncertain(model) ? { class: 'opacity-60' } : {})}
   bind:orderingCol
   bind:orderingMethod
   bind:search
@@ -261,6 +296,12 @@
         onclick={onDownloadData}
       />
     </div>
+
+    {#if !raw && greySpread !== undefined && rows.some(isUncertain)}
+      <p class="mb-0! text-grey text-[14px]!">
+        {m['ranking.table.uncertain']({ count: greySpread })}
+      </p>
+    {/if}
   {/snippet}
 
   {#snippet cell(model, col)}
@@ -301,6 +342,9 @@
           class="text-black!"
           onclick={() => (selectedModel = model.id)}>{model.human_id}</a
         >
+        {#if isUncertain(model)}
+          <span class="fr-sr-only">({m['ranking.table.uncertain']({ count: greySpread! })})</span>
+        {/if}
       </div>
     {:else if col.id === 'size'}
       <strong>{model.size_class}</strong> -
@@ -321,11 +365,8 @@
       {#if raw}
         {model.data.elo}
       {:else}
-        <div class="gap-2 flex min-w-[160px] items-center">
-          <div
-            class="rounded-xs bg-light-primary h-2 relative flex-1"
-            title={m['ranking.table.data.tooltips.trust_range']()}
-          >
+        <div class="gap-2 flex min-w-[160px] items-center" title={rankRange(model)}>
+          <div class="rounded-xs bg-light-primary h-2 relative flex-1" aria-hidden="true">
             <div
               class="rounded-xs bg-primary top-0 absolute h-full"
               style="left: {model.ciLeft}%; width: {model.ciWidth}%"
@@ -336,10 +377,26 @@
             ></div>
           </div>
           <span class="text-xs font-bold">{model.data.elo}</span>
+          <span class="fr-sr-only">{rankRange(model)}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
+    {:else if col.id === 'energy_class'}
+      {#if model.license.kind === 'proprietary'}
+        <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>
+      {:else if raw}
+        {model.energy_class}
+      {:else}
+        <span class="gap-1 inline-flex items-center">
+          <span
+            aria-hidden="true"
+            class="h-3 w-3 rounded-xs inline-block"
+            style="background-color: var({ENERGY_CLASS_COLORS[model.energy_class]})"
+          ></span>
+          <strong>{model.energy_class}</strong>
+        </span>
+      {/if}
     {:else if col.id === 'consumption'}
       {#if model.license.kind === 'proprietary'}
         <span class="text-xs text-[--grey-625-425]">{m['words.NA']()}</span>

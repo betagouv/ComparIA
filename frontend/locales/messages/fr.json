@@ -614,6 +614,8 @@
                 "ranking": {
                     "maxRankSpread": "Écart de rang maximum",
                     "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs.",
+                    "greyRankSpread": "Écart de rang avant grisage",
+                    "greyRankSpreadHelp": "Un modèle affiché est grisé si son rang peut varier de plus de ce nombre de places, vers le haut ou vers le bas. Mettez une valeur égale ou supérieure à l'écart de rang maximum pour ne griser aucun modèle.",
                     "minVotes": "Nombre minimum de votes",
                     "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
                     "title": "Classement"
@@ -2139,6 +2141,7 @@
                 "cols": {
                     "arch": "Architecture",
                     "consumption": "Conso. moyenne<br>(1000 tokens)",
+                    "energy_class": "Énergie",
                     "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -2153,9 +2156,11 @@
                     "trust_range": "Confiance (±)"
                 },
                 "estimation": "(estimation)",
+                "rankRange": "Rang possible entre {best} et {worst}",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
+                    "energy_class": "Étiquette énergie de A (le plus sobre) à F (le moins sobre), selon l'électricité utilisée par le modèle pour répondre. Les valeurs exactes sont dans l'onglet Focus énergie et dans le téléchargement. Les modèles propriétaires dont la taille et l'architecture ne sont pas publiques sont affichés en N/A.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "price": "Prix indicatif d’utilisation via API pour un million de jetons, converti dans la devise affichée. L’entrée correspond à la requête envoyée, la sortie à la réponse générée.",
                     "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
@@ -2169,7 +2174,8 @@
                 "label": "Afficher les rangs"
             },
             "totalModels": "Total modèles :",
-            "totalVotes": "Total votes :"
+            "totalVotes": "Total votes :",
+            "uncertain": "En grisé : modèles dont le rang peut encore varier de plus de {count} places."
         },
         "title": "Des votes… au classement des modèles",
         "views": {

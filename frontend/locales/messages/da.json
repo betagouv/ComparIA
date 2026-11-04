@@ -616,7 +616,9 @@
                     "minVotes": "Minimum antal stemmer",
                     "minVotesHelp": "En model rangeres først, når den har dette antal stemmer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
                     "maxRankSpread": "Maksimal rangspredning",
-                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer."
+                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer.",
+                    "greyRankSpread": "Rangspredning før gråtoning",
+                    "greyRankSpreadHelp": "En vist model gråtones, hvis dens placering kan flytte sig mere end dette antal pladser op eller ned. Sæt værdien til den maksimale rangspredning eller højere for ikke at gråtone nogen."
                 },
                 "votesObjective": "Stemmemål"
             },
@@ -2127,6 +2129,7 @@
                 "cols": {
                     "arch": "Arkitektur",
                     "consumption": "Gns. forbrug<br>(1.000 tokens)",
+                    "energy_class": "Energi",
                     "elo": "BT<br>tilfredshedsscore",
                     "license": "Licens",
                     "n_match": "Samlet antal stemmer",
@@ -2141,9 +2144,11 @@
                     "trust_range": "Konfidens (±)"
                 },
                 "estimation": "(estimering)",
+                "rankRange": "Kan placere sig mellem {best} og {worst}",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
                     "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, som ikke-analyseret (N/A).",
+                    "energy_class": "Energimærke fra A (mest effektiv) til F (mindst effektiv), baseret på den strøm, modellen bruger til at svare. De præcise tal findes under fanen Energifokus og i download. Proprietære modeller uden offentlig størrelse og arkitektur vises som N/A.",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "price": "Vejledende pris for brug via en API, pr. million tokens, omregnet til den viste valuta. Input er den forespørgsel, der sendes, output er det svar, der genereres.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
@@ -2157,7 +2162,8 @@
                 "label": "Vis placeringer"
             },
             "totalModels": "Total antal modeller:",
-            "totalVotes": "Total antal stemmer:"
+            "totalVotes": "Total antal stemmer:",
+            "uncertain": "Gråtonet: modeller, hvis placering stadig kan flytte sig mere end {count} pladser."
         },
         "title": "Fra stemmer til en rangering af modeller",
         "views": {

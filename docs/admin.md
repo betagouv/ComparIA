@@ -79,7 +79,7 @@ Adding models one by one through the panel is fine for a handful. For more, writ
 
 `/admin/customization` controls the platform name, logo, the four brand colours (primary and secondary, each in a light and a dark variant), the homepage link, and the vote target the public counter counts towards.
 
-It also sets two leaderboard thresholds: the votes a model needs before it is ranked (0 by default), and how many places its rank may move either way before it is hidden (30 by default). A small instance can relax them to show something while votes come in. The vote minimum applies at the next ranking update, within the hour.
+It also sets three leaderboard thresholds: the votes a model needs before it is ranked (0 by default), how many places its rank may move either way before it is hidden (30 by default), and how many before a shown model is greyed out (30 by default, which greys out nothing). A small instance can relax them to show something while votes come in, or raise the hide threshold and grey out the uncertain models instead. The vote minimum applies at the next ranking update, within the hour.
 
 ## Languages
 

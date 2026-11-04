@@ -18,6 +18,7 @@
   let votesObjective = $state('')
   let rankingMinVotes = $state('')
   let rankingMaxRankSpread = $state('')
+  let rankingGreyRankSpread = $state('')
   let platformName = $state('')
   let hasCustomLogo = $state(false)
   let primaryColorLight = $state('')
@@ -29,6 +30,7 @@
     votesObjective: '',
     rankingMinVotes: '',
     rankingMaxRankSpread: '',
+    rankingGreyRankSpread: '',
     platformName: '',
     primaryColorLight: '',
     primaryColorDark: '',
@@ -53,6 +55,7 @@
       votesObjective = String(data.votes_objective)
       rankingMinVotes = String(data.ranking_min_votes)
       rankingMaxRankSpread = String(data.ranking_max_rank_spread)
+      rankingGreyRankSpread = String(data.ranking_grey_rank_spread)
       platformName = data.platform_name
       hasCustomLogo = data.has_custom_logo
       primaryColorLight = data.primary_color_light
@@ -65,6 +68,7 @@
         votesObjective,
         rankingMinVotes,
         rankingMaxRankSpread,
+        rankingGreyRankSpread,
         platformName
       }
     } finally {
@@ -120,6 +124,7 @@
     votesObjective = loadedValues.votesObjective
     rankingMinVotes = loadedValues.rankingMinVotes
     rankingMaxRankSpread = loadedValues.rankingMaxRankSpread
+    rankingGreyRankSpread = loadedValues.rankingGreyRankSpread
     platformName = loadedValues.platformName
     primaryColorLight = loadedValues.primaryColorLight
     primaryColorDark = loadedValues.primaryColorDark
@@ -138,6 +143,7 @@
         votes_objective: Number(votesObjective),
         ranking_min_votes: Number(rankingMinVotes),
         ranking_max_rank_spread: Number(rankingMaxRankSpread),
+        ranking_grey_rank_spread: Number(rankingGreyRankSpread),
         platform_name: platformName,
         primary_color_light: primaryColorLight.toUpperCase(),
         primary_color_dark: primaryColorDark.toUpperCase(),
@@ -153,6 +159,7 @@
       votes.objective = saved.votes_objective
       rankingMinVotes = String(saved.ranking_min_votes)
       rankingMaxRankSpread = String(saved.ranking_max_rank_spread)
+      rankingGreyRankSpread = String(saved.ranking_grey_rank_spread)
       platformName = saved.platform_name
       primaryColorLight = saved.primary_color_light
       primaryColorDark = saved.primary_color_dark
@@ -164,6 +171,7 @@
         votesObjective,
         rankingMinVotes,
         rankingMaxRankSpread,
+        rankingGreyRankSpread,
         platformName
       }
       Object.assign(auth.config, {
@@ -353,6 +361,15 @@
           label={m['admin.settings.customization.ranking.maxRankSpread']()}
           help={m['admin.settings.customization.ranking.maxRankSpreadHelp']()}
           bind:value={rankingMaxRankSpread}
+        />
+        <Input
+          id="settings-ranking-grey-rank-spread"
+          type="number"
+          min="0"
+          required
+          label={m['admin.settings.customization.ranking.greyRankSpread']()}
+          help={m['admin.settings.customization.ranking.greyRankSpreadHelp']()}
+          bind:value={rankingGreyRankSpread}
         />
       </fieldset>
       <div class="gap-3 mt-4! flex flex-wrap">
