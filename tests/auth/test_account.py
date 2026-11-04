@@ -286,8 +286,33 @@ def mock_survey(monkeypatch: pytest.MonkeyPatch):
     async def empty(*args, **kwargs):
         return []
 
+    async def app_settings():
+        return SimpleNamespace(default_locale="fr")
+
     monkeypatch.setattr(survey_module, "_all_answers", empty)
     monkeypatch.setattr(survey_module, "_all_questions", empty)
+    monkeypatch.setattr(auth_export, "get_app_settings", app_settings)
+
+
+def test_export_labels_survey_answers_in_the_instance_language(
+    mock_survey, monkeypatch: pytest.MonkeyPatch
+):
+    user = User(email="personne@example.org")
+    locales = []
+
+    async def app_settings():
+        return SimpleNamespace(default_locale="da")
+
+    async def my_answers(locale, user_id, anonymous_user_hash):
+        locales.append(locale)
+        return []
+
+    monkeypatch.setattr(auth_export, "get_app_settings", app_settings)
+    monkeypatch.setattr(auth_export, "my_answers", my_answers)
+
+    export_of(user, comparison_of(user.id))
+
+    assert locales == ["da"]
 
 
 def test_export_carries_the_conversations_and_the_consent_history(mock_survey):
