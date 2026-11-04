@@ -66,6 +66,8 @@
   let firstSignIn = $state(false)
 
   let terms = $state<ConsentDocument>()
+  // Loaded, with or without terms: none in force means nothing to accept.
+  let consentReady = $state(false)
   let consentRecorded = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
@@ -84,10 +86,12 @@
     consentError = undefined
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
-      terms = snapshot.document
+      terms = snapshot.document ?? undefined
       consentRecorded = snapshot.accepted
+      consentReady = true
     } catch {
       terms = undefined
+      consentReady = false
       consentError = m['consent.loadFailed']()
     } finally {
       consentLoading = false
@@ -103,18 +107,18 @@
   })
 
   async function requestCode() {
-    if (!terms) {
+    if (!consentReady) {
       consentError = m['consent.loadFailed']()
       return
     }
-    if (!consented) {
+    if (terms && !consented) {
       consentError = m['consent.required']()
       return
     }
     loading = true
     error = undefined
     try {
-      if (!consentRecorded) {
+      if (terms && !consentRecorded) {
         await submitConsent(terms, false)
         consentRecorded = true
       }
@@ -390,7 +394,7 @@
         <Button
           type="submit"
           text={loading ? m['auth.modal.email.submitting']() : m['auth.modal.email.submit']()}
-          disabled={loading || consentLoading || !terms || !consented || !email}
+          disabled={loading || consentLoading || !consentReady || (!!terms && !consented) || !email}
           class="mt-8 block! w-full!"
         />
       {/if}

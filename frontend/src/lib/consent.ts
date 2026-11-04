@@ -1,6 +1,6 @@
 import { resolve } from '$app/paths'
 import { renderInlineMarkdown } from '$components/markdown'
-import { api } from '$lib/fastapi-client'
+import { api, type ApiError } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
 import type { InternalLinkProps } from '$lib/routing'
 
@@ -41,8 +41,18 @@ export type TermsAcceptance = {
 }
 
 export type ConsentSnapshot = {
-  document: ConsentDocument
+  // null when no terms are in force: there is nothing to accept, and the
+  // backend gates let everyone through until an administrator publishes some.
+  document: ConsentDocument | null
   accepted: boolean
+}
+
+// What /settings/legal/terms answers, with a 404, when no terms are in force.
+export const TERMS_NOT_PUBLISHED = 'not_published'
+
+function isTermsNotPublished(error: unknown): boolean {
+  const { status, detail } = error as ApiError
+  return status === 404 && detail === TERMS_NOT_PUBLISHED
 }
 
 type TermsResponse = {
@@ -109,9 +119,15 @@ export function hasAcceptedDocument(
 }
 
 async function fetchSnapshot(locale: string, authenticated: boolean): Promise<ConsentSnapshot> {
-  const terms = await api.request<TermsResponse>('/settings/legal/terms', {
-    searchParams: { locale }
-  })
+  let terms: TermsResponse
+  try {
+    terms = await api.request<TermsResponse>('/settings/legal/terms', {
+      searchParams: { locale }
+    })
+  } catch (error) {
+    if (isTermsNotPublished(error)) return { document: null, accepted: true }
+    throw error
+  }
   const acceptance = await api.request<TermsAcceptance>(
     authenticated ? '/auth/consent' : '/auth/consent/anonymous'
   )

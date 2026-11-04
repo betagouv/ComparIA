@@ -118,6 +118,29 @@ describe('SignInForm consent', () => {
     mocks.questions = []
   })
 
+  it('requests a code without a checkbox while no terms are in force', async () => {
+    mocks.request.mockImplementation((path: string) => {
+      if (path.startsWith('/settings/legal/terms'))
+        return Promise.reject(
+          Object.assign(new Error('404'), { status: 404, detail: 'not_published' })
+        )
+      if (path === '/auth/email/request') return Promise.resolve(undefined)
+      return Promise.reject(new Error(`Unexpected request: ${path}`))
+    })
+    const { container } = render(SignInForm)
+
+    await fireEvent.input(container.querySelector<HTMLInputElement>('#login-email')!, {
+      target: { value: 'personne@example.test' }
+    })
+    const submit = container.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    await waitFor(() => expect(submit.disabled).toBe(false))
+    expect(container.querySelector('#login-consent')).toBeNull()
+    await fireEvent.click(submit)
+
+    await waitFor(() => expect(paths()).toContain('/auth/email/request'))
+    expect(paths()).not.toContain('/auth/consent/anonymous')
+  })
+
   it('does not request a code until the terms are accepted', async () => {
     const { container } = render(SignInForm)
     await waitFor(() => expect(container.querySelector('#login-consent')).not.toBeNull())

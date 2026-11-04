@@ -31,6 +31,8 @@
   let error = $state<string>()
 
   let terms = $state<ConsentDocument>()
+  // Loaded, with or without terms: none in force means nothing to accept.
+  let consentReady = $state(false)
   let consentRecorded = $state(false)
   let consentLoading = $state(true)
   let consentError = $state<string>()
@@ -42,10 +44,12 @@
     consentError = undefined
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
-      terms = snapshot.document
+      terms = snapshot.document ?? undefined
       consentRecorded = snapshot.accepted
+      consentReady = true
     } catch {
       terms = undefined
+      consentReady = false
       consentError = m['consent.loadFailed']()
     } finally {
       consentLoading = false
@@ -67,11 +71,11 @@
   })
 
   async function accept() {
-    if (!terms) {
+    if (!consentReady) {
       consentError = m['consent.loadFailed']()
       return
     }
-    if (!consented) {
+    if (terms && !consented) {
       consentError = m['consent.required']()
       return
     }
@@ -80,7 +84,7 @@
     try {
       // Recorded while still anonymous, so accept_invite carries it onto the
       // new account with the time it was given.
-      if (!consentRecorded) {
+      if (terms && !consentRecorded) {
         await submitConsent(terms, false)
         consentRecorded = true
       }
@@ -159,7 +163,7 @@
         {/if}
         <Button
           text={submitting ? m['invite.accepting']() : m['invite.accept']()}
-          disabled={submitting || consentLoading || !terms || !consented}
+          disabled={submitting || consentLoading || !consentReady || (!!terms && !consented)}
           onclick={accept}
           class="mt-4 block! w-full!"
         />

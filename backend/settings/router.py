@@ -49,6 +49,9 @@ class PublicLegalDocument(BaseModel):
     effective_at: UtcTimestamp
 
 
+LEGAL_DOCUMENT_NOT_PUBLISHED = "not_published"
+
+
 class PublicTermsDocument(PublicLegalDocument):
     presentation: LegalPresentation
 
@@ -57,11 +60,16 @@ async def _active_document(
     kind: LegalDocumentKind, locale: str
 ) -> tuple[LegalDocument, str, str]:
     document = await get_active_legal_document(kind)
-    if document:
-        if content := document.content.get(locale):
-            return document, content, locale
-        if content := document.content.get(DEFAULT_LEGAL_LANGUAGE):
-            return document, content, DEFAULT_LEGAL_LANGUAGE
+    if not document:
+        # A known key: with no terms in force there is nothing to accept, and
+        # the client lets the visitor through like the auth gates do.
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=LEGAL_DOCUMENT_NOT_PUBLISHED
+        )
+    if content := document.content.get(locale):
+        return document, content, locale
+    if content := document.content.get(DEFAULT_LEGAL_LANGUAGE):
+        return document, content, DEFAULT_LEGAL_LANGUAGE
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,

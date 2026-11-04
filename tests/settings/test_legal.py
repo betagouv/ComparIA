@@ -316,6 +316,26 @@ def test_public_terms_are_revalidated_with_an_etag():
         assert cached.status_code == 304
 
 
+def test_public_terms_say_when_nothing_is_published():
+    async def no_document(_kind):
+        return None
+
+    with public_client() as client:
+        with patch.object(settings_router, "get_active_legal_document", no_document):
+            nothing = client.get("/settings/legal/terms")
+
+    assert nothing.status_code == 404
+    assert nothing.json()["detail"] == settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
+
+
+def test_public_terms_in_no_readable_locale_are_not_unpublished():
+    with public_client(document=legal_document(content={"da": "Vilkår"})) as client:
+        missing = client.get("/settings/legal/terms", params={"locale": "en"})
+
+    assert missing.status_code == 404
+    assert missing.json()["detail"] != settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
+
+
 def test_public_terms_etag_changes_with_the_presentation():
     with public_client() as client:
         etag = client.get("/settings/legal/terms").headers["ETag"]

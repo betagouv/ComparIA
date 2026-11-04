@@ -7,6 +7,7 @@ import {
   reloadConsent,
   resetConsent,
   submitConsent,
+  TERMS_NOT_PUBLISHED,
   type ConsentDocument
 } from './consent'
 import { api } from './fastapi-client'
@@ -113,6 +114,26 @@ describe('consent', () => {
 
     fail = false
     await expect(reloadConsent('fr', false)).resolves.toMatchObject({ accepted: true })
+  })
+
+  it('has nothing to accept while no terms are in force', async () => {
+    const notPublished = Object.assign(new Error('404'), {
+      status: 404,
+      detail: TERMS_NOT_PUBLISHED
+    })
+    const request = vi
+      .spyOn(api, 'request')
+      .mockImplementation(() => Promise.reject(notPublished) as never)
+
+    await expect(loadConsent('fr', false)).resolves.toEqual({ document: null, accepted: true })
+    expect(request).toHaveBeenCalledTimes(1)
+  })
+
+  it('still fails when the terms exist but cannot be read', async () => {
+    const missingLocale = Object.assign(new Error('404'), { status: 404, detail: 'other' })
+    vi.spyOn(api, 'request').mockImplementation(() => Promise.reject(missingLocale) as never)
+
+    await expect(loadConsent('fr', false)).rejects.toBe(missingLocale)
   })
 
   it('does not ask the server again after recording an acceptance', async () => {

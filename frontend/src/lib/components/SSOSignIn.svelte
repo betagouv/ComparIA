@@ -34,6 +34,8 @@
   const locale = getLocale()
 
   let terms = $state<ConsentDocument>()
+  // Loaded, with or without terms: none in force means nothing to accept.
+  let consentReady = $state(false)
   let consentRequired = $state(false)
   let consented = $state(false)
   let consentLoading = $state(true)
@@ -49,11 +51,13 @@
     consentError = undefined
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, false)
-      terms = snapshot.document
+      terms = snapshot.document ?? undefined
       consentRequired = !snapshot.accepted
       consented = snapshot.accepted
+      consentReady = true
     } catch {
       terms = undefined
+      consentReady = false
       consentError = m['consent.loadFailed']()
     } finally {
       consentLoading = false
@@ -65,7 +69,7 @@
   })
 
   async function onSignIn() {
-    if (!terms) {
+    if (!consentReady) {
       consentError = m['consent.loadFailed']()
       return
     }
@@ -78,7 +82,7 @@
       // The backend gate on /auth/oidc/login requires a recorded acceptance
       // before it redirects to the provider, so record it first — the email
       // form does the same just before requesting its code.
-      if (consentRequired) {
+      if (terms && consentRequired) {
         await submitConsent(terms, false)
       }
       const searchParams: Record<string, string> = {}
@@ -132,7 +136,7 @@
 
   <Button
     onclick={onSignIn}
-    disabled={loading || consentLoading || !terms || (consentRequired && !consented)}
+    disabled={loading || consentLoading || !consentReady || (consentRequired && !consented)}
     class="mt-8 block w-full! justify-center"
   >
     <!-- A long label wraps beside its logo rather than centring under it. -->

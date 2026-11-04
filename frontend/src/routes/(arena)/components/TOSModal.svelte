@@ -44,7 +44,7 @@
     tosError = undefined
     try {
       const snapshot = await (again ? reloadConsent : loadConsent)(locale, !!auth.user)
-      terms = snapshot.document
+      terms = snapshot.document ?? undefined
       acceptTos = snapshot.accepted
       status = snapshot.accepted ? 'accepted' : 'required'
     } catch {
