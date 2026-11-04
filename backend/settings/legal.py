@@ -10,14 +10,15 @@ from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, select
 
-from backend.utils.locale import BASE_LOCALE, pick_locale
+from backend.utils.locale import pick_locale
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.i18n import DEFAULT_LOCALE
 from utils.validation import Translatable
 
-DEFAULT_LEGAL_LANGUAGE = "fr"
+DEFAULT_LEGAL_LANGUAGE = DEFAULT_LOCALE
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
 LEGAL_LOCALE_PATTERN = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
@@ -147,7 +148,7 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
 )
 
 
-def fallback_legal_presentation(locale: str = BASE_LOCALE) -> LegalPresentation:
+def fallback_legal_presentation(locale: str = DEFAULT_LOCALE) -> LegalPresentation:
     return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
 
 
