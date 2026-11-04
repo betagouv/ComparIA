@@ -70,6 +70,16 @@ def test_open_publication_prepares_before_building(monkeypatch, tmp_path):
     ]
 
 
+def test_reserved_publication_prepares_before_building(monkeypatch, tmp_path):
+    assert exercise_export(monkeypatch, tmp_path, ["reserved"]) == [
+        "prepare",
+        "start",
+        "build",
+        "publish",
+        "finish",
+    ]
+
+
 def test_raw_only_publication_skips_analysis(monkeypatch, tmp_path):
     assert exercise_export(monkeypatch, tmp_path, ["raw"]) == [
         "start",

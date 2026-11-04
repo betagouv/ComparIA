@@ -150,14 +150,14 @@ async def _export(
                 "No enabled destination receives the requested datasets."
             )
 
-    if not dry_run and "normal" in datasets:
-        # The open dataset only accepts comparisons that deterministic linting
-        # classified and the configured reviewer cleared. Both operations are
-        # incremental, so an already prepared comparison is not processed or
-        # billed again on later publications.
+    if not dry_run and {"normal", "reserved"} & set(datasets):
+        # The open and reserved datasets only accept comparisons that
+        # deterministic linting classified and the configured reviewer cleared.
+        # Both operations are incremental, so an already prepared comparison is
+        # not processed or billed again on later publications.
         from utils.database.lint import lint
 
-        logger.info("Preparing comparisons for the open dataset.")
+        logger.info("Preparing comparisons for publication.")
         await lint(fix=True, with_llm_analyze=True)
 
     check_free_disk(export_base_path)
