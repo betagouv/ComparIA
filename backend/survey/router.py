@@ -1,6 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, HTTPException, Query, status
+from sqlalchemy.exc import IntegrityError
 
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous
 from backend.auth.services import get_current_terms_acceptance_version
@@ -74,4 +75,13 @@ async def post_answers(
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)
             ) from error
-        await session.commit()
+        try:
+            await session.commit()
+        except IntegrityError as error:
+            # Another submission from the same respondent got in first: the
+            # unique index refused the duplicate answer row.
+            await session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Answers submitted concurrently, try again.",
+            ) from error
