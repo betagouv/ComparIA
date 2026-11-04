@@ -116,6 +116,9 @@ class AppSettings(SQLModel, table=True):
     # instance running a short campaign wants a shorter gap than one running
     # for a year.
     survey_reask_after_days: int = Field(default=7)
+    # Shown models whose rank could move by more than this many places are
+    # greyed out. At ranking_max_rank_spread or above, none is.
+    ranking_grey_rank_spread: int = Field(default=30)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     informational_legal_pages: Annotated[
@@ -184,6 +187,7 @@ class AppSettingsPublic(SQLModel):
     ranking_min_votes: int
     ranking_max_rank_spread: int
     survey_reask_after_days: int
+    ranking_grey_rank_spread: int
     platform_name: str
     primary_color_light: str
     primary_color_dark: str
@@ -222,6 +226,7 @@ class AppSettingsPatch(SQLModel):
     ranking_min_votes: int | None = Field(default=None, ge=0, le=_INT_MAX)
     ranking_max_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
     survey_reask_after_days: int | None = Field(default=None, ge=0, le=365)
+    ranking_grey_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
@@ -285,7 +290,12 @@ class AppSettingsPatch(SQLModel):
             raise ValueError(f"Unknown time zone: {value}")
         return value
 
-    @field_validator("ranking_min_votes", "ranking_max_rank_spread", mode="before")
+    @field_validator(
+        "ranking_min_votes",
+        "ranking_max_rank_spread",
+        "ranking_grey_rank_spread",
+        mode="before",
+    )
     @classmethod
     def ranking_threshold_not_null(cls, value: object) -> object:
         if value is None:

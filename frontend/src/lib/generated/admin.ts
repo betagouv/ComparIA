@@ -310,6 +310,7 @@ export interface AppSettingsPatch {
   ranking_min_votes?: number | null;
   ranking_max_rank_spread?: number | null;
   survey_reask_after_days?: number | null;
+  ranking_grey_rank_spread?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
@@ -337,6 +338,7 @@ export interface AppSettingsPublic {
   ranking_min_votes: number;
   ranking_max_rank_spread: number;
   survey_reask_after_days: number;
+  ranking_grey_rank_spread: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;
