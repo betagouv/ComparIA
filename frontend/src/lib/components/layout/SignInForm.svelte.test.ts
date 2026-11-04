@@ -249,8 +249,8 @@ describe('SignInForm consent', () => {
 
   it('closes the modal before navigating to a legal document', async () => {
     const { container } = render(SignInModal)
-    await waitFor(() => expect(container.querySelector('a[href="/privacy"]')).not.toBeNull())
-    const privacyLink = container.querySelector<HTMLAnchorElement>('a[href="/privacy"]')!
+    await waitFor(() => expect(container.querySelector('a[href="/privacy_policy"]')).not.toBeNull())
+    const privacyLink = container.querySelector<HTMLAnchorElement>('a[href="/privacy_policy"]')!
 
     await fireEvent.click(privacyLink)
 

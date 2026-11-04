@@ -18,11 +18,11 @@ const PAGES = [
   { path: '/ranking', name: 'ranking' },
   { path: '/statistics', name: 'statistics' },
   { path: '/settings', name: 'settings' },
-  { path: '/privacy', name: 'privacy policy' },
+  { path: '/privacy_policy', name: 'privacy policy' },
   { path: '/terms', name: 'terms' },
-  { path: '/legal', name: 'legal notice' },
+  { path: '/legal_notice', name: 'legal notice' },
   { path: '/accessibility', name: 'accessibility statement' },
-  { path: '/eco-design', name: 'eco-design statement' }
+  { path: '/ecodesign', name: 'eco-design statement' }
 ]
 
 async function analyse(page: Page) {

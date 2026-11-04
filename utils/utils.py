@@ -12,6 +12,13 @@ from utils.logger import configure_logger
 
 Obj = dict[str, Any]
 
+# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
+# An instance enables a subset of these. Anything outside the tuple is refused
+# rather than stored, because the frontend has no messages for it and would fall
+# back to the base locale without telling anyone.
+SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
+
+
 UTILS_DIR = Path(__file__).parent
 ROOT_DIR = UTILS_DIR.parent
 DATA_DIR = ROOT_DIR / "data"

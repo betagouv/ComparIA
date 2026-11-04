@@ -4,8 +4,11 @@ from fastapi import APIRouter, HTTPException, Request, Response, status
 from pydantic import BaseModel
 
 from backend.settings.informational_legal import (
-    InformationalLegalPages,
-    get_informational_legal_pages,
+    InformationalLegalPageContent,
+    InformationalLegalPageLinks,
+    LegalPageKey,
+    get_informational_legal_page_content,
+    get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
@@ -20,9 +23,21 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 router = APIRouter(prefix="/settings", tags=["settings"])
 
 
-@router.get("/legal/informational-pages", response_model=InformationalLegalPages)
-async def public_informational_legal_pages() -> InformationalLegalPages:
-    return await get_informational_legal_pages()
+@router.get(
+    "/legal/informational-page/{key}",
+    response_model=InformationalLegalPageContent | None,
+)
+async def public_informational_legal_pages(
+    key: LegalPageKey, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+) -> InformationalLegalPageContent | None:
+    return await get_informational_legal_page_content(key, locale)
+
+
+@router.get(
+    "/legal/informational-pages-links", response_model=InformationalLegalPageLinks
+)
+async def public_informational_legal_pages_links() -> InformationalLegalPageLinks:
+    return await get_informational_legal_pages_links()
 
 
 class PublicLegalDocument(BaseModel):
@@ -38,16 +53,20 @@ class PublicTermsDocument(PublicLegalDocument):
     presentation: LegalPresentation
 
 
-async def _active_document(kind: LegalDocumentKind, locale: str) -> LegalDocument:
-    document = await get_active_legal_document(kind, locale)
-    if not document and locale != DEFAULT_LEGAL_LANGUAGE:
-        document = await get_active_legal_document(kind, DEFAULT_LEGAL_LANGUAGE)
-    if not document:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No published document is available for this locale.",
-        )
-    return document
+async def _active_document(
+    kind: LegalDocumentKind, locale: str
+) -> tuple[LegalDocument, str, str]:
+    document = await get_active_legal_document(kind)
+    if document:
+        if content := document.content.get(locale):
+            return document, content, locale
+        if content := document.content.get(DEFAULT_LEGAL_LANGUAGE):
+            return document, content, DEFAULT_LEGAL_LANGUAGE
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="No published document is available for this locale.",
+    )
 
 
 def _cache_headers(*parts: str) -> dict[str, str]:
@@ -64,7 +83,7 @@ def _cache_headers(*parts: str) -> dict[str, str]:
 async def public_terms(
     request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
 ):
-    document = await _active_document("terms", locale)
+    document, content, locale = await _active_document("terms", locale)
     presentation = await get_legal_presentation(locale)
     # The presentation is part of the payload, so editing it must invalidate
     # the cached response even though the document itself is unchanged.
@@ -75,19 +94,19 @@ async def public_terms(
     return PublicTermsDocument(
         version=document.version,
         content_hash=document.content_hash,
-        locale=document.language,
-        content=document.content,
+        locale=locale,
+        content=content,
         published_at=document.published_at,
         effective_at=document.effective_at,
         presentation=presentation,
     )
 
 
-@router.get("/legal/privacy-policy", response_model=PublicLegalDocument)
+@router.get("/legal/privacy_policy", response_model=PublicLegalDocument)
 async def public_privacy_policy(
     request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
 ):
-    document = await _active_document("privacy_policy", locale)
+    document, content, locale = await _active_document("privacy_policy", locale)
     headers = _cache_headers(document.content_hash)
     if request.headers.get("if-none-match") == headers["ETag"]:
         return Response(status_code=status.HTTP_304_NOT_MODIFIED, headers=headers)
@@ -95,8 +114,8 @@ async def public_privacy_policy(
     return PublicLegalDocument(
         version=document.version,
         content_hash=document.content_hash,
-        locale=document.language,
-        content=document.content,
+        locale=locale,
+        content=content,
         published_at=document.published_at,
         effective_at=document.effective_at,
     )

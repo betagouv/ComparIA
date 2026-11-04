@@ -1,16 +1,21 @@
 <script lang="ts">
-  import type { SvelteHTMLElements } from 'svelte/elements'
+  import MarkdownCode from '$components/markdown/MarkdownCode.svelte'
+  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
   let {
     id,
     label,
     content,
+    class: klass,
+    markdown,
     children,
     ...props
   }: {
     id: string
     label: string
     content?: string
+    class?: ClassValue
+    markdown?: boolean
   } & SvelteHTMLElements['section'] = $props()
 </script>
 
@@ -25,7 +30,15 @@
       {label}
     </button>
   </h3>
-  <div class="fr-collapse" id={`accordion-${id}`}>
-    {#if content}{content}{:else}{@render children?.()}{/if}
+  <div class={['fr-collapse m-0!', klass]} id={`accordion-${id}`}>
+    {#if content}
+      {#if markdown}
+        <MarkdownCode message={content} sanitize_html variant="document" />
+      {:else}
+        {content}
+      {/if}
+    {:else}
+      {@render children?.()}
+    {/if}
   </div>
 </section>

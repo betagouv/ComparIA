@@ -1,5 +1,4 @@
 import uuid
-from copy import deepcopy
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
@@ -9,6 +8,7 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.utils import SUPPORTED_LOCALES
 from utils.validation import is_secure_url
 
 from .publish import PublishFrequency
@@ -79,47 +79,12 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
-# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
-# An instance enables a subset of these. Anything outside the tuple is refused
-# rather than stored, because the frontend has no messages for it and would fall
-# back to the base locale without telling anyone.
-SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
-
 # What a new instance starts with, and what the migration backfills onto the
 # existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
 # few translated messages to be offered unasked, which is why prod carried
 # PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
 # /admin/locales, which is the point of the setting.
 DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
-
-DEFAULT_INFORMATIONAL_LEGAL_PAGES: dict[str, dict[str, object]] = {
-    "legal_notice": {
-        "mode": "internal",
-        "external_url": None,
-        "visible_in_legal_menu": True,
-        "visible_in_settings": True,
-        "content_by_locale": {},
-    },
-    "accessibility": {
-        "mode": "internal",
-        "external_url": None,
-        "visible_in_legal_menu": True,
-        "visible_in_settings": True,
-        "content_by_locale": {},
-    },
-    "ecodesign": {
-        "mode": "internal",
-        "external_url": None,
-        "visible_in_legal_menu": True,
-        "visible_in_settings": True,
-        "content_by_locale": {},
-    },
-}
-
-
-def default_informational_legal_pages() -> dict[str, dict[str, object]]:
-    """Return an independent copy suitable for a mutable JSONB column."""
-    return deepcopy(DEFAULT_INFORMATIONAL_LEGAL_PAGES)
 
 
 def _check_enabled_locales(value: list[str]) -> list[str]:
@@ -153,9 +118,9 @@ class AppSettings(SQLModel, table=True):
     survey_reask_after_days: int = Field(default=7)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
-    informational_legal_pages: Annotated[dict, Field(sa_type=JSONB)] = (
-        default_informational_legal_pages()
-    )
+    informational_legal_pages: Annotated[
+        dict, Field(sa_type=JSONB, default_factory=dict)
+    ]
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
     primary_color_dark: str = Field(default=PRIMARY_COLOR_DARK_DEFAULT, max_length=7)
     secondary_color_light: str = Field(

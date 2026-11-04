@@ -1,6 +1,10 @@
 import type { AuthConfig, AuthUser } from '$lib/auth.svelte'
 import { api } from '$lib/fastapi-client'
-import type { LLMList, PublicSurveyResponse } from '$lib/generated/backend'
+import type {
+  InformationalLegalPageLinks,
+  LLMList,
+  PublicSurveyResponse
+} from '$lib/generated/backend'
 import type { VotesData } from '$lib/global.svelte'
 import { getLocale } from '$lib/i18n/runtime'
 import { emptySurvey } from '$lib/survey.svelte'
@@ -10,11 +14,14 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
   depends('survey:signup')
   const locale = getLocale()
 
-  const [votes, data, authConfig, auth, survey] = await Promise.all([
+  const [votes, data, authConfig, auth, informationalPagesLinks, survey] = await Promise.all([
     api.request<VotesData>('/counter', { fetch }),
     api.request<LLMList>('/models/', { fetch }),
     api.request<AuthConfig>('/auth/config', { fetch }),
     api.request<{ user: AuthUser | null }>('/auth/me', { fetch }),
+    api.request<InformationalLegalPageLinks>('/settings/legal/informational-pages-links', {
+      fetch
+    }),
     // A survey outage must never take a page down: both degrade exactly
     // like no questions being configured at all.
     api
@@ -32,6 +39,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
     data,
     votes,
     auth: { user: auth.user, config: authConfig },
+    informationalPagesLinks,
     survey
   }
 }

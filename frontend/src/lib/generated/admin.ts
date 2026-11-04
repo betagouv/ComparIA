@@ -1,5 +1,5 @@
 /* tslint:disable */
- 
+/* eslint-disable */
 /**
 /* This file was automatically generated from pydantic models by running pydantic2ts.
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
@@ -171,13 +171,13 @@ export interface AdminLegalDocument {
   id: string;
   kind: "terms" | "privacy_policy";
   version: string;
-  locale: string;
-  content: string;
+  content: {
+    [k: string]: string;
+  };
   content_hash: string;
   published_at: string;
   effective_at: string;
   retired_at: string | null;
-  seeded: boolean;
 }
 export interface AdminPublishDestination {
   id: string;
@@ -353,6 +353,16 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface InformationalLegalPage {
+  mode?: "internal" | "external";
+  external_url?: string | null;
+  visible_in_legal_menu?: boolean;
+  visible_in_settings?: boolean;
+  content_by_locale?: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000 {
+  [k: string]: string;
 }
 /**
  * LLM definition.
@@ -569,6 +579,34 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
+export interface TranslatableLegalPresentation {
+  [k: string]: LegalPresentation;
+}
+export interface LegalPresentation {
+  arena: ArenaLegalPresentation;
+  sign_in: SignInLegalPresentation;
+}
+export interface ArenaLegalPresentation {
+  title: string;
+  introduction: string;
+  checkbox_label: string;
+  button_label?: string | null;
+}
+export interface SignInLegalPresentation {
+  checkbox_label: string;
+}
+export interface LegalStatuses {
+  participation: LegalStatus;
+  terms: LegalStatus;
+  privacy_policy: LegalStatus;
+  legal_notice: LegalStatus;
+  accessibility: LegalStatus;
+  ecodesign: LegalStatus;
+}
+export interface LegalStatus {
+  published: boolean;
+  missing_locales: boolean;
+}
 export interface PromptCheckPatch {
   enabled?: boolean | null;
   model?: string | null;
@@ -634,10 +672,12 @@ export interface S3ConfigInput {
 }
 export interface PublishLegalDocumentBody {
   version: string;
-  locale: string;
-  content: string;
+  content: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000;
   effective_at?: string | null;
   confirm_publication: true;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000 {
+  [k: string]: string;
 }
 export interface SuggestionArchiveUpdate {
   archived: boolean;
@@ -687,25 +727,6 @@ export interface SurveyQuestionUpdate {
   };
   options: SurveyOptionWrite[];
   published: boolean;
-}
-export interface UpdateLegalPresentationBody {
-  presentation: LegalPresentation;
-}
-export interface LegalPresentation {
-  arena: ArenaLegalPresentation;
-  sign_in: SignInLegalPresentation;
-  [k: string]: unknown;
-}
-export interface ArenaLegalPresentation {
-  title: string;
-  introduction: string;
-  checkbox_label: string;
-  button_label?: string | null;
-  [k: string]: unknown;
-}
-export interface SignInLegalPresentation {
-  checkbox_label: string;
-  [k: string]: unknown;
 }
 export interface UserPublic {
   id?: string;

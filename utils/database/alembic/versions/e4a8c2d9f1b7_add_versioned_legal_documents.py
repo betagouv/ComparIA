@@ -22,40 +22,6 @@ down_revision: Union[str, Sequence[str], None] = "c6a1f3e8d2b7"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# Starter terms so a fresh install is never blocked on an unpublished document.
-SEED_ID = uuid.UUID("6f1b6f6e-8f4a-4c3e-9a2f-2d0d5a1f7b41")
-# Frozen copy of backend.settings.legal.SEEDED_TERMS_VERSION: a migration must
-# keep running whatever the application code becomes. tests/settings/test_legal.py
-# fails if the two drift apart.
-SEED_VERSION = "0-initiale-a-remplacer"
-SEED_CONTENT = """# Conditions générales d’utilisation
-
-Version initiale, à remplacer par l’éditeur de la plateforme depuis
-l’administration. Elle décrit seulement ce que la plateforme fait aujourd’hui.
-
-## Objet
-
-Compar:IA permet de comparer les réponses de plusieurs modèles d’IA à une même
-question, puis de voter pour celle que vous préférez.
-
-## Vos messages
-
-Les messages que vous saisissez sont transmis aux fournisseurs des modèles
-comparés pour produire les réponses. Ne saisissez aucune donnée sensible ni
-aucune information permettant d’identifier une personne.
-
-## Réutilisation des conversations
-
-Les conversations et les votes sont conservés et peuvent être réutilisés pour
-évaluer les modèles, pour la recherche et pour la publication de jeux de
-données ouverts.
-
-## Évolution
-
-Une nouvelle version de ces conditions peut être publiée à tout moment. La
-version applicable est celle affichée sur cette page.
-"""
-
 
 def upgrade() -> None:
     op.create_table(
@@ -85,36 +51,6 @@ def upgrade() -> None:
     op.add_column(
         "app_settings",
         sa.Column("legal_presentation", postgresql.JSONB(), nullable=True),
-    )
-
-    # Every legal timestamp is naive UTC.
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
-    op.bulk_insert(
-        sa.table(
-            "legal_document",
-            sa.column("id", sa.Uuid()),
-            sa.column("kind", sa.String()),
-            sa.column("version", sa.String()),
-            sa.column("language", sa.String()),
-            sa.column("content", sa.String()),
-            sa.column("content_hash", sa.String()),
-            sa.column("published_at", postgresql.TIMESTAMP()),
-            sa.column("effective_at", postgresql.TIMESTAMP()),
-        ),
-        [
-            {
-                "id": SEED_ID,
-                "kind": "terms",
-                "version": SEED_VERSION,
-                "language": "fr",
-                "content": SEED_CONTENT,
-                "content_hash": hashlib.sha256(
-                    SEED_CONTENT.encode("utf-8")
-                ).hexdigest(),
-                "published_at": now,
-                "effective_at": now,
-            }
-        ],
     )
 
 

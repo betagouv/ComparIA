@@ -1,10 +1,12 @@
 import hashlib
+import json
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import Query
 from pydantic import BaseModel, Field, PlainSerializer, field_validator
+from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import select
 
@@ -13,6 +15,7 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.validation import Translatable
 
 DEFAULT_LEGAL_LANGUAGE = "fr"
 # Version of the starter terms seeded by the migration, kept here so the
@@ -25,7 +28,6 @@ _LOCALE_QUERY = Query(
     min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
 )
 LocaleQuery = Annotated[str, _LOCALE_QUERY]
-OptionalLocaleQuery = Annotated[str | None, _LOCALE_QUERY]
 
 
 def _stamp_utc(value: datetime) -> datetime:
@@ -37,7 +39,7 @@ def _stamp_utc(value: datetime) -> datetime:
 UtcTimestamp = Annotated[datetime, PlainSerializer(_stamp_utc)]
 
 
-class ArenaLegalPresentation(BaseModel):
+class ArenaLegalPresentation(BaseModel, extra="forbid"):
     title: str = Field(min_length=1, max_length=200)
     introduction: str = Field(min_length=1, max_length=2_000)
     checkbox_label: str = Field(min_length=1, max_length=2_000)
@@ -54,7 +56,7 @@ class ArenaLegalPresentation(BaseModel):
         return value
 
 
-class SignInLegalPresentation(BaseModel):
+class SignInLegalPresentation(BaseModel, extra="forbid"):
     checkbox_label: str = Field(min_length=1, max_length=2_000)
 
     @field_validator("checkbox_label")
@@ -66,93 +68,112 @@ class SignInLegalPresentation(BaseModel):
         return value
 
 
-class LegalPresentation(BaseModel):
+class LegalPresentation(BaseModel, extra="forbid"):
     arena: ArenaLegalPresentation
     sign_in: SignInLegalPresentation
 
 
+LegalPresentationTranslatable = Translatable[LegalPresentation]
+
 # What visitors read until an admin writes their own copy. The admin copy is
 # stored in one language, so an instance serving several should write it in
 # the one it defaults to.
-FALLBACK_PRESENTATIONS: dict[str, LegalPresentation] = {
-    "fr": LegalPresentation(
-        arena=ArenaLegalPresentation(
-            title="Avant de commencer",
-            introduction=(
-                "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
-                "aucune donnée sensible ou permettant d’identifier une personne."
-            ),
-            checkbox_label=(
-                "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
-                "comprends que participer implique le traitement de mes messages par "
-                "des modèles d’IA et la réutilisation des conversations et votes pour "
-                "l’évaluation, la recherche et la production de jeux de données."
-            ),
-            button_label="C’est parti",
-        ),
-        sign_in=SignInLegalPresentation(
-            checkbox_label=(
-                "J’ai pris connaissance de l’utilisation de mes données et j’accepte "
-                "les conditions générales d’utilisation."
-            ),
-        ),
-    ),
-    "en": LegalPresentation(
-        arena=ArenaLegalPresentation(
-            title="Before you start",
-            introduction=(
-                "Your messages are sent to the AI models being compared. Do not "
-                "enter sensitive data or anything that identifies a person."
-            ),
-            checkbox_label=(
-                "I have read and accept the terms of use. I understand that taking "
-                "part means AI models process my messages, and that conversations "
-                "and votes are reused for evaluation, research and datasets."
-            ),
-            button_label="Let’s go",
-        ),
-        sign_in=SignInLegalPresentation(
-            checkbox_label=(
-                "I have read how my data is used and I accept the terms of use."
-            ),
-        ),
-    ),
-    "da": LegalPresentation(
-        arena=ArenaLegalPresentation(
-            title="Før du starter",
-            introduction=(
-                "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
-                "ikke følsomme oplysninger eller noget, der kan identificere en "
-                "person."
-            ),
-            checkbox_label=(
-                "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
-                "deltagelse indebærer, at AI-modeller behandler mine beskeder, og at "
-                "samtaler og stemmer genbruges til evaluering, forskning og datasæt."
-            ),
-            button_label="Kom i gang",
-        ),
-        sign_in=SignInLegalPresentation(
-            checkbox_label=(
-                "Jeg har læst, hvordan mine data bruges, og jeg accepterer "
-                "vilkårene for brug."
-            ),
-        ),
-    ),
-}
+FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = LegalPresentationTranslatable(
+    {
+        "fr": {
+            "arena": {
+                "title": "Avant de commencer",
+                "introduction": (
+                    "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
+                    "aucune donnée sensible ou permettant d’identifier une personne."
+                ),
+                "checkbox_label": (
+                    "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
+                    "comprends que participer implique le traitement de mes messages par "
+                    "des modèles d’IA et la réutilisation des conversations et votes pour "
+                    "l’évaluation, la recherche et la production de jeux de données."
+                ),
+                "button_label": "C’est parti",
+            },
+            "sign_in": {
+                "checkbox_label": (
+                    "J’ai pris connaissance de l’utilisation de mes données et j’accepte "
+                    "les conditions générales d’utilisation."
+                ),
+            },
+        },
+        "en": {
+            "arena": {
+                "title": "Before you start",
+                "introduction": (
+                    "Your messages are sent to the AI models being compared. Do not "
+                    "enter sensitive data or anything that identifies a person."
+                ),
+                "checkbox_label": (
+                    "I have read and accept the terms of use. I understand that taking "
+                    "part means AI models process my messages, and that conversations "
+                    "and votes are reused for evaluation, research and datasets."
+                ),
+                "button_label": "Let’s go",
+            },
+            "sign_in": {
+                "checkbox_label": (
+                    "I have read how my data is used and I accept the terms of use."
+                ),
+            },
+        },
+        "da": {
+            "arena": {
+                "title": "Før du starter",
+                "introduction": (
+                    "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
+                    "ikke følsomme oplysninger eller noget, der kan identificere en "
+                    "person."
+                ),
+                "checkbox_label": (
+                    "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
+                    "deltagelse indebærer, at AI-modeller behandler mine beskeder, og at "
+                    "samtaler og stemmer genbruges til evaluering, forskning og datasæt."
+                ),
+                "button_label": "Kom i gang",
+            },
+            "sign_in": {
+                "checkbox_label": (
+                    "Jeg har læst, hvordan mine data bruges, og jeg accepterer "
+                    "vilkårene for brug."
+                ),
+            },
+        },
+    }
+)
 
 
 def fallback_legal_presentation(locale: str = BASE_LOCALE) -> LegalPresentation:
-    return FALLBACK_PRESENTATIONS[pick_locale(locale, FALLBACK_PRESENTATIONS)]
+    return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
+
+
+async def get_legal_presentations() -> LegalPresentation:
+    """Return all configured locales or default ones."""
+    app_settings = await get_app_settings()
+    if app_settings.legal_presentation:
+        try:
+            return LegalPresentationTranslatable.model_validate(
+                app_settings.legal_presentation
+            )
+        except ValidationError:
+            pass
+
+    return FALLBACK_PRESENTATIONS
 
 
 async def get_legal_presentation(locale: str | None = None) -> LegalPresentation:
     """The admin's copy when there is one, else the default in `locale`, or in
     the instance's default language when the caller has none."""
     app_settings = await get_app_settings()
-    if app_settings.legal_presentation:
-        return LegalPresentation.model_validate(app_settings.legal_presentation)
-    return fallback_legal_presentation(locale or app_settings.default_locale)
+    presentations = await get_legal_presentations()
+    return (await get_legal_presentations()).root[
+        pick_locale(locale or app_settings.default_locale, presentations.root)
+    ]
 
 
 class DuplicateLegalDocumentError(ValueError):
@@ -163,8 +184,11 @@ class InvalidEffectiveDateError(ValueError):
     pass
 
 
-def legal_document_hash(content: str) -> str:
-    return hashlib.sha256(content.encode("utf-8")).hexdigest()
+def legal_document_hash(content: dict[str, str]) -> str:
+    dumped_content = json.dumps(
+        content, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    )
+    return hashlib.sha256(dumped_content.encode("utf-8")).hexdigest()
 
 
 def normalize_effective_at(
@@ -186,29 +210,24 @@ def normalize_effective_at(
     return effective
 
 
-async def list_legal_documents(
-    kind: LegalDocumentKind, language: str | None = None
-) -> list[LegalDocument]:
+async def list_legal_documents(kind: LegalDocumentKind) -> list[LegalDocument]:
     async with get_session() as session:
-        statement = select(LegalDocument).where(LegalDocument.kind == kind)
-        if language:
-            statement = statement.where(LegalDocument.language == language)
         result = await session.exec(
-            statement.order_by(LegalDocument.effective_at.desc()).limit(100)
+            select(LegalDocument)
+            .where(LegalDocument.kind == kind)
+            .order_by(LegalDocument.effective_at.desc())
+            .limit(100)
         )
         return list(result.all())
 
 
-async def get_active_legal_document(
-    kind: LegalDocumentKind, language: str
-) -> LegalDocument | None:
+async def get_active_legal_document(kind: LegalDocumentKind) -> LegalDocument | None:
     now = utc_now()
     async with get_session() as session:
         result = await session.exec(
             select(LegalDocument)
             .where(
                 LegalDocument.kind == kind,
-                LegalDocument.language == language,
                 LegalDocument.effective_at <= now,
                 LegalDocument.retired_at.is_(None),
             )
@@ -221,8 +240,7 @@ async def publish_legal_document(
     *,
     kind: LegalDocumentKind,
     version: str,
-    language: str,
-    content: str,
+    content: dict[str, str],
     effective_at: datetime | None,
 ) -> LegalDocument:
     """Publish an immutable document and retire the active one when immediate.
@@ -232,14 +250,6 @@ async def publish_legal_document(
     """
     label = kind.replace("_", " ")
     version = version.strip()
-    language = language.strip()
-    if not 1 <= len(version) <= LEGAL_VERSION_MAX_LENGTH:
-        raise ValueError("version must contain between 1 and 64 characters")
-    if not LEGAL_LOCALE_PATTERN.fullmatch(language):
-        raise ValueError("language must be a valid locale")
-    if not 1 <= len(content) <= LEGAL_CONTENT_MAX_LENGTH:
-        raise ValueError("content must contain between 1 and 100000 characters")
-
     now = utc_now()
     normalized_effective_at = normalize_effective_at(effective_at, now)
     digest = legal_document_hash(content)
@@ -249,7 +259,6 @@ async def publish_legal_document(
             select(LegalDocument).where(
                 LegalDocument.kind == kind,
                 LegalDocument.version == version,
-                LegalDocument.language == language,
             )
         )
         existing = existing_result.first()
@@ -268,7 +277,6 @@ async def publish_legal_document(
         document = LegalDocument(
             kind=kind,
             version=version,
-            language=language,
             content=content,
             content_hash=digest,
             effective_at=normalized_effective_at,
@@ -278,7 +286,6 @@ async def publish_legal_document(
                 select(LegalDocument)
                 .where(
                     LegalDocument.kind == kind,
-                    LegalDocument.language == language,
                     LegalDocument.effective_at <= normalized_effective_at,
                     LegalDocument.retired_at.is_(None),
                 )

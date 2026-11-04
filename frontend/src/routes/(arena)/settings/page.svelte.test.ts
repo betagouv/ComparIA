@@ -1,5 +1,6 @@
 import { ACCESSIBILITY_PATH, ECODESIGN_PATH, PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
 import { expectAccessible } from '$lib/testing/a11y'
+import ContextWrapper from '$lib/testing/ContextWrapper.svelte'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import Page from './+page.svelte'
@@ -52,9 +53,14 @@ vi.mock('$lib/survey.svelte', async (importOriginal) => {
     })
   }
 })
+
+function getWrappedComponent() {
+  return render(ContextWrapper, { props: { Component: Page } })
+}
+
 describe('Settings page', () => {
   it('splits the account actions from the legal information', async () => {
-    const { container, getByRole, getByLabelText } = render(Page)
+    const { container, getByRole, getByLabelText } = getWrappedComponent()
 
     expect(getByRole('heading', { level: 1, name: 'Paramètres' })).toBeTruthy()
     expect(getByRole('tab', { name: 'Compte' }).getAttribute('aria-selected')).toBe('true')
@@ -85,7 +91,7 @@ describe('Settings page', () => {
 
   it('asks the backend for the export rather than building it in the page', async () => {
     request.mockResolvedValue({ schema_version: 1, conversations: [], consents: [] })
-    const { getByRole } = render(Page)
+    const { getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: 'Exporter mes données' }))
 
@@ -93,7 +99,7 @@ describe('Settings page', () => {
   })
 
   it('only enables the erasure once the account address is retyped', async () => {
-    const { container } = render(Page)
+    const { container } = getWrappedComponent()
 
     const modal = container.querySelector('#account-erasure-modal')!
     const confirm = () =>
@@ -133,7 +139,7 @@ describe('Settings page two-factor section', () => {
 
   it('is not shown to a plain user', () => {
     mocks.auth.user = { email: 'personne@example.org', role: 'user', totp_enabled: false }
-    const { queryByRole } = render(Page)
+    const { queryByRole } = getWrappedComponent()
     expect(queryByRole('heading', { name: 'Double authentification' })).toBeNull()
   })
 
@@ -141,7 +147,7 @@ describe('Settings page two-factor section', () => {
     request.mockImplementation((path: string) =>
       path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     expect(getByRole('heading', { name: 'Double authentification' })).toBeTruthy()
     expect(container.textContent).toContain('Non configurée')
@@ -194,7 +200,7 @@ describe('Settings page two-factor section', () => {
           })
         : Promise.resolve(undefined)
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
     const modal = container.querySelector('#totp-setup-modal')!
     const open = () => fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
 
@@ -220,7 +226,7 @@ describe('Settings page two-factor section', () => {
     request.mockImplementation((path: string) =>
       path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     expect(container.textContent).toContain('Configuration requise')
     await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
@@ -242,7 +248,7 @@ describe('Settings page two-factor section', () => {
         ? Promise.resolve(setup)
         : Promise.reject(Object.assign(new Error('Invalid'), { status: 400 }))
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
     const modal = container.querySelector('#totp-setup-modal')!
@@ -265,7 +271,7 @@ describe('Settings page two-factor section', () => {
         ? Promise.resolve(setup)
         : Promise.reject(Object.assign(new Error('auth_required'), { status: 401 }))
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
     const modal = container.querySelector('#totp-setup-modal')!
@@ -287,7 +293,7 @@ describe('Settings page two-factor section', () => {
         ? Promise.resolve(setup)
         : Promise.reject(new TypeError('Failed to fetch'))
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
     const modal = container.querySelector('#totp-setup-modal')!
@@ -310,7 +316,7 @@ describe('Settings page two-factor section', () => {
         status: 400
       })
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: 'Configurer une application' }))
     const modal = container.querySelector('#totp-setup-modal')!
@@ -324,7 +330,7 @@ describe('Settings page two-factor section', () => {
     request.mockImplementation((path: string) =>
       path === '/auth/totp/setup' ? Promise.resolve(setup) : Promise.resolve(undefined)
     )
-    const { container, getByRole } = render(Page)
+    const { container, getByRole } = getWrappedComponent()
 
     expect(container.textContent).toContain('Activée')
     await fireEvent.click(getByRole('button', { name: 'Changer d’appareil' }))

@@ -3,6 +3,7 @@ from typing import Annotated, Literal
 
 from pydantic import AfterValidator, EmailStr, field_validator
 from sqlalchemy import Index, UniqueConstraint, func, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
@@ -154,16 +155,13 @@ class LegalDocument(SQLModel, table=True):
 
     __tablename__ = "legal_document"
     __table_args__ = (
-        UniqueConstraint(
-            "kind", "version", "language", name="uq_legal_document_version"
-        ),
+        UniqueConstraint("kind", "version", name="uq_legal_document_version"),
     )
 
     id: ModelId
     kind: Annotated[LegalDocumentKind, Field(sa_type=String)]
     version: str
-    language: str
-    content: str
+    content: dict[str, str] = Field(sa_type=JSONB, nullable=False)
     content_hash: str = Field(index=True, min_length=64, max_length=64)
     published_at: UtcDatetime
     effective_at: Datetime

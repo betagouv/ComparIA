@@ -94,13 +94,11 @@ type FromEntries<E extends readonly Entry[]> = {
   [P in E[number] as P[0]]: Extract<E[number], readonly [P[0], unknown]>[1]
 }
 
-export function getKeys<T extends Record<Key, unknown>, K extends (keyof T)[]>(obj: T): K {
+export function getKeys<T extends object, K extends (keyof T)[]>(obj: T): K {
   return Object.keys(obj) as K
 }
 
-export function toEntries<T extends Record<Key, unknown>>(
-  obj: T
-): { [K in keyof T]: [K, T[K]] }[keyof T][] {
+export function toEntries<T extends object>(obj: T): { [K in keyof T]: [K, T[K]] }[keyof T][] {
   return Object.entries(obj) as { [K in keyof T]: [K, T[K]] }[keyof T][]
 }
 
@@ -108,10 +106,7 @@ export function fromEntries<const E extends readonly Entry[]>(entries: E): FromE
   return Object.fromEntries(entries as Iterable<readonly [Key, unknown]>) as FromEntries<E>
 }
 
-export function pick<T extends Record<Key, unknown>, K extends keyof T>(
-  obj: T,
-  keys: readonly K[]
-): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: readonly K[]): Pick<T, K> {
   const out = {} as Pick<T, K>
   for (const k of keys) {
     out[k] = obj[k]
@@ -119,10 +114,7 @@ export function pick<T extends Record<Key, unknown>, K extends keyof T>(
   return out
 }
 
-export function omit<T extends Record<Key, unknown>, K extends keyof T>(
-  obj: T,
-  keys: readonly K[]
-): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: readonly K[]): Omit<T, K> {
   const keySet = new Set<Key>(keys as readonly Key[])
   const out: Partial<T> = {}
 

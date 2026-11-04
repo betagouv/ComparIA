@@ -1,14 +1,35 @@
-<script lang="ts" generics="T extends {id?: string; label: string; content: string}">
+<script
+  lang="ts"
+  generics="T extends {id?: string; label: string; content: string, class?: ClassValue}"
+>
   import { Accordion } from '$components/dsfr'
-  import type { SvelteHTMLElements } from 'svelte/elements'
+  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
-  let { items, children, ...props }: { items?: T[] } & SvelteHTMLElements['div'] = $props()
+  let {
+    id,
+    items,
+    children,
+    group = true,
+    markdown = false,
+    ...props
+  }: {
+    id: string
+    items?: T[]
+    group?: boolean
+    markdown?: boolean
+  } & SvelteHTMLElements['div'] = $props()
 </script>
 
-<div data-fr-group="true" class="fr-accordions-group" {...props}>
+<div {id} data-fr-group={group ? 'true' : 'false'} class="fr-accordions-group" {...props}>
   {#if items}
     {#each items as item, i (i)}
-      <Accordion id={item.id ?? i.toString()} label={item.label} content={item.content} />
+      <Accordion
+        id="{id}-{item.id ?? i.toString()}"
+        label={item.label}
+        content={item.content}
+        class={item.class}
+        {markdown}
+      />
     {/each}
   {:else}
     {@render children?.()}

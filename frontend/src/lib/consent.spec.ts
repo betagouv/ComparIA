@@ -1,22 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  ACCESSIBILITY_PATH,
   buildConsentEvidence,
   consentCheckboxLabel,
-  ECODESIGN_PATH,
   hasAcceptedDocument,
-  LEGAL_NOTICE_PATH,
-  legalPageLinks,
   loadConsent,
-  PRIVACY_POLICY_PATH,
   reloadConsent,
   resetConsent,
   submitConsent,
-  TERMS_PATH,
   type ConsentDocument
 } from './consent'
 import { api } from './fastapi-client'
-import { DEFAULT_INFORMATIONAL_PAGES } from './informational-pages'
 
 const document: ConsentDocument = {
   version: '2026-07-20',
@@ -71,26 +64,6 @@ describe('consent', () => {
       locale: document.locale,
       legal_information_acknowledged: true
     })
-  })
-
-  it('lists every legal page on the same canonical paths', () => {
-    expect(legalPageLinks().map((link) => link.href)).toEqual([
-      PRIVACY_POLICY_PATH,
-      TERMS_PATH,
-      LEGAL_NOTICE_PATH,
-      ACCESSIBILITY_PATH,
-      ECODESIGN_PATH
-    ])
-  })
-
-  it('keeps footer links independent from menu visibility', () => {
-    const pages = structuredClone(DEFAULT_INFORMATIONAL_PAGES)
-    pages.ecodesign.visible_in_legal_menu = false
-
-    expect(
-      legalPageLinks(pages, 'legal_menu').some((link) => link.href.includes('eco-design'))
-    ).toBe(false)
-    expect(legalPageLinks(pages).some((link) => link.href.includes('eco-design'))).toBe(true)
   })
 
   it('renders the checkbox label of the page that asks', () => {
