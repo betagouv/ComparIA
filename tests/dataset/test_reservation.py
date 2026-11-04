@@ -17,8 +17,10 @@ os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "RAW")
 
 from pydantic import ValidationError  # noqa: E402
+from sqlmodel import select  # noqa: E402
 
 from tests.admin.test_activity import add_comparison, add_llms  # noqa: E402
+from utils.database.actions.llm_analyze import TO_ANALYZE_CONDITION  # noqa: E402
 from utils.database.models import Comparison  # noqa: E402
 from utils.database.models.publish import (  # noqa: E402
     PublishDestination,
@@ -100,6 +102,26 @@ def test_a_comparison_waiting_for_analysis_can_be_reserved(database):
             session.add(comparison)
             await session.commit()
         assert (await dataset_counts()).reserved == 1
+
+    database(scenario)
+
+
+def test_analysis_reaches_what_was_reserved_then_archived(database):
+    async def waiting(comparison_id: uuid.UUID) -> bool:
+        async with get_session() as session:
+            found = await session.exec(
+                select(Comparison.id).where(
+                    Comparison.id == comparison_id, TO_ANALYZE_CONDITION
+                )
+            )
+            return found.first() is not None
+
+    async def scenario():
+        llms = await add_llms()
+        archived = await add_comparison(llms, archived=True)
+        assert not await waiting(archived)
+        assert await reservation.reserve(archived)
+        assert await waiting(archived)
 
     database(scenario)
 
