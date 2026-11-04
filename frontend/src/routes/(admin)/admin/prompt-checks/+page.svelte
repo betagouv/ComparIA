@@ -13,7 +13,7 @@
   import { api } from '$lib/fastapi-client'
   import type { PromptCheckCriterion, PromptCheckStatus } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { AnyFormItemProps } from '$lib/utils/form'
   import type { PageProps } from './$types'
   import ActivityLineChart from './ActivityLineChart.svelte'
@@ -25,11 +25,11 @@
   let { data }: PageProps = $props()
 
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/prompt-check',
       // The key is write-only: it is in the form, never in what the API returns.
-      data: data.check as PromptCheckStatus & { api_key?: string },
-      schema: data.schema,
+      initialData: () => data.check as PromptCheckStatus & { api_key?: string },
+      schema: () => data.schema,
       i18nKey: 'prompt_check_upsert',
       method: 'put',
       omitKeys: [
