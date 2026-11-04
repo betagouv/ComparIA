@@ -197,6 +197,18 @@ The same page sets two limits on how many conversations one IP may start over a 
 
 Tags are archived rather than deleted, so old votes keep meaning something.
 
+## Survey
+
+`/admin/survey` holds the questions asked to describe who takes part. Each question is a single choice or a set of checkboxes, with a label per language and its options. There is no free text answer: add an option instead.
+
+The table lists every question in the order it is asked, with its respondent count. Drag a row or use the arrows to reorder.
+
+- **Required**: a signed-in account must answer it before it can chat or vote again. The questions come up right after sign-in. Optional questions are offered in a card in the navigation bar, to anonymous visitors too.
+- **Published**: only the answers to published questions go into the public dataset. A set of answers shared by fewer than five respondents is exported empty, and only answers given under the terms in force are exported.
+- **Archive**: a question with answers is archived rather than deleted, and a removed option is archived too, so existing answers keep their label. Delete only works on a question nobody answered.
+
+An optional question shown but left blank comes back at most three times, with a gap between showings set by `survey_reask_after_days` in the instance settings (7 days by default). People see and edit their answers on their settings page, and the answers are part of their data export.
+
 ## Suggestions
 
 `/admin/suggestions` holds the starter prompts on an empty arena page, grouped into categories. Both categories and prompts are per language, so each locale gets its own.
