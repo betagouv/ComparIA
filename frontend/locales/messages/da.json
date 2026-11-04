@@ -559,6 +559,14 @@
             "secureLabel": "Forbindelse via HTTPS",
             "subtitle": "Konfigurer destinationer og deres frekvens. Historikken samler alle publikationer.",
             "timezoneLabel": "Tidszone",
+            "voterIds": {
+                "title": "Vælger-id'er i det rå datasæt",
+                "help": "Tilføjer et pseudonymt id pr. vælger til det rå datasæt: det samme for alle sammenligninger fra en konto eller en anonym session. Det gør det muligt at samle én persons samtaler, for eksempel for at udelade nogen, der gentager den samme prompt. Det åbne datasæt indeholder det aldrig. Id'et kan ikke føres tilbage til kontoen eller sessionen og forsvinder, når kontoen slettes, eller når opbevaringsperioden udløber.",
+                "label": "Udgiv vælger-id'er i det rå datasæt",
+                "warning": "Alle, der modtager det rå datasæt, vil kunne forbinde én persons samtaler med hinanden. Kontrollér, at vilkårene dækker det. Et Hugging Face-repository, der modtager det rå datasæt, skal være privat eller lukket med manuel godkendelse, ellers mislykkes upload.",
+                "save": "Gem",
+                "success": "Indstillingen er gemt. Den gælder fra næste udgivelse."
+            },
             "title": "Datasætpublicering",
             "tokenHelp": "Et skrivebeskyttet token (read-only) består læsetjekket, men fejler ved første offentliggørelse.",
             "tokenKeep": "Lad feltet stå tomt for at beholde det gemte token.",

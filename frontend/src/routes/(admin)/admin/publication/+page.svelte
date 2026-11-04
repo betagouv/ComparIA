@@ -17,6 +17,7 @@
   import type { AdminPublishDestination, AdminPublishStatus } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import DatasetVoterIds from '$components/admin/DatasetVoterIds.svelte'
   import type { TableCol } from '$lib/utils/data'
   import { untrack } from 'svelte'
   import type { PageProps } from './$types'
@@ -378,6 +379,8 @@
       </div>
     </form>
   </section>
+
+  <DatasetVoterIds enabled={data.settings.dataset_voter_ids} onSaved={refetch} />
 
   <section class="mb-10">
     <Table

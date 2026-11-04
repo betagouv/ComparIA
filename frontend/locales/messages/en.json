@@ -559,6 +559,14 @@
             "secureLabel": "Connect over HTTPS",
             "subtitle": "Where the dataset goes, how often, and what the last run did.",
             "timezoneLabel": "Time zone",
+            "voterIds": {
+                "title": "Voter ids in the raw dataset",
+                "help": "Adds a pseudonymous id per voter to the raw dataset: the same for every comparison of an account, or of an anonymous session. It lets you group one person's conversations, for example to leave out someone who replays the same prompt. The open dataset never carries it. The id cannot be traced back to the account or the session, and disappears when the account is deleted or at the end of the retention period.",
+                "label": "Publish voter ids in the raw dataset",
+                "warning": "Whoever receives the raw dataset will be able to link one person's conversations together. Check that the terms of use cover it. A Hugging Face repository receiving the raw dataset has to be private, or gated with manual review, or the upload fails.",
+                "save": "Save",
+                "success": "Setting saved. It applies from the next publication."
+            },
             "title": "Dataset publishing",
             "tokenHelp": "A read-only token passes a read check and fails on the first real upload.",
             "tokenKeep": "Leave empty to keep the token already stored.",

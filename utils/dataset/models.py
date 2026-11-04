@@ -22,6 +22,7 @@ from utils.database.models import (
     UserMessageRead,
 )
 from utils.database.models.llms.constants import LLMStatus
+from utils.dataset.voters import VoterType
 
 # Same two datasets a destination subscribes to, kept in one place so the two
 # lists cannot drift apart.
@@ -69,6 +70,10 @@ class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
 
 class DatasetComparisonExtraMetadata(SQLModel):
     cohorts: str | None
+    # Raw dataset only, and only once an instance turns it on, see
+    # utils/dataset/voters.py. Not read from the comparison: set by the export.
+    voter_id: str | None = None
+    voter_type: VoterType | None = None
     error: ErrorDetails | None
     llm_analyzed: bool | None = None
     contains_pii: bool | None = None
