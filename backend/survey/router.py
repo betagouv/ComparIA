@@ -15,6 +15,7 @@ from backend.survey.services import (
 from utils.database.models.auth import User
 from utils.database.models.survey import PublicSurveyResponse, SurveyAnswerSubmit
 from utils.database.session import get_session
+from utils.i18n import DEFAULT_LOCALE
 
 router = APIRouter(prefix="/survey", tags=["survey"])
 
@@ -34,7 +35,7 @@ def _respondent(
 async def get_questions(
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
-    locale: str = Query(default="fr"),
+    locale: str = Query(default=DEFAULT_LOCALE),
 ) -> PublicSurveyResponse:
     user_id, anon_hash = _respondent(user, anonymous_user_hash)
     questions = await list_questions(locale)
