@@ -1051,7 +1051,7 @@ async def get_me(request: Request) -> dict:
             "totp_enabled": await has_confirmed_totp(user.id),
             # Whether a required signup question is still unanswered, which
             # holds every arena write until it is (see survey/dependencies.py).
-            "questionsAnswered": await signup_questions_answered(
+            "questions_answered": await signup_questions_answered(
                 user_id=user.id, anonymous_user_hash=None
             ),
         }

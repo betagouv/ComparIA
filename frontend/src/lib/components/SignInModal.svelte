@@ -44,7 +44,7 @@
     step = 'email'
     updateComparisonsContext(comparisons)
     useToast(m['auth.success'](), 4000)
-    if (auth.user && !auth.user.questionsAnswered) {
+    if (auth.user && !auth.user.questions_answered) {
       survey.showRequiredSurvey = true
     }
   }

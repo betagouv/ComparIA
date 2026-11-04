@@ -520,7 +520,7 @@ describe('SignInForm after the code', () => {
         return Promise.resolve({ email: 'a@example.com', first_sign_in: firstSignIn })
       if (path === '/auth/me')
         return Promise.resolve({
-          user: { email: 'a@example.com', role: 'user', questionsAnswered }
+          user: { email: 'a@example.com', role: 'user', questions_answered: questionsAnswered }
         })
       return Promise.reject(new Error(`Unexpected request: ${path}`))
     })

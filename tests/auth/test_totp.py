@@ -895,7 +895,7 @@ def test_me_says_whether_the_authenticator_is_enrolled():
             "email": "admin@example.test",
             "role": "admin",
             "totp_enabled": True,
-            "questionsAnswered": True,
+            "questions_answered": True,
         }
     }
 

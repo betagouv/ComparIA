@@ -146,7 +146,7 @@
     // Delay a bit the context change to avoid modal closing itself
     auth.user = data.user
     // Ask questions if any and user didn't yet answered it
-    if (survey.questions.length && (firstSignIn || !auth.user!.questionsAnswered)) {
+    if (survey.questions.length && (firstSignIn || !auth.user!.questions_answered)) {
       step = 'questions'
     } else {
       firstSignIn = false

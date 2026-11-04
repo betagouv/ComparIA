@@ -45,7 +45,7 @@ export function provideSurveyContext(source: () => PublicSurveyResponse) {
     })
   })
   // Show modal at page load if survey not fullfilled
-  let showRequiredSurvey = $state(auth.user?.questionsAnswered === false)
+  let showRequiredSurvey = $state(auth.user?.questions_answered === false)
   // Whether there is anything to ask and whether this visitor has already been offered the popup.
   // FIXME hardcoded: do not show survey for 'pix' cohorts
   const showSurveyCard = $derived(
