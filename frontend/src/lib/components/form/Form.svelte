@@ -109,8 +109,10 @@
           {m['form.containsErrors']()}
           {#each anyError as [errId, errMsg], i (i)}
             <li class="block!">
-              <a href="#{errId}">"{items?.find((item) => item.id === errId)?.label ?? errId}"</a>:
-              {errMsg}
+              {#if errId}<a href="#{errId}"
+                  >"{items?.find((item) => item.id === errId)?.label ?? errId}"</a
+                >:
+              {/if}{errMsg}
             </li>
           {/each}
         </ul>
