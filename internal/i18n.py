@@ -1,10 +1,10 @@
 import glob
 from typing import Any
 
+from utils.i18n import DEFAULT_LOCALE
 from utils.utils import (
     FRONTEND_I18N_DIR,
     FRONTEND_MAIN_I18N_FILE,
-    MAIN_LOCALE,
     read_json,
     write_json,
 )
@@ -83,10 +83,10 @@ def clean_locales():
     Remove stale keys in all locales files.
     """
     locales = ALL_LOCALES
-    locales.discard(MAIN_LOCALE)
+    locales.discard(DEFAULT_LOCALE)
 
-    # Remove {MAIN_LOCALE}.json no longer present keys in other locales files
+    # Remove {DEFAULT_LOCALE}.json no longer present keys in other locales files
     main_data = read_json(FRONTEND_MAIN_I18N_FILE)
     remove_stale_keys(get_flatten_keys(main_data), locales)
-    # Also sort {MAIN_LOCALE}.json
+    # Also sort {DEFAULT_LOCALE}.json
     write_json(FRONTEND_MAIN_I18N_FILE, sort_dict(main_data), indent=4)
