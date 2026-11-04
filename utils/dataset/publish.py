@@ -103,7 +103,15 @@ def _push_to_huggingface(
     published = repo_id.split("/")[-1]
 
     api = HfApi(token=config.token)
-    api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
+    # The raw dataset holds every conversation, the held-back ones included.
+    # Left unset, a new repository takes the organisation's default, which is
+    # public, and an existing one keeps whatever someone gave it.
+    private = dataset == "raw"
+    api.create_repo(repo_id, repo_type="dataset", private=private, exist_ok=True)
+    if private and not api.repo_info(repo_id, repo_type="dataset").private:
+        raise DestinationError(
+            f"'{repo_id}' is public: the raw dataset only goes to a private repository."
+        )
 
     operations: list = [
         CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(path))
