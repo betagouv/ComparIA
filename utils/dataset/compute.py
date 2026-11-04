@@ -388,12 +388,16 @@ def _build_exporters(
             )
         elif dataset == "reserved":
             # The open dataset's columns, so a partner's code reads both.
+            # Nothing reserved is normal, before the first reservation or
+            # after a release: the partner's copy then empties like any other
+            # snapshot, rather than going on showing what was released.
             exporters[dataset] = StreamingDatasetExporter(
                 name,
                 export_base_path / name,
                 keep=_reserved,
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
+                empty_ok=True,
             )
         else:
             exporters[dataset] = StreamingDatasetExporter(
@@ -446,7 +450,7 @@ async def stream_to_exporters(
             f"{len(failed_comparison_ids)} comparisons could not be properly parsed: \n"
             + "\n".join(f"- '{id_}'" for id_ in failed_comparison_ids)
         )
-    if total_rows == 0:
+    if total_rows == 0 and not all(exp.empty_ok for exp in exporters.values()):
         raise Exception("No rows produced, aborting export")
 
 

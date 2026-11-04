@@ -457,3 +457,40 @@ def test_a_build_starts_from_an_empty_folder(tmp_path):
     compute._build_exporters(["reserved"], tmp_path)
 
     assert not (stale / "comparisons-reserved.parquet").exists()
+
+
+async def no_comparisons(*args, **kwargs):
+    return
+    yield
+
+
+def test_an_empty_reserved_dataset_empties_the_partners_copy(monkeypatch, tmp_path):
+    import pyarrow.parquet as pq
+
+    from utils.dataset import compute
+    from utils.dataset.publish import _built_files
+
+    monkeypatch.setattr(compute, "get_db_comparisons_stream", no_comparisons)
+
+    exporters = compute._build_exporters(["reserved"], tmp_path)
+    asyncio.run(compute.stream_to_exporters(exporters))
+
+    built = tmp_path / "comparisons-reserved"
+    parquet = pq.read_table(built / "comparisons-reserved.parquet")
+    assert parquet.num_rows == 0
+    assert "comparison_id" in parquet.column_names
+    assert "extra_metadata" not in parquet.column_names
+    assert (built / "comparisons-reserved.parquet", "partner.parquet") in _built_files(
+        built, "reserved", "partner"
+    )
+
+
+@pytest.mark.parametrize("datasets", [["normal"], ["normal", "reserved"]])
+def test_an_empty_open_dataset_still_stops_the_run(monkeypatch, tmp_path, datasets):
+    from utils.dataset import compute
+
+    monkeypatch.setattr(compute, "get_db_comparisons_stream", no_comparisons)
+
+    exporters = compute._build_exporters(datasets, tmp_path)
+    with pytest.raises(Exception, match="No rows produced"):
+        asyncio.run(compute.stream_to_exporters(exporters))
