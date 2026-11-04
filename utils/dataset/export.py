@@ -41,6 +41,9 @@ class StreamingDatasetExporter:
     parquet is the canonical format used by HuggingFace and our own tooling),
     it would be ~70% of the published bytes, and serialising it was the export's
     memory and time bottleneck. The tiny sample previews are still written.
+
+    With `empty_ok`, a dataset that keeps no row still writes its parquet, with
+    its columns and no rows, for the file to replace the one last sent.
     """
 
     def __init__(
@@ -52,12 +55,14 @@ class StreamingDatasetExporter:
         drop_columns: tuple[str, ...] = (),
         schema_rows: list[dict] | None = None,
         batch_rows: int = BATCH_ROWS,
+        empty_ok: bool = False,
     ):
         self.dataset_name = dataset_name
         self.export_dir = export_dir
         self.keep = keep
         self.drop_columns = drop_columns
         self.batch_rows = batch_rows
+        self.empty_ok = empty_ok
 
         export_dir.mkdir(exist_ok=True)
         self._parquet_path = export_dir / f"{dataset_name}.parquet"
@@ -123,6 +128,8 @@ class StreamingDatasetExporter:
 
     def close(self) -> None:
         self._flush()
+        if self._parquet_writer is None and self.empty_ok and self._schema:
+            self._parquet_writer = pq.ParquetWriter(self._parquet_path, self._schema)
         if self._parquet_writer is not None:
             self._parquet_writer.close()
 
