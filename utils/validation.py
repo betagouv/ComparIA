@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BeforeValidator, RootModel, ValidationInfo, model_validator
 
-from utils.utils import SUPPORTED_LOCALES
+from utils.i18n import SUPPORTED_LOCALES
 
 _LOOPBACK_HOSTS = {"localhost", "127.0.0.1"}
 

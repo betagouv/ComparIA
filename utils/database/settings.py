@@ -2,8 +2,9 @@ import uuid
 from datetime import datetime
 
 from backend.config import settings
-from utils.database.models.app_settings import DEFAULT_ENABLED_LOCALES, AppSettings
+from utils.database.models.app_settings import AppSettings
 from utils.database.session import get_session
+from utils.i18n import DEFAULT_ENABLED_LOCALES
 from utils.storage.redis import REDIS_APP_SETTINGS_KEY, invalidate_cache, redis_cache
 
 # The instance name happens to be a locale code on fr and da. One-off instances

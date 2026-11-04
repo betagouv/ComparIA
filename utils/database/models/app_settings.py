@@ -8,7 +8,7 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from utils.utils import SUPPORTED_LOCALES
+from utils.i18n import DEFAULT_ENABLED_LOCALES, SUPPORTED_LOCALES
 from utils.validation import is_secure_url
 
 from .publish import PublishFrequency
@@ -77,14 +77,6 @@ def _normalize_homepage_url(value: object) -> str | None:
     ):
         raise ValueError("Homepage URL must be an absolute HTTPS URL")
     return url
-
-
-# What a new instance starts with, and what the migration backfills onto the
-# existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
-# few translated messages to be offered unasked, which is why prod carried
-# PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
-# /admin/locales, which is the point of the setting.
-DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
 
 
 def _check_enabled_locales(value: list[str]) -> list[str]:
