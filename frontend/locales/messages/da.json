@@ -537,15 +537,6 @@
             "regionLabel": "Region",
             "repoPathHelp": "I formatet organisation/arkiv. Rådatasættet sendes til det samme navn efterfulgt af -raw.",
             "repoPathLabel": "Arkiv",
-            "reviewerEndpointLabel": "Slutpunkt",
-            "reviewerEndpointNone": "Intet slutpunkt",
-            "reviewerHelp": "Denne model analyserer samtaler før offentliggørelse for at opdage personlige data og spam.",
-            "reviewerIncomplete": "Vælg et slutpunkt og angiv en model, eller lad begge felter stå tomme.",
-            "reviewerModelHelp": "Modellen, som slutpunktet forventer.",
-            "reviewerModelLabel": "Model",
-            "reviewerSave": "Gem analysemodellen",
-            "reviewerSuccess": "Analysemodel gemt",
-            "reviewerTitle": "Analysemodel",
             "runCounts": "Offentliggjorte samtaler: {published} · sat til side: {heldBack}.",
             "runCountsUnknown": "Denne kørsel genopbyggede ikke det åbne datasæt.",
             "runFailed": "Mislykkedes den {date}",
@@ -562,7 +553,36 @@
             "title": "Datasætpublicering",
             "tokenHelp": "Et skrivebeskyttet token (read-only) består læsetjekket, men fejler ved første offentliggørelse.",
             "tokenKeep": "Lad feltet stå tomt for at beholde det gemte token.",
-            "tokenLabel": "Skrive-token"
+            "tokenLabel": "Skrive-token",
+            "datasetCheck": {
+                "title": "Analyse før offentliggørelse",
+                "help": "Før hver offentliggørelse læser beslutningsmodellen hver samtale, spørgsmål og svar medregnet. Den siger, om den indeholder personoplysninger eller spam, og angiver dens emner og sprog.",
+                "formTitle": "Indstillinger for analysen",
+                "noModel": "Ingen beslutningsmodel",
+                "noModelHint": "Intet analyseres, så ingen nye samtaler offentliggøres. Vælg en model nedenfor.",
+                "noKey": "Ingen OpenRouter-nøgle",
+                "noKeyHint": "Hverken her, på beskedtjekket eller i OPENROUTER_API_KEY: analysen kan ikke køre.",
+                "criteriaEmpty": "Ingen kriterier: kun emner og sprog analyseres.",
+                "reasons": {
+                    "pii": "Personoplysninger",
+                    "spam": "Spam"
+                },
+                "try": {
+                    "title": "Test en samtale",
+                    "label": "Samtale",
+                    "hint": "Indsæt den, som den er. Intet gemmes, og de ikke-gemte indstillinger ovenfor bruges.",
+                    "run": "Analysér",
+                    "empty": "Indsæt en samtale, der skal analyseres.",
+                    "published": "Ville blive offentliggjort",
+                    "excluded": "Ville ikke blive offentliggjort",
+                    "reached": "Tærskel nået",
+                    "notReached": "Under tærsklen",
+                    "categories": "Emner:",
+                    "languages": "Sprog:",
+                    "none": "ingen",
+                    "allScores": "Alle scorer"
+                }
+            }
         },
         "settings": {
             "authentification": {
@@ -1570,6 +1590,58 @@
             "conversations_same_models_per_ip_per_hour": {
                 "help": "Samme grænse for ét modelpar. 0 slår den fra, tom går tilbage til instansens standard.",
                 "label": "Samtaler pr. IP pr. time med de samme modeller"
+            }
+        },
+        "dataset_check_upsert": {
+            "api_key": {
+                "help": "Tom bruger analysen beskedtjekkets nøgle og derefter OPENROUTER_API_KEY.",
+                "label": "OpenRouter API-nøgle"
+            },
+            "category_threshold": {
+                "help": "Et emne tildeles fra denne score. Ingen nået: « Other ».",
+                "label": "Tærskel for emner"
+            },
+            "criteria": {
+                "help": "En samtale, der når et kriteriums tærskel, offentliggøres ikke.",
+                "label": "Udelukkelseskriterier"
+            },
+            "DatasetCheckCriterion": {
+                "key": {
+                    "help": "De gemte scorer arkiveres efter nøgle: skift den ikke, når kriteriet er i brug.",
+                    "label": "Nøgle"
+                },
+                "label": {
+                    "label": "Navn"
+                },
+                "no": {
+                    "label": "Tæller som nej"
+                },
+                "question": {
+                    "help": "Et lukket spørgsmål om samtalen (`message`), der besvares med ja eller nej.",
+                    "label": "Spørgsmål til modellen"
+                },
+                "reason": {
+                    "help": "Personoplysninger eller spam: det offentliggjorte flag og arkiveringsgrunden.",
+                    "label": "Grund"
+                },
+                "threshold": {
+                    "label": "Tærskel"
+                },
+                "yes": {
+                    "label": "Tæller som ja"
+                }
+            },
+            "description": {
+                "help": "Modellen læser den med hver samtale. Sig, hvad instansen er, og hvad der offentliggøres.",
+                "label": "Beskrivelse af instansen"
+            },
+            "language_threshold": {
+                "help": "Et sprog tildeles fra denne score.",
+                "label": "Tærskel for sprog"
+            },
+            "model": {
+                "help": "En beslutningsmodel fra OpenRouter. Tom analyseres og offentliggøres ingen samtaler.",
+                "label": "Beslutningsmodel"
             }
         }
     },

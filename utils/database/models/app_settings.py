@@ -160,13 +160,6 @@ class AppSettings(SQLModel, table=True):
         default=SECONDARY_COLOR_DARK_DEFAULT, max_length=7
     )
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
-    # The model that reads whole comparisons before publication and says
-    # whether they hold personal information or spam. It is not the arena's
-    # input guardrail: different check, different provider, its own setting.
-    analysis_endpoint_id: uuid.UUID | None = Field(
-        default=None, foreign_key="llm_endpoint.id"
-    )
-    analysis_model: str | None = Field(default=None, max_length=200)
     # When the publish run fires. 'off' until an instance asks for one.
     publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
     publish_hour: int = Field(default=3)
@@ -219,8 +212,6 @@ class AppSettingsPublic(SQLModel):
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
-    analysis_endpoint_id: uuid.UUID | None
-    analysis_model: str | None
     publish_frequency: PublishFrequency
     publish_hour: int
     publish_timezone: str
@@ -258,8 +249,6 @@ class AppSettingsPatch(SQLModel):
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
     enabled_locales: list[str] | None = None
     default_locale: str | None = None
-    analysis_endpoint_id: uuid.UUID | None = None
-    analysis_model: str | None = Field(default=None, max_length=200)
     publish_frequency: PublishFrequency | None = None
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)

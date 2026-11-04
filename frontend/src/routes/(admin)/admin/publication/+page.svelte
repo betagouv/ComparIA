@@ -18,8 +18,8 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
-  import { untrack } from 'svelte'
   import type { PageProps } from './$types'
+  import { DatasetCheck } from './components'
 
   let { data }: PageProps = $props()
 
@@ -52,9 +52,6 @@
 
   let busy = $state(false)
   let publishing = $state<string>()
-  let reviewerEndpointId = $state(untrack(() => data.settings.analysis_endpoint_id ?? ''))
-  let reviewerModel = $state(untrack(() => data.settings.analysis_model ?? ''))
-  let reviewerError = $state<string>()
   let formError = $state<string>()
   let editing = $state<AdminPublishDestination>()
   let toDelete = $state<AdminPublishDestination>()
@@ -217,33 +214,6 @@
     }
   }
 
-  async function saveReviewer(event?: SubmitEvent) {
-    event?.preventDefault()
-    reviewerError = undefined
-    const model = reviewerModel.trim()
-    if ((reviewerEndpointId && !model) || (!reviewerEndpointId && model)) {
-      reviewerError = m['admin.publishing.reviewerIncomplete']()
-      return
-    }
-    busy = true
-    try {
-      await api.request('/admin/settings', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          analysis_endpoint_id: reviewerEndpointId || null,
-          analysis_model: model || null
-        })
-      })
-      reviewerModel = model
-      useToast(m['admin.publishing.reviewerSuccess'](), 4000)
-      await refetch()
-    } catch (error) {
-      reviewerError = (error as ApiError).message
-    } finally {
-      busy = false
-    }
-  }
-
   const setEnabled = (destination: AdminPublishDestination, enabled: boolean) =>
     run(
       () =>
@@ -343,40 +313,9 @@
   subtitle={m['admin.publishing.subtitle']()}
 >
   <section class="mb-10">
-    <h2 class="fr-h6 mb-2!">{m['admin.publishing.reviewerTitle']()}</h2>
-    <p class="fr-text--sm text-grey mb-4!">
-      {m['admin.publishing.reviewerHelp']()}
-      {m['admin.publishing.reviewerModelHelp']()}
-    </p>
-
-    <form onsubmit={saveReviewer}>
-      <div class="gap-4 md:grid-cols-2 grid">
-        <Select
-          id="reviewer-endpoint"
-          bind:selected={reviewerEndpointId}
-          label={m['admin.publishing.reviewerEndpointLabel']()}
-          options={[
-            { value: '', label: m['admin.publishing.reviewerEndpointNone']() },
-            ...data.endpoints
-              .filter((endpoint) => endpoint.id)
-              .map((endpoint) => ({ value: endpoint.id!, label: endpoint.name }))
-          ]}
-        />
-        <Input
-          id="reviewer-model"
-          bind:value={reviewerModel}
-          label={m['admin.publishing.reviewerModelLabel']()}
-        />
-      </div>
-
-      {#if reviewerError}
-        <p class="fr-error-text" aria-live="polite">{reviewerError}</p>
-      {/if}
-
-      <div class="flex justify-start">
-        <Button type="submit" text={m['admin.publishing.reviewerSave']()} disabled={busy} />
-      </div>
-    </form>
+    <h2 class="fr-h6 mb-2!">{m['admin.publishing.datasetCheck.title']()}</h2>
+    <p class="fr-text--sm text-grey mb-4!">{m['admin.publishing.datasetCheck.help']()}</p>
+    <DatasetCheck check={data.datasetCheck} schema={data.datasetCheckSchema} models={data.models} />
   </section>
 
   <section class="mb-10">

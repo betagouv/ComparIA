@@ -29,8 +29,6 @@ const base: AppSettingsPublic = {
   secondary_color_light: '#FF9575',
   secondary_color_dark: '#FFCC00',
   homepage_url: null,
-  analysis_endpoint_id: null,
-  analysis_model: null,
   publish_frequency: 'off',
   publish_hour: 3,
   publish_timezone: 'UTC',

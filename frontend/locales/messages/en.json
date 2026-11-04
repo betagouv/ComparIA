@@ -537,15 +537,6 @@
             "regionLabel": "Region",
             "repoPathHelp": "As organisation/repository. The raw dataset goes to the same name followed by -raw.",
             "repoPathLabel": "Repository",
-            "reviewerEndpointLabel": "Endpoint",
-            "reviewerEndpointNone": "No endpoint",
-            "reviewerHelp": "This model reads the conversations before publication to spot personal data and spam.",
-            "reviewerIncomplete": "Select an endpoint and fill in a model, or leave both fields empty.",
-            "reviewerModelHelp": "Identifier of the model the endpoint expects.",
-            "reviewerModelLabel": "Model",
-            "reviewerSave": "Save the analysis model",
-            "reviewerSuccess": "Analysis model saved",
-            "reviewerTitle": "Analysis model",
             "runCounts": "Conversations published: {published} · held back: {heldBack}.",
             "runCountsUnknown": "This run did not rebuild the open dataset.",
             "runFailed": "Failed on {date}",
@@ -562,7 +553,36 @@
             "title": "Dataset publishing",
             "tokenHelp": "A read-only token passes a read check and fails on the first real upload.",
             "tokenKeep": "Leave empty to keep the token already stored.",
-            "tokenLabel": "Write token"
+            "tokenLabel": "Write token",
+            "datasetCheck": {
+                "title": "Analysis before publishing",
+                "help": "Before each publication, the decision model reads every conversation, questions and answers included. It says whether it holds personal data or spam, and gives its topics and languages.",
+                "formTitle": "Analysis settings",
+                "noModel": "No decision model",
+                "noModelHint": "Nothing is analysed, so no new conversation is published. Pick a model below.",
+                "noKey": "No OpenRouter key",
+                "noKeyHint": "None here, on the message check or in OPENROUTER_API_KEY: the analysis cannot run.",
+                "criteriaEmpty": "No criteria: only topics and languages are analysed.",
+                "reasons": {
+                    "pii": "Personal data",
+                    "spam": "Spam"
+                },
+                "try": {
+                    "title": "Test a conversation",
+                    "label": "Conversation",
+                    "hint": "Paste it as it is. Nothing is saved, and the unsaved settings above are used.",
+                    "run": "Analyse",
+                    "empty": "Paste a conversation to analyse.",
+                    "published": "Would be published",
+                    "excluded": "Would not be published",
+                    "reached": "Threshold reached",
+                    "notReached": "Under the threshold",
+                    "categories": "Topics:",
+                    "languages": "Languages:",
+                    "none": "none",
+                    "allScores": "All scores"
+                }
+            }
         },
         "settings": {
             "authentification": {
@@ -1570,6 +1590,58 @@
             "conversations_same_models_per_ip_per_hour": {
                 "help": "The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.",
                 "label": "Conversations per IP per hour with the same models"
+            }
+        },
+        "dataset_check_upsert": {
+            "api_key": {
+                "help": "Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.",
+                "label": "OpenRouter API key"
+            },
+            "category_threshold": {
+                "help": "A topic is given from this score. None reached: « Other ».",
+                "label": "Topic threshold"
+            },
+            "criteria": {
+                "help": "A conversation that reaches the threshold of a criterion is not published.",
+                "label": "Exclusion criteria"
+            },
+            "DatasetCheckCriterion": {
+                "key": {
+                    "help": "Stored scores are filed by key: do not change it once the criterion is in use.",
+                    "label": "Key"
+                },
+                "label": {
+                    "label": "Name"
+                },
+                "no": {
+                    "label": "Counts as no"
+                },
+                "question": {
+                    "help": "A closed question about the conversation (the `message`), answered yes or no.",
+                    "label": "Question asked to the model"
+                },
+                "reason": {
+                    "help": "Personal data or spam: the published flag and the archiving reason.",
+                    "label": "Reason"
+                },
+                "threshold": {
+                    "label": "Threshold"
+                },
+                "yes": {
+                    "label": "Counts as yes"
+                }
+            },
+            "description": {
+                "help": "The model reads it with every conversation. Say what the instance is and what is published.",
+                "label": "Instance description"
+            },
+            "language_threshold": {
+                "help": "A language is given from this score.",
+                "label": "Language threshold"
+            },
+            "model": {
+                "help": "A decision model from OpenRouter. Empty, no conversation is analysed or published.",
+                "label": "Decision model"
             }
         }
     },
