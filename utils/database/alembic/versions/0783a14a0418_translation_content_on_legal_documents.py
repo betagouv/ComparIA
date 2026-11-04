@@ -66,6 +66,8 @@ def upgrade() -> None:
 
     for group in grouped.values():
         # Keep the first published row and combine all translations into it.
+        # Its content_hash stays as is: the acceptances recorded against it
+        # carry that hash, and the client compares the two.
         keep = group[0]
         translations = {row["language"]: row["content"] for row in group}
 

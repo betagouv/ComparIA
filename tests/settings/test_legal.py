@@ -192,6 +192,29 @@ def test_published_version_cannot_be_reused_with_different_content():
     assert not fake_session.committed
 
 
+def test_republishing_a_merged_version_returns_it_unchanged():
+    effective_at = utc_now() + timedelta(days=1)
+    # Merged from one row per language, it kept the hash of one of them.
+    existing = legal_document(
+        version="2.0",
+        content={"fr": "Original", "en": "Original"},
+        content_hash="b" * 64,
+        effective_at=effective_at,
+    )
+    fake_session = FakeSession([[existing]])
+
+    published = publish(
+        fake_session,
+        kind="terms",
+        version="2.0",
+        content={"fr": "Original", "en": "Original"},
+        effective_at=effective_at,
+    )
+
+    assert published is existing
+    assert not fake_session.added
+
+
 def test_effective_date_must_stay_in_publication_window():
     for value in (
         datetime.now(timezone.utc) - timedelta(minutes=6),

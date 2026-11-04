@@ -262,9 +262,10 @@ async def publish_legal_document(
         )
         existing = existing_result.first()
         if existing:
+            # Compared on content, not hash: documents merged from one row per
+            # language keep the hash their acceptances were recorded with.
             if (
-                existing.content_hash != digest
-                or existing.content != content
+                existing.content != content
                 or existing.effective_at != normalized_effective_at
             ):
                 raise DuplicateLegalDocumentError(
