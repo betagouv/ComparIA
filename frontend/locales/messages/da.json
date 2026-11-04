@@ -597,6 +597,14 @@
                     "title": "Platformfarver"
                 },
                 "discard": "Annuller ændringer",
+                "home": {
+                    "bannerHint": "Vises øverst på forsiden. Lad feltet være tomt for ikke at vise et. **Tekst** for fed, [tekst](https://…) for et link.",
+                    "bannerLabel": "Advarselsbanner",
+                    "hint": "Disse tekster erstatter dem på arenaens forside. Lad et felt være tomt for at beholde standardteksten.",
+                    "promptPlaceholderLabel": "Tekst i beskedfeltet",
+                    "title": "Arenaens forside",
+                    "titleLabel": "Titel"
+                },
                 "homepageUrl": {
                     "hint": "Denne adresse åbnes, når en person vælger logoet eller platformens navn. Lad den stå tom for at bruge den lokale startside.",
                     "invalid": "Indtast en fuld HTTPS-URL.",

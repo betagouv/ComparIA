@@ -3,6 +3,7 @@
     type: HTMLInputElement['type']
     placeholder?: HTMLInputElement['placeholder']
     step?: HTMLInputElement['step']
+    maxlength?: HTMLInputElement['maxLength']
     // Id of a <datalist> suggesting values without limiting the field to them.
     list?: string
   } & BaseFormFieldProps<'input'>
@@ -19,6 +20,7 @@
     disabled,
     placeholder,
     step,
+    maxlength,
     list,
     children,
     ...props
@@ -34,6 +36,7 @@
         {placeholder}
         {disabled}
         {step}
+        {maxlength}
         {list}
         bind:value
         class="fr-input"

@@ -5,9 +5,11 @@
   import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
+  import { getAuthContext } from '$lib/auth.svelte'
   import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
+  import { getLocale } from '$lib/i18n/runtime'
   import { getModelsContext } from '$lib/models'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
@@ -30,6 +32,11 @@
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
+
+  const authConfig = getAuthContext().config
+  const homeTitle = authConfig.home_title?.[getLocale()] || m['arenaHome.title']()
+  const homePromptPlaceholder =
+    authConfig.home_prompt_placeholder?.[getLocale()] || m['arenaHome.prompt.placeholder']()
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 
@@ -184,7 +191,7 @@
   <div id="prompt-area" class="fr-container py-10 md:py-24 my-auto">
     <div class="fr-col-xl-8 m-auto">
       <h2 class="fr-h4 mb-0! text-center">
-        {m['arenaHome.title']()}
+        {homeTitle}
       </h2>
       <div class="gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 grid">
         <div class="md:order-none md:col-span-full order-1">
@@ -193,7 +200,7 @@
             bind:el={promptEl}
             bind:value={prompt}
             label={m['arenaHome.prompt.label']()}
-            placeholder={m['arenaHome.prompt.placeholder']()}
+            placeholder={homePromptPlaceholder}
             bind:error={promptError}
             disabled={loading}
             submitDisabled={disabled}
