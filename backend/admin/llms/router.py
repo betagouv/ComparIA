@@ -7,6 +7,7 @@ from sqlmodel import SQLModel, select
 
 from backend.admin.logos import read_logo
 from backend.config import LAB_LOGO_BOX
+from backend.utils.countries import get_ranking
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
@@ -79,6 +80,14 @@ async def get_data():
                 _to_endpoint_public(endpoint) for endpoint in db_data["endpoints"]
             ]
             db_data["labs"] = [_to_lab_public(lab) for lab in db_data["labs"]]
+
+        # Read from the ranking job, which counts every model's votes, so
+        # disabled models and those under the vote minimum show theirs too.
+        ranking = get_ranking()
+        db_data["vote_counts"] = {
+            str(llm_id): n
+            for llm_id, n in (ranking.vote_counts if ranking else {}).items()
+        }
 
         return db_data
     except Exception as e:

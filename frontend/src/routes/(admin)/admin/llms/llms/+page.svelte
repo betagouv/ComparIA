@@ -15,7 +15,10 @@
   const llms = $derived(
     data.llms.map((llm) => ({
       ...llm,
-      votes: data.data.models.find((other) => other.id === llm.id)?.data?.n_match,
+      // Ranking caches from before vote_counts existed only have n_match.
+      votes:
+        data.vote_counts[llm.id!] ??
+        data.data.models.find((other) => other.id === llm.id)?.data?.n_match,
       release_date: new Date(llm.release_date),
       updated_at: new Date(llm.updated_at!),
       created_at: new Date(llm.created_at!),

@@ -10,6 +10,7 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
     licenses: LLMLicense[]
     labs: LLMLabPublic[]
     llms: LLMData[]
+    vote_counts: Record<string, number>
   }>('/admin/llms/data', { fetch })
   const schemas = await api.request<{
     endpoints: JSONSchema
