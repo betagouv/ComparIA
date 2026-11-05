@@ -2,6 +2,7 @@ import { resolve } from '$app/paths'
 import { renderInlineMarkdown } from '$components/markdown'
 import { api, type ApiError } from '$lib/fastapi-client'
 import { m } from '$lib/i18n/messages'
+import type { Locale } from '$lib/i18n/runtime'
 import type { InternalLinkProps } from '$lib/routing'
 
 export type ConsentPresentation = {
@@ -19,7 +20,7 @@ export type ConsentPresentation = {
 export type ConsentDocument = {
   version: string
   hash: string
-  locale: string
+  locale: Locale
   presentation: ConsentPresentation
 }
 
@@ -27,7 +28,7 @@ export type ConsentEvidence = {
   terms_version: string
   terms_hash: string
   accepted_at: string
-  locale: string
+  locale: Locale
   legal_information_acknowledged: true
 }
 
@@ -35,7 +36,7 @@ export type TermsAcceptance = {
   terms: null | {
     version: string
     content_hash: string
-    locale: string
+    locale: Locale
     accepted_at: string
   }
 }
@@ -58,7 +59,7 @@ function isTermsNotPublished(error: unknown): boolean {
 type TermsResponse = {
   version: string
   content_hash: string
-  locale: string
+  locale: Locale
   presentation: {
     arena: {
       title: string
@@ -118,7 +119,7 @@ export function hasAcceptedDocument(
   )
 }
 
-async function fetchSnapshot(locale: string, authenticated: boolean): Promise<ConsentSnapshot> {
+async function fetchSnapshot(locale: Locale, authenticated: boolean): Promise<ConsentSnapshot> {
   let terms: TermsResponse
   try {
     terms = await api.request<TermsResponse>('/settings/legal/terms', {
@@ -155,7 +156,7 @@ async function fetchSnapshot(locale: string, authenticated: boolean): Promise<Co
 let cacheKey: string | undefined
 let pending: Promise<ConsentSnapshot> | undefined
 
-export function loadConsent(locale: string, authenticated: boolean): Promise<ConsentSnapshot> {
+export function loadConsent(locale: Locale, authenticated: boolean): Promise<ConsentSnapshot> {
   const key = `${locale}:${authenticated}`
   if (!pending || cacheKey !== key) {
     cacheKey = key
@@ -164,7 +165,7 @@ export function loadConsent(locale: string, authenticated: boolean): Promise<Con
   return pending
 }
 
-export function reloadConsent(locale: string, authenticated: boolean): Promise<ConsentSnapshot> {
+export function reloadConsent(locale: Locale, authenticated: boolean): Promise<ConsentSnapshot> {
   resetConsent()
   return loadConsent(locale, authenticated)
 }
