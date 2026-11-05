@@ -13,11 +13,11 @@ from backend.settings.informational_legal import (
 from backend.settings.legal import (
     DEFAULT_LEGAL_LANGUAGE,
     LegalPresentation,
-    LocaleQuery,
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
 )
+from backend.utils.locale import LocaleQuery
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 
 router = APIRouter(prefix="/settings", tags=["settings"])
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/settings", tags=["settings"])
     response_model=InformationalLegalPageContent | None,
 )
 async def public_informational_legal_pages(
-    key: LegalPageKey, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    key: LegalPageKey, locale: LocaleQuery
 ) -> InformationalLegalPageContent | None:
     return await get_informational_legal_page_content(key, locale)
 
@@ -81,7 +81,9 @@ def _cache_headers(*parts: str) -> dict[str, str]:
 
 @router.get("/legal/terms", response_model=PublicTermsDocument)
 async def public_terms(
-    request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    request: Request,
+    response: Response,
+    locale: LocaleQuery,
 ):
     document, content, locale = await _active_document("terms", locale)
     presentation = await get_legal_presentation(locale)
@@ -104,7 +106,9 @@ async def public_terms(
 
 @router.get("/legal/privacy_policy", response_model=PublicLegalDocument)
 async def public_privacy_policy(
-    request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    request: Request,
+    response: Response,
+    locale: LocaleQuery,
 ):
     document, content, locale = await _active_document("privacy_policy", locale)
     headers = _cache_headers(document.content_hash)

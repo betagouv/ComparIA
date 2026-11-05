@@ -4,7 +4,6 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-from fastapi import Query
 from pydantic import BaseModel, Field, PlainSerializer, field_validator
 from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
@@ -22,10 +21,6 @@ DEFAULT_LEGAL_LANGUAGE = DEFAULT_LOCALE
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
 LEGAL_LOCALE_PATTERN = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
-_LOCALE_QUERY = Query(
-    min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
-)
-LocaleQuery = Annotated[str, _LOCALE_QUERY]
 
 
 def _stamp_utc(value: datetime) -> datetime:
