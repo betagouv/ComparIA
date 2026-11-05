@@ -29,7 +29,7 @@
     onSubmit,
     ...props
   }: Omit<SvelteHTMLElements['form'], 'method'> & {
-    label: string
+    label?: string
     subLabel?: string
     description?: string
     items?: AnyFormItemProps[]
@@ -76,12 +76,14 @@
   aria-describedby="errors-{id}"
 >
   <div class={{ 'px-4 md:px-6 my-6': stickyFooter }}>
-    <h2 id="{id}-title" class="text-3xl!">
-      {label}
-      {#if subLabel}
-        <span class="text-grey text-base">{subLabel}</span>
-      {/if}
-    </h2>
+    {#if label}
+      <h2 id="{id}-title" class="text-3xl!">
+        {label}
+        {#if subLabel}
+          <span class="text-grey text-base">{subLabel}</span>
+        {/if}
+      </h2>
+    {/if}
 
     {#if description}
       <p class="text-sm! text-grey mb-6!">{description}</p>
