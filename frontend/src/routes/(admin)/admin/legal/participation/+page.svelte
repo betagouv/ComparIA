@@ -7,9 +7,8 @@
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import UserPreview from '$components/UserPreview.svelte'
-  import { getAuthContext } from '$lib/authContext.svelte'
   import type { ArenaLegalPresentation, SignInLegalPresentation } from '$lib/generated/admin'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import type { Locale } from '$lib/i18n/runtime'
   import { useForm } from '$lib/stores/form.svelte'
@@ -18,8 +17,7 @@
 
   const { data }: PageProps = $props()
 
-  const auth = getAuthContext()
-  const locales = $derived(getLocales(auth.config.enabled_locales))
+  const locales = getLocalesContext()
 
   const form = useForm({
     url: '/admin/legal/presentation',
@@ -27,9 +25,9 @@
     initialData: () => {
       const presentations = structuredClone(data.presentations)
       const currentLocales = getKeys(presentations)
-      const missingLocales = locales.filter((locale) => !currentLocales.includes(locale.code))
+      const missingLocales = locales.enabled.filter((locale) => !currentLocales.includes(locale))
       missingLocales.forEach((locale) => {
-        presentations[locale.code] = {
+        presentations[locale] = {
           arena: {} as ArenaLegalPresentation,
           sign_in: {} as SignInLegalPresentation
         }
