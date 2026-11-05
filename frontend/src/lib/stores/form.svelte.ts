@@ -26,7 +26,7 @@ type UseFormOptions<T extends object, K extends keyof T = never> = {
   url: string
   initialData: () => T
   omitKeys?: K[]
-  method?: 'post' | 'put'
+  method?: 'post' | 'put' | 'PATCH'
   onBeforeSubmit?: (
     form: Omit<T, K>,
     errors: FormErrors
