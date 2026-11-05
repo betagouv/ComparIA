@@ -11,7 +11,6 @@ from sqlmodel import Field, SQLModel, String
 from utils.i18n import (
     DEFAULT_ENABLED_LOCALES,
     DEFAULT_LOCALE,
-    SUPPORTED_LOCALES,
     SupportedLocale,
 )
 from utils.validation import is_secure_url
@@ -82,15 +81,6 @@ def _normalize_homepage_url(value: object) -> str | None:
     ):
         raise ValueError("Homepage URL must be an absolute HTTPS URL")
     return url
-
-
-def _check_enabled_locales(value: list[str]) -> list[str]:
-    if not value:
-        raise ValueError("At least one locale must be enabled")
-    unknown = sorted(set(value) - set(SUPPORTED_LOCALES))
-    if unknown:
-        raise ValueError(f"Unsupported locales: {', '.join(unknown)}")
-    return value
 
 
 class AppSettings(SQLModel, table=True):
@@ -352,11 +342,6 @@ class AppSettingsPatch(SQLModel):
     @field_validator("enabled_locales")
     @classmethod
     def validate_enabled_locales(cls, value: list[str] | None) -> list[str] | None:
-        return value if value is None else _check_enabled_locales(value)
-
-    @field_validator("default_locale")
-    @classmethod
-    def validate_default_locale(cls, value: str | None) -> str | None:
-        if value is not None and value not in SUPPORTED_LOCALES:
-            raise ValueError(f"Unsupported locale: {value}")
-        return value
+        if value is None or len(value) > 0:
+            return value
+        raise ValueError("At least one locale must be enabled")
