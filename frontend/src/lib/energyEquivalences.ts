@@ -1,3 +1,5 @@
+import type { Locale } from '$lib/i18n/runtime'
+
 const LED_REFERENCE_WATTS = 6
 const PHONE_BATTERY_REFERENCE_WH = 15
 const VIDEO_STREAMING_REFERENCE_WATTS = 80
@@ -8,14 +10,14 @@ export interface EnergyEquivalences {
   videoDuration: string
 }
 
-function formatNumber(value: number, locale: string, maximumFractionDigits = 0): string {
+function formatNumber(value: number, locale: Locale, maximumFractionDigits = 0): string {
   return new Intl.NumberFormat(locale, { maximumFractionDigits }).format(value)
 }
 
 function formatLongDuration(
   value: number,
   unit: 'days' | 'weeks' | 'years',
-  locale: string
+  locale: Locale
 ): string {
   const units = {
     fr: { days: 'j', weeks: 'sem.', years: 'ans' },
@@ -30,7 +32,7 @@ function formatLongDuration(
   return `${formatNumber(value, locale, 1)} ${localizedUnits[unit]}`
 }
 
-function formatDuration(seconds: number, locale: string): string {
+function formatDuration(seconds: number, locale: Locale): string {
   if (seconds < 0.5) return '< 1 s'
   if (seconds < 60) return `${formatNumber(Math.round(seconds), locale)} s`
   if (seconds < 600) return `${formatNumber(Math.round(seconds / 10) * 10, locale)} s`
@@ -56,7 +58,7 @@ function formatDuration(seconds: number, locale: string): string {
     : `${formatNumber(hours, locale)} h ${formatNumber(minutes, locale)} min`
 }
 
-function formatPhoneBatteryPercentage(percentage: number, locale: string): string {
+function formatPhoneBatteryPercentage(percentage: number, locale: Locale): string {
   if (percentage < 0.1) return `< ${formatNumber(0.1, locale, 1)} %`
   if (percentage < 1) return `${formatNumber(percentage, locale, 1)} %`
   return `${formatNumber(percentage, locale)} %`
@@ -64,7 +66,7 @@ function formatPhoneBatteryPercentage(percentage: number, locale: string): strin
 
 export function buildEnergyEquivalences(
   energyMwh: number,
-  locale: string
+  locale: Locale
 ): EnergyEquivalences | null {
   if (!Number.isFinite(energyMwh) || energyMwh <= 0) return null
 
