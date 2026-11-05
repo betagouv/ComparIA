@@ -228,7 +228,7 @@ def _shown_models(
     ci: dict[UUID, Interval],
     table: dict[UUID, dict],
     max_rank_spread: int,
-) -> set[UUID]:
+) -> tuple[set[UUID], dict[UUID, dict]]:
     """
     Models the leaderboard shows: rank within ``max_rank_spread`` places.
 
@@ -236,15 +236,20 @@ def _shown_models(
     all models over the spread at once would also drop its neighbours. Drop
     the widest one(s) only, recount the others without them, and repeat until
     every model left fits. A model dropped once stays dropped, so it ends.
+
+    Returns the shown models, and the fields each hidden model was dropped on.
     """
     shown = set(table)
+    dropped: dict[UUID, dict] = {}
     while shown:
         widest = max(_spread(table[m]) for m in shown)
         if widest <= max_rank_spread:
             break
-        shown -= {m for m in shown if _spread(table[m]) == widest}
+        over = {m for m in shown if _spread(table[m]) == widest}
+        dropped |= {m: table[m] for m in over}
+        shown -= over
         table = _variant_table({m: ci[m] for m in shown}, {}, {})
-    return shown
+    return shown, dropped
 
 
 def _compute_ranking(
@@ -307,11 +312,16 @@ def _compute_ranking(
     )
 
     if max_rank_spread is not None:
-        shown = _shown_models(ci_controlled, controlled, max_rank_spread)
-        if len(shown) < len(controlled):
+        shown, dropped = _shown_models(ci_controlled, controlled, max_rank_spread)
+        if dropped:
             # Rank shown models among themselves, as the leaderboard does.
-            # Hidden models keep the values computed over every eligible
-            # model, which are what put them over the spread.
+            # Hidden models keep the rank and bounds they were dropped on:
+            # counted over every model, a few fall back under the spread, and
+            # the frontend filter would show them.
+            for model, fields in dropped.items():
+                controlled[model] |= {
+                    key: fields[key] for key in ("rank", "rank_p2_5", "rank_p97_5")
+                }
             controlled |= _variant_table(
                 {m: ci_controlled[m] for m in shown}, match_counts, win_counts
             )

@@ -19,6 +19,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from utils.ranking import compute  # noqa: E402
 from utils.ranking.bradley_terry import Interval  # noqa: E402
 from utils.ranking.compute import (  # noqa: E402
     _compute_ranking,
@@ -54,7 +55,7 @@ def test_noisy_model_is_hidden_and_others_rank_among_themselves():
     # With the noisy model counted, every solid model may move a place.
     assert all(_over_spread(table[m], 0) for m in solid)
 
-    shown = _shown_models(ci, table, 0)
+    shown, _ = _shown_models(ci, table, 0)
     assert shown == set(solid)
 
     shown_table = _variant_table({m: ci[m] for m in shown}, {}, {})
@@ -76,7 +77,7 @@ def test_shown_models_always_fit_the_spread():
                 float(np.percentile(samples, 97.5)),
                 samples,
             )
-        shown = _shown_models(ci, _variant_table(ci, {}, {}), spread)
+        shown, _ = _shown_models(ci, _variant_table(ci, {}, {}), spread)
         if not shown:
             continue
         final = _variant_table({m: ci[m] for m in shown}, {}, {})
@@ -135,6 +136,34 @@ def test_hidden_model_does_not_widen_the_shown_ranges():
 
     # The hidden model keeps its data and stays over the spread.
     assert result.rankings[RARE].trust_range == unfiltered.rankings[RARE].trust_range
+
+
+def test_a_hidden_model_stays_over_the_spread(monkeypatch):
+    # Found by search: one model dropped on the way falls back under the spread
+    # once every other hidden model is counted again.
+    rng = random.Random(663)
+    ci = {}
+    for i in range(60):
+        centre = rng.uniform(800, 1200)
+        width = rng.choice((5, 15, 30, 80, 150))
+        samples = np.random.default_rng(663_000 + i).normal(centre, width, 1000)
+        ci[uuid4()] = Interval(
+            centre,
+            float(np.percentile(samples, 2.5)),
+            float(np.percentile(samples, 97.5)),
+            samples,
+        )
+    monkeypatch.setattr(compute, "bootstrap_style_controlled", lambda *_: (ci, {}))
+    monkeypatch.setattr(compute, "bootstrap_confidence_intervals", lambda _: ci)
+    models = list(ci)
+    votes = [_vote(a, b, True) for a, b in zip(models, models[1:])]
+
+    result = _compute_ranking(votes, {}, with_ratio=False, max_rank_spread=10)
+
+    # The leaderboard's filter, then its numbering.
+    shown = [r for r in result.rankings.values() if max(r.trust_range) <= 10]
+    assert shown
+    assert sorted(r.rank for r in shown) == list(range(1, len(shown) + 1))
 
 
 if __name__ == "__main__":
