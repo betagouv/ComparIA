@@ -174,6 +174,17 @@ class AppSettings(SQLModel, table=True):
     publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
     publish_hour: int = Field(default=3)
     publish_timezone: str = Field(default="UTC", max_length=64)
+    # Whether the raw dataset carries a pseudonymous voter id per comparison,
+    # see utils/dataset/voters.py. Off until an instance decides to, since it
+    # lets whoever holds the raw dataset link one person's conversations.
+    dataset_voter_ids: bool = Field(default=False)
+    # Key of the voter pseudonyms, encrypted like every other secret at rest.
+    # Made the first time a raw dataset is built with voter ids, then kept so
+    # a voter has the same id from one publication to the next. Never sent to
+    # the admin panel.
+    dataset_voter_key_encrypted: Annotated[bytes | None, Field(sa_type=LargeBinary)] = (
+        None
+    )
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
     enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
@@ -228,6 +239,7 @@ class AppSettingsPublic(SQLModel):
     publish_frequency: PublishFrequency
     publish_hour: int
     publish_timezone: str
+    dataset_voter_ids: bool
     has_custom_logo: bool
     logo_version: str | None = None
     enabled_locales: list[str]
@@ -268,6 +280,7 @@ class AppSettingsPatch(SQLModel):
     publish_frequency: PublishFrequency | None = None
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
+    dataset_voter_ids: bool | None = None
     auth_methods: list[str] | None = None
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -328,6 +341,13 @@ class AppSettingsPatch(SQLModel):
     def ranking_threshold_not_null(cls, value: object) -> object:
         if value is None:
             raise ValueError("Leaderboard thresholds cannot be null")
+        return value
+
+    @field_validator("dataset_voter_ids", mode="before")
+    @classmethod
+    def dataset_voter_ids_not_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("dataset_voter_ids cannot be null")
         return value
 
     @field_validator(

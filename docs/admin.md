@@ -173,6 +173,17 @@ Two kinds of destination:
 
 Frequency is per destination: off, daily, weekly or monthly. You choose the frequency, not the hour.
 
+### Voter ids in the raw dataset
+
+Off by default. Turned on, the raw dataset carries `extra_metadata.voter_id` and `extra_metadata.voter_type` (`account` or `anonymous`) on each row, so whoever analyses it can group one person's comparisons: to leave out someone who replays the same prompt, or runs experiments. The open dataset never carries them.
+
+- The id is the same for every comparison of an account, or of an anonymous session (a browser, until its session cookie expires). An anonymous visitor who signs in and merges their history gets the account's id on it from the next run.
+- It is an HMAC of the internal identifier under a key made once per instance and stored encrypted, so it does not give away the account or the session, and stays the same from one run to the next.
+- It goes when the identifiers go: on account erasure, and when the retention period blanks them (24 months).
+- A Hugging Face repository has to be private, or gated with manual review, to receive the raw dataset while the ids are on; a new one is created private. The run cannot check an S3 bucket's access, so keep it private.
+
+Turning it on lets anyone holding the raw dataset link one person's conversations together, and with the survey answers once those are published. Cover it in the terms of use before turning it on.
+
 To check a run before trusting it with credentials:
 
 ```bash

@@ -32,6 +32,7 @@ from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
+from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms
 
 from .export import StreamingDatasetExporter
 from .models import (
@@ -146,9 +147,14 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     }
 
 
-async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
+async def comparison_to_turns(
+    db_comparison: Comparison, voters: VoterPseudonyms | None = None
+) -> list[dict]:
     """
     Flatten a Comparison into one row per turn.
+
+    With `voters`, extra_metadata carries the voter's pseudonymous id. Only the
+    raw dataset keeps extra_metadata, so the open one never sees it.
 
     Reads ORM attributes directly instead of routing the whole nested object
     graph (turns, user/assistant/system messages, full conversations) through
@@ -255,6 +261,11 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     )
     comparison_id = str(comp.id)
 
+    if voters is not None:
+        extra_meta["voter_id"], extra_meta["voter_type"] = voters(
+            comp.user_id, comp.anonymous_user_hash
+        )
+
     return [
         {
             **row,
@@ -321,6 +332,8 @@ def _reference_rows() -> list[dict]:
             },
             "extra_metadata": {
                 "cohorts": "x",
+                "voter_id": "x",
+                "voter_type": "account",
                 "error": {
                     "code": "provider_error",
                     "message": "x",
@@ -362,6 +375,7 @@ def _build_exporters(
 
 async def stream_to_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter],
+    voters: VoterPseudonyms | None = None,
 ) -> None:
     """
     Single pass over the DB: turn each Comparison into rows and feed every
@@ -373,7 +387,7 @@ async def stream_to_exporters(
 
     async for db_comp in get_db_comparisons_stream():
         try:
-            turns = await comparison_to_turns(db_comp)
+            turns = await comparison_to_turns(db_comp, voters)
         except Exception:
             logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
             failed_comparison_ids.append(str(db_comp.id))
@@ -628,9 +642,14 @@ async def process_datasets(
         logger.warning(
             f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
         )
+    # Read at the start of each build, from the database: the publish job
+    # runs for days and has to see the switch as it is now.
+    voters = await load_voter_pseudonyms() if "raw" in datasets else None
+    if voters is not None:
+        logger.info("The raw dataset carries pseudonymous voter ids.")
     logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
     exporters = _build_exporters(datasets, export_base_path)
-    await stream_to_exporters(exporters)
+    await stream_to_exporters(exporters, voters)
 
     built = {dataset: export_base_path / LOCAL_NAMES[dataset] for dataset in exporters}
     for export_dir in built.values():

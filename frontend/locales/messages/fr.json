@@ -559,6 +559,14 @@
             "secureLabel": "Connexion en HTTPS",
             "subtitle": "Configurez les destinations et leur fréquence. L'historique regroupe toutes les publications.",
             "timezoneLabel": "Fuseau horaire",
+            "voterIds": {
+                "title": "Identifiants de votants dans le jeu brut",
+                "help": "Ajoute au jeu de données brut un identifiant pseudonyme par votant : le même pour toutes les comparaisons d'un compte, ou d'une session anonyme. Il permet de regrouper les conversations d'une même personne, par exemple pour écarter quelqu'un qui répète le même prompt. Le jeu ouvert ne le contient jamais. L'identifiant ne permet pas de retrouver le compte ni la session, et disparaît quand le compte est supprimé ou à la fin de la durée de conservation.",
+                "label": "Publier les identifiants de votants dans le jeu brut",
+                "warning": "Quiconque reçoit le jeu brut pourra relier entre elles les conversations d'une même personne. Vérifiez que les conditions d'utilisation le couvrent. Un dépôt Hugging Face qui reçoit le jeu brut doit être privé, ou fermé avec validation manuelle, sinon l'envoi échoue.",
+                "save": "Enregistrer",
+                "success": "Réglage enregistré. Il s'applique à la prochaine publication."
+            },
             "title": "Jeux de données",
             "tokenHelp": "Un jeton en lecture seule passe le test de lecture et échoue à la première publication.",
             "tokenKeep": "Laisser vide pour garder le jeton enregistré.",
