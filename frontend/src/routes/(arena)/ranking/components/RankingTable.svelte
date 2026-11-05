@@ -84,10 +84,9 @@
         { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
         // Opt-in columns stay out of the general ranking, which keeps the
         // essentials (#787): the rank range shows on hover over the score,
-        // the lab is in the logo and the model card, and energy is a label
-        // rather than a figure more precise than the estimate behind it.
-        // The focus tabs ask for the ones they need, and the download keeps
-        // them all.
+        // and energy is a label rather than a figure more precise than the
+        // estimate behind it. The focus tabs ask for the ones they need, and
+        // the download keeps them all.
         {
           id: 'trust_range',
           tooltip: m['ranking.table.data.tooltips.trust_range'](),
@@ -103,9 +102,9 @@
         { id: 'price_in', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'price_out', tooltip: m['ranking.table.data.tooltips.price'](), optIn: true },
         { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
-        { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch'](), optIn: true },
+        { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
         { id: 'release' },
-        { id: 'organisation', optIn: true },
+        { id: 'organisation' },
         { id: 'license' }
       ] as const
     )

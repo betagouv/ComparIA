@@ -60,18 +60,18 @@ const headers = (container: HTMLElement) =>
   [...container.querySelectorAll('thead th')].map((th) => th.id || th.textContent!.trim())
 
 describe('RankingTable', () => {
-  it('leaves the confidence, architecture, organisation and raw energy columns out', () => {
+  it('leaves the confidence and raw energy columns out', () => {
     const { container } = renderTable()
     const ids = container.querySelectorAll('thead th').length
     const text = container.querySelector('thead')!.textContent!
 
     expect(ids).toBeGreaterThan(0)
     expect(text).not.toContain('Confiance')
-    expect(text).not.toContain('Architecture')
-    expect(text).not.toContain('Organisation')
     expect(text).not.toContain('Conso. moyenne')
     expect(text).toContain('Énergie')
-    expect(headers(container).length).toBe(8)
+    expect(text).toContain('Architecture')
+    expect(text).toContain('Organisation')
+    expect(headers(container).length).toBe(10)
   })
 
   it('shows the rank range on hover over the score', () => {
