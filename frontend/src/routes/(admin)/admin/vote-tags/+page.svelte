@@ -22,11 +22,6 @@
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
   const defaultLocale = $derived(locales.default)
-  const orderedLocales = $derived(
-    locales.enabled.sort(
-      (left, right) => Number(right === defaultLocale) - Number(left === defaultLocale)
-    )
-  )
 
   // A reorder shows up here first and the request only confirms it, so moving
   // three tags is three clicks rather than three round trips. Cleared as soon
@@ -136,7 +131,7 @@
 
     // Ordered, because the backend mints the key from the first label it gets.
     const labels = Object.fromEntries(
-      orderedLocales
+      locales.enabled
         .map((code) => [code, (formLabels[code] ?? '').trim()])
         .filter(([, value]) => value)
     )

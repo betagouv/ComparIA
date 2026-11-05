@@ -31,8 +31,11 @@ export function getLocalesContext() {
   // Query current locale only once, on change a page reload occurs
   const currentLocale = getLocale()
   const auth = getAuthContext()
-  const enabledLocales = $derived(auth.config.enabled_locales)
   const defaultLocale = $derived(auth.config.default_locale)
+  const allLocales = sortLocales(locales)
+  const enabledLocales = $derived(sortLocales(auth.config.enabled_locales))
+  const enabledOptions = $derived(asOptions(enabledLocales))
+  const allOptions = $derived(asOptions(locales))
 
   function getLabel(locale: Locale, variant: 'long' | 'short' = 'long') {
     return ALL_LOCALES[locale][variant]
@@ -42,8 +45,12 @@ export function getLocalesContext() {
     return locales.map((value) => ({ value, label: getLabel(value, variant) }))
   }
 
-  const enabledOptions = $derived(asOptions(enabledLocales))
-  const allOptions = $derived(asOptions(locales))
+  function sortLocales(locales: Readonly<Locale[]>) {
+    // Put default locale in first position
+    return [...locales].sort(
+      (left, right) => Number(right === defaultLocale) - Number(left === defaultLocale)
+    )
+  }
 
   return {
     get current() {
@@ -61,7 +68,9 @@ export function getLocalesContext() {
     get enabledOptions() {
       return enabledOptions
     },
-    all: locales,
+    get all() {
+      return allLocales
+    },
     get allOptions() {
       return allOptions
     },
