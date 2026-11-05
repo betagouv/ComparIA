@@ -1,11 +1,12 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { Badge, Button, Icon, Input, Modal, Select, Table } from '$components/dsfr'
+  import FormInput from '$components/form/FormInput.svelte'
+  import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
-  import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminVoteTag } from '$lib/generated/admin'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
@@ -14,16 +15,16 @@
 
   const { data }: PageProps = $props()
 
-  const auth = getAuthContext()
+  const locales = getLocalesContext()
   const refetch = () => invalidate('admin:vote-tags')
 
   // The default locale mints the published key, so its field comes first and
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
-  const defaultLocale = $derived(data.defaultLocale)
+  const defaultLocale = $derived(locales.default)
   const orderedLocales = $derived(
-    getLocales(auth.config.enabled_locales).sort(
-      (left, right) => Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
+    locales.enabled.sort(
+      (left, right) => Number(right === defaultLocale) - Number(left === defaultLocale)
     )
   )
 
@@ -136,7 +137,7 @@
     // Ordered, because the backend mints the key from the first label it gets.
     const labels = Object.fromEntries(
       orderedLocales
-        .map(({ code }) => [code, (formLabels[code] ?? '').trim()])
+        .map((code) => [code, (formLabels[code] ?? '').trim()])
         .filter(([, value]) => value)
     )
     const emoji = formEmoji.trim()
@@ -446,17 +447,18 @@
       maxlength={16}
     />
 
-    {#each orderedLocales as locale (locale.code)}
-      <Input
-        id="vote-tag-label-{locale.code}"
-        value={formLabels[locale.code] ?? ''}
-        oninput={(event) =>
-          (formLabels = { ...formLabels, [locale.code]: event.currentTarget.value })}
-        label={m['admin.voteTags.labelFor']({ locale: locale.long })}
-        help={locale.code === defaultLocale ? m['admin.voteTags.labelHelp']() : undefined}
-        maxlength={100}
-      />
-    {/each}
+    <FormTranslate id="vote-tag-label" bind:value={formLabels}>
+      {#snippet subSnippet(locale, label)}
+        <FormInput
+          id="vote-tag-label-{locale}"
+          type="text"
+          bind:value={formLabels[locale]}
+          label={m['admin.voteTags.labelFor']({ locale: label })}
+          help={locale === defaultLocale ? m['admin.voteTags.labelHelp']() : undefined}
+          maxlength={100}
+        />
+      {/snippet}
+    </FormTranslate>
 
     {#if editing}
       <p class="fr-text--sm text-grey">{m['admin.voteTags.keyFrozen']({ key: editing.key })}</p>

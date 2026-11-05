@@ -17,6 +17,6 @@ export interface SuggestionsPage {
 export interface SuggestionFilters {
   search: string
   status: '' | SuggestionStatus
-  locale: Locale
+  locale: '' | Locale
   category_id: string
 }

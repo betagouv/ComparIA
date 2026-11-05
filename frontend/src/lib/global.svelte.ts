@@ -1,26 +1,20 @@
-import type { Locale } from '$lib/i18n/runtime'
+import { getLocale, locales, setLocale, type Locale } from '$lib/i18n/runtime'
 import { getContext, setContext } from 'svelte'
+import { getAuthContext } from './authContext.svelte'
 
-export type LocaleOption = { code: Locale; short: string; long: string }
+export type LocaleDesc = { short: string; long: string }
 
 // Every locale the bundle ships with. Which of them an instance offers is an
 // admin setting (AppSettings.enabled_locales), not a property of the domain:
 // picking a language never moves you to another instance.
-export const ALL_LOCALES = [
-  { code: 'da', short: 'DA', long: 'DA - Dansk' },
-  { code: 'fr', short: 'FR', long: 'FR - Français' },
-  { code: 'en', short: 'EN', long: 'EN - English' },
-  { code: 'it', short: 'IT', long: 'IT - Italiano' },
-  { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
-  { code: 'nb-NO', short: 'NB', long: 'NB - Norsk bokmål' },
-  { code: 'sv', short: 'SV', long: 'SV - Svensk' }
-] satisfies LocaleOption[]
-
-// Falls back to the full list so a frontend deployed ahead of its backend still
-// renders a language menu instead of throwing on a missing field.
-export function getLocales(enabledLocales: string[] | undefined): LocaleOption[] {
-  if (!enabledLocales?.length) return ALL_LOCALES
-  return ALL_LOCALES.filter((locale) => enabledLocales.includes(locale.code))
+export const ALL_LOCALES: Record<Locale, LocaleDesc> = {
+  da: { short: 'DA', long: 'DA - Dansk' },
+  fr: { short: 'FR', long: 'FR - Français' },
+  en: { short: 'EN', long: 'EN - English' },
+  it: { short: 'IT', long: 'IT - Italiano' },
+  lt: { short: 'LT', long: 'LT - Lietuvių' },
+  'nb-NO': { short: 'NB', long: 'NB - Norsk bokmål' },
+  sv: { short: 'SV', long: 'SV - Svensk' }
 }
 
 export type VotesData = { count: number; objective: number }
@@ -31,4 +25,47 @@ export function setVotesContext(votes: VotesData) {
 
 export function getVotesContext() {
   return getContext<VotesData>('votes')
+}
+
+export function getLocalesContext() {
+  // Query current locale only once, on change a page reload occurs
+  const currentLocale = getLocale()
+  const auth = getAuthContext()
+  const enabledLocales = $derived(auth.config.enabled_locales)
+  const defaultLocale = $derived(auth.config.default_locale)
+
+  function getLabel(locale: Locale, variant: 'long' | 'short' = 'long') {
+    return ALL_LOCALES[locale][variant]
+  }
+
+  function asOptions(locales: Readonly<Locale[]>, variant: 'long' | 'short' = 'long') {
+    return locales.map((value) => ({ value, label: getLabel(value, variant) }))
+  }
+
+  const enabledOptions = $derived(asOptions(enabledLocales))
+  const allOptions = $derived(asOptions(locales))
+
+  return {
+    get current() {
+      return currentLocale
+    },
+    set current(value: Locale) {
+      setLocale(value)
+    },
+    get default() {
+      return defaultLocale
+    },
+    get enabled() {
+      return enabledLocales
+    },
+    get enabledOptions() {
+      return enabledOptions
+    },
+    all: locales,
+    get allOptions() {
+      return allOptions
+    },
+    getLabel,
+    asOptions
+  }
 }

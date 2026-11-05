@@ -4,9 +4,8 @@
   import { page } from '$app/state'
   import { Badge, Button, Icon, Modal, Pagination, Search, Select } from '$components/dsfr'
   import { PageLayout } from '$components/layout'
-  import { getAuthContext } from '$lib/authContext.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity'
@@ -16,9 +15,7 @@
 
   let { data }: PageProps = $props()
 
-  const auth = getAuthContext()
-  const enabledLocales = $derived(getLocales(auth.config.enabled_locales))
-  const defaultLocale = $derived(auth.config.default_locale)
+  const locales = getLocalesContext()
 
   const refetch = () => invalidate('admin:suggestions')
   const baseRoute = '/admin/suggestions'
@@ -44,10 +41,10 @@
   let actionLoading = $state(false)
   let prompt = $state('')
   let promptCategoryId = $state('')
-  let promptLocale = $derived(defaultLocale)
+  let promptLocale = $state(locales.default)
   let formError = $state<string>()
   let formLoading = $state(false)
-  let categoryLocale = $derived(defaultLocale)
+  let categoryLocale = $state(locales.default)
   let categoryTitle = $state('')
   let categoryDescription = $state('')
   let categoryIcon = $state('i-ri-lightbulb-line')
@@ -56,9 +53,9 @@
   let categoryFormLoading = $state(false)
 
   const categories = $derived(data.suggestions.categories)
-  const availableLocales = $derived.by(() => {
-    const availableLocaleCodes = [...new Set(categories.map((category) => category.locale))]
-    return enabledLocales.filter((l) => availableLocaleCodes.includes(l.code))
+  const availableLocalesOptions = $derived.by(() => {
+    const availableLocales = new Set(categories.map((category) => category.locale))
+    return locales.enabledOptions.filter((opt) => availableLocales.has(opt.value))
   })
   const filterCategoryOptions = $derived([
     { value: '', label: m['admin.suggestions.allCategories']() },
@@ -73,15 +70,9 @@
       .map((category) => ({ value: category.id, label: category.title }))
   ])
   const localeOptions = $derived([
-    { value: '', label: m['admin.suggestions.allLocales']() },
-    ...availableLocales.map((l) => ({ value: l.code, label: l.long }))
+    { value: '' as const, label: m['admin.suggestions.allLocales']() },
+    ...availableLocalesOptions
   ])
-  const promptLocaleOptions = $derived(
-    availableLocales.map((l) => ({ value: l.code, label: l.long }))
-  )
-  const categoryLocaleOptions = $derived(
-    enabledLocales.map((l) => ({ value: l.code, label: l.long }))
-  )
   const categoryIconOptions = [
     { value: 'i-ri-lightbulb-line', label: m['admin.suggestions.iconLightbulb']() },
     { value: 'i-ri-draft-line', label: m['admin.suggestions.iconDocument']() },
@@ -192,7 +183,7 @@
   function openAddModal() {
     prompt = ''
     formError = undefined
-    promptLocale = defaultLocale
+    promptLocale = locales.default
     promptCategoryId = ''
     discloseModal('fr-modal-add-suggestion')
   }
@@ -208,7 +199,7 @@
   }
 
   function openAddCategoryModal() {
-    categoryLocale = defaultLocale
+    categoryLocale = locales.default
     categoryTitle = ''
     categoryDescription = ''
     categoryIcon = 'i-ri-lightbulb-line'
@@ -554,7 +545,7 @@
     <Select
       id="suggestion-category-locale"
       label={m['admin.suggestions.locale']()}
-      options={categoryLocaleOptions}
+      options={locales.enabledOptions}
       bind:selected={categoryLocale}
       required
     />
@@ -653,7 +644,7 @@
     <Select
       id="suggestion-locale"
       label={m['admin.suggestions.locale']()}
-      options={promptLocaleOptions}
+      options={availableLocalesOptions}
       bind:selected={promptLocale}
       onchange={() => (promptCategoryId = '')}
     />

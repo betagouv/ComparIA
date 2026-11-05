@@ -1,25 +1,24 @@
 <script lang="ts">
-  import { Button, Checkbox, Select } from '$components/dsfr'
+  import { invalidateAll } from '$app/navigation'
+  import { Button, Select } from '$components/dsfr'
+  import { FormCheckboxGroup } from '$components/form'
   import { PageLayout } from '$components/layout'
   import { api } from '$lib/fastapi-client'
   import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
-  import { ALL_LOCALES } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onMount } from 'svelte'
 
+  const locales = getLocalesContext()
+
   let loading = $state(true)
   let saving = $state(false)
 
-  let enabledLocales = $state<Record<string, boolean>>({})
-  let defaultLocale = $state('')
+  let enabledLocales = $state(locales.enabled)
+  let defaultLocale = $state(locales.default)
 
-  const defaultLocaleOptions = $derived(
-    ALL_LOCALES.filter((locale) => enabledLocales[locale.code]).map((locale) => ({
-      value: locale.code,
-      label: locale.long
-    }))
-  )
+  const defaultLocaleOptions = $derived(locales.asOptions(enabledLocales))
 
   $effect(() => {
     // Keep the selection valid if the admin unchecks the current default locale
@@ -35,9 +34,7 @@
     loading = true
     try {
       const data = await api.request<AppSettingsPublic>('/admin/settings')
-      enabledLocales = Object.fromEntries(
-        ALL_LOCALES.map((locale) => [locale.code, data.enabled_locales?.includes(locale.code)])
-      )
+      enabledLocales = data.enabled_locales
       defaultLocale = data.default_locale
     } finally {
       loading = false
@@ -51,13 +48,13 @@
     saving = true
     try {
       const patch: AppSettingsPatch = {
-        enabled_locales: ALL_LOCALES.filter((locale) => enabledLocales[locale.code]).map(
-          (locale) => locale.code
-        ),
+        enabled_locales: enabledLocales,
         default_locale: defaultLocale
       }
       await api.request('/admin/settings', { method: 'PATCH', body: JSON.stringify(patch) })
       useToast(m['admin.settings.saved'](), 4000)
+      // Invalidate all since locales data are used almost everywhere
+      await invalidateAll()
     } catch (err) {
       useToast((err as Error).message, 6000, 'error')
     } finally {
@@ -75,17 +72,13 @@
     <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
   {:else}
     <form onsubmit={save} class="max-w-[480px]">
-      <div>
-        <p class="fr-label mb-2!">{m['admin.settings.locales.enabled.label']()}</p>
-        <p class="fr-hint-text mt-0! mb-2!">{m['admin.settings.locales.enabled.hint']()}</p>
-        {#each ALL_LOCALES as locale (locale.code)}
-          <Checkbox
-            id="settings-locale-{locale.code}"
-            label={locale.long}
-            bind:checked={enabledLocales[locale.code]}
-          />
-        {/each}
-      </div>
+      <FormCheckboxGroup
+        id="enabled_locales"
+        label={m['admin.settings.locales.enabled.label']()}
+        help={m['admin.settings.locales.enabled.hint']()}
+        options={locales.allOptions}
+        bind:value={enabledLocales}
+      />
 
       <Select
         id="settings-default-locale"
