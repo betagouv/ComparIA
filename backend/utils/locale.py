@@ -1,13 +1,13 @@
 from collections.abc import Collection
 from typing import Annotated, cast
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 
 from utils.database.settings import get_app_settings
 from utils.i18n import DEFAULT_LOCALE, SupportedLocale
 
 
-async def get_safe_locale(locale: str | None = None) -> SupportedLocale:
+async def get_safe_locale(locale: SupportedLocale | None = None) -> SupportedLocale:
     """
     Safely get an enabled locale.
     Fallback to db's default locale if given locale not in enabled.
@@ -18,7 +18,20 @@ async def get_safe_locale(locale: str | None = None) -> SupportedLocale:
     return settings.default_locale
 
 
+async def get_strict_locale(locale: SupportedLocale) -> SupportedLocale:
+    """
+    Get an enabled locale or error out.
+    """
+    settings = await get_app_settings()
+    if locale not in settings.enabled_locales:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, f"Unsupported locale '{locale}'."
+        )
+    return locale
+
+
 LocaleQuery = Annotated[SupportedLocale, Depends(get_safe_locale)]
+LocaleQueryStrict = Annotated[SupportedLocale, Depends(get_strict_locale)]
 
 
 def pick_locale(locale: str | None, available: Collection[str]) -> str:
