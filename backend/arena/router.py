@@ -404,7 +404,7 @@ async def add_first_text(
     if not reserve_conversation(
         get_ip(request), (llm_a_id, llm_b_id), caps, conversation, args.cohorts
     ):
-        logger.error(
+        logger.warning(
             "Too many conversations started from this IP",
             extra={"request": request},
         )
