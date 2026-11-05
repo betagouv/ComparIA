@@ -14,6 +14,7 @@
   import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import type { TableCol } from '$lib/utils/data'
   import type { PageData } from './$types'
   import SurveyAnswersChart from './SurveyAnswersChart.svelte'
@@ -29,13 +30,6 @@
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
   const defaultLocale = $derived(locales.default)
-  // Copied before sorting: getLocales can hand back the shared list of every
-  // locale, which the language switcher reads too.
-  const orderedLocales = $derived(
-    [...locales.enabled].sort(
-      (left, right) => Number(right === defaultLocale) - Number(left === defaultLocale)
-    )
-  )
 
   // A reorder shows up here first and the request only confirms it, so moving
   // three questions is three clicks rather than three round trips. Cleared as
@@ -184,7 +178,7 @@
     }
 
     const labels = Object.fromEntries(
-      orderedLocales
+      locales.enabled
         .map((code) => [code, (formLabels[code] ?? '').trim()])
         .filter(([, value]) => value)
     )
@@ -192,7 +186,7 @@
       .map((option) => ({
         key: option.key,
         labels: Object.fromEntries(
-          orderedLocales
+          locales.enabled
             .map((code) => [code, (option.labels[code] ?? '').trim()])
             .filter(([, value]) => value)
         )
@@ -214,9 +208,11 @@
     // The form only shows the locales the instance serves today. Labels in a
     // locale switched off since are kept as they were: dropping them would
     // lose the translation and count as a change of wording.
-    const served = new Set<string>(orderedLocales)
+    const served = new Set<Locale>(locales.enabled)
     const unserved = (stored: Record<string, string> | undefined) =>
-      Object.fromEntries(Object.entries(stored ?? {}).filter(([code]) => !served.has(code)))
+      Object.fromEntries(
+        Object.entries(stored ?? {}).filter(([code]) => !served.has(code as Locale))
+      )
     const keptLabels = { ...unserved(editing?.labels), ...labels }
     const keptOptions = options.map((option) => ({
       ...option,
@@ -387,7 +383,7 @@
   // Enabled languages a visitor would see falling back to another one.
   function missingLocales(question: AdminSurveyQuestion) {
     const has = (labels: Record<string, string>, code: string) => !!labels[code]?.trim()
-    return orderedLocales
+    return locales.enabled
       .filter(
         (code) =>
           !has(question.labels, code) ||
