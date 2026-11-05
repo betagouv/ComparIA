@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
-from backend.utils.locale import pick_locale
+from backend.utils.locale import SupportedLocale, pick_locale
 from utils.database.settings import get_app_settings
 from utils.validation import NonEmptyStr, Translatable
 
@@ -79,11 +79,11 @@ async def get_informational_legal_page(
 
 class InformationalLegalPageContent(BaseModel):
     content: str
-    locale: str
+    locale: SupportedLocale
 
 
 async def get_informational_legal_page_content(
-    key: LegalPageKey, locale: str
+    key: LegalPageKey, locale: SupportedLocale
 ) -> InformationalLegalPageContent | None:
     page = await get_informational_legal_page(key)
     contents = page.content_by_locale.root
