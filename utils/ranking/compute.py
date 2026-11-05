@@ -42,6 +42,10 @@ class RankingResult:
     # Style coefficients from the style-controlled fit (one per STYLE_FEATURES
     # entry); exposed for transparency about how much presentation drives votes.
     style_coefficients: dict[str, float] = field(default_factory=dict)
+    # Decisive votes per model, for every model with votes: the table leaves
+    # out models under the vote minimum, and the public list leaves out
+    # disabled ones, but the admin list shows the count for all of them.
+    vote_counts: dict[UUID, int] = field(default_factory=dict)
 
 
 def _votes_to_battles(
@@ -346,6 +350,7 @@ def _compute_ranking(
         rankings=rankings,
         preferences=preferences,
         style_coefficients=style_coefficients,
+        vote_counts=dict(match_counts),
     )
 
 
