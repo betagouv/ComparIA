@@ -73,12 +73,13 @@ from backend.auth.totp import (
 )
 from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
-from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.settings.legal import get_active_legal_document
 from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
     REDIS_ANONYMOUS_CONSENT_REQ,
@@ -112,8 +113,8 @@ class AuthConfig(BaseModel):
     has_custom_logo: bool
     # Goes in the logo URL, so the browser can keep the file for a year.
     logo_version: str | None
-    enabled_locales: list[str]
-    default_locale: str
+    enabled_locales: list[SupportedLocale]
+    default_locale: SupportedLocale
     # OIDC method description for the login page. `oidc_enabled` is derived
     # from the instance's `auth_methods` plus a complete provider config, so
     # the button only shows when OIDC would actually work.
@@ -126,7 +127,7 @@ class EmailRequestBody(BaseModel):
     email: NormalizedEmail
     altcha_payload: str
     # The language the visitor is reading the site in, for the email.
-    locale: str | None = Field(default=None, min_length=2, max_length=16)
+    locale: SupportedLocale | None = None
 
 
 class EmailVerifyBody(BaseModel):
@@ -183,9 +184,7 @@ class ConsentAssertion(BaseModel):
     terms_version: str = Field(min_length=1, max_length=64)
     terms_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     accepted_at: datetime
-    locale: str = Field(
-        min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
-    )
+    locale: SupportedLocale
     legal_information_acknowledged: Literal[True]
 
     @field_validator("accepted_at")

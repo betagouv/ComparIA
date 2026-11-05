@@ -103,6 +103,7 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.i18n import SupportedLocale
 from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
 from utils.validation import Translatable
@@ -131,7 +132,7 @@ class UsersPage(BaseModel):
 class InviteBody(BaseModel):
     email: NormalizedEmail
     # The inviting admin's language: the best guess we have for the invitee's.
-    locale: str | None = Field(default=None, min_length=2, max_length=16)
+    locale: SupportedLocale | None = None
 
 
 class AdminLegalDocument(BaseModel):

@@ -8,7 +8,7 @@ from html import escape
 
 from backend.config import settings
 from backend.utils.locale import pick_locale
-from utils.i18n import DEFAULT_LOCALE
+from utils.i18n import DEFAULT_LOCALE, SupportedLocale
 
 logger = logging.getLogger("languia")
 
@@ -265,7 +265,7 @@ class _Placeholders(dict):
 
 
 def _copy(
-    locale: str, platform_name: str, html: bool = False, **values: str
+    locale: SupportedLocale, platform_name: str, html: bool = False, **values: str
 ) -> tuple[str, dict[str, str]]:
     """The wording for `locale`, with the platform name and `values` filled in."""
     picked = pick_locale(locale, _COPY)
@@ -341,7 +341,7 @@ async def send_login_code(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> None:
     if not settings.SMTP_HOST:
         # The code signs someone in on its own, so it belongs in the logs only
@@ -367,7 +367,7 @@ async def send_invite_link(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> None:
     if not settings.SMTP_HOST:
         # The link carries the invite token, which is a credential too.
@@ -393,7 +393,7 @@ async def send_inactivity_warning(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> bool:
     """Returns whether the warning went out, so the caller only records it then."""
     if not settings.SMTP_HOST:
@@ -424,7 +424,7 @@ def _build_login_message(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -467,7 +467,7 @@ def _build_invite_message(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -515,7 +515,7 @@ def _build_inactivity_message(
     platform_name: str = _DEFAULT_PLATFORM_NAME,
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
-    locale: str = DEFAULT_LOCALE,
+    locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
