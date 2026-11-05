@@ -1,8 +1,8 @@
 import { goto } from '$app/navigation'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import Page from './+page.svelte'
 import type { PageProps } from './$types'
+import Page from './+page.svelte'
 import type { SuggestionFilters, SuggestionsPage } from './types'
 
 vi.mock('$app/navigation', () => ({
@@ -24,6 +24,11 @@ vi.mock('$lib/fastapi-client', () => ({ api: { request } }))
 
 vi.mock('$lib/helpers/useToast.svelte', () => ({
   useToast: vi.fn()
+}))
+
+vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$lib/authContext.svelte')>()),
+  getAuthContext: () => ({ config: { default_locale: 'fr', enabled_locales: ['fr', 'en'] } })
 }))
 
 const filters: SuggestionFilters = { search: '', status: '', locale: '', category_id: '' }

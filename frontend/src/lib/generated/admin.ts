@@ -240,7 +240,7 @@ export interface AdminPublishStatus {
 export interface AdminSuggestion {
   id: string;
   text: string;
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   category_id: string;
   category_title: string;
   status: "available" | "archived";
@@ -249,7 +249,7 @@ export interface AdminSuggestion {
 }
 export interface AdminSuggestionCategory {
   id: string;
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   key: string;
   title: string;
   description: string;
@@ -760,7 +760,7 @@ export interface SuggestionArchiveUpdate {
   archived: boolean;
 }
 export interface SuggestionCategoryCreate {
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   title: string;
   description: string;
   icon: string;
