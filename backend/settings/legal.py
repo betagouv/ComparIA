@@ -169,7 +169,7 @@ async def get_legal_presentation(
     the instance's default language when the caller has none."""
     app_settings = await get_app_settings()
     presentations = await get_legal_presentations()
-    return (await get_legal_presentations()).root[
+    return presentations.root[
         pick_locale(locale or app_settings.default_locale, presentations.root)
     ]
 
