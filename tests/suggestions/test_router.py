@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -19,6 +20,7 @@ from fastapi.testclient import TestClient
 import backend.admin.suggestions as admin_suggestions
 import backend.suggestions.router as suggestions_router
 import backend.suggestions.services as suggestion_services
+import backend.utils.locale as locale_module
 from backend.admin.router import router as admin_router
 from backend.auth.dependencies import require_admin
 from backend.suggestions.services import (
@@ -39,6 +41,15 @@ from utils.database.models.suggestion import (
     PublicSuggestionCategory,
     PublicSuggestionsResponse,
 )
+from utils.i18n import DEFAULT_LOCALE
+
+
+@pytest.fixture()
+def mock_locale_settings(monkeypatch):
+    app_settings = AsyncMock(
+        return_value=SimpleNamespace(default_locale="fr", enabled_locales=["fr", "da"])
+    )
+    monkeypatch.setattr(locale_module, "get_app_settings", app_settings)
 
 
 def _category() -> AdminSuggestionCategory:
@@ -67,7 +78,9 @@ def _suggestion() -> AdminSuggestion:
     )
 
 
-def test_public_suggestions_returns_grouped_categories(monkeypatch):
+def test_public_suggestions_returns_grouped_categories(
+    monkeypatch, mock_locale_settings
+):
     async def fake_list(locale):
         assert locale == "fr"
         return PublicSuggestionsResponse(
@@ -97,18 +110,16 @@ def test_public_suggestions_returns_grouped_categories(monkeypatch):
     ]
 
 
-def test_public_suggestions_returns_nothing_for_a_locale_without_content(monkeypatch):
-    async def fail_list(locale):
-        raise AssertionError(f"the service must not be called for {locale}")
-
-    monkeypatch.setattr(suggestions_router, "list_public_suggestions", fail_list)
+def test_public_suggestions_fails_for_not_enabled_locale(
+    monkeypatch, mock_locale_settings
+):
     app = FastAPI()
     app.include_router(suggestions_router.router)
 
-    response = TestClient(app).get("/suggestions?locale=lt")
+    response = TestClient(app).get("/suggestions?locale=it")
 
-    assert response.status_code == 200
-    assert response.json() == {"categories": []}
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Unsupported locale 'it'."}
 
 
 def test_admin_suggestions_requires_an_admin():
@@ -120,7 +131,9 @@ def test_admin_suggestions_requires_an_admin():
     assert response.status_code == 401
 
 
-def test_admin_suggestions_passes_filters_and_returns_categories(monkeypatch):
+def test_admin_suggestions_passes_filters_and_returns_categories(
+    monkeypatch, mock_locale_settings
+):
     received = {}
 
     async def fake_list(**kwargs):
@@ -130,7 +143,11 @@ def test_admin_suggestions_passes_filters_and_returns_categories(monkeypatch):
     async def fake_admin():
         return SimpleNamespace(id=uuid.UUID("00000000-0000-0000-0000-000000000003"))
 
+    async def app_settings():
+        return SimpleNamespace(default_locale="fr", enabled_locales=["fr", "da"])
+
     monkeypatch.setattr(admin_suggestions, "list_admin_suggestions", fake_list)
+    monkeypatch.setattr(admin_suggestions, "get_app_settings", app_settings)
     app = FastAPI()
     app.include_router(admin_router)
     app.dependency_overrides[require_admin] = fake_admin
@@ -147,6 +164,7 @@ def test_admin_suggestions_passes_filters_and_returns_categories(monkeypatch):
         "category_id": _category().id,
         "page": 2,
         "page_size": 20,
+        "default_locale": DEFAULT_LOCALE,
     }
     assert response.json()["total"] == 1
     assert response.json()["categories"][0]["key"] == "administrative"

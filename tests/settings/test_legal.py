@@ -26,6 +26,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.settings.router as settings_router  # noqa: E402
+import backend.utils.locale as locale_module
 from backend.admin.router import (  # noqa: E402
     PublishLegalDocumentBody,
     _to_admin_legal_document,
@@ -296,9 +297,13 @@ def public_client(presentation=None, document=None):
     async def get_presentation(_locale):
         return presentation or legal.fallback_legal_presentation()
 
+    async def app_settings():
+        return SimpleNamespace(default_locale="fr", enabled_locales=["fr", "da"])
+
     app = FastAPI()
     app.include_router(settings_router.router)
     with (
+        patch.object(locale_module, "get_app_settings", app_settings),
         patch.object(settings_router, "get_active_legal_document", active_document),
         patch.object(settings_router, "get_legal_presentation", get_presentation),
     ):
