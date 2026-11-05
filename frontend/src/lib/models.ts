@@ -65,6 +65,9 @@ export type Commons = {
   currency: LLMList['currency']
   // For the card copy that names the instance.
   platformName: string
+  // Shown models whose rank could move by more than this many places are
+  // greyed out in the ranking table. Left out, none is.
+  greyRankSpread?: number
 }
 export type Data = {
   lastUpdateDate: string | null
@@ -432,7 +435,8 @@ export function setModelsContext(data: LLMList, platformName: string) {
       modelsCount,
       currency: data.currency,
       rankClasses,
-      platformName
+      platformName,
+      greyRankSpread: data.grey_rank_spread
     }
   })
 }

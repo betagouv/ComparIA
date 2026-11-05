@@ -616,7 +616,9 @@
                     "minVotes": "Minimum votes",
                     "minVotesHelp": "A model is ranked only once it has this many votes. Applied at the next ranking update, within the hour.",
                     "maxRankSpread": "Maximum rank spread",
-                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks."
+                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks.",
+                    "greyRankSpread": "Grey-out rank spread",
+                    "greyRankSpreadHelp": "A shown model is greyed out if its rank could move by more than this many places, up or down. Set it to the maximum rank spread or higher to grey out nothing."
                 },
                 "votesObjective": "Votes objective"
             },
@@ -2127,6 +2129,7 @@
                 "cols": {
                     "arch": "Architecture",
                     "consumption": "Average energy<br>(per 1000 tokens)",
+                    "energy_class": "Energy",
                     "elo": "BT score <br> of satisfaction",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -2141,9 +2144,11 @@
                     "trust_range": "Confidence (±)"
                 },
                 "estimation": "(estimate)",
+                "rankRange": "Could rank between {best} and {worst}",
                 "tooltips": {
                     "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
                     "consumption": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a request and generate the corresponding response. Model energy consumption depends on the model's size and architecture. We have chosen to display proprietary models for which we do not have transparent information about their size and architecture in gray as \"unanalyzed\" (N/A).",
+                    "energy_class": "Energy label from A (most efficient) to F (least efficient), based on the electricity the model uses to answer. Exact figures are in the Energy focus tab and in the download. Proprietary models with no public size or architecture are shown as N/A.",
                     "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
                     "price": "Indicative price for use through an API, per million tokens, converted to the displayed currency. The input is the request sent, the output the answer generated.",
                     "rank": "Rank assigned based on Bradley-Terry satisfaction score",
@@ -2157,7 +2162,8 @@
                 "label": "Show ranks"
             },
             "totalModels": "Total models:",
-            "totalVotes": "Total votes:"
+            "totalVotes": "Total votes:",
+            "uncertain": "Greyed out: models whose rank could still move by more than {count} places."
         },
         "title": "From votes to a leaderboard",
         "views": {

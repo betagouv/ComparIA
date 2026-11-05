@@ -103,6 +103,7 @@ export interface LLMList {
     [k: string]: number;
   } | null;
   max_rank_spread: number;
+  grey_rank_spread: number;
   currency: CurrencyInfo;
 }
 /**
