@@ -14,13 +14,12 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
-from utils.i18n import DEFAULT_LOCALE
+from utils.i18n import DEFAULT_LOCALE, SupportedLocale
 from utils.validation import Translatable
 
 DEFAULT_LEGAL_LANGUAGE = DEFAULT_LOCALE
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
-LEGAL_LOCALE_PATTERN = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
 
 
 def _stamp_utc(value: datetime) -> datetime:
@@ -143,7 +142,9 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
 )
 
 
-def fallback_legal_presentation(locale: str = DEFAULT_LOCALE) -> LegalPresentation:
+def fallback_legal_presentation(
+    locale: SupportedLocale = DEFAULT_LOCALE,
+) -> LegalPresentation:
     return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
 
 
@@ -161,7 +162,9 @@ async def get_legal_presentations() -> LegalPresentationTranslatable:
     return FALLBACK_PRESENTATIONS
 
 
-async def get_legal_presentation(locale: str | None = None) -> LegalPresentation:
+async def get_legal_presentation(
+    locale: SupportedLocale | None = None,
+) -> LegalPresentation:
     """The admin's copy when there is one, else the default in `locale`, or in
     the instance's default language when the caller has none."""
     app_settings = await get_app_settings()

@@ -36,6 +36,7 @@ from utils.database.models.survey import (
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 from utils.storage.redis import REDIS_SURVEY_KEY, invalidate_cache, redis_cache
 
 
@@ -90,14 +91,18 @@ def _key(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")[:100]
 
 
-def _label(labels: dict[str, str], locale: str, default_locale: str) -> str:
+def _label(
+    labels: dict[str, str],
+    locale: SupportedLocale,
+    default_locale: SupportedLocale,
+) -> str:
     """Exact locale, then the instance default, then whatever is there."""
     if locale in labels:
         return labels[locale]
     return labels.get(default_locale) or next(iter(labels.values()))
 
 
-async def _default_locale() -> str:
+async def _default_locale() -> SupportedLocale:
     """Read once per request and handed down: every label on a page falls back
     to it, and each read of the settings is a round trip to Redis."""
     return (await get_app_settings()).default_locale
@@ -178,8 +183,8 @@ async def _all_logs(
 
 def _to_public(
     question: SurveyQuestion,
-    locale: str,
-    default_locale: str,
+    locale: SupportedLocale,
+    default_locale: SupportedLocale,
     *,
     include_archived: bool = False,
 ) -> PublicSurveyQuestion:
@@ -209,7 +214,7 @@ def _to_public(
 # --- public ----------------------------------------------------------------
 
 
-async def list_questions(locale: str) -> list[PublicSurveyQuestion]:
+async def list_questions(locale: SupportedLocale) -> list[PublicSurveyQuestion]:
     """
     Returns every askable questions.
     """
@@ -221,7 +226,7 @@ async def list_questions(locale: str) -> list[PublicSurveyQuestion]:
 
 
 async def list_unanswered_questions_ids(
-    locale: str,
+    locale: SupportedLocale,
     user_id: uuid.UUID | None,
     anonymous_user_hash: str | None,
 ) -> list[uuid.UUID]:
@@ -400,7 +405,7 @@ async def submit_answers(
 
 
 async def my_answers(
-    locale: str,
+    locale: SupportedLocale,
     user_id: uuid.UUID | None,
     anonymous_user_hash: str | None,
 ) -> list[MySurveyAnswer]:

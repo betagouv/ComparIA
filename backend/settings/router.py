@@ -19,6 +19,7 @@ from backend.settings.legal import (
 )
 from backend.utils.locale import LocaleQuery
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
+from utils.i18n import SupportedLocale
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
@@ -43,7 +44,7 @@ async def public_informational_legal_pages_links() -> InformationalLegalPageLink
 class PublicLegalDocument(BaseModel):
     version: str
     content_hash: str
-    locale: str
+    locale: SupportedLocale
     content: str
     published_at: UtcTimestamp
     effective_at: UtcTimestamp
@@ -54,7 +55,7 @@ class PublicTermsDocument(PublicLegalDocument):
 
 
 async def _active_document(
-    kind: LegalDocumentKind, locale: str
+    kind: LegalDocumentKind, locale: SupportedLocale
 ) -> tuple[LegalDocument, str, str]:
     document = await get_active_legal_document(kind)
     if document:

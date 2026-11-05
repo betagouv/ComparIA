@@ -22,6 +22,7 @@ from utils.database.models.vote_tag import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 from utils.storage.redis import REDIS_VOTE_TAGS_KEY, invalidate_cache, redis_cache
 
 
@@ -128,7 +129,7 @@ async def check_vote_tags(keys: list[str], choice: TurnChoice, pos: BotPos) -> N
         raise VoteTagSignMismatchError(", ".join(sorted(mismatched)))
 
 
-async def _label(tag: VoteTag, locale: str) -> str | None:
+async def _label(tag: VoteTag, locale: SupportedLocale) -> str | None:
     # Reserved tags are translated in the message files, so the API sends no
     # label for them and the frontend reads 'vote.choices.{sign}.{key}'.
     if tag.reserved or not tag.labels:
@@ -139,7 +140,7 @@ async def _label(tag: VoteTag, locale: str) -> str | None:
     return tag.labels.get(default_locale) or next(iter(tag.labels.values()), None)
 
 
-async def list_public_vote_tags(locale: str) -> PublicVoteTagsResponse:
+async def list_public_vote_tags(locale: SupportedLocale) -> PublicVoteTagsResponse:
     return PublicVoteTagsResponse(
         tags=[
             PublicVoteTag(

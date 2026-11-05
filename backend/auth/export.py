@@ -22,6 +22,7 @@ from utils.database.models.survey import MySurveyAnswer, SurveyAnswer, SurveyAns
 from utils.database.models.turn import Turn
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
+from utils.i18n import SupportedLocale
 
 EXPORT_SCHEMA_VERSION = 1
 
@@ -34,7 +35,7 @@ class ExportedAccount(BaseModel):
 class ExportedConsent(BaseModel):
     terms_version: str
     document_hash: str | None
-    locale: str | None
+    locale: SupportedLocale | None
     purpose: str
     accepted_at: datetime
 

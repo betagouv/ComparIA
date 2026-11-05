@@ -34,7 +34,10 @@ LocaleQuery = Annotated[SupportedLocale, Depends(get_safe_locale)]
 LocaleQueryStrict = Annotated[SupportedLocale, Depends(get_strict_locale)]
 
 
-def pick_locale(locale: str | None, available: Collection[str]) -> str:
+def pick_locale(
+    locale: SupportedLocale | None,
+    available: Collection[str],
+) -> SupportedLocale:
     """The closest locale we have copy for: exact, then same language, then
     the base locale everything is written in first."""
     if locale:

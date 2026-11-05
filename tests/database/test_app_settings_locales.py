@@ -41,7 +41,9 @@ def test_supported_locales_are_accepted(locales: list[str]) -> None:
 
 
 def test_unsupported_locales_are_refused() -> None:
-    with pytest.raises(ValidationError, match="Unsupported locales: de, xx"):
+    with pytest.raises(
+        ValidationError, match=r"(?s)enabled_locales.*type=literal_error"
+    ):
         AppSettingsPatch(enabled_locales=["fr", "xx", "de"])
 
 
@@ -53,7 +55,9 @@ def test_enabling_no_locale_is_refused() -> None:
 
 
 def test_unsupported_default_locale_is_refused() -> None:
-    with pytest.raises(ValidationError, match="Unsupported locale: xx"):
+    with pytest.raises(
+        ValidationError, match=r"(?s)default_locale.*type=literal_error"
+    ):
         AppSettingsPatch(default_locale="xx")
 
 
