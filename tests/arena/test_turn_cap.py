@@ -42,13 +42,17 @@ def patched(module, **attributes):
             setattr(module, name, value)
 
 
+LLM_A = uuid4()
+LLM_B = uuid4()
+
+
 def comparison_with(turn_count: int):
     turn = SimpleNamespace(user_msg=SimpleNamespace(content="Bonjour"))
     return SimpleNamespace(
         id=uuid4(),
         turns=[turn] * turn_count,
-        llm_id_a=uuid4(),
-        llm_id_b=uuid4(),
+        llm_id_a=LLM_A,
+        llm_id_b=LLM_B,
         cohorts=None,
     )
 
@@ -61,7 +65,7 @@ def send_follow_up(comparison):
         return None
 
     async def get_llms_data():
-        return None
+        return SimpleNamespace(enabled=[LLM_A, LLM_B])
 
     body = arena_models.AddTextBody(
         message="Et pour les plantes en hiver, comment cela se passe ?",
@@ -119,8 +123,22 @@ def test_the_cap_is_not_a_ceiling_that_can_be_stepped_over():
             raise AssertionError("an over-long comparison grew further")
 
 
+def test_a_conversation_stops_when_a_model_was_turned_off():
+    gone = comparison_with(1)
+    gone.llm_id_b = uuid4()
+    with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
+        try:
+            send_follow_up(gone)
+        except HTTPException as error:
+            assert error.status_code == 400
+            assert error.detail == "comparison_model_unavailable"
+        else:
+            raise AssertionError("a follow-up went to a model that is turned off")
+
+
 if __name__ == "__main__":
     test_a_conversation_below_the_cap_goes_through()
     test_a_conversation_at_the_cap_is_refused()
     test_the_cap_is_not_a_ceiling_that_can_be_stepped_over()
+    test_a_conversation_stops_when_a_model_was_turned_off()
     print("Turn cap cases passed.")

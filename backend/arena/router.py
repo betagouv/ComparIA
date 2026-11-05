@@ -70,6 +70,7 @@ from backend.vote_tags.services import (
     check_vote_tags,
 )
 from utils.database.models import (
+    BOT_POS,
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
@@ -106,6 +107,19 @@ def assert_not_rate_limited(
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="rate_limited",
+        )
+
+
+def assert_models_enabled(comparison: ComparisonRead, llms_data: LLMsData) -> None:
+    """
+    A model turned off after the comparison began can no longer answer in it.
+    """
+    if any(
+        getattr(comparison, f"llm_id_{pos}") not in llms_data.enabled for pos in BOT_POS
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="comparison_model_unavailable",
         )
 
 
@@ -530,6 +544,7 @@ async def add_text(
             detail="max_turns_reached",
         )
 
+    assert_models_enabled(comparison_, await get_llms_data())
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
         args.message,
@@ -640,6 +655,7 @@ async def retry(
                 await update_comparison_llm_id(comparison, pos, new_llm_id)
                 logger.warning(f"Swapped LLM '{failing_llm_id}' to '{new_llm_id}'")
 
+    assert_models_enabled(comparison, await get_llms_data())
     charge_budget(
         turn.user_msg.content,
         (comparison.llm_id_a, comparison.llm_id_b),
