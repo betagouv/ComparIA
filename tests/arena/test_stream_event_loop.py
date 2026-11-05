@@ -22,6 +22,7 @@ import os
 import sys
 import threading
 import time
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -40,9 +41,13 @@ from litellm.types.utils import (  # noqa: E402
     StreamingChoices,
 )
 
+import backend.arena.conversation as conversation  # noqa: E402
 import backend.arena.litellm as arena_litellm  # noqa: E402
 import backend.arena.streaming as streaming  # noqa: E402
-from backend.arena.conversation import bot_response_async  # noqa: E402
+from backend.arena.conversation import (  # noqa: E402
+    EmptyResponseError,
+    bot_response_async,
+)
 from backend.config import settings  # noqa: E402
 from backend.llms.models import LitellmEndpoint  # noqa: E402
 from utils.database.models import LLMMessageCreate, UserMessageRead  # noqa: E402
@@ -190,6 +195,28 @@ def test_the_loop_keeps_serving_while_a_provider_is_slow(slow_provider, monkeypa
     assert final.tokens
     assert final.created_at <= final.responded_at <= final.updated_at
     assert turn.llm_msg_a == final
+
+
+@pytest.mark.parametrize(
+    "delta", [{"reasoning_content": "Je réfléchis."}, {"content": "  \n"}]
+)
+def test_an_answer_without_text_counts_as_empty(delta, monkeypatch):
+    async def stream(*, msg, **_kwargs):
+        msg.created_at = msg.updated_at = datetime.now()
+        msg.content = delta.get("content", "")
+        msg.reasoning_content = delta.get("reasoning_content", "")
+        yield msg
+
+    monkeypatch.setattr(conversation, "litellm_stream_iter", stream)
+    monkeypatch.setattr(conversation, "get_cached_response", lambda *_args: None)
+
+    async def scenario():
+        turn: Any = SimpleNamespace(user_msg=UserMessageRead(content="Bonjour ?"))
+        async for _ in bot_response_async("a", llm_at("http://x"), turn, 1, []):
+            pass
+
+    with pytest.raises(EmptyResponseError):
+        asyncio.run(scenario())
 
 
 def test_the_mock_response_still_streams(monkeypatch):

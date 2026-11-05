@@ -113,6 +113,7 @@ def arena(llm_ids=(CHEAP, CHEAP)):
         return SimpleNamespace(
             pick_two=lambda _mode, _selection: (llm_a, llm_b),
             pricey_models=[PRICEY],
+            enabled=[llm_a, llm_b],
         )
 
     async def run_checks(_text, _field, _request, _warning_token, **_kwargs):

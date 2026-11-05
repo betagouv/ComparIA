@@ -153,8 +153,9 @@ async def bot_response_async(
     logger.debug(
         f"duration for {llm_msg.generation_id}: {duration}", extra={"request": request}
     )
-    # Check for empty responses and raise error (check on data that is not stripped)
-    if not llm_msg.content and not llm_msg.reasoning_content:
+    # Reasoning alone is not an answer: the turn saves a stripped, non-empty
+    # `content`, so a model that only reasoned could not be stored.
+    if not llm_msg.content.strip():
         logger.error(
             f"reponse_vide: {llm.id}, message: {llm_msg}",
             exc_info=True,

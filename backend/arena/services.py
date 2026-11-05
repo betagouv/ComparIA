@@ -171,9 +171,9 @@ async def add_comparison_turn(
         session.add(db_turn)
         await session.commit()
 
-    comparison = ComparisonRead.model_validate(
-        await _get_item(Comparison, comparison_id, session)
-    )
+        comparison = ComparisonRead.model_validate(
+            await _get_item(Comparison, comparison_id, session)
+        )
 
     return (comparison, next(t for t in comparison.turns if t.id == new_turn_id))
 

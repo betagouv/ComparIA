@@ -861,6 +861,7 @@
             "captcha_unavailable": "The anti-robot check is unavailable, please try again.",
             "comparison_streaming": "Please wait for the models to finish answering.",
             "max_turns_reached": "This conversation has reached its length limit. Please start a new one.",
+            "comparison_model_unavailable": "One of the models in this comparison is no longer available. Start a new comparison to continue.",
             "model_unavailable": "One of the models you chose can no longer be picked by hand. Reload the page to choose from the models available.",
             "prompt_check": {
                 "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
