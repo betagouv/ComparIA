@@ -1,6 +1,7 @@
 import type { CurrencyInfo } from '$lib/generated/backend'
+import type { Locale } from '$lib/i18n/runtime'
 
-export function currencyFormatter(currency: CurrencyInfo, locale: string): Intl.NumberFormat {
+export function currencyFormatter(currency: CurrencyInfo, locale: Locale): Intl.NumberFormat {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency.code,
@@ -15,7 +16,7 @@ export function convertFromUsd(amount: number, currency: CurrencyInfo): number {
 export function formatCurrencyFromUsd(
   amount: number,
   currency: CurrencyInfo,
-  locale: string
+  locale: Locale
 ): string {
   return currencyFormatter(currency, locale).format(convertFromUsd(amount, currency))
 }
@@ -23,7 +24,7 @@ export function formatCurrencyFromUsd(
 export function formatUsageCostFromUsd(
   amount: number,
   currency: CurrencyInfo,
-  locale: string
+  locale: Locale
 ): string {
   const converted = convertFromUsd(amount, currency)
   const maximumFractionDigits = 6

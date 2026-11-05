@@ -1,3 +1,4 @@
+import type { Locale } from '$lib/i18n/runtime'
 import { shuffleArray } from '$lib/utils/commons'
 
 export type PromptSuggestion = {
@@ -31,7 +32,7 @@ export type SuggestionCategoryCard = SuggestionCategory & {
  */
 export function getGuidedSuggestionCategories(
   categories: SuggestionCategory[],
-  locale: string
+  locale: Locale
 ): SuggestionCategory[] {
   const activeCategories = categories.filter((category) => category.suggestions.length > 0)
 
@@ -47,7 +48,7 @@ export function getGuidedSuggestionCategories(
 
 export function toSuggestionCategoryCards(
   categories: SuggestionCategory[],
-  locale: string
+  locale: Locale
 ): SuggestionCategoryCard[] {
   return getGuidedSuggestionCategories(categories, locale)
     .slice(0, 4)

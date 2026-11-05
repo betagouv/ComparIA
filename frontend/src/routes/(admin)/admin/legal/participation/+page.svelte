@@ -11,6 +11,7 @@
   import type { ArenaLegalPresentation, SignInLegalPresentation } from '$lib/generated/admin'
   import { getLocales } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import { useForm } from '$lib/stores/form.svelte'
   import { getKeys } from '$lib/utils/commons'
   import type { PageProps } from './$types'
@@ -47,7 +48,7 @@
     onSuccess: async () => await invalidate('admin:legal')
   })
 
-  function clearLocale(locale: string) {
+  function clearLocale(locale: Locale) {
     form.form[locale] = {
       arena: {} as ArenaLegalPresentation,
       sign_in: {} as SignInLegalPresentation
@@ -57,7 +58,7 @@
     })
   }
 
-  function isValid(locale: string) {
+  function isValid(locale: Locale) {
     if (!form.form[locale]) return false
     const sections = Object.values(form.form[locale]) as object[]
     if (sections.length != 2 || sections.some((v) => Object.keys(v).length === 0)) return false

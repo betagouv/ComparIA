@@ -1,14 +1,14 @@
 <script lang="ts">
   import { MarkdownCode as Markdown, stripLeadingTitle } from '$components/markdown'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
+  import { getLocale, type Locale } from '$lib/i18n/runtime'
 
   let {
     version,
     effectiveAt,
     content,
     locale
-  }: { version: string; effectiveAt: string; content: string; locale: string } = $props()
+  }: { version: string; effectiveAt: string; content: string; locale: Locale } = $props()
 
   // The backend serves the French document when the requested locale has none,
   // so say it rather than passing the substitution off as a translation.

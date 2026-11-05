@@ -10,6 +10,7 @@
   import { getAuthContext } from '$lib/authContext.svelte'
   import { getLocales } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
@@ -26,9 +27,9 @@
     ...props
   }: Omit<FormFieldsetItemProps, 'component'> & {
     value: Record<string, unknown>
-    locale?: string
-    isValid?: (locale: string) => boolean
-    subSnippet?: Snippet<[locale: string, label: string]>
+    locale?: Locale
+    isValid?: (locale: Locale) => boolean
+    subSnippet?: Snippet<[locale: Locale, label: string]>
   } = $props()
 
   const locales = $derived(getLocales(auth.config.enabled_locales))
