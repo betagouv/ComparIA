@@ -2,25 +2,22 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { AccordionGroup, Alert, Badge, Button } from '$components/dsfr'
-  import { getAuthContext } from '$lib/authContext.svelte'
   import { PRIVACY_POLICY_PATH, TERMS_PATH } from '$lib/consent'
   import type { AdminLegalDocument } from '$lib/generated/admin'
   import type { LegalDocumentKeys } from '$lib/generated/constants'
-  import type { LocaleOption } from '$lib/global.svelte'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
-  import { fromEntries } from '$lib/utils/commons'
+  import { getLocale, type Locale } from '$lib/i18n/runtime'
   import type { PageProps } from './$types'
 
   const { data, params }: PageProps = $props()
 
+  const locales = getLocalesContext()
+
   const kind = $derived(params.legalDoc as LegalDocumentKeys)
   let documents = $derived<AdminLegalDocument[]>(data.documents.history)
   let activeDocument = $derived(data.documents.current)
-  const activeDocumentLocales = $derived(
-    Object.keys(activeDocument?.content ?? {}) as LocaleOption['code'][]
-  )
+  const activeDocumentLocales = $derived(Object.keys(activeDocument?.content ?? {}) as Locale[])
 
   const scheduledDocuments = $derived(
     documents.filter(
@@ -36,11 +33,6 @@
     )
   )
 
-  const auth = getAuthContext()
-  const locales = $derived(
-    fromEntries(getLocales(auth.config.enabled_locales).map((l) => [l.code, l]))
-  )
-
   function formatDate(value: string) {
     return new Intl.DateTimeFormat(getLocale(), {
       dateStyle: 'medium',
@@ -54,7 +46,7 @@
 {#snippet documentList(documents: AdminLegalDocument[])}
   <div class="gap-4 flex flex-col">
     {#each documents as doc (doc.id)}
-      {@const availableLocales = Object.keys(doc.content) as LocaleOption['code'][]}
+      {@const availableLocales = Object.keys(doc.content) as Locale[]}
       <div class="cg-border p-4">
         <h3 class="text-base! mb-3!">
           {m['admin.legal.document.versionOn']({
@@ -66,7 +58,7 @@
           id="accordion-{doc.version}"
           items={availableLocales.map((l) => ({
             id: l,
-            label: locales[l].long,
+            label: locales.getLabel(l),
             content: doc.content[l],
             class: 'bg-[--green-tilleul-verveine-975-75]'
           }))}
@@ -115,7 +107,7 @@
           id="accordion-{activeDocument.version}"
           items={activeDocumentLocales.map((l) => ({
             id: l,
-            label: locales[l].long,
+            label: locales.getLabel(l),
             content: activeDocument.content[l],
             class: 'bg-[--green-tilleul-verveine-975-75]'
           }))}

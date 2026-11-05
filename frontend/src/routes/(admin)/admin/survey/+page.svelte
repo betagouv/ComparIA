@@ -4,7 +4,6 @@
   import { FormRadioGroup } from '$components/form'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
-  import { getAuthContext } from '$lib/auth.svelte'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type {
     AdminSurveyQuestion,
@@ -12,7 +11,7 @@
     SurveyQuestionCreate,
     SurveyQuestionUpdate
   } from '$lib/generated/admin'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { TableCol } from '$lib/utils/data'
@@ -23,18 +22,18 @@
 
   type SurveyInputType = AdminSurveyQuestion['input_type']
 
-  const auth = getAuthContext()
+  const locales = getLocalesContext()
   const refetch = () => invalidate('admin:survey')
 
   // The default locale mints the published key, so its field comes first and
   // carries the hint, and its label is the one the lists show. Only the
   // locales the instance actually serves, same set as the language switcher.
-  const defaultLocale = $derived(auth.config.default_locale)
+  const defaultLocale = $derived(locales.default)
   // Copied before sorting: getLocales can hand back the shared list of every
   // locale, which the language switcher reads too.
   const orderedLocales = $derived(
-    [...getLocales(auth.config.enabled_locales)].sort(
-      (left, right) => Number(right.code === defaultLocale) - Number(left.code === defaultLocale)
+    [...locales.enabled].sort(
+      (left, right) => Number(right === defaultLocale) - Number(left === defaultLocale)
     )
   )
 
@@ -179,14 +178,14 @@
       startedOptions.some((option) => !filled(option.labels, defaultLocale))
     ) {
       formError = m['survey.admin.defaultLabelError']({
-        locale: orderedLocales.find(({ code }) => code === defaultLocale)?.long ?? defaultLocale
+        locale: locales.getLabel(defaultLocale)
       })
       return
     }
 
     const labels = Object.fromEntries(
       orderedLocales
-        .map(({ code }) => [code, (formLabels[code] ?? '').trim()])
+        .map((code) => [code, (formLabels[code] ?? '').trim()])
         .filter(([, value]) => value)
     )
     const options: SurveyOptionWrite[] = formOptions
@@ -194,7 +193,7 @@
         key: option.key,
         labels: Object.fromEntries(
           orderedLocales
-            .map(({ code }) => [code, (option.labels[code] ?? '').trim()])
+            .map((code) => [code, (option.labels[code] ?? '').trim()])
             .filter(([, value]) => value)
         )
       }))
@@ -215,7 +214,7 @@
     // The form only shows the locales the instance serves today. Labels in a
     // locale switched off since are kept as they were: dropping them would
     // lose the translation and count as a change of wording.
-    const served = new Set<string>(orderedLocales.map(({ code }) => code))
+    const served = new Set<string>(orderedLocales)
     const unserved = (stored: Record<string, string> | undefined) =>
       Object.fromEntries(Object.entries(stored ?? {}).filter(([code]) => !served.has(code)))
     const keptLabels = { ...unserved(editing?.labels), ...labels }
@@ -390,11 +389,11 @@
     const has = (labels: Record<string, string>, code: string) => !!labels[code]?.trim()
     return orderedLocales
       .filter(
-        ({ code }) =>
+        (code) =>
           !has(question.labels, code) ||
           question.options.some((option) => !option.archived && !has(option.labels, code))
       )
-      .map(({ short }) => short)
+      .map((code) => locales.getLabel(code, 'short'))
   }
 
   function displayLabel(question: AdminSurveyQuestion) {
