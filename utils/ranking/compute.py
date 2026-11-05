@@ -212,14 +212,62 @@ def _variant_table(
     return table
 
 
+def _spread(fields: dict) -> int:
+    """How many places the rank may move, the larger side of trust_range."""
+    return max(
+        fields["rank"] - fields["rank_p2_5"], fields["rank_p97_5"] - fields["rank"]
+    )
+
+
+def _over_spread(fields: dict, max_rank_spread: int) -> bool:
+    """Same test as the leaderboard's filter on trust_range (frontend models.ts)."""
+    return _spread(fields) > max_rank_spread
+
+
+def _shown_models(
+    ci: dict[UUID, Interval],
+    table: dict[UUID, dict],
+    max_rank_spread: int,
+) -> tuple[set[UUID], dict[UUID, dict]]:
+    """
+    Models the leaderboard shows: rank within ``max_rank_spread`` places.
+
+    One uncertain model widens the range of every model near it, so dropping
+    all models over the spread at once would also drop its neighbours. Drop
+    the widest one(s) only, recount the others without them, and repeat until
+    every model left fits. A model dropped once stays dropped, so it ends.
+
+    Returns the shown models, and the fields each hidden model was dropped on.
+    """
+    shown = set(table)
+    dropped: dict[UUID, dict] = {}
+    while shown:
+        widest = max(_spread(table[m]) for m in shown)
+        if widest <= max_rank_spread:
+            break
+        over = {m for m in shown if _spread(table[m]) == widest}
+        dropped |= {m: table[m] for m in over}
+        shown -= over
+        table = _variant_table({m: ci[m] for m in shown}, {}, {})
+    return shown, dropped
+
+
 def _compute_ranking(
     votes: list[dict],
     signs: dict[str, VoteTagSign],
     *,
     with_ratio: bool,
     min_votes: int = 0,
+    max_rank_spread: int | None = None,
 ) -> RankingResult:
-    """Compute ranking and preferences for a single group of votes/reactions."""
+    """
+    Compute ranking and preferences for a single group of votes/reactions.
+
+    With ``max_rank_spread``, the models the leaderboard shows (rank may move
+    at most that many places either way) get their rank and rank bounds
+    counted among the shown models only, so a hidden model does not widen
+    anyone's range.
+    """
     all_battles, style_a, style_b = _votes_to_battles(votes)
 
     if not all_battles:
@@ -262,6 +310,26 @@ def _compute_ranking(
         match_counts,
         win_counts,
     )
+
+    if max_rank_spread is not None:
+        shown, dropped = _shown_models(ci_controlled, controlled, max_rank_spread)
+        if dropped:
+            # Rank shown models among themselves, as the leaderboard does.
+            # Hidden models keep the rank and bounds they were dropped on:
+            # counted over every model, a few fall back under the spread, and
+            # the frontend filter would show them.
+            for model, fields in dropped.items():
+                controlled[model] |= {
+                    key: fields[key] for key in ("rank", "rank_p2_5", "rank_p97_5")
+                }
+            controlled |= _variant_table(
+                {m: ci_controlled[m] for m in shown}, match_counts, win_counts
+            )
+            plain |= _variant_table(
+                {m: v for m, v in ci_plain.items() if m in shown},
+                match_counts,
+                win_counts,
+            )
 
     rankings: dict[UUID, DatasetData] = {}
     for model, fields in controlled.items():
@@ -313,6 +381,7 @@ async def compute_ranking() -> RankingResult | None:
             signs,
             with_ratio=with_ratio,
             min_votes=app_settings.ranking_min_votes,
+            max_rank_spread=app_settings.ranking_max_rank_spread,
         )
         elapsed = time.time() - start
         logger.info(f"[Ranking] Updated ranking in {elapsed:.1f}s")
