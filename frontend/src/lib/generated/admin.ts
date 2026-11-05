@@ -317,8 +317,8 @@ export interface AppSettingsPatch {
   secondary_color_light?: string | null;
   secondary_color_dark?: string | null;
   homepage_url?: string | null;
-  enabled_locales?: string[] | null;
-  default_locale?: string | null;
+  enabled_locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[] | null;
+  default_locale?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv") | null;
   analysis_endpoint_id?: string | null;
   analysis_model?: string | null;
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
@@ -354,8 +354,8 @@ export interface AppSettingsPublic {
   dataset_voter_ids: boolean;
   has_custom_logo: boolean;
   logo_version?: string | null;
-  enabled_locales: string[];
-  default_locale: string;
+  enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  default_locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   auth_methods: string[];
   oidc_issuer: string | null;
   oidc_client_id: string | null;

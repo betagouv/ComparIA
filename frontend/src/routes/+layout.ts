@@ -1,6 +1,7 @@
-import type { AuthConfig, AuthUser } from '$lib/auth.svelte'
+import type { AuthUser } from '$lib/auth.svelte'
 import { api } from '$lib/fastapi-client'
 import type {
+  AuthConfig,
   InformationalLegalPageLinks,
   LLMList,
   PublicSurveyResponse
