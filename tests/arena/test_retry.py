@@ -67,7 +67,7 @@ def retry(target):
         return None
 
     async def get_llms_data():
-        return SimpleNamespace(pricey_models=[])
+        return SimpleNamespace(pricey_models=[], enabled={"a": object(), "b": object()})
 
     request = Request(
         {
@@ -114,6 +114,36 @@ def test_a_failed_turn_can_be_retried():
     assert retry(failed).status_code == 200
 
 
+def test_a_retry_stops_when_a_model_was_turned_off():
+    gone = comparison(answered=False)
+    gone.llm_id_b = "turned-off"
+    try:
+        retry(gone)
+    except HTTPException as error:
+        assert error.status_code == 400
+        assert error.detail == "comparison_model_unavailable"
+    else:
+        raise AssertionError("a retry went on with a model that is turned off")
+
+
+def test_a_first_turn_retry_swaps_a_failed_model_that_was_turned_off():
+    gone = comparison(answered=False, error=SimpleNamespace(pos="b", is_timeout=False))
+    gone.llm_id_b = "turned-off"
+
+    async def pick_replacement_model(*_args):
+        return "b"
+
+    async def update_comparison_llm_id(target, pos, new_llm_id):
+        setattr(target, f"llm_id_{pos}", new_llm_id)
+
+    with patched(
+        arena_router,
+        pick_replacement_model=pick_replacement_model,
+        update_comparison_llm_id=update_comparison_llm_id,
+    ):
+        assert retry(gone).status_code == 200
+
+
 def test_a_retry_needs_a_captcha():
     with patched(arena_models, verify_altcha_token=lambda _token: (False, "bad")):
         try:
@@ -128,5 +158,7 @@ if __name__ == "__main__":
     test_a_finished_turn_cannot_be_answered_again()
     test_a_turn_that_never_finished_can_be_retried()
     test_a_failed_turn_can_be_retried()
+    test_a_retry_stops_when_a_model_was_turned_off()
+    test_a_first_turn_retry_swaps_a_failed_model_that_was_turned_off()
     test_a_retry_needs_a_captcha()
     print("Retry cases passed.")
