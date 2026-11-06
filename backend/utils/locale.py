@@ -69,3 +69,30 @@ def pick_locale(
         if language in available:
             return language
     return DEFAULT_LOCALE
+
+
+T = TypeVar("T")
+
+
+def pick_translation(
+    contents: dict[SupportedLocale, T],
+    locale: SupportedLocale | None,
+    locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
+) -> tuple[SupportedLocale, T]:
+    """
+    The closest locale and content we have copy for: exact, then same language,
+    then the default locale and finally the first available locale in enabled ones.
+    """
+    available_locales = list(set(contents.keys()).intersection(set(locales.enabled)))
+    tries = [locale, locales.default, *available_locales]
+
+    for l in tries:
+        if not l:
+            continue
+        if l in available_locales:
+            return l, contents[l]
+        l_ = l.split("-")[0]
+        if l_ in available_locales:
+            return l_, contents[l_]
+
+    raise ValueError("Couldn't find any translations matching enabled locales.")
