@@ -302,6 +302,25 @@
             }
         },
         "llms": {
+            "health": {
+                "button": "Test model health",
+                "column": "Health",
+                "errors": {
+                    "emptyResponse": "Empty response",
+                    "keyRejected": "Key rejected",
+                    "modelNotFound": "Model not found",
+                    "noCredits": "Out of credits",
+                    "notConfigured": "Key missing",
+                    "providerError": "Provider error",
+                    "rateLimited": "Too many requests",
+                    "requestFailed": "Test failed",
+                    "timeout": "Timed out"
+                },
+                "healthy": "{latency} ms",
+                "progress": "Testing: {done} of {total}",
+                "summaryFailed": "No response: {failed} of {total}",
+                "summaryHealthy": "All models respond"
+            },
             "subTitle": "LLMs, labs, licenses and endpoints.",
             "title": "LLMs data configuration"
         },

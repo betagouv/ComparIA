@@ -302,6 +302,25 @@
             }
         },
         "llms": {
+            "health": {
+                "button": "Tester les modèles",
+                "column": "Santé",
+                "errors": {
+                    "emptyResponse": "Réponse vide",
+                    "keyRejected": "Clé refusée",
+                    "modelNotFound": "Modèle introuvable",
+                    "noCredits": "Crédit épuisé",
+                    "notConfigured": "Clé manquante",
+                    "providerError": "Erreur du fournisseur",
+                    "rateLimited": "Trop de requêtes",
+                    "requestFailed": "Test impossible",
+                    "timeout": "Délai dépassé"
+                },
+                "healthy": "{latency} ms",
+                "progress": "Test en cours : {done} sur {total}",
+                "summaryFailed": "Sans réponse : {failed} sur {total}",
+                "summaryHealthy": "Tous les modèles répondent"
+            },
             "subTitle": "LLMs, labs, licenses and endpoints.",
             "title": "LLMs data configuration"
         },
