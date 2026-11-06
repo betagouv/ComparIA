@@ -1,10 +1,32 @@
 from collections.abc import Collection
+from dataclasses import dataclass
 from typing import Annotated, cast
 
 from fastapi import Depends, HTTPException, status
 
 from utils.database.settings import get_app_settings
-from utils.i18n import DEFAULT_LOCALE, SupportedLocale
+from utils.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES, SupportedLocale
+
+
+@dataclass
+class LocalesSettings:
+    default: SupportedLocale
+    enabled: list[SupportedLocale]
+
+
+DEFAULT_LOCALES_SETTINGS = LocalesSettings(
+    default=DEFAULT_LOCALE, enabled=list(SUPPORTED_LOCALES)
+)
+
+
+async def get_locales_settings() -> LocalesSettings:
+    """
+    Helper to easy get default and enabled locales from settings.
+    """
+    settings = await get_app_settings()
+    return LocalesSettings(
+        default=settings.default_locale, enabled=settings.enabled_locales
+    )
 
 
 async def get_safe_locale(locale: SupportedLocale | None = None) -> SupportedLocale:
@@ -12,18 +34,18 @@ async def get_safe_locale(locale: SupportedLocale | None = None) -> SupportedLoc
     Safely get an enabled locale.
     Fallback to db's default locale if given locale not in enabled.
     """
-    settings = await get_app_settings()
-    if locale and locale in settings.enabled_locales:
+    locales = await get_locales_settings()
+    if locale and locale in locales.enabled:
         return cast(SupportedLocale, locale)
-    return settings.default_locale
+    return locales.default
 
 
 async def get_strict_locale(locale: SupportedLocale) -> SupportedLocale:
     """
     Get an enabled locale or error out.
     """
-    settings = await get_app_settings()
-    if locale not in settings.enabled_locales:
+    locales = await get_locales_settings()
+    if locale not in locales.enabled:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, f"Unsupported locale '{locale}'."
         )
