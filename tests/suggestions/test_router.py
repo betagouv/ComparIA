@@ -164,7 +164,7 @@ def test_admin_suggestions_passes_filters_and_returns_categories(
         "category_id": _category().id,
         "page": 2,
         "page_size": 20,
-        "default_locale": DEFAULT_LOCALE,
+        "default_locale": "fr",
     }
     assert response.json()["total"] == 1
     assert response.json()["categories"][0]["key"] == "administrative"
