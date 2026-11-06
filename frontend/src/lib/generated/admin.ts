@@ -548,6 +548,22 @@ export interface LLMEndpointPublic {
   api_version?: string | null;
   has_api_key?: boolean;
 }
+export interface LLMHealth {
+  healthy: boolean;
+  latency_ms?: number | null;
+  error?:
+    | (
+        | "timeout"
+        | "key_rejected"
+        | "no_credits"
+        | "rate_limited"
+        | "model_not_found"
+        | "empty_response"
+        | "provider_error"
+        | "not_configured"
+      )
+    | null;
+}
 /**
  * LLM lab/organization metadata.
  */

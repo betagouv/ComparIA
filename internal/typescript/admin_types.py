@@ -5,6 +5,7 @@ from backend.activity.models import (
     ActivityOverview,
     ActivityStoppedMessagesPage,
 )
+from backend.admin.llms.health import LLMHealth
 from backend.admin.router import (
     AdminLegalDocument,
     InformationalLegalPage,
