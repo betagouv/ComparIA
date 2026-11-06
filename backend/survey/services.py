@@ -13,6 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from backend.utils.locale import LocalesSettings, get_locales_settings, pick_translation
 from utils.database.models.survey import (
     MAX_QUESTION_PROMPTS,
     AdminSurveyOption,
@@ -91,23 +92,6 @@ def _key(label: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")[:100]
 
 
-def _label(
-    labels: dict[str, str],
-    locale: SupportedLocale,
-    default_locale: SupportedLocale,
-) -> str:
-    """Exact locale, then the instance default, then whatever is there."""
-    if locale in labels:
-        return labels[locale]
-    return labels.get(default_locale) or next(iter(labels.values()))
-
-
-async def _default_locale() -> SupportedLocale:
-    """Read once per request and handed down: every label on a page falls back
-    to it, and each read of the settings is a round trip to Redis."""
-    return (await get_app_settings()).default_locale
-
-
 def _require_respondent(
     user_id: uuid.UUID | None, anonymous_user_hash: str | None
 ) -> None:
@@ -184,7 +168,7 @@ async def _all_logs(
 def _to_public(
     question: SurveyQuestion,
     locale: SupportedLocale,
-    default_locale: SupportedLocale,
+    locales: LocalesSettings,
     *,
     include_archived: bool = False,
 ) -> PublicSurveyQuestion:
@@ -196,7 +180,7 @@ def _to_public(
         options.append(
             PublicSurveyOption(
                 key=option.key,
-                label=_label(option.labels, locale, default_locale),
+                label=pick_translation(option.labels, locale, locales)[1],
                 archived=option.archived,
             )
         )
@@ -205,7 +189,7 @@ def _to_public(
         key=question.key,
         required=question.required,
         input_type=question.input_type,
-        label=_label(question.labels, locale, default_locale),
+        label=pick_translation(question.labels, locale, locales)[1],
         revision=question.revision,
         options=options,
     )
@@ -218,10 +202,9 @@ async def list_questions(locale: SupportedLocale) -> list[PublicSurveyQuestion]:
     """
     Returns every askable questions.
     """
-    default_locale = await _default_locale()
+    locales = await get_locales_settings()
     return [
-        _to_public(question, locale, default_locale)
-        for question in await _askable_questions()
+        _to_public(question, locale, locales) for question in await _askable_questions()
     ]
 
 
@@ -421,14 +404,14 @@ async def my_answers(
     }
 
     questions_by_id = {question.id: question for question in await _all_questions()}
-    default_locale = await _default_locale()
+    locales = await get_locales_settings()
 
     results = []
     for question_id, value in selected.items():
         question = questions_by_id.get(question_id)
         if question is None:
             continue
-        public = _to_public(question, locale, default_locale, include_archived=True)
+        public = _to_public(question, locale, locales, include_archived=True)
         results.append(
             MySurveyAnswer(
                 question_id=question.id,

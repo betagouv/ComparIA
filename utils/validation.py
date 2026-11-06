@@ -1,7 +1,7 @@
 from typing import Annotated, Any, Generic, TypeVar
 from urllib.parse import urlsplit
 
-from pydantic import BeforeValidator, RootModel, ValidationInfo, model_validator
+from pydantic import BeforeValidator, RootModel, model_validator
 
 from utils.i18n import SupportedLocale
 
