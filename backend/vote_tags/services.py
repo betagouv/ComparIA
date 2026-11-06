@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, func, select
 
 from backend.config import TurnChoice
+from backend.utils.locale import LocalesSettings, get_locales_settings, pick_translation
 from utils.database.models.turn import Turn
 from utils.database.models.utils import BotPos
 from utils.database.models.vote_tag import (
@@ -21,7 +22,6 @@ from utils.database.models.vote_tag import (
     VoteTagUpdate,
 )
 from utils.database.session import get_session
-from utils.database.settings import get_app_settings
 from utils.i18n import SupportedLocale
 from utils.storage.redis import REDIS_VOTE_TAGS_KEY, invalidate_cache, redis_cache
 
@@ -129,18 +129,18 @@ async def check_vote_tags(keys: list[str], choice: TurnChoice, pos: BotPos) -> N
         raise VoteTagSignMismatchError(", ".join(sorted(mismatched)))
 
 
-async def _label(tag: VoteTag, locale: SupportedLocale) -> str | None:
+async def _label(
+    tag: VoteTag, locale: SupportedLocale, locales: LocalesSettings
+) -> str | None:
     # Reserved tags are translated in the message files, so the API sends no
     # label for them and the frontend reads 'vote.choices.{sign}.{key}'.
     if tag.reserved or not tag.labels:
         return None
-    if locale in tag.labels:
-        return tag.labels[locale]
-    default_locale = (await get_app_settings()).default_locale
-    return tag.labels.get(default_locale) or next(iter(tag.labels.values()), None)
+    return pick_translation(tag.labels, locale, locales)[1]
 
 
 async def list_public_vote_tags(locale: SupportedLocale) -> PublicVoteTagsResponse:
+    locales = await get_locales_settings()
     return PublicVoteTagsResponse(
         tags=[
             PublicVoteTag(
@@ -148,7 +148,7 @@ async def list_public_vote_tags(locale: SupportedLocale) -> PublicVoteTagsRespon
                 sign=tag.sign,
                 emoji=tag.emoji,
                 reserved=tag.reserved,
-                label=await _label(tag, locale),
+                label=await _label(tag, locale, locales),
             )
             for tag in await get_active_vote_tags()
         ]

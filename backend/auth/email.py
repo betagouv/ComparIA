@@ -7,7 +7,13 @@ from email.message import EmailMessage
 from html import escape
 
 from backend.config import settings
-from backend.utils.locale import pick_locale
+from backend.utils.locale import (
+    DEFAULT_LOCALES_SETTINGS,
+    LocalesSettings,
+    get_locales_settings,
+    pick_locale,
+    pick_translation,
+)
 from utils.i18n import DEFAULT_LOCALE, SupportedLocale
 
 logger = logging.getLogger("languia")
@@ -87,7 +93,7 @@ _INACTIVITY_CONTENT = """\
 
 # Wording per locale. `{platform_name}` is filled in later, already escaped
 # for the HTML parts. The plain-text parts reuse the same sentences.
-_COPY: dict[str, dict[str, str]] = {
+_COPY: dict[SupportedLocale, dict[str, str]] = {
     "fr": {
         "footer": "Message automatique envoyé par {platform_name}.",
         "greeting": "Bonjour,",
@@ -265,13 +271,17 @@ class _Placeholders(dict):
 
 
 def _copy(
-    locale: SupportedLocale, platform_name: str, html: bool = False, **values: str
-) -> tuple[str, dict[str, str]]:
+    locale: SupportedLocale,
+    locales: LocalesSettings,
+    platform_name: str,
+    html: bool = False,
+    **values: str,
+) -> tuple[SupportedLocale, dict[str, str]]:
     """The wording for `locale`, with the platform name and `values` filled in."""
-    picked = pick_locale(locale, _COPY)
+    picked, data = pick_translation(_COPY, locale, locales)
     filled = _Placeholders(platform_name=platform_name, **values)
     copy = {}
-    for key, value in _COPY[picked].items():
+    for key, value in data.items():
         value = value.format_map(filled)
         copy[key] = _no_break(value) if html else value
     return picked, copy
@@ -351,12 +361,14 @@ async def send_login_code(
         else:
             logger.error("[AUTH] SMTP is not configured, no login code sent")
         return
+    locales = await get_locales_settings()
     message = _build_login_message(
         code,
         platform_name=platform_name,
         primary_color=primary_color,
         secondary_color=secondary_color,
         locale=locale,
+        locales=locales,
     )
     await asyncio.to_thread(_send_message, to_email, message)
 
@@ -376,12 +388,14 @@ async def send_invite_link(
         else:
             logger.error("[AUTH] SMTP is not configured, no invite sent")
         return
+    locales = await get_locales_settings()
     message = _build_invite_message(
         link,
         platform_name=platform_name,
         primary_color=primary_color,
         secondary_color=secondary_color,
         locale=locale,
+        locales=locales,
     )
     await asyncio.to_thread(_send_message, to_email, message)
 
@@ -407,6 +421,7 @@ async def send_inactivity_warning(
         else:
             logger.error("[AUTH] SMTP is not configured, no inactivity warning sent")
         return False
+    locales = await get_locales_settings()
     message = _build_inactivity_message(
         last_seen_at,
         erasure_at,
@@ -414,6 +429,7 @@ async def send_inactivity_warning(
         primary_color=primary_color,
         secondary_color=secondary_color,
         locale=locale,
+        locales=locales,
     )
     await asyncio.to_thread(_send_message, to_email, message)
     return True
@@ -425,6 +441,7 @@ def _build_login_message(
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
     locale: SupportedLocale = DEFAULT_LOCALE,
+    locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -432,8 +449,8 @@ def _build_login_message(
     platform_name = _safe_platform_name(platform_name)
     safe_platform_name = escape(platform_name)
     safe_code = escape(code)
-    lang, text_copy = _copy(locale, platform_name)
-    _, html_copy = _copy(locale, safe_platform_name, html=True)
+    lang, text_copy = _copy(locale, locales, platform_name)
+    _, html_copy = _copy(locale, locales, safe_platform_name, html=True)
     html = _EMAIL_SHELL.format(
         lang=lang,
         title=html_copy["login_subject"],
@@ -468,6 +485,7 @@ def _build_invite_message(
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
     locale: SupportedLocale = DEFAULT_LOCALE,
+    locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -475,8 +493,8 @@ def _build_invite_message(
     platform_name = _safe_platform_name(platform_name)
     safe_platform_name = escape(platform_name)
     safe_link = escape(link, quote=True)
-    lang, text_copy = _copy(locale, platform_name)
-    _, html_copy = _copy(locale, safe_platform_name, html=True)
+    lang, text_copy = _copy(locale, locales, platform_name)
+    _, html_copy = _copy(locale, locales, safe_platform_name, html=True)
     html = _EMAIL_SHELL.format(
         lang=lang,
         title=html_copy["invite_subject"],
@@ -516,6 +534,7 @@ def _build_inactivity_message(
     primary_color: str = _DEFAULT_PRIMARY_COLOR,
     secondary_color: str = _DEFAULT_SECONDARY_COLOR,
     locale: SupportedLocale = DEFAULT_LOCALE,
+    locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
 ) -> EmailMessage:
     primary_color, secondary_color, canvas_color = _email_colors(
         primary_color, secondary_color
@@ -523,13 +542,13 @@ def _build_inactivity_message(
     platform_name = _safe_platform_name(platform_name)
     safe_platform_name = escape(platform_name)
     link = settings.COMPARIA_APP_URL
-    lang = pick_locale(locale, _COPY)
+    lang = pick_locale(_COPY, locale, locales)
     dates = {
         "last_seen": _format_date(last_seen_at, lang),
         "erasure": _format_date(erasure_at, lang),
     }
-    _, text_copy = _copy(lang, platform_name, **dates)
-    _, html_copy = _copy(lang, safe_platform_name, html=True, **dates)
+    _, text_copy = _copy(lang, locales, platform_name, **dates)
+    _, html_copy = _copy(lang, locales, safe_platform_name, html=True, **dates)
     html = _EMAIL_SHELL.format(
         lang=lang,
         title=html_copy["inactivity_subject"],

@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
-from backend.utils.locale import SupportedLocale, pick_locale
+from backend.utils.locale import SupportedLocale, pick_translation
 from utils.database.settings import get_app_settings
 from utils.validation import NonEmptyStr, Translatable
 
@@ -86,16 +86,17 @@ async def get_informational_legal_page_content(
     key: LegalPageKey, locale: SupportedLocale
 ) -> InformationalLegalPageContent | None:
     page = await get_informational_legal_page(key)
-    contents = page.content_by_locale.root
-    available_locale = pick_locale(locale, contents)
 
-    if page.mode == "external" or not available_locale in contents:
+    if page.mode == "external":
         return None
 
-    return InformationalLegalPageContent(
-        content=contents[available_locale],
-        locale=available_locale,
-    )
+    try:
+        available_locale, content = pick_translation(
+            page.content_by_locale.root, locale
+        )
+        return InformationalLegalPageContent(content=content, locale=available_locale)
+    except ValueError:
+        return None
 
 
 InformationalLegalPageLinkAnno = Annotated[
