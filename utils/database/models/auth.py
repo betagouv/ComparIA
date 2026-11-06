@@ -163,7 +163,7 @@ class LegalDocument(SQLModel, table=True):
     id: ModelId
     kind: Annotated[LegalDocumentKind, Field(sa_type=String)]
     version: str
-    content: dict[str, str] = Field(sa_type=JSONB, nullable=False)
+    content: dict[SupportedLocale, str] = Field(sa_type=JSONB, nullable=False)
     content_hash: str = Field(index=True, min_length=64, max_length=64)
     published_at: UtcDatetime
     effective_at: Datetime
