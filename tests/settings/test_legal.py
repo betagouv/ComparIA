@@ -280,7 +280,7 @@ def test_presentation_uses_defaults_when_not_configured():
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
 
-    assert result == legal.fallback_legal_presentation("fr")
+    assert result == legal.FALLBACK_PRESENTATIONS.root["fr"]
 
 
 def test_default_presentation_follows_the_visitor_locale():
@@ -318,7 +318,7 @@ def public_client(presentation=None, document=None):
         return document
 
     async def get_presentation(_locale):
-        return presentation or legal.fallback_legal_presentation()
+        return presentation or legal.FALLBACK_PRESENTATIONS.root["fr"]
 
     async def app_settings():
         return SimpleNamespace(default_locale="fr", enabled_locales=["fr", "da"])
