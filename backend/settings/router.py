@@ -11,13 +11,12 @@ from backend.settings.informational_legal import (
     get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
-    DEFAULT_LEGAL_LANGUAGE,
     LegalPresentation,
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
 )
-from backend.utils.locale import LocaleQuery
+from backend.utils.locale import LocaleQuery, get_locales_settings
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.i18n import SupportedLocale
 
@@ -59,7 +58,7 @@ class PublicTermsDocument(PublicLegalDocument):
 
 async def _active_document(
     kind: LegalDocumentKind, locale: SupportedLocale
-) -> tuple[LegalDocument, str, str]:
+) -> tuple[LegalDocument, str, SupportedLocale]:
     document = await get_active_legal_document(kind)
     if not document:
         # A known key: with no terms in force there is nothing to accept, and
@@ -69,8 +68,9 @@ async def _active_document(
         )
     if content := document.content.get(locale):
         return document, content, locale
-    if content := document.content.get(DEFAULT_LEGAL_LANGUAGE):
-        return document, content, DEFAULT_LEGAL_LANGUAGE
+    locales = await get_locales_settings()
+    if content := document.content.get(locales.default):
+        return document, content, locales.default
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
