@@ -20,13 +20,13 @@
         "accessData": "Access data",
         "contact": "Contact us",
         "contactUs": "Contact us",
-        "copyLink": {
-            "do": "Copy the link",
-            "done": "Link copied to clipboard"
-        },
         "copyKey": {
             "do": "Copy the key",
             "done": "Key copied"
+        },
+        "copyLink": {
+            "do": "Copy the link",
+            "done": "Link copied to clipboard"
         },
         "copyMessage": {
             "do": "Copy the message",
@@ -47,143 +47,132 @@
     },
     "admin": {
         "activity": {
-            "title": "Activity",
-            "subTitle": "What happens in the arena: the questions asked, the models compared, the votes.",
-            "tabs": {
-                "overview": "Overview",
-                "conversations": "Conversations"
-            },
-            "filters": {
-                "label": "Filters",
-                "period": "Period",
-                "model": "Model",
-                "search": "Search the messages",
-                "periodsShort": {
-                    "24h": "24 h",
-                    "7d": "7 d",
-                    "30d": "30 d",
-                    "90d": "90 d",
-                    "365d": "12 mo",
-                    "all": "All"
-                },
-                "journey": "Journey",
-                "allModels": "All models",
-                "allJourneys": "All journeys"
-            },
-            "modes": {
-                "random": "Random",
-                "big-vs-small": "Big against small",
-                "small-models": "Small models",
-                "custom": "Chosen by hand"
-            },
             "choices": {
                 "a_better": "A is better",
                 "b_better": "B is better",
-                "both_good": "Both good",
                 "both_bad": "Both bad",
+                "both_good": "Both good",
                 "idk": "Don't know",
                 "none": "No vote"
             },
-            "flags": {
-                "pii": "Personal data",
-                "spam": "Spam",
-                "error": "Error",
-                "archived": "Archived",
-                "not_analyzed": "Not analysed yet"
-            },
-            "overview": {
-                "computedAt": "Figures computed at {time}",
-                "refresh": "Refresh",
-                "metrics": {
-                    "conversations": "Conversations",
-                    "prompts": "Messages sent",
-                    "voteRate": "Messages voted on",
-                    "commentRate": "Messages commented on",
-                    "promptsPerConversation": "Messages per conversation",
-                    "errorRate": "Conversations with an error"
-                },
-                "ofPrompts": "{count} of {total} messages",
-                "ofConversations": "{count} of {total} conversations",
-                "activityTitle": "Activity over time",
-                "activityChartTitle": "Conversations and messages",
-                "activityTable": "Conversations and messages per period",
-                "activityDate": "Period",
-                "funnelTitle": "Journey",
-                "funnel": {
-                    "started": "Conversations started",
-                    "voted": "With at least one vote",
-                    "revealed": "Models revealed",
-                    "continue": "{share} go on",
-                    "dropped": "{count} stop here"
-                },
-                "choicesTitle": "Votes",
-                "modesTitle": "Modes",
-                "empty": "No conversation in this period.",
-                "unvoted": "No vote: {count} messages ({share})"
+            "conversation": {
+                "analysis": "Analysis",
+                "archived": "Archived: {reason}",
+                "back": "Back to conversations",
+                "categories": "Subjects",
+                "cohort": "Cohort",
+                "details": "Details",
+                "error": "Error: {code}",
+                "keywords": "Keywords",
+                "languages": "Languages",
+                "mode": "Mode",
+                "no": "No",
+                "noAnswer": "No answer: error or timeout.",
+                "notAnalyzed": "This conversation has not been analysed yet.",
+                "piiWarning": "The analysis found personal data in this conversation. The text is hidden.",
+                "prompt": "Message {index}",
+                "readLess": "Show less",
+                "readMore": "Read more",
+                "revealed": "Models revealed",
+                "show": "Show the text",
+                "summary": "Summary",
+                "systemPrompts": "System prompts",
+                "title": "Conversation",
+                "tokens": "tokens",
+                "unknownModel": "Deleted model",
+                "versus": "{a} vs {b}",
+                "vote": "Vote: {choice}",
+                "yes": "Yes"
             },
             "conversations": {
                 "caption": "Conversations",
                 "cols": {
-                    "date": "Date",
-                    "models": "Models",
                     "conversation": "Conversation",
-                    "journey": "Journey"
+                    "date": "Date",
+                    "journey": "Journey",
+                    "models": "Models"
                 },
                 "count": "{count} conversations",
                 "countCapped": "More than {count} conversations",
-                "next": "Next",
-                "first": "Back to the newest",
                 "empty": "No conversation matches these filters.",
+                "first": "Back to the newest",
                 "hiddenPrompt": "Hidden: personal data",
+                "next": "Next",
+                "nextOne": "Next",
                 "open": "Open the page",
                 "previous": "Previous",
-                "nextOne": "Next",
                 "turnsCount": "{count} messages"
             },
-            "conversation": {
-                "title": "Conversation",
-                "back": "Back to conversations",
-                "prompt": "Message {index}",
-                "analysis": "Analysis",
-                "notAnalyzed": "This conversation has not been analysed yet.",
-                "summary": "Summary",
-                "keywords": "Keywords",
-                "categories": "Subjects",
-                "languages": "Languages",
-                "details": "Details",
-                "mode": "Mode",
-                "cohort": "Cohort",
-                "revealed": "Models revealed",
-                "yes": "Yes",
-                "no": "No",
-                "archived": "Archived: {reason}",
-                "error": "Error: {code}",
-                "systemPrompts": "System prompts",
-                "piiWarning": "The analysis found personal data in this conversation. The text is hidden.",
-                "show": "Show the text",
-                "unknownModel": "Deleted model",
-                "tokens": "tokens",
-                "noAnswer": "No answer: error or timeout.",
-                "vote": "Vote: {choice}",
-                "readMore": "Read more",
-                "readLess": "Show less",
-                "versus": "{a} vs {b}"
-            },
             "errors": {
-                "timeout": "The query took too long. Narrow the period or remove some filters.",
-                "generic": "The data could not be loaded."
+                "generic": "The data could not be loaded.",
+                "timeout": "The query took too long. Narrow the period or remove some filters."
             },
-            "verdicts": {
-                "preferred": "Preferred",
-                "rejected": "Rejected",
-                "mixed": "Mixed"
+            "filters": {
+                "allJourneys": "All journeys",
+                "allModels": "All models",
+                "journey": "Journey",
+                "label": "Filters",
+                "model": "Model",
+                "period": "Period",
+                "periodsShort": {
+                    "24h": "24 h",
+                    "30d": "30 d",
+                    "365d": "12 mo",
+                    "7d": "7 d",
+                    "90d": "90 d",
+                    "all": "All"
+                },
+                "search": "Search the messages"
+            },
+            "flags": {
+                "archived": "Archived",
+                "error": "Error",
+                "not_analyzed": "Not analysed yet",
+                "pii": "Personal data",
+                "spam": "Spam"
+            },
+            "modes": {
+                "big-vs-small": "Big against small",
+                "custom": "Chosen by hand",
+                "random": "Random",
+                "small-models": "Small models"
+            },
+            "overview": {
+                "activityChartTitle": "Conversations and messages",
+                "activityDate": "Period",
+                "activityTable": "Conversations and messages per period",
+                "activityTitle": "Activity over time",
+                "choicesTitle": "Votes",
+                "computedAt": "Figures computed at {time}",
+                "empty": "No conversation in this period.",
+                "funnel": {
+                    "continue": "{share} go on",
+                    "dropped": "{count} stop here",
+                    "revealed": "Models revealed",
+                    "started": "Conversations started",
+                    "voted": "With at least one vote"
+                },
+                "funnelTitle": "Journey",
+                "metrics": {
+                    "commentRate": "Messages commented on",
+                    "conversations": "Conversations",
+                    "errorRate": "Conversations with an error",
+                    "prompts": "Messages sent",
+                    "promptsPerConversation": "Messages per conversation",
+                    "voteRate": "Messages voted on"
+                },
+                "modesTitle": "Modes",
+                "ofConversations": "{count} of {total} conversations",
+                "ofPrompts": "{count} of {total} messages",
+                "refresh": "Refresh",
+                "unvoted": "No vote: {count} messages ({share})"
             },
             "stages": {
-                "started": "No vote",
-                "voted": "Voted",
-                "revealed": "Revealed",
                 "commented": "Commented",
-                "stopped": "Refused or warned"
+                "revealed": "Revealed",
+                "started": "No vote",
+                "stopped": "Refused or warned",
+                "voted": "Voted"
             },
             "stopped": {
                 "caption": "Refused or warned messages",
@@ -200,6 +189,17 @@
                     "unavailable": "Refused, check unavailable",
                     "warned": "Warned, not sent"
                 }
+            },
+            "subTitle": "What happens in the arena: the questions asked, the models compared, the votes.",
+            "tabs": {
+                "conversations": "Conversations",
+                "overview": "Overview"
+            },
+            "title": "Activity",
+            "verdicts": {
+                "mixed": "Mixed",
+                "preferred": "Preferred",
+                "rejected": "Rejected"
             }
         },
         "endpointKey": {
@@ -379,13 +379,21 @@
                 "action": "Action",
                 "threshold": "Threshold"
             },
+            "criteria": {
+                "add": "Add a criterion",
+                "empty": "No criteria: no message is checked.",
+                "messages": {
+                    "generic": "General",
+                    "pii": "Personal data",
+                    "self_harm": "Distress (with helpline)"
+                },
+                "new": "New criterion",
+                "remove": "Remove"
+            },
             "health": {
                 "failures": "{count} failures in a row",
-                "unhealthy": "The check no longer answers",
-                "unhealthyHint": "Calls to the decision model are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
                 "keyRejected": "OpenRouter refuses the key",
                 "keyRejectedHint": "Every message is refused until the key is fixed. Paste a valid OpenRouter key below.",
-                "unhealthyHintOptional": "Calls to the decision model are failing. The check is not required, so messages go through unchecked while it does not answer. Look at the server logs.",
                 "keyRejectedHintOptional": "The check is not required, so messages go through unchecked until the key is fixed. Paste a valid OpenRouter key below.",
                 "noCredits": "OpenRouter has no credits left for this key",
                 "noCreditsHint": "Every message is refused until the account or the key's limit is topped up. Add credits on OpenRouter or paste another key below.",
@@ -393,7 +401,10 @@
                 "noKey": "No API key",
                 "noKeyHint": "No key is stored here and OPENROUTER_API_KEY is not set: the check does not run and messages go through unchecked, even when it is required. Paste an OpenRouter key below.",
                 "noModel": "No decision model",
-                "noModelHint": "Pick a decision model below: until there is one, the check does not run and messages go through unchecked, even when it is required."
+                "noModelHint": "Pick a decision model below: until there is one, the check does not run and messages go through unchecked, even when it is required.",
+                "unhealthy": "The check no longer answers",
+                "unhealthyHint": "Calls to the decision model are failing. Messages are refused while it does not answer, then, after a few more failures, go through unchecked a minute at a time. Look at the server logs.",
+                "unhealthyHintOptional": "Calls to the decision model are failing. The check is not required, so messages go through unchecked while it does not answer. Look at the server logs."
             },
             "settings": {
                 "title": "Settings"
@@ -414,11 +425,11 @@
                 },
                 "periodLabel": "Period shown",
                 "periods": {
-                    "all": "From the start",
-                    "7d": "Last 7 days",
                     "30d": "Last 30 days",
+                    "365d": "Last 12 months",
+                    "7d": "Last 7 days",
                     "90d": "Last 90 days",
-                    "365d": "Last 12 months"
+                    "all": "From the start"
                 },
                 "proceeded": "{count} sent anyway",
                 "subtitle": "Follow the detections and decisions over the selected period.",
@@ -435,18 +446,7 @@
                 "warningsTitle": "Warnings shown, from the start"
             },
             "subtitle": "When a message meets one of your criteria, you decide what happens to the person: nothing, a warning they can pass, or a refusal.",
-            "title": "Message checks",
-            "criteria": {
-                "add": "Add a criterion",
-                "remove": "Remove",
-                "empty": "No criteria: no message is checked.",
-                "messages": {
-                    "generic": "General",
-                    "self_harm": "Distress (with helpline)",
-                    "pii": "Personal data"
-                },
-                "new": "New criterion"
-            }
+            "title": "Message checks"
         },
         "publishing": {
             "accessKeyLabel": "Access key",
@@ -508,17 +508,17 @@
             "nameLabel": "Name",
             "nextRun": "Next publication: {date}",
             "nextRunNever": "Nothing is scheduled.",
-            "requestPending": "Publication requested {duration} ago, waiting for the publish job",
             "noDestinations": "No destination: the dataset goes nowhere.",
             "prefixHelp": "Put in front of every file, so one bucket can hold several instances.",
             "prefixLabel": "Prefix",
+            "publishing": "Publishing…",
             "publishNow": "Publish",
             "publishStarted": "Publication started",
-            "publishing": "Publishing…",
             "rawWarning": "This destination receives the raw dataset, which holds the conversations kept back for personal information. Make sure it is private.",
             "regionLabel": "Region",
             "repoPathHelp": "As organisation/repository. The raw dataset goes to the same name followed by -raw.",
             "repoPathLabel": "Repository",
+            "requestPending": "Publication requested {duration} ago, waiting for the publish job",
             "reviewerEndpointLabel": "Endpoint",
             "reviewerEndpointNone": "No endpoint",
             "reviewerHelp": "This model reads the conversations before publication to spot personal data and spam.",
@@ -553,16 +553,16 @@
                     "label": "Access mode",
                     "required": "Sign-in required (sign_in_required)"
                 },
-                "domainAllowlist": {
-                    "help": "Comma-separated. Leave empty to allow all domains.",
-                    "label": "Allowed email domains"
-                },
                 "authMethods": {
                     "emailCode": "Email code",
                     "emailCodeLocked": "Pass an OIDC connection test to be able to remove this sign-in method.",
                     "error": "At least one method must be enabled",
                     "label": "Authentication methods",
                     "oidc": "Identity provider (OIDC)"
+                },
+                "domainAllowlist": {
+                    "help": "Comma-separated. Leave empty to allow all domains.",
+                    "label": "Allowed email domains"
                 }
             },
             "customization": {
@@ -594,11 +594,11 @@
                 },
                 "platformName": "Platform name",
                 "ranking": {
-                    "title": "Leaderboard",
+                    "maxRankSpread": "Maximum rank spread",
+                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks.",
                     "minVotes": "Minimum votes",
                     "minVotesHelp": "A model is ranked only once it has this many votes. Applied at the next ranking update, within the hour.",
-                    "maxRankSpread": "Maximum rank spread",
-                    "maxRankSpreadHelp": "A model is shown only if its rank could move by at most this many places, up or down. A higher value shows more models, with less certain ranks."
+                    "title": "Leaderboard"
                 },
                 "votesObjective": "Votes objective"
             },
@@ -612,10 +612,6 @@
                     "label": "Enabled languages"
                 }
             },
-            "save": "Save",
-            "saved": "Settings updated",
-            "saving": "Saving...",
-            "subtitle": "Application configuration.",
             "oidc": {
                 "buttonLabel": {
                     "hint": "E.g. Sign in with ProConnect",
@@ -666,7 +662,11 @@
                     "running": "Testing…"
                 },
                 "title": "OIDC configuration"
-            }
+            },
+            "save": "Save",
+            "saved": "Settings updated",
+            "saving": "Saving...",
+            "subtitle": "Application configuration."
         },
         "suggestions": {
             "actions": "Actions",
@@ -678,8 +678,8 @@
             "archive": "Archive",
             "archiveCategory": "Archive the category",
             "archiveConfirm": "Archive this suggestion? It will no longer be offered in the arena, but it can be restored.",
-            "archiveSuccess": "Suggestion archived.",
             "archived": "Archived",
+            "archiveSuccess": "Suggestion archived.",
             "available": "Available",
             "cancel": "Cancel",
             "categories": "Categories",
@@ -764,8 +764,8 @@
             "active": "Active",
             "addTitle": "Add a tag",
             "archive": "Hide",
-            "archiveSuccess": "Tag hidden",
             "archived": "Hidden",
+            "archiveSuccess": "Tag hidden",
             "cancel": "Cancel",
             "colActions": "Actions",
             "colKey": "Key",
@@ -792,9 +792,9 @@
             "labelError": "Enter an emoji and at least one label containing a letter or a digit.",
             "labelFor": "Label ({locale})",
             "labelHelp": "Used to build the key published in the dataset.",
+            "moved": "{label} moved to position {position} of {total}.",
             "moveDown": "Move down",
             "moveUp": "Move up",
-            "moved": "{label} moved to position {position} of {total}.",
             "negative": "Negative tags",
             "positive": "Positive tags",
             "reserved": "Shipped",
@@ -869,19 +869,19 @@
         "login": {
             "description": "Compare conversational AI models blind and help evaluate AI in Europe.",
             "tabEmail": "Email",
-            "tabSso": "SSO",
             "tabsLabel": "Sign-in methods",
+            "tabSso": "SSO",
             "title": "Welcome to {platformName}"
         },
         "modal": {
             "code": {
                 "changeEmail": "Change email address",
+                "error": "Invalid or expired code.",
                 "label": "6-digit code",
-                "submit": "Verify",
-                "verifying": "Verifying...",
                 "notReceived": "Didn’t receive anything?",
                 "resend": "Resend a code",
-                "error": "Invalid or expired code."
+                "submit": "Verify",
+                "verifying": "Verifying..."
             },
             "email": {
                 "emailLabel": "Email",
@@ -892,9 +892,9 @@
             },
             "info": {
                 "dataDesc": "Conversations and preferences you express on the arena are used anonymously to build representative datasets of European languages and uses, in order to reduce cultural biases and develop more inclusive AI models.",
-                "dataTitle": "How is my data used?",
                 "datasetsDesc": "Conversations are published as open data in research datasets. That is why we ask you to <strong>never include</strong> in your conversations:",
                 "datasetsTitle": "The arena's datasets",
+                "dataTitle": "How is my data used?",
                 "emailPrivacy": "Your email is never published or shared with third parties.",
                 "neverAddress": "addresses (postal, email)",
                 "neverName": "your name, surname or that of a third party",
@@ -904,12 +904,12 @@
             },
             "merge": "Merge existing conversations with your account",
             "totp": {
-                "label": "Authenticator app code",
-                "help": "The 6 digits shown by your app (Google Authenticator, Aegis, FreeOTP…).",
+                "emailChecked": "Your email address has already been checked: only the code from your authenticator app is left.",
                 "error": "Wrong code.",
                 "expired": "Sign-in expired, request a new email code.",
                 "expiredSso": "Sign-in expired, sign in again with the identity provider.",
-                "emailChecked": "Your email address has already been checked: only the code from your authenticator app is left."
+                "help": "The 6 digits shown by your app (Google Authenticator, Aegis, FreeOTP…).",
+                "label": "Authenticator app code"
             }
         },
         "oidc": {
@@ -970,39 +970,39 @@
             "tabsLabel": "Settings sections",
             "title": "Settings",
             "totp": {
-                "title": "Two-factor authentication",
-                "desc": "Admin access asks, on top of the email code, for a code from an authenticator app installed on your phone.",
-                "status": "Status:",
-                "statusOn": "Enabled",
-                "statusOff": "Not set up",
-                "setup": "Set up an app",
                 "change": "Change device",
-                "success": "Authenticator app enabled.",
-                "required": {
-                    "title": "Setup required",
-                    "desc": "Set up an authenticator app to access the admin area."
-                },
+                "desc": "Admin access asks, on top of the email code, for a code from an authenticator app installed on your phone.",
                 "modal": {
-                    "title": "Set up the authenticator app",
-                    "currentHelp": "To change device, first enter a code from the app currently in use.",
-                    "currentLabel": "Code from the current app",
-                    "continue": "Continue",
-                    "loading": "Preparing…",
-                    "scanHelp": "Scan this QR code with your app (Google Authenticator, Aegis, FreeOTP…), then enter the code it shows.",
-                    "qrAlt": "QR code to scan with your authenticator app",
-                    "manualKey": "Or type this key by hand:",
-                    "manualKeyLabel": "Secret key",
-                    "confirmLabel": "Code shown by the app",
                     "confirm": "Enable",
                     "confirming": "Checking…",
-                    "otherSessions": "Your other sessions will be signed out.",
-                    "invalid": "Wrong code.",
-                    "tooMany": "Too many attempts, try again in a few minutes.",
+                    "confirmLabel": "Code shown by the app",
+                    "continue": "Continue",
+                    "currentHelp": "To change device, first enter a code from the app currently in use.",
+                    "currentLabel": "Code from the current app",
                     "expired": "This QR code has expired, start again.",
-                    "sessionExpired": "Session expired, sign in again.",
+                    "failedTitle": "Setup could not start",
+                    "invalid": "Wrong code.",
+                    "loading": "Preparing…",
+                    "manualKey": "Or type this key by hand:",
+                    "manualKeyLabel": "Secret key",
+                    "otherSessions": "Your other sessions will be signed out.",
+                    "qrAlt": "QR code to scan with your authenticator app",
                     "restart": "Start again from the beginning.",
-                    "failedTitle": "Setup could not start"
-                }
+                    "scanHelp": "Scan this QR code with your app (Google Authenticator, Aegis, FreeOTP…), then enter the code it shows.",
+                    "sessionExpired": "Session expired, sign in again.",
+                    "title": "Set up the authenticator app",
+                    "tooMany": "Too many attempts, try again in a few minutes."
+                },
+                "required": {
+                    "desc": "Set up an authenticator app to access the admin area.",
+                    "title": "Setup required"
+                },
+                "setup": "Set up an app",
+                "status": "Status:",
+                "statusOff": "Not set up",
+                "statusOn": "Enabled",
+                "success": "Authenticator app enabled.",
+                "title": "Two-factor authentication"
             }
         },
         "success": "You are signed in!"
@@ -1098,8 +1098,8 @@
         },
         "links": {
             "accessibility": "Accessibility: non-compliant",
-            "legal_notice": "Legal notice",
             "ecodesign": "Eco-design",
+            "legal_notice": "Legal notice",
             "sources": "Source code"
         }
     },
@@ -1131,23 +1131,23 @@
     "generated": {
         "archs": {
             "dense": {
-                "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
+                "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
                 "long_name": "",
                 "name": "Dense"
             },
             "matformer": {
-                "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
+                "desc": "Imaginez des poupées russes (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs sous-modèles imbriqués de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
                 "long_name": "",
                 "name": "Matformer"
             },
             "moe": {
-                "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
-                "long_name": "Mixture of experts",
+                "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
+                "long_name": "Mélange d’experts",
                 "name": "MoE"
             },
             "na": {
-                "desc": "The model lab has not made information about the model's architecture public.",
-                "long_name": "Not disclosed",
+                "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
+                "long_name": "Non communiqué",
                 "name": "N/A"
             }
         },
@@ -1248,6 +1248,10 @@
             "created_at": {
                 "label": "Created At"
             },
+            "custom_selectable": {
+                "help": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
+                "label": "Selectable in custom mode"
+            },
             "endpoint_id": {
                 "help": "The LLM's endpoint information, create it first if not already available",
                 "label": "Endpoint"
@@ -1279,6 +1283,14 @@
                 "help": "The LLM's license, create it first if not already available",
                 "label": "License"
             },
+            "Link": {
+                "text": {
+                    "label": "Text"
+                },
+                "url": {
+                    "label": "Url"
+                }
+            },
             "links": {
                 "help": "List of links to display in LLM card.",
                 "label": "Links"
@@ -1291,11 +1303,11 @@
                 "label": "Params"
             },
             "price_in": {
-                "help": "Price per million input tokens in $.",
+                "help": "Price per million input tokens in USD.",
                 "label": "Price In"
             },
             "price_out": {
-                "help": "Price per million output tokens in $.",
+                "help": "Price per million output tokens in USD.",
                 "label": "Price Out"
             },
             "public_training_code": {
@@ -1335,62 +1347,62 @@
         },
         "prompt_check_upsert": {
             "api_key": {
-                "help": "Left empty, the check uses OPENROUTER_API_KEY.",
-                "label": "OpenRouter API key"
+                "help": "Laissée vide, la vérification utilise OPENROUTER_API_KEY.",
+                "label": "Clé API OpenRouter"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure avec les mêmes modèles"
             },
             "criteria": {
-                "label": "Criteria"
+                "label": "Critères"
             },
             "description": {
-                "help": "The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.",
-                "label": "Instance description"
+                "help": "Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.",
+                "label": "Description de l'instance"
             },
             "enabled": {
-                "label": "Message check"
+                "label": "Vérification des messages"
             },
             "model": {
-                "help": "A decision model from OpenRouter.",
-                "label": "Decision model"
+                "help": "Un modèle de décision d'OpenRouter.",
+                "label": "Modèle de décision"
             },
             "PromptCheckCriterion": {
                 "action": {
                     "label": "Action"
                 },
                 "key": {
-                    "help": "Stats are counted by key: do not change it once the criterion is in use.",
-                    "label": "Key"
+                    "help": "Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.",
+                    "label": "Identifiant"
                 },
                 "label": {
-                    "label": "Name"
+                    "label": "Nom"
                 },
                 "message": {
-                    "label": "Message shown"
+                    "label": "Message affiché"
                 },
                 "no": {
-                    "label": "Counts as no"
+                    "label": "Compte comme non"
                 },
                 "question": {
-                    "help": "A closed question about the `message`, answered yes or no.",
-                    "label": "Question asked to the model"
+                    "help": "Une question fermée sur le `message`, à laquelle on répond par oui ou non.",
+                    "label": "Question posée au modèle"
                 },
                 "threshold": {
-                    "label": "Threshold"
+                    "label": "Seuil"
                 },
                 "yes": {
-                    "label": "Counts as yes"
+                    "label": "Compte comme oui"
                 }
             },
             "required": {
-                "help": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
-                "label": "Required check"
-            },
-            "conversations_per_ip_per_hour": {
-                "help": "Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.",
-                "label": "Conversations per IP per hour"
-            },
-            "conversations_same_models_per_ip_per_hour": {
-                "help": "The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.",
-                "label": "Conversations per IP per hour with the same models"
+                "help": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.",
+                "label": "Vérification obligatoire"
             }
         }
     },
@@ -1619,12 +1631,6 @@
             "a": "Model A",
             "b": "Model B"
         },
-        "openWeight": {
-            "tooltips": {
-                "openSource": "The training data, code, and weights of this model (i.e., the parameters learned during its training) are fully downloadable and modifiable by the public, allowing them to run and modify the model on their own hardware. Whether a model is \"open source\" is more restrictive than \"open weights,\" in particular because of the need for transparency of the training corpus, and few models are considered \"open source.\"",
-                "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\"."
-            }
-        },
         "opennessSovereignty": {
             "fields": {
                 "commercial_use": "Commercial use",
@@ -1638,6 +1644,12 @@
                 "reuse": "Reuse of the outputs"
             },
             "title": "Openness level"
+        },
+        "openWeight": {
+            "tooltips": {
+                "openSource": "The training data, code, and weights of this model (i.e., the parameters learned during its training) are fully downloadable and modifiable by the public, allowing them to run and modify the model on their own hardware. Whether a model is \"open source\" is more restrictive than \"open weights,\" in particular because of the need for transparency of the training corpus, and few models are considered \"open source.\"",
+                "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\"."
+            }
         },
         "performance": {
             "fields": {
@@ -2124,15 +2136,15 @@
         "titles": {
             "accessibility": "Accessibility statement",
             "arene": "Chat",
-            "privacy_policy": "Privacy policy",
-            "invite": "Invitation",
-            "login": "Sign in",
-            "legal_notice": "Legal notice",
-            "terms": "Terms of use",
-            "modeles": "Model list",
-            "ranking": "Leaderboard",
             "ecodesign": "Ecodesign statement",
-            "settings": "Settings"
+            "invite": "Invitation",
+            "legal_notice": "Legal notice",
+            "login": "Sign in",
+            "modeles": "Model list",
+            "privacy_policy": "Privacy policy",
+            "ranking": "Leaderboard",
+            "settings": "Settings",
+            "terms": "Terms of use"
         }
     },
     "statistics": {
@@ -2181,8 +2193,8 @@
             "addTitle": "Add a question",
             "answersLabel": "answers",
             "archive": "Archive",
-            "archiveSuccess": "Question archived",
             "archived": "Archived",
+            "archiveSuccess": "Question archived",
             "cancel": "Cancel",
             "colActions": "Actions",
             "colLabel": "Question",
@@ -2191,6 +2203,7 @@
             "colRespondents": "Respondents",
             "colStatus": "Status",
             "createSuccess": "Question added",
+            "defaultLabelError": "Fill in at least the {locale} label, for the question and for every option.",
             "delete": "Delete",
             "deleteConfirm": "Delete “{label}”?",
             "deleteSuccess": "Question deleted",
@@ -2200,17 +2213,18 @@
             "editSuccess": "Question updated",
             "editTitle": "Edit the question",
             "emptyTrigger": "No active question here.",
-            "inUseError": "Answers already carry this question. Archive it instead of deleting it.",
             "inputTypeCheckboxGroup": "Multiple choice (checkboxes)",
             "inputTypeLabel": "Input type",
             "inputTypeSelect": "Single choice (dropdown)",
+            "inUseError": "Answers already carry this question. Archive it instead of deleting it.",
             "keyFrozen": "Published key: {key}. It stays put even if the wording is corrected.",
             "keyPreview": "Published key: {key}",
             "labelError": "Enter at least one label containing a letter or a digit for the question and for every option.",
             "labelFor": "Label",
+            "missingTranslation": "Missing translation: {locales}",
+            "moved": "{label} moved to position {position} of {total}.",
             "moveDown": "Move down",
             "moveUp": "Move up",
-            "moved": "{label} moved to position {position} of {total}.",
             "noAnswersYet": "No answers yet.",
             "notPublished": "Not published",
             "optionArchivedHint": "Removing an option archives it rather than deleting it: existing answers keep pointing at it.",
@@ -2220,26 +2234,24 @@
             "optionsError": "A question needs at least two options.",
             "optionsLegend": "Options",
             "optionsTitle": "Response's options",
-            "published": "Published",
             "publishAction": "Publish",
-            "publishSuccess": "Question published",
+            "published": "Published",
             "publishedHelp": "Answers to a published question are exported to the public dataset alongside the conversation text.",
+            "publishSuccess": "Question published",
             "removeOption": "Remove this option",
+            "required": "Answer required",
+            "requiredHelp": "A required question holds back account creation until it is answered. Without it the question is asked but may be left blank.",
             "respondentCount": "Respondents: {count}",
             "restore": "Unarchive",
             "restoreSuccess": "Question unarchived",
             "revisionN": "revision {revision}",
             "save": "Save",
-            "required": "Answer required",
-            "requiredHelp": "A required question holds back account creation until it is answered. Without it the question is asked but may be left blank.",
             "statsIntro": "Total respondents: {count}.",
             "statsTitle": "Answers",
             "subtitle": "Configure the questions asked at sign-up and after a vote, and check how identifying the answers are before publishing them.",
             "title": "Survey",
             "unpublishAction": "Unpublish",
-            "unpublishSuccess": "Question unpublished",
-            "missingTranslation": "Missing translation: {locales}",
-            "defaultLabelError": "Fill in at least the {locale} label, for the question and for every option."
+            "unpublishSuccess": "Question unpublished"
         },
         "afterVote": {
             "description": "Your answers are optional and help us better understand who uses compar:IA.",
@@ -2254,30 +2266,30 @@
             "optional": "Optional · ~30 sec",
             "title": "{platformName} survey"
         },
+        "profile": {
+            "clear": "Clear this answer",
+            "description": "These answers are optional. You can change or clear them at any time.",
+            "loadFailed": "The questionnaire could not be loaded.",
+            "loading": "Loading the questionnaire…",
+            "noAnswerOption": "No answer",
+            "saved": "Answers saved.",
+            "saveFailed": "The answers could not be saved. Try again in a moment.",
+            "saving": "Saving…",
+            "title": "Your survey answers"
+        },
         "question": {
             "chooseOption": "Select an option",
             "required": "This question needs an answer."
         },
-        "profile": {
-            "title": "Your survey answers",
-            "description": "These answers are optional. You can change or clear them at any time.",
-            "loading": "Loading the questionnaire…",
-            "loadFailed": "The questionnaire could not be loaded.",
-            "clear": "Clear this answer",
-            "noAnswerOption": "No answer",
-            "saving": "Saving…",
-            "saved": "Answers saved.",
-            "saveFailed": "The answers could not be saved. Try again in a moment."
+        "required": {
+            "description": "To keep chatting and voting, answer the questions marked with an asterisk (*). You can change your answers any time in your settings.",
+            "title": "An answer is needed to continue"
         },
         "signup": {
+            "description": "Questions marked with an asterisk (*) are required. Your answers help us know who takes part in compar:IA, and you can change them any time in your settings.",
             "optional": " (optional)",
             "reloadNeeded": "The questions could not be loaded. Reload the page and try again.",
-            "title": "Last step: a few questions about you",
-            "description": "Questions marked with an asterisk (*) are required. Your answers help us know who takes part in compar:IA, and you can change them any time in your settings."
-        },
-        "required": {
-            "title": "An answer is needed to continue",
-            "description": "To keep chatting and voting, answer the questions marked with an asterisk (*). You can change your answers any time in your settings."
+            "title": "Last step: a few questions about you"
         }
     },
     "vote": {
@@ -2314,7 +2326,6 @@
         "yours": "Your vote"
     },
     "words": {
-        "NA": "N / A",
         "activated": "Activated",
         "add": "Add",
         "allowed": "allowed",
@@ -2327,6 +2338,7 @@
         "deactivated": "Disabled",
         "forbidden": "forbidden",
         "loading": "Loading",
+        "NA": "N / A",
         "new": "New",
         "no": "No",
         "private": "private",
