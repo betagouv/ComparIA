@@ -10,7 +10,7 @@ SUPPORTED_LOCALES: tuple[SupportedLocale, ...] = get_args(SupportedLocale)
 # Hard default locale, mainly used for internal code:
 # - define the main project language (for weblate, to remove stale keys in i18n cli command, etc.)
 # - default locale for `settings.COMPARIA_INSTANCE_NAME` and therefore `AppSettings.default_locale`
-DEFAULT_LOCALE: SupportedLocale = "fr"
+DEFAULT_LOCALE: SupportedLocale = "en"
 
 # What a new instance starts with, and what the migration backfills onto the
 # existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
