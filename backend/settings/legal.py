@@ -142,12 +142,6 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
 )
 
 
-def fallback_legal_presentation(
-    locale: SupportedLocale = DEFAULT_LOCALE,
-) -> LegalPresentation:
-    return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
-
-
 async def get_legal_presentations() -> LegalPresentationTranslatable:
     """Return all configured locales or default ones."""
     app_settings = await get_app_settings()
