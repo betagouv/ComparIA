@@ -195,6 +195,7 @@
         },
         "legal": {
             "accessibility": {
+                "subtitle": "Information regarding the accessibility of the digital service.",
                 "title": "Accessibility statement"
             },
             "back": "Back to legal documents",
@@ -222,11 +223,19 @@
                 "versionOn": "Version {version} of {date}"
             },
             "ecodesign": {
+                "subtitle": "Information regarding the service’s eco-design process.",
                 "title": "Ecodesign"
             },
             "hub": {
+                "cols": {
+                    "desc": "Description",
+                    "status": "Status",
+                    "title": "Element"
+                },
+                "published": "Published",
                 "subtitle": "Each piece of content has its own space for editing and publishing.",
-                "title": "Legal documents and journeys"
+                "title": "Legal documents and journeys",
+                "toComplete": "To be completed"
             },
             "informational": {
                 "contentLabel": "Content in {locale}",
@@ -240,6 +249,7 @@
                 "visibleInSettings": "The Settings page"
             },
             "legal_notice": {
+                "subtitle": "Information about the publisher and the service provider.",
                 "title": "Legal notice"
             },
             "markdownHelp": "Markdown formatting is supported: **bold**, *italics*, [link](https://example.com).",
@@ -1046,6 +1056,7 @@
         "close": "Close without sending",
         "confirm": "Confirm",
         "links": {
+            "privacy_policy": "Privacy policy",
             "terms": "Terms of use"
         },
         "loadFailed": "The terms of use could not be loaded.",
@@ -1082,14 +1093,25 @@
         }
     },
     "form": {
+        "busy": "Saving…",
+        "containsErrors": "The form contains errors:",
+        "missing_default_locale": "Main translation missing",
+        "missing_locales": "Missing translations",
         "preview": "Preview",
-        "previewEmpty": "The preview will appear here."
+        "previewEmpty": "The preview will appear here.",
+        "toastError": "Invalid data",
+        "toastSuccess": "Data successfully saved",
+        "unsavedChanges": "You have unsaved changes. Are you sure you want to leave this page?"
     },
     "general": {
         "document": {
             "frenchOnly": "This document is only published in French for now.",
             "unavailable": "This document is not available right now. Please try again later.",
             "version": "Version {version}, in effect since {date}."
+        },
+        "privacy_policy": {
+            "optOutTitle": "Object to the audience measurement",
+            "title": "Privacy policy"
         },
         "terms": {
             "title": "Terms of use"
@@ -2098,6 +2120,7 @@
             "colActions": "Actions",
             "colLabel": "Question",
             "colOrder": "Order",
+            "colRequired": "Required",
             "colRespondents": "Respondents",
             "colStatus": "Status",
             "createSuccess": "Question added",
@@ -2157,6 +2180,12 @@
             "submit": "Send my answers",
             "submitFailed": "Sending failed. Your answers were not saved, you can try again.",
             "title": "A few questions to get to know you"
+        },
+        "card": {
+            "cta": "Answer {count} questions",
+            "desc": "Help us understand you better by answering a few anonymous questions.",
+            "optional": "Optional · ~30 sec",
+            "title": "{platformName} survey"
         },
         "profile": {
             "clear": "Clear this answer",
@@ -2226,6 +2255,7 @@
         "back": "Back",
         "cancel": "Cancel",
         "close": "Close",
+        "continue": "Continue",
         "deactivated": "Disabled",
         "forbidden": "forbidden",
         "loading": "Loading",
