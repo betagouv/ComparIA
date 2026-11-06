@@ -13,8 +13,8 @@ from sqlalchemy import func
 from sqlmodel import col, select
 
 from backend.config import TurnChoice
-from backend.settings.legal import DEFAULT_LEGAL_LANGUAGE
 from backend.survey.services import my_answers
+from backend.utils.locale import get_locales_settings
 from utils.database.models.auth import ConsentLog, User
 from utils.database.models.comparison import Comparison
 from utils.database.models.llms import LLMData
@@ -176,7 +176,8 @@ async def build_account_export(user: User) -> AccountDataExport:
         # their current session locale, so it always resolves labels in the
         # instance's default language, same as the legal documents it also
         # exports the acceptance of.
-        survey_answers = await my_answers(DEFAULT_LEGAL_LANGUAGE, user.id, None)
+        locales = await get_locales_settings()
+        survey_answers = await my_answers(locales.default, user.id, None)
 
     return AccountDataExport(
         exported_at=utc_now(),

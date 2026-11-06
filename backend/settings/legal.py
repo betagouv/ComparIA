@@ -13,11 +13,9 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
-from utils.i18n import DEFAULT_LOCALE, SupportedLocale
+from utils.i18n import SupportedLocale
 from utils.validation import Translatable
 
-# FIXME
-DEFAULT_LEGAL_LANGUAGE = DEFAULT_LOCALE
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
 
