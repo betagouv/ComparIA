@@ -6,7 +6,7 @@ from sqlalchemy import Index, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
-from utils.i18n import SupportedLocale
+from utils.i18n import SupportedLocale, TranslatableRaw
 
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
 
@@ -163,7 +163,7 @@ class LegalDocument(SQLModel, table=True):
     id: ModelId
     kind: Annotated[LegalDocumentKind, Field(sa_type=String)]
     version: str
-    content: dict[SupportedLocale, str] = Field(sa_type=JSONB, nullable=False)
+    content: TranslatableRaw[str] = Field(sa_type=JSONB, nullable=False)
     content_hash: str = Field(index=True, min_length=64, max_length=64)
     published_at: UtcDatetime
     effective_at: Datetime

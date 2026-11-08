@@ -103,7 +103,7 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
-from utils.i18n import SupportedLocale
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
 from utils.validation import Translatable
@@ -139,7 +139,7 @@ class AdminLegalDocument(BaseModel):
     id: uuid.UUID
     kind: LegalDocumentKind
     version: str
-    content: dict[str, str]
+    content: TranslatableRaw[str]
     content_hash: str
     published_at: UtcTimestamp
     effective_at: UtcTimestamp

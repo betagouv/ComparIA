@@ -1,4 +1,4 @@
-from typing import Literal, get_args
+from typing import Literal, TypeVar, get_args
 
 # Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
 # An instance enables a subset of these. Anything outside the tuple is refused
@@ -18,3 +18,6 @@ DEFAULT_LOCALE: SupportedLocale = "en"
 # PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
 # /admin/locales, which is the point of the setting.
 DEFAULT_ENABLED_LOCALES: tuple[SupportedLocale, ...] = ("da", "en", "fr")
+
+T = TypeVar("T")
+TranslatableRaw = dict[SupportedLocale, T]

@@ -4,7 +4,12 @@ from typing import Annotated, TypeVar, cast
 from fastapi import Depends, HTTPException, status
 
 from utils.database.settings import get_app_settings
-from utils.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES, SupportedLocale
+from utils.i18n import (
+    DEFAULT_LOCALE,
+    SUPPORTED_LOCALES,
+    SupportedLocale,
+    TranslatableRaw,
+)
 
 
 @dataclass
@@ -59,7 +64,7 @@ T = TypeVar("T")
 
 
 def pick_locale(
-    contents: dict[SupportedLocale, T],
+    contents: TranslatableRaw[T],
     locale: SupportedLocale | None,
     locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
 ) -> SupportedLocale:
@@ -83,7 +88,7 @@ def pick_locale(
 
 
 def pick_translation(
-    contents: dict[SupportedLocale, T],
+    contents: TranslatableRaw[T],
     locale: SupportedLocale | None,
     locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
 ) -> tuple[SupportedLocale, T]:

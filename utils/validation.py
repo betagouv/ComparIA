@@ -3,7 +3,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BeforeValidator, RootModel, model_validator
 
-from utils.i18n import SupportedLocale
+from utils.i18n import TranslatableRaw
 
 _LOOPBACK_HOSTS = {"localhost", "127.0.0.1"}
 
@@ -35,7 +35,7 @@ T = TypeVar("T")
 
 
 # TODO add check or another type that check that the default locale is present
-class Translatable(RootModel[dict[SupportedLocale, T]], Generic[T]):
+class Translatable(RootModel[TranslatableRaw[T]], Generic[T]):
     @model_validator(mode="before")
     @classmethod
     def remove_empty(cls, data: Any):
