@@ -41,7 +41,6 @@ from utils.database.models.suggestion import (
     PublicSuggestionCategory,
     PublicSuggestionsResponse,
 )
-from utils.i18n import DEFAULT_LOCALE
 
 
 @pytest.fixture()

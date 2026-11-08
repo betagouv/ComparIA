@@ -14,7 +14,7 @@ from backend.utils.locale import (
     pick_locale,
     pick_translation,
 )
-from utils.i18n import DEFAULT_LOCALE, SupportedLocale
+from utils.i18n import DEFAULT_LOCALE, SupportedLocale, TranslatableRaw
 
 logger = logging.getLogger("languia")
 
@@ -93,7 +93,7 @@ _INACTIVITY_CONTENT = """\
 
 # Wording per locale. `{platform_name}` is filled in later, already escaped
 # for the HTML parts. The plain-text parts reuse the same sentences.
-_COPY: dict[SupportedLocale, dict[str, str]] = {
+_COPY: TranslatableRaw[dict[str, str]] = {
     "fr": {
         "footer": "Message automatique envoyé par {platform_name}.",
         "greeting": "Bonjour,",

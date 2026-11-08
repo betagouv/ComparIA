@@ -13,7 +13,7 @@ from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
-from utils.i18n import SupportedLocale
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.validation import Translatable
 
 LEGAL_VERSION_MAX_LENGTH = 64
@@ -172,7 +172,7 @@ class InvalidEffectiveDateError(ValueError):
     pass
 
 
-def legal_document_hash(content: dict[SupportedLocale, str]) -> str:
+def legal_document_hash(content: TranslatableRaw[str]) -> str:
     dumped_content = json.dumps(
         content, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     )
@@ -228,7 +228,7 @@ async def publish_legal_document(
     *,
     kind: LegalDocumentKind,
     version: str,
-    content: dict[SupportedLocale, str],
+    content: TranslatableRaw[str],
     effective_at: datetime | None,
 ) -> LegalDocument:
     """Publish an immutable document and retire the active one when immediate.
