@@ -47,45 +47,45 @@ DEFAULT_DESCRIPTION = (
 )
 
 FIELDS = {
-    "enabled": {"title": "Vérification des messages"},
+    "enabled": {"title": "Message check"},
     "required": {
-        "title": "Vérification obligatoire",
-        "description": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.",
+        "title": "Required check",
+        "description": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
     },
     "model": {
-        "title": "Modèle de décision",
-        "description": "Un modèle de décision d'OpenRouter.",
+        "title": "Decision model",
+        "description": "A decision model from OpenRouter.",
     },
     "api_key": {
-        "title": "Clé API OpenRouter",
-        "description": "Laissée vide, la vérification utilise OPENROUTER_API_KEY.",
+        "title": "OpenRouter API key",
+        "description": "Left empty, the check uses OPENROUTER_API_KEY.",
     },
     "description": {
-        "title": "Description de l'instance",
-        "description": "Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.",
+        "title": "Instance description",
+        "description": "The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.",
     },
-    "criteria": {"title": "Critères"},
+    "criteria": {"title": "Criteria"},
     "key": {
-        "title": "Identifiant",
-        "description": "Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.",
+        "title": "Key",
+        "description": "Stats are counted by key: do not change it once the criterion is in use.",
     },
-    "label": {"title": "Nom"},
+    "label": {"title": "Name"},
     "question": {
-        "title": "Question posée au modèle",
-        "description": "Une question fermée sur le `message`, à laquelle on répond par oui ou non.",
+        "title": "Question asked to the model",
+        "description": "A closed question about the `message`, answered yes or no.",
     },
-    "yes": {"title": "Compte comme oui"},
-    "no": {"title": "Compte comme non"},
-    "threshold": {"title": "Seuil"},
+    "yes": {"title": "Counts as yes"},
+    "no": {"title": "Counts as no"},
+    "threshold": {"title": "Threshold"},
     "action": {"title": "Action"},
-    "message": {"title": "Message affiché"},
+    "message": {"title": "Message shown"},
     "conversations_per_ip_per_hour": {
-        "title": "Conversations par IP et par heure",
-        "description": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
+        "title": "Conversations per IP per hour",
+        "description": "Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.",
     },
     "conversations_same_models_per_ip_per_hour": {
-        "title": "Conversations par IP et par heure avec les mêmes modèles",
-        "description": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
+        "title": "Conversations per IP per hour with the same models",
+        "description": "The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.",
     },
 }
 
