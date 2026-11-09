@@ -115,11 +115,14 @@ describe('ViewPrompt', () => {
     )
   })
 
-  it('falls back to the home texts of the default locale', () => {
+  it('keeps the built-in title when the instance set none for the current locale', () => {
     auth.config.home_title = { en: 'Ask your question' }
     const { getByRole } = render(ViewPrompt, props)
 
-    expect(getByRole('heading', { level: 2 }).textContent).toContain('Ask your question')
+    expect(getByRole('heading', { level: 2 }).textContent).not.toContain('Ask your question')
+    expect(getByRole('heading', { level: 2 }).textContent).toContain(
+      "Comment puis-je vous aider aujourd'hui ?"
+    )
   })
 
   it('keeps the built-in home texts when the instance set none', () => {

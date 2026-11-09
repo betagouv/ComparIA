@@ -35,10 +35,11 @@
 
   const authConfig = getAuthContext().config
   const locales = getLocalesContext()
-  const homeTitle = locales.pickTranslation(authConfig.home_title) || m['arenaHome.title']()
+  // Only the visitor's own language: the built-in wording reads better than an
+  // admin's text in another language.
+  const homeTitle = authConfig.home_title[locales.current] || m['arenaHome.title']()
   const homePromptPlaceholder =
-    locales.pickTranslation(authConfig.home_prompt_placeholder) ||
-    m['arenaHome.prompt.placeholder']()
+    authConfig.home_prompt_placeholder[locales.current] || m['arenaHome.prompt.placeholder']()
 
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 
