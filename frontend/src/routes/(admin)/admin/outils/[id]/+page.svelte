@@ -9,7 +9,7 @@
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
   type ToolTestResult = {
@@ -39,9 +39,10 @@
   let testResult = $state<ToolTestResult>()
 
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/tools/tool',
-      ...data.formProps,
+      initialData: () => data.formProps.data,
+      schema: () => data.formProps.schema,
       omitKeys: ['updated_at', 'created_at', 'has_secret'],
       i18nKey: 'tool_upsert',
       method: 'put',
