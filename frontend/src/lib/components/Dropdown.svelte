@@ -8,6 +8,7 @@
     variant = 'normal',
     closeOnSelect = false,
     role = null,
+    disabled = false,
     maxHeight = 400,
     buttonClass = 'fr-select',
     buttonLabel,
@@ -19,6 +20,7 @@
     closeOnSelect?: boolean
     variant?: 'light' | 'normal'
     role?: 'menu' | null
+    disabled?: boolean
     maxHeight?: number
     buttonClass?: ClassValue
     buttonLabel?: Snippet<[string]>
@@ -195,7 +197,8 @@
     aria-haspopup={role ?? true}
     aria-expanded={open}
     aria-controls={id}
-    class={[buttonClass, { 'not-hover:bg-white': variant === 'light' }]}
+    {disabled}
+    class={[buttonClass, { 'not-hover:bg-white disabled:bg-white': variant === 'light' }]}
     onclick={toggle}
   >
     {#if buttonLabel}{@render buttonLabel(label)}{:else}{label}{/if}

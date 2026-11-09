@@ -116,9 +116,9 @@ export interface RevealData {
 
 const MODES = [
   { value: 'random', icon: 'i-ri-dice-line' },
-  { value: 'custom', icon: 'i-ri-search-line' },
   { value: 'small-models', icon: 'i-ri-leaf-line' },
-  { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
+  { value: 'big-vs-small', icon: 'i-ri-ruler-line' },
+  { value: 'custom', icon: 'i-ri-search-line' }
 ] as const
 
 // Resolved on each call rather than at module load: the module is evaluated
