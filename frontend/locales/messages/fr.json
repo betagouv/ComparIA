@@ -1352,57 +1352,6 @@
                 "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
                 "label": "Conversations par IP et par heure avec les mêmes modèles"
             }
-        },
-        "tool_upsert": {
-            "allowed_domains": {
-                "help": "For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.",
-                "label": "Allowed Domains"
-            },
-            "allowed_functions": {
-                "help": "For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.",
-                "label": "Allowed Functions"
-            },
-            "blocked_domains": {
-                "help": "For web search, sites results never come from. Cannot be combined with allowed domains.",
-                "label": "Blocked Domains"
-            },
-            "created_at": {
-                "label": "Created At"
-            },
-            "description": {
-                "help": "One line shown to visitors, in French.",
-                "label": "Description"
-            },
-            "enabled": {
-                "help": "Disabled tools are never offered to a model nor shown to a visitor.",
-                "label": "Enabled"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "key": {
-                "help": "Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').",
-                "label": "Key"
-            },
-            "kind": {
-                "help": "How the tool is carried out.",
-                "label": "Kind"
-            },
-            "label": {
-                "help": "Name shown to visitors, in French.",
-                "label": "Label"
-            },
-            "secret": {
-                "help": "For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again.",
-                "label": "Credential"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            },
-            "url": {
-                "help": "For an MCP tool, the server address.",
-                "label": "Url"
-            }
         }
     },
     "header": {
