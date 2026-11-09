@@ -1,16 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
 import { describe, expect, it } from 'vitest'
-import ColorInput from './ColorInput.svelte'
+import FormColorInput from './FormColorInput.svelte'
 
-describe('ColorInput', () => {
+describe('FormColorInput', () => {
   it('synchronises the hexadecimal field with the native colour picker', async () => {
-    const { container } = render(ColorInput, {
+    const { container } = render(FormColorInput, {
       id: 'primary-light',
       label: 'Couleur primaire (thème clair)',
-      hint: 'Format attendu : #RRGGBB.',
+      help: 'Format attendu : #RRGGBB.',
       value: '#6464F3'
     })
-    const textInput = container.querySelector<HTMLInputElement>('#primary-light-text')
+    const textInput = container.querySelector<HTMLInputElement>('#primary-light')
     const picker = container.querySelector<HTMLInputElement>('input[type="color"]')
 
     expect(picker?.value).toBe('#6464f3')
@@ -20,13 +20,13 @@ describe('ColorInput', () => {
   })
 
   it('lets an incomplete value through so the form can show its own error', async () => {
-    const { container } = render(ColorInput, {
+    const { container } = render(FormColorInput, {
       id: 'primary-light',
       label: 'Couleur primaire (thème clair)',
-      hint: 'Format attendu : #RRGGBB.',
+      help: 'Format attendu : #RRGGBB.',
       value: '#6464F3'
     })
-    const textInput = container.querySelector<HTMLInputElement>('#primary-light-text')
+    const textInput = container.querySelector<HTMLInputElement>('#primary-light')
 
     await fireEvent.input(textInput!, { target: { value: '#12' } })
 
@@ -34,14 +34,14 @@ describe('ColorInput', () => {
   })
 
   it('connects an explicit validation error to both controls', () => {
-    const { container } = render(ColorInput, {
+    const { container } = render(FormColorInput, {
       id: 'primary-dark',
       label: 'Couleur primaire (thème sombre)',
-      hint: 'Format attendu : #RRGGBB.',
+      help: 'Format attendu : #RRGGBB.',
       value: '#161616',
-      error: 'Contraste insuffisant.'
+      errors: { 'primary-dark': 'Contraste insuffisant.' }
     })
-    const textInput = container.querySelector<HTMLInputElement>('#primary-dark-text')
+    const textInput = container.querySelector<HTMLInputElement>('#primary-dark')
     const picker = container.querySelector<HTMLInputElement>('input[type="color"]')
     const error = screen.getByText('Contraste insuffisant.')
 

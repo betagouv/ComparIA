@@ -70,7 +70,7 @@ class FakeRedis:
 
 
 def _settings_row(**overrides):
-    fields = dict(
+    fields: dict[str, object] = dict(
         auth_access_policy="anonymous_first",
         auth_domain_allowlist=[],
         auth_methods=["email_code", "oidc"],
@@ -87,6 +87,9 @@ def _settings_row(**overrides):
         secondary_color_light="#6A6AF4",
         secondary_color_dark="#CACAFB",
         homepage_url=None,
+        home_title={},
+        home_prompt_placeholder={},
+        home_banner={},
         logo=None,
         logo_version=None,
         enabled_locales=["fr"],

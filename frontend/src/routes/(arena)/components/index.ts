@@ -1,6 +1,7 @@
 export { default as ErrorDisplay } from './ErrorDisplay.svelte'
 export { default as GroupedMessages } from './GroupedMessages.svelte'
 export { default as GuidedPromptSuggestions } from './GuidedPromptSuggestions.svelte'
+export { default as HomeBanner } from './HomeBanner.svelte'
 export { default as MessageBot } from './MessageBot.svelte'
 export { default as MessageUser } from './MessageUser.svelte'
 export { default as MiniCard } from './MiniCard.svelte'

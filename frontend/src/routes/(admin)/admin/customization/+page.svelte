@@ -1,186 +1,114 @@
 <script lang="ts">
-  import { Button, Input } from '$components/dsfr'
-  import ColorInput from '$components/form/ColorInput.svelte'
+  import { Button } from '$components/dsfr'
+  import { FormColorInput, FormInput } from '$components/form'
+  import Form from '$components/form/Form.svelte'
+  import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import { getAuthContext } from '$lib/auth.svelte'
   import { api } from '$lib/fastapi-client'
-  import type { AppSettingsPatch, AppSettingsPublic } from '$lib/generated/admin'
+  import type { AppSettingsPublic } from '$lib/generated/admin'
   import { getVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { useForm, type FormErrors } from '$lib/stores/form.svelte'
   import { contrastRatio, isHexColor } from '$lib/theme'
-  import { onMount } from 'svelte'
+  import { pick } from '$lib/utils/commons'
+  import type { PageProps } from './$types'
 
-  let loading = $state(true)
-  let saving = $state(false)
-  let uploadingLogo = $state(false)
+  let { data }: PageProps = $props()
 
-  let votesObjective = $state('')
-  let rankingMinVotes = $state('')
-  let rankingMaxRankSpread = $state('')
-  let platformName = $state('')
-  let hasCustomLogo = $state(false)
-  let primaryColorLight = $state('')
-  let primaryColorDark = $state('')
-  let secondaryColorLight = $state('')
-  let secondaryColorDark = $state('')
-  let homepageUrl = $state('')
-  let loadedValues = $state({
-    votesObjective: '',
-    rankingMinVotes: '',
-    rankingMaxRankSpread: '',
-    platformName: '',
-    primaryColorLight: '',
-    primaryColorDark: '',
-    secondaryColorLight: '',
-    secondaryColorDark: '',
-    homepageUrl: ''
-  })
-  let errors = $state<Record<string, string>>({})
+  // Same limits as HomeText and HomeBanner in app_settings.py: past them the
+  // backend refuses the whole save.
+  const HOME_TEXT_MAX_LENGTH = 200
+  const HOME_BANNER_MAX_LENGTH = 1000
+
+  // Settings the arena reads from the auth config, refreshed there on save.
+  const CONFIG_FIELDS = [
+    'platform_name',
+    'homepage_url',
+    'home_title',
+    'home_prompt_placeholder',
+    'home_banner',
+    'primary_color_light',
+    'primary_color_dark',
+    'secondary_color_light',
+    'secondary_color_dark'
+  ] as const
+  const FIELDS = [
+    ...CONFIG_FIELDS,
+    'votes_objective',
+    'ranking_min_votes',
+    'ranking_max_rank_spread'
+  ] as const
+
+  type Settings = Pick<AppSettingsPublic, (typeof FIELDS)[number]>
+
+  const COLORS = [
+    { id: 'primary_color_light', label: m['admin.settings.customization.colors.primaryLight']() },
+    { id: 'primary_color_dark', label: m['admin.settings.customization.colors.primaryDark']() },
+    {
+      id: 'secondary_color_light',
+      label: m['admin.settings.customization.colors.secondaryLight']()
+    },
+    { id: 'secondary_color_dark', label: m['admin.settings.customization.colors.secondaryDark']() }
+  ] as const
 
   const auth = getAuthContext()
+  const votes = getVotesContext()
+
+  const form = useForm({
+    url: '/admin/settings',
+    method: 'PATCH',
+    initialData: (): Settings => pick(data.settings, FIELDS),
+    onBeforeSubmit: (settings, errors) => {
+      Object.assign(errors, validate(settings))
+      if (Object.keys(errors).length) return null
+      return { ...settings, homepage_url: settings.homepage_url || null }
+    },
+    onSuccess: (saved) => {
+      Object.assign(auth.config, pick(saved, CONFIG_FIELDS))
+      votes.objective = saved.votes_objective
+    }
+  })
+
+  function validate(settings: Settings): FormErrors {
+    const errors: FormErrors = {}
+    for (const { id } of COLORS) {
+      if (!isHexColor(settings[id])) {
+        errors[id] = m['admin.settings.customization.colors.invalid']()
+      }
+    }
+    if (
+      !errors.primary_color_light &&
+      contrastRatio(settings.primary_color_light, '#FFFFFF') < 4.5
+    ) {
+      errors.primary_color_light = m['admin.settings.customization.colors.contrastLight']()
+    }
+    if (!errors.primary_color_dark && contrastRatio(settings.primary_color_dark, '#161616') < 4.5) {
+      errors.primary_color_dark = m['admin.settings.customization.colors.contrastDark']()
+    }
+    if (settings.homepage_url && !isSecureUrl(settings.homepage_url)) {
+      errors.homepage_url = m['admin.settings.customization.homepageUrl.invalid']()
+    }
+    return errors
+  }
+
+  function isSecureUrl(value: string) {
+    try {
+      const url = new URL(value)
+      return url.protocol === 'https:' && !url.username && !url.password && !/\s/.test(value)
+    } catch {
+      return false
+    }
+  }
+
+  // The logo is uploaded on its own, outside the form's save.
+  let uploadingLogo = $state(false)
   const logoSrc = $derived(
-    hasCustomLogo
+    auth.config.has_custom_logo
       ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
       : '/orgs/comparia.png'
   )
-  const votes = getVotesContext()
-
-  async function load() {
-    loading = true
-    try {
-      const data = await api.request<AppSettingsPublic>('/admin/settings')
-      votesObjective = String(data.votes_objective)
-      rankingMinVotes = String(data.ranking_min_votes)
-      rankingMaxRankSpread = String(data.ranking_max_rank_spread)
-      platformName = data.platform_name
-      hasCustomLogo = data.has_custom_logo
-      primaryColorLight = data.primary_color_light
-      primaryColorDark = data.primary_color_dark
-      secondaryColorLight = data.secondary_color_light
-      secondaryColorDark = data.secondary_color_dark
-      homepageUrl = data.homepage_url ?? ''
-      loadedValues = {
-        ...currentValues(),
-        votesObjective,
-        rankingMinVotes,
-        rankingMaxRankSpread,
-        platformName
-      }
-    } finally {
-      loading = false
-    }
-  }
-
-  onMount(load)
-
-  function currentValues() {
-    return {
-      primaryColorLight,
-      primaryColorDark,
-      secondaryColorLight,
-      secondaryColorDark,
-      homepageUrl
-    }
-  }
-
-  function validate() {
-    const nextErrors: Record<string, string> = {}
-    const hexError = m['admin.settings.customization.colors.invalid']()
-    for (const [field, value] of Object.entries(currentValues()).filter(
-      ([field]) => field !== 'homepageUrl'
-    )) {
-      if (!isHexColor(value)) nextErrors[field] = hexError
-    }
-    if (!nextErrors.primaryColorLight && contrastRatio(primaryColorLight, '#FFFFFF') < 4.5) {
-      nextErrors.primaryColorLight = m['admin.settings.customization.colors.contrastLight']()
-    }
-    if (!nextErrors.primaryColorDark && contrastRatio(primaryColorDark, '#161616') < 4.5) {
-      nextErrors.primaryColorDark = m['admin.settings.customization.colors.contrastDark']()
-    }
-    if (homepageUrl) {
-      try {
-        const url = new URL(homepageUrl)
-        if (
-          url.protocol !== 'https:' ||
-          url.username ||
-          url.password ||
-          /\s/.test(homepageUrl.trim())
-        )
-          nextErrors.homepageUrl = m['admin.settings.customization.homepageUrl.invalid']()
-      } catch {
-        nextErrors.homepageUrl = m['admin.settings.customization.homepageUrl.invalid']()
-      }
-    }
-    errors = nextErrors
-    return Object.keys(nextErrors).length === 0
-  }
-
-  function discardChanges() {
-    votesObjective = loadedValues.votesObjective
-    rankingMinVotes = loadedValues.rankingMinVotes
-    rankingMaxRankSpread = loadedValues.rankingMaxRankSpread
-    platformName = loadedValues.platformName
-    primaryColorLight = loadedValues.primaryColorLight
-    primaryColorDark = loadedValues.primaryColorDark
-    secondaryColorLight = loadedValues.secondaryColorLight
-    secondaryColorDark = loadedValues.secondaryColorDark
-    homepageUrl = loadedValues.homepageUrl
-    errors = {}
-  }
-
-  async function save(e: SubmitEvent) {
-    e.preventDefault()
-    if (!validate()) return
-    saving = true
-    try {
-      const patch: AppSettingsPatch = {
-        votes_objective: Number(votesObjective),
-        ranking_min_votes: Number(rankingMinVotes),
-        ranking_max_rank_spread: Number(rankingMaxRankSpread),
-        platform_name: platformName,
-        primary_color_light: primaryColorLight.toUpperCase(),
-        primary_color_dark: primaryColorDark.toUpperCase(),
-        secondary_color_light: secondaryColorLight.toUpperCase(),
-        secondary_color_dark: secondaryColorDark.toUpperCase(),
-        homepage_url: homepageUrl || null
-      }
-      const saved = await api.request<AppSettingsPublic>('/admin/settings', {
-        method: 'PATCH',
-        body: JSON.stringify(patch)
-      })
-      votesObjective = String(saved.votes_objective)
-      votes.objective = saved.votes_objective
-      rankingMinVotes = String(saved.ranking_min_votes)
-      rankingMaxRankSpread = String(saved.ranking_max_rank_spread)
-      platformName = saved.platform_name
-      primaryColorLight = saved.primary_color_light
-      primaryColorDark = saved.primary_color_dark
-      secondaryColorLight = saved.secondary_color_light
-      secondaryColorDark = saved.secondary_color_dark
-      homepageUrl = saved.homepage_url ?? ''
-      loadedValues = {
-        ...currentValues(),
-        votesObjective,
-        rankingMinVotes,
-        rankingMaxRankSpread,
-        platformName
-      }
-      Object.assign(auth.config, {
-        platform_name: saved.platform_name,
-        primary_color_light: saved.primary_color_light,
-        primary_color_dark: saved.primary_color_dark,
-        secondary_color_light: saved.secondary_color_light,
-        secondary_color_dark: saved.secondary_color_dark,
-        homepage_url: saved.homepage_url
-      })
-      useToast(m['admin.settings.saved'](), 4000)
-    } catch (err) {
-      useToast((err as Error).message, 6000, 'error')
-    } finally {
-      saving = false
-    }
-  }
 
   async function uploadLogo(e: Event) {
     const input = e.currentTarget as HTMLInputElement
@@ -196,7 +124,6 @@
         body: formData,
         headers: {}
       })
-      hasCustomLogo = true
       auth.config.has_custom_logo = true
       auth.config.logo_version = updated.logo_version ?? null
       useToast(m['admin.settings.customization.logo.updated'](), 4000)
@@ -212,7 +139,6 @@
     uploadingLogo = true
     try {
       await api.request('/admin/settings/logo', { method: 'DELETE', headers: {} })
-      hasCustomLogo = false
       auth.config.has_custom_logo = false
       auth.config.logo_version = null
       useToast(m['admin.settings.customization.logo.resetDone'](), 4000)
@@ -229,146 +155,138 @@
   title={m['admin.nav.customization']()}
   subtitle={m['admin.settings.subtitle']()}
 >
-  {#if loading}
-    <p class="fr-text--sm text-[--text-mention-grey]">{m['admin.settings.loading']()}</p>
-  {:else}
-    <form onsubmit={save} class="max-w-[720px]">
-      <Input
-        id="settings-platform-name"
-        label={m['admin.settings.customization.platformName']()}
-        bind:value={platformName}
-        groupClass="mt-4!"
-      />
+  <Form id="customization" {...form} class="max-w-[720px]">
+    <FormInput
+      id="platform_name"
+      type="text"
+      label={m['admin.settings.customization.platformName']()}
+      errors={form.errors}
+      bind:value={form.form.platform_name}
+    />
 
-      <Input
-        id="settings-homepage-url"
-        type="url"
-        label={m['admin.settings.customization.homepageUrl.label']()}
-        help={m['admin.settings.customization.homepageUrl.hint']()}
-        bind:value={homepageUrl}
-        error={errors.homepageUrl}
-        disabled={saving}
-        autocomplete="url"
-        placeholder="https://example.gouv.fr"
-        groupClass="mt-8!"
-      />
+    <FormInput
+      id="homepage_url"
+      type="url"
+      label={m['admin.settings.customization.homepageUrl.label']()}
+      help={m['admin.settings.customization.homepageUrl.hint']()}
+      placeholder="https://example.gouv.fr"
+      errors={form.errors}
+      bind:value={form.form.homepage_url}
+    />
 
-      <div class="mt-4!">
-        <p class="fr-label mb-2!">{m['admin.settings.customization.logo.label']()}</p>
-        <div class="gap-4 flex items-center">
-          <img
-            src={logoSrc}
-            alt=""
-            class="bg-white h-[48px] border border-[--border-default-grey]"
-          />
-          <div class="gap-2 flex flex-col">
-            <label class="fr-label">
-              <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
-              <input
-                class="fr-upload"
-                type="file"
-                accept="image/png,image/jpeg,image/svg+xml,image/webp"
-                disabled={uploadingLogo}
-                onchange={uploadLogo}
-              />
-            </label>
-            {#if hasCustomLogo}
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                text={m['admin.settings.customization.logo.reset']()}
-                disabled={uploadingLogo}
-                onclick={resetLogo}
-              />
-            {/if}
-          </div>
+    <div class="fr-input-group">
+      <p class="fr-label font-bold mb-2!">{m['admin.settings.customization.logo.label']()}</p>
+      <div class="gap-4 flex items-center">
+        <img src={logoSrc} alt="" class="bg-white h-[48px] border border-[--border-default-grey]" />
+        <div class="gap-2 flex flex-col">
+          <label class="fr-label">
+            <span class="fr-sr-only">{m['admin.settings.customization.logo.chooseFile']()}</span>
+            <input
+              class="fr-upload"
+              type="file"
+              accept="image/png,image/jpeg,image/svg+xml,image/webp"
+              disabled={uploadingLogo}
+              onchange={uploadLogo}
+            />
+          </label>
+          {#if auth.config.has_custom_logo}
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              text={m['admin.settings.customization.logo.reset']()}
+              disabled={uploadingLogo}
+              onclick={resetLogo}
+            />
+          {/if}
         </div>
-        <p class="fr-hint-text mt-1!">{m['admin.settings.customization.logo.hint']()}</p>
       </div>
+      <p class="fr-hint-text mt-1!">{m['admin.settings.customization.logo.hint']()}</p>
+    </div>
 
-      <fieldset class="mt-8! p-0 border-0">
-        <legend class="fr-h4">{m['admin.settings.customization.colors.title']()}</legend>
-        <p class="fr-hint-text mt-0!">{m['admin.settings.customization.colors.hint']()}</p>
-        <div class="gap-x-6 gap-y-4 md:grid-cols-2 grid">
-          <ColorInput
-            id="settings-primary-color-light"
-            label={m['admin.settings.customization.colors.primaryLight']()}
-            hint={m['admin.settings.customization.colors.fieldHint']()}
-            bind:value={primaryColorLight}
-            error={errors.primaryColorLight}
-            disabled={saving}
-          />
-          <ColorInput
-            id="settings-primary-color-dark"
-            label={m['admin.settings.customization.colors.primaryDark']()}
-            hint={m['admin.settings.customization.colors.fieldHint']()}
-            bind:value={primaryColorDark}
-            error={errors.primaryColorDark}
-            disabled={saving}
-          />
-          <ColorInput
-            id="settings-secondary-color-light"
-            label={m['admin.settings.customization.colors.secondaryLight']()}
-            hint={m['admin.settings.customization.colors.fieldHint']()}
-            bind:value={secondaryColorLight}
-            error={errors.secondaryColorLight}
-            disabled={saving}
-          />
-          <ColorInput
-            id="settings-secondary-color-dark"
-            label={m['admin.settings.customization.colors.secondaryDark']()}
-            hint={m['admin.settings.customization.colors.fieldHint']()}
-            bind:value={secondaryColorDark}
-            error={errors.secondaryColorDark}
-            disabled={saving}
-          />
-        </div>
-      </fieldset>
+    <fieldset class="mt-8! p-0 border-0">
+      <legend class="fr-h4">{m['admin.settings.customization.home.title']()}</legend>
+      <p class="fr-hint-text mt-0!">{m['admin.settings.customization.home.hint']()}</p>
+      <FormTranslate
+        id="home_title"
+        bind:value={form.form.home_title}
+        subProps={{
+          component: 'input',
+          type: 'text',
+          id: 'input',
+          maxlength: HOME_TEXT_MAX_LENGTH,
+          label: m['admin.settings.customization.home.titleLabel']()
+        }}
+      />
+      <FormTranslate
+        id="home_prompt_placeholder"
+        bind:value={form.form.home_prompt_placeholder}
+        subProps={{
+          component: 'input',
+          type: 'text',
+          id: 'input',
+          maxlength: HOME_TEXT_MAX_LENGTH,
+          label: m['admin.settings.customization.home.promptPlaceholderLabel']()
+        }}
+      />
+      <FormTranslate
+        id="home_banner"
+        bind:value={form.form.home_banner}
+        subProps={{
+          component: 'textarea',
+          id: 'input',
+          rows: 4,
+          maxlength: HOME_BANNER_MAX_LENGTH,
+          label: m['admin.settings.customization.home.bannerLabel'](),
+          help: m['admin.settings.customization.home.bannerHint']()
+        }}
+      />
+    </fieldset>
 
-      <Input
-        id="settings-votes-objective"
+    <fieldset class="mt-8! p-0 border-0">
+      <legend class="fr-h4">{m['admin.settings.customization.colors.title']()}</legend>
+      <p class="fr-hint-text mt-0!">{m['admin.settings.customization.colors.hint']()}</p>
+      <div class="gap-x-6 md:grid-cols-2 grid">
+        {#each COLORS as { id, label } (id)}
+          <FormColorInput
+            {id}
+            {label}
+            help={m['admin.settings.customization.colors.fieldHint']()}
+            errors={form.errors}
+            bind:value={form.form[id]}
+          />
+        {/each}
+      </div>
+    </fieldset>
+
+    <FormInput
+      id="votes_objective"
+      type="number"
+      label={m['admin.settings.customization.votesObjective']()}
+      errors={form.errors}
+      bind:value={form.form.votes_objective}
+    />
+
+    <fieldset class="mt-8! p-0 border-0">
+      <legend class="fr-h4">{m['admin.settings.customization.ranking.title']()}</legend>
+      <FormInput
+        id="ranking_min_votes"
         type="number"
-        min="0"
-        label={m['admin.settings.customization.votesObjective']()}
-        bind:value={votesObjective}
-        groupClass="mt-4!"
+        required
+        label={m['admin.settings.customization.ranking.minVotes']()}
+        help={m['admin.settings.customization.ranking.minVotesHelp']()}
+        errors={form.errors}
+        bind:value={form.form.ranking_min_votes}
       />
-      <fieldset class="mt-8! p-0 border-0">
-        <legend class="fr-h4">{m['admin.settings.customization.ranking.title']()}</legend>
-        <Input
-          id="settings-ranking-min-votes"
-          type="number"
-          min="0"
-          required
-          label={m['admin.settings.customization.ranking.minVotes']()}
-          help={m['admin.settings.customization.ranking.minVotesHelp']()}
-          bind:value={rankingMinVotes}
-        />
-        <Input
-          id="settings-ranking-max-rank-spread"
-          type="number"
-          min="0"
-          required
-          label={m['admin.settings.customization.ranking.maxRankSpread']()}
-          help={m['admin.settings.customization.ranking.maxRankSpreadHelp']()}
-          bind:value={rankingMaxRankSpread}
-        />
-      </fieldset>
-      <div class="gap-3 mt-4! flex flex-wrap">
-        <Button
-          type="submit"
-          text={saving ? m['admin.settings.saving']() : m['admin.settings.save']()}
-          disabled={saving}
-        />
-        <Button
-          type="button"
-          variant="secondary"
-          text={m['admin.settings.customization.discard']()}
-          disabled={saving}
-          onclick={discardChanges}
-        />
-      </div>
-    </form>
-  {/if}
+      <FormInput
+        id="ranking_max_rank_spread"
+        type="number"
+        required
+        label={m['admin.settings.customization.ranking.maxRankSpread']()}
+        help={m['admin.settings.customization.ranking.maxRankSpreadHelp']()}
+        errors={form.errors}
+        bind:value={form.form.ranking_max_rank_spread}
+      />
+    </fieldset>
+  </Form>
 </PageLayout>

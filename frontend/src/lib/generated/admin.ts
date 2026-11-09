@@ -316,6 +316,9 @@ export interface AppSettingsPatch {
   secondary_color_light?: string | null;
   secondary_color_dark?: string | null;
   homepage_url?: string | null;
+  home_title?: TranslatableAnnotatedStrStringConstraints | null;
+  home_prompt_placeholder?: TranslatableAnnotatedStrStringConstraints | null;
+  home_banner?: TranslatableAnnotatedStrStringConstraints1 | null;
   enabled_locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[] | null;
   default_locale?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv") | null;
   analysis_endpoint_id?: string | null;
@@ -330,6 +333,12 @@ export interface AppSettingsPatch {
   oidc_scopes?: string[] | null;
   oidc_button_label?: string | null;
 }
+export interface TranslatableAnnotatedStrStringConstraints {
+  [k: string]: string;
+}
+export interface TranslatableAnnotatedStrStringConstraints1 {
+  [k: string]: string;
+}
 export interface AppSettingsPublic {
   auth_access_policy: "anonymous_first" | "sign_in_required";
   auth_domain_allowlist: string[];
@@ -343,6 +352,15 @@ export interface AppSettingsPublic {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
+  home_title: {
+    [k: string]: string;
+  };
+  home_prompt_placeholder: {
+    [k: string]: string;
+  };
+  home_banner: {
+    [k: string]: string;
+  };
   analysis_endpoint_id: string | null;
   analysis_model: string | null;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";

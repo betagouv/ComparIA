@@ -20,6 +20,7 @@
     disabled,
     placeholder,
     step,
+    maxlength,
     list,
     children,
     ...props
@@ -37,6 +38,7 @@
         {placeholder}
         {disabled}
         {step}
+        {maxlength}
         {list}
         bind:value
         class="fr-input"

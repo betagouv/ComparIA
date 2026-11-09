@@ -16,6 +16,15 @@ export interface AuthConfig {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
+  home_title: {
+    [k: string]: string;
+  };
+  home_prompt_placeholder: {
+    [k: string]: string;
+  };
+  home_banner: {
+    [k: string]: string;
+  };
   platform_url: string;
   has_custom_logo: boolean;
   logo_version: string | null;

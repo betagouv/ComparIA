@@ -45,6 +45,19 @@ export function getLocalesContext() {
     return locales.map((value) => ({ value, label: getLabel(value, variant) }))
   }
 
+  // Same order as the backend's pick_translation: the current locale, then the
+  // default one, then any enabled locale, each tried whole then as a language.
+  function pickTranslation<C extends Partial<Record<Locale, unknown>>>(
+    contents: C
+  ): C[Locale] | undefined {
+    const tries = [currentLocale, defaultLocale, ...enabledLocales].flatMap((locale) => [
+      locale,
+      locale.split('-')[0]
+    ]) as Locale[]
+    const found = tries.find((locale) => enabledLocales.includes(locale) && contents[locale])
+    return found ? contents[found] : undefined
+  }
+
   function sortLocales(locales: Readonly<Locale[]>) {
     // Put default locale in first position
     return [...locales].sort(
@@ -75,6 +88,7 @@ export function getLocalesContext() {
       return allOptions
     },
     getLabel,
-    asOptions
+    asOptions,
+    pickTranslation
   }
 }

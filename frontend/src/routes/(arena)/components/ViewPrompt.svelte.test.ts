@@ -19,6 +19,17 @@ vi.mock('$lib/chatService.svelte', () => ({
   ]
 }))
 
+const auth = {
+  config: {
+    default_locale: 'en',
+    enabled_locales: ['en', 'fr'],
+    home_title: {} as Record<string, string>,
+    home_prompt_placeholder: {} as Record<string, string>
+  }
+}
+
+vi.mock('$lib/authContext.svelte', () => ({ getAuthContext: () => auth }))
+
 const props = {
   loading: false,
   onPrompt: vi.fn(),
@@ -27,6 +38,8 @@ const props = {
 
 describe('ViewPrompt', () => {
   beforeEach(() => {
+    auth.config.home_title = {}
+    auth.config.home_prompt_placeholder = {}
     const values = new Map<string, string>()
     vi.stubGlobal('localStorage', {
       getItem: (key: string) => values.get(key) ?? null,
@@ -82,5 +95,42 @@ describe('ViewPrompt', () => {
 
     expect(view.getByRole('textbox')).toHaveValue('Une question à réessayer')
     expect(view.getByText('Réessayez')).toBeInTheDocument()
+  })
+
+  it('shows the home texts the instance set for the current locale', () => {
+    auth.config.home_title = {
+      fr: 'Posez votre question, deux IA vous répondent',
+      en: 'Ask your question'
+    }
+    auth.config.home_prompt_placeholder = {
+      fr: 'Posez votre question santé ici, sans donnée patient'
+    }
+    const { getByRole, container } = render(ViewPrompt, props)
+
+    expect(getByRole('heading', { level: 2 }).textContent).toContain(
+      'Posez votre question, deux IA vous répondent'
+    )
+    expect(container.querySelector('#initial-prompt')?.getAttribute('placeholder')).toBe(
+      'Posez votre question santé ici, sans donnée patient'
+    )
+  })
+
+  it('keeps the built-in title when the instance set none for the current locale', () => {
+    auth.config.home_title = { en: 'Ask your question' }
+    const { getByRole } = render(ViewPrompt, props)
+
+    expect(getByRole('heading', { level: 2 }).textContent).not.toContain('Ask your question')
+    expect(getByRole('heading', { level: 2 }).textContent).toContain(
+      "Comment puis-je vous aider aujourd'hui ?"
+    )
+  })
+
+  it('keeps the built-in home texts when the instance set none', () => {
+    const { getByRole, container } = render(ViewPrompt, props)
+
+    expect(getByRole('heading', { level: 2 }).textContent).toContain('Comment puis-je vous aider')
+    expect(container.querySelector('#initial-prompt')?.getAttribute('placeholder')).toBe(
+      'Écrivez votre première requête ici'
+    )
   })
 })
