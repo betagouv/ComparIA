@@ -3,16 +3,18 @@ name: Check translations
 permissions:
   contents: read
 
-# Lists the French strings a pull request adds or changes, and which of the
-# nearly complete languages still lack them. Languages that are mostly
-# untranslated are left out, or the comment would list thousands of keys.
+# Lists the base-language strings a pull request adds or changes, and which of
+# the nearly complete languages still lack them. The base language is
+# `baseLocale` in frontend/comparia.inlang/settings.json. Languages that are
+# mostly untranslated are left out, or the comment would list thousands of keys.
 on:
   pull_request:
     branches:
       - develop
       - next
     paths:
-      - 'frontend/locales/messages/fr.json'
+      - 'frontend/locales/messages/*.json'
+      - 'frontend/comparia.inlang/settings.json'
       - '.github/workflows/check-translations.yml'
 
 concurrency:
@@ -34,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: List French strings the other languages lack
+      - name: List base-language strings the other languages lack
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
@@ -45,7 +47,8 @@ jobs:
           import subprocess
 
           MESSAGES = "frontend/locales/messages"
-          # A language is checked once it covers this share of the French keys
+          BASE = json.load(open("frontend/comparia.inlang/settings.json"))["baseLocale"]
+          # A language is checked once it covers this share of the base keys
           COVERAGE = 0.9
           MAX_LISTED = 50
 
@@ -59,16 +62,16 @@ jobs:
                       out[key] = v
               return out
 
-          fr = leaves(json.load(open(f"{MESSAGES}/fr.json")))
+          main = leaves(json.load(open(f"{MESSAGES}/{BASE}.json")))
           base = subprocess.run(
-              ["git", "show", f"{os.environ['BASE_SHA']}:{MESSAGES}/fr.json"],
+              ["git", "show", f"{os.environ['BASE_SHA']}:{MESSAGES}/{BASE}.json"],
               capture_output=True,
               text=True,
           )
-          fr_base = leaves(json.loads(base.stdout)) if base.returncode == 0 else {}
+          main_base = leaves(json.loads(base.stdout)) if base.returncode == 0 else {}
 
-          added = sorted(k for k in fr if k not in fr_base)
-          changed = sorted(k for k in fr if k in fr_base and fr[k] != fr_base[k])
+          added = sorted(k for k in main if k not in main_base)
+          changed = sorted(k for k in main if k in main_base and main[k] != main_base[k])
 
           def listing(keys):
               shown = "\n".join(f"- `{k}`" for k in keys[:MAX_LISTED])
@@ -78,18 +81,18 @@ jobs:
 
           parts = ["<!-- check-translations -->", "## Translations"]
           if not added and not changed:
-              parts.append("This pull request adds or changes no French text.")
+              parts.append(f"This pull request adds or changes no `{BASE}` text.")
           else:
               parts.append(
                   f"This pull request adds {len(added)} and changes {len(changed)} "
-                  "French strings."
+                  f"`{BASE}` strings."
               )
               for path in sorted(glob.glob(f"{MESSAGES}/*.json")):
                   lang = os.path.basename(path)[: -len(".json")]
-                  if lang == "fr":
+                  if lang == BASE:
                       continue
                   other = leaves(json.load(open(path)))
-                  if len(fr.keys() & other.keys()) < COVERAGE * len(fr):
+                  if len(main.keys() & other.keys()) < COVERAGE * len(main):
                       continue
                   missing = [k for k in added if k not in other]
                   if missing:
