@@ -1281,11 +1281,11 @@
                 "label": "Params"
             },
             "price_in": {
-                "help": "Price per million input tokens in $.",
+                "help": "Price per million input tokens in USD.",
                 "label": "Price In"
             },
             "price_out": {
-                "help": "Price per million output tokens in $.",
+                "help": "Price per million output tokens in USD.",
                 "label": "Price Out"
             },
             "public_training_code": {
