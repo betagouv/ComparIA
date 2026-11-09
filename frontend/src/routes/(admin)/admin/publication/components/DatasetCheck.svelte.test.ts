@@ -31,50 +31,49 @@ const schema = {
       type: 'string',
       maxLength: 100,
       default: '',
-      title: 'Modèle de décision',
+      title: 'Decision model',
       description:
-        "Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.",
+        'A decision model from OpenRouter. Empty, no conversation is analysed or published.',
       optional: true
     },
     api_key: {
       type: 'string',
       optional: true,
       default: null,
-      title: 'Clé API OpenRouter',
-      description:
-        "Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY."
+      title: 'OpenRouter API key',
+      description: "Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY."
     },
     description: {
       type: 'string',
       maxLength: 2000,
       default: '',
-      title: "Description de l'instance",
+      title: 'Instance description',
       description:
-        "Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié."
+        'The model reads it with every conversation. Say what the instance is and what is published.'
     },
     criteria: {
       type: 'array',
       items: { $ref: '#/$defs/DatasetCheckCriterion' },
       maxItems: 32,
       default: [],
-      title: "Critères d'exclusion",
-      description: "Une conversation qui atteint le seuil d'un critère n'est pas publiée."
+      title: 'Exclusion criteria',
+      description: 'A conversation that reaches the threshold of a criterion is not published.'
     },
     category_threshold: {
       type: 'number',
       maximum: 1,
       minimum: 0,
       default: 0.5,
-      title: 'Seuil des thèmes',
-      description: 'Un thème est attribué à partir de ce score. Aucun atteint : « Other ».'
+      title: 'Topic threshold',
+      description: 'A topic is given from this score. None reached: "Other".'
     },
     language_threshold: {
       type: 'number',
       maximum: 1,
       minimum: 0,
       default: 0.5,
-      title: 'Seuil des langues',
-      description: 'Une langue est attribuée à partir de ce score.'
+      title: 'Language threshold',
+      description: 'A language is given from this score.'
     }
   },
   title: 'DatasetCheckUpsert',
@@ -84,28 +83,28 @@ const schema = {
       properties: {
         key: {
           type: 'string',
-          title: 'Identifiant',
+          title: 'Key',
           description:
-            'Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.'
+            'Stored scores are filed by key: do not change it once the criterion is in use.'
         },
-        label: { type: 'string', minLength: 1, maxLength: 80, title: 'Nom' },
+        label: { type: 'string', minLength: 1, maxLength: 80, title: 'Name' },
         question: {
           type: 'string',
           minLength: 1,
           maxLength: 500,
-          title: 'Question posée au modèle',
+          title: 'Question asked to the model',
           description:
-            'Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.'
+            'A closed question about the conversation (the `message`), answered yes or no.'
         },
-        yes: { type: 'string', maxLength: 1000, default: '', title: 'Compte comme oui' },
-        no: { type: 'string', maxLength: 1000, default: '', title: 'Compte comme non' },
-        threshold: { type: 'number', maximum: 1, minimum: 0, title: 'Seuil' },
+        yes: { type: 'string', maxLength: 1000, default: '', title: 'Counts as yes' },
+        no: { type: 'string', maxLength: 1000, default: '', title: 'Counts as no' },
+        threshold: { type: 'number', maximum: 1, minimum: 0, title: 'Threshold' },
         reason: {
           enum: ['pii', 'spam'],
           type: 'string',
           default: 'spam',
-          title: 'Motif',
-          description: "Données personnelles ou spam : le drapeau publié et le motif d'archivage."
+          title: 'Reason',
+          description: 'Personal data or spam: the published flag and the archiving reason.'
         }
       },
       required: ['key', 'label', 'question', 'threshold'],
