@@ -1184,54 +1184,54 @@
         },
         "dataset_check_upsert": {
             "api_key": {
-                "help": "Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.",
-                "label": "Clé API OpenRouter"
+                "help": "Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.",
+                "label": "OpenRouter API key"
             },
             "category_threshold": {
-                "help": "Un thème est attribué à partir de ce score. Aucun atteint : « Other ».",
-                "label": "Seuil des thèmes"
+                "help": "A topic is given from this score. None reached: \"Other\".",
+                "label": "Topic threshold"
             },
             "criteria": {
-                "help": "Une conversation qui atteint le seuil d'un critère n'est pas publiée.",
-                "label": "Critères d'exclusion"
+                "help": "A conversation that reaches the threshold of a criterion is not published.",
+                "label": "Exclusion criteria"
             },
             "DatasetCheckCriterion": {
                 "key": {
-                    "help": "Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.",
-                    "label": "Identifiant"
+                    "help": "Stored scores are filed by key: do not change it once the criterion is in use.",
+                    "label": "Key"
                 },
                 "label": {
-                    "label": "Nom"
+                    "label": "Name"
                 },
                 "no": {
-                    "label": "Compte comme non"
+                    "label": "Counts as no"
                 },
                 "question": {
-                    "help": "Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.",
-                    "label": "Question posée au modèle"
+                    "help": "A closed question about the conversation (the `message`), answered yes or no.",
+                    "label": "Question asked to the model"
                 },
                 "reason": {
-                    "help": "Données personnelles ou spam : le drapeau publié et le motif d'archivage.",
-                    "label": "Motif"
+                    "help": "Personal data or spam: the published flag and the archiving reason.",
+                    "label": "Reason"
                 },
                 "threshold": {
-                    "label": "Seuil"
+                    "label": "Threshold"
                 },
                 "yes": {
-                    "label": "Compte comme oui"
+                    "label": "Counts as yes"
                 }
             },
             "description": {
-                "help": "Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.",
-                "label": "Description de l'instance"
+                "help": "The model reads it with every conversation. Say what the instance is and what is published.",
+                "label": "Instance description"
             },
             "language_threshold": {
-                "help": "Une langue est attribuée à partir de ce score.",
-                "label": "Seuil des langues"
+                "help": "A language is given from this score.",
+                "label": "Language threshold"
             },
             "model": {
-                "help": "Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.",
-                "label": "Modèle de décision"
+                "help": "A decision model from OpenRouter. Empty, no conversation is analysed or published.",
+                "label": "Decision model"
             }
         },
         "endpoint_upsert": {

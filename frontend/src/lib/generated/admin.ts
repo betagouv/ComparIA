@@ -375,12 +375,12 @@ export interface OIDCConnectionTest {
 }
 export interface DatasetCheckPublic {
   /**
-   * Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
    */
   model?: string;
   has_api_key: boolean;
   /**
-   * Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.
+   * The model reads it with every conversation. Say what the instance is and what is published.
    */
   description: string;
   criteria: DatasetCheckCriterion[];
@@ -393,19 +393,19 @@ export interface DatasetCheckPublic {
 }
 export interface DatasetCheckCriterion {
   /**
-   * Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.
+   * Stored scores are filed by key: do not change it once the criterion is in use.
    */
   key: string;
   label: string;
   /**
-   * Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.
+   * A closed question about the conversation (the `message`), answered yes or no.
    */
   question: string;
   yes?: string;
   no?: string;
   threshold: number;
   /**
-   * Données personnelles ou spam : le drapeau publié et le motif d'archivage.
+   * Personal data or spam: the published flag and the archiving reason.
    */
   reason?: "pii" | "spam";
   [k: string]: unknown;
@@ -424,29 +424,29 @@ export interface DatasetCheckTryResult {
 }
 export interface DatasetCheckUpsert {
   /**
-   * Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
    */
   model?: string;
   /**
-   * Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.
+   * Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.
    */
   api_key?: string | null;
   /**
-   * Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.
+   * The model reads it with every conversation. Say what the instance is and what is published.
    */
   description?: string;
   /**
-   * Une conversation qui atteint le seuil d'un critère n'est pas publiée.
+   * A conversation that reaches the threshold of a criterion is not published.
    *
    * @maxItems 32
    */
   criteria?: DatasetCheckCriterion[];
   /**
-   * Un thème est attribué à partir de ce score. Aucun atteint : « Other ».
+   * A topic is given from this score. None reached: "Other".
    */
   category_threshold?: number;
   /**
-   * Une langue est attribuée à partir de ce score.
+   * A language is given from this score.
    */
   language_threshold?: number;
 }

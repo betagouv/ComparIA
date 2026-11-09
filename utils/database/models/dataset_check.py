@@ -33,44 +33,44 @@ DEFAULT_EXCLUSION_THRESHOLD = 0.3
 
 FIELDS = {
     "model": {
-        "title": "Modèle de décision",
-        "description": "Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.",
+        "title": "Decision model",
+        "description": "A decision model from OpenRouter. Empty, no conversation is analysed or published.",
     },
     "api_key": {
-        "title": "Clé API OpenRouter",
-        "description": "Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.",
+        "title": "OpenRouter API key",
+        "description": "Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.",
     },
     "description": {
-        "title": "Description de l'instance",
-        "description": "Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.",
+        "title": "Instance description",
+        "description": "The model reads it with every conversation. Say what the instance is and what is published.",
     },
     "criteria": {
-        "title": "Critères d'exclusion",
-        "description": "Une conversation qui atteint le seuil d'un critère n'est pas publiée.",
+        "title": "Exclusion criteria",
+        "description": "A conversation that reaches the threshold of a criterion is not published.",
     },
     "key": {
-        "title": "Identifiant",
-        "description": "Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.",
+        "title": "Key",
+        "description": "Stored scores are filed by key: do not change it once the criterion is in use.",
     },
-    "label": {"title": "Nom"},
+    "label": {"title": "Name"},
     "question": {
-        "title": "Question posée au modèle",
-        "description": "Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.",
+        "title": "Question asked to the model",
+        "description": "A closed question about the conversation (the `message`), answered yes or no.",
     },
-    "yes": {"title": "Compte comme oui"},
-    "no": {"title": "Compte comme non"},
-    "threshold": {"title": "Seuil"},
+    "yes": {"title": "Counts as yes"},
+    "no": {"title": "Counts as no"},
+    "threshold": {"title": "Threshold"},
     "reason": {
-        "title": "Motif",
-        "description": "Données personnelles ou spam : le drapeau publié et le motif d'archivage.",
+        "title": "Reason",
+        "description": "Personal data or spam: the published flag and the archiving reason.",
     },
     "category_threshold": {
-        "title": "Seuil des thèmes",
-        "description": "Un thème est attribué à partir de ce score. Aucun atteint : « Other ».",
+        "title": "Topic threshold",
+        "description": 'A topic is given from this score. None reached: "Other".',
     },
     "language_threshold": {
-        "title": "Seuil des langues",
-        "description": "Une langue est attribuée à partir de ce score.",
+        "title": "Language threshold",
+        "description": "A language is given from this score.",
     },
 }
 
