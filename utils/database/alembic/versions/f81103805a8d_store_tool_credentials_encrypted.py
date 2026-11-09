@@ -1,32 +1,53 @@
 """store tool credentials encrypted
 
 Revision ID: f81103805a8d
-Revises: a05512fa3efe
+Revises: e5a91c73f2d8
 Create Date: 2026-10-08 11:50:25.766285
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 import sqlmodel
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 from utils.secrets import decrypt_secret, encrypt_secret
 
 # revision identifiers, used by Alembic.
-revision: str = 'f81103805a8d'
-down_revision: Union[str, Sequence[str], None] = 'a05512fa3efe'
+revision: str = "f81103805a8d"
+down_revision: Union[str, Sequence[str], None] = "e5a91c73f2d8"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
     """Upgrade schema."""
-    op.add_column('tool', sa.Column('allowed_functions', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-    op.add_column('tool', sa.Column('allowed_domains', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-    op.add_column('tool', sa.Column('blocked_domains', postgresql.JSONB(astext_type=sa.Text()), nullable=True))
-    op.add_column('tool', sa.Column('secret_encrypted', sqlmodel.sql.sqltypes.AutoString(), nullable=True))
+    op.add_column(
+        "tool",
+        sa.Column(
+            "allowed_functions", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
+    )
+    op.add_column(
+        "tool",
+        sa.Column(
+            "allowed_domains", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
+    )
+    op.add_column(
+        "tool",
+        sa.Column(
+            "blocked_domains", postgresql.JSONB(astext_type=sa.Text()), nullable=True
+        ),
+    )
+    op.add_column(
+        "tool",
+        sa.Column(
+            "secret_encrypted", sqlmodel.sql.sqltypes.AutoString(), nullable=True
+        ),
+    )
 
     # A header stored in clear moves to the encrypted column as it is: the
     # arena reads a 'Name: value' credential the same way it read the header.
@@ -40,12 +61,15 @@ def upgrade() -> None:
             {"secret": encrypt_secret(header), "id": row_id},
         )
 
-    op.drop_column('tool', 'auth_header')
+    op.drop_column("tool", "auth_header")
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.add_column('tool', sa.Column('auth_header', sa.VARCHAR(), autoincrement=False, nullable=True))
+    op.add_column(
+        "tool",
+        sa.Column("auth_header", sa.VARCHAR(), autoincrement=False, nullable=True),
+    )
 
     connection = op.get_bind()
     rows = connection.execute(
@@ -60,7 +84,7 @@ def downgrade() -> None:
             {"header": decrypt_secret(token), "id": row_id},
         )
 
-    op.drop_column('tool', 'secret_encrypted')
-    op.drop_column('tool', 'blocked_domains')
-    op.drop_column('tool', 'allowed_domains')
-    op.drop_column('tool', 'allowed_functions')
+    op.drop_column("tool", "secret_encrypted")
+    op.drop_column("tool", "blocked_domains")
+    op.drop_column("tool", "allowed_domains")
+    op.drop_column("tool", "allowed_functions")

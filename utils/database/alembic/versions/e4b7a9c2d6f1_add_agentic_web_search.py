@@ -1,7 +1,7 @@
 """add agentic web search fields
 
 Revision ID: e4b7a9c2d6f1
-Revises: c6a1f3e8d2b7
+Revises: ec3f6414fa8b
 Create Date: 2026-07-27 00:00:00.000000
 
 """
@@ -13,7 +13,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "e4b7a9c2d6f1"
-down_revision: Union[str, Sequence[str], None] = "c6a1f3e8d2b7"
+down_revision: Union[str, Sequence[str], None] = "ec3f6414fa8b"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
