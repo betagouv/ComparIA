@@ -163,7 +163,7 @@ def upgrade() -> None:
     locale = bind.execute(
         sa.text("SELECT default_locale FROM app_settings WHERE id = 1")
     ).scalar()
-    locale = locale if locale in CRITERIA else "fr"
+    locale = locale if locale in CRITERIA else "en"
     arena = bind.execute(
         sa.text("SELECT description FROM prompt_check WHERE id = 1")
     ).scalar()
