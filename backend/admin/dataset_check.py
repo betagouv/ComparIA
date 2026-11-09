@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 from backend.arena.checks import CHUNK_CHARS
 from backend.auth.dependencies import RequiredAdmin
+from backend.utils.locale import get_locales_settings
 from utils.database.actions.llm_analyze import (
     MAX_WINDOWS,
     analysis_for,
@@ -26,7 +27,6 @@ from utils.database.models.dataset_check import (
     Description,
     LanguageThreshold,
 )
-from utils.database.settings import get_app_settings
 from utils.utils import FormJsonSchema
 
 router = APIRouter(prefix="/dataset-check", tags=["dataset-check"])
@@ -157,10 +157,7 @@ async def try_dataset_check(body: DatasetCheckTryBody) -> DatasetCheckTryResult:
     if not api_key or isinstance(api_key, UnreadableSecret):
         return _failed(NO_API_KEY_MESSAGE)
 
-    app_settings = await get_app_settings()
-    analysis = analysis_for(
-        check, api_key, app_settings.default_locale, app_settings.enabled_locales
-    )
+    analysis = analysis_for(check, api_key, await get_locales_settings())
     started = time.monotonic()
     try:
         scores = await score_comparison(body.text, analysis)

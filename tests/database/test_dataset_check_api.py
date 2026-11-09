@@ -18,6 +18,7 @@ os.environ["LOG_FORMAT"] = "JSON"
 
 import backend.admin.dataset_check as api
 import backend.arena.checks as checks
+from backend.utils.locale import LocalesSettings
 from utils.database import dataset_checks
 from utils.database.models.dataset_check import (
     DEFAULT_CRITERIA,
@@ -62,11 +63,11 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
     async def get_session():
         yield session
 
-    async def app_settings():
-        return SimpleNamespace(default_locale="fr", enabled_locales=["fr", "en"])
+    async def locales_settings():
+        return LocalesSettings(default="fr", enabled=["fr", "en"])
 
     monkeypatch.setattr(dataset_checks, "get_session", get_session)
-    monkeypatch.setattr(api, "get_app_settings", app_settings)
+    monkeypatch.setattr(api, "get_locales_settings", locales_settings)
     return session
 
 

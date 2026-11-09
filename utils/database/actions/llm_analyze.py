@@ -33,6 +33,7 @@ from backend.arena.checks import (
     highest,
     texts_to_score,
 )
+from backend.utils.locale import LocalesSettings, get_locales_settings
 from utils.database.dataset_checks import dataset_check_api_key, get_dataset_check
 from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.comparison import (
@@ -43,7 +44,6 @@ from utils.database.models.comparison import (
 from utils.database.models.dataset_check import DatasetCheck, DatasetCheckCriterion
 from utils.database.models.messages import UserMessageRead
 from utils.database.session import get_session
-from utils.database.settings import get_app_settings
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.runs import PUBLISHABLE
 from utils.secrets import SecretUnreadableError
@@ -181,10 +181,10 @@ class Question(NamedTuple):
     no: str = ""
 
 
-def language_codes(default_locale: str, enabled_locales: list[str]) -> list[str]:
+def language_codes(locales: LocalesSettings) -> list[str]:
     """The languages asked about, the instance's first, as the two-letter
     codes the `languages` column holds."""
-    codes = [default_locale, *enabled_locales, *COMMON_LANGUAGES]
+    codes = [locales.default, *locales.enabled, *COMMON_LANGUAGES]
     return list(dict.fromkeys(code.split("-")[0].lower() for code in codes))
 
 
@@ -375,17 +375,13 @@ async def get_analysis() -> Analysis:
             "No OpenRouter key for the dataset check: none on the publication "
             "page, on the prompt check or in OPENROUTER_API_KEY."
         )
-    app_settings = await get_app_settings()
-    return analysis_for(
-        check, api_key, app_settings.default_locale, app_settings.enabled_locales
-    )
+    return analysis_for(check, api_key, await get_locales_settings())
 
 
 def analysis_for(
     check: DatasetCheck,
     api_key: str,
-    default_locale: str,
-    enabled_locales: list[str],
+    locales: LocalesSettings,
 ) -> Analysis:
     return Analysis(
         model=check.model,
@@ -393,7 +389,7 @@ def analysis_for(
         criteria=check.typed_criteria,
         category_threshold=check.category_threshold,
         language_threshold=check.language_threshold,
-        languages=language_codes(default_locale, enabled_locales),
+        languages=language_codes(locales),
         api_key=api_key,
     )
 

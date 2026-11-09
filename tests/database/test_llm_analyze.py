@@ -23,6 +23,7 @@ import pytest  # noqa: E402
 from linkup import LinkupSearchTextResult  # noqa: E402
 
 import backend.arena.checks as checks  # noqa: E402
+from backend.utils.locale import LocalesSettings  # noqa: E402
 from utils.database.models import Comparison, Turn  # noqa: E402
 from utils.database.models.comparison import (  # noqa: E402
     ComparisonLLMAnalysisFailedUpdate,
@@ -64,7 +65,9 @@ def analysis(**overrides) -> "llm_analyze.Analysis":
     )
     for key, value in overrides.items():
         setattr(check, key, value)
-    return llm_analyze.analysis_for(check, "test-key", "fr", ["da", "en", "fr"])
+    return llm_analyze.analysis_for(
+        check, "test-key", LocalesSettings(default="fr", enabled=["da", "en", "fr"])
+    )
 
 
 class Decider:
@@ -356,7 +359,9 @@ def test_a_refused_key_stops_the_run(monkeypatch):
 
 
 def test_languages_follow_the_instance():
-    codes = llm_analyze.language_codes("da", ["da", "en", "nb-NO", "sv"])
+    codes = llm_analyze.language_codes(
+        LocalesSettings(default="da", enabled=["da", "en", "nb-NO", "sv"])
+    )
     assert codes[:4] == ["da", "en", "nb", "sv"]
     assert len(codes) == len(set(codes))
     assert "fr" in codes and "zh" in codes
