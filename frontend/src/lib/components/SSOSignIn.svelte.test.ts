@@ -20,11 +20,6 @@ vi.mock('$lib/fastapi-client', () => ({
   }
 }))
 
-vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('$lib/i18n/runtime')>()),
-  getLocale: () => 'fr'
-}))
-
 const terms = {
   version: '2026-07-20',
   content_hash: 'a'.repeat(64),
