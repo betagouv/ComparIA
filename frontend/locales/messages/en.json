@@ -578,7 +578,6 @@
                     "secondaryLight": "Secondary color (light theme)",
                     "title": "Platform colors"
                 },
-                "discard": "Discard changes",
                 "home": {
                     "bannerHint": "Shown at the top of the home page. Leave empty to show none. **Text** for bold, [text](https://…) for a link.",
                     "bannerLabel": "Warning banner",

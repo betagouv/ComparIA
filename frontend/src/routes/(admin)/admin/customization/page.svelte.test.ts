@@ -1,6 +1,7 @@
 import type { AppSettingsPublic } from '$lib/generated/admin'
 import { fireEvent, render, waitFor } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import type { PageProps } from './$types'
 import Page from './+page.svelte'
 
 const auth = {
@@ -17,6 +18,7 @@ const auth = {
 }
 const votes = { count: 148, objective: 300_000 }
 
+vi.mock('$app/navigation', () => ({ beforeNavigate: vi.fn() }))
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => auth }))
 vi.mock('$lib/authContext.svelte', () => ({
   getAuthContext: () => auth,
@@ -27,7 +29,8 @@ vi.mock('$lib/global.svelte', async (importOriginal) => ({
   getVotesContext: () => votes
 }))
 vi.mock('$lib/fastapi-client', () => ({
-  api: { request: vi.fn(), getPublicUrl: (path: string) => path }
+  api: { request: vi.fn(), getPublicUrl: (path: string) => path },
+  ValidationError: class extends Error {}
 }))
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: vi.fn() }))
 
@@ -67,20 +70,28 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   updated_by: null
 })
 
+function renderPage() {
+  const props = { data: { settings: settings(300_000) } } as unknown as PageProps
+  return render(Page, props)
+}
+
+async function lastRequestBody() {
+  const { api } = await import('$lib/fastapi-client')
+  await waitFor(() => expect(api.request).toHaveBeenCalledTimes(1))
+  return JSON.parse(vi.mocked(api.request).mock.calls[0][1]!.body as string)
+}
+
 describe('admin customization page', () => {
   beforeEach(async () => {
     const { api } = await import('$lib/fastapi-client')
     vi.mocked(api.request).mockReset()
-    vi.mocked(api.request)
-      .mockResolvedValueOnce(settings(300_000))
-      .mockResolvedValueOnce(settings(450_000))
+    vi.mocked(api.request).mockResolvedValueOnce(settings(450_000))
     votes.objective = 300_000
   })
 
   it('updates the live sidebar vote objective after saving', async () => {
-    const { container } = render(Page)
-    await waitFor(() => expect(container.querySelector('#settings-votes-objective')).not.toBeNull())
-    const input = container.querySelector<HTMLInputElement>('#settings-votes-objective')!
+    const { container } = renderPage()
+    const input = container.querySelector<HTMLInputElement>('#votes_objective')!
 
     await fireEvent.input(input, { target: { value: '450000' } })
     await fireEvent.submit(input.closest('form')!)
@@ -89,60 +100,55 @@ describe('admin customization page', () => {
   })
 
   it('sends the leaderboard thresholds on save', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    const { container } = render(Page)
-    await waitFor(() =>
-      expect(container.querySelector('#settings-ranking-min-votes')).not.toBeNull()
-    )
-    const minVotes = container.querySelector<HTMLInputElement>('#settings-ranking-min-votes')!
-    const spread = container.querySelector<HTMLInputElement>('#settings-ranking-max-rank-spread')!
+    const { container } = renderPage()
+    const minVotes = container.querySelector<HTMLInputElement>('#ranking_min_votes')!
+    const spread = container.querySelector<HTMLInputElement>('#ranking_max_rank_spread')!
 
     await fireEvent.input(minVotes, { target: { value: '50' } })
     await fireEvent.input(spread, { target: { value: '60' } })
     await fireEvent.submit(minVotes.closest('form')!)
 
-    await waitFor(() => expect(api.request).toHaveBeenCalledTimes(2))
-    const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
-    expect(body).toMatchObject({ ranking_min_votes: 50, ranking_max_rank_spread: 60 })
+    expect(await lastRequestBody()).toMatchObject({
+      ranking_min_votes: 50,
+      ranking_max_rank_spread: 60
+    })
   })
 
   it('sends the home texts per locale on save', async () => {
-    const { api } = await import('$lib/fastapi-client')
-    const { container } = render(Page)
-    await waitFor(() =>
-      expect(container.querySelector('#settings-home-title-input')).not.toBeNull()
-    )
-    const title = container.querySelector<HTMLInputElement>('#settings-home-title-input')!
+    const { container } = renderPage()
+    const title = container.querySelector<HTMLInputElement>('#home_title-input')!
     expect(title.value).toBe('Posez votre question')
 
-    await fireEvent.click(container.querySelector('#settings-home-prompt-placeholder-en')!)
-    const placeholder = container.querySelector<HTMLInputElement>(
-      '#settings-home-prompt-placeholder-input'
-    )!
+    await fireEvent.click(container.querySelector('#home_prompt_placeholder-en')!)
+    const placeholder = container.querySelector<HTMLInputElement>('#home_prompt_placeholder-input')!
     await fireEvent.input(placeholder, { target: { value: 'Ask your health question' } })
     await fireEvent.submit(title.closest('form')!)
 
-    await waitFor(() => expect(api.request).toHaveBeenCalledTimes(2))
-    const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
-    expect(body).toMatchObject({
+    expect(await lastRequestBody()).toMatchObject({
       home_title: { fr: 'Posez votre question' },
       home_prompt_placeholder: { en: 'Ask your health question' }
     })
   })
 
-  it('stops the home texts at the length the backend accepts', async () => {
-    const { container } = render(Page)
-    await waitFor(() =>
-      expect(container.querySelector('#settings-home-title-input')).not.toBeNull()
-    )
-    expect(container.querySelector('#settings-home-title-input')!.getAttribute('maxlength')).toBe(
-      '200'
-    )
-    expect(
-      container.querySelector('#settings-home-prompt-placeholder-input')!.getAttribute('maxlength')
-    ).toBe('200')
-    expect(container.querySelector('#settings-home-banner-input')!.getAttribute('maxlength')).toBe(
-      '1000'
-    )
+  it('stops the home texts at the length the backend accepts', () => {
+    const { container } = renderPage()
+    const maxlength = (id: string) => container.querySelector(id)!.getAttribute('maxlength')
+
+    expect(maxlength('#home_title-input')).toBe('200')
+    expect(maxlength('#home_prompt_placeholder-input')).toBe('200')
+    expect(maxlength('#home_banner-input')).toBe('1000')
+  })
+
+  it('refuses a primary colour that is too light to read on white', async () => {
+    const { api } = await import('$lib/fastapi-client')
+    const { container, findByText } = renderPage()
+    const color = container.querySelector<HTMLInputElement>('#primary_color_light')!
+
+    await fireEvent.input(color, { target: { value: '#FFFF00' } })
+    await fireEvent.submit(color.closest('form')!)
+
+    expect(color.getAttribute('aria-invalid')).toBe('true')
+    expect(await findByText(/contraste/i, { selector: '.fr-message--error' })).toBeTruthy()
+    expect(api.request).not.toHaveBeenCalled()
   })
 })

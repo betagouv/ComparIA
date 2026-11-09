@@ -578,7 +578,6 @@
                     "secondaryLight": "Couleur secondaire (thème clair)",
                     "title": "Couleurs de la plateforme"
                 },
-                "discard": "Annuler les modifications",
                 "home": {
                     "bannerHint": "Affiché en haut de l’accueil. Laissez vide pour ne pas en afficher. **Texte** pour mettre en gras, [texte](https://…) pour un lien.",
                     "bannerLabel": "Bandeau d’avertissement",
