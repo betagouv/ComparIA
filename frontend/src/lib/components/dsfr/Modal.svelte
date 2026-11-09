@@ -1,6 +1,7 @@
 <script lang="ts">
   import { teleport } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
+  import type { Snippet } from 'svelte'
   import type { ClassValue, HTMLDialogAttributes } from 'svelte/elements'
   import { Button } from '.'
 
@@ -14,6 +15,7 @@
     headerClass,
     teleport: doTeleport,
     onClose,
+    footer,
     children
   }: {
     id: string
@@ -24,6 +26,7 @@
     headerClass?: ClassValue
     teleport?: boolean
     onClose?: () => void
+    footer?: Snippet
   } & HTMLDialogAttributes = $props()
 
   // DSFR announces a real close with this event, the same way ModelInfoModal
@@ -79,6 +82,12 @@
           <div class={['fr-modal__content', contentClass]}>
             {@render children?.()}
           </div>
+
+          {#if footer}
+            <div class="fr-modal__footer p-4! md:px-5!">
+              {@render footer()}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
