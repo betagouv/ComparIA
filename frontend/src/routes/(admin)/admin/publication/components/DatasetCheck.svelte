@@ -16,7 +16,7 @@
     DatasetCheckTryResult
   } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
-  import { useForm } from '$lib/stores/form.svelte'
+  import { useFormSchema } from '$lib/stores/form.svelte'
   import type { AnyFormItemProps, JSONSchema } from '$lib/utils/form'
   import CriterionRow from '$components/admin/CriterionRow.svelte'
   import type { PromptCheckModel } from '../../prompt-checks/types'
@@ -30,11 +30,11 @@
   const refetch = () => invalidate('admin:publishing')
 
   const form = $derived(
-    useForm({
+    useFormSchema({
       url: '/admin/dataset-check',
       // The key is write-only: it is in the form, never in what the API returns.
-      data: check as DatasetCheckPublic & { api_key?: string },
-      schema,
+      initialData: () => check as DatasetCheckPublic & { api_key?: string },
+      schema: () => schema,
       i18nKey: 'dataset_check_upsert',
       method: 'put',
       omitKeys: ['has_api_key', 'updated_at', 'updated_by', 'no_api_key', 'no_model'],
