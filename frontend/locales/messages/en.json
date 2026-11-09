@@ -1642,7 +1642,7 @@
                 "label": "Params"
             },
             "price_in": {
-                "help": "Price per million input tokens in $.",
+                "help": "Price per million input tokens in USD.",
                 "label": "Price In"
             },
             "price_out": {
