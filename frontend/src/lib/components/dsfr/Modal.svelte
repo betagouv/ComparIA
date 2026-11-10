@@ -84,7 +84,7 @@
           </div>
 
           {#if footer}
-            <div class="fr-modal__footer p-4! md:px-5!">
+            <div class="fr-modal__footer p-4! md:px-5! mt-0!">
               {@render footer()}
             </div>
           {/if}

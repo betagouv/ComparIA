@@ -278,12 +278,13 @@
       </div>
       <div>
         <p class="fr-text--sm font-bold mb-2!">{m['admin.tools.wizard.present.preview']()}</p>
-        <div class="p-4 rounded-xl bg-[--background-alt-grey]">
+        <div class="p-4 rounded-xl ps-10 bg-[--background-alt-grey]">
           <ToolCard
-            id="preview"
-            label={label.trim() || m['admin.tools.wizard.present.label']()}
-            description={description.trim()}
-            pressed
+            tool={{
+              key,
+              label: label.trim() || m['admin.tools.wizard.present.label'](),
+              description: description.trim()
+            }}
           />
         </div>
       </div>
