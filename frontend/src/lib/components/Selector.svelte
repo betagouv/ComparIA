@@ -20,17 +20,18 @@
     disabled?: boolean
     multiple?: Multiple
     max?: number
+    checkedStyle?: 'border' | 'icon'
     containerClass?: ClassValue
     choiceClass?: ClassValue
     onChange?: (value: Value) => void
     option?: Snippet<
       [
         Option,
-        { for: string; class: ClassValue },
+        { for: string; class?: ClassValue },
         Snippet<[Option, HTMLInputAttributes] | [Option]>
       ]
     >
-    extra?: Snippet<[{ class: ClassValue }]>
+    extra?: Snippet<[{ class?: ClassValue }]>
   }
   let {
     id,
@@ -41,6 +42,7 @@
     disabled = false,
     multiple = false as Multiple,
     max = Infinity,
+    checkedStyle = 'border',
     containerClass,
     choiceClass,
     onChange,
@@ -103,17 +105,13 @@
   {id}
   role={kind === 'radio' ? 'radiogroup' : 'group'}
   aria-label={label}
-  class={['cl-selector', containerClass]}
+  class={[`cl-selector-${checkedStyle}`, containerClass]}
 >
   {#each choices as choice (choice.value)}
     {#if option}
-      {@render option(
-        choice,
-        { for: `${id}-${choice.value}`, class: ['cg-border', choiceClass] },
-        input
-      )}
+      {@render option(choice, { for: `${id}-${choice.value}`, class: choiceClass }, input)}
     {:else}
-      <label for="{id}-{choice.value}" class={['cg-border', choiceClass]}>
+      <label for="{id}-{choice.value}" class={choiceClass}>
         {@render input(choice)}
         {choice.label}
       </label>
@@ -121,12 +119,12 @@
   {/each}
 
   {#if extra}
-    {@render extra({ class: ['cg-border', choiceClass] })}
+    {@render extra({ class: choiceClass })}
   {/if}
 </div>
 
 <style>
-  .cl-selector :global(label) {
+  .cl-selector-border :global(label) {
     &:has(input) {
       margin: 1px;
     }
@@ -134,6 +132,7 @@
     &:has(input:focus) {
       outline: 2px solid var(--outline-color);
       outline-offset: 2px;
+      position: relative;
     }
 
     &:has(input:checked),
@@ -141,6 +140,18 @@
       border: 2px solid var(--blue-france-main-525);
       color: var(--blue-france-main-525);
       margin: 0;
+    }
+
+    &:has(input:disabled) {
+      filter: grayscale(100%);
+    }
+  }
+
+  .cl-selector-icon :global(label) {
+    &:has(input:focus) {
+      outline: 2px solid var(--outline-color);
+      outline-offset: -2px;
+      position: relative;
     }
 
     &:has(input:disabled) {

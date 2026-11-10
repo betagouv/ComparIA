@@ -286,6 +286,7 @@ def comparison_between(fast: str, slow: str):
         system_msg_b=None,
         mode="random",
         custom_models_selection=None,
+        enabled_tools=[],
         error=None,
     )
 
@@ -303,7 +304,7 @@ def fake_models(
     """
 
     async def bot_response_async(
-        pos, llm, turn, turn_index, messages, request=None
+        pos, llm, turn, turn_index, messages, request=None, tools=None
     ) -> AsyncGenerator[LLMMessageCreate]:
         msg = LLMMessageCreate()
         try:

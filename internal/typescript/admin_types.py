@@ -47,6 +47,7 @@ from utils.database.models.survey import (
     SurveyQuestionOrder,
     SurveyQuestionUpdate,
 )
+from utils.database.models.tool import ToolAdmin, ToolUpsert
 from utils.database.models.vote_tag import (
     AdminVoteTag,
     AdminVoteTagsResponse,

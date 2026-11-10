@@ -316,6 +316,7 @@
             "publishing": "Publishing",
             "suggestions": "Suggestions",
             "survey": "Survey",
+            "tools": "Tools",
             "users": "Users",
             "voteTags": "Vote tags"
         },
@@ -760,6 +761,112 @@
             "title": "Prompt suggestions",
             "validation": "Enter a suggestion and choose a category."
         },
+        "tools": {
+            "errors": {
+                "invalid_credential": "The provider refuses the credential.",
+                "no_credential": "No key: neither on the tool nor on the server.",
+                "no_credit": "The provider account has run out of credit.",
+                "no_url": "Fill in the MCP server address.",
+                "timeout": "The server took too long to answer.",
+                "unknown_builtin": "No built-in tool has this key.",
+                "unreachable": "The server does not answer or returns an error."
+            },
+            "functionsHint": "None ticked: every function is offered, including ones the server adds later. Tick some to offer only those.",
+            "functionsLegend": "Functions offered to models",
+            "functionsUntested": "Test the tool to list the server's functions.",
+            "list": {
+                "add": "Add an MCP server",
+                "builtin": "Built in",
+                "calls": "Uses (30 days)",
+                "enabled": "On",
+                "failures": "{count} failed",
+                "health": {
+                    "checking": "Checking…",
+                    "invalid_credential": "Credential refused",
+                    "no_credential": "No key",
+                    "no_credit": "Out of credit",
+                    "no_url": "No address",
+                    "ok": "Answers",
+                    "timeout": "Too slow",
+                    "title": "Status",
+                    "unknown": "Unknown",
+                    "unknown_builtin": "Unknown tool",
+                    "unreachable": "Not answering"
+                },
+                "intro": "Switched-on tools are offered to visitors before each comparison. Switch one off to withdraw it at once, without losing its settings.",
+                "label": "Tool",
+                "recheck": "Check again",
+                "rechecking": "Checking…",
+                "switch": "Switch on {label}",
+                "switchedOff": "'{label}' is no longer offered to visitors.",
+                "switchedOn": "'{label}' is offered to visitors."
+            },
+            "remove": "Remove the credential",
+            "removeConfirm": "Confirm removal",
+            "removed": "Credential removed.",
+            "secretHintBuiltin": "The provider's API key. Leave empty to keep the stored key; with none stored, the server's (LINKUP_API_KEY) is used.",
+            "secretHintMcp": "A token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Leave empty to keep the stored one.",
+            "secretSet": "Credential set",
+            "secretUnset": "No credential",
+            "test": "Test the tool",
+            "testFailed": "The test failed",
+            "testHint": "The test uses the saved configuration: save your changes first.",
+            "testing": "Testing…",
+            "testOk": "The tool answers.",
+            "testOkFunctions": "The server answers and offers {count} functions.",
+            "wizard": {
+                "connect": {
+                    "hint": "An MCP server gives models new functions: searching data, reading documentation. Enter its address and test the connection. Nothing is saved before the last step.",
+                    "mustTest": "Test the connection to continue.",
+                    "secret": "Credential (optional)",
+                    "secretHint": "Leave empty if the server is public. Otherwise, a token, sent as 'Authorization: Bearer', or a whole header as 'Name: value'. It is encrypted and never shown again.",
+                    "test": "Test the connection",
+                    "title": "Connect to the MCP server",
+                    "url": "Server address",
+                    "urlHint": "The MCP server's HTTP address, often ending in /mcp."
+                },
+                "limit": {
+                    "all": "Tick all",
+                    "count": "{count} of {total}",
+                    "hint": "Models only see ticked functions. Leaving them all ticked also offers the ones the server adds later.",
+                    "needOne": "Tick at least one function.",
+                    "none": "Untick all",
+                    "title": "Choose the functions"
+                },
+                "next": "Continue",
+                "present": {
+                    "description": "Description",
+                    "descriptionHint": "One sentence saying what the tool lets models do.",
+                    "hint": "Visitors see this name and sentence when they pick their tools, before a comparison.",
+                    "key": "Technical key: {key}",
+                    "label": "Name",
+                    "preview": "What visitors see",
+                    "title": "Present the tool to visitors"
+                },
+                "progress": "Steps to add a tool",
+                "review": {
+                    "allFunctions": "All ({count}), and those added later",
+                    "create": "Create the tool",
+                    "created": "'{label}' is added.",
+                    "creating": "Creating…",
+                    "edit": "Edit",
+                    "enable": "Offer to visitors now",
+                    "enableHint": "Otherwise the tool is created switched off, and you switch it on later from the list.",
+                    "failed": "The tool was not created",
+                    "functions": "Functions",
+                    "noDescription": "None",
+                    "secret": "Credential",
+                    "title": "Check and create"
+                },
+                "steps": {
+                    "connect": "Connect",
+                    "limit": "Limit",
+                    "present": "Present",
+                    "review": "Create"
+                },
+                "stepState": "Step {current} of {total}"
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Add a tag",
@@ -829,11 +936,23 @@
             "title": "Suggested prompts"
         },
         "title": "How can I help you today?",
+        "tools": {
+            "add": "Add tools",
+            "clear": "Clear all",
+            "contract": "Select tools that allow models to access other sources of information beyond their own knowledge.",
+            "count": "{count} tools",
+            "label": "Tools",
+            "legend": "Tools",
+            "locked": "Tools are fixed for the whole conversation.",
+            "none": "No tool",
+            "viewAll": "View all tools"
+        },
         "webSearch": {
             "disabled": "Web search disabled",
             "enabled": "Web search enabled",
-            "label": "Web search",
-            "tooltip": "Enable web search to let the models rely on online sources and cite more up-to-date information.<br><strong>Without web search</strong>, models answer based on what they learned during training (their training data). They can’t verify information online, so very recent or highly specific facts may be incomplete."
+            "help": "Each model decides whether running a search would be useful.",
+            "label": "Allow web search",
+            "tooltip": "Allow the models to search for information online and cite more recent sources. <strong>Each model independently chooses whether to use this tool</strong> based on your message.<br>If you do not allow it, the models answer only from what they learned during training and cannot verify information online."
         }
     },
     "arene": {
@@ -1008,6 +1127,21 @@
         "success": "You are signed in!"
     },
     "chatbot": {
+        "activity": {
+            "allSources": "All sources ({count})",
+            "calling": "Consulting",
+            "calls": "{count} calls",
+            "collapse": "Show less",
+            "failed": "The tool did not answer",
+            "reading": "Reading the results",
+            "reasoning": "Reasoning",
+            "searches": "{count} searches",
+            "searching": "Searching the web",
+            "showAll": "Show all",
+            "source": "1 source",
+            "sources": "{count} sources",
+            "thinking": "Thinking"
+        },
         "announce": {
             "generating": "The models are writing their answers…",
             "ready": "Both answers are ready."
@@ -1032,6 +1166,16 @@
             "inProgress": "Reasoning in progress…"
         },
         "revealButton": "Finish and discover the models",
+        "tools": {
+            "done": "Done",
+            "fixed": "Tools fixed for this conversation: {tools}",
+            "none": "No tool used",
+            "noResult": "No result",
+            "result": "1 result",
+            "results": "{count} results",
+            "running": "Searching…",
+            "sources": "{count} source(s)"
+        },
         "webSearch": {
             "label": "Associated Web search results."
         }
@@ -1403,6 +1547,57 @@
             "required": {
                 "help": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
                 "label": "Required check"
+            }
+        },
+        "tool_upsert": {
+            "allowed_domains": {
+                "help": "For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.",
+                "label": "Allowed Domains"
+            },
+            "allowed_functions": {
+                "help": "For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.",
+                "label": "Allowed Functions"
+            },
+            "blocked_domains": {
+                "help": "For web search, sites results never come from. Cannot be combined with allowed domains.",
+                "label": "Blocked Domains"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "description": {
+                "help": "One line shown to visitors, in French.",
+                "label": "Description"
+            },
+            "enabled": {
+                "help": "Disabled tools are never offered to a model nor shown to a visitor.",
+                "label": "Enabled"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "key": {
+                "help": "Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').",
+                "label": "Key"
+            },
+            "kind": {
+                "help": "How the tool is carried out.",
+                "label": "Kind"
+            },
+            "label": {
+                "help": "Name shown to visitors, in French.",
+                "label": "Label"
+            },
+            "secret": {
+                "help": "For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again.",
+                "label": "Credential"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            },
+            "url": {
+                "help": "For an MCP tool, the server address.",
+                "label": "Url"
             }
         }
     },

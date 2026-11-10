@@ -634,25 +634,25 @@ export interface LegalStatus {
 export interface PromptCheckStatus {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
+   * When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.
    */
   required?: boolean;
   /**
-   * Un modèle de décision d'OpenRouter.
+   * A decision model from OpenRouter.
    */
   model?: string;
   has_api_key: boolean;
   /**
-   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   * The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.
    */
   description: string;
   criteria: PromptCheckCriterion[];
   /**
-   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   * Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.
    */
   conversations_per_ip_per_hour?: number | null;
   /**
-   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   * The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.
    */
   conversations_same_models_per_ip_per_hour?: number | null;
   updated_at: string;
@@ -669,12 +669,12 @@ export interface PromptCheckStatus {
 }
 export interface PromptCheckCriterion {
   /**
-   * Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.
+   * Stats are counted by key: do not change it once the criterion is in use.
    */
   key: string;
   label: string;
   /**
-   * Une question fermée sur le `message`, à laquelle on répond par oui ou non.
+   * A closed question about the `message`, answered yes or no.
    */
   question: string;
   yes?: string;
@@ -687,19 +687,19 @@ export interface PromptCheckCriterion {
 export interface PromptCheckUpsert {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
+   * When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.
    */
   required?: boolean;
   /**
-   * Un modèle de décision d'OpenRouter.
+   * A decision model from OpenRouter.
    */
   model?: string;
   /**
-   * Laissée vide, la vérification utilise OPENROUTER_API_KEY.
+   * Left empty, the check uses OPENROUTER_API_KEY.
    */
   api_key?: string | null;
   /**
-   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   * The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.
    */
   description?: string;
   /**
@@ -707,11 +707,11 @@ export interface PromptCheckUpsert {
    */
   criteria?: PromptCheckCriterion[];
   /**
-   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   * Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.
    */
   conversations_per_ip_per_hour?: number | null;
   /**
-   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   * The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.
    */
   conversations_same_models_per_ip_per_hour?: number | null;
 }
@@ -800,6 +800,97 @@ export interface SurveyQuestionUpdate {
   };
   options: SurveyOptionWrite[];
   published: boolean;
+}
+/**
+ * What the admin panel is allowed to see: whether a credential is set,
+ * never the credential.
+ */
+export interface ToolAdmin {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+  has_secret?: boolean;
+}
+export interface ToolUpsert {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor shown to a visitor.
+   */
+  enabled?: boolean;
+  /**
+   * For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again.
+   */
+  secret?: string | null;
 }
 export interface UserPublic {
   id?: string;

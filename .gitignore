@@ -84,3 +84,4 @@ AGENTS.md
 .claude
 ignored_files
 .playwright-mcp/
+data/llms-data.json
