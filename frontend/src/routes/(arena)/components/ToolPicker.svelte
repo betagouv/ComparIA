@@ -1,8 +1,12 @@
 <script lang="ts">
+  import Dropdown from '$components/Dropdown.svelte'
   import ToolCard from '$components/ToolCard.svelte'
   import { Button, Icon, Modal } from '$components/dsfr'
+  import Link from '$components/dsfr/Link.svelte'
+  import { FormToggle } from '$components/form'
   import type { ToolPublic } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
+  import { fromEntries, getKeys } from '$lib/utils/commons'
 
   export type ToolPickerProps = {
     tools: ToolPublic[]
@@ -14,91 +18,149 @@
 
   const modalId = 'fr-modal-tools'
 
-  // Keep the trigger stable and compact as more tools become available.
-  const triggerLabel = $derived(
-    selected.length === 0
-      ? m['arenaHome.tools.none']()
-      : `${m['arenaHome.tools.label']()} (${selected.length})`
-  )
+  let form = $state(resetForm())
+  let applied = $state(false)
 
-  function toggleTool(key: string): void {
-    selected = selected.includes(key)
-      ? selected.filter((selectedKey) => selectedKey !== key)
-      : [...selected, key]
+  function resetForm() {
+    return fromEntries(tools.map((tool) => [tool.key, selected.includes(tool.key)]))
+  }
+
+  function applySelected(close?: () => void) {
+    selected = getKeys(form).filter((k) => form[k]) as string[]
+    applied = true
+    close?.()
+    console.log('aply sel', selected)
+  }
+
+  function onClose() {
+    console.log('close', applied)
+    if (!applied) {
+      form = resetForm()
+    }
+    applied = false
   }
 </script>
 
+{#snippet toolToggle(tool: ToolPublic, kind: 'dropdown' | 'modal' = 'dropdown')}
+  <FormToggle
+    id="tool-{tool.key}-{kind}"
+    bind:value={form[tool.key]}
+    label={tool.label}
+    checkKind="none"
+    class="my-2!"
+  >
+    {#snippet labelSnippet()}
+      <ToolCard {tool} />
+    {/snippet}
+  </FormToggle>
+{/snippet}
+
 {#if tools.length > 0}
-  <div class="min-w-0 md:w-auto my-auto w-full">
-    <Button
-      variant="secondary"
-      native
-      aria-controls={modalId}
-      data-fr-opened="false"
-      {disabled}
-      title={disabled ? m['arenaHome.tools.locked']() : undefined}
-      class="bg-white! px-3! text-sm! text-dark-grey! md:w-auto! md:max-w-[240px] w-full! max-w-full! items-center justify-start"
-      style="--border-action-high-blue-france: var(--grey-925-125)"
-    >
-      <span class="gap-2 min-w-0 flex items-center">
-        <Icon icon="i-ri-tools-line" size="sm" class="text-primary shrink-0" />
-        <span class="truncate">{triggerLabel}</span>
+  <Dropdown
+    id="dropdown-tools"
+    label={m['arenaHome.tools.label']()}
+    variant="light"
+    {disabled}
+    {onClose}
+    buttonClass="fr-select text-sm! ps-3! cg-border shadow-none! rounded-lg! md:w-auto! w-full!"
+  >
+    {#snippet buttonLabel(label)}
+      <Icon icon="i-ri-add-large-line" size="sm" class="text-primary me-2" />
+      {label}
+      <span
+        class="ms-1 bg-primary text-white px-2 text-xs inline-block rounded-full py-[3px] align-top"
+      >
+        {selected.length}
       </span>
-      <Icon icon="i-ri-arrow-down-s-line" size="sm" class="md:ms-2 ms-auto shrink-0" />
-    </Button>
-  </div>
+    {/snippet}
+
+    {#snippet contentSnippet(close)}
+      <ul class="m-0 px-3 py-1 flex list-none flex-col">
+        {#each tools.slice(0, 6) as tool (tool.key)}
+          <li class="b-b m-0! p-0! border-[--grey-925-125]">
+            {@render toolToggle(tool)}
+          </li>
+        {/each}
+      </ul>
+
+      <div class="p-3 gap-3 bottom-0 sticky flex justify-end">
+        <Link
+          text={m['arenaHome.tools.viewAll']()}
+          href="#"
+          size="sm"
+          aria-controls={modalId}
+          data-fr-opened="false"
+          onclick={() => applySelected(close)}
+          class="h-fit place-self-center"
+        />
+
+        <Button
+          variant="primary"
+          size="sm"
+          text={m['arenaHome.tools.add']()}
+          {disabled}
+          title={disabled ? m['arenaHome.tools.locked']() : undefined}
+          onclick={() => applySelected(close)}
+        />
+      </div>
+    {/snippet}
+  </Dropdown>
 
   <Modal
     id={modalId}
     titleId="{modalId}-title"
-    sizeClass="fr-col-12 fr-col-md-8"
+    sizeClass="fr-col-12 fr-col-md-10"
     class="tools-modal"
     contentClass="mb-8! px-6! md:px-12!"
+    {onClose}
   >
-    <h2 id="{modalId}-title" class="fr-h4 mb-6!">{m['arenaHome.tools.label']()}</h2>
+    <h2 id="{modalId}-title" class="fr-h6 mb-0!">{m['arenaHome.tools.label']()}</h2>
 
-    <p class="fr-text--sm mb-6! text-[--text-mention-grey]">
+    <p class="fr-text--sm mb-4! text-[--text-mention-grey]">
       {m['arenaHome.tools.contract']()}
     </p>
 
-    <!-- DSFR's tag styles are not loaded, so the list is laid out here. -->
-    <ul class="m-0 gap-3 p-0 md:grid-cols-2 grid list-none">
+    <ul class="p-0! md:grid-cols-2 gap-2 md:gap-4 grid list-none">
       {#each tools as tool (tool.key)}
-        {@const pressed = selected.includes(tool.key)}
         <li class="p-0">
-          <ToolCard
-            id={tool.key}
-            label={tool.label}
-            description={tool.description}
-            {pressed}
-            onclick={() => toggleTool(tool.key)}
-          />
+          {@render toolToggle(tool, 'modal')}
         </li>
       {/each}
     </ul>
 
-    <div class="mt-8 gap-4 flex flex-wrap items-center justify-between">
-      <span class="fr-text--sm mb-0! text-[--text-mention-grey]" aria-live="polite">
-        {selected.length === 0
-          ? m['arenaHome.tools.none']()
-          : m['arenaHome.tools.count']({ count: selected.length })}
-      </span>
-      <span class="gap-2 flex">
-        {#if selected.length > 0}
-          <Button
-            variant="tertiary-no-outline"
-            text={m['arenaHome.tools.clear']()}
-            onclick={() => (selected = [])}
-          />
-        {/if}
-        <Button text={m['words.validate']()} aria-controls={modalId} />
-      </span>
-    </div>
+    {#snippet footer()}
+      <div class="gap-4 md:flex-row flex w-full flex-col-reverse">
+        <Button
+          text={m['words.cancel']()}
+          variant="tertiary"
+          aria-controls={modalId}
+          class="md:w-auto! w-full!"
+        />
+        <div class="gap-4 md:order-none md:ms-auto order-1 flex">
+          <div
+            class="text-sm place-self-center whitespace-nowrap text-[--text-mention-grey]"
+            aria-live="polite"
+          >
+            {selected.length === 0
+              ? m['arenaHome.tools.none']()
+              : m['arenaHome.tools.count']({ count: selected.length })}
+          </div>
+          {#if selected.length > 0}
+            <Button
+              variant="tertiary"
+              text={m['arenaHome.tools.clear']()}
+              onclick={() => (selected = [])}
+              class="md:w-auto! w-full!"
+            />
+          {/if}
+        </div>
+        <Button
+          text={m['arenaHome.tools.add']()}
+          aria-controls={modalId}
+          onclick={() => applySelected()}
+          class="md:w-auto! w-full!"
+        />
+      </div>
+    {/snippet}
   </Modal>
 {/if}
-
-<style>
-  :global(.tools-modal.fr-modal) {
-    background-color: rgba(22, 22, 22, 0.2);
-  }
-</style>

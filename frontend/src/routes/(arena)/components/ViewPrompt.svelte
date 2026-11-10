@@ -49,7 +49,7 @@
     }
     return []
   })
-  let selectedTools = $state<string[]>([])
+  let selectedTools = $state<string[]>(['web_search'])
   let submitting = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
