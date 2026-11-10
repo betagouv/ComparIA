@@ -12,6 +12,8 @@
     maxHeight = 400,
     buttonClass = 'fr-select',
     buttonLabel,
+    onClose,
+    contentSnippet,
     children,
     ...props
   }: {
@@ -24,6 +26,8 @@
     maxHeight?: number
     buttonClass?: ClassValue
     buttonLabel?: Snippet<[string]>
+    onClose?: () => void
+    contentSnippet?: Snippet<[close: (focusButton?: boolean) => void]>
     children?: Snippet
   } & SvelteHTMLElements['div'] = $props()
 
@@ -52,6 +56,7 @@
   function close(focusButton = true): void {
     open = false
     if (focusButton) buttonEl?.focus()
+    onClose?.()
   }
 
   function handleContentKeydown(e: KeyboardEvent): void {
@@ -220,6 +225,7 @@
     ]}
     {style}
   >
+    {@render contentSnippet?.(close)}
     {@render children?.()}
   </div>
 </div>
