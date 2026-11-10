@@ -1,12 +1,15 @@
 <script module lang="ts">
   export type FormToggleProps = {
-    checkKind?: 'truth' | 'active'
+    checkKind?: 'truth' | 'active' | 'none'
+    labelSnippet?: Snippet<[label: string]>
   } & BaseFormFieldProps<'toggle'>
 </script>
 
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
   import type { BaseFormFieldProps } from '$lib/utils/form'
+  import type { Snippet } from 'svelte'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
     value = $bindable(),
@@ -16,17 +19,26 @@
     disabled,
     hidden,
     errors,
-    checkKind = 'truth'
-  }: FormToggleProps & { value: boolean } = $props()
+    checkKind = 'truth',
+    labelSnippet,
+    ...props
+  }: Omit<FormToggleProps, 'component'> & { value: boolean } & SvelteHTMLElements['div'] = $props()
 
   const messagesId = $derived(`${id}-messages`)
   const hintId = $derived(`${id}-hint`)
-  const checkedLabel = $derived(m[`words.${checkKind === 'truth' ? 'yes' : 'activated'}`]())
-  const uncheckedLabel = $derived(m[`words.${checkKind === 'truth' ? 'no' : 'deactivated'}`]())
+  const checkedLabel = $derived(
+    checkKind === 'none' ? '' : m[`words.${checkKind === 'truth' ? 'yes' : 'activated'}`]()
+  )
+  const uncheckedLabel = $derived(
+    checkKind === 'none' ? '' : m[`words.${checkKind === 'truth' ? 'no' : 'deactivated'}`]()
+  )
   const error = $derived(errors?.[id])
 </script>
 
-<div class={['fr-toggle mb-6!', { 'fr-toggle--error': !!error, 'hidden!': hidden }]}>
+<div
+  {...props}
+  class={['fr-toggle', { 'fr-toggle--error': !!error, 'hidden!': hidden }, props.class ?? 'mb-6!']}
+>
   <input
     {id}
     type="checkbox"
@@ -38,12 +50,16 @@
   />
 
   <label
-    class="fr-toggle__label"
+    class="fr-toggle__label w-full!"
     for={id}
     data-fr-checked-label={checkedLabel}
     data-fr-unchecked-label={uncheckedLabel}
   >
-    {label}
+    {#if labelSnippet}
+      {@render labelSnippet(label)}
+    {:else}
+      {label}
+    {/if}
   </label>
 
   {#if help}
