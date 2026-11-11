@@ -10,6 +10,10 @@ COPY . .
 ARG PUBLIC_API_URL MATOMO_ID MATOMO_URL GIT_COMMIT
 ENV PUBLIC_API_URL=$PUBLIC_API_URL MATOMO_ID=$MATOMO_ID MATOMO_URL=$MATOMO_URL PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
+# Always on, whatever the Instance: the path is chosen at start, see
+# docker-entrypoint.sh. Same default as the script.
+ENV INSTANCE_PATH_PLACEHOLDER=/__INSTANCE_PATH__
+
 RUN yarn build && yarn install --production --ignore-scripts
 
 FROM public.ecr.aws/docker/library/node:26-alpine@sha256:6f08a523443ddedf52941874c203475b0ad503e859ad70cb26ab8be9a517dbd5 AS runtime
@@ -20,8 +24,11 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /app/package.json ./package.json
 COPY --from=builder --chown=node:node /app/node_modules ./node_modules
 COPY --from=builder --chown=node:node /app/build ./build
+COPY --from=builder --chown=node:node /app/docker-entrypoint.sh ./docker-entrypoint.sh
 
 EXPOSE 80
 USER node
 # node build executes build/index.js which starts the server (@sveltejs/adapter-node)
+# INSTANCE_PATH, e.g. /fr, is the path the app is mounted under; empty serves it from the root.
+ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "build"]

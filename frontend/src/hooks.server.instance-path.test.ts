@@ -19,8 +19,14 @@ vi.mock('$lib/fastapi-client', () => ({
   TOTP_SETUP_PATH: '/settings?totp=required',
   isTotpSetupRequired: () => false
 }))
-vi.mock('$lib/i18n/runtime', () => ({ defineCustomServerStrategy: () => {} }))
-vi.mock('$lib/i18n/server', () => ({ paraglideMiddleware: () => {} }))
+vi.mock('$lib/localeCookie', () => ({}))
+vi.mock('$lib/i18n/runtime', () => ({ defineCustomServerStrategy: () => {}, cookieMaxAge: 100 }))
+vi.mock('$lib/i18n/server', () => ({
+  paraglideMiddleware: (
+    request: Request,
+    run: (args: { request: Request; locale: string }) => unknown
+  ) => run({ request, locale: 'da' })
+}))
 vi.mock('$lib/logger.server', () => ({ logger: { error: () => {}, info: () => {} } }))
 const { counted } = vi.hoisted(() => ({ counted: vi.fn() }))
 vi.mock('$lib/metrics', () => ({
@@ -28,7 +34,8 @@ vi.mock('$lib/metrics', () => ({
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle, maintenanceHandle, metricsHandle } = await import('./hooks.server')
+const { authWallHandle, maintenanceHandle, metricsHandle, paraglideHandle } =
+  await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
@@ -129,5 +136,62 @@ describe('metrics under an Instance path', () => {
     await metricsHandle({ event: eventAt('/fr/statistics'), resolve } as never)
 
     expect(counted).toHaveBeenCalledOnce()
+  })
+})
+
+describe('cookies under an Instance path', () => {
+  function cookieJar() {
+    return { set: vi.fn(), delete: vi.fn(), get: () => undefined }
+  }
+
+  it('sets the locale cookie on the Instance path, so that another Instance does not see it', async () => {
+    const cookies = cookieJar()
+
+    await paraglideHandle({
+      event: { ...(eventAt('/fr/') as object), cookies },
+      resolve
+    } as never)
+
+    expect(cookies.set).toHaveBeenCalledWith(
+      'PARAGLIDE_LOCALE',
+      'da',
+      expect.objectContaining({ path: '/fr' })
+    )
+  })
+
+  it('gives the inline script of the page the Instance path as cookie path for scheme and theme', async () => {
+    const render = vi.fn(
+      async (
+        _event: unknown,
+        options: { transformPageChunk: (chunk: { html: string }) => string | Promise<string> }
+      ) => {
+        const html = await options.transformPageChunk({
+          html: "document.cookie = 'x=1; path=%instance_cookie_path%'"
+        })
+        return new Response(html)
+      }
+    )
+
+    const response = await paraglideHandle({
+      event: { ...(eventAt('/fr/') as object), cookies: cookieJar() },
+      resolve: render
+    } as never)
+
+    expect(await response.text()).toBe("document.cookie = 'x=1; path=/fr'")
+  })
+
+  it('deletes the session cookie on the Instance path when the session is gone', async () => {
+    const cookies = { get: () => 'stale', delete: vi.fn() }
+    privateEnv.AUTH_ACCESS_POLICY = 'sign_in_required'
+    request.mockResolvedValue({ user: null })
+
+    await redirectedFrom(() =>
+      authWallHandle({
+        event: { ...(eventAt('/fr/statistics') as object), cookies },
+        resolve
+      } as never)
+    )
+
+    expect(cookies.delete).toHaveBeenCalledWith('auth_session', { path: '/fr' })
   })
 })

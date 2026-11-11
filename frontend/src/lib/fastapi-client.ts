@@ -12,6 +12,7 @@ import type {
   AssistantMessage,
   Bot
 } from '$lib/chatService.svelte'
+import { instancePath } from '$lib/routing'
 import { omit } from '$lib/utils/commons'
 
 // Function to get the appropriate backend URL
@@ -30,8 +31,13 @@ function getBackendUrl(): string {
   } else if (dev || publicEnv.PUBLIC_API_DEV_MODE === 'true') {
     return (publicEnv.PUBLIC_API_URL || 'http://localhost:8008') + '/api'
   } else {
-    // Client-side: use public URL or origin
-    return (window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') + '/api'
+    // Client-side: the API is served from the app origin, under the Instance path
+    // (the Gateway removes it before the backend).
+    return (
+      (window.location.origin || publicEnv.PUBLIC_API_URL || 'http://localhost:8001') +
+      instancePath() +
+      '/api'
+    )
   }
 }
 
@@ -45,7 +51,7 @@ function getPublicBackendUrl(): string {
   }
   // Same origin as the page in production, so a relative path works on both
   // server and client.
-  return '/api'
+  return `${instancePath()}/api`
 }
 
 /**
@@ -153,10 +159,16 @@ export function isTotpSetupRequired(error: unknown): boolean {
  * FastAPI client class
  */
 export class FastAPIClient {
-  private baseUrl: string
+  private readonly resolveBaseUrl: () => string
 
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl
+  // A function rather than a string for the global client: the Instance path is
+  // only known once the app has started in the browser, after this module loads.
+  constructor(baseUrl: string | (() => string)) {
+    this.resolveBaseUrl = typeof baseUrl === 'function' ? baseUrl : () => baseUrl
+  }
+
+  private get baseUrl(): string {
+    return this.resolveBaseUrl()
   }
 
   /**
@@ -340,4 +352,4 @@ export class FastAPIClient {
 /**
  * Global FastAPI client instance
  */
-export const api = new FastAPIClient(getBackendUrl())
+export const api = new FastAPIClient(getBackendUrl)

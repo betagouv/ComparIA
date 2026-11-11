@@ -1,3 +1,4 @@
+import '$lib/localeCookie'
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
 import { resolve } from '$app/paths'
@@ -9,7 +10,7 @@ import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
-import { withoutInstancePath } from '$lib/routing'
+import { instanceCookiePath, withoutInstancePath } from '$lib/routing'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -173,13 +174,13 @@ export const handleError: HandleServerError = async ({ error, event }) => {
 }
 
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) => {
+export const paraglideHandle: Handle = ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
     event.request = localizedRequest
     if (locale !== event.cookies.get('PARAGLIDE_LOCALE')) {
       // Same lifetime as the cookie Paraglide sets in the browser.
       event.cookies.set('PARAGLIDE_LOCALE', locale, {
-        path: '/',
+        path: instanceCookiePath(),
         httpOnly: false,
         maxAge: cookieMaxAge
       })
@@ -189,6 +190,7 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
       transformPageChunk: ({ html }) => {
         return html
           .replaceAll('%lang%', locale)
+          .replaceAll('%instance_cookie_path%', instanceCookiePath())
           .replace('%scheme%', event.cookies.get('scheme') || 'system')
           .replace('%theme%', event.cookies.get('theme') || 'system')
           .replaceAll('%matomo_id%', MATOMO_ID)
@@ -296,7 +298,7 @@ export const authWallHandle: Handle = async ({ event, resolve: render }) => {
   }
 
   if (!session.user) {
-    event.cookies.delete('auth_session', { path: '/' })
+    event.cookies.delete('auth_session', { path: instanceCookiePath() })
     redirect(302, loginUrl(event.url))
   }
 

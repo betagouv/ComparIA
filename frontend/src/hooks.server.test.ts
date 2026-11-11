@@ -8,6 +8,7 @@ const { request, privateEnv } = vi.hoisted(() => ({
 vi.mock('$env/dynamic/private', () => ({ env: privateEnv }))
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 vi.mock('$lib/fastapi-client', () => ({ api: { request }, UnauthorizedError: class {} }))
+vi.mock('$lib/localeCookie', () => ({}))
 vi.mock('$lib/i18n/runtime', () => ({ defineCustomServerStrategy: () => {} }))
 vi.mock('$lib/i18n/server', () => ({ paraglideMiddleware: () => {} }))
 vi.mock('$lib/logger.server', () => ({ logger: { error: () => {}, info: () => {} } }))
