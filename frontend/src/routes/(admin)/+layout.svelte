@@ -38,9 +38,7 @@
       label: m['admin.nav.legal'](),
       href: '/admin/legal',
       icon: 'i-ri-file-shield-2-line',
-      isCurrent: () =>
-        page.url.pathname.startsWith('/admin/legal') ||
-        page.url.pathname === '/admin/conditions-participation'
+      isCurrent: () => page.url.pathname.startsWith('/admin/legal')
     },
     {
       label: m['admin.nav.users'](),
@@ -56,6 +54,11 @@
       label: m['admin.nav.voteTags'](),
       href: '/admin/vote-tags',
       icon: 'i-ri-price-tag-3-line'
+    },
+    {
+      label: m['admin.nav.survey'](),
+      href: '/admin/survey',
+      icon: 'i-ri-questionnaire-line'
     },
     {
       label: m['admin.nav.promptChecks'](),

@@ -15,7 +15,7 @@
     disabled,
     options,
     ...props
-  }: FormCheckboxGroupProps & { value?: string[] } = $props()
+  }: Omit<FormCheckboxGroupProps, 'component'> & { value?: string[] } = $props()
 
   function onToggle(option: string, checked: boolean) {
     value = checked ? [...(value ?? []), option] : (value ?? []).filter((v) => v !== option)
@@ -25,7 +25,7 @@
 <FormFieldset {...props} component="fieldset">
   {#snippet formItem({ id })}
     {#each options as opt (opt.value)}
-      <div class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-fieldset__element--inline">
         <FormField id={`${id}-${opt.value}`} label={opt.label} component="checkbox">
           {#snippet formItem({ id })}
             <input

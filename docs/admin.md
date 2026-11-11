@@ -85,7 +85,7 @@ It also sets two leaderboard thresholds: the votes a model needs before it is ra
 
 `/admin/locales` sets which languages the instance offers and which one it defaults to. The default has to be one of the enabled ones.
 
-Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/database/models/app_settings.py`.
+Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/utils.py`.
 
 ## Authentication
 
@@ -196,6 +196,18 @@ The same page sets two limits on how many conversations one IP may start over a 
 `/admin/vote-tags` lists the reasons offered to someone who has just voted. Each tag has an emoji, a sign saying whether it is praise or criticism, a label per language, and a display order. They are per instance, so a sector-specific arena can ask about what matters to it.
 
 Tags are archived rather than deleted, so old votes keep meaning something.
+
+## Survey
+
+`/admin/survey` holds the questions asked to describe who takes part. Each question is a single choice or a set of checkboxes, with a label per language and its options. There is no free text answer: add an option instead.
+
+The table lists every question in the order it is asked, with its respondent count. Drag a row or use the arrows to reorder.
+
+- **Required**: a signed-in account must answer it before it can chat or vote again. The questions come up right after sign-in. Optional questions are offered in a card in the navigation bar, to anonymous visitors too.
+- **Published**: only the answers to published questions go into the public dataset. A set of answers shared by fewer than five respondents is exported empty, and only answers given under the terms in force are exported.
+- **Archive**: a question with answers is archived rather than deleted, and a removed option is archived too, so existing answers keep their label. Delete only works on a question nobody answered.
+
+An optional question shown but left blank comes back at most three times, with a gap between showings set by `survey_reask_after_days` in the instance settings (7 days by default). People see and edit their answers on their settings page, and the answers are part of their data export.
 
 ## Suggestions
 

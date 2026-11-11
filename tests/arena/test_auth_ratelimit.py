@@ -256,7 +256,11 @@ def test_successful_verify_clears_fail_counter():
 
     async def wrong_then_right(**kwargs):
         calls["n"] += 1
-        return None if calls["n"] == 1 else LoginResult("session", "sometoken")
+        return (
+            None
+            if calls["n"] == 1
+            else LoginResult(kind="session", token="sometoken", first=False)
+        )
 
     with fake_router(verify_login_code=wrong_then_right) as (client, fake):
         r = client.post(
@@ -402,7 +406,7 @@ def test_verify_refuses_a_cross_site_origin():
     cookie in a visitor's browser."""
 
     async def always_right(**kwargs):
-        return LoginResult("session", "sometoken")
+        return LoginResult(kind="session", token="sometoken", first=False)
 
     with fake_router(verify_login_code=always_right) as (client, _fake):
         r = client.post(
@@ -497,6 +501,25 @@ def test_parallel_wrong_codes_from_many_ips_stop_at_the_email_cap():
         assert "auth_session" not in r.cookies
 
 
+def test_verify_says_whether_this_is_the_first_sign_in():
+    """The sign-in form asks its optional questions of a new account only once:
+    the answer comes from the verify call, not from how recent the account is."""
+
+    for first in (True, False):
+
+        async def login_result(first=first, **kwargs):
+            return LoginResult(kind="session", token="sometoken", first=first)
+
+        with fake_router(verify_login_code=login_result) as (client, _fake):
+            r = client.post(
+                "/auth/email/verify",
+                json={"email": "student1@school.fr", "code": "000000"},
+                headers={"origin": "http://testserver"},
+            )
+            assert r.status_code == 200
+            assert r.json()["first_sign_in"] is first
+
+
 def run():
     test_per_email_request_cap_is_isolated_per_email()
     test_per_ip_request_cap_uses_configured_ceiling()
@@ -511,6 +534,7 @@ def run():
     test_verify_refuses_a_cross_site_origin()
     test_parallel_wrong_codes_from_one_ip_stop_at_the_cap()
     test_parallel_wrong_codes_from_many_ips_stop_at_the_email_cap()
+    test_verify_says_whether_this_is_the_first_sign_in()
     print("All auth rate limit cases passed.")
 
 

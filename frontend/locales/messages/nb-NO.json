@@ -125,181 +125,17 @@
         },
         "links": {
             "accessibility": "Tilgjengelighet: ikke kompatibel",
-            "legal": "Juridisk merknad",
-            "rgesn": "Økodesign",
+            "legal_notice": "Juridisk merknad",
+            "ecodesign": "Økodesign",
             "sources": "Kildekode"
         }
     },
     "general": {
-        "a11y": {
-            "desc": "Denne tilgjengelighetserklæringen gjelder for nettstedet <strong>{domain}</strong>.",
-            "disclaimer": "<strong>compar:IA</strong> er forpliktet til å gjøre sine digitale tjenester tilgjengelige i samsvar med artikkel 47 i lov nr. 2005-102 av 11. februar 2005.",
-            "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
-            "improveDelay": "Vi prøver å svare innen to virkedager.",
-            "improveDesc": "Hvis du ikke får tilgang til innhold eller tjenester, kan du kontakte administratoren av {domain} for å bli henvist til et tilgjengelig alternativ eller få tak i innholdet i et annet format.",
-            "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
-            "improveTitle": "Forbedring og kontakt",
-            "remedyAdvocate": "Skriv en melding til <a {linkProps}>Défenseur des droits</a>",
-            "remedyAdvocateAdress": "Send et brev i posten (gratis, ikke bruk frimerke): Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
-            "remedyDelegateAdvocate": "Kontakt <a {linkProps}>Likestillings- og diskrimineringsombudet</a>",
-            "remedyDesc": "Denne prosedyren skal brukes i følgende tilfelle: du har rapportert en feil med tilgjengeligheten til ansvarlig for nettstedet som hindrer deg i å få tilgang til innhold eller en av portalens tjenester, og du har ikke mottatt et tilfredsstillende svar.",
-            "remedyList": "Du kan:",
-            "remedyTitle": "Anke",
-            "stateDesc": "Nettstedet {domain} er ikke i samsvar med RGAA 4.1. Nettstedet er ennå ikke revidert. <strong>Det er imidlertid utformet for å være tilgjengelig for så mange som mulig</strong>. Du bør derfor kunne:",
-            "stateNavigate": "finne fram på alle sidene på nettstedet ved hjelp av et tastatur",
-            "statePrefs": "tilpasse nettstedet til dine behov (skriftstørrelse, zoome inn på skjermen, endre typografi osv.) uten tap av innhold",
-            "stateScreenReader": "se nettsiden med en skjermleser.",
-            "stateTitle": "Status for samsvar",
-            "title": "Tilgjengelighetserklæring"
-        },
-        "legal": {
-            "a11yDesc": "Overholdelse av standarder for digital tilgjengelighet er et framtidig mål, men vi etterstreber å gjøre dette nettstedet tilgjengelig for alle.",
-            "a11yTitle": "Tilgjengelighet",
-            "directorDesc": "Herr Romain Delassus, leder for den sentrale digitale enheten i det franske kulturdepartementet",
-            "directorTitle": "Ansvarlig redaktør",
-            "editorDesc": "Denne nettsiden er publisert av det franske kulturdepartementet, 182, rue Saint-Honoré, 75001 Paris",
-            "editorTitle": "Publisert",
-            "hostingDesc": "Dette nettstedet driftes av OVH SAS (<a {linkProps}>https://www.ovh.com</a>), med registrert kontoradresse på 2 rue Kellermann, 59100 Roubaix, Frankrike.",
-            "hostingTitle": "Drift av nettstedet",
-            "reportA11y": "Hvis du støter på et tilgjengelighetsproblem som hindrer deg i å få tilgang til innhold eller funksjoner på nettstedet, vennligst gi oss beskjed.",
-            "reportA11yDesc": "For å lære mer om statens tilgjengelighetspolicy for digitale tjenester: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
-            "reportDesc": "Hvis du ikke mottar et raskt svar fra oss, har du rett til å sende inn en klage eller be om henvisning til Likestillings- og diskrimineringsombudet.",
-            "reportTitle": "Rapporter et problem",
-            "securityCertif": "Nettstedet er beskyttet av et elektronisk sertifikat, representert i de fleste nettlesere som en hengelås. Denne beskyttelsen bidrar til å sikre konfidensialitet i dataoverføringen.",
-            "securityNoMail": "Tjenestene tilknyttet plattformen vil ikke under noen omstendigheter sende ut e-poster som ber deg sende inn personopplysninger.",
-            "securityTitle": "Sikkerhet",
-            "sources": "Med mindre annet er oppgitt, er all tekst på dette nettstedet under lisensen <a {etalabLinkProps}>Etalab Open 2.0</a>. Kildekoden til applikasjonen kan gjenbrukes fritt og er tilgjengelig på <a {githubLinkProps}>GitHub</a>.",
-            "title": "Juridisk merknad"
-        },
-        "privacy": {
-            "cookiesBannerDesc": "Det er sant, du trengte ikke å klikke i en boks som dekker halve siden for å si at du godtar bruken av informasjonskapsler – selv om du ikke vet hva det betyr!",
-            "cookiesBannerNoNeed": "Ingenting eksepsjonelt, ingen spesialbehandling knyttet til et .gouv.fr-domene. Vi respekterer rett og slett loven, som sier at visse verktøy for målgruppesporing, riktig konfigurert for å respektere personvernet, er unntatt fra forhåndsgodkjenning.",
-            "cookiesBannerTitle": "Hvorfor popper det ikke opp en boks for samtykke til informasjonskapsler på dette nettstedet?",
-            "cookiesBannerTools": "Vi bruker <a {matomoLinkProps}>Matomo</a>, et <a {libreLinkProps}>gratis</a> verktøy, konfigurert til å overholde CNILs <a {cnilLinkProps}>anbefaling</a> om informasjonskapsler. Dette betyr at for eksempel IP-adressen din blir anonymisert før den registreres. Det er derfor umulig å knytte besøkene dine på dette nettstedet til din person.",
-            "cookiesDesc": "Dette nettstedet plasserer en liten tekstfil (en «informasjonskapsel») på datamaskinen din når du besøker det. Dette lar oss måle antall besøk slik at vi forstår hvilke sider som er mest besøkt.",
-            "cookiesDescMore": "Du kan velge å ikke la deg spore på dette nettstedet. Dette vil beskytte personvernet ditt, men det vil også hindre eieren i å lære av handlingene dine og skape en bedre opplevelse for deg og andre brukere.",
-            "cookiesTitle": "Informasjonskapsler og samtykke",
-            "dataAccessDatasets": "Brukerdialog- og preferansedata distribueres under Etalabs Open License 2.0 på plattformen Hugging Face gjennom det franske kulturdepartementets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "dataAccessDesc": "Så klart! Bruksstatistikken for nettstedet er fritt tilgjengelig på <a {linkProps}>stats.beta.gouv.fr</a>.",
-            "dataAccessTitle": "Jeg bidrar til å berike dataene deres, kan jeg få tilgang til dem?",
-            "dataExtraCountry": "Destinasjonsland: Frankrike",
-            "dataExtraHost": "Underleverandør: OVH",
-            "dataExtraTitle": "Hvem hjelper oss med databehandling?",
-            "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
-            "dataExtraWhat": "Utført behandling: Tilrettelegging",
-            "dataRespDesc": "Det franske kulturdepartementets digitale enhet er ansvarlig for behandlingen av personopplysningene dine.",
-            "dataRespTitle": "Hvem er ansvarlig for databehandlingen?",
-            "dataTimeDesc": "Data knyttet til brukere og deres interaksjon med modeller lagres fra tidspunktet preferansevalget blir registrert.",
-            "dataTimeTitle": "Hvor lenge lagrer vi disse dataene?",
-            "dataUseDesc": "Utgiveren forplikter seg uansett til å implementere tiltak for å sikre anonymisering av dialogdata før de gjøres offentlig tilgjengelige.",
-            "dataUseTitle": "Hvilken behandling utføres på samtaledataene?",
-            "desc": "Tjenesten publiseres av den digitale enheten i det franske kulturdepartementet.",
+        "privacy_policy": {
             "optOutTitle": "Reserver deg mot besøksmåling",
-            "privacyData": "Dataene som samles inn på nettstedet er som følger:",
-            "privacyDataArena": "Data relatert til brukernes samtaler med modellene: spørsmål stilt av brukerne, modellsvar og brukernes preferanser mellom svarene til de to modellene",
-            "privacyDataForm": "Data relatert til spørreskjemaet «Hjelp oss å forbedre compar:IA».",
-            "privacyDesc": "Tjenesten behandler ikke personopplysninger som definert av CNIL, det vil si informasjon knyttet til en identifiserbar fysisk person, direkte eller indirekte.",
-            "privacyResp": "Brukeren er ansvarlig for dataene eller innholdet brukeren oppgir i prompter som plattformen foreslår. Ved å godta <a {linkProps}>bruksvilkårene</a> samtykker brukeren i å ikke overføre informasjon som kan identifisere brukeren selv eller en tredjepart.",
-            "privacyTitle": "Behandler vi personopplysninger?",
-            "tallyData": "Når du fyller ut et av disse skjemaene, blir dataene du oppgir overført til og lagret av Tally (Tally BV, Belgia). Tally er forpliktet til ikke å bruke dataene dine til kommersielle formål og til å overholde GDPR. For mer informasjon, se Tallys <a {tallyPrivacyLinkProps}>personvernerklæring</a>.",
-            "tallyDesc": "Dette nettstedet bruker <a {tallyLinkProps}>Tally</a>, en tjeneste for oppretting av skjemaer på nett, til to funksjoner:",
-            "tallyFeedback": "Skjemaet \"Din mening\" lar oss samle inn tilbakemeldinger fra deg om tjenesten",
-            "tallyNewsletter": "Abonnementsskjema for nyhetsbrev fra compar:IA",
-            "tallyTitle": "Tally-skjemaer",
             "title": "Personvernerklæring"
         },
-        "rgesn": {
-            "1": {
-                "1": "Nettstedet compar:IA gir enkel og gratis tilgang til et bredt utvalg av konversasjonsbaserte KI-modeller, med mål om å øke den offentlig bevisstheten rundt de ulike utfordringene med generativ KI: mangfold, skjevheter og miljøpåvirkning. Videre deles datasettene med spørsmål og preferanser som er samlet inn som åpen kildekode under lisensen MIT/Etalab 2.0.",
-                "2": "Målgruppen av brukere av tjenesten Compar:IA ble identifisert ved å gjennomføre brukerintervjuer og en innledende fase med behovsundersøkelse.",
-                "3": "Dermed er alle borgere ansett som potensielle brukere, men spesielt lærere, elever, studenter, workshop-arrangører, KI-instruktører, samt forskere (innen informatikk, KI, humaniora og samfunnsvitenskap) og bedrifter som er interessert i å analysere eller bruke delte datasett med åpen kildekode. Følgelig dekker den digitale tjenesten deres behov gjennom følgende funksjoner: gratis testing og sammenligning av modeller, og bruk av delte data med åpen kildekode.",
-                "4": "Tjenesten compar:IA er en del av en økodesigntilnærming som tar sikte på å redusere miljøpåvirkning. For dette formålet ble denne erklæringen utarbeidet innenfor rammen av implementeringen av det generelle rammeverket for økodesign for digitale tjenester (RGESN, versjon 2024). RGESN, produsert av Arcep og Arcom, i samarbeid med ADEME, DINUM, CNIL og Inria, er tilgjengelig på <a {linkProps}>Arceps nettsted</a>.",
-                "title": "Formålet med denne tjenesten"
-            },
-            "2": {
-                "1": "Økodesign av digitale tjenester er en tilnærming som tar sikte på å redusere og begrense miljøpåvirkningen av en tjeneste fra designfasen og gjennom hele livssyklusen.",
-                "2": {
-                    "1": "Utforme mer bærekraftige digitale tjenester for å forlenge levetiden til enheter;",
-                    "2": "Fremme en tilnærming basert på miljømessig nøkternhet som svar på strategier for å fange brukernes oppmerksomhet, i tråd med internasjonale miljømål;",
-                    "3": "Reduser bruken av IT-ressurser, optimaliser datatrafikk og bruken av digital infrastruktur;",
-                    "4": "Øk nivået av åpenhet om det miljømessige fotavtrykket til den digitale tjenesten.",
-                    "title": "Implementeringen har fire hovedmål:"
-                },
-                "3": {
-                    "1": "Begrens størrelsen på en side",
-                    "2": "Begrens kompleksiteten til en side",
-                    "3": "Begrens antall serverforespørsler",
-                    "4": "Begrens energiforbruket som kreves for å være vert for tjenesten",
-                    "title": "I praksis betyr økodesign et sett med beste praksis som skal følges før, under og etter etableringen eller forbedringen av en tjeneste, noe som særlig muliggjør:"
-                },
-                "4": "Dette er en prosess som innebærer kontinuerlig og kollektiv forbedring.",
-                "title": "Hva er økodesign?"
-            },
-            "3": {
-                "1": {
-                    "1": "Forenkling av brukeropplevelsen: navigasjonsstiene er optimalisert og sentrert rundt de viktigste funksjonene i compar:IA-tjenesten (arena for modeller som skal testes, datasett, rangering) med regelmessig brukertesting.",
-                    "2": "Øke bevisstheten blant brukerne om tjenestens økologiske fotavtrykk: fremheve indikatorer for energipåvirkning på spørsmål stilt til KI; fremme \"sparsommelig\" bruk, med en modus dedikert til å spørre etter \"små\" konversasjonsbaserte KI-modeller med mindre miljøpåvirkning.",
-                    "3": "Bruk av State Design System (DSFR)-grensesnittkomponenter: de er tilgjengelige, og fotavtrykket deres er minimalt.",
-                    "4": "Den mest intuitive navigasjonen som er mulig for å redusere tiden man bruker på å finne informasjon.",
-                    "5": "Mobilorientert design: mobile enheter kan vise alt innhold. Nettstedet tilpasser seg alle skjermstørrelser.",
-                    "6": "Utelukke integrasjon av video på nettstedet.",
-                    "title": "Hovedutfordringen er å sikre at compar:IA fungerer på så gamle enheter som mulig, under varierende tilkoblingsforhold. Flere tiltak ble implementert i designfasen, inkludert:"
-                },
-                "title": "Strategi implementert og mål for reduksjon eller begrensning av miljøpåvirkninger"
-            },
-            "4": {
-                "1": "Egenvurderingen, som ble utført mellom mai og oktober 2025 av produktteamet (to personer var ansvarlige for å gjennomgå og validere alle kriteriene), dekket alle sidene på nettstedet. Verktøyene som ble brukt til å evaluere visse tekniske indikatorer var nettleserens utviklerverktøys «nettverksinspektør», utvidelsen <a {greenitLinkProps}>Green IT Analysis</a> og verktøyet <a {ecoindexLinkProps}>EcoIndex</a>.",
-                "title": "RGESN-diagnose"
-            },
-            "5": {
-                "1": {
-                    "1": "Score for fremdrift i implementeringen av RGESN per 12.10.2025: 89 %",
-                    "title": "Selvdiagnostiseringen gir en grad av samsvar med <a {linkProps}>RGESN</a> (generell referanse for økodesign) på 89 %."
-                },
-                "2": "Den digitale tjenesten compar:IA har som mål å forbedre denne fremdriftsscoren til 95 % innen 2027.",
-                "3": {
-                    "1": "Strategi: 100 %",
-                    "2": "Spesifikasjoner: 78 %",
-                    "3": "Arkitektur: 100 %",
-                    "4": "Brukeropplevelse og grensesnitt (UX/UI): 100 %",
-                    "5": "Innhold: 67 %",
-                    "6": "Frontend: 82 %",
-                    "7": "Backend: 64%",
-                    "8": "Hosting: 90 %",
-                    "9": "Algoritmer: 100 %",
-                    "title": "Poengsum etter tema:"
-                },
-                "4": {
-                    "date": "10. desember 2025",
-                    "title": "Revisjonstabell for RGESN"
-                },
-                "title": "Poengsum i implementeringen av rammeverket"
-            },
-            "6": {
-                "1": "Nettstedet er designet for å være tilgjengelig på alle mobile enheter fra 2017 eller senere.",
-                "2": "Minimumstilkobling som kreves for komfortabel tilgang og bruk av tjenesten: 3G på mobil og 512 Kbps på fastnett.",
-                "3": "Nettstedet er designet for forskjellige skjermstørrelser (minimum 320 pikslers bredde).",
-                "4": "Nettstedet er ikke tilgjengelig via nettleseren Internet Explorer. ",
-                "title": "Minimumskrav for å få tilgang til nettstedet"
-            },
-            "7": {
-                "1": "Sett opp tjenesten med en gjennomgang av design og kode, der ett av målene er å redusere miljøpåvirkningen av hver funksjon (kriterium 2.1)",
-                "2": "Implementer perioder for datalagring med formål å slette eller arkivere: regelmessig sletting av logger i filserveren «S3» og spesielt i databasen (Postgres).",
-                "3": {
-                    "1": "Maksimalt antall serverforespørsler per skjerm: 40",
-                    "2": "Maksimal ressursstørrelse per skjerm: 600 KB",
-                    "title": "Overholde en maksimal vekt og en grense for antall forespørsler per skjerm (kriterium 6.1):"
-                },
-                "4": "Konvertere illustrasjonene til WebP, AVIF, JPEG XL eller et mer effektivt bildeformat for rasterbilder (kriterium 5.1).",
-                "5": "Tillate muligheten til å avbryte inferens (lasting av svar) under sammenligning av modeller.",
-                "6": "Resultatene for EcoIndex-analyse viser et betydelig avvik i effektmålinger, der noen sider får poengsummer på opptil E eller F (relativt høy sidevekt, kompleksitet og antall forespørsler). Utfordringen nå er å forstå disse resultatene mer presist fra sak til sak, til tross for implementeringen av en god praksis, for å identifisere ytterligere forbedringer.",
-                "desc": "Flere forbedringer har blitt eller blir fortsatt identifisert, inkludert:",
-                "title": "Identifiserte forbedringer"
-            },
-            "desc": "publisert 11. desember 2025",
-            "title": "Erklæring om økodesign"
-        },
-        "tos": {
+        "terms": {
             "title": "Vilkår for bruk"
         }
     },
@@ -659,14 +495,14 @@
         "desc": "{platformName} er et verktøy som muliggjør blind sammenligning av ulike konversasjonsbaserte KI-modeller, øker bevisstheten om problemstillinger rundt generativ KI (pluralitet, skjevheter, miljøpåvirkning) og bidrar til å lage preferansedatasett for språkene som brukes.",
         "title": "{platformName}, arena for sammenligning av KI-chatboter",
         "titles": {
-            "accessibilite": "Tlgjengelighetserklæring",
+            "accessibility": "Tlgjengelighetserklæring",
             "arene": "Chat",
-            "donnees-personnelles": "Personvernerklæring",
-            "mentions-legales": "Juridisk merknad",
-            "modalites": "Vilkår for bruk",
+            "privacy_policy": "Personvernerklæring",
+            "legal_notice": "Juridisk merknad",
+            "terms": "Vilkår for bruk",
             "modeles": "Liste over modeller",
             "ranking": "Rangering",
-            "rgesn": "Økodesign-erklæring"
+            "ecodesign": "Økodesign-erklæring"
         }
     },
     "vote": {

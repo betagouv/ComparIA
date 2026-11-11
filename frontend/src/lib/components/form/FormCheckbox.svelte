@@ -6,7 +6,11 @@
   import type { BaseFormFieldProps } from '$lib/utils/form'
   import { FormField } from '.'
 
-  let { value = $bindable(), disabled, ...props }: FormCheckboxProps & { value: boolean } = $props()
+  let {
+    value = $bindable(),
+    disabled,
+    ...props
+  }: Omit<FormCheckboxProps, 'component'> & { value: boolean } = $props()
 </script>
 
 <FormField {...props} component="checkbox">

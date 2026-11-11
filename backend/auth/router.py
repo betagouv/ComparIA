@@ -74,6 +74,7 @@ from backend.auth.totp import (
 from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
@@ -265,7 +266,7 @@ def _reject_cross_site(request: Request) -> None:
 
 
 async def _validated_terms(assertion: ConsentAssertion) -> LegalDocument:
-    document = await get_active_legal_document("terms", assertion.locale)
+    document = await get_active_legal_document("terms")
     if (
         not document
         or document.version != assertion.terms_version
@@ -497,7 +498,11 @@ async def email_verify(
         logger.error(f"[AUTH] Redis rate limit check failed: {e}")
 
     totp_required = _set_login_cookie(response, login)
-    return {"email": body.email, "totp_required": totp_required}
+    return {
+        "email": body.email,
+        "totp_required": totp_required,
+        "first_sign_in": login.first,
+    }
 
 
 @router.post("/totp/verify", response_model=None)
@@ -1044,6 +1049,11 @@ async def get_me(request: Request) -> dict:
             "email": user.email,
             "role": user.role,
             "totp_enabled": await has_confirmed_totp(user.id),
+            # Whether a required signup question is still unanswered, which
+            # holds every arena write until it is (see survey/dependencies.py).
+            "questions_answered": await signup_questions_answered(
+                user_id=user.id, anonymous_user_hash=None
+            ),
         }
     }
 
@@ -1090,6 +1100,7 @@ async def accept_consent(
     await record_user_consent(
         user.id,
         document,
+        body.consent.locale,
         body.consent.accepted_at,
         request.cookies.get("auth_session"),
     )
@@ -1121,7 +1132,7 @@ async def accept_anonymous_consent(
 
     document = await _validated_terms(body.consent)
     await record_anonymous_consent(
-        anonymous_user_hash, document, body.consent.accepted_at
+        anonymous_user_hash, document, body.consent.locale, body.consent.accepted_at
     )
 
 

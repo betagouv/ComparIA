@@ -190,13 +190,13 @@ export interface AdminLegalDocument {
   id: string;
   kind: "terms" | "privacy_policy";
   version: string;
-  locale: string;
-  content: string;
+  content: {
+    [k: string]: string;
+  };
   content_hash: string;
   published_at: string;
   effective_at: string;
   retired_at: string | null;
-  seeded: boolean;
 }
 export interface AdminPublishDestination {
   id: string;
@@ -260,6 +260,33 @@ export interface AdminSuggestionCategory {
   suggestion_count?: number;
   available_suggestion_count?: number;
 }
+export interface AdminSurveyOption {
+  key: string;
+  labels: {
+    [k: string]: string;
+  };
+  archived: boolean;
+  answer_count: number;
+}
+export interface AdminSurveyQuestion {
+  id: string;
+  key: string;
+  required: boolean;
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: AdminSurveyOption[];
+  published: boolean;
+  revision: number;
+  display_order: number;
+  archived: boolean;
+  respondent_count: number;
+}
+export interface AdminSurveyResponse {
+  questions: AdminSurveyQuestion[];
+  total_respondents: number;
+}
 export interface AdminVoteTag {
   id: string;
   key: string;
@@ -282,6 +309,7 @@ export interface AppSettingsPatch {
   votes_objective?: number | null;
   ranking_min_votes?: number | null;
   ranking_max_rank_spread?: number | null;
+  survey_reask_after_days?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
@@ -308,6 +336,7 @@ export interface AppSettingsPublic {
   votes_objective: number;
   ranking_min_votes: number;
   ranking_max_rank_spread: number;
+  survey_reask_after_days: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;
@@ -343,6 +372,16 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface InformationalLegalPage {
+  mode?: "internal" | "external";
+  external_url?: string | null;
+  visible_in_legal_menu?: boolean;
+  visible_in_settings?: boolean;
+  content_by_locale?: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength200000 {
+  [k: string]: string;
 }
 /**
  * LLM definition.
@@ -559,6 +598,34 @@ export interface LLMLicense {
   reuse: boolean;
   commercial_use: boolean;
 }
+export interface TranslatableLegalPresentation {
+  [k: string]: LegalPresentation;
+}
+export interface LegalPresentation {
+  arena: ArenaLegalPresentation;
+  sign_in: SignInLegalPresentation;
+}
+export interface ArenaLegalPresentation {
+  title: string;
+  introduction: string;
+  checkbox_label: string;
+  button_label?: string | null;
+}
+export interface SignInLegalPresentation {
+  checkbox_label: string;
+}
+export interface LegalStatuses {
+  participation: LegalStatus;
+  terms: LegalStatus;
+  privacy_policy: LegalStatus;
+  legal_notice: LegalStatus;
+  accessibility: LegalStatus;
+  ecodesign: LegalStatus;
+}
+export interface LegalStatus {
+  published: boolean;
+  missing_locales: boolean;
+}
 /**
  * The configuration plus how the check is faring, since a broken check
  * either refuses every message or, while the model counts as down, lets them
@@ -678,10 +745,12 @@ export interface S3ConfigInput {
 }
 export interface PublishLegalDocumentBody {
   version: string;
-  locale: string;
-  content: string;
+  content: TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000;
   effective_at?: string | null;
   confirm_publication: true;
+}
+export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000 {
+  [k: string]: string;
 }
 export interface SuggestionArchiveUpdate {
   archived: boolean;
@@ -697,24 +766,40 @@ export interface SuggestionCreate {
   category_id: string;
   text: string;
 }
-export interface UpdateLegalPresentationBody {
-  presentation: LegalPresentation;
+export interface SurveyOptionWrite {
+  key?: string | null;
+  labels: {
+    [k: string]: string;
+  };
+  archived?: boolean;
 }
-export interface LegalPresentation {
-  arena: ArenaLegalPresentation;
-  sign_in: SignInLegalPresentation;
-  [k: string]: unknown;
+export interface SurveyQuestionArchiveUpdate {
+  archived: boolean;
 }
-export interface ArenaLegalPresentation {
-  title: string;
-  introduction: string;
-  checkbox_label: string;
-  button_label?: string | null;
-  [k: string]: unknown;
+export interface SurveyQuestionCreate {
+  required?: boolean;
+  input_type: "select" | "checkbox_group";
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published?: boolean;
 }
-export interface SignInLegalPresentation {
-  checkbox_label: string;
-  [k: string]: unknown;
+/**
+ * The whole order, written in one request, as the vote tags do: one round
+ * trip per drag, and the gaps archiving leaves in 'display_order' get
+ * rewritten away.
+ */
+export interface SurveyQuestionOrder {
+  ids: string[];
+}
+export interface SurveyQuestionUpdate {
+  required: boolean;
+  labels: {
+    [k: string]: string;
+  };
+  options: SurveyOptionWrite[];
+  published: boolean;
 }
 export interface UserPublic {
   id?: string;

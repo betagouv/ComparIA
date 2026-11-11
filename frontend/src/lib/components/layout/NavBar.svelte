@@ -11,18 +11,21 @@
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
+  import SurveyModal from '$components/SurveyModal.svelte'
   import { getAuthContext, logout } from '$lib/auth.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { getComparisonsContext } from '$lib/chatService.svelte'
   import { api } from '$lib/fastapi-client'
   import { m } from '$lib/i18n/messages'
   import { validExternalUrl } from '$lib/routing'
+  import { getSurveyContext } from '$lib/survey.svelte'
   import type { HTMLAnchorAttributes } from 'svelte/elements'
   import { History, LanguageSelector, LegalMenu, VoteGauge } from '.'
 
   const { navLinks, isAdmin = false }: { navLinks: NavLink[]; isAdmin?: boolean } = $props()
 
   const auth = getAuthContext()
+  const survey = getSurveyContext()
   const platformName = getPlatformName()
   const comparisons = getComparisonsContext()
   let expanded = $state(true)
@@ -96,6 +99,32 @@
       {platformName}
     </a>
   </div>
+{/snippet}
+
+{#snippet surveyCard()}
+  {#if survey.showSurveyCard}
+    <div class="cg-border mx-3 mt-3 p-3 gap-1 rounded-lg flex flex-col">
+      <div class="gap-1 flex items-center">
+        <Icon icon="i-ri-survey-line" size="sm" block class="text-[--yellow-moutarde-850-200]" />
+        <p class="font-bold text-[14px]!">
+          {m['survey.card.title']({ platformName })}
+        </p>
+      </div>
+      <p class="text-xs! text-grey">
+        {m['survey.card.desc']()}
+        <br />
+        <em class="mt-1 inline-block">{m['survey.card.optional']()}</em>
+      </p>
+      <Link
+        href="#"
+        size="xs"
+        data-fr-opened="false"
+        aria-controls="fr-modal-survey"
+        class="text-dark-grey! mb-1 underline!"
+        text={m['survey.card.cta']({ count: survey.unansweredQuestions.length })}
+      />
+    </div>
+  {/if}
 {/snippet}
 
 {#snippet account()}
@@ -207,6 +236,9 @@
     {/if}
 
     <div class="mt-auto">
+      {#if !isAdmin}
+        {@render surveyCard()}
+      {/if}
       {@render account()}
       <div class="b-t-[--grey-925-125] b-t-1 px-4 py-5">
         {@render footer()}
@@ -251,6 +283,9 @@
       {/if}
 
       <div class="mt-auto">
+        {#if !isAdmin}
+          {@render surveyCard()}
+        {/if}
         {@render account()}
         <div class="bottom-0 pb-5 p-4 bg-white sticky border-t border-[--grey-925-125]">
           {@render footer('mobile')}
@@ -259,3 +294,5 @@
     </div>
   </dialog>
 </header>
+
+<SurveyModal />

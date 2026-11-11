@@ -96,6 +96,22 @@ export interface Consumption {
   energy_kwh: number;
   [k: string]: unknown;
 }
+export interface InformationalLegalPageContent {
+  content: string;
+  locale: string;
+}
+export interface InformationalLegalPageLinks {
+  legal_notice?: InformationalLegalPageLink;
+  accessibility?: InformationalLegalPageLink;
+  ecodesign?: InformationalLegalPageLink;
+}
+export interface InformationalLegalPageLink {
+  mode?: "internal" | "external";
+  external_url?: string | null;
+  visible_in_legal_menu?: boolean;
+  visible_in_settings?: boolean;
+  [k: string]: unknown;
+}
 export interface LLMList {
   data_timestamp: number | null;
   models: APILLMData[];
@@ -335,6 +351,23 @@ export interface CurrencyInfo {
   [k: string]: unknown;
 }
 /**
+ * What the profile page and the personal-data export show.
+ */
+export interface MySurveyAnswer {
+  question_id: string;
+  question_key: string;
+  label: string;
+  input_type: "select" | "checkbox_group";
+  options: PublicSurveyOption[];
+  value: string | string[];
+  archived?: boolean;
+}
+export interface PublicSurveyOption {
+  key: string;
+  label: string;
+  archived?: boolean;
+}
+/**
  * The signed-in user's own ranking, already scored, ordered and numbered.
  *
  * Rows carry no model metadata beyond the identity: the client joins them on
@@ -370,6 +403,20 @@ export interface PublicLegalDocument {
   published_at: string;
   effective_at: string;
 }
+export interface PublicSurveyQuestion {
+  id: string;
+  key: string;
+  required: boolean;
+  input_type: "select" | "checkbox_group";
+  label: string;
+  revision: number;
+  options: PublicSurveyOption[];
+}
+export interface PublicSurveyResponse {
+  questions: PublicSurveyQuestion[];
+  never_answered_ids: string[];
+  answers: MySurveyAnswer[];
+}
 export interface PublicVoteTag {
   key: string;
   sign: "positive" | "negative";
@@ -379,4 +426,11 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+}
+export interface SurveyAnswerSubmit {
+  answers: SurveyQuestionAnswer[];
+}
+export interface SurveyQuestionAnswer {
+  question_id: string;
+  value: string | string[] | null;
 }

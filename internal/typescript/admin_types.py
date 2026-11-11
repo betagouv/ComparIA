@@ -7,8 +7,10 @@ from backend.activity.models import (
 )
 from backend.admin.router import (
     AdminLegalDocument,
+    InformationalLegalPage,
+    LegalPresentationTranslatable,
+    LegalStatuses,
     PublishLegalDocumentBody,
-    UpdateLegalPresentationBody,
 )
 from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
 from utils.database.models.auth import UserPublic, UserUpsert
@@ -34,6 +36,16 @@ from utils.database.models.suggestion import (
     SuggestionArchiveUpdate,
     SuggestionCategoryCreate,
     SuggestionCreate,
+)
+from utils.database.models.survey import (
+    AdminSurveyOption,
+    AdminSurveyQuestion,
+    AdminSurveyResponse,
+    SurveyOptionWrite,
+    SurveyQuestionArchiveUpdate,
+    SurveyQuestionCreate,
+    SurveyQuestionOrder,
+    SurveyQuestionUpdate,
 )
 from utils.database.models.vote_tag import (
     AdminVoteTag,

@@ -6,7 +6,6 @@ Run with pytest, or directly:
 """
 
 import asyncio
-import importlib.util
 import json
 import os
 import sys
@@ -104,42 +103,21 @@ def publish(fake_session, **kwargs):
         return asyncio.run(legal.publish_legal_document(**kwargs))
 
 
-def test_seeded_terms_version_matches_the_migration():
-    """The migration keeps its own literal so it never depends on app code."""
-    path = (
-        Path(__file__).resolve().parents[2]
-        / "utils/database/alembic/versions"
-        / "e4a8c2d9f1b7_add_versioned_legal_documents.py"
-    )
-    spec = importlib.util.spec_from_file_location("legal_documents_migration", path)
-    migration = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(migration)
-
-    assert migration.SEED_VERSION == legal.SEEDED_TERMS_VERSION
-
-
 def test_immediate_publication_retires_active_terms():
-    active = LegalDocument(
-        kind="terms",
-        version="1.0",
-        language="fr",
-        content="Previous terms",
-        content_hash=legal.legal_document_hash("Previous terms"),
-        effective_at=utc_now() - timedelta(days=1),
-    )
+    active = legal_document(effective_at=utc_now() - timedelta(days=1))
     fake_session = FakeSession([[], [active]])
+    new_content = {"fr": "New terms"}
     published = publish(
         fake_session,
         kind="terms",
         version="2.0",
-        language="fr",
-        content="New terms",
+        content=new_content,
         effective_at=None,
     )
 
     assert fake_session.committed
     assert active.retired_at == published.effective_at
-    assert published.content_hash == legal.legal_document_hash("New terms")
+    assert published.content_hash == legal.legal_document_hash(new_content)
     assert published in fake_session.added
 
 
@@ -149,8 +127,7 @@ def test_published_and_effective_timestamps_are_both_utc():
         FakeSession([[], []]),
         kind="terms",
         version="2.0",
-        language="fr",
-        content="New terms",
+        content={"fr": "New terms"},
         effective_at=None,
     )
 
@@ -165,8 +142,7 @@ def test_scheduled_publication_keeps_current_terms_active():
         fake_session,
         kind="terms",
         version="3.0",
-        language="fr-FR",
-        content="Scheduled terms",
+        content={"fr": "Scheduled terms"},
         effective_at=datetime.now(timezone.utc) + timedelta(days=1),
     )
 
@@ -175,12 +151,9 @@ def test_scheduled_publication_keeps_current_terms_active():
 
 
 def test_immediate_privacy_policy_publication_retires_only_previous_policy():
-    active = LegalDocument(
+    active = legal_document(
         kind="privacy_policy",
-        version="1.0",
-        language="fr",
-        content="Previous privacy policy",
-        content_hash=legal.legal_document_hash("Previous privacy policy"),
+        content={"fr": "Previous privacy policy"},
         effective_at=utc_now() - timedelta(days=1),
     )
     fake_session = FakeSession([[], [active]])
@@ -188,8 +161,7 @@ def test_immediate_privacy_policy_publication_retires_only_previous_policy():
         fake_session,
         kind="privacy_policy",
         version="2.0",
-        language="fr",
-        content="# Nouvelle politique",
+        content={"fr": "# Nouvelle politique"},
         effective_at=None,
     )
 
@@ -200,12 +172,9 @@ def test_immediate_privacy_policy_publication_retires_only_previous_policy():
 
 
 def test_published_version_cannot_be_reused_with_different_content():
-    existing = LegalDocument(
-        kind="terms",
+    existing = legal_document(
         version="2.0",
-        language="fr",
-        content="Original",
-        content_hash=legal.legal_document_hash("Original"),
+        content={"fr": "Original"},
         effective_at=datetime(2026, 8, 1, 12, 0),
     )
     fake_session = FakeSession([[existing]])
@@ -215,13 +184,35 @@ def test_published_version_cannot_be_reused_with_different_content():
             fake_session,
             kind="terms",
             version="2.0",
-            language="fr",
-            content="Changed",
+            content={"fr": "Changed"},
             effective_at=None,
         ),
     )
 
     assert not fake_session.committed
+
+
+def test_republishing_a_merged_version_returns_it_unchanged():
+    effective_at = utc_now() + timedelta(days=1)
+    # Merged from one row per language, it kept the hash of one of them.
+    existing = legal_document(
+        version="2.0",
+        content={"fr": "Original", "en": "Original"},
+        content_hash="b" * 64,
+        effective_at=effective_at,
+    )
+    fake_session = FakeSession([[existing]])
+
+    published = publish(
+        fake_session,
+        kind="terms",
+        version="2.0",
+        content={"fr": "Original", "en": "Original"},
+        effective_at=effective_at,
+    )
+
+    assert published is existing
+    assert not fake_session.added
 
 
 def test_effective_date_must_stay_in_publication_window():
@@ -249,8 +240,7 @@ def test_admin_publication_requires_explicit_confirmation():
         lambda: PublishLegalDocumentBody.model_validate(
             {
                 "version": "2.0",
-                "locale": "fr",
-                "content": "New terms",
+                "content": {"fr": "New terms"},
                 "confirm_publication": False,
             }
         ),
@@ -263,8 +253,7 @@ def test_admin_publication_rejects_invalid_locale():
         lambda: PublishLegalDocumentBody.model_validate(
             {
                 "version": "2.0",
-                "locale": "not a locale",
-                "content": "New terms",
+                "content": {"not a locale": "New terms"},
                 "confirm_publication": True,
             }
         ),
@@ -272,10 +261,10 @@ def test_admin_publication_rejects_invalid_locale():
 
 
 def test_mutable_presentation_comes_from_app_settings():
-    configured = presentation_payload(title="Parcours modifiable")
+    configured = {"fr": presentation_payload(title="Parcours modifiable")}
 
     async def app_settings():
-        return SimpleNamespace(legal_presentation=configured)
+        return SimpleNamespace(legal_presentation=configured, default_locale="fr")
 
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
@@ -290,7 +279,7 @@ def test_presentation_uses_defaults_when_not_configured():
     with patch.object(legal, "get_app_settings", app_settings):
         result = asyncio.run(legal.get_legal_presentation())
 
-    assert result == legal.fallback_legal_presentation()
+    assert result == legal.fallback_legal_presentation("fr")
 
 
 def test_default_presentation_follows_the_visitor_locale():
@@ -307,13 +296,13 @@ def test_default_presentation_follows_the_visitor_locale():
     assert unknown.arena.title == "Avant de commencer"
 
 
-def terms_document(**overrides) -> LegalDocument:
+def legal_document(**overrides) -> LegalDocument:
+    content = overrides.pop("content", {"fr": "Conditions"})
     fields = {
         "kind": "terms",
         "version": "1.0",
-        "language": "fr",
-        "content": "Conditions",
-        "content_hash": legal.legal_document_hash("Conditions"),
+        "content": content,
+        "content_hash": legal.legal_document_hash(content),
         "effective_at": utc_now(),
     }
     fields.update(overrides)
@@ -322,9 +311,9 @@ def terms_document(**overrides) -> LegalDocument:
 
 @contextmanager
 def public_client(presentation=None, document=None):
-    document = document or terms_document()
+    document = document or legal_document()
 
-    async def active_document(_kind, _language):
+    async def active_document(_kind):
         return document
 
     async def get_presentation(_locale):
@@ -350,6 +339,26 @@ def test_public_terms_are_revalidated_with_an_etag():
         assert cached.status_code == 304
 
 
+def test_public_terms_say_when_nothing_is_published():
+    async def no_document(_kind):
+        return None
+
+    with public_client() as client:
+        with patch.object(settings_router, "get_active_legal_document", no_document):
+            nothing = client.get("/settings/legal/terms")
+
+    assert nothing.status_code == 404
+    assert nothing.json()["detail"] == settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
+
+
+def test_public_terms_in_no_readable_locale_are_not_unpublished():
+    with public_client(document=legal_document(content={"da": "Vilkår"})) as client:
+        missing = client.get("/settings/legal/terms", params={"locale": "en"})
+
+    assert missing.status_code == 404
+    assert missing.json()["detail"] != settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
+
+
 def test_public_terms_etag_changes_with_the_presentation():
     with public_client() as client:
         etag = client.get("/settings/legal/terms").headers["ETag"]
@@ -368,7 +377,7 @@ def test_public_timestamps_carry_a_utc_offset():
     after midnight would be shown as the previous day.
     """
     stored = datetime(2026, 7, 27, 22, 30)
-    with public_client(document=terms_document(effective_at=stored)) as client:
+    with public_client(document=legal_document(effective_at=stored)) as client:
         payload = client.get("/settings/legal/terms").json()
 
     for key in ("published_at", "effective_at"):
@@ -380,7 +389,7 @@ def test_public_timestamps_carry_a_utc_offset():
 
 def test_admin_timestamps_carry_a_utc_offset():
     stored = datetime(2026, 7, 27, 22, 30)
-    document = terms_document(effective_at=stored, retired_at=stored)
+    document = legal_document(effective_at=stored, retired_at=stored)
     payload = json.loads(_to_admin_legal_document(document).model_dump_json())
 
     for key in ("published_at", "effective_at", "retired_at"):
