@@ -11,6 +11,14 @@ yarn check           # type check
 yarn build           # production build
 ```
 
+## Serving under a path
+
+One image serves an Instance at the root of its origin or under a path such as `/fr`. The path is chosen when the container starts, with `INSTANCE_PATH` (empty or unset: the root).
+
+The image is built with `INSTANCE_PATH_PLACEHOLDER` (`/__INSTANCE_PATH__`, set in `devops/docker/Dockerfile.front`) as the SvelteKit base path. `docker-entrypoint.sh` replaces it in the built files, moves the static assets directory that adapter-node names after the base path, and makes the precompressed copies (`.gz`, `.br`) of the files it changed again. Without `INSTANCE_PATH_PLACEHOLDER`, as in `yarn dev`, `yarn build` and the tests, the base path is empty. A restarted container refuses a different `INSTANCE_PATH`: start a new one.
+
+The gateway keeps the path for the frontend and removes it for `/api`, so the browser calls `<origin><path>/api`. Backend routes that FastAPI would redirect to their trailing slash (`/survey` to `/survey/`) have to be called with it, since the redirect has no path.
+
 ## Accessibility
 
 The arena is held to [RGAA 4.1.2](https://accessibilite.numerique.gouv.fr/), the French public-sector standard. Two suites guard it.

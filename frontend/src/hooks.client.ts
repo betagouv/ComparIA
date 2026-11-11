@@ -1,3 +1,4 @@
+import '$lib/localeCookie'
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'

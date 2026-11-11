@@ -1,10 +1,17 @@
 import adapter from '@sveltejs/adapter-node'
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 
+// The Instance path is chosen when the container starts, from one image: the
+// image is built with this placeholder as base path and docker-entrypoint.sh
+// replaces it in the built files. Unset, as in dev and tests, the app is served
+// from the root. Dockerfile.front sets it, with the same default as the script.
 const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter(),
+    // Absolute paths: `resolve` also answers in hooks, where relative ones (the
+    // default) are meaningless, and the Instance path is read from it.
+    paths: { base: process.env.INSTANCE_PATH_PLACEHOLDER || '', relative: false },
     alias: {
       $css: './src/css',
       $components: './src/lib/components'

@@ -57,3 +57,11 @@ export function withoutInstancePath(pathname: string): Pathname {
   if (pathname === prefix) return '/'
   return (pathname.startsWith(`${prefix}/`) ? pathname.slice(prefix.length) : pathname) as Pathname
 }
+
+/**
+ * Path attribute of the cookies the frontend sets: the Instance path, so that
+ * Instances sharing an origin do not see each other's cookies, or '/' with none.
+ */
+export function instanceCookiePath(): string {
+  return instancePath() || '/'
+}
