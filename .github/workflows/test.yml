@@ -114,7 +114,7 @@ jobs:
       COMPARIA_APP_URL: http://localhost:8080/fr
       LANGUIA_DEBUG: 'true'
       MOCK_RESPONSE: 'true'
-      LOGDIR: ${{ runner.temp }}/comparia-logs
+      LOGDIR: /tmp/comparia-logs
 
     steps:
       - name: Checkout repository
