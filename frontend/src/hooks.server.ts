@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
+import { resolve } from '$app/paths'
 import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
 import { cookieMaxAge, defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
@@ -8,6 +9,7 @@ import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { withoutInstancePath } from '$lib/routing'
 
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
@@ -154,13 +156,18 @@ defineCustomServerStrategy('custom-url', {
   }
 })
 
+// The page to come back to is kept as an app route, without the Instance path:
+// the login page hands it to `resolve`, which adds the path back.
+function loginUrl(url: URL): ReturnType<typeof resolve> {
+  return resolve(`/login?redirect=${encodeURIComponent(withoutInstancePath(url.pathname))}`)
+}
+
 export const handleError: HandleServerError = async ({ error, event }) => {
   if (isTotpSetupRequired(error)) {
-    redirect(302, TOTP_SETUP_PATH)
+    redirect(302, resolve(TOTP_SETUP_PATH))
   }
   if (error instanceof UnauthorizedError) {
-    const path = event.url.pathname
-    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+    redirect(302, loginUrl(event.url))
   }
   console.error(error)
 }
@@ -200,9 +207,10 @@ let maintenanceCache: { enabled: boolean; checkedAt: number } | null = null
 // Maintenance mode: re-checked at most every MAINTENANCE_CHECK_TTL_MS, so a
 // fresh navigation sees the flag within that window (unlike client-side
 // polling, already-open idle tabs are only caught on their next navigation).
-const maintenanceHandle: Handle = async ({ event, resolve }) => {
-  if (event.url.pathname.startsWith(MAINTENANCE_PATH) || event.url.pathname.startsWith('/_app')) {
-    return resolve(event)
+export const maintenanceHandle: Handle = async ({ event, resolve: render }) => {
+  const path = withoutInstancePath(event.url.pathname)
+  if (path.startsWith(MAINTENANCE_PATH) || path.startsWith('/_app')) {
+    return render(event)
   }
 
   const now = Date.now()
@@ -220,21 +228,21 @@ const maintenanceHandle: Handle = async ({ event, resolve }) => {
   }
 
   if (maintenanceCache.enabled) {
-    redirect(307, MAINTENANCE_PATH)
+    redirect(307, resolve(MAINTENANCE_PATH))
   }
 
-  return resolve(event)
+  return render(event)
 }
 
 // Metrics middleware
-const metricsHandle: Handle = async ({ event, resolve }) => {
+export const metricsHandle: Handle = async ({ event, resolve: render }) => {
   // Skip metrics endpoint itself
-  if (event.url.pathname === '/metrics') {
-    return resolve(event)
+  if (withoutInstancePath(event.url.pathname) === '/metrics') {
+    return render(event)
   }
 
   const start = Date.now()
-  const response = await resolve(event)
+  const response = await render(event)
   const duration = (Date.now() - start) / 1000
 
   const labels = {
@@ -259,16 +267,16 @@ const metricsHandle: Handle = async ({ event, resolve }) => {
   return response
 }
 
-export const authWallHandle: Handle = async ({ event, resolve }) => {
-  if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return resolve(event)
+export const authWallHandle: Handle = async ({ event, resolve: render }) => {
+  if (env.AUTH_ACCESS_POLICY !== 'sign_in_required') return render(event)
 
-  const path = event.url.pathname
+  const path = withoutInstancePath(event.url.pathname)
   if (path.startsWith('/login') || path.startsWith('/_app') || path.startsWith(MAINTENANCE_PATH))
-    return resolve(event)
+    return render(event)
 
   const cookie = event.cookies.get('auth_session')
   if (!cookie) {
-    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+    redirect(302, loginUrl(event.url))
   }
 
   // Holding a cookie is not the same as holding a session: anyone can set one
@@ -284,15 +292,15 @@ export const authWallHandle: Handle = async ({ event, resolve }) => {
     // Fail open, like the maintenance and locale checks above: a backend blip
     // must not sign everyone out, and the API guards its own endpoints anyway.
     logger.error('Auth wall session check failed', { error: `${error}` })
-    return resolve(event)
+    return render(event)
   }
 
   if (!session.user) {
     event.cookies.delete('auth_session', { path: '/' })
-    redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
+    redirect(302, loginUrl(event.url))
   }
 
-  return resolve(event)
+  return render(event)
 }
 
 // securityHeadersHandle comes first so it sees the finished response, including

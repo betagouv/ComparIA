@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { match, resolve } from '$app/paths'
+  import { asset, match, resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Alert, Tabs } from '$components/dsfr'
   import { SeoHead, SignInForm } from '$components/layout'
@@ -76,7 +76,7 @@
       <img
         src={auth.config?.has_custom_logo
           ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
-          : '/orgs/comparia.png'}
+          : asset('/orgs/comparia.png')}
         aria-hidden="true"
         alt=""
         class="h-[35px]"

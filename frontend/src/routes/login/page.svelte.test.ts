@@ -22,7 +22,11 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn(), replaceState: mocks.replaceState }))
-vi.mock('$app/paths', () => ({ resolve: (path: string) => path, match: vi.fn() }))
+vi.mock('$app/paths', () => ({
+  resolve: (path: string) => path,
+  asset: (path: string) => path,
+  match: vi.fn()
+}))
 vi.mock('$app/state', () => ({ page: mocks.pageState }))
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => mocks.authContext }))

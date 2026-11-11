@@ -46,7 +46,7 @@
       <Link
         button
         icon="edit-line"
-        href="/"
+        href={resolve('/')}
         text={m['header.chatbot.newDiscussion']()}
         class="text-nowrap"
       />

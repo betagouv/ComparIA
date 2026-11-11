@@ -20,6 +20,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import { withoutInstancePath } from '$lib/routing'
   import { signInMethods } from '$lib/signInMethods'
   import { getSurveyContext } from '$lib/survey.svelte'
   import { onMount, tick } from 'svelte'
@@ -215,7 +216,8 @@
       const params = new SvelteURLSearchParams(page.url.searchParams)
       params.delete('step')
       const qs = params.toString()
-      replaceState(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, {})
+      const path = withoutInstancePath(page.url.pathname)
+      replaceState(qs ? resolve(`${path}?${qs}`) : resolve(path), {})
     }
     if (!emailEnabled && onChallengeExpired) {
       loading = false

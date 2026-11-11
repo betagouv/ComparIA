@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { Link, Modal } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { PreferencesTable } from '.'
@@ -30,7 +31,7 @@
     </h6>
 
     <!-- FIXME alt -->
-    <img src="/ranking/preferences.png" alt="" />
+    <img src={asset('/ranking/preferences.png')} alt="" />
   </Modal>
 
   <PreferencesTable id="preferences-table" {onDownloadData} />
