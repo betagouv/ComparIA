@@ -3,7 +3,7 @@ import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Literal
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 
 import redis
@@ -696,9 +696,10 @@ _OIDC_STATE_COOKIE = "oidc_state"
 
 
 def _oidc_state_cookie_path() -> str:
-    # The path the browser sees, which carries the Instance path the Gateway
-    # strips before the request reaches this backend.
-    return f"{settings.instance_path}/api/auth/oidc"
+    # The directory of the callback URL the provider sends the browser back to:
+    # it carries the Instance path the Gateway strips before the request reaches
+    # this backend, and follows COMPARIA_API_URL when that one is set.
+    return urlsplit(oidc_callback_url()).path.removesuffix("/callback")
 
 
 _MAX_REDIRECT_LENGTH = 2048
