@@ -50,6 +50,68 @@ tests:
           path: spec.template.spec.containers[0].readinessProbe.httpGet.path
           value: /
 
+  - it: gives the frontend the Instance path of the public URL and probes it
+    template: frontend-deployment.yaml
+    set:
+      config.appUrl: https://example.org/fr
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: INSTANCE_PATH
+            value: /fr
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /fr/
+      - contains:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.httpHeaders
+          content:
+            name: Host
+            value: example.org
+
+  - it: ignores a trailing slash of the public URL path
+    template: frontend-deployment.yaml
+    set:
+      config.appUrl: https://example.org/fr/
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: INSTANCE_PATH
+            value: /fr
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /fr/
+
+  - it: sends no Instance path and probes / when the public URL has no path
+    template: frontend-deployment.yaml
+    set:
+      config.appUrl: https://example.org
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: INSTANCE_PATH
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /
+      - contains:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.httpHeaders
+          content:
+            name: Host
+            value: example.org
+
+  - it: sends no Instance path and probes / when there is no public URL
+    template: frontend-deployment.yaml
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: INSTANCE_PATH
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /
+
   - it: sets the admin/auth/currency env vars with their defaults
     template: backend-deployment.yaml
     asserts:

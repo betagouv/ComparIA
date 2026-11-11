@@ -124,3 +124,14 @@ subset would silently leave it without SMTP or with the default session length.
 {{ toYaml . }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Path of the public URL of the Instance (config.appUrl), without a trailing
+slash: "/fr" for https://example.org/fr/, "" when the URL has no path. The
+frontend gets it as INSTANCE_PATH and its readiness probe hits it.
+*/}}
+{{- define "comparia.instancePath" -}}
+{{- if .Values.config.appUrl -}}
+{{- regexReplaceAll "/+$" (urlParse .Values.config.appUrl).path "" -}}
+{{- end -}}
+{{- end -}}
