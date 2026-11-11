@@ -410,6 +410,17 @@ def test_invitation_links_keep_the_instance_path():
     assert sent == [f"{WITH_PATH}/invite/invite-token"]
 
 
+def test_the_oidc_state_cookie_follows_an_explicit_api_url():
+    # The callback is where COMPARIA_API_URL says, whatever the app URL has.
+    with public_url(WITH_PATH, COMPARIA_API_URL="https://arena.example.test"):
+        with oidc_client():
+            client = client_for(anonymous=True)
+            client.cookies.set("anonymous_session", "token")
+            response = client.get("/auth/oidc/login", follow_redirects=False)
+
+    assert path_of(cookie_named(response, "oidc_state")) == "/api/auth/oidc"
+
+
 def test_the_oidc_callback_url_and_login_redirects_keep_the_instance_path():
     from backend.auth.oidc import callback_origin, oidc_callback_url
 
