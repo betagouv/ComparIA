@@ -62,7 +62,6 @@
     "chatbot": {
         "tools": {
             "done": "Klart",
-            "fixed": "Verktyg låsta för det här samtalet: {tools}",
             "noResult": "Inget resultat",
             "none": "Inget verktyg användes",
             "result": "1 resultat",

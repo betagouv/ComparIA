@@ -1211,6 +1211,7 @@
             }
         },
         "loading": "Loading answers",
+        "parameters": "Discussion settings",
         "reasoning": {
             "finished": "Reasoning completed",
             "inProgress": "Reasoning in progress…"
@@ -1218,7 +1219,7 @@
         "revealButton": "Finish and discover the models",
         "tools": {
             "done": "Done",
-            "fixed": "Tools fixed for this conversation: {tools}",
+            "enabled": "Enabled Tools",
             "none": "No tool used",
             "noResult": "No result",
             "result": "1 result",

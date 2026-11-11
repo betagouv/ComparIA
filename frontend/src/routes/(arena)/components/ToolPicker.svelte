@@ -51,7 +51,7 @@
     class="my-2!"
   >
     {#snippet labelSnippet()}
-      <ToolCard {tool} />
+      <ToolCard {tool} class="-ms-6" />
     {/snippet}
   </FormToggle>
 {/snippet}

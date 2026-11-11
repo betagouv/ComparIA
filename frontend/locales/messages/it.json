@@ -64,7 +64,6 @@
     "chatbot": {
         "tools": {
             "done": "Fatto",
-            "fixed": "Strumenti fissati per questa conversazione: {tools}",
             "noResult": "Nessun risultato",
             "none": "Nessuno strumento utilizzato",
             "running": "Ricerca in corso…",

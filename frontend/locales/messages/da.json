@@ -1078,7 +1078,6 @@
         },
         "tools": {
             "done": "Færdig",
-            "fixed": "Værktøjer låst for denne samtale: {tools}",
             "noResult": "Intet resultat",
             "none": "Intet værktøj brugt",
             "result": "1 resultat",

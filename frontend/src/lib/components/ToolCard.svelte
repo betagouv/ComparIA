@@ -1,20 +1,28 @@
 <script lang="ts">
   import { Icon } from '$components/dsfr'
   import type { ToolPublic } from '$lib/generated/backend'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { tool }: { tool: ToolPublic } = $props()
+  let {
+    tool,
+    size = 'sm',
+    ...props
+  }: { tool: ToolPublic; size?: 'xs' | 'sm' } & SvelteHTMLElements['div'] = $props()
 </script>
 
-<div class="gap-2 flex">
-  <div class="b-1 rounded-sm h-8 w-8 -ms-6 flex border-[--grey-925-125]">
+<div {...props} class={['gap-2 bg-white flex', `text-${size}`, props.class]}>
+  <div
+    class={['b-1 rounded-sm flex border-[--grey-925-125]', size === 'sm' ? 'h-8 w-8' : 'h-5 w-5']}
+  >
     <Icon
       icon={tool.key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'}
       class="text-primary m-auto"
+      {size}
       block
     />
   </div>
 
-  <div class="text-sm! lh-tight!">
+  <div class="lh-tight! h-fit place-self-center">
     <strong>{tool.label}</strong><br />
     {#if tool.description}
       <span class="text-grey text-[11px]">{tool.description}</span>

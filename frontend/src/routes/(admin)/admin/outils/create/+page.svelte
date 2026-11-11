@@ -278,7 +278,7 @@
       </div>
       <div>
         <p class="fr-text--sm font-bold mb-2!">{m['admin.tools.wizard.present.preview']()}</p>
-        <div class="p-4 rounded-xl ps-10 bg-[--background-alt-grey]">
+        <div class="p-4 rounded-xl cg-border">
           <ToolCard
             tool={{
               key,

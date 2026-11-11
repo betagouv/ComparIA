@@ -54,7 +54,7 @@
 </script>
 
 <div class="grouped-messages px-4 py-2 md:py-5 md:px-6 gap-2 md:gap-5 flex flex-col">
-  <div class="md:flex">
+  <div class="md:flex gap-5">
     {@render children?.()}
 
     <MessageUser id={`user-${turn.id}`} message={turn.user_msg} />

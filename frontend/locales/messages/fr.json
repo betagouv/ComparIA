@@ -1216,7 +1216,6 @@
         "revealButton": "Terminer et découvrir les modèles",
         "tools": {
             "done": "Terminé",
-            "fixed": "Outils fixés pour cette conversation : {tools}",
             "none": "Aucun outil utilisé",
             "noResult": "Aucun résultat",
             "result": "1 résultat",
