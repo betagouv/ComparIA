@@ -17,6 +17,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { provideLegalLinksContext } from '$lib/informational-pages.svelte'
   import { setModelsContext } from '$lib/models'
+  import { withoutInstancePath } from '$lib/routing'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { provideSurveyContext } from '$lib/survey.svelte'
   import { createBrandThemeStyle } from '$lib/theme'
@@ -46,7 +47,7 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
-      goto(resolve(`${page.url.pathname}?${params}${page.url.hash}`))
+      goto(resolve(`${withoutInstancePath(page.url.pathname)}?${params}${page.url.hash}`))
     }
   })
 

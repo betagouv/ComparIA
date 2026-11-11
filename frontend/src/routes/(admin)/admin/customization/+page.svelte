@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { Button, Input } from '$components/dsfr'
   import ColorInput from '$components/form/ColorInput.svelte'
   import { PageLayout } from '$components/layout'
@@ -44,7 +45,7 @@
   const logoSrc = $derived(
     hasCustomLogo
       ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
-      : '/orgs/comparia.png'
+      : asset('/orgs/comparia.png')
   )
   const votes = getVotesContext()
 

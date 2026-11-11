@@ -8,6 +8,7 @@
   import type { Step } from '$lib/components/layout/SignInForm.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { withoutInstancePath } from '$lib/routing'
   import { signInMethods } from '$lib/signInMethods'
   import { getSurveyContext } from '$lib/survey.svelte'
   import SSOSignIn from './SSOSignIn.svelte'
@@ -21,7 +22,7 @@
   const methods = $derived(signInMethods(auth.config))
   // Brings a visitor who signs in through the provider back to the page they
   // opened the modal from.
-  const redirect = $derived(page.url.pathname + page.url.search)
+  const redirect = $derived(withoutInstancePath(page.url.pathname) + page.url.search)
 
   function closeModal() {
     const el = document.getElementById('fr-modal-signin')

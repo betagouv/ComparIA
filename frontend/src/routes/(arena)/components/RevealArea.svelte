@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset, resolve } from '$app/paths'
   import { Button, Link } from '$components/dsfr'
   import SideSwitcher from '$components/SideSwitcher.svelte'
   import { getPlatformName } from '$lib/authContext.svelte'
@@ -61,7 +62,7 @@
         <Link
           button
           icon="edit-line"
-          href="/"
+          href={resolve('/')}
           text={m['header.chatbot.newDiscussion']()}
           class="md:hidden! w-full!"
         />
@@ -116,7 +117,7 @@
                   </div>
                   <img
                     class="fr-responsive-img"
-                    src="/share-example.png"
+                    src={asset('/share-example.png')}
                     alt={m['reveal.feedback.example']()}
                     title={m['reveal.feedback.example']()}
                   />

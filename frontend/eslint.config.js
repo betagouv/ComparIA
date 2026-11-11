@@ -41,6 +41,33 @@ export default ts.config(
     }
   },
   {
+    // The app can be served under an Instance path: internal paths go through
+    // `resolve` (routes) or `asset` (static files) from $app/paths, which add it.
+    // no-navigation-without-resolve already covers <a href>, goto and friends.
+    files: ['src/**/*.ts', 'src/**/*.svelte'],
+    ignores: ['**/*.{test,spec}.ts', '**/*.svelte.{test,spec}.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "CallExpression[callee.name='redirect'] > Literal.arguments[value=/^\\/(?!\\/)/]",
+          message: 'Wrap internal redirect targets in resolve() from $app/paths.'
+        },
+        {
+          selector:
+            "CallExpression[callee.name='redirect'] > TemplateLiteral.arguments[quasis.0.value.raw=/^\\/(?!\\/)/]",
+          message: 'Wrap internal redirect targets in resolve() from $app/paths.'
+        },
+        {
+          selector:
+            'SvelteAttribute[key.name=/^(src|srcset|href|action|poster)$/] > SvelteLiteral[value=/^\\/(?!\\/)/]',
+          message: 'Use resolve() or asset() from $app/paths for internal paths.'
+        }
+      ]
+    }
+  },
+  {
     files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
     languageOptions: {
       parserOptions: {

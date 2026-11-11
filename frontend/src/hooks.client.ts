@@ -1,6 +1,7 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
 import { TOTP_SETUP_PATH, UnauthorizedError, isTotpSetupRequired } from '$lib/fastapi-client'
+import { withoutInstancePath } from '$lib/routing'
 import type { ClientInit, HandleClientError } from '@sveltejs/kit'
 import { loadLocaleMessages } from 'virtual:locale-messages'
 
@@ -18,7 +19,7 @@ export const handleError: HandleClientError = ({ error }) => {
     return
   }
   if (error instanceof UnauthorizedError) {
-    goto(resolve(`/login?redirect=${encodeURIComponent(location.pathname)}`))
+    goto(resolve(`/login?redirect=${encodeURIComponent(withoutInstancePath(location.pathname))}`))
     return
   }
   console.error(error)
