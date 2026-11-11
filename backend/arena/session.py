@@ -77,6 +77,9 @@ def retreive_comparison_metadata(id: uuid.UUID) -> ComparisonMetadata:
     except ValidationError as e:
         logger.error(f"[SESSION] Error decoding comparison '{id}' metadata.: {e}")
         raise ValueError(f"Invalid comparison '{id}' metadata.")
+    except ValueError:
+        # Logged above: comparison metadata expires, this is not a failure.
+        raise
     except Exception as e:
         logger.error(f"[SESSION] Error retrieving comparison '{id}' metadata.: {e}")
         raise

@@ -172,8 +172,9 @@ async def stream_llm_response(
 
         if settings.SENTRY_DSN:
             # Error is silenced to be sent thru sse message, send it to sentry manually
-            # TODO: only capture model name to sort more easily in sentry
-            sentry_sdk.capture_exception(e)
+            with sentry_sdk.new_scope() as scope:
+                scope.set_tag("llm", llm.human_id)
+                sentry_sdk.capture_exception(e)
 
         error_reason = (
             f"error_during_convo: {llm.id}, {llm.endpoint.api_type}, {error_message}"
