@@ -163,6 +163,9 @@ cd frontend && npx vitest --run
 # Frontend E2E tests (requires build first)
 cd frontend && yarn run build && npx playwright test
 
+# The same flows with the app served under a path (/fr): CI job e2e-instance-path,
+# by hand see frontend/README.md, "End-to-end under a path"
+
 # Lint & type check
 cd frontend && yarn run lint
 cd frontend && yarn run check
