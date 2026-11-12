@@ -36,6 +36,7 @@ const base: AppSettingsPublic = {
   publish_frequency: 'off',
   publish_hour: 3,
   publish_timezone: 'UTC',
+  dataset_voter_ids: false,
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',

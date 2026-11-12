@@ -452,6 +452,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         publish_frequency=row.publish_frequency,
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
+        dataset_voter_ids=row.dataset_voter_ids,
         has_custom_logo=row.logo is not None,
         logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,

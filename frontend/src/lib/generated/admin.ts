@@ -324,6 +324,7 @@ export interface AppSettingsPatch {
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
+  dataset_voter_ids?: boolean | null;
   auth_methods?: string[] | null;
   oidc_issuer?: string | null;
   oidc_client_id?: string | null;
@@ -350,6 +351,7 @@ export interface AppSettingsPublic {
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   publish_hour: number;
   publish_timezone: string;
+  dataset_voter_ids: boolean;
   has_custom_logo: boolean;
   logo_version?: string | null;
   enabled_locales: string[];

@@ -14,9 +14,11 @@ captured from the first batch).
     uv run --group data python tests/dataset/test_streaming_export.py
 """
 
+import asyncio
 import os
 import sys
 import tempfile
+import uuid
 from datetime import datetime
 from pathlib import Path
 
@@ -27,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from utils.dataset.export import StreamingDatasetExporter
+from utils.dataset.voters import VoterPseudonyms
 
 
 def make_rows(n: int) -> list[dict]:
@@ -185,9 +188,10 @@ def check_reference_schema(failures):
         archived_reason="spam",
         archived_at=datetime(2024, 1, 1),
     )
-    real = pa.Table.from_pandas(
-        pd.DataFrame(fix.comparison_to_turns(full)), preserve_index=False
-    ).schema
+    # Fully populated includes the raw dataset's voter id.
+    full.user_id = uuid.uuid4()
+    rows = asyncio.run(compute.comparison_to_turns(full, VoterPseudonyms(b"k")))
+    real = pa.Table.from_pandas(pd.DataFrame(rows), preserve_index=False).schema
     ref = pa.Table.from_pandas(
         pd.DataFrame(compute._reference_rows()), preserve_index=False
     ).schema
