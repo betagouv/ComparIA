@@ -139,11 +139,13 @@
     `background: var(--brand-rank-${rankClass}); color: var(--brand-rank-${rankClass}-text)`
 
   // Where the rank could land in 95% of bootstrap rounds, read on hover over
-  // the score rather than in a column of its own.
+  // the score rather than in a column of its own. The page renumbers ranks
+  // over the models it shows while the distances come from the full fit, so
+  // the bounds are kept within the table.
   const rankRange = (model: BotModelWithData) =>
     m['ranking.table.data.rankRange']({
-      best: model.data.rank - model.data.trust_range[0],
-      worst: model.data.rank + model.data.trust_range[1]
+      best: Math.max(1, model.data.rank - model.data.trust_range[0]),
+      worst: Math.min(data.length, model.data.rank + model.data.trust_range[1])
     })
 
   // Shown, but with a rank still too loose to read much into: greyed out.

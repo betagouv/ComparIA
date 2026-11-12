@@ -78,7 +78,23 @@ describe('RankingTable', () => {
     const { container } = renderTable()
     const row = container.querySelector('#ranking-table-loose')!
 
-    expect(row.querySelector('[title]')!.getAttribute('title')).toBe('Rang possible entre 1 et 14')
+    expect(row.querySelector('[title]')!.getAttribute('title')).toBe('Rang possible entre 1 et 3')
+  })
+
+  it('keeps the rank range within the table once ranks are renumbered', () => {
+    // Ranked 3rd by the fit, 1st here once the two above it are left out:
+    // the distances still come from the fit.
+    const { container } = render(RankingTable, {
+      id: 'ranking-table',
+      models: [model('renumbered', 1, [2, 1]), model('next', 2, [0, 0])],
+      commons: commons(),
+      lastUpdateDate: '01/01/2026',
+      totalVotes: 1500,
+      onDownloadData: () => {}
+    })
+    const row = container.querySelector('#ranking-table-renumbered')!
+
+    expect(row.querySelector('[title]')!.getAttribute('title')).toBe('Rang possible entre 1 et 2')
   })
 
   it('shows the energy label, and N/A for proprietary models', () => {
