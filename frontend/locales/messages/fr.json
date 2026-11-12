@@ -937,13 +937,15 @@
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
         "tools": {
+            "add": "Ajouter les outils",
             "clear": "Tout désélectionner",
             "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
             "count": "{count} outils",
             "label": "Outils",
             "legend": "Outils",
             "locked": "Les outils sont fixés pour toute la conversation.",
-            "none": "Aucun outil"
+            "none": "Aucun outil",
+            "viewAll": "Voir tous les outils"
         },
         "webSearch": {
             "disabled": "Recherche web désactivée",
