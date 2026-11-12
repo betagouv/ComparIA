@@ -187,6 +187,7 @@ def check_reference_schema(failures):
         archived=False,
         archived_reason="spam",
         archived_at=datetime(2024, 1, 1),
+        reserved_at=datetime(2024, 1, 1),
     )
     # Fully populated includes the raw dataset's voter id.
     full.user_id = uuid.uuid4()
@@ -255,6 +256,7 @@ def check_temporal_nulls(failures):
                 "archived": False,
                 "archived_reason": None,
                 "archived_at": None,
+                "reserved_at": None,
             },
             "respondent": '{"age": "25_34"}' if populated else "{}",
         }

@@ -18,9 +18,10 @@ from utils.validation import NonEmptyStr
 
 from .utils import BaseDBModel, Datetime, OptionalDatetime, utc_now
 
-# The two datasets a run produces. Code, not configuration: a destination picks
-# which of them it receives, it cannot invent a third.
-PublishDataset = Literal["normal", "raw"]
+# The datasets a run produces. Code, not configuration: a destination picks
+# which of them it receives, it cannot invent another. "reserved" holds what
+# admins set aside for a partner, see utils/dataset/reservation.py.
+PublishDataset = Literal["normal", "raw", "reserved"]
 PUBLISH_DATASETS: tuple[PublishDataset, ...] = get_args(PublishDataset)
 
 PublishKind = Literal["huggingface", "s3"]
@@ -36,7 +37,8 @@ _REPO_PATH = re.compile(r"^[\w.-]+/[\w.-]+$")
 
 class HuggingFaceConfigPublic(SQLModel):
     kind: Literal["huggingface"] = "huggingface"
-    # The raw dataset is pushed to '{repo_path}-raw'.
+    # The raw and reserved datasets are pushed to '{repo_path}-raw' and
+    # '{repo_path}-reserved'.
     repo_path: NonEmptyStr
 
     @field_validator("repo_path")
@@ -195,6 +197,10 @@ class PublishDestinationUpsert(SQLModel):
             raise ValueError("a destination needs at least one dataset")
         if len(set(value)) != len(value):
             raise ValueError("a dataset can only be listed once")
+        # A partner's evaluation is worthless once its comparisons are public,
+        # and the open dataset usually goes to a public repository.
+        if {"normal", "reserved"} <= set(value):
+            raise ValueError("the open and reserved datasets go to different places")
         return value
 
 
@@ -254,6 +260,24 @@ class PublishRun(BaseDBModel, table=True):
     # model, or its configuration, broke.
     held_back: int | None = None
     published: int | None = None
+    # What the reserved dataset carried, null for a run that did not build it.
+    reserved: int | None = None
+
+
+class PublishSending(BaseDBModel, table=True):
+    """
+    One dataset a run read and sent, kept whatever later happens to the
+    destinations: whether a comparison can still be reserved for a partner
+    depends on everything ever sent. See utils/dataset/reservation.py.
+    """
+
+    __tablename__ = "publish_sending"
+
+    dataset: Annotated[PublishDataset, Field(sa_type=String, index=True)]
+    started_at: Datetime
+    # Null while the run reads and sends. Every comparison created before it
+    # may have left.
+    sent_until: OptionalDatetime = None
 
 
 class AdminPublishRun(SQLModel):
@@ -263,9 +287,17 @@ class AdminPublishRun(SQLModel):
     error: str | None
     held_back: int | None
     published: int | None
+    reserved: int | None
 
 
 class AdminPublishStatus(SQLModel):
     # Shared across destinations: a run says what was published, while each
     # destination owns only its schedule.
     runs: list[AdminPublishRun]
+    # Reserved now, and how many of those a run already sent to the partner.
+    reserved: int
+    reserved_sent: int
+
+
+class AdminReleasedReservations(SQLModel):
+    released: int

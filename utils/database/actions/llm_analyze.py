@@ -27,7 +27,9 @@ from utils.secrets import SecretUnreadableError
 logger = logging.getLogger("comparia.db.llm_analyze")
 
 TO_ANALYZE_CONDITION = and_(
-    col(Comparison.archived) == False,
+    # A reserved comparison needs analysing to reach the partner, who judges
+    # what linting archived for itself.
+    or_(col(Comparison.archived) == False, col(Comparison.reserved_at).is_not(None)),
     col(Comparison.llm_analyzed) == None,
     # The analysis decides what gets published, and partner programme
     # conversations (Pix pupils) never are: sending them to the analysis

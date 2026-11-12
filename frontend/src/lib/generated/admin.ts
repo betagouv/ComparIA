@@ -133,11 +133,14 @@ export interface ActivityConversationRow {
   comment: string | null;
   revealed: boolean;
   categories: string[];
-  llm_analyzed: boolean;
+  llm_analyzed: boolean | null;
   contains_pii: boolean;
   contains_spam: boolean;
   archived: boolean;
   has_error: boolean;
+  reserved_at: string | null;
+  reserve_block?: ("publishing" | "published" | "pii" | "cohort" | "analysis_failed") | null;
+  reserved_sent: boolean;
   [k: string]: unknown;
 }
 export interface ActivityFilterOptions {
@@ -203,7 +206,7 @@ export interface AdminPublishDestination {
   name: string;
   kind: "huggingface" | "s3";
   config: HuggingFaceConfigPublic | S3ConfigPublic;
-  datasets: ("normal" | "raw")[];
+  datasets: ("normal" | "raw" | "reserved")[];
   enabled: boolean;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   next_run_at?: string | null;
@@ -233,9 +236,12 @@ export interface AdminPublishRun {
   error: string | null;
   held_back: number | null;
   published: number | null;
+  reserved: number | null;
 }
 export interface AdminPublishStatus {
   runs: AdminPublishRun[];
+  reserved: number;
+  reserved_sent: number;
 }
 export interface AdminSuggestion {
   id: string;
@@ -726,7 +732,7 @@ export interface PromptCheckUpsert {
 export interface PublishDestinationUpsert {
   name: string;
   config: HuggingFaceConfigInput | S3ConfigInput;
-  datasets: ("normal" | "raw")[];
+  datasets: ("normal" | "raw" | "reserved")[];
   enabled?: boolean;
   publish_frequency?: "off" | "daily" | "weekly" | "monthly";
 }
