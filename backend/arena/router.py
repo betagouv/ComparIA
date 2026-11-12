@@ -60,9 +60,15 @@ from backend.config import (
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
 )
-from backend.errors import UnavailableLLMsSelectionError
-from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
-from backend.selection_modes.services import get_public_modes
+from backend.errors import NoValidPairError, UnavailableLLMsSelectionError
+from backend.llms.data import LLMsData, get_llms_data
+from backend.selection_modes.services import (
+    ModeUnavailableError,
+    comparison_mode_key,
+    get_public_modes,
+    pick_replacement_model,
+    resolve_mode,
+)
 from backend.survey.dependencies import require_answered_questions
 from backend.utils.locale import LocaleQuery
 from backend.utils.user import get_ip
@@ -332,6 +338,13 @@ async def get_selection_modes(
     return await get_public_modes(locale, cohorts)
 
 
+def mode_unavailable() -> HTTPException:
+    # An open tab still offers a mode an admin has since changed or turned off.
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="mode_unavailable"
+    )
+
+
 @router.post(
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
@@ -381,6 +394,10 @@ async def add_first_text(
         f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, {len(args.tools)} tools)",
         extra={"request": request},
     )
+    try:
+        mode = await resolve_mode(args.mode, args.locale, args.cohorts)
+    except ModeUnavailableError:
+        raise mode_unavailable()
     enabled_tools = await keep_offered_tools(args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
@@ -397,12 +414,14 @@ async def add_first_text(
     # Select LLMs
     llms_data = await get_llms_data()
     try:
-        llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+        llm_a_id, llm_b_id = llms_data.pick_two(mode, args.custom_models_selection)
     except UnavailableLLMsSelectionError:
         # An open tab still lists a model an admin has since locked or turned off.
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="model_unavailable"
         )
+    except NoValidPairError:
+        raise mode_unavailable()
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
@@ -445,7 +464,7 @@ async def add_first_text(
             user_id=user.id if user else None,
             participation_terms_version=participation_terms_version,
             cohorts=args.cohorts,
-            mode=args.mode,
+            mode=await comparison_mode_key(mode, args.custom_models_selection),
             custom_models_selection=args.custom_models_selection,
             enabled_tools=enabled_tools,
             llm_id_a=llm_a_id,
@@ -641,7 +660,9 @@ async def retry(
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
         if pos := comparison.error.pos:
-            if comparison.mode != "custom" and comparison.error.is_timeout:
+            # A drawn model that timed out was already swapped while streaming.
+            # Only a visitor's own pick is kept then, and may be swapped here.
+            if not comparison.custom_models_selection and comparison.error.is_timeout:
                 # Another timeout error occured even tho llms have been rerolled already
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

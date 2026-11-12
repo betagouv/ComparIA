@@ -4,16 +4,12 @@ Data validation models using Pydantic.
 
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.normalize import strip_hidden
-from backend.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    DEFAULT_SELECTION_MODE,
-    CustomModelsSelection,
-    SelectionMode,
-)
+from backend.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, CustomModelsSelection
+from utils.i18n import SupportedLocale
 
 # Request/Response models for FastAPI endpoints
 PromptField = Field(min_length=1)
@@ -46,8 +42,12 @@ class AddFirstTextBody(CaptchaBody):
     """Request body for add_first_text endpoint."""
 
     prompt_value: str = PromptField
-    mode: SelectionMode = DEFAULT_SELECTION_MODE
+    # A selection mode key, resolved on the server. Left out, the default mode.
+    mode: str | None = Field(default=None, max_length=50)
     custom_models_selection: CustomModelsSelection = None
+    # For modes offered only in some languages. Left out, the language is not
+    # checked: it decides what the menu shows, not what a request may do.
+    locale: SupportedLocale | None = None
     # We force cohorts not to be None to make sure cohorts detection has been called on frontend
     cohorts: str
     tools: list[str] = []
@@ -62,22 +62,13 @@ class AddFirstTextBody(CaptchaBody):
         # `pick_two` parses these as UUIDs and only knows what to do with one or
         # two of them. Left unchecked, a third element or a non-UUID string
         # crashes deep in the picker as a 500; here it is a plain 422.
-        if v is None:
-            return v
+        if not v:
+            return None
         if len(v) > 2:
             raise ValueError("At most two models can be selected.")
         for llm_id in v:
             UUID(llm_id)
         return v
-
-    @model_validator(mode="after")
-    def custom_without_models_is_random(self) -> "AddFirstTextBody":
-        # Manual mode with nothing picked gets two random models from
-        # `pick_two`, so store it as what it is.
-        if self.mode == "custom" and not self.custom_models_selection:
-            self.mode = "random"
-            self.custom_models_selection = None
-        return self
 
     @field_validator("prompt_value")
     @classmethod

@@ -1,29 +1,27 @@
 import logging
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 from uuid import UUID
 
-import numpy as np
 from pydantic import BaseModel, Field, computed_field, field_validator
 from sqlmodel import select
 
-from backend.config import (
-    BIG_MODELS_BUCKET_LOWER_LIMIT,
-    SMALL_MODELS_BUCKET_UPPER_LIMIT,
-    CustomModelsSelection,
-    SelectionMode,
-)
+from backend.config import CustomModelsSelection
 from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.currency import CurrencyInfo, get_currency_info
 from backend.llms.models import APILLMData, LLMDataArchived, LLMDataEnabled
+from backend.llms.selection import (
+    ModeRules,
+    draw_pair,
+    needs_ranking,
+)
 from backend.utils.countries import get_ranking
 from utils.database.encrypted import UnreadableRow, UnreadableSecret
 from utils.database.models.llms import LLMData
+from utils.database.models.selection_mode import SelectionModeRules
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.ranking.compute import RankingResult
 from utils.storage.redis import REDIS_LLMS_DATA_CACHE_KEY, redis_cache
-
-if TYPE_CHECKING:
-    from utils.database.models import BotPos, ComparisonRead
 
 logger = logging.getLogger("languia")
 
@@ -68,7 +66,7 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def enabled(self) -> dict[str, LLMDataEnabled]:
+    def enabled(self) -> dict[UUID, LLMDataEnabled]:
         """
         Filter to only enabled models (removes disabled or deprecated models)
         """
@@ -80,38 +78,6 @@ class LLMsData(BaseModel):
 
     @computed_field  # type: ignore[prop-decorator]
     @property
-    def random_models(self) -> list[UUID]:
-        """
-        All models (for standard random selection)
-        """
-        return [model.id for model in self.enabled.values()]
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def small_models(self) -> list[UUID]:
-        """
-        Models with parameters <= 60B (for "small-models" selection mode)
-        """
-        return [
-            model.id
-            for model in self.enabled.values()
-            if model.params <= SMALL_MODELS_BUCKET_UPPER_LIMIT
-        ]
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def big_models(self) -> list[UUID]:
-        """
-        Models with parameters >= 100B (for "big-vs-small" selection mode)
-        """
-        return [
-            model.id
-            for model in self.enabled.values()
-            if model.params >= BIG_MODELS_BUCKET_LOWER_LIMIT
-        ]
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
     def pricey_models(self) -> list[UUID]:
         """
         Commercial models with higher API costs (e.g., Claude, GPT-4)
@@ -119,141 +85,39 @@ class LLMsData(BaseModel):
         """
         return [model.id for model in self.enabled.values() if model.rate_limited]
 
-    def pick_one(self, models: list[UUID], excluded: list[UUID] = []) -> UUID:
-        """
-        Randomly select a model from a list, excluding specified models.
-
-        Args:
-            models: List of available model names to choose from
-            excluded: List of model names to exclude from selection
-
-        Returns:
-            UUID: Selected LLM id
-
-        Raises:
-            Error: If no models are available after filtering
-        """
-        # Filter out excluded models
-        models_pool = [_id for _id in models if _id not in excluded]
-
-        logger.debug("chosing from:" + str(models_pool))
-        logger.debug("excluded:" + str(excluded))
-
-        # Handle empty pool
-        if len(models_pool) == 0:
-            # TODO: tell user in a toast notif that we couldn't respect prefs
-            logger.warning("Couldn't respect exclusion prefs")
-            if len(models) == 0:
-                logger.critical("No model to choose from")
-                # No models available at all
-                # FIXME use Error that can be toasted
-                raise Exception("No model available for this mode")
-            else:
-                # Fall back to all models if couldn't respect exclusions
-                # FIXME hmm readding excluded models ?
-                models_pool = models
-
-        # Random selection from available models
-        picked_index = np.random.choice(len(models_pool), p=None)
-        return models_pool[picked_index]
-
     def pick_two(
         self,
-        mode: SelectionMode | None = "random",
+        mode: "ModeRules | None" = None,
         custom_selection: CustomModelsSelection = None,
         unavailable_models: list[UUID] = [],
+        ranking: RankingResult | None = None,
     ) -> tuple[UUID, UUID]:
         """
-        Select two models based on the comparison mode.
+        Two models drawn under a selection mode's rules, in random order.
+        Without a mode, two models from the whole catalogue.
 
-        Supports multiple selection modes:
-        - random: Two random models
-        - big-vs-small: One large model vs one small model
-        - small-models: Two small models
-        - custom: User-specified models
-
-        Args:
-            mode: Selection mode string
-            custom_models_selection: User's custom model choices (if custom mode)
-            unavailable_models: Models that are currently unavailable/offline
-
-        Returns:
-            tuple: (model_a_id, model_b_id) - pair of model ids, randomly swapped
+        Raises UnavailableLLMsSelectionError when the visitor picked a model
+        the mode does not let them pick, and NoValidPairError when the mode
+        has no valid pair.
         """
-        import random
+        # `AddFirstTextBody` already refuses anything but one or two UUIDs,
+        # but nothing has checked a selection that comes from elsewhere.
+        selection = custom_selection or ()
+        if len(selection) > 2:
+            raise ValueError("At most two models can be selected.")
+        try:
+            picked = [UUID(str(llm_id)) for llm_id in selection]
+        except ValueError:
+            raise ValueError("Custom LLMs selection contains invalid ids")
 
-        # FIXME rework unavailable_models, models should be available if endpoint is defined or use class attribute to store unavailable models
-
-        if mode == "big-vs-small":
-            # Compare large models against small models
-            model_a_id = self.pick_one(self.big_models, excluded=unavailable_models)
-            model_b_id = self.pick_one(self.small_models, excluded=unavailable_models)
-
-        elif mode == "small-models":
-            # Compare two small models
-            model_a_id = self.pick_one(self.small_models, excluded=unavailable_models)
-            model_b_id = self.pick_one(
-                self.small_models, excluded=[*unavailable_models, model_a_id]
-            )
-
-        elif mode == "custom" and custom_selection and len(custom_selection) > 0:
-            # `AddFirstTextBody` already refuses anything but one or two UUIDs,
-            # but this is also called from the CLI, where nothing has checked.
-            if len(custom_selection) > 2:
-                raise ValueError("At most two models can be selected.")
-            try:
-                custom_selection = [UUID(llm_id) for llm_id in custom_selection]
-            except ValueError:
-                raise ValueError("Custom LLMs selection contains invalid ids")
-
-            if unknown_llms := [
-                llm_id
-                for llm_id in custom_selection
-                if llm_id not in self.random_models
-            ]:
-                logger.error(
-                    f"`custom_models_selection` with unavailable LLM ids: {unknown_llms}"
-                )
-                raise UnavailableLLMsSelectionError(
-                    "Custom LLMs selection contains unavailable LLMs"
-                )
-
-            # The arena greys these out, so only a client skipping it gets here.
-            if locked_llms := [
-                llm_id
-                for llm_id in custom_selection
-                if not self.enabled[llm_id].custom_selectable
-            ]:
-                logger.warning(
-                    f"`custom_models_selection` with LLMs locked out of custom mode: {locked_llms}"
-                )
-                raise UnavailableLLMsSelectionError(
-                    "Custom LLMs selection contains locked LLMs"
-                )
-
-            if len(custom_selection) == 1:
-                # One model chosen by user, pair with random model
-                model_a_id = custom_selection[0]
-                model_b_id = self.pick_one(
-                    self.random_models, excluded=[*unavailable_models, model_a_id]
-                )
-            elif len(custom_selection) == 2:
-                # Two models chosen by user
-                model_a_id = custom_selection[0]
-                model_b_id = custom_selection[1]
-
-        else:
-            # Default to random mode
-            model_a_id = self.pick_one(self.random_models, excluded=unavailable_models)
-            model_b_id = self.pick_one(
-                self.random_models, excluded=[*unavailable_models, model_a_id]
-            )
-
-        # Randomly swap models to avoid position bias
-        swap = random.randint(0, 1)
-        if swap == 1:
-            return (model_b_id, model_a_id)
-        return (model_a_id, model_b_id)
+        rules: ModeRules = mode or SelectionModeRules()
+        if ranking is None and needs_ranking(rules):
+            ranking = get_ranking()
+        try:
+            return draw_pair(rules, self, picked, unavailable_models, ranking)
+        except UnavailableLLMsSelectionError:
+            logger.warning(f"`custom_models_selection` refused: {picked}")
+            raise
 
 
 @redis_cache(REDIS_LLMS_DATA_CACHE_KEY)
@@ -299,39 +163,3 @@ async def get_llms_list() -> LLMList:
         },
         context={"ranking": ranking},
     )
-
-
-async def pick_replacement_model(
-    comparison: "ComparisonRead", pos: "BotPos", charged: bool = False
-) -> str | None:
-    """
-    Pick a replacement model from the appropriate pool, excluding both current models.
-
-    `charged` says the turn already paid its character budgets for the current
-    pair. If neither model is pricey, the turn skipped the pricey budget, so
-    no pricey model may take over.
-    """
-    models = await get_llms_data()
-    other_pos: "BotPos" = "b" if pos == "a" else "a"
-    failing = getattr(comparison, f"llm_id_{pos}")
-    other = getattr(comparison, f"llm_id_{other_pos}")
-    excluded = [failing, other]
-
-    # Pick from the right pool based on mode
-    if comparison.mode == "small-models":
-        pool = models.small_models
-    elif comparison.mode == "big-vs-small":
-        pool = (
-            models.big_models if failing in models.big_models else models.small_models
-        )
-    else:
-        pool = models.random_models
-
-    pricey = models.pricey_models
-    if charged and failing not in pricey and other not in pricey:
-        pool = [llm_id for llm_id in pool if llm_id not in pricey]
-
-    try:
-        return models.pick_one(pool, excluded=excluded)
-    except Exception:
-        return None

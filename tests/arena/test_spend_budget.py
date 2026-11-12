@@ -31,12 +31,14 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.arena.session as session  # noqa: E402
+import backend.selection_modes.services as mode_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.config import (  # noqa: E402
     ANONYMOUS_SESSION_COOKIE,
     RATELIMIT_ALL_MODELS_INPUT,
     RATELIMIT_ALL_MODELS_INPUT_PER_IP,
 )
+from tests.arena.modes import resolve_seeded_mode, seeded_modes  # noqa: E402
 from tests.arena.test_ratelimit import FakeRedis, default_prompt_check  # noqa: E402
 
 SESSION = "b" * 64
@@ -143,22 +145,28 @@ def arena(llm_ids=(CHEAP, CHEAP)):
 
     with patched(session, get_redis_client=lambda: redis):
         with patched(arena_models, verify_altcha_token=lambda _token: (True, None)):
-            with patched(
-                arena_router,
-                get_llms_data=get_llms_data,
-                get_prompt_check=default_prompt_check,
-                run_checks=run_checks,
-                save_prompt_check_result=save_prompt_check_result,
-                get_current_terms_acceptance_version=terms_version,
-                create_comparison=create_comparison,
-                add_comparison_turn=add_comparison_turn,
-                update_turn=noop,
-                update_comparison_error=noop,
-                store_comparison_metadata=lambda *_args, **_kwargs: None,
-                stream_comparison_messages=stream_comparison_messages,
-                format_sse_event=lambda event: f"data: {event['type']}\n\n",
-                ComparisonPublic=SimpleNamespace(model_validate=lambda *_a, **_k: {}),
-                TurnPublic=SimpleNamespace(model_validate=lambda *_a, **_k: {}),
+            with (
+                patched(mode_services, get_selection_modes=seeded_modes),
+                patched(
+                    arena_router,
+                    get_llms_data=get_llms_data,
+                    resolve_mode=resolve_seeded_mode,
+                    get_prompt_check=default_prompt_check,
+                    run_checks=run_checks,
+                    save_prompt_check_result=save_prompt_check_result,
+                    get_current_terms_acceptance_version=terms_version,
+                    create_comparison=create_comparison,
+                    add_comparison_turn=add_comparison_turn,
+                    update_turn=noop,
+                    update_comparison_error=noop,
+                    store_comparison_metadata=lambda *_args, **_kwargs: None,
+                    stream_comparison_messages=stream_comparison_messages,
+                    format_sse_event=lambda event: f"data: {event['type']}\n\n",
+                    ComparisonPublic=SimpleNamespace(
+                        model_validate=lambda *_a, **_k: {}
+                    ),
+                    TurnPublic=SimpleNamespace(model_validate=lambda *_a, **_k: {}),
+                ),
             ):
                 yield state
 

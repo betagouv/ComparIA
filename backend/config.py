@@ -263,10 +263,6 @@ DEFAULT_SELECTION_MODE: SelectionMode = "random"
 # Language model custom selection (tuple of 0, 1, or 2 model IDs, or None)
 CustomModelsSelection = tuple[str, ...] | None
 
-# Model parameter thresholds for categorization
-SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
-BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
-
 # Rate limiting specifically for expensive models (openai models, etc.).
 # Keyed per anonymous session (the `anonymous_session` cookie hash), not per IP,
 # so users behind a shared NAT (schools, hospitals) each get their own budget.

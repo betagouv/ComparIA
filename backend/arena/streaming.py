@@ -25,10 +25,11 @@ from backend.arena.conversation import (
 )
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
 from backend.arena.tools import ToolSpec, resolve_tools
-from backend.config import CustomModelsSelection, SelectionMode, settings
+from backend.config import CustomModelsSelection, settings
 from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
-from backend.llms.data import get_llms_data, pick_replacement_model
+from backend.llms.data import get_llms_data
 from backend.llms.models import LLMDataEnabled
+from backend.selection_modes.services import pick_replacement_model
 from utils.database.models import (
     BOT_POS,
     BotPos,
@@ -275,9 +276,7 @@ async def stream_comparison_messages(
                             and turn_index == 0
                             and not retried[e.pos]
                             and not _is_model_user_selected(
-                                failing_llm_id,
-                                comparison.mode,
-                                comparison.custom_models_selection,
+                                failing_llm_id, comparison.custom_models_selection
                             )
                         ):
                             if new_llm_id := await pick_replacement_model(
@@ -389,12 +388,13 @@ def _get_messages(comparison: ComparisonRead, pos: BotPos) -> list[AnyMessageRea
 
 
 def _is_model_user_selected(
-    model_name: str, mode: SelectionMode, custom_selection: CustomModelsSelection
+    model_name: str, custom_selection: CustomModelsSelection
 ) -> bool:
     """
-    Check if a model was explicitly chosen by the user (custom mode).
+    Check if a model was explicitly chosen by the visitor. Only modes that let
+    the visitor pick store a selection.
     """
-    if mode != "custom" or not custom_selection:
+    if not custom_selection:
         return False
     return str(model_name) in custom_selection
 

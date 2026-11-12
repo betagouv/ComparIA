@@ -11,11 +11,14 @@ import pytest
 
 from backend.llms.data import LLMsData
 from backend.llms.models import LLMDataEnabled
+from utils.database.models import SelectionModeRules
 
 OPEN = uuid4()
 OTHER = uuid4()
 LOCKED = uuid4()
 DRAWS = 50
+CUSTOM = SelectionModeRules(visitor_picks=2)
+RANDOM = SelectionModeRules()
 
 
 @pytest.fixture
@@ -30,7 +33,7 @@ def llms() -> LLMsData:
 
 
 def test_an_open_pair_goes_through(llms: LLMsData) -> None:
-    assert set(llms.pick_two("custom", (str(OPEN), str(OTHER)))) == {OPEN, OTHER}
+    assert set(llms.pick_two(CUSTOM, (str(OPEN), str(OTHER)))) == {OPEN, OTHER}
 
 
 @pytest.mark.parametrize(
@@ -38,9 +41,9 @@ def test_an_open_pair_goes_through(llms: LLMsData) -> None:
 )
 def test_a_locked_model_is_refused(llms: LLMsData, selection: tuple[str, ...]) -> None:
     with pytest.raises(ValueError, match="locked"):
-        llms.pick_two("custom", selection)
+        llms.pick_two(CUSTOM, selection)
 
 
 def test_a_locked_model_still_comes_up_at_random(llms: LLMsData) -> None:
-    drawn = {model for _ in range(DRAWS) for model in llms.pick_two("random")}
+    drawn = {model for _ in range(DRAWS) for model in llms.pick_two(RANDOM)}
     assert LOCKED in drawn

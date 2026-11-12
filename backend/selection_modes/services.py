@@ -14,21 +14,27 @@ from backend.arena.tools import get_offered_tools
 from backend.config import DEFAULT_SELECTION_MODE
 from backend.llms.data import LLMsData, get_llms_data
 from backend.llms.selection import (
+    ModeRules,
     ToolsOnOffer,
     allowed_tools,
     as_filter,
     needs_ranking,
     picker_llm_ids,
     pools,
+    replacement_pool,
     viability,
+    weighted_choice,
 )
 from backend.utils.countries import get_ranking
 from backend.utils.locale import get_locales_settings, pick_translation
 from utils.database.models import (
+    BotPos,
+    ComparisonRead,
     SelectionMode,
     SelectionModeBase,
     SelectionModePublic,
 )
+from utils.database.models.selection_mode import SelectionModeRules
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.i18n import SupportedLocale
@@ -262,3 +268,34 @@ async def comparison_mode_key(
     ):
         return default.key
     return mode.key
+
+
+async def pick_replacement_model(
+    comparison: ComparisonRead, pos: BotPos, charged: bool = False
+) -> UUID | None:
+    """
+    Pick a model to take over from a failing one, from the pool it was drawn
+    from under the comparison's mode. A mode deleted since leaves the whole
+    catalogue to draw from.
+
+    `charged` says the turn already paid its character budgets for the current
+    pair. If neither model is pricey, the turn skipped the pricey budget, so
+    no pricey model may take over.
+    """
+    models = await get_llms_data()
+    other_pos: BotPos = "b" if pos == "a" else "a"
+    failing = getattr(comparison, f"llm_id_{pos}")
+    other = getattr(comparison, f"llm_id_{other_pos}")
+
+    mode: ModeRules = await find_selection_mode(comparison.mode) or SelectionModeRules()
+    ranking = get_ranking() if needs_ranking(mode) else None
+    pool = replacement_pool(mode, models, failing, other, ranking)
+
+    pricey = models.pricey_models
+    if charged and failing not in pricey and other not in pricey:
+        pool = [llm_id for llm_id in pool if llm_id not in pricey]
+
+    if not pool:
+        logger.warning("No model can take over from a failing one")
+        return None
+    return weighted_choice(mode, pool, models, ranking)
