@@ -48,7 +48,7 @@ def test_an_llm_can_be_created_without_the_optional_fields():
     llm = LLMDataUpsert(
         **{
             k: v
-            for k, v in payload().items()
+            for k, v in payload(status="disabled").items()
             if k not in ("api_model_id", "endpoint_id")
         }
     )
@@ -66,10 +66,19 @@ def test_a_moe_llm_still_needs_active_params():
     assert LLMDataUpsert(**payload(arch="moe", active_params=1.0)).active_params == 1.0
 
 
-def test_an_llm_without_an_endpoint_is_disabled():
-    llm = LLMDataUpsert(**payload(status="enabled", endpoint_id=None))
+def test_an_enabled_llm_without_an_endpoint_is_refused():
+    with pytest.raises(ValidationError, match="endpoint_id"):
+        LLMDataUpsert(**payload(status="enabled", endpoint_id=None))
 
-    assert llm.status == "disabled"
+    with pytest.raises(ValidationError, match="api_model_id"):
+        LLMDataUpsert(**payload(status="enabled", api_model_id=None))
+
+
+@pytest.mark.parametrize("status", ["archived", "disabled"])
+def test_an_llm_without_an_endpoint_keeps_its_status(status):
+    llm = LLMDataUpsert(**payload(status=status, endpoint_id=None, api_model_id=None))
+
+    assert llm.status == status
 
 
 def test_links_are_not_required_in_the_admin_form():
