@@ -94,3 +94,8 @@ def test_llm_metadata_dates_are_date_only():
 
     with pytest.raises(ValidationError):
         LLMDataUpsert(**payload(release_date="2026-01-02T12:30:00"))
+
+
+def test_every_model_gets_the_arena_tools_unless_told_otherwise():
+    assert LLMDataUpsert(**payload()).arena_tools is True
+    assert LLMDataUpsert(**payload(arena_tools=False)).arena_tools is False

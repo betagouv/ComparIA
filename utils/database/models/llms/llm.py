@@ -52,6 +52,10 @@ FIELDS = {
         "title": "Selectable in custom mode",
         "description": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
     },
+    "arena_tools": {
+        "title": "Gets the arena's tools",
+        "description": "Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.",
+    },
     "release_date": {},
     "knowledge_cutoff": {
         "description": "Date after which the LLM no longer has knowledge.",
@@ -127,6 +131,14 @@ class LLMDataBase(BaseDBModel):
             default=True,
             sa_column_kwargs={"server_default": true()},
             **FIELDS["custom_selectable"],
+        ),
+    ]
+    arena_tools: Annotated[
+        bool,
+        Field(
+            default=True,
+            sa_column_kwargs={"server_default": true()},
+            **FIELDS["arena_tools"],
         ),
     ]
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
