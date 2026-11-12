@@ -1,43 +1,52 @@
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import { m } from '$lib/i18n/messages'
 import { describe, expect, it, vi } from 'vitest'
 import ToolPicker from './ToolPicker.svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
+
+// jsdom has no Web Animations API, which the dropdown's fade-in needs.
+Element.prototype.animate ??= vi.fn(() => ({
+  cancel: vi.fn(),
+  finished: Promise.resolve()
+})) as unknown as Element['animate']
 
 const tools = [
   { key: 'web_search', label: 'Recherche web', description: 'Chercher sur le web' },
   { key: 'datagouv', label: 'Données publiques', description: 'Jeux de données publics' }
 ]
 
-describe('ToolPicker', () => {
-  it('starts with nothing selected', () => {
-    const { container } = render(ToolPicker, { props: { tools, selected: [] } })
+function trigger(container: HTMLElement) {
+  return container.querySelector<HTMLButtonElement>('button[aria-controls="dropdown-tools"]')!
+}
 
-    expect(container.querySelector('button')?.textContent).toContain('Aucun outil')
-    const toolTags = container.querySelectorAll<HTMLButtonElement>('button[aria-pressed]')
-    expect(toolTags.length).toBe(tools.length)
-    for (const tag of toolTags) expect(tag.getAttribute('aria-pressed')).toBe('false')
+describe('ToolPicker', () => {
+  it('shows the number of selected tools on the trigger', () => {
+    const { container } = render(ToolPicker, { props: { tools, selected: ['web_search'] } })
+
+    expect(trigger(container).textContent).toMatch(/Outils\s*1/)
   })
 
-  it('renders tools as pressable cards and toggles their selection', async () => {
+  it('offers one toggle per tool, checked when selected', () => {
+    const { container } = render(ToolPicker, { props: { tools, selected: ['datagouv'] } })
+
+    const toggles = container.querySelectorAll<HTMLInputElement>('#dropdown-tools input')
+    expect([...toggles].map((input) => input.id)).toEqual([
+      'tool-web_search-dropdown',
+      'tool-datagouv-dropdown'
+    ])
+    expect([...toggles].map((input) => input.checked)).toEqual([false, true])
+  })
+
+  it('applies the toggled tools when the visitor adds them', async () => {
     const { container } = render(ToolPicker, { props: { tools, selected: [] } })
-    const webSearch = container.querySelector<HTMLButtonElement>(
-      'button[aria-describedby="tool-web_search-description"]'
+
+    await fireEvent.click(container.querySelector('#tool-web_search-dropdown')!)
+    await fireEvent.click(
+      screen.getAllByRole('button', { name: m['arenaHome.tools.add'](), hidden: true })[0]
     )
 
-    expect(webSearch?.getAttribute('aria-pressed')).toBe('false')
-
-    await fireEvent.click(webSearch!)
-    expect(webSearch?.getAttribute('aria-pressed')).toBe('true')
-
-    await fireEvent.click(webSearch!)
-    expect(webSearch?.getAttribute('aria-pressed')).toBe('false')
-  })
-
-  it('shows each description next to its tool', () => {
-    render(ToolPicker, { props: { tools, selected: [] } })
-
-    expect(screen.getByText('Chercher sur le web').id).toBe('tool-web_search-description')
+    expect(trigger(container).textContent).toMatch(/Outils\s*1/)
   })
 
   it('clears the selection in one click', async () => {
@@ -46,27 +55,7 @@ describe('ToolPicker', () => {
     })
 
     await fireEvent.click(screen.getByText('Tout désélectionner'))
-    expect(container.querySelectorAll('button[aria-pressed="true"]')).toHaveLength(0)
-  })
-
-  it('shows the tools title only once in the modal', () => {
-    render(ToolPicker, { props: { tools, selected: [] } })
-
-    expect(screen.getAllByText('Outils')).toHaveLength(1)
-  })
-
-  it('shows the number of selected tools on the trigger', () => {
-    const { container } = render(ToolPicker, { props: { tools, selected: ['web_search'] } })
-
-    expect(container.querySelector('button')?.textContent).toContain('Outils (1)')
-  })
-
-  it('keeps the same compact label with multiple selected tools', () => {
-    const { container } = render(ToolPicker, {
-      props: { tools, selected: ['web_search', 'datagouv'] }
-    })
-
-    expect(container.querySelector('button')?.textContent).toContain('Outils (2)')
+    expect(trigger(container).textContent).toMatch(/Outils\s*0/)
   })
 
   it('states that both models are offered the tools and stay free to use them', () => {
@@ -75,7 +64,25 @@ describe('ToolPicker', () => {
     expect(screen.getByText(/libres de les utiliser ou non/)).toBeTruthy()
   })
 
-  it('renders nothing when the instance has no tool configured', () => {
+  it('shows the tools a mode forces as always on, with nothing to change', () => {
+    const { container } = render(ToolPicker, {
+      props: { tools: [tools[0]], selected: ['web_search'], locked: true }
+    })
+
+    expect(screen.getByText('Recherche web')).toBeInTheDocument()
+    expect(screen.getByText(/Toujours actif dans ce mode/)).toBeInTheDocument()
+    expect(container.querySelector('button')).toBeNull()
+    expect(container.querySelector('input')).toBeNull()
+  })
+
+  it('offers only the tools it is given', () => {
+    const { container } = render(ToolPicker, { props: { tools: [tools[1]], selected: [] } })
+
+    expect(container.querySelector('#tool-web_search-dropdown')).toBeNull()
+    expect(container.querySelector('#tool-datagouv-dropdown')).not.toBeNull()
+  })
+
+  it('renders nothing when no tool is on offer', () => {
     const { container } = render(ToolPicker, { props: { tools: [], selected: [] } })
 
     expect(container.textContent?.trim()).toBe('')

@@ -1272,6 +1272,7 @@
             "clear": "Clear all",
             "contract": "Select tools that allow models to access other sources of information beyond their own knowledge.",
             "count": "{count} tools",
+            "forced": "Always on in this mode",
             "label": "Tools",
             "legend": "Tools",
             "locked": "Tools are fixed for the whole conversation.",
