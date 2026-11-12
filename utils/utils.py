@@ -115,7 +115,7 @@ class FormJsonSchema(GenerateJsonSchema):
 
     def get_flattened_anyof(self, schemas: list[JsonSchemaValue]) -> JsonSchemaValue:
         # remove null values for simplicity, inject 'optional' prop if null in schemas
-        non_null = [schema for schema in schemas if schema["type"] != "null"]
+        non_null = [schema for schema in schemas if schema.get("type") != "null"]
         flattened = super().get_flattened_anyof(schemas=non_null)
         if len(schemas) != len(non_null):
             flattened["optional"] = True
