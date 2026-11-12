@@ -5,7 +5,7 @@
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
   import { m } from '$lib/i18n/messages'
   import { toEntries } from '$lib/utils/commons'
-  import { getItemLabel, type AnyFormItemProps } from '$lib/utils/form'
+  import { getItemLabel, type AnyFormItemProps, type FormSection } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
   import { onMount } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
@@ -16,6 +16,7 @@
     subLabel,
     description,
     items,
+    sections,
     form,
     isBusy = false,
     isDirty = false,
@@ -33,6 +34,8 @@
     subLabel?: string
     description?: string
     items?: AnyFormItemProps[]
+    // When set, only the items the sections list are shown, in their order
+    sections?: FormSection[]
     form: Record<string, unknown>
     isBusy?: boolean
     isDirty?: boolean
@@ -77,7 +80,8 @@
   {novalidate}
   aria-describedby="errors-{id}"
 >
-  <div class={{ 'px-4 md:px-6 my-6': stickyFooter }}>
+  <!-- Sections draw their own boxes, so they need no inset -->
+  <div class={{ 'my-6': stickyFooter, 'px-4 md:px-6': stickyFooter && !sections }}>
     {#if label}
       <h2 id="{id}-title" class="text-3xl!">
         {label}
@@ -91,14 +95,39 @@
       <p class="text-sm! text-grey mb-6!">{description}</p>
     {/if}
 
+    {#snippet field(itemId: string)}
+      {@const item = items?.find((item) => item.id === itemId)}
+      {#if fieldSnippets?.[itemId]}
+        {@render fieldSnippets[itemId]()}
+      {:else if item}
+        <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
+      {/if}
+    {/snippet}
+
     <!-- Auto form fields -->
-    {#if items}
+    {#if sections}
+      {#each sections as section (section.id)}
+        <section class="mb-6 p-4 md:p-6 cg-border" aria-labelledby="{id}-{section.id}-title">
+          <h2 id="{id}-{section.id}-title" class="fr-h5 mb-1!">{section.title}</h2>
+          {#if section.intro}
+            <p class="fr-text--sm mb-5! text-[--text-mention-grey]">{section.intro}</p>
+          {/if}
+          {#each section.items as row, i (i)}
+            {#if Array.isArray(row)}
+              <div class="sm:grid-cols-2 sm:gap-x-6 grid">
+                {#each row as itemId (itemId)}
+                  {@render field(itemId)}
+                {/each}
+              </div>
+            {:else}
+              {@render field(row)}
+            {/if}
+          {/each}
+        </section>
+      {/each}
+    {:else if items}
       {#each items as item (item.id)}
-        {#if fieldSnippets?.[item.id]}
-          {@render fieldSnippets[item.id]()}
-        {:else}
-          <AnyFormItem {...item} bind:value={form[item.id]!} {errors} />
-        {/if}
+        {@render field(item.id)}
       {/each}
     {/if}
 
@@ -128,8 +157,8 @@
     class={[
       'py-4 gap-4 flex justify-end',
       {
-        'bottom-0 bg-white px-4 md:px-6 sticky z-501 border-t-1 border-[--grey-925-125]':
-          stickyFooter
+        'bottom-0 bg-white sticky z-501 border-t-1 border-[--grey-925-125]': stickyFooter,
+        'px-4 md:px-6': stickyFooter && !sections
       }
     ]}
   >

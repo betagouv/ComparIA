@@ -66,6 +66,17 @@ export type AnyFormItemProps =
   | FormTagsInputProps
   | FormTranslateItemProps
 
+/**
+ * A titled group of fields in a form. An item is a field id, or a row of ids
+ * shown side by side on wider screens.
+ */
+export type FormSection = {
+  id: string
+  title: string
+  intro?: string
+  items: (string | string[])[]
+}
+
 export type FormItemSnippetProps = {
   'aria-describedby': string
   'aria-invalid'?: 'true'
