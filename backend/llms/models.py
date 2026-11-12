@@ -22,11 +22,13 @@ from typing import Annotated, Any, Literal, Self, TypeVar
 from pydantic import (
     AfterValidator,
     BaseModel,
+    Field,
     ValidationInfo,
     computed_field,
     field_validator,
     model_validator,
 )
+from pydantic.json_schema import SkipJsonSchema
 
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
@@ -235,11 +237,18 @@ class LLMDataEnabled(APILLMDataBase):
         )
 
 
+# Admin metadata, never published: a blind mode drawing from a tag would
+# otherwise give its pool away. Read, so the row validates, but never dumped.
+HiddenTags = Annotated[SkipJsonSchema[list[str]], Field(exclude=True)]
+
+
 class APILLMData(APILLMDataBase):
     """
     LLM data used for LLM list, sent to clients.
     !Warning: make sure there's no secrets.
     """
+
+    tags: HiddenTags = []
 
     data: DatasetData | None = None
     prefs: PreferencesData | None = None

@@ -11,7 +11,7 @@ from pydantic import (
 from sqlmodel import SQLModel
 
 from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
-from backend.llms.models import APILLMDataBase
+from backend.llms.models import APILLMDataBase, HiddenTags
 from utils.database.models import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
     ArchivedReason,
@@ -54,6 +54,7 @@ class DatasetLLM(APILLMDataBase):
     """
 
     status: LLMStatus  # type: ignore[assignment]  # widened on purpose, see above
+    tags: HiddenTags = []
 
 
 class DatasetTurnMetadata(SQLModel):
