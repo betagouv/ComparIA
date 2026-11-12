@@ -5,7 +5,7 @@
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
   import { m } from '$lib/i18n/messages'
   import { toEntries } from '$lib/utils/commons'
-  import type { AnyFormItemProps } from '$lib/utils/form'
+  import { getItemLabel, type AnyFormItemProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
   import { onMount } from 'svelte'
   import type { SvelteHTMLElements } from 'svelte/elements'
@@ -45,6 +45,8 @@
   } = $props()
 
   const anyError = $derived(toEntries(errors))
+  const errorLabel = (errId: string) =>
+    (items && getItemLabel(items, errId)) || (errId === 'unexpected' ? undefined : errId)
 
   beforeNavigate((navigation) => {
     if (!isDirty) return
@@ -111,7 +113,9 @@
           {m['form.containsErrors']()}
           {#each anyError as [errId, errMsg], i (i)}
             <li class="block!">
-              <a href="#{errId}">"{items?.find((item) => item.id === errId)?.label ?? errId}"</a>:
+              {#if errorLabel(errId)}
+                <a href="#{errId}">"{errorLabel(errId)}"</a>:
+              {/if}
               {errMsg}
             </li>
           {/each}

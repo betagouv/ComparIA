@@ -141,4 +141,20 @@ describe('Form', () => {
     expect(cancel).not.toHaveBeenCalled()
     confirm.mockRestore()
   })
+
+  it('names a nested field in the error summary, and only the message for others', () => {
+    const { container } = render(Form, {
+      props: {
+        id: 'mode',
+        items: [modalities],
+        form: {},
+        errors: { inputs: 'Pick one', unexpected: 'Server down' },
+        onSubmit: () => {}
+      }
+    })
+
+    const lines = [...container.querySelectorAll('#errors-mode li')].map((li) => li.textContent)
+    expect(lines[0]).toContain('"Modalities"')
+    expect(lines[1]?.trim()).toBe('Server down')
+  })
 })
