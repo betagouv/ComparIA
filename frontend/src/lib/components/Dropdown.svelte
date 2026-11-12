@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick, type Snippet } from 'svelte'
-  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
+  import type { ClassValue, HTMLButtonAttributes, SvelteHTMLElements } from 'svelte/elements'
 
   let {
     id,
@@ -11,6 +11,7 @@
     disabled = false,
     maxHeight = 400,
     buttonClass = 'fr-select',
+    buttonProps,
     buttonLabel,
     onClose,
     contentSnippet,
@@ -25,6 +26,8 @@
     disabled?: boolean
     maxHeight?: number
     buttonClass?: ClassValue
+    // Extra attributes for the button, such as the id a form label points at
+    buttonProps?: HTMLButtonAttributes
     buttonLabel?: Snippet<[string]>
     onClose?: () => void
     contentSnippet?: Snippet<[close: (focusButton?: boolean) => void]>
@@ -193,6 +196,7 @@
 
 <div class="dropdown relative inline-block">
   <button
+    {...buttonProps}
     bind:this={buttonEl}
     type="button"
     aria-haspopup={role ?? true}
