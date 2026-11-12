@@ -440,6 +440,7 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         ranking_min_votes=row.ranking_min_votes,
         ranking_max_rank_spread=row.ranking_max_rank_spread,
         survey_reask_after_days=row.survey_reask_after_days,
+        ranking_grey_rank_spread=row.ranking_grey_rank_spread,
         platform_name=row.platform_name,
         primary_color_light=row.primary_color_light,
         primary_color_dark=row.primary_color_dark,
