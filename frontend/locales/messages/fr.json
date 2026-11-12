@@ -548,6 +548,50 @@
             "tokenLabel": "Jeton d'écriture"
         },
         "selectionModes": {
+            "errors": {
+                "defaultChanged": "Un autre administrateur vient de choisir un autre mode par défaut. Rechargez la page, puis enregistrez à nouveau.",
+                "forcedTools": "Cochez au moins un outil, ou laissez le visiteur choisir.",
+                "keyImmutable": "La clé d'un mode enregistré ne peut pas changer.",
+                "keyTaken": "Un autre mode utilise déjà cette clé.",
+                "labelDefaultLocale": "Donnez un nom au mode dans la langue principale de l'instance.",
+                "labelRequired": "Donnez un nom au mode.",
+                "lastEnabled": "C'est le dernier mode proposé dans l'arène. Activez-en un autre d'abord.",
+                "notFound": "Ce mode n'existe plus. Rechargez la page.",
+                "paramsRange": "Le minimum dépasse le maximum.",
+                "pattern": "Utilisez seulement des lettres minuscules, des chiffres et des tirets.",
+                "releaseRange": "La période de sortie se termine avant de commencer.",
+                "tag": "Une étiquette ne contient que des lettres, des chiffres, '-' ou '_'.",
+                "tooSmall": "Cette valeur est trop petite.",
+                "window": "La fin arrive avant le début."
+            },
+            "pairing": {
+                "any": "Deux modèles différents, sans autre règle",
+                "anyHelp": "Aucune contrainte entre les deux côtés.",
+                "differentLab": "De laboratoires différents",
+                "differentLabHelp": "Jamais deux modèles du même laboratoire.",
+                "differentSize": "De tailles différentes",
+                "differentSizeHelp": "Jamais deux modèles de la même classe de taille.",
+                "sameLab": "Du même laboratoire",
+                "sameLabHelp": "Pour comparer entre eux les modèles d'un même laboratoire.",
+                "sameSize": "De même taille",
+                "sameSizeHelp": "Seuls des modèles de la même classe de taille s'affrontent."
+            },
+            "picks": {
+                "none": "Personne : compar:IA tire les deux modèles",
+                "noneHelp": "Un tirage à l'aveugle parmi les groupes ci-dessous.",
+                "one": "Le visiteur choisit un modèle",
+                "oneHelp": "Le visiteur choisit un modèle dans les groupes ; compar:IA tire l'autre. S'il n'en choisit aucun, les deux sont tirés.",
+                "two": "Le visiteur choisit jusqu'à deux modèles",
+                "twoHelp": "Le visiteur choisit un ou deux modèles dans les groupes ; compar:IA tire le reste."
+            },
+            "sampling": {
+                "fewerVotes": "D'abord les modèles peu votés",
+                "fewerVotesHelp": "Les modèles qui ont peu de votes sortent plus souvent, pour que leur classement se stabilise plus vite.",
+                "newest": "D'abord les modèles récents",
+                "newestHelp": "Plus un modèle est sorti récemment, plus il sort souvent.",
+                "uniform": "Tous les modèles aussi souvent",
+                "uniformHelp": "Le tirage habituel."
+            },
             "templates": {
                 "champion": {
                     "description": "Un modèle fixe contre tous les autres. Choisissez le champion dans le groupe A.",
@@ -597,6 +641,14 @@
                     "description": "Les deux modèles ont toujours la recherche web. Limitez ses sites dans les réglages de l'outil.",
                     "title": "Toujours avec la recherche web"
                 }
+            },
+            "tools": {
+                "forced": "Toujours activés",
+                "forcedHelp": "Les outils cochés sont toujours activés et le visiteur ne peut pas les désactiver.",
+                "none": "Aucun outil",
+                "noneHelp": "Les modèles répondent sans aucun outil.",
+                "visitor": "Le visiteur",
+                "visitorHelp": "Le visiteur active les outils qu'il veut parmi ceux proposés."
             }
         },
         "settings": {

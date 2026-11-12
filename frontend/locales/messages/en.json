@@ -548,6 +548,50 @@
             "tokenLabel": "Write token"
         },
         "selectionModes": {
+            "errors": {
+                "defaultChanged": "Another admin has just made a different mode the default. Reload the page, then save again.",
+                "forcedTools": "Tick at least one tool, or let the visitor choose.",
+                "keyImmutable": "The key of a saved mode cannot change.",
+                "keyTaken": "Another mode already uses this key.",
+                "labelDefaultLocale": "Give the mode a name in the instance's main language.",
+                "labelRequired": "Give the mode a name.",
+                "lastEnabled": "This is the last mode offered in the arena. Switch another one on first.",
+                "notFound": "This mode no longer exists. Reload the page.",
+                "paramsRange": "The minimum is above the maximum.",
+                "pattern": "Use only lowercase letters, digits and dashes.",
+                "releaseRange": "The release window ends before it starts.",
+                "tag": "A tag holds only letters, digits, '-' or '_'.",
+                "tooSmall": "This value is too small.",
+                "window": "The end comes before the start."
+            },
+            "pairing": {
+                "any": "Any two different models",
+                "anyHelp": "No rule between the two sides.",
+                "differentLab": "From different labs",
+                "differentLabHelp": "Never two models from the same lab.",
+                "differentSize": "Of different sizes",
+                "differentSizeHelp": "Never two models of the same size class.",
+                "sameLab": "From the same lab",
+                "sameLabHelp": "To compare the models of one lab with each other.",
+                "sameSize": "Of the same size",
+                "sameSizeHelp": "Only models of the same size class face each other."
+            },
+            "picks": {
+                "none": "Nobody: compar:IA draws both models",
+                "noneHelp": "A blind draw among the pools below.",
+                "one": "The visitor picks one model",
+                "oneHelp": "The visitor picks one model among the pools; compar:IA draws the other. If they pick none, both are drawn.",
+                "two": "The visitor picks up to two models",
+                "twoHelp": "The visitor picks one or two models among the pools; compar:IA draws what is left."
+            },
+            "sampling": {
+                "fewerVotes": "Models with few votes first",
+                "fewerVotesHelp": "Models with few votes come up more often, so their ranking settles sooner.",
+                "newest": "Recent models first",
+                "newestHelp": "The more recent the release, the more often a model comes up.",
+                "uniform": "Every model as often",
+                "uniformHelp": "The usual draw."
+            },
             "templates": {
                 "champion": {
                     "description": "One fixed model against every other model. Pick the champion in pool A.",
@@ -597,6 +641,14 @@
                     "description": "Both models always get web search. Limit its sites in the tool settings.",
                     "title": "Always with web search"
                 }
+            },
+            "tools": {
+                "forced": "Always on",
+                "forcedHelp": "The ticked tools are always on and the visitor cannot switch them off.",
+                "none": "No tools",
+                "noneHelp": "The models answer with no tool at all.",
+                "visitor": "The visitor",
+                "visitorHelp": "The visitor switches on the tools they want among those on offer."
             }
         },
         "settings": {
