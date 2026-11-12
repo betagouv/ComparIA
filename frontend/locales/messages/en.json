@@ -1437,6 +1437,10 @@
                 "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
                 "label": "Arch"
             },
+            "arena_tools": {
+                "help": "Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.",
+                "label": "Gets the arena's tools"
+            },
             "context_tokens": {
                 "help": "Size of its context window in tokens.",
                 "label": "Context Tokens"
@@ -1537,6 +1541,10 @@
                 "help": "System message to add in llm call if specified",
                 "label": "System Prompt"
             },
+            "tags": {
+                "help": "Free labels such as 'legal' or 'sovereign'. Selection modes can draw only the models carrying some of them.",
+                "label": "Tags"
+            },
             "updated_at": {
                 "label": "Updated At"
             }
@@ -1599,6 +1607,174 @@
             "required": {
                 "help": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
                 "label": "Required check"
+            }
+        },
+        "selection_mode_upsert": {
+            "cohorts": {
+                "help": "Offered only to visitors who came with one of these cohorts in the address, as in ?c=pix.",
+                "label": "Cohorts"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "description": {
+                "help": "One line under the name, to say what the visitor will get.",
+                "label": "Description"
+            },
+            "enabled": {
+                "help": "The arena needs at least one mode switched on.",
+                "label": "Offered in the arena"
+            },
+            "ends_at": {
+                "help": "Offered until this time (UTC).",
+                "label": "Ends at"
+            },
+            "icon": {
+                "help": "One of the icons the admin picker offers.",
+                "label": "Icon"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "is_default": {
+                "help": "Preselected when a visitor arrives. Only one mode is the default: this one replaces the current one.",
+                "label": "Default mode"
+            },
+            "key": {
+                "help": "Lowercase letters, digits and dashes. Stored on every comparison and published with the dataset: it cannot be changed once saved.",
+                "label": "Key"
+            },
+            "label": {
+                "help": "Required in the instance's main language. Shown in the arena's mode menu.",
+                "label": "Name"
+            },
+            "locales": {
+                "help": "Offered only when the arena is shown in one of these languages.",
+                "label": "Languages"
+            },
+            "ModelFilter": {
+                "archs": {
+                    "label": "Architectures"
+                },
+                "arena_tools": {
+                    "help": "Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.",
+                    "label": "Arena's tools"
+                },
+                "energy_classes": {
+                    "help": "From A, the lowest estimated consumption, to F, the highest.",
+                    "label": "Energy classes"
+                },
+                "eu_hostable": {
+                    "label": "Can be hosted in the European Union"
+                },
+                "exclude_lab_ids": {
+                    "label": "Except these labs"
+                },
+                "exclude_llm_ids": {
+                    "label": "Except these models"
+                },
+                "exclude_tags": {
+                    "label": "Without these tags"
+                },
+                "inputs": {
+                    "help": "The model accepts every one of these.",
+                    "label": "Accepted inputs"
+                },
+                "lab_ids": {
+                    "label": "Only these labs"
+                },
+                "license_ids": {
+                    "label": "Only these licences"
+                },
+                "llm_ids": {
+                    "help": "Leave empty to keep every model that meets the other criteria.",
+                    "label": "Only these models"
+                },
+                "params_max": {
+                    "help": "In billions.",
+                    "label": "Maximum parameters"
+                },
+                "params_min": {
+                    "help": "In billions.",
+                    "label": "Minimum parameters"
+                },
+                "price_out_max": {
+                    "help": "In US dollars per million output tokens.",
+                    "label": "Maximum output price"
+                },
+                "public_weights": {
+                    "help": "Yes: open weights only. No: proprietary only.",
+                    "label": "Weights"
+                },
+                "rate_limited": {
+                    "help": "Rate limited models are the expensive ones, with a usage cap per visitor.",
+                    "label": "Rate limited models"
+                },
+                "released_after": {
+                    "label": "Released on or after"
+                },
+                "released_before": {
+                    "label": "Released on or before"
+                },
+                "released_within_days": {
+                    "help": "For example 90 for the last three months.",
+                    "label": "Released in the last (days)"
+                },
+                "size_classes": {
+                    "help": "In billions of parameters.",
+                    "label": "Size classes"
+                },
+                "tags": {
+                    "help": "Tags set on the models in the LLM form.",
+                    "label": "With these tags"
+                },
+                "tags_match": {
+                    "help": "any: at least one of the tags; all: every tag.",
+                    "label": "Models must carry"
+                },
+                "top_ranked": {
+                    "help": "Only the N first models of the ranking. Models not ranked yet never match.",
+                    "label": "Among the best ranked"
+                }
+            },
+            "pairing": {
+                "label": "The two models"
+            },
+            "pool_a": {
+                "help": "Models side A is drawn from.",
+                "label": "Pool A"
+            },
+            "pool_b": {
+                "help": "Models side B is drawn from. Leave empty to draw both sides from pool A.",
+                "label": "Pool B"
+            },
+            "position": {
+                "help": "Order in the mode menu, smallest first.",
+                "label": "Position"
+            },
+            "sampling": {
+                "label": "Which models come up most"
+            },
+            "short_label": {
+                "help": "Shown on the closed menu button. Leave empty to reuse the name.",
+                "label": "Short name"
+            },
+            "starts_at": {
+                "help": "Offered from this time on (UTC).",
+                "label": "Starts at"
+            },
+            "tool_keys": {
+                "help": "With 'forced', the tools always on. With 'visitor', the only tools offered; leave empty to offer every tool.",
+                "label": "Tools of the mode"
+            },
+            "tools_policy": {
+                "label": "Who decides"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            },
+            "visitor_picks": {
+                "label": "Models the visitor picks"
             }
         },
         "tool_upsert": {

@@ -142,8 +142,14 @@ export interface ActivityConversationRow {
 }
 export interface ActivityFilterOptions {
   llms: ActivityLLM[];
+  modes: ActivityMode[];
   cohorts: string[];
   categories: string[];
+}
+export interface ActivityMode {
+  key: string;
+  label: string;
+  [k: string]: unknown;
 }
 export interface ActivityOverview {
   range_start: string | null;
@@ -418,6 +424,10 @@ export interface LLMData {
    */
   custom_selectable?: boolean;
   /**
+   * Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.
+   */
+  arena_tools?: boolean;
+  /**
    * The lab that developed the LLM, create it first if not already available
    */
   lab_id: string;
@@ -486,6 +496,10 @@ export interface LLMData {
    * List of links to display in LLM card.
    */
   links?: Link[];
+  /**
+   * Free labels such as 'legal' or 'sovereign'. Selection modes can draw only the models carrying some of them.
+   */
+  tags?: string[];
 }
 export interface Link {
   text: string;
@@ -627,6 +641,96 @@ export interface LegalStatus {
   missing_locales: boolean;
 }
 /**
+ * Whether a mode can draw a pair now, and what an admin should know.
+ */
+export interface ModeViability {
+  viable: boolean;
+  pool_a_size: number;
+  pool_b_size: number;
+  pairs: number;
+  warnings?: (
+    | "pool_a_empty"
+    | "pool_b_empty"
+    | "no_valid_pair"
+    | "single_pair"
+    | "unknown_llm_ids"
+    | "unknown_tool_keys"
+    | "tool_not_offered"
+  )[];
+}
+/**
+ * Which models a side of a mode draws from. Every field is optional and an
+ * empty filter matches every enabled model. A model matches when it passes
+ * every field that is set.
+ */
+export interface ModelFilter {
+  /**
+   * Leave empty to keep every model that meets the other criteria.
+   */
+  llm_ids?: string[];
+  exclude_llm_ids?: string[];
+  lab_ids?: string[];
+  exclude_lab_ids?: string[];
+  /**
+   * Tags set on the models in the LLM form.
+   */
+  tags?: string[];
+  exclude_tags?: string[];
+  /**
+   * any: at least one of the tags; all: every tag.
+   */
+  tags_match?: "any" | "all";
+  license_ids?: string[];
+  /**
+   * Yes: open weights only. No: proprietary only.
+   */
+  public_weights?: boolean | null;
+  eu_hostable?: boolean | null;
+  archs?: ("moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na")[];
+  /**
+   * In billions of parameters.
+   */
+  size_classes?: ("XS" | "S" | "M" | "L" | "XL")[];
+  /**
+   * In billions.
+   */
+  params_min?: number | null;
+  /**
+   * In billions.
+   */
+  params_max?: number | null;
+  /**
+   * From A, the lowest estimated consumption, to F, the highest.
+   */
+  energy_classes?: ("A" | "B" | "C" | "D" | "E" | "F")[];
+  /**
+   * The model accepts every one of these.
+   */
+  inputs?: ("text" | "image" | "audio" | "video")[];
+  released_after?: string | null;
+  released_before?: string | null;
+  /**
+   * For example 90 for the last three months.
+   */
+  released_within_days?: number | null;
+  /**
+   * In US dollars per million output tokens.
+   */
+  price_out_max?: number | null;
+  /**
+   * Rate limited models are the expensive ones, with a usage cap per visitor.
+   */
+  rate_limited?: boolean | null;
+  /**
+   * Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.
+   */
+  arena_tools?: boolean | null;
+  /**
+   * Only the N first models of the ranking. Models not ranked yet never match.
+   */
+  top_ranked?: number | null;
+}
+/**
  * The configuration plus how the check is faring, since a broken check
  * either refuses every message or, while the model counts as down, lets them
  * all through unchecked.
@@ -751,6 +855,531 @@ export interface PublishLegalDocumentBody {
 }
 export interface TranslatableAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1MaxLenMaxLength100000 {
   [k: string]: string;
+}
+export interface SelectionModeAdmin {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Lowercase letters, digits and dashes. Stored on every comparison and published with the dataset: it cannot be changed once saved.
+   */
+  key: string;
+  /**
+   * Required in the instance's main language. Shown in the arena's mode menu.
+   */
+  label: {
+    [k: string]: string;
+  };
+  /**
+   * Shown on the closed menu button. Leave empty to reuse the name.
+   */
+  short_label?: {
+    [k: string]: string;
+  };
+  /**
+   * One line under the name, to say what the visitor will get.
+   */
+  description?: {
+    [k: string]: string;
+  };
+  /**
+   * One of the icons the admin picker offers.
+   */
+  icon: string;
+  /**
+   * The arena needs at least one mode switched on.
+   */
+  enabled?: boolean;
+  /**
+   * Order in the mode menu, smallest first.
+   */
+  position?: number;
+  /**
+   * Preselected when a visitor arrives. Only one mode is the default: this one replaces the current one.
+   */
+  is_default?: boolean;
+  visitor_picks?: 0 | 1 | 2;
+  pool_a?: ModelFilter1;
+  /**
+   * Models side B is drawn from. Leave empty to draw both sides from pool A.
+   */
+  pool_b?: ModelFilter | null;
+  pairing?: "any" | "different_lab" | "same_lab" | "different_size_class" | "same_size_class";
+  sampling?: "uniform" | "fewer_votes" | "newest";
+  tools_policy?: "visitor" | "none" | "forced";
+  /**
+   * With 'forced', the tools always on. With 'visitor', the only tools offered; leave empty to offer every tool.
+   */
+  tool_keys?: string[];
+  /**
+   * Offered only to visitors who came with one of these cohorts in the address, as in ?c=pix.
+   */
+  cohorts?: string[];
+  /**
+   * Offered only when the arena is shown in one of these languages.
+   */
+  locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  /**
+   * Offered from this time on (UTC).
+   */
+  starts_at?: string | null;
+  /**
+   * Offered until this time (UTC).
+   */
+  ends_at?: string | null;
+  viability: ModeViability;
+}
+/**
+ * Models side A is drawn from.
+ */
+export interface ModelFilter1 {
+  /**
+   * Leave empty to keep every model that meets the other criteria.
+   */
+  llm_ids?: string[];
+  exclude_llm_ids?: string[];
+  lab_ids?: string[];
+  exclude_lab_ids?: string[];
+  /**
+   * Tags set on the models in the LLM form.
+   */
+  tags?: string[];
+  exclude_tags?: string[];
+  /**
+   * any: at least one of the tags; all: every tag.
+   */
+  tags_match?: "any" | "all";
+  license_ids?: string[];
+  /**
+   * Yes: open weights only. No: proprietary only.
+   */
+  public_weights?: boolean | null;
+  eu_hostable?: boolean | null;
+  archs?: ("moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na")[];
+  /**
+   * In billions of parameters.
+   */
+  size_classes?: ("XS" | "S" | "M" | "L" | "XL")[];
+  /**
+   * In billions.
+   */
+  params_min?: number | null;
+  /**
+   * In billions.
+   */
+  params_max?: number | null;
+  /**
+   * From A, the lowest estimated consumption, to F, the highest.
+   */
+  energy_classes?: ("A" | "B" | "C" | "D" | "E" | "F")[];
+  /**
+   * The model accepts every one of these.
+   */
+  inputs?: ("text" | "image" | "audio" | "video")[];
+  released_after?: string | null;
+  released_before?: string | null;
+  /**
+   * For example 90 for the last three months.
+   */
+  released_within_days?: number | null;
+  /**
+   * In US dollars per million output tokens.
+   */
+  price_out_max?: number | null;
+  /**
+   * Rate limited models are the expensive ones, with a usage cap per visitor.
+   */
+  rate_limited?: boolean | null;
+  /**
+   * Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.
+   */
+  arena_tools?: boolean | null;
+  /**
+   * Only the N first models of the ranking. Models not ranked yet never match.
+   */
+  top_ranked?: number | null;
+}
+/**
+ * The whole menu order, written in one request.
+ */
+export interface SelectionModeOrder {
+  ids: string[];
+}
+export interface SelectionModePreview {
+  viability: ModeViability;
+  pool_a: PreviewLLM[];
+  pool_b: PreviewLLM[];
+  sample_draws: [unknown, unknown][];
+}
+export interface PreviewLLM {
+  id: string;
+  name: string;
+  lab: string;
+  arena_tools: boolean;
+  [k: string]: unknown;
+}
+/**
+ * What the draw reads from a mode. A mode row has these fields too; this is
+ * for rules that are not a row, like a mode being edited in the admin.
+ */
+export interface SelectionModeRules {
+  visitor_picks?: 0 | 1 | 2;
+  pool_a?: ModelFilter2;
+  pool_b?: ModelFilter | null;
+  pairing?: "any" | "different_lab" | "same_lab" | "different_size_class" | "same_size_class";
+  sampling?: "uniform" | "fewer_votes" | "newest";
+  tools_policy?: "visitor" | "none" | "forced";
+  tool_keys?: string[];
+}
+/**
+ * Which models a side of a mode draws from. Every field is optional and an
+ * empty filter matches every enabled model. A model matches when it passes
+ * every field that is set.
+ */
+export interface ModelFilter2 {
+  /**
+   * Leave empty to keep every model that meets the other criteria.
+   */
+  llm_ids?: string[];
+  exclude_llm_ids?: string[];
+  lab_ids?: string[];
+  exclude_lab_ids?: string[];
+  /**
+   * Tags set on the models in the LLM form.
+   */
+  tags?: string[];
+  exclude_tags?: string[];
+  /**
+   * any: at least one of the tags; all: every tag.
+   */
+  tags_match?: "any" | "all";
+  license_ids?: string[];
+  /**
+   * Yes: open weights only. No: proprietary only.
+   */
+  public_weights?: boolean | null;
+  eu_hostable?: boolean | null;
+  archs?: ("moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na")[];
+  /**
+   * In billions of parameters.
+   */
+  size_classes?: ("XS" | "S" | "M" | "L" | "XL")[];
+  /**
+   * In billions.
+   */
+  params_min?: number | null;
+  /**
+   * In billions.
+   */
+  params_max?: number | null;
+  /**
+   * From A, the lowest estimated consumption, to F, the highest.
+   */
+  energy_classes?: ("A" | "B" | "C" | "D" | "E" | "F")[];
+  /**
+   * The model accepts every one of these.
+   */
+  inputs?: ("text" | "image" | "audio" | "video")[];
+  released_after?: string | null;
+  released_before?: string | null;
+  /**
+   * For example 90 for the last three months.
+   */
+  released_within_days?: number | null;
+  /**
+   * In US dollars per million output tokens.
+   */
+  price_out_max?: number | null;
+  /**
+   * Rate limited models are the expensive ones, with a usage cap per visitor.
+   */
+  rate_limited?: boolean | null;
+  /**
+   * Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.
+   */
+  arena_tools?: boolean | null;
+  /**
+   * Only the N first models of the ranking. Models not ranked yet never match.
+   */
+  top_ranked?: number | null;
+}
+export interface SelectionModeTemplate {
+  id: string;
+  mode: SelectionModeDraft;
+}
+/**
+ * A mode not saved yet, as a template fills the create form.
+ */
+export interface SelectionModeDraft {
+  visitor_picks?: 0 | 1 | 2;
+  pool_a?: ModelFilter3;
+  pool_b?: ModelFilter | null;
+  pairing?: "any" | "different_lab" | "same_lab" | "different_size_class" | "same_size_class";
+  sampling?: "uniform" | "fewer_votes" | "newest";
+  tools_policy?: "visitor" | "none" | "forced";
+  tool_keys?: string[];
+  key?: string;
+  label?: {
+    [k: string]: string;
+  };
+  short_label?: {
+    [k: string]: string;
+  };
+  description?: {
+    [k: string]: string;
+  };
+  icon?:
+    | "i-ri-dice-line"
+    | "i-ri-scales-3-line"
+    | "i-ri-open-source-line"
+    | "i-ri-map-pin-line"
+    | "i-ri-ruler-line"
+    | "i-ri-leaf-line"
+    | "i-ri-trophy-line"
+    | "i-ri-sparkling-line"
+    | "i-ri-group-line"
+    | "i-ri-search-line"
+    | "i-ri-global-line"
+    | "i-ri-government-line"
+    | "i-ri-heart-pulse-line"
+    | "i-ri-stethoscope-line"
+    | "i-ri-graduation-cap-line"
+    | "i-ri-shield-check-line"
+    | "i-ri-flashlight-line";
+  [k: string]: unknown;
+}
+/**
+ * Which models a side of a mode draws from. Every field is optional and an
+ * empty filter matches every enabled model. A model matches when it passes
+ * every field that is set.
+ */
+export interface ModelFilter3 {
+  /**
+   * Leave empty to keep every model that meets the other criteria.
+   */
+  llm_ids?: string[];
+  exclude_llm_ids?: string[];
+  lab_ids?: string[];
+  exclude_lab_ids?: string[];
+  /**
+   * Tags set on the models in the LLM form.
+   */
+  tags?: string[];
+  exclude_tags?: string[];
+  /**
+   * any: at least one of the tags; all: every tag.
+   */
+  tags_match?: "any" | "all";
+  license_ids?: string[];
+  /**
+   * Yes: open weights only. No: proprietary only.
+   */
+  public_weights?: boolean | null;
+  eu_hostable?: boolean | null;
+  archs?: ("moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na")[];
+  /**
+   * In billions of parameters.
+   */
+  size_classes?: ("XS" | "S" | "M" | "L" | "XL")[];
+  /**
+   * In billions.
+   */
+  params_min?: number | null;
+  /**
+   * In billions.
+   */
+  params_max?: number | null;
+  /**
+   * From A, the lowest estimated consumption, to F, the highest.
+   */
+  energy_classes?: ("A" | "B" | "C" | "D" | "E" | "F")[];
+  /**
+   * The model accepts every one of these.
+   */
+  inputs?: ("text" | "image" | "audio" | "video")[];
+  released_after?: string | null;
+  released_before?: string | null;
+  /**
+   * For example 90 for the last three months.
+   */
+  released_within_days?: number | null;
+  /**
+   * In US dollars per million output tokens.
+   */
+  price_out_max?: number | null;
+  /**
+   * Rate limited models are the expensive ones, with a usage cap per visitor.
+   */
+  rate_limited?: boolean | null;
+  /**
+   * Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.
+   */
+  arena_tools?: boolean | null;
+  /**
+   * Only the N first models of the ranking. Models not ranked yet never match.
+   */
+  top_ranked?: number | null;
+}
+export interface SelectionModeUpsert {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Lowercase letters, digits and dashes. Stored on every comparison and published with the dataset: it cannot be changed once saved.
+   */
+  key: string;
+  /**
+   * Required in the instance's main language. Shown in the arena's mode menu.
+   */
+  label: {
+    [k: string]: string;
+  };
+  /**
+   * Shown on the closed menu button. Leave empty to reuse the name.
+   */
+  short_label?: {
+    [k: string]: string;
+  };
+  /**
+   * One line under the name, to say what the visitor will get.
+   */
+  description?: {
+    [k: string]: string;
+  };
+  /**
+   * One of the icons the admin picker offers.
+   */
+  icon:
+    | "i-ri-dice-line"
+    | "i-ri-scales-3-line"
+    | "i-ri-open-source-line"
+    | "i-ri-map-pin-line"
+    | "i-ri-ruler-line"
+    | "i-ri-leaf-line"
+    | "i-ri-trophy-line"
+    | "i-ri-sparkling-line"
+    | "i-ri-group-line"
+    | "i-ri-search-line"
+    | "i-ri-global-line"
+    | "i-ri-government-line"
+    | "i-ri-heart-pulse-line"
+    | "i-ri-stethoscope-line"
+    | "i-ri-graduation-cap-line"
+    | "i-ri-shield-check-line"
+    | "i-ri-flashlight-line";
+  /**
+   * The arena needs at least one mode switched on.
+   */
+  enabled?: boolean;
+  /**
+   * Order in the mode menu, smallest first.
+   */
+  position?: number;
+  /**
+   * Preselected when a visitor arrives. Only one mode is the default: this one replaces the current one.
+   */
+  is_default?: boolean;
+  visitor_picks?: 0 | 1 | 2;
+  pool_a?: ModelFilter4;
+  /**
+   * Models side B is drawn from. Leave empty to draw both sides from pool A.
+   */
+  pool_b?: ModelFilter | null;
+  pairing?: "any" | "different_lab" | "same_lab" | "different_size_class" | "same_size_class";
+  sampling?: "uniform" | "fewer_votes" | "newest";
+  tools_policy?: "visitor" | "none" | "forced";
+  /**
+   * With 'forced', the tools always on. With 'visitor', the only tools offered; leave empty to offer every tool.
+   */
+  tool_keys?: string[];
+  /**
+   * Offered only to visitors who came with one of these cohorts in the address, as in ?c=pix.
+   */
+  cohorts?: string[];
+  /**
+   * Offered only when the arena is shown in one of these languages.
+   */
+  locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  /**
+   * Offered from this time on (UTC).
+   */
+  starts_at?: string | null;
+  /**
+   * Offered until this time (UTC).
+   */
+  ends_at?: string | null;
+}
+/**
+ * Which models a side of a mode draws from. Every field is optional and an
+ * empty filter matches every enabled model. A model matches when it passes
+ * every field that is set.
+ */
+export interface ModelFilter4 {
+  /**
+   * Leave empty to keep every model that meets the other criteria.
+   */
+  llm_ids?: string[];
+  exclude_llm_ids?: string[];
+  lab_ids?: string[];
+  exclude_lab_ids?: string[];
+  /**
+   * Tags set on the models in the LLM form.
+   */
+  tags?: string[];
+  exclude_tags?: string[];
+  /**
+   * any: at least one of the tags; all: every tag.
+   */
+  tags_match?: "any" | "all";
+  license_ids?: string[];
+  /**
+   * Yes: open weights only. No: proprietary only.
+   */
+  public_weights?: boolean | null;
+  eu_hostable?: boolean | null;
+  archs?: ("moe" | "matformer" | "dense" | "maybe-moe" | "maybe-matformer" | "maybe-dense" | "na")[];
+  /**
+   * In billions of parameters.
+   */
+  size_classes?: ("XS" | "S" | "M" | "L" | "XL")[];
+  /**
+   * In billions.
+   */
+  params_min?: number | null;
+  /**
+   * In billions.
+   */
+  params_max?: number | null;
+  /**
+   * From A, the lowest estimated consumption, to F, the highest.
+   */
+  energy_classes?: ("A" | "B" | "C" | "D" | "E" | "F")[];
+  /**
+   * The model accepts every one of these.
+   */
+  inputs?: ("text" | "image" | "audio" | "video")[];
+  released_after?: string | null;
+  released_before?: string | null;
+  /**
+   * For example 90 for the last three months.
+   */
+  released_within_days?: number | null;
+  /**
+   * In US dollars per million output tokens.
+   */
+  price_out_max?: number | null;
+  /**
+   * Rate limited models are the expensive ones, with a usage cap per visitor.
+   */
+  rate_limited?: boolean | null;
+  /**
+   * Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.
+   */
+  arena_tools?: boolean | null;
+  /**
+   * Only the N first models of the ranking. Models not ranked yet never match.
+   */
+  top_ranked?: number | null;
 }
 export interface SuggestionArchiveUpdate {
   archived: boolean;
