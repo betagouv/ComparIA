@@ -255,10 +255,9 @@ ORDBOGEN_STREAM_TIMEOUT = 60
 TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
 TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 
-# Language model selection modes
-SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
-SELECTION_MODES: tuple[SelectionMode, ...] = get_args(SelectionMode)
-DEFAULT_SELECTION_MODE: SelectionMode = "random"
+# Selection modes are rows in the 'selection_mode' table, designed in the
+# admin. This key is only the last resort when none is marked as the default.
+DEFAULT_SELECTION_MODE = "random"
 
 # Language model custom selection (tuple of 0, 1, or 2 model IDs, or None)
 CustomModelsSelection = tuple[str, ...] | None
