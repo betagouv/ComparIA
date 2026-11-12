@@ -594,6 +594,39 @@
                 "tooSmall": "This value is too small.",
                 "window": "The end comes before the start."
             },
+            "filter": {
+                "activeTitle": "Models kept",
+                "anyValue": "Either",
+                "arenaToolsNo": "Brings its own tools",
+                "arenaToolsYes": "Takes the arena's tools",
+                "clearAll": "Remove every criterion",
+                "everyModel": "Every model on offer. Add criteria below to narrow it down.",
+                "groups": {
+                    "labsTags": "Labs, tags and tools",
+                    "models": "Models",
+                    "openness": "Openness",
+                    "size": "Size"
+                },
+                "maybeArch": "Probably {arch}",
+                "more": "More criteria",
+                "moreSet": "More criteria ({count} set)",
+                "openWeightsOnly": "Open weights only",
+                "proprietaryOnly": "Proprietary only",
+                "rateLimitedNone": "None",
+                "rateLimitedOnly": "Only those",
+                "tagsAll": "Every tag",
+                "tagsAny": "At least one tag",
+                "tagsInUse": "In use: {tags}.",
+                "tagsNone": "No model has a tag yet."
+            },
+            "multi": {
+                "clear": "Clear the selection",
+                "noMatch": "No match.",
+                "none": "Any",
+                "search": "Search in {label}",
+                "searchPlaceholder": "Search",
+                "selected": "{count} selected"
+            },
             "pairing": {
                 "any": "Any two different models",
                 "anyHelp": "No rule between the two sides.",

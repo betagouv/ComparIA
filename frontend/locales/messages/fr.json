@@ -594,6 +594,39 @@
                 "tooSmall": "Cette valeur est trop petite.",
                 "window": "La fin arrive avant le début."
             },
+            "filter": {
+                "activeTitle": "Modèles retenus",
+                "anyValue": "Indifférent",
+                "arenaToolsNo": "Apporte ses propres outils",
+                "arenaToolsYes": "Reçoit les outils de l'arène",
+                "clearAll": "Retirer tous les critères",
+                "everyModel": "Tous les modèles proposés. Ajoutez des critères ci-dessous pour restreindre.",
+                "groups": {
+                    "labsTags": "Laboratoires, étiquettes et outils",
+                    "models": "Modèles",
+                    "openness": "Ouverture",
+                    "size": "Taille"
+                },
+                "maybeArch": "Probablement {arch}",
+                "more": "Autres critères",
+                "moreSet": "Autres critères ({count} actifs)",
+                "openWeightsOnly": "Poids ouverts seulement",
+                "proprietaryOnly": "Propriétaires seulement",
+                "rateLimitedNone": "Aucun",
+                "rateLimitedOnly": "Seulement eux",
+                "tagsAll": "Toutes les étiquettes",
+                "tagsAny": "Au moins une étiquette",
+                "tagsInUse": "En usage : {tags}.",
+                "tagsNone": "Aucun modèle n'en a encore."
+            },
+            "multi": {
+                "clear": "Vider la sélection",
+                "noMatch": "Aucun résultat.",
+                "none": "Tous",
+                "search": "Rechercher dans {label}",
+                "searchPlaceholder": "Rechercher",
+                "selected": "{count} sélectionnés"
+            },
             "pairing": {
                 "any": "Deux modèles différents, sans autre règle",
                 "anyHelp": "Aucune contrainte entre les deux côtés.",
