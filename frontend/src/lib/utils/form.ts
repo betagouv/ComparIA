@@ -118,7 +118,9 @@ function parseSchema(
     const ref = $ref.replace('#/$defs/', '')
     if (!$defs || !(ref in $defs) || typeof $defs[ref] === 'boolean') throw new Error('defs err')
     const innerSchema = { ...$defs[ref], $defs }
-    return parseSchema(innerSchema, id, `${i18nBaseKey}.${ref}`)
+    const item = parseSchema(innerSchema, id, `${i18nBaseKey}.${ref}`) as AnyFormItemProps
+    // The field's own label, when it has one, rather than its type's
+    return { ...item, label: label ?? item.label, help: help ?? item.help }
   } else if ($enum) {
     const options = $enum.map((value) =>
       typeof value === 'string'
@@ -196,4 +198,31 @@ export function getSchemaDefaults(schema: JSONSchema): Record<string, unknown> {
 
 export function getFormFields(schema: JSONSchema, i18nBaseKey: string) {
   return parseSchema(schema, '', i18nBaseKey) as AnyFormItemProps[]
+}
+
+/**
+ * The label of the field an error key points at. A nested field's key is its
+ * path, 'pool_a-params_min', and gets its parents' labels too.
+ */
+export function getItemLabel(items: AnyFormItemProps[], id: string): string | undefined {
+  const item = items.find((item) => item.id === id)
+  if (item) return item.label
+  const parent = items.find(
+    (item) =>
+      (item.component === 'fieldset-item' || item.component === 'fieldset-list') &&
+      id.startsWith(`${item.id}-`)
+  ) as FormFieldsetItemProps | FormFieldsetListProps | undefined
+  if (!parent) return
+  let rest = id.slice(parent.id.length + 1)
+  let subProps: AnyFormItemProps[]
+  if (parent.component === 'fieldset-list') {
+    // 'criteria-0-key': the index of the list item comes first
+    rest = rest.replace(/^\d+-/, '')
+    const item = parent.subProps
+    subProps = item.component === 'fieldset-item' ? item.subProps : [item]
+  } else {
+    subProps = parent.subProps
+  }
+  const label = getItemLabel(subProps, rest)
+  return label && `${parent.label} › ${label}`
 }

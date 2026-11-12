@@ -1,6 +1,6 @@
 import { m } from '$lib/i18n/messages'
 import { describe, expect, it } from 'vitest'
-import { getFormFields, getSchemaDefaults } from './form'
+import { getFormFields, getItemLabel, getSchemaDefaults } from './form'
 
 describe('JSON-schema form fields', () => {
   it('takes labels and help from the generated messages, not the schema', () => {
@@ -137,5 +137,26 @@ describe('JSON-schema choices and nested fields', () => {
     )
 
     expect(field).toMatchObject({ id: 'label', component: 'translate' })
+  })
+
+  it("keeps a referenced field's own label and names nested fields by their path", () => {
+    const fields = getFormFields(
+      {
+        type: 'object',
+        properties: { pool: { $ref: '#/$defs/Filter', title: 'Pool' } },
+        $defs: {
+          Filter: {
+            type: 'object',
+            title: 'Filter',
+            properties: { min: { type: 'number', title: 'Minimum' } }
+          }
+        }
+      },
+      ''
+    )
+
+    expect(fields[0].label).toBe('Pool')
+    expect(getItemLabel(fields, 'pool-min')).toBe('Pool › Minimum')
+    expect(getItemLabel(fields, 'unknown')).toBeUndefined()
   })
 })
