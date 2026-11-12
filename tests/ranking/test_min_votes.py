@@ -74,8 +74,17 @@ def test_models_below_minimum_still_count_in_the_fit():
         )
 
 
+def test_vote_counts_cover_models_below_minimum():
+    """The admin list reads vote_counts, so a model left out still shows its votes."""
+    result = _compute_ranking(_votes(), {}, with_ratio=False, min_votes=50)
+    assert RARE not in result.rankings
+    assert result.vote_counts[RARE] == 6
+    assert result.vote_counts[WEAK] == 400 + 3
+
+
 if __name__ == "__main__":
     test_no_minimum_ranks_every_model()
     test_minimum_leaves_out_models_below_it()
     test_models_below_minimum_still_count_in_the_fit()
+    test_vote_counts_cover_models_below_minimum()
     print("ok")
