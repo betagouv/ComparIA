@@ -1237,11 +1237,15 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 models",
+            "countMax": "{count}/{max} models",
             "help": "If you only choose one, the second will be selected randomly",
+            "helpOne": "Choose one model. The other will be selected randomly.",
             "noneSelected": "No model picked: you will compare two random models.",
+            "pickOne": "Choose a model",
+            "pickTwo": "Choose your models",
             "question": "Which models would you like to compare?",
-            "randomOnly": "Only available at random"
+            "randomOnly": "Only available at random",
+            "samePool": "Cannot face the model you picked in this mode"
         },
         "modelSelection": "Model selection",
         "prompt": {

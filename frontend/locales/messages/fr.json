@@ -1237,11 +1237,15 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 modèles",
+            "countMax": "{count}/{max} modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
+            "helpOne": "Choisissez un modèle. L’autre sera tiré au hasard.",
             "noneSelected": "Aucun modèle choisi : la comparaison se fera entre deux modèles aléatoires.",
+            "pickOne": "Choisir un modèle",
+            "pickTwo": "Choisir les modèles",
             "question": "Quels modèles voulez-vous comparer ?",
-            "randomOnly": "Disponible au hasard uniquement"
+            "randomOnly": "Disponible au hasard uniquement",
+            "samePool": "Ne peut pas affronter le modèle choisi dans ce mode"
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
