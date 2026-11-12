@@ -1406,6 +1406,165 @@
                 "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
                 "label": "Conversations par IP et par heure avec les mêmes modèles"
             }
+        },
+        "selection_mode_upsert": {
+            "cohorts": {
+                "help": "Proposé seulement aux visiteurs arrivés avec une de ces cohortes dans l'adresse, comme ?c=pix.",
+                "label": "Cohortes"
+            },
+            "description": {
+                "help": "Une ligne sous le nom, pour dire au visiteur ce qu'il va obtenir.",
+                "label": "Description"
+            },
+            "enabled": {
+                "help": "L'arène a besoin d'au moins un mode activé.",
+                "label": "Proposé dans l'arène"
+            },
+            "ends_at": {
+                "help": "Proposé jusqu'à cette heure (UTC).",
+                "label": "Fin"
+            },
+            "icon": {
+                "help": "Une des icônes proposées par le sélecteur.",
+                "label": "Icône"
+            },
+            "is_default": {
+                "help": "Présélectionné à l'arrivée d'un visiteur. Un seul mode est le mode par défaut : celui-ci remplace l'actuel.",
+                "label": "Mode par défaut"
+            },
+            "key": {
+                "help": "Lettres minuscules, chiffres et tirets. Enregistrée sur chaque comparaison et publiée avec le jeu de données : elle ne peut plus changer une fois le mode enregistré.",
+                "label": "Clé"
+            },
+            "label": {
+                "help": "Obligatoire dans la langue principale de l'instance. Affiché dans le menu des modes de l'arène.",
+                "label": "Nom"
+            },
+            "locales": {
+                "help": "Proposé seulement quand l'arène s'affiche dans une de ces langues.",
+                "label": "Langues"
+            },
+            "ModelFilter": {
+                "archs": {
+                    "label": "Architectures"
+                },
+                "arena_tools": {
+                    "help": "Réglé dans la fiche de chaque modèle. Un système qui a sa propre recherche documentaire ou ses propres outils derrière son point d'accès ne reçoit jamais ceux de l'arène.",
+                    "label": "Outils de l'arène"
+                },
+                "energy_classes": {
+                    "help": "De A, la consommation estimée la plus faible, à F, la plus forte.",
+                    "label": "Classes énergétiques"
+                },
+                "eu_hostable": {
+                    "label": "Hébergeable dans l'Union européenne"
+                },
+                "exclude_lab_ids": {
+                    "label": "Sauf ces laboratoires"
+                },
+                "exclude_llm_ids": {
+                    "label": "Sauf ces modèles"
+                },
+                "exclude_tags": {
+                    "label": "Sans ces étiquettes"
+                },
+                "inputs": {
+                    "help": "Le modèle accepte chacune d'elles.",
+                    "label": "Entrées acceptées"
+                },
+                "lab_ids": {
+                    "label": "Seulement ces laboratoires"
+                },
+                "license_ids": {
+                    "label": "Seulement ces licences"
+                },
+                "llm_ids": {
+                    "help": "Laisser vide pour garder tous les modèles qui remplissent les autres critères.",
+                    "label": "Seulement ces modèles"
+                },
+                "params_max": {
+                    "help": "En milliards.",
+                    "label": "Paramètres maximum"
+                },
+                "params_min": {
+                    "help": "En milliards.",
+                    "label": "Paramètres minimum"
+                },
+                "price_out_max": {
+                    "help": "En dollars américains par million de jetons générés.",
+                    "label": "Prix maximum en sortie"
+                },
+                "public_weights": {
+                    "help": "Oui : poids ouverts seulement. Non : propriétaires seulement.",
+                    "label": "Poids"
+                },
+                "rate_limited": {
+                    "help": "Les modèles à usage limité sont les plus coûteux, avec un plafond d'usage par visiteur.",
+                    "label": "Modèles à usage limité"
+                },
+                "released_after": {
+                    "label": "Sortis à partir du"
+                },
+                "released_before": {
+                    "label": "Sortis jusqu'au"
+                },
+                "released_within_days": {
+                    "help": "Par exemple 90 pour les trois derniers mois.",
+                    "label": "Sortis il y a moins de (jours)"
+                },
+                "size_classes": {
+                    "help": "En milliards de paramètres.",
+                    "label": "Classes de taille"
+                },
+                "tags": {
+                    "help": "Étiquettes ajoutées dans la fiche de chaque modèle.",
+                    "label": "Avec ces étiquettes"
+                },
+                "tags_match": {
+                    "help": "any : au moins une des étiquettes ; all : toutes.",
+                    "label": "Les modèles doivent porter"
+                },
+                "top_ranked": {
+                    "help": "Seulement les N premiers modèles du classement. Les modèles pas encore classés ne sont jamais retenus.",
+                    "label": "Parmi les mieux classés"
+                }
+            },
+            "pairing": {
+                "label": "Les deux modèles"
+            },
+            "pool_a": {
+                "help": "Modèles dans lesquels le côté A est tiré.",
+                "label": "Groupe A"
+            },
+            "pool_b": {
+                "help": "Modèles dans lesquels le côté B est tiré. Laisser vide pour tirer les deux côtés dans le groupe A.",
+                "label": "Groupe B"
+            },
+            "position": {
+                "help": "Ordre dans le menu des modes, du plus petit au plus grand.",
+                "label": "Position"
+            },
+            "sampling": {
+                "label": "Les modèles qui sortent le plus"
+            },
+            "short_label": {
+                "help": "Affiché sur le bouton du menu fermé. Laisser vide pour reprendre le nom.",
+                "label": "Nom court"
+            },
+            "starts_at": {
+                "help": "Proposé à partir de cette heure (UTC).",
+                "label": "Début"
+            },
+            "tool_keys": {
+                "help": "Avec « forced », les outils toujours activés. Avec « visitor », les seuls outils proposés ; laisser vide pour proposer tous les outils.",
+                "label": "Outils du mode"
+            },
+            "tools_policy": {
+                "label": "Qui décide"
+            },
+            "visitor_picks": {
+                "label": "Modèles choisis par le visiteur"
+            }
         }
     },
     "header": {
