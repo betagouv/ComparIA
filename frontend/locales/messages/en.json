@@ -1249,6 +1249,11 @@
             "placeholder": "Write your first prompt here"
         },
         "selectModels": {
+            "fallback": {
+                "description": "Two models chosen randomly from the full list",
+                "label": "Random",
+                "shortLabel": "Random model selection"
+            },
             "help": "Choose the comparison mode",
             "question": "Which models would you like to compare?"
         },

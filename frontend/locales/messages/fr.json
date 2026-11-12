@@ -1249,6 +1249,11 @@
             "placeholder": "Écrivez votre première requête ici"
         },
         "selectModels": {
+            "fallback": {
+                "description": "Deux modèles choisis au hasard parmi toute la liste",
+                "label": "Aléatoire",
+                "shortLabel": "Modèles aléatoires"
+            },
             "help": "Sélectionnez le mode de comparaison qui vous convient",
             "question": "Quels modèles voulez-vous comparer ?"
         },

@@ -7,6 +7,7 @@
   import { initComparisonsContext } from '$lib/chatService.svelte.js'
   import SignInModal from '$lib/components/SignInModal.svelte'
   import { m } from '$lib/i18n/messages'
+  import { initSelectionModesContext } from '$lib/selectionModes.svelte'
   import { setVoteTagsContext } from '$lib/voteTags'
   import type { LayoutProps } from './$types'
 
@@ -14,6 +15,7 @@
 
   initComparisonsContext(data.comparisons)
   setVoteTagsContext(data.voteTags)
+  initSelectionModesContext(data.selectionModes)
   const auth = getAuthContext()
 
   let mainEl: HTMLElement | undefined = $state()
