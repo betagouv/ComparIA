@@ -25,7 +25,6 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 modellar",
             "help": "Viss du berre vel ein, vert den andre vald tilfeldig",
             "question": "Kva modellar vil du samanlikne?"
         },

@@ -131,12 +131,6 @@
                 "pii": "Données personnelles",
                 "spam": "Spam"
             },
-            "modes": {
-                "big-vs-small": "Grand contre petit",
-                "custom": "Choix manuel",
-                "random": "Aléatoire",
-                "small-models": "Petits modèles"
-            },
             "overview": {
                 "activityChartTitle": "Conversations et messages",
                 "activityDate": "Période",
@@ -2128,38 +2122,6 @@
         },
         "technical": {
             "title": "Caractéristiques techniques"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David contre Goliath",
-            "description": "Un petit modèle contre un grand, les deux tirés au hasard",
-            "label": "David contre Goliath",
-            "title": "Mode David contre Goliath"
-        },
-        "custom": {
-            "altLabel": "Sélection manuelle",
-            "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
-            "label": "Sélection manuelle",
-            "title": "Mode Sélection"
-        },
-        "random": {
-            "altLabel": "Modèles aléatoires",
-            "description": "Deux modèles choisis au hasard parmi toute la liste",
-            "label": "Aléatoire",
-            "title": "Mode Aléatoire"
-        },
-        "reasoning": {
-            "altLabel": "Modèles avec raisonnement",
-            "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-            "label": "Raisonnement",
-            "title": "Mode Raisonnement"
-        },
-        "small-models": {
-            "altLabel": "Modèles frugaux",
-            "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille",
-            "label": "Frugal",
-            "title": "Mode Frugal"
         }
     },
     "ranking": {

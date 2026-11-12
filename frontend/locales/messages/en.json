@@ -131,12 +131,6 @@
                 "pii": "Personal data",
                 "spam": "Spam"
             },
-            "modes": {
-                "big-vs-small": "Big against small",
-                "custom": "Chosen by hand",
-                "random": "Random",
-                "small-models": "Small models"
-            },
             "overview": {
                 "activityChartTitle": "Conversations and messages",
                 "activityDate": "Period",
@@ -2390,38 +2384,6 @@
         },
         "technical": {
             "title": "Technical characteristics"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David vs Goliath model selection",
-            "description": "One small model against one big model, both chosen randomly",
-            "label": "David vs Goliath",
-            "title": "David vs Goliath mode"
-        },
-        "custom": {
-            "altLabel": "Manual model selection",
-            "description": "Will you recognize the two models you chose?",
-            "label": "Manual selection",
-            "title": "Manual selection mode"
-        },
-        "random": {
-            "altLabel": "Random model selection",
-            "description": "Two models chosen randomly from the full list",
-            "label": "Random",
-            "title": "Random mode"
-        },
-        "reasoning": {
-            "altLabel": "Reasoning model selection",
-            "description": "Two reasoning models chosen randomly",
-            "label": "Reasoning",
-            "title": "Reasoning mode"
-        },
-        "small-models": {
-            "altLabel": "Frugal model selection",
-            "description": "Two small models chosen randomly",
-            "label": "Frugal",
-            "title": "Frugal mode"
         }
     },
     "ranking": {

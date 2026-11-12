@@ -36,8 +36,8 @@ const MODALITIES = [
   { id: 'video', icon: 'i-ri-video-line' }
 ] as const
 
-// See getModeInfos in chatService: a module-level constant would be translated
-// once, in the base locale.
+// Resolved on each call: the module is evaluated once per server, before any
+// request sets a locale, so a constant would be translated in the base locale.
 export function getModalities() {
   return MODALITIES.map((item) => ({
     ...item,

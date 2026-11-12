@@ -35,7 +35,6 @@
             "none": "Ingen verktøy"
         },
         "compareModels": {
-            "count": "{count}/2 modeller",
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
             "question": "Hvilke modeller vil du sammenligne?"
         },
@@ -280,38 +279,6 @@
             },
             "estimated": "Estimert størrelse ({size})",
             "title": "Størrelse {size}"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David mot Goliat-modellutvalg",
-            "description": "En liten modell mot en stor modell, begge valgt tilfeldig",
-            "label": "David mot Goliat",
-            "title": "David mot Goliat-modus"
-        },
-        "custom": {
-            "altLabel": "Manuelt valg av modeller",
-            "description": "Vil du kjenne igjen de to modellene du har valgt?",
-            "label": "Manuelt valg",
-            "title": "Modus for valg"
-        },
-        "random": {
-            "altLabel": "Tilfeldig valg av modeller",
-            "description": "To modeller valgt tilfeldig fra hele listen",
-            "label": "Tilfeldig",
-            "title": "Tilfeldig-modus"
-        },
-        "reasoning": {
-            "altLabel": "Modeller med resonnering",
-            "description": "To tilfeldig valgte modeller fra de som er optimalisert for komplekse oppgaver",
-            "label": "Resonnering",
-            "title": "Resonneringsmodus"
-        },
-        "small-models": {
-            "altLabel": "Valg av ressurssparende modeller",
-            "description": "To tilfeldig valgte små modeller",
-            "label": "Ressurssparende",
-            "title": "Ressurssparende modus"
         }
     },
     "ranking": {
