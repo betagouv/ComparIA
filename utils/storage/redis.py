@@ -73,6 +73,7 @@ REDIS_MCP_SCHEMAS_KEY: Final[str] = (
 REDIS_TOOL_HEALTH_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}tool_health:{{tool_id}}"
 REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
+REDIS_SELECTION_MODES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}selection_modes"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"
 REDIS_SUGGESTIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}suggestions"
 REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
