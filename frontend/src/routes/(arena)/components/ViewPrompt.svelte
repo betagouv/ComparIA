@@ -5,13 +5,18 @@
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import type { ToolPublic } from '$lib/generated/backend'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
+  import {
+    getSelectionModesContext,
+    keepAllowedTools,
+    keepPickable
+  } from '$lib/selectionModes.svelte'
   import type { SuggestionCategory } from '$lib/suggestions'
-  import { onMount, tick } from 'svelte'
+  import { onMount, tick, untrack } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
@@ -41,8 +46,10 @@
     models.filter((llm) => llm.custom_selectable !== false).map((llm) => llm.id)
   )
 
+  const selectionModes = getSelectionModesContext()
+  const selectedMode = $derived(selectionModes.current)
+
   let prompt = $state('')
-  const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
       return parsed.filter((id) => selectableIds.has(id))
@@ -52,9 +59,22 @@
   let selectedTools = $state<string[]>(['web_search'])
   let submitting = $state(false)
 
+  // On a mode change, drop the models and tools the new mode does not allow.
+  $effect.pre(() => {
+    const current = selectedMode
+    untrack(() => {
+      const models = keepPickable(modelsSelection.value, current)
+      if (models.length !== modelsSelection.value.length) modelsSelection.value = models
+      // A forced mode shows its own tools; they never become the visitor's pick.
+      if (current.tools_policy !== 'forced') {
+        selectedTools = keepAllowedTools(selectedTools, current)
+      }
+    })
+  })
+
+  const modeTools = $derived(tools.filter((tool) => selectedMode.tool_keys.includes(tool.key)))
+
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
-  const modeInfos = getModeInfos()
-  const selectedMode = $derived(modeInfos.find((item) => item.value === mode.value)!)
 
   onMount(() => {
     const vsParam = page.url.searchParams.get('vs')
@@ -73,11 +93,16 @@
       )
     ].slice(0, 2)
 
-    if (validIds.length > 0) {
-      mode.value = 'custom'
+    // The current mode if it lets the visitor pick these, else the first that does.
+    const fits = (candidate: typeof selectedMode) =>
+      candidate.visitor_picks >= validIds.length &&
+      validIds.every((id) => candidate.llm_ids?.includes(id))
+    const target = validIds.length ? [selectedMode, ...selectionModes.modes].find(fits) : undefined
+
+    if (target) {
+      selectionModes.select(target.key)
       modelsSelection.value = validIds
     } else {
-      mode.value = 'random'
       modelsSelection.value = []
     }
 
@@ -106,14 +131,12 @@
     if (loading || submitting) return
 
     submitting = true
-    // Manual mode can be left empty, e.g. when the saved models were disabled.
-    if (mode.value === 'custom' && !modelsSelection.value.length) mode.value = 'random'
     try {
       await onPrompt({
-        mode: mode.value,
-        custom_models_selection: modelsSelection.value,
+        mode: selectionModes.currentKey,
+        custom_models_selection: keepPickable(modelsSelection.value, selectedMode),
         prompt_value: prompt,
-        tools: selectedTools
+        tools: keepAllowedTools(selectedTools, selectedMode)
       })
     } finally {
       submitting = false
@@ -170,8 +193,10 @@
           class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
         >
           <Icon icon={selectedMode.icon} size="sm" class="text-primary" />
-          <strong>{selectedMode.title}</strong>
-          <Tooltip id="pending-mode-desc" text={selectedMode.description} size="xs" />
+          <strong>{selectedMode.label}</strong>
+          {#if selectedMode.description}
+            <Tooltip id="pending-mode-desc" text={selectedMode.description} size="xs" />
+          {/if}
         </div>
 
         <MessageUser
@@ -208,12 +233,23 @@
 
         <div class="gap-3 md:col-span-5 md:flex-row flex flex-col">
           <ModelSelector
-            bind:mode={mode.value}
+            bind:mode={() => selectedMode.key, (key) => selectionModes.select(key)}
             bind:modelsSelection={modelsSelection.value}
+            modes={selectionModes.modes}
             {models}
             disabled={loading}
           />
-          <ToolPicker {tools} bind:selected={selectedTools} disabled={loading} />
+          {#if selectedMode.tools_policy !== 'none'}
+            <ToolPicker
+              tools={modeTools}
+              bind:selected={
+                () => keepAllowedTools(selectedTools, selectedMode),
+                (keys) => (selectedTools = keys)
+              }
+              locked={selectedMode.tools_policy === 'forced'}
+              disabled={loading}
+            />
+          {/if}
         </div>
 
         <Button
