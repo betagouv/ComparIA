@@ -17,7 +17,7 @@ The models are organized in hierarchy:
 - DatasetData/PreferencesData: Rankings and user preferences
 """
 
-from typing import Annotated, Any, Literal, Self, TypeVar, get_args
+from typing import Annotated, Any, Literal, Self, TypeVar
 
 from pydantic import (
     AfterValidator,
@@ -30,11 +30,10 @@ from pydantic import (
 
 from backend.llms.utils import convert_range_to_value, get_llm_impact
 from utils.database.models.llms import LLMEndpoint, LLMLabPublic, LLMLicensePublic
+from utils.database.models.llms.constants import EnergyClass, SizeClass
 from utils.database.models.llms.llm import LLMDataBase
 
 # LLM scale classes
-SizeClass = Literal["XS", "S", "M", "L", "XL"]
-SIZE_CLASSES: tuple[SizeClass, ...] = get_args(SizeClass)
 SIZE_CLASSES_SCALE: dict[SizeClass, int | float] = {
     # in billion params
     "XS": 15,
@@ -44,8 +43,6 @@ SIZE_CLASSES_SCALE: dict[SizeClass, int | float] = {
     "XL": float("inf"),
 }
 
-EnergyClass = Literal["A", "B", "C", "D", "E", "F"]
-ENERGY_CLASSES: tuple[EnergyClass, ...] = get_args(EnergyClass)
 ENERGY_CLASSES_SCALE: dict[EnergyClass, int | float] = {
     # in wh
     "A": 100,

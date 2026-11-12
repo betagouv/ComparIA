@@ -3,11 +3,14 @@ from typing import get_args
 
 from pydantic2ts import generate_typescript_defs
 
-from backend.llms.models import ENERGY_CLASSES, SIZE_CLASSES
 from backend.settings.informational_legal import LegalPageKey
 from internal.archs import get_archs
 from utils.database.models.auth import LegalDocumentKind
-from utils.database.models.llms.constants import LLMArchKind
+from utils.database.models.llms.constants import (
+    ENERGY_CLASSES,
+    SIZE_CLASSES,
+    LLMArchKind,
+)
 from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
 JSON2TS_PATH = FRONTEND_DIR / "node_modules/.bin/json2ts"
