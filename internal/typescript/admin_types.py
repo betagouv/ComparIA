@@ -12,6 +12,11 @@ from backend.admin.router import (
     LegalStatuses,
     PublishLegalDocumentBody,
 )
+from backend.admin.selection_modes.models import (
+    SelectionModeOrder,
+    SelectionModePreview,
+    SelectionModeTemplate,
+)
 from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
 from utils.database.models.auth import UserPublic, UserUpsert
 from utils.database.models.llms import (
@@ -29,6 +34,13 @@ from utils.database.models.publish import (
     AdminPublishRun,
     AdminPublishStatus,
     PublishDestinationUpsert,
+)
+from utils.database.models.selection_mode import (
+    ModelFilter,
+    ModeViability,
+    SelectionModeAdmin,
+    SelectionModeRules,
+    SelectionModeUpsert,
 )
 from utils.database.models.suggestion import (
     AdminSuggestion,

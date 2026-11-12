@@ -11,6 +11,12 @@ from utils.database.models.llms.constants import (
     SIZE_CLASSES,
     LLMArchKind,
 )
+from utils.database.models.selection_mode import (
+    MODE_ICONS,
+    PAIRINGS,
+    SAMPLINGS,
+    TOOLS_POLICIES,
+)
 from utils.utils import FRONTEND_DIR, FRONTEND_GENERATED_DIR
 
 JSON2TS_PATH = FRONTEND_DIR / "node_modules/.bin/json2ts"
@@ -52,6 +58,10 @@ def generate_frontend_constants() -> None:
         "MAYBE_ARCHS": [f"maybe-{a}" for a in archs if a != "na"],
         "INFORMATIONAL_PAGE_KEYS": list(get_args(LegalPageKey)),
         "LEGAL_DOCUMENT_KEYS": list(get_args(LegalDocumentKind)),
+        "SELECTION_PAIRINGS": list(PAIRINGS),
+        "SELECTION_SAMPLINGS": list(SAMPLINGS),
+        "TOOLS_POLICIES": list(TOOLS_POLICIES),
+        "MODE_ICONS": list(MODE_ICONS),
     }
 
     file_lines = [f"export const {k} = {v} as const" for k, v in constants.items()] + [

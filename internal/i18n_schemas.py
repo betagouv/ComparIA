@@ -5,6 +5,7 @@ from utils.database.models.llms import (
     LLMLicenseUpsert,
 )
 from utils.database.models.prompt_check import PromptCheckUpsert
+from utils.database.models.selection_mode import SelectionModeUpsert
 from utils.database.models.tool import ToolUpsert
 from utils.utils import (
     FRONTEND_MAIN_I18N_FILE,
@@ -31,6 +32,10 @@ def get_schema_i18n(schema, refs):
             if ref := v.get("$ref"):
                 ref = ref.split("/")[-1]
                 data[ref] = get_schema_i18n(refs[ref], refs)
+                # A field typed by a model still has its own label, and two
+                # fields may share one model (a mode's two pools).
+                if "title" in v:
+                    data[k] = get_property_i18n(v)
             else:
                 data[k] = get_property_i18n(v)
                 if ref := v.get("items", {}).get("$ref"):
@@ -50,6 +55,7 @@ def generate_admin_schemas_i18n():
         "llm_upsert": LLMDataUpsert,
         "prompt_check_upsert": PromptCheckUpsert,
         "tool_upsert": ToolUpsert,
+        "selection_mode_upsert": SelectionModeUpsert,
     }
     schemas = {
         k: model.model_json_schema(schema_generator=FormJsonSchema)
