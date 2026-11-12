@@ -6,6 +6,7 @@ import type {
   FormInputProps,
   FormRadioGroupProps,
   FormSelectProps,
+  FormTagsInputProps,
   FormToggleProps
 } from '$components/form'
 import { getKeys, tryI18n } from '$lib/utils/commons'
@@ -57,12 +58,18 @@ export type AnyFormItemProps =
   | FormRadioGroupProps
   | FormFieldsetItemProps
   | FormFieldsetListProps
+  | FormTagsInputProps
 
 export type FormItemSnippetProps = {
   'aria-describedby': string
   'aria-invalid'?: 'true'
   id: string
   required?: boolean
+}
+
+// Plain text values (tags, domains): typed one by one, no fixed choices.
+function isFreeString(schema: JSONSchema): boolean {
+  return schema.type === 'string' && !schema.enum && !schema.format && !schema.$ref
 }
 
 function parseSchema(
@@ -147,6 +154,8 @@ function parseSchema(
         ...baseProps,
         component: 'checkbox-group'
       } as FormCheckboxGroupProps
+    } else if (isFreeString(inner)) {
+      return { ...baseProps, component: 'tags' }
     } else {
       return {
         ...baseProps,

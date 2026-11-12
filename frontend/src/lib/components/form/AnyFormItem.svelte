@@ -15,6 +15,8 @@
   <components.FormCheckboxGroup {...props} bind:value />
 {:else if props.component === 'fieldset-item'}
   <components.FormFieldsetItem {...props} bind:value />
+{:else if props.component === 'tags'}
+  <components.FormTagsInput {...props} bind:value />
 {:else if props.component === 'fieldset-list'}
   <components.FormFieldsetList {...props} bind:value />
 {:else}

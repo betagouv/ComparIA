@@ -83,3 +83,25 @@ describe('JSON-schema defaults', () => {
     expect(defaults).toEqual({ custom_selectable: true, public: false, system_prompt: null })
   })
 })
+
+describe('JSON-schema lists of text', () => {
+  it('types free text values one by one, and keeps fixed choices as checkboxes', () => {
+    const fields = getFormFields(
+      {
+        type: 'object',
+        properties: {
+          tags: { type: 'array', items: { type: 'string' }, optional: true },
+          inputs: { type: 'array', items: { type: 'string', enum: ['text', 'image'] } },
+          links: { type: 'array', items: { type: 'string', format: 'uri' } }
+        }
+      },
+      ''
+    )
+
+    expect(fields.map((field) => [field.id, field.component])).toEqual([
+      ['tags', 'tags'],
+      ['inputs', 'checkbox-group'],
+      ['links', 'fieldset-list']
+    ])
+  })
+})
