@@ -32,7 +32,7 @@ export function getLocalesContext() {
   const currentLocale = getLocale()
   const auth = getAuthContext()
   const defaultLocale = $derived(auth.config.default_locale)
-  const allLocales = sortLocales(locales)
+  const allLocales = $derived(sortLocales(locales))
   const enabledLocales = $derived(sortLocales(auth.config.enabled_locales))
   const enabledOptions = $derived(asOptions(enabledLocales))
   const allOptions = $derived(asOptions(locales))
