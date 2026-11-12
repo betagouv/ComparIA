@@ -587,6 +587,9 @@
                 "title": "How the pair is drawn"
             },
             "editor": {
+                "back": "All modes",
+                "createTitle": "New mode",
+                "editTitle": "Edit {label}",
                 "statusBad": "Not offered: see the preview",
                 "statusOk": "{pairs} possible pairs: see the preview",
                 "unsaved": "Unsaved changes"
@@ -632,6 +635,15 @@
                 "tagsInUse": "In use: {tags}.",
                 "tagsNone": "No model has a tag yet."
             },
+            "gallery": {
+                "blank": "Blank mode",
+                "blankHelp": "Two models drawn among all models, no restriction.",
+                "change": "Choose another starting point",
+                "intro": "Pick a starting point. Everything stays editable, and nothing is saved before you press Save.",
+                "startedBlank": "Started from a blank mode",
+                "startedFrom": "Started from: {template}",
+                "title": "Start from…"
+            },
             "icons": {
                 "dice": "Dice",
                 "flash": "Flashlight",
@@ -656,6 +668,32 @@
                 "keyFrozen": "Stored on every comparison and published with the dataset, so it cannot change.",
                 "labelOtherHelp": "Leave empty to show the name in the main language.",
                 "title": "Identity"
+            },
+            "list": {
+                "actions": "Actions",
+                "add": "New mode",
+                "check": "To check",
+                "confirmDelete": "Delete",
+                "default": "Default",
+                "delete": "Delete {label}",
+                "deleted": "{label} deleted.",
+                "deleteTitle": "Delete {label}?",
+                "deleteWarning": "Visitors will no longer see this mode. Past comparisons keep its key, {key}, in the dataset.",
+                "deleting": "Deleting…",
+                "edit": "Edit {label}",
+                "enabled": "Offered",
+                "intro": "The arena offers these modes in this order. A mode that cannot draw two models is not offered to visitors.",
+                "mode": "Mode",
+                "moved": "{label} moved to position {position} of {total}.",
+                "moveDown": "Move {label} down",
+                "moveUp": "Move {label} up",
+                "nobodyCovered": "No mode switched on is open to everyone right now. Visitors outside these audiences get a plain random draw.",
+                "notViable": "Not offered to visitors",
+                "order": "Order",
+                "rule": "Rule",
+                "switch": "Offer {label} in the arena",
+                "switchedOff": "{label} is no longer offered.",
+                "switchedOn": "{label} is offered in the arena."
             },
             "multi": {
                 "clear": "Clear the selection",
@@ -733,6 +771,7 @@
                 "uniform": "Every model as often",
                 "uniformHelp": "The usual draw."
             },
+            "subtitle": "Which models face each other in the arena, who picks them and which tools they get.",
             "summary": {
                 "audience": "limited audience",
                 "differentLab": "different labs",
@@ -801,6 +840,7 @@
                     "title": "Always with web search"
                 }
             },
+            "title": "Selection modes",
             "tools": {
                 "forced": "Always on",
                 "forcedHelp": "The ticked tools are always on and the visitor cannot switch them off.",

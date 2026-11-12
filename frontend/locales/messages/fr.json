@@ -587,6 +587,9 @@
                 "title": "Comment la paire est tirée"
             },
             "editor": {
+                "back": "Tous les modes",
+                "createTitle": "Nouveau mode",
+                "editTitle": "Modifier {label}",
                 "statusBad": "Non proposé : voir l'aperçu",
                 "statusOk": "{pairs} paires possibles : voir l'aperçu",
                 "unsaved": "Modifications non enregistrées"
@@ -632,6 +635,15 @@
                 "tagsInUse": "En usage : {tags}.",
                 "tagsNone": "Aucun modèle n'en a encore."
             },
+            "gallery": {
+                "blank": "Mode vierge",
+                "blankHelp": "Deux modèles tirés parmi tous les modèles, sans restriction.",
+                "change": "Choisir un autre point de départ",
+                "intro": "Choisissez un point de départ. Tout reste modifiable, et rien n'est enregistré avant de cliquer sur Enregistrer.",
+                "startedBlank": "Point de départ : mode vierge",
+                "startedFrom": "Point de départ : {template}",
+                "title": "Partir de…"
+            },
             "icons": {
                 "dice": "Dé",
                 "flash": "Lampe torche",
@@ -656,6 +668,32 @@
                 "keyFrozen": "Enregistrée sur chaque comparaison et publiée avec le jeu de données, elle ne peut pas changer.",
                 "labelOtherHelp": "Laisser vide pour afficher le nom dans la langue principale.",
                 "title": "Identité"
+            },
+            "list": {
+                "actions": "Actions",
+                "add": "Nouveau mode",
+                "check": "À vérifier",
+                "confirmDelete": "Supprimer",
+                "default": "Par défaut",
+                "delete": "Supprimer {label}",
+                "deleted": "{label} supprimé.",
+                "deleteTitle": "Supprimer {label} ?",
+                "deleteWarning": "Les visiteurs ne verront plus ce mode. Les comparaisons passées gardent sa clé, {key}, dans le jeu de données.",
+                "deleting": "Suppression…",
+                "edit": "Modifier {label}",
+                "enabled": "Proposé",
+                "intro": "L'arène propose ces modes dans cet ordre. Un mode qui ne peut pas tirer deux modèles n'est pas proposé aux visiteurs.",
+                "mode": "Mode",
+                "moved": "{label} déplacé en position {position} sur {total}.",
+                "moveDown": "Descendre {label}",
+                "moveUp": "Monter {label}",
+                "nobodyCovered": "Aucun mode activé n'est ouvert à tous en ce moment. Les visiteurs hors de ces publics ont un tirage aléatoire simple.",
+                "notViable": "Non proposé aux visiteurs",
+                "order": "Ordre",
+                "rule": "Règle",
+                "switch": "Proposer {label} dans l'arène",
+                "switchedOff": "{label} n'est plus proposé.",
+                "switchedOn": "{label} est proposé dans l'arène."
             },
             "multi": {
                 "clear": "Vider la sélection",
@@ -733,6 +771,7 @@
                 "uniform": "Tous les modèles aussi souvent",
                 "uniformHelp": "Le tirage habituel."
             },
+            "subtitle": "Quels modèles s'affrontent dans l'arène, qui les choisit et quels outils ils reçoivent.",
             "summary": {
                 "audience": "public restreint",
                 "differentLab": "laboratoires différents",
@@ -801,6 +840,7 @@
                     "title": "Toujours avec la recherche web"
                 }
             },
+            "title": "Modes de sélection",
             "tools": {
                 "forced": "Toujours activés",
                 "forcedHelp": "Les outils cochés sont toujours activés et le visiteur ne peut pas les désactiver.",
