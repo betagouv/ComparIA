@@ -1306,6 +1306,10 @@
         "missing_locales": "Traductions manquantes",
         "preview": "Aperçu utilisateur",
         "previewEmpty": "L’aperçu apparaîtra ici.",
+        "tags": {
+            "placeholder": "Saisir puis appuyer sur Entrée",
+            "remove": "Retirer {tag}"
+        },
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
         "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter la page ?"

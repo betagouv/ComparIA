@@ -1306,6 +1306,10 @@
         "missing_locales": "Missing translations",
         "preview": "Preview",
         "previewEmpty": "The preview will appear here.",
+        "tags": {
+            "placeholder": "Type, then press Enter",
+            "remove": "Remove {tag}"
+        },
         "toastError": "Invalid data",
         "toastSuccess": "Data saved",
         "unsavedChanges": "You have unsaved changes. Are you sure you want to leave the page?"
