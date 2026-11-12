@@ -7,6 +7,7 @@ import {
   presetWind4,
   transformerDirectives
 } from 'unocss'
+import { MODE_ICONS } from './src/lib/generated/constants'
 import { ICONS } from './src/lib/generated/models'
 
 export default defineConfig({
@@ -105,6 +106,8 @@ export default defineConfig({
     'i-ri-image-upload-line',
     'i-ri-volume-up-line',
     'i-ri-video-line',
+    // selection modes: the icon comes from the database
+    ...MODE_ICONS,
     ...ICONS.map((icon) => 'i-ai-' + icon)
   ]
 })
