@@ -66,10 +66,8 @@ type UseFormOptions<T extends object, K extends keyof T = never> = {
   initialData: () => T
   omitKeys?: K[]
   method?: 'post' | 'put' | 'PATCH'
-  onBeforeSubmit?: (
-    form: Omit<T, K>,
-    errors: FormErrors
-  ) => Omit<T, K> | null | Promise<Omit<T, K> | null>
+  // Returns the body to send, which may differ from the form, or null to stop
+  onBeforeSubmit?: (form: Omit<T, K>, errors: FormErrors) => object | null | Promise<object | null>
   onSuccess?: (form: Omit<T, K>) => void | Promise<void>
 } & FormErrorOptions
 
