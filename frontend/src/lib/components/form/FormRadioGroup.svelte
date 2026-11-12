@@ -1,6 +1,9 @@
 <script module lang="ts">
   export type FormRadioGroupProps = {
     options: Option<string>[]
+    // Side by side suits short labels; options with a help line read better
+    // one under the other.
+    inline?: boolean
     // The admin form only holds the keys the user touched, so the group may
     // render before its own key exists.
   } & BaseFormFieldProps<'radio'>
@@ -14,6 +17,7 @@
     value = $bindable(),
     disabled,
     options,
+    inline = true,
     ...props
   }: Omit<FormRadioGroupProps, 'component'> & { value?: string } = $props()
 </script>
@@ -21,8 +25,8 @@
 <FormFieldset {...props} component="fieldset">
   {#snippet formItem({ id })}
     {#each options as opt (opt.value)}
-      <div class="fr-fieldset__element fr-fieldset__element--inline">
-        <FormField id={`${id}-${opt.value}`} label={opt.label} component="radio">
+      <div class={['fr-fieldset__element', { 'fr-fieldset__element--inline': inline }]}>
+        <FormField id={`${id}-${opt.value}`} label={opt.label} help={opt.help} component="radio">
           {#snippet formItem({ id })}
             <input name={id} {id} type="radio" bind:group={value} value={opt.value} {disabled} />
           {/snippet}

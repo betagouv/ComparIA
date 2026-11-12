@@ -45,7 +45,7 @@ export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
   errors?: Record<string, string>
 }
 
-export type Option<T> = { value: T; label: string }
+export type Option<T> = { value: T; label: string; help?: string }
 
 export type AnyFormItemProps =
   | FormInputProps
