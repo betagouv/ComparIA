@@ -62,7 +62,9 @@ from backend.config import (
 )
 from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.selection_modes.services import get_public_modes
 from backend.survey.dependencies import require_answered_questions
+from backend.utils.locale import LocaleQuery
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -73,6 +75,7 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    SelectionModePublic,
     ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
@@ -315,6 +318,18 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
 async def get_tools() -> list[ToolPublic]:
     """Tools a visitor may offer to the models on this instance."""
     return [ToolPublic.model_validate(tool) for tool in await get_offered_tools()]
+
+
+@router.get("/selection-modes")
+async def get_selection_modes(
+    locale: LocaleQuery, cohorts: str | None = None
+) -> list[SelectionModePublic]:
+    """
+    The selection modes on offer for this visitor, in menu order, with exactly
+    one marked as the default. `cohorts` is comma-separated, as sent to
+    `add_first_text`.
+    """
+    return await get_public_modes(locale, cohorts)
 
 
 @router.post(
