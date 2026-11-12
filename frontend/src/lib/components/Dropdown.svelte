@@ -117,22 +117,18 @@
     let offset = 4
 
     const { left, top, right, bottom, width: btnWidth } = buttonEl.getBoundingClientRect()
-    const contentHeight = contentEl.scrollHeight
     const contentWidth = contentEl.scrollWidth
     const { innerWidth, innerHeight } = window
 
-    // Vertical pos
-    let topPos: number
-    const preferredBelow = innerHeight - bottom >= contentHeight + offset * 2
-    const preferredAbove = top >= contentHeight + offset * 2
-
-    if (preferredBelow || !preferredAbove) {
-      isBelow = true
-      topPos = bottom + offset
-    } else {
-      isBelow = false
-      topPos = top - contentHeight - offset
-    }
+    // A list longer than maxHeight scrolls inside it. It opens on the side
+    // with room for it, else on the side with more room, and scrolls within
+    // that room so its end never goes off screen.
+    const wanted = Math.min(contentEl.scrollHeight, maxHeight)
+    const roomBelow = innerHeight - bottom - offset * 2
+    const roomAbove = top - offset * 2
+    isBelow = roomBelow >= wanted || roomBelow >= roomAbove
+    const contentHeight = Math.min(wanted, Math.max(isBelow ? roomBelow : roomAbove, 0))
+    let topPos = isBelow ? bottom + offset : top - contentHeight - offset
 
     // Clamp top to viewport
     if (topPos + contentHeight > innerHeight - offset) {
@@ -161,7 +157,7 @@
       left: `${leftPos}px`,
       'min-width': `${btnWidth}px`,
       'max-width': `${innerWidth - offset * 2}px`,
-      'max-height': `${Math.min(maxHeight, innerHeight - offset * 2)}px`
+      'max-height': `${contentHeight}px`
     }
   }
 
