@@ -26,8 +26,22 @@
       }
     })
   )
+
+  // Tags already in use, offered while typing so 'legal' is not typed twice
+  // as 'legal' and 'juridique'.
+  const tagSuggestions = $derived([...new Set(data.llms.flatMap((llm) => llm.tags ?? []))].sort())
+  const items = $derived(
+    form.items.map((item) => (item.id === 'tags' ? { ...item, suggestions: tagSuggestions } : item))
+  )
 </script>
 
 <div>
-  <Form {id} label="LLM" subLabel={id} {...form} class="mt-6! p-6 cg-border max-w-[700px]" />
+  <Form
+    {id}
+    label="LLM"
+    subLabel={id}
+    {...form}
+    {items}
+    class="mt-6! p-6 cg-border max-w-[700px]"
+  />
 </div>
