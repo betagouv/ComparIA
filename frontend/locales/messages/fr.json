@@ -647,6 +647,30 @@
                 "two": "Le visiteur choisit jusqu'à deux modèles",
                 "twoHelp": "Le visiteur choisit un ou deux modèles dans les groupes ; compar:IA tire le reste."
             },
+            "pool": {
+                "title": "Modèles tirés"
+            },
+            "preview": {
+                "draw": "Tirer 5 exemples",
+                "drawing": "Tirage…",
+                "drawsNoPicks": "Tirés comme si le visiteur ne choisissait rien.",
+                "fromPoolA": "Tiré du groupe A",
+                "fromPoolB": "Tiré du groupe B",
+                "intro": "Ce que l'arène tirerait avec ces réglages, avant d'enregistrer. Se met à jour pendant la saisie.",
+                "invalid": "Ces réglages contiennent une erreur",
+                "loading": "Calcul de l'aperçu…",
+                "models": "{count} modèles",
+                "noModel": "Aucun modèle ne correspond.",
+                "notViable": "Les visiteurs ne verront pas ce mode",
+                "oneModel": "1 modèle",
+                "onePair": "Une seule paire possible",
+                "ownTools": "outils internes",
+                "ownToolsHelp": "Apporte ses propres outils : ne reçoit jamais ceux de l'arène.",
+                "pairs": "{count} paires possibles",
+                "title": "Aperçu",
+                "updating": "Mise à jour…",
+                "versus": "contre"
+            },
             "sampling": {
                 "fewerVotes": "D'abord les modèles peu votés",
                 "fewerVotesHelp": "Les modèles qui ont peu de votes sortent plus souvent, pour que leur classement se stabilise plus vite.",

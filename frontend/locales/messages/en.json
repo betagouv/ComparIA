@@ -647,6 +647,30 @@
                 "two": "The visitor picks up to two models",
                 "twoHelp": "The visitor picks one or two models among the pools; compar:IA draws what is left."
             },
+            "pool": {
+                "title": "Models drawn"
+            },
+            "preview": {
+                "draw": "Draw 5 examples",
+                "drawing": "Drawing…",
+                "drawsNoPicks": "Drawn as if the visitor picked nothing.",
+                "fromPoolA": "From pool A",
+                "fromPoolB": "From pool B",
+                "intro": "What the arena would draw with these settings, before you save. Refreshes as you edit.",
+                "invalid": "These settings contain a mistake",
+                "loading": "Computing the preview…",
+                "models": "{count} models",
+                "noModel": "No model matches.",
+                "notViable": "Visitors will not see this mode",
+                "oneModel": "1 model",
+                "onePair": "Only one possible pair",
+                "ownTools": "own tools",
+                "ownToolsHelp": "Brings its own tools: never gets the arena's.",
+                "pairs": "{count} possible pairs",
+                "title": "Preview",
+                "updating": "Updating…",
+                "versus": "against"
+            },
             "sampling": {
                 "fewerVotes": "Models with few votes first",
                 "fewerVotesHelp": "Models with few votes come up more often, so their ranking settles sooner.",
