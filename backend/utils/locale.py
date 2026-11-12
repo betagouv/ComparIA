@@ -70,21 +70,27 @@ def pick_locale(
 ) -> SupportedLocale:
     """
     The closest locale we have copy for: exact, then same language, then the default
-    locale and finally the first available locale in enabled ones.
+    locale, then the first enabled locale with copy. Copy that no enabled locale
+    has still beats an error: the hard default locale, then any locale with copy.
     """
-    available_locales = list(set(contents.keys()).intersection(set(locales.enabled)))
+    available_locales = [l for l in locales.enabled if l in contents]
     tries = [locale, locales.default, *available_locales]
 
     for l in tries:
         if not l:
             continue
         if l in available_locales:
-            return cast(SupportedLocale, l)
+            return l
         l_ = l.split("-")[0]
         if l_ in available_locales:
             return cast(SupportedLocale, l_)
 
-    raise ValueError("Couldn't find any enabled locale in available content.")
+    if DEFAULT_LOCALE in contents:
+        return DEFAULT_LOCALE
+    for l in contents:
+        return l
+
+    raise ValueError("No content in any locale.")
 
 
 def pick_translation(
