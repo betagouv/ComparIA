@@ -1,9 +1,9 @@
 from typing import Annotated, Any, Generic, TypeVar
 from urllib.parse import urlsplit
 
-from pydantic import BeforeValidator, RootModel, ValidationInfo, model_validator
+from pydantic import BeforeValidator, RootModel, model_validator
 
-from utils.utils import SUPPORTED_LOCALES
+from utils.i18n import TranslatableRaw
 
 _LOOPBACK_HOSTS = {"localhost", "127.0.0.1"}
 
@@ -34,16 +34,9 @@ def is_secure_url(url: str) -> bool:
 T = TypeVar("T")
 
 
-class Translatable(RootModel[dict[str, T]], Generic[T]):
+# TODO add check or another type that check that the default locale is present
+class Translatable(RootModel[TranslatableRaw[T]], Generic[T]):
     @model_validator(mode="before")
     @classmethod
     def remove_empty(cls, data: Any):
         return {locale: value for locale, value in data.items() if value}
-
-    @model_validator(mode="after")
-    def check_locales(self, info: ValidationInfo):
-        invalid_locales = set(self.root) - set(SUPPORTED_LOCALES)
-        if invalid_locales:
-            raise ValueError(f"Unsupported locale(s): {sorted(invalid_locales)}")
-
-        return self

@@ -26,6 +26,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.settings.router as settings_router  # noqa: E402
+import backend.utils.locale as locale_module
 from backend.admin.router import (  # noqa: E402
     PublishLegalDocumentBody,
     _to_admin_legal_document,
@@ -260,40 +261,49 @@ def test_admin_publication_rejects_invalid_locale():
     )
 
 
+@contextmanager
+def mock_settings(
+    presentation=None, default_locale="fr", enabled_locales=["fr", "en", "da"]
+):
+    async def app_settings():
+        return SimpleNamespace(
+            legal_presentation=presentation,
+            default_locale=default_locale,
+            enabled_locales=enabled_locales,
+        )
+
+    with (
+        patch.object(locale_module, "get_app_settings", app_settings),
+        patch.object(legal, "get_app_settings", app_settings),
+    ):
+        yield
+
+
 def test_mutable_presentation_comes_from_app_settings():
     configured = {"fr": presentation_payload(title="Parcours modifiable")}
 
-    async def app_settings():
-        return SimpleNamespace(legal_presentation=configured, default_locale="fr")
-
-    with patch.object(legal, "get_app_settings", app_settings):
+    with mock_settings(presentation=configured):
         result = asyncio.run(legal.get_legal_presentation())
 
     assert result.arena.title == "Parcours modifiable"
 
 
 def test_presentation_uses_defaults_when_not_configured():
-    async def app_settings():
-        return SimpleNamespace(legal_presentation=None, default_locale="fr")
-
-    with patch.object(legal, "get_app_settings", app_settings):
+    with mock_settings():
         result = asyncio.run(legal.get_legal_presentation())
 
-    assert result == legal.fallback_legal_presentation("fr")
+    assert result == legal.FALLBACK_PRESENTATIONS.root["fr"]
 
 
 def test_default_presentation_follows_the_visitor_locale():
-    async def app_settings():
-        return SimpleNamespace(legal_presentation=None, default_locale="da")
-
-    with patch.object(legal, "get_app_settings", app_settings):
+    with mock_settings(default_locale="da"):
         english = asyncio.run(legal.get_legal_presentation("en"))
         instance_default = asyncio.run(legal.get_legal_presentation())
         unknown = asyncio.run(legal.get_legal_presentation("lt"))
 
     assert english.arena.title == "Before you start"
     assert instance_default.arena.title == "Før du starter"
-    assert unknown.arena.title == "Avant de commencer"
+    assert unknown.arena.title == "Før du starter"
 
 
 def legal_document(**overrides) -> LegalDocument:
@@ -317,11 +327,12 @@ def public_client(presentation=None, document=None):
         return document
 
     async def get_presentation(_locale):
-        return presentation or legal.fallback_legal_presentation()
+        return presentation or legal.FALLBACK_PRESENTATIONS.root["fr"]
 
     app = FastAPI()
     app.include_router(settings_router.router)
     with (
+        mock_settings(),
         patch.object(settings_router, "get_active_legal_document", active_document),
         patch.object(settings_router, "get_legal_presentation", get_presentation),
     ):

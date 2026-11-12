@@ -1,4 +1,5 @@
 import { api } from '$lib/fastapi-client'
+import type { Locale } from '$lib/i18n/runtime'
 import type { PageLoad } from './$types'
 import type { SuggestionFilters, SuggestionsPage } from './types'
 
@@ -6,7 +7,7 @@ export const load: PageLoad = async ({ depends, fetch, url }) => {
   const filters: SuggestionFilters = {
     search: url.searchParams.get('search') ?? '',
     status: (url.searchParams.get('status') as SuggestionFilters['status']) ?? '',
-    locale: url.searchParams.get('language') ?? '',
+    locale: (url.searchParams.get('language') as Locale) ?? '',
     category_id: url.searchParams.get('category_id') ?? ''
   }
   const searchParams = new URLSearchParams({

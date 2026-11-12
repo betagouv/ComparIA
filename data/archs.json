@@ -1,26 +1,26 @@
 [
   {
     "id": "moe",
-    "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
+    "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
     "name": "MoE",
-    "long_name": "Mélange d’experts"
+    "long_name": "Mixture of experts"
   },
   {
     "id": "dense",
-    "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
+    "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
     "name": "Dense",
     "long_name": ""
   },
   {
     "id": "matformer",
-    "desc": "Imaginez des poupées russes (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs sous-modèles imbriqués de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
+    "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
     "name": "Matformer",
     "long_name": ""
   },
   {
     "id": "na",
-    "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
+    "desc": "The model lab has not made information about the model's architecture public.",
     "name": "N/A",
-    "long_name": "Non communiqué"
+    "long_name": "Not disclosed"
   }
 ]

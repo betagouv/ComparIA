@@ -25,8 +25,9 @@ from utils.database.models.suggestion import (
     SuggestionArchiveUpdate,
     SuggestionCategoryCreate,
     SuggestionCreate,
-    SuggestionLocale,
 )
+from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 
 router = APIRouter(prefix="/suggestions", tags=["suggestions"])
 
@@ -45,11 +46,13 @@ async def get_suggestions(
     status_filter: Literal["available", "archived"] | None = Query(
         default=None, alias="status"
     ),
-    locale: SuggestionLocale | None = Query(default=None),
+    # Any supported locale, enabled or not: admins also curate disabled ones.
+    locale: SupportedLocale | None = Query(default=None),
     category_id: uuid.UUID | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, ge=1, le=200),
 ) -> AdminSuggestionsPage:
+    settings = await get_app_settings()
     items, total, categories = await list_admin_suggestions(
         search=search,
         status=status_filter,
@@ -57,6 +60,7 @@ async def get_suggestions(
         category_id=category_id,
         page=page,
         page_size=page_size,
+        default_locale=settings.default_locale,
     )
     return AdminSuggestionsPage(
         items=items,

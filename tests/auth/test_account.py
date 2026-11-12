@@ -27,6 +27,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 import backend.auth.export as auth_export  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
+import backend.utils.locale as locale_module  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.dependencies import require_user  # noqa: E402
 from utils.database.models.auth import ConsentLog, User  # noqa: E402
@@ -287,11 +288,11 @@ def mock_survey(monkeypatch: pytest.MonkeyPatch):
         return []
 
     async def app_settings():
-        return SimpleNamespace(default_locale="fr")
+        return SimpleNamespace(default_locale="fr", enabled_locales=["fr"])
 
     monkeypatch.setattr(survey_module, "_all_answers", empty)
     monkeypatch.setattr(survey_module, "_all_questions", empty)
-    monkeypatch.setattr(auth_export, "get_app_settings", app_settings)
+    monkeypatch.setattr(locale_module, "get_app_settings", app_settings)
 
 
 def test_export_labels_survey_answers_in_the_instance_language(
@@ -301,13 +302,13 @@ def test_export_labels_survey_answers_in_the_instance_language(
     locales = []
 
     async def app_settings():
-        return SimpleNamespace(default_locale="da")
+        return SimpleNamespace(default_locale="da", enabled_locales=["fr"])
 
     async def my_answers(locale, user_id, anonymous_user_hash):
         locales.append(locale)
         return []
 
-    monkeypatch.setattr(auth_export, "get_app_settings", app_settings)
+    monkeypatch.setattr(locale_module, "get_app_settings", app_settings)
     monkeypatch.setattr(auth_export, "my_answers", my_answers)
 
     export_of(user, comparison_of(user.id))

@@ -26,7 +26,7 @@ type UseFormOptions<T extends object, K extends keyof T = never> = {
   url: string
   initialData: () => T
   omitKeys?: K[]
-  method?: 'post' | 'put'
+  method?: 'post' | 'put' | 'PATCH'
   onBeforeSubmit?: (
     form: Omit<T, K>,
     errors: FormErrors
@@ -61,7 +61,9 @@ export function useForm<T extends object, K extends keyof T = never>({
     resetFormErrors(errors)
 
     try {
-      const body = await (onBeforeSubmit ? onBeforeSubmit(form, errors) : form)
+      const body = await (onBeforeSubmit
+        ? onBeforeSubmit($state.snapshot(form) as Omit<T, K>, errors)
+        : form)
       // onBeforeSubmit consumer can return 'null' to prevent form submit
       if (body === null) {
         useToast(m['form.toastError'](), 6000, 'error')

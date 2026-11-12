@@ -35,4 +35,9 @@ vi.mock('$env/dynamic/public', () => ({
   }
 }))
 
+vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('./src/lib/i18n/runtime')>()),
+  getLocale: () => 'fr'
+}))
+
 // add more mocks here if you need them

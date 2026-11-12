@@ -1,3 +1,4 @@
+from backend.auth.router import AuthConfig
 from backend.llms.data import LLMList
 from backend.ranking.models import PersonalRanking
 from backend.settings.informational_legal import (

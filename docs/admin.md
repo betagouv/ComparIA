@@ -85,7 +85,7 @@ It also sets three leaderboard thresholds: the votes a model needs before it is 
 
 `/admin/locales` sets which languages the instance offers and which one it defaults to. The default has to be one of the enabled ones.
 
-Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/utils.py`.
+Seven locales are wired up: `da`, `en`, `fr`, `it`, `lt`, `nb-NO`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SupportedLocale` in `utils/i18n.py` and `./comparia-cli internal i18n` has been run.
 
 ## Authentication
 

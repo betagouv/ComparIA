@@ -1,3 +1,4 @@
+import type { Locale } from '$lib/i18n/runtime'
 import type { ClassValue } from 'svelte/elements'
 
 export function sortIfDefined(a: Record<string, any>, b: Record<string, any>, key: string) {
@@ -15,7 +16,7 @@ export function downloadTextFile(data: string, filename: string) {
   a.click()
 }
 
-export function toRelativeTime(date: Date, locale: string) {
+export function toRelativeTime(date: Date, locale: Locale) {
   const now = new Date().getTime()
   const diff = (now - date.getTime()) / 1000
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
@@ -33,7 +34,7 @@ export function toRelativeTime(date: Date, locale: string) {
 
 export function toShortDate(
   date: Date,
-  locale: string,
+  locale: Locale,
   year: 'numeric' | '2-digit' | undefined = 'numeric'
 ) {
   return date.toLocaleString(locale, { year, month: 'numeric' })

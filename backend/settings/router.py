@@ -11,14 +11,14 @@ from backend.settings.informational_legal import (
     get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
-    DEFAULT_LEGAL_LANGUAGE,
     LegalPresentation,
-    LocaleQuery,
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentation,
 )
+from backend.utils.locale import LocaleQuery, get_locales_settings
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
+from utils.i18n import SupportedLocale
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/settings", tags=["settings"])
     response_model=InformationalLegalPageContent | None,
 )
 async def public_informational_legal_pages(
-    key: LegalPageKey, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    key: LegalPageKey, locale: LocaleQuery
 ) -> InformationalLegalPageContent | None:
     return await get_informational_legal_page_content(key, locale)
 
@@ -43,7 +43,7 @@ async def public_informational_legal_pages_links() -> InformationalLegalPageLink
 class PublicLegalDocument(BaseModel):
     version: str
     content_hash: str
-    locale: str
+    locale: SupportedLocale
     content: str
     published_at: UtcTimestamp
     effective_at: UtcTimestamp
@@ -57,8 +57,8 @@ class PublicTermsDocument(PublicLegalDocument):
 
 
 async def _active_document(
-    kind: LegalDocumentKind, locale: str
-) -> tuple[LegalDocument, str, str]:
+    kind: LegalDocumentKind, locale: SupportedLocale
+) -> tuple[LegalDocument, str, SupportedLocale]:
     document = await get_active_legal_document(kind)
     if not document:
         # A known key: with no terms in force there is nothing to accept, and
@@ -68,8 +68,9 @@ async def _active_document(
         )
     if content := document.content.get(locale):
         return document, content, locale
-    if content := document.content.get(DEFAULT_LEGAL_LANGUAGE):
-        return document, content, DEFAULT_LEGAL_LANGUAGE
+    locales = await get_locales_settings()
+    if content := document.content.get(locales.default):
+        return document, content, locales.default
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -89,7 +90,9 @@ def _cache_headers(*parts: str) -> dict[str, str]:
 
 @router.get("/legal/terms", response_model=PublicTermsDocument)
 async def public_terms(
-    request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    request: Request,
+    response: Response,
+    locale: LocaleQuery,
 ):
     document, content, locale = await _active_document("terms", locale)
     presentation = await get_legal_presentation(locale)
@@ -112,7 +115,9 @@ async def public_terms(
 
 @router.get("/legal/privacy_policy", response_model=PublicLegalDocument)
 async def public_privacy_policy(
-    request: Request, response: Response, locale: LocaleQuery = DEFAULT_LEGAL_LANGUAGE
+    request: Request,
+    response: Response,
+    locale: LocaleQuery,
 ):
     document, content, locale = await _active_document("privacy_policy", locale)
     headers = _cache_headers(document.content_hash)

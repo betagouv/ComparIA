@@ -8,16 +8,10 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, FieldSerializationInfo, PlainSerializer
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaValue
 
+from utils.i18n import DEFAULT_LOCALE
 from utils.logger import configure_logger
 
 Obj = dict[str, Any]
-
-# Locales compiled into the frontend bundle, see frontend/comparia.inlang/settings.json.
-# An instance enables a subset of these. Anything outside the tuple is refused
-# rather than stored, because the frontend has no messages for it and would fall
-# back to the base locale without telling anyone.
-SUPPORTED_LOCALES = ("da", "en", "fr", "it", "lt", "nb-NO", "sv")
-
 
 UTILS_DIR = Path(__file__).parent
 ROOT_DIR = UTILS_DIR.parent
@@ -25,10 +19,9 @@ DATA_DIR = ROOT_DIR / "data"
 # LLMs data
 DEFAULT_LLM_DATA_PATH = DATA_DIR / "llms-data.json"
 # Frontend
-MAIN_LOCALE = "fr"
 FRONTEND_DIR = ROOT_DIR / "frontend"
 FRONTEND_I18N_DIR = FRONTEND_DIR / "locales" / "messages"
-FRONTEND_MAIN_I18N_FILE = FRONTEND_I18N_DIR / f"{MAIN_LOCALE}.json"
+FRONTEND_MAIN_I18N_FILE = FRONTEND_I18N_DIR / f"{DEFAULT_LOCALE}.json"
 FRONTEND_GENERATED_DIR = FRONTEND_DIR / "src" / "lib" / "generated"
 
 # Legacy LLM files (be carefull to not remove those file, needed in migrations)
