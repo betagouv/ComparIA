@@ -153,6 +153,7 @@ def check_reference_schema(failures):
     fully-populated comparison, compare its inferred schema to the reference's.
     """
     import pyarrow as pa
+    from linkup import LinkupSearchTextResult
 
     import tests.dataset.test_comparison_to_turns as fix
     from utils.dataset import compute
@@ -160,7 +161,14 @@ def check_reference_schema(failures):
     full = fix.comparison(
         [
             fix.turn(
-                fix.user_msg("q"),
+                fix.user_msg(
+                    "q",
+                    web_search_results=[
+                        LinkupSearchTextResult(
+                            type="text", name="n", url="u", content="c", favicon="f"
+                        )
+                    ],
+                ),
                 fix.llm_msg("a", 100, reasoning="r"),
                 fix.llm_msg("b", 90, reasoning="r"),
                 "a_better",
@@ -218,6 +226,7 @@ def check_temporal_nulls(failures):
             "choice": None,
             "response_a": [{"role": "user", "content": "q"}],
             "response_b": [{"role": "user", "content": "q"}],
+            "web_search_results": None,
             "turn": 0,
             "comparison_id": f"c{i}",
             "model_a": "a",
