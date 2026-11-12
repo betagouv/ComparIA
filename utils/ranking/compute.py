@@ -42,6 +42,9 @@ class RankingResult:
     # Style coefficients from the style-controlled fit (one per STYLE_FEATURES
     # entry); exposed for transparency about how much presentation drives votes.
     style_coefficients: dict[str, float] = field(default_factory=dict)
+    # The spread the ranks were counted with. The leaderboard filters with
+    # this one, not the current setting, until the next run catches up.
+    max_rank_spread: int | None = None
     # Decisive votes per model, for every model with votes: the table leaves
     # out models under the vote minimum, and the public list leaves out
     # disabled ones, but the admin list shows the count for all of them.
@@ -275,7 +278,7 @@ def _compute_ranking(
     all_battles, style_a, style_b = _votes_to_battles(votes)
 
     if not all_battles:
-        return RankingResult(timestamp=time.time())
+        return RankingResult(timestamp=time.time(), max_rank_spread=max_rank_spread)
 
     # Two rankings from the same battles so the frontend "Contrôle du style"
     # toggle can switch views without a recompute:
@@ -350,6 +353,7 @@ def _compute_ranking(
         rankings=rankings,
         preferences=preferences,
         style_coefficients=style_coefficients,
+        max_rank_spread=max_rank_spread,
         vote_counts=dict(match_counts),
     )
 
