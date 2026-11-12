@@ -51,6 +51,9 @@ export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
 
 export type Option<T> = { value: T; label: string; help?: string }
 
+// Text in several languages. Not rendered on its own yet: give it a field snippet.
+export type FormTranslateItemProps = BaseFormFieldProps<'translate'>
+
 export type AnyFormItemProps =
   | FormInputProps
   | FormSelectProps
@@ -61,6 +64,7 @@ export type AnyFormItemProps =
   | FormFieldsetItemProps
   | FormFieldsetListProps
   | FormTagsInputProps
+  | FormTranslateItemProps
 
 export type FormItemSnippetProps = {
   'aria-describedby': string
@@ -91,7 +95,9 @@ function parseSchema(
     hidden
   }
 
-  if (type === 'object') {
+  if (type === 'object' && !properties && schema.additionalProperties) {
+    return { ...baseProps, component: 'translate' }
+  } else if (type === 'object') {
     if (!properties) throw new Error('no properties')
 
     const subProps = getKeys(properties).map((k) => {

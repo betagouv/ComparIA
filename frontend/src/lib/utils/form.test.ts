@@ -126,4 +126,16 @@ describe('JSON-schema choices and nested fields', () => {
     expect(plain).toMatchObject({ component: 'radio', inline: true })
     expect(helped).toMatchObject({ component: 'radio', inline: false })
   })
+
+  it('reads text in several languages as one field instead of failing', () => {
+    const [field] = getFormFields(
+      {
+        type: 'object',
+        properties: { label: { type: 'object', additionalProperties: { type: 'string' } } }
+      },
+      ''
+    )
+
+    expect(field).toMatchObject({ id: 'label', component: 'translate' })
+  })
 })
