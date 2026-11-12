@@ -36,7 +36,8 @@ class Settings(BaseSettings):
     # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
     # which described a country portal the project outgrew; the deployment manifests
     # have to carry the new name, since nothing falls back to the old one. The
-    # values themselves are unchanged, so Redis keys stay put.
+    # deployments set it explicitly, so the Redis keys of fr and da stay put; the
+    # DEFAULT_LOCALE default only applies to local runs.
     COMPARIA_INSTANCE_NAME: str = DEFAULT_LOCALE
 
     # Display currency. Model prices are stored in US dollars and converted for the UI.
