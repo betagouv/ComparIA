@@ -51,7 +51,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.tools import get_offered_tools, keep_offered_tools
+from backend.arena.tools import get_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -69,6 +69,7 @@ from backend.selection_modes.services import (
     keep_known_cohorts,
     pick_replacement_model,
     resolve_mode,
+    tools_for_comparison,
 )
 from backend.survey.dependencies import require_answered_questions
 from backend.utils.locale import LocaleQuery
@@ -401,7 +402,9 @@ async def add_first_text(
         raise mode_unavailable()
     # Stored and published with the comparison: only cohorts someone set up.
     cohorts = await keep_known_cohorts(args.cohorts)
-    enabled_tools = await keep_offered_tools(args.tools)
+    # Decided by the mode, not the client: a mode without tools ignores the
+    # list it was sent, and the comparison keeps what is stored here.
+    enabled_tools = await tools_for_comparison(mode, args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(

@@ -18,6 +18,7 @@ from backend.llms.selection import (
     ToolsOnOffer,
     allowed_tools,
     as_filter,
+    enabled_tools,
     needs_ranking,
     picker_llm_ids,
     pools,
@@ -279,6 +280,20 @@ async def comparison_mode_key(
     ):
         return default.key
     return mode.key
+
+
+async def tools_for_comparison(
+    mode: SelectionModeBase, requested: list[str]
+) -> list[str]:
+    """
+    The tools a new comparison gets under its mode's policy. A mode with no
+    tools never reads the request's list at all.
+    """
+    if mode.tools_policy == "none":
+        return []
+    if mode.tools_policy == "visitor" and not requested:
+        return []
+    return enabled_tools(mode, requested, await _offered_tool_keys())
 
 
 async def pick_replacement_model(
