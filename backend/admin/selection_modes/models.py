@@ -2,7 +2,8 @@ import uuid
 
 from pydantic import BaseModel
 
-from utils.database.models import ModeViability, SelectionModeRules
+from utils.database.models import ModeIcon, ModeViability, SelectionModeRules
+from utils.i18n import TranslatableRaw
 
 
 class SelectionModeOrder(BaseModel):
@@ -28,3 +29,18 @@ class SelectionModePreview(BaseModel):
     # A's model comes first; the arena itself shows them in random order.
     sample_draws: list[tuple[PreviewLLM, PreviewLLM]]
 
+
+class SelectionModeDraft(SelectionModeRules):
+    """A mode not saved yet, as a template fills the create form."""
+
+    key: str = ""
+    label: TranslatableRaw[str] = {}
+    short_label: TranslatableRaw[str] = {}
+    description: TranslatableRaw[str] = {}
+    icon: ModeIcon = "i-ri-dice-line"
+
+
+class SelectionModeTemplate(BaseModel):
+    # Also the key of its title and description in the frontend messages.
+    id: str
+    mode: SelectionModeDraft

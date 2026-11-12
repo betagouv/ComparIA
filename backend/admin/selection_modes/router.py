@@ -7,6 +7,7 @@ from fastapi import APIRouter, HTTPException, status
 from backend.admin.selection_modes.models import (
     SelectionModeOrder,
     SelectionModePreview,
+    SelectionModeTemplate,
 )
 from backend.admin.selection_modes.services import (
     CannotRemoveLastModeError,
@@ -22,6 +23,7 @@ from backend.admin.selection_modes.services import (
     reorder_modes,
     update_mode,
 )
+from backend.admin.selection_modes.templates import TEMPLATES
 from utils.database.models import (
     SelectionModeAdmin,
     SelectionModeRules,
@@ -72,6 +74,11 @@ async def get_schemas():
             schema_generator=FormJsonSchema
         )
     }
+
+
+@router.get("/templates")
+async def get_templates() -> list[SelectionModeTemplate]:
+    return TEMPLATES
 
 
 @router.post("/preview")

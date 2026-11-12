@@ -547,6 +547,58 @@
             "tokenKeep": "Leave empty to keep the token already stored.",
             "tokenLabel": "Write token"
         },
+        "selectionModes": {
+            "templates": {
+                "champion": {
+                    "description": "One fixed model against every other model. Pick the champion in pool A.",
+                    "title": "Champion against challengers"
+                },
+                "european": {
+                    "description": "Two models that can be hosted in the European Union.",
+                    "title": "Hostable in Europe"
+                },
+                "fixed-pair": {
+                    "description": "Always the same two models, for a workshop. Pick both in pool A.",
+                    "title": "Fixed pair"
+                },
+                "frugal": {
+                    "description": "Two models among those that use the least energy (classes A and B).",
+                    "title": "Frugal models"
+                },
+                "new-models-first": {
+                    "description": "Models with few votes come up more often, so the ranking settles sooner.",
+                    "title": "New models first"
+                },
+                "no-tools-expert": {
+                    "description": "Draws only the models tagged 'legal' (change the tag to yours) and gives them no tools, whatever the visitor asks.",
+                    "title": "Expert arena without tools"
+                },
+                "open-weights": {
+                    "description": "Two models whose weights are public.",
+                    "title": "Open weights only"
+                },
+                "small-vs-big": {
+                    "description": "One model of 100 billion parameters or more against one of 60 billion or less.",
+                    "title": "Small against big"
+                },
+                "specialised-vs-generalist": {
+                    "description": "A system with its own retrieval (tagged 'specialised', change the tag to yours) against a general model that gets web search. The system is never given the arena's tools.",
+                    "title": "Specialised system vs generalist with tools"
+                },
+                "speciality-set": {
+                    "description": "Both models from one tag, such as 'penal-law' (change it to yours), with no tools.",
+                    "title": "Speciality set"
+                },
+                "visitor-picks": {
+                    "description": "The visitor picks one or two models, but only among the models of pool A.",
+                    "title": "Visitor picks within a pool"
+                },
+                "web-search": {
+                    "description": "Both models always get web search. Limit its sites in the tool settings.",
+                    "title": "Always with web search"
+                }
+            }
+        },
         "settings": {
             "authentification": {
                 "accessPolicy": {

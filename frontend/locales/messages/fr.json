@@ -547,6 +547,58 @@
             "tokenKeep": "Laisser vide pour garder le jeton enregistré.",
             "tokenLabel": "Jeton d'écriture"
         },
+        "selectionModes": {
+            "templates": {
+                "champion": {
+                    "description": "Un modèle fixe contre tous les autres. Choisissez le champion dans le groupe A.",
+                    "title": "Champion contre challengers"
+                },
+                "european": {
+                    "description": "Deux modèles qui peuvent être hébergés dans l'Union européenne.",
+                    "title": "Hébergeables en Europe"
+                },
+                "fixed-pair": {
+                    "description": "Toujours les deux mêmes modèles, pour un atelier. Choisissez-les dans le groupe A.",
+                    "title": "Paire fixe"
+                },
+                "frugal": {
+                    "description": "Deux modèles parmi ceux qui consomment le moins d'énergie (classes A et B).",
+                    "title": "Modèles frugaux"
+                },
+                "new-models-first": {
+                    "description": "Les modèles qui ont peu de votes sortent plus souvent, pour que le classement se stabilise plus vite.",
+                    "title": "Nouveaux modèles d'abord"
+                },
+                "no-tools-expert": {
+                    "description": "Tire seulement les modèles étiquetés 'legal' (remplacez par votre étiquette) et ne leur donne aucun outil, quoi que demande le visiteur.",
+                    "title": "Arène experte sans outils"
+                },
+                "open-weights": {
+                    "description": "Deux modèles dont les poids sont publics.",
+                    "title": "Modèles ouverts seulement"
+                },
+                "small-vs-big": {
+                    "description": "Un modèle de 100 milliards de paramètres ou plus contre un de 60 milliards ou moins.",
+                    "title": "Petit contre grand"
+                },
+                "specialised-vs-generalist": {
+                    "description": "Un système qui a sa propre recherche documentaire (étiqueté 'specialised', remplacez par votre étiquette) contre un modèle généraliste qui a la recherche web. Le système ne reçoit jamais les outils de l'arène.",
+                    "title": "Système spécialisé contre généraliste outillé"
+                },
+                "speciality-set": {
+                    "description": "Les deux modèles d'une même étiquette, par exemple 'penal-law' (remplacez par la vôtre), sans outils.",
+                    "title": "Ensemble spécialisé"
+                },
+                "visitor-picks": {
+                    "description": "Le visiteur choisit un ou deux modèles, mais seulement parmi ceux du groupe A.",
+                    "title": "Le visiteur choisit dans un groupe"
+                },
+                "web-search": {
+                    "description": "Les deux modèles ont toujours la recherche web. Limitez ses sites dans les réglages de l'outil.",
+                    "title": "Toujours avec la recherche web"
+                }
+            }
+        },
         "settings": {
             "authentification": {
                 "accessPolicy": {
