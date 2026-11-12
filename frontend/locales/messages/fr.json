@@ -1256,7 +1256,7 @@
         "previewEmpty": "L’aperçu apparaîtra ici.",
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
-        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
+        "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter la page ?"
     },
     "general": {
         "document": {
