@@ -6,7 +6,21 @@ import Page from './+page.svelte'
 const mocks = vi.hoisted(() => ({
   goto: vi.fn(),
   pageState: { params: { id: 'arene' }, url: new URL('http://localhost/arene') },
-  authContext: { user: null, config: { access_policy: 'open', methods: [] } }
+  authContext: { user: null, config: { access_policy: 'open', methods: [] } },
+  modes: [
+    {
+      key: 'random',
+      label: 'Aléatoire',
+      short_label: 'Aléatoire',
+      description: 'Deux modèles au hasard',
+      icon: 'i-ri-dice-line',
+      is_default: true,
+      visitor_picks: 0,
+      tools_policy: 'visitor',
+      tool_keys: [],
+      llm_ids: null
+    }
+  ]
 }))
 
 const store = $state<{ comparisons: { id: string; mode: string; turns: never[] }[] }>({
@@ -31,8 +45,12 @@ vi.mock('$lib/chatService.svelte', () => ({
     get comparison() {
       return store.comparisons.find((c) => c.id === comparisonId)
     }
-  }),
-  getModeInfos: () => [{ value: 'random', icon: 'i-ri-dice-line', title: 'Aléatoire' }]
+  })
+}))
+vi.mock('$lib/selectionModes.svelte', () => ({
+  getSelectionModesContext: () => ({
+    find: (key: string) => mocks.modes.find((mode) => mode.key === key)
+  })
 }))
 
 function visit(path: string) {
@@ -44,7 +62,10 @@ function visit(path: string) {
 describe('comparison page', () => {
   beforeEach(() => {
     mocks.goto.mockReset()
-    store.comparisons = [{ id: 'known-id', mode: 'random', turns: [] }]
+    store.comparisons = [
+      { id: 'known-id', mode: 'random', turns: [] },
+      { id: 'deleted-mode-id', mode: 'workshop-2025', turns: [] }
+    ]
   })
 
   it('sends an id with no matching comparison back to the arena', () => {
@@ -64,6 +85,14 @@ describe('comparison page', () => {
 
   it('shows the chat of a known comparison', () => {
     visit('/known-id')
+    const { container } = render(Page)
+
+    expect(mocks.goto).not.toHaveBeenCalled()
+    expect(container.querySelector('#send-area')).not.toBeNull()
+  })
+
+  it('shows the chat of a comparison whose mode was deleted since', () => {
+    visit('/deleted-mode-id')
     const { container } = render(Page)
 
     expect(mocks.goto).not.toHaveBeenCalled()
