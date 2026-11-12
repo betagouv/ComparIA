@@ -154,11 +154,13 @@ async def update_comparison_tool_capability(comparison: ComparisonRead) -> None:
     async with get_session() as session:
         db_comparison = await _get_item(Comparison, comparison.id, session)
         for pos in BOT_POS:
-            model = llms_data[
-                getattr(comparison, f"llm_id_{pos}")
-            ].litellm_endpoint.model
+            llm = llms_data[getattr(comparison, f"llm_id_{pos}")]
+            # A model set to go without the arena's tools never had them on
+            # offer, which the dataset records like a model that refuses them.
             setattr(
-                db_comparison, f"tool_capable_{pos}", not model_rejects_tools(model)
+                db_comparison,
+                f"tool_capable_{pos}",
+                llm.arena_tools and not model_rejects_tools(llm.litellm_endpoint.model),
             )
         db_comparison.updated_at = datetime.now()
         session.add(db_comparison)

@@ -153,6 +153,12 @@ async def stream_llm_response(
         AnySSEEventMsg
     """
 
+    # A system with its own retrieval is never handed the arena's tools, on any
+    # turn, retry or swap: every path that streams a model comes through here.
+    # The model it faces keeps them.
+    if not llm.arena_tools:
+        tools = None
+
     try:
         # Stream responses from bot_response_async generator
         async with aclosing(
