@@ -5,7 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { ConversationTranscript } from '../../components'
-  import { label, modelName } from '../../filters'
+  import { label, modeLabel, modelName } from '../../filters'
   import type { PageProps } from './$types'
 
   let { data }: PageProps = $props()
@@ -50,7 +50,7 @@
         </div>
         <div>
           <dt class="text-grey">{m['admin.activity.conversation.mode']()}</dt>
-          <dd class="m-0!">{label('modes', conversation.mode)}</dd>
+          <dd class="m-0!">{modeLabel(data.options.modes, conversation.mode)}</dd>
         </div>
         {#if conversation.cohorts}
           <div>

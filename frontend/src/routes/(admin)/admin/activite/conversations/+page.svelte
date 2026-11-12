@@ -288,7 +288,12 @@
       </tbody>
     </table>
 
-    <ConversationModal rows={data.conversations.items} bind:index={selected} hrefFor={detailHref} />
+    <ConversationModal
+      rows={data.conversations.items}
+      modes={data.options.modes}
+      bind:index={selected}
+      hrefFor={detailHref}
+    />
   {/if}
 
   <nav class="gap-3 mt-4 flex justify-end" aria-label={m['admin.activity.conversations.caption']()}>

@@ -11,10 +11,11 @@
   import {
     CHOICES,
     CHOICE_COLORS,
-    MODES,
     SHARED_FILTERS,
     errorMessage,
     label,
+    modeKeys,
+    modeLabel,
     nextQuery,
     pick
   } from '../filters'
@@ -150,7 +151,11 @@
   const unvoted = $derived(overview?.choices.none ?? 0)
   const modes = $derived(
     overview
-      ? MODES.map((key) => ({ key, label: label('modes', key), count: overview.modes[key] ?? 0 }))
+      ? modeKeys(data.options.modes, overview.modes).map((key) => ({
+          key,
+          label: modeLabel(data.options.modes, key),
+          count: overview.modes[key] ?? 0
+        }))
       : []
   )
 </script>
