@@ -107,15 +107,15 @@ describe('RankingTable', () => {
   it('greys out models whose rank could move more than the threshold', () => {
     const { container } = renderTable(10)
 
-    expect(container.querySelector('#ranking-table-loose')!.classList).toContain('opacity-60')
-    expect(container.querySelector('#ranking-table-solid')!.classList).not.toContain('opacity-60')
+    expect(container.querySelector('#ranking-table-loose')!.classList).toContain('text-grey')
+    expect(container.querySelector('#ranking-table-solid')!.classList).not.toContain('text-grey')
     expect(container.textContent).toContain('plus de 10 places')
   })
 
   it('greys out nothing without a threshold', () => {
     const { container } = renderTable()
 
-    expect(container.querySelectorAll('tr.opacity-60')).toHaveLength(0)
+    expect(container.querySelectorAll('tr.text-grey')).toHaveLength(0)
     expect(container.textContent).not.toContain('places.')
   })
 })

@@ -149,6 +149,10 @@
     })
 
   // Shown, but with a rank still too loose to read much into: greyed out.
+  // Grey text and no colour rather than a faded row, which would drop the
+  // text under the 4.5:1 contrast it needs. Grayscale keeps each colour's
+  // lightness, so the chips stay as readable as before.
+  const UNCERTAIN_ROW = 'text-grey grayscale [&_a]:text-grey!'
   const greySpread = $derived(commons.greyRankSpread)
   const isUncertain = (model: BotModelWithData) =>
     greySpread !== undefined && Math.max(...model.data.trust_range) > greySpread
@@ -248,7 +252,7 @@
   {id}
   {cols}
   rows={sortedRows}
-  rowAttributes={(model) => (isUncertain(model) ? { class: 'opacity-60' } : {})}
+  rowAttributes={(model) => (isUncertain(model) ? { class: UNCERTAIN_ROW } : {})}
   bind:orderingCol
   bind:orderingMethod
   bind:search
