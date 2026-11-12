@@ -5,6 +5,7 @@ LLMArchKind = Literal[
 ]
 LLMLicenseKind = Literal["proprietary", "open-weights", "open-source"]
 LLMStatus = Literal["archived", "disabled", "enabled"]
+LLMInput = Literal["text", "image", "audio", "video"]
 
 # Here rather than next to their scales in backend/llms/models.py: selection
 # mode filters name them, and those live with the database models.

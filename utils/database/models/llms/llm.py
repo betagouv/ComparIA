@@ -13,7 +13,7 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
 from ..utils import BaseDBModel
-from .constants import LLMArchKind, LLMStatus
+from .constants import LLMArchKind, LLMInput, LLMStatus
 from .endpoint import LLMEndpoint
 from .lab import LLMLab
 from .license import LLMLicense
@@ -154,7 +154,7 @@ class LLMDataBase(BaseDBModel):
         Field(default=None, sa_type=String, **FIELDS["quantization"]),
     ]
     inputs: Annotated[
-        list[Literal["text", "image", "audio", "video"]],
+        list[LLMInput],
         Field(sa_type=JSONB, **FIELDS["inputs"]),
     ]
     price_in: Annotated[float, Field(**FIELDS["price_in"])]
