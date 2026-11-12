@@ -548,6 +548,10 @@
             "tokenLabel": "Jeton d'écriture"
         },
         "selectionModes": {
+            "audience": {
+                "intro": "Laisser vide pour proposer le mode à tout le monde, tout le temps.",
+                "title": "Public et calendrier"
+            },
             "criteria": {
                 "archs": "Architecture : {values}",
                 "arenaToolsNo": "Ont leurs propres outils",
@@ -577,6 +581,15 @@
                 "tags": "Étiquetés {tags}",
                 "tagsAll": "Étiquetés {tags} (toutes)",
                 "topRanked": "Les {count} premiers du classement"
+            },
+            "draw": {
+                "intro": "Règles appliquées aux modèles tirés. Les modèles choisis par le visiteur y échappent : c'est son choix.",
+                "title": "Comment la paire est tirée"
+            },
+            "editor": {
+                "statusBad": "Non proposé : voir l'aperçu",
+                "statusOk": "{pairs} paires possibles : voir l'aperçu",
+                "unsaved": "Modifications non enregistrées"
             },
             "errors": {
                 "defaultChanged": "Un autre administrateur vient de choisir un autre mode par défaut. Rechargez la page, puis enregistrez à nouveau.",
@@ -619,6 +632,31 @@
                 "tagsInUse": "En usage : {tags}.",
                 "tagsNone": "Aucun modèle n'en a encore."
             },
+            "icons": {
+                "dice": "Dé",
+                "flash": "Lampe torche",
+                "global": "Globe",
+                "government": "Bâtiment public",
+                "group": "Groupe",
+                "health": "Santé",
+                "leaf": "Feuille",
+                "learning": "Apprentissage",
+                "mapPin": "Repère sur une carte",
+                "openSource": "Code ouvert",
+                "ruler": "Règle",
+                "scales": "Balance",
+                "search": "Loupe",
+                "shield": "Bouclier",
+                "sparkling": "Étincelles",
+                "stethoscope": "Stéthoscope",
+                "trophy": "Trophée"
+            },
+            "identity": {
+                "intro": "Comment le mode apparaît dans le menu des modes de l'arène.",
+                "keyFrozen": "Enregistrée sur chaque comparaison et publiée avec le jeu de données, elle ne peut pas changer.",
+                "labelOtherHelp": "Laisser vide pour afficher le nom dans la langue principale.",
+                "title": "Identité"
+            },
             "multi": {
                 "clear": "Vider la sélection",
                 "noMatch": "Aucun résultat.",
@@ -640,15 +678,26 @@
                 "sameSizeHelp": "Seuls des modèles de la même classe de taille s'affrontent."
             },
             "picks": {
+                "intro": "Dans une comparaison à l'aveugle, le visiteur ne découvre les noms qu'après avoir voté.",
                 "none": "Personne : compar:IA tire les deux modèles",
                 "noneHelp": "Un tirage à l'aveugle parmi les groupes ci-dessous.",
                 "one": "Le visiteur choisit un modèle",
                 "oneHelp": "Le visiteur choisit un modèle dans les groupes ; compar:IA tire l'autre. S'il n'en choisit aucun, les deux sont tirés.",
+                "title": "Qui choisit les modèles",
                 "two": "Le visiteur choisit jusqu'à deux modèles",
                 "twoHelp": "Le visiteur choisit un ou deux modèles dans les groupes ; compar:IA tire le reste."
             },
             "pool": {
+                "intro": "Les deux côtés sont tirés parmi ces modèles. Sans critère, tous les modèles proposés peuvent sortir.",
                 "title": "Modèles tirés"
+            },
+            "poolA": {
+                "intro": "Un côté de chaque comparaison est tiré parmi ces modèles."
+            },
+            "poolB": {
+                "intro": "L'autre côté est tiré parmi ces modèles.",
+                "switch": "Le côté B est tiré dans un autre groupe",
+                "switchHelp": "Pour opposer un type de modèle à un autre : petit contre grand, un laboratoire contre les autres, un champion contre des challengers."
             },
             "preview": {
                 "draw": "Tirer 5 exemples",
@@ -670,6 +719,11 @@
                 "title": "Aperçu",
                 "updating": "Mise à jour…",
                 "versus": "contre"
+            },
+            "publish": {
+                "intro": "Un mode désactivé n'est jamais proposé, et les demandes qui le citent sont refusées.",
+                "isDefaultHelp": "Présélectionné à l'arrivée d'un visiteur. Pour en changer, faites d'un autre mode le mode par défaut.",
+                "title": "Publication"
             },
             "sampling": {
                 "fewerVotes": "D'abord les modèles peu votés",
@@ -750,8 +804,15 @@
             "tools": {
                 "forced": "Toujours activés",
                 "forcedHelp": "Les outils cochés sont toujours activés et le visiteur ne peut pas les désactiver.",
+                "intro": "Ce que les modèles peuvent utiliser pour répondre, comme la recherche web. Le serveur applique ce choix, quoi qu'envoie le navigateur du visiteur.",
+                "listForcedHelp": "Cochez au moins un outil.",
+                "listVisitorHelp": "Ne rien cocher pour proposer tous les outils. En cocher pour ne proposer que ceux-là.",
                 "none": "Aucun outil",
                 "noneHelp": "Les modèles répondent sans aucun outil.",
+                "noTools": "Aucun outil n'est encore configuré.",
+                "ownTools": "Jamais d'outils de l'arène pour : {names}. Ces modèles ont leurs propres outils, et le modèle en face garde ceux de l'arène.",
+                "switchedOff": "{key}, désactivé dans la page Outils",
+                "title": "Outils",
                 "visitor": "Le visiteur",
                 "visitorHelp": "Le visiteur active les outils qu'il veut parmi ceux proposés."
             },

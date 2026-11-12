@@ -548,6 +548,10 @@
             "tokenLabel": "Write token"
         },
         "selectionModes": {
+            "audience": {
+                "intro": "Leave empty to offer the mode to everyone, all the time.",
+                "title": "Audience and schedule"
+            },
             "criteria": {
                 "archs": "Architecture: {values}",
                 "arenaToolsNo": "Bring their own tools",
@@ -577,6 +581,15 @@
                 "tags": "Tagged {tags}",
                 "tagsAll": "Tagged {tags} (all)",
                 "topRanked": "Top {count} of the ranking"
+            },
+            "draw": {
+                "intro": "Rules applied to the drawn models. Models the visitor picks are exempt: they chose.",
+                "title": "How the pair is drawn"
+            },
+            "editor": {
+                "statusBad": "Not offered: see the preview",
+                "statusOk": "{pairs} possible pairs: see the preview",
+                "unsaved": "Unsaved changes"
             },
             "errors": {
                 "defaultChanged": "Another admin has just made a different mode the default. Reload the page, then save again.",
@@ -619,6 +632,31 @@
                 "tagsInUse": "In use: {tags}.",
                 "tagsNone": "No model has a tag yet."
             },
+            "icons": {
+                "dice": "Dice",
+                "flash": "Flashlight",
+                "global": "Globe",
+                "government": "Public building",
+                "group": "Group",
+                "health": "Health",
+                "leaf": "Leaf",
+                "learning": "Learning",
+                "mapPin": "Map pin",
+                "openSource": "Open source",
+                "ruler": "Ruler",
+                "scales": "Scales",
+                "search": "Magnifying glass",
+                "shield": "Shield",
+                "sparkling": "Sparkles",
+                "stethoscope": "Stethoscope",
+                "trophy": "Trophy"
+            },
+            "identity": {
+                "intro": "How the mode appears in the arena's mode menu.",
+                "keyFrozen": "Stored on every comparison and published with the dataset, so it cannot change.",
+                "labelOtherHelp": "Leave empty to show the name in the main language.",
+                "title": "Identity"
+            },
             "multi": {
                 "clear": "Clear the selection",
                 "noMatch": "No match.",
@@ -640,15 +678,26 @@
                 "sameSizeHelp": "Only models of the same size class face each other."
             },
             "picks": {
+                "intro": "In a blind comparison, the visitor learns the names only after voting.",
                 "none": "Nobody: compar:IA draws both models",
                 "noneHelp": "A blind draw among the pools below.",
                 "one": "The visitor picks one model",
                 "oneHelp": "The visitor picks one model among the pools; compar:IA draws the other. If they pick none, both are drawn.",
+                "title": "Who chooses the models",
                 "two": "The visitor picks up to two models",
                 "twoHelp": "The visitor picks one or two models among the pools; compar:IA draws what is left."
             },
             "pool": {
+                "intro": "Both sides are drawn from these models. With no criterion, every model on offer can come up.",
                 "title": "Models drawn"
+            },
+            "poolA": {
+                "intro": "One side of each comparison is drawn from these models."
+            },
+            "poolB": {
+                "intro": "The other side is drawn from these models.",
+                "switch": "Side B draws from a different pool",
+                "switchHelp": "For one kind of model against another: small against big, one lab against the rest, a champion against challengers."
             },
             "preview": {
                 "draw": "Draw 5 examples",
@@ -670,6 +719,11 @@
                 "title": "Preview",
                 "updating": "Updating…",
                 "versus": "against"
+            },
+            "publish": {
+                "intro": "A mode switched off is never offered, and requests that name it are refused.",
+                "isDefaultHelp": "Preselected when a visitor arrives. To change it, make another mode the default.",
+                "title": "Publication"
             },
             "sampling": {
                 "fewerVotes": "Models with few votes first",
@@ -750,8 +804,15 @@
             "tools": {
                 "forced": "Always on",
                 "forcedHelp": "The ticked tools are always on and the visitor cannot switch them off.",
+                "intro": "What the models can use while they answer, such as web search. The server enforces it, whatever the visitor's browser sends.",
+                "listForcedHelp": "Tick at least one tool.",
+                "listVisitorHelp": "Leave everything unticked to offer every tool. Tick some to offer only those.",
                 "none": "No tools",
                 "noneHelp": "The models answer with no tool at all.",
+                "noTools": "No tool is set up yet.",
+                "ownTools": "Never given the arena's tools: {names}. They bring their own, and the model they face keeps the arena's.",
+                "switchedOff": "{key}, switched off in the Tools page",
+                "title": "Tools",
                 "visitor": "The visitor",
                 "visitorHelp": "The visitor switches on the tools they want among those on offer."
             },
