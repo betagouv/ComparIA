@@ -105,3 +105,25 @@ describe('JSON-schema lists of text', () => {
     ])
   })
 })
+
+describe('JSON-schema choices and nested fields', () => {
+  it('shows an enum as radio buttons when asked, stacked when options have help', () => {
+    const [plain, helped] = getFormFields(
+      {
+        type: 'object',
+        properties: {
+          side: { type: 'string', radio: true, enum: ['a', 'b'] },
+          picks: {
+            type: 'integer',
+            radio: true,
+            enum: [{ value: 0, label: 'None', help: 'A blind draw' }] as unknown as number[]
+          }
+        }
+      },
+      ''
+    )
+
+    expect(plain).toMatchObject({ component: 'radio', inline: true })
+    expect(helped).toMatchObject({ component: 'radio', inline: false })
+  })
+})

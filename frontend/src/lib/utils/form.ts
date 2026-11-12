@@ -21,6 +21,8 @@ export type JSONSchema = BaseJSONSchema & {
   optional?: boolean
   disabled?: boolean
   hidden?: boolean
+  // Shows an enum as radio buttons rather than a select
+  radio?: boolean
 }
 
 export type AnyFormItemComponent =
@@ -77,7 +79,7 @@ function parseSchema(
   id: string,
   i18nBaseKey?: string
 ): AnyFormItemProps | AnyFormItemProps[] {
-  const { properties, $defs, type, $ref, enum: $enum, optional, disabled, hidden } = schema
+  const { properties, $defs, type, $ref, enum: $enum, optional, disabled, hidden, radio } = schema
   const label = tryI18n(`${i18nBaseKey}.${id}.label`, schema.title)!
   const help = tryI18n(`${i18nBaseKey}.${id}.help`, schema.description)
   const baseProps = {
@@ -117,6 +119,15 @@ function parseSchema(
         ? { label: value as string, value: value as string }
         : (value as unknown as Option<string | null>)
     )
+    if (radio) {
+      return {
+        ...baseProps,
+        component: 'radio',
+        options,
+        // Options with a help line read better one under the other
+        inline: !options.some((option) => option.help)
+      } as FormRadioGroupProps
+    }
     if (optional) {
       options.push({ value: null, label: 'None' })
     }

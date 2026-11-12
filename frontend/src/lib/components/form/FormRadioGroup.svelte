@@ -1,6 +1,6 @@
 <script module lang="ts">
   export type FormRadioGroupProps = {
-    options: Option<string>[]
+    options: Option<string | number>[]
     // Side by side suits short labels; options with a help line read better
     // one under the other.
     inline?: boolean
@@ -19,7 +19,7 @@
     options,
     inline = true,
     ...props
-  }: Omit<FormRadioGroupProps, 'component'> & { value?: string } = $props()
+  }: Omit<FormRadioGroupProps, 'component'> & { value?: string | number } = $props()
 </script>
 
 <FormFieldset {...props} component="fieldset">

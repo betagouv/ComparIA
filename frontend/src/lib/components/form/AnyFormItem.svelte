@@ -11,6 +11,8 @@
   <components.FormSelect {...props} bind:value />
 {:else if props.component === 'toggle'}
   <components.FormToggle {...props} bind:value />
+{:else if props.component === 'radio'}
+  <components.FormRadioGroup {...props} bind:value />
 {:else if props.component === 'checkbox-group'}
   <components.FormCheckboxGroup {...props} bind:value />
 {:else if props.component === 'fieldset-item'}
