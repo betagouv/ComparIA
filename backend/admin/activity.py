@@ -27,6 +27,7 @@ from backend.activity.services import (
 )
 from backend.auth.dependencies import RequiredAdmin
 from backend.errors import ActivityQueryTimeoutError
+from backend.utils.locale import LocaleQuery
 
 logger = logging.getLogger("languia")
 
@@ -42,9 +43,12 @@ def _timeout_as_503() -> Iterator[None]:
 
 
 @router.get("/filters", response_model=ActivityFilterOptions)
-async def read_filter_options(refresh: bool = False) -> ActivityFilterOptions:
+async def read_filter_options(
+    locale: LocaleQuery, refresh: bool = False
+) -> ActivityFilterOptions:
+    """The filter choices, mode names in `locale`."""
     with _timeout_as_503():
-        return await get_filter_options(refresh)
+        return await get_filter_options(locale, refresh)
 
 
 class OverviewQuery(ActivityFilters):

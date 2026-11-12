@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from backend.config import SelectionMode, TurnChoice
+from backend.config import TurnChoice
 from backend.statistics.projection import Bucket
 from utils.database.models.comparison import ArchivedReason, ErrorDetails
 
@@ -25,7 +25,7 @@ class ActivityFilters(BaseModel):
     period: ActivityPeriod = "30d"
     start: date | None = None
     end: date | None = None
-    mode: SelectionMode | None = None
+    mode: str | None = Field(default=None, max_length=50)
     llm_id: uuid.UUID | None = None
     cohort: str | None = Field(default=None, max_length=100)
     include_archived: bool = False
@@ -50,8 +50,16 @@ class ActivityLLM(BaseModel):
     human_id: str
 
 
+class ActivityMode(BaseModel):
+    key: str
+    # In the admin's language; the bare key once the mode is deleted.
+    label: str
+
+
 class ActivityFilterOptions(BaseModel):
     llms: list[ActivityLLM]
+    # The current modes in menu order, then any other key comparisons carry.
+    modes: list[ActivityMode]
     cohorts: list[str]
     categories: list[str]
 
