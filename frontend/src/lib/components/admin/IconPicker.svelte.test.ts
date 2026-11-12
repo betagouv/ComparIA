@@ -1,15 +1,15 @@
 import { fireEvent, render } from '@testing-library/svelte'
 import { describe, expect, it, vi } from 'vitest'
-import CategoryIconPicker from './CategoryIconPicker.svelte'
+import IconPicker from './IconPicker.svelte'
 
 const options = [
   { value: 'i-ri-lightbulb-line', label: 'Idée' },
   { value: 'i-ri-question-answer-line', label: 'Discussion' }
 ]
 
-describe('CategoryIconPicker', () => {
+describe('IconPicker', () => {
   it('exposes each Remix icon as an accessible radio option', () => {
-    const { getByRole, container } = render(CategoryIconPicker, {
+    const { getByRole, container } = render(IconPicker, {
       id: 'category-icon',
       label: 'Icône',
       options,
@@ -27,7 +27,7 @@ describe('CategoryIconPicker', () => {
 
   it('selects an icon and reports the new value', async () => {
     const onchange = vi.fn()
-    const { getByRole } = render(CategoryIconPicker, {
+    const { getByRole } = render(IconPicker, {
       id: 'category-icon',
       label: 'Icône',
       options,

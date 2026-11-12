@@ -10,7 +10,7 @@
   import { m } from '$lib/i18n/messages'
   import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity'
   import type { PageProps } from './$types'
-  import CategoryIconPicker from './CategoryIconPicker.svelte'
+  import IconPicker from '$components/admin/IconPicker.svelte'
   import type { PromptSuggestion, SuggestionCategory, SuggestionStatus } from './types'
 
   let { data }: PageProps = $props()
@@ -604,7 +604,7 @@
         aria-describedby="suggestion-category-tooltip-hint suggestion-category-tooltip-limit suggestion-category-messages"
       ></textarea>
     </div>
-    <CategoryIconPicker
+    <IconPicker
       id="suggestion-category-icon"
       label={m['admin.suggestions.categoryIcon']()}
       options={categoryIconOptions}
