@@ -10,9 +10,11 @@ DB-free. Runnable either way:
     pytest tests/ranking/test_rank_spread.py
 """
 
+import asyncio
 import random
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import uuid4
 
 import numpy as np
@@ -164,6 +166,55 @@ def test_a_hidden_model_stays_over_the_spread(monkeypatch):
     shown = [r for r in result.rankings.values() if max(r.trust_range) <= 10]
     assert shown
     assert sorted(r.rank for r in shown) == list(range(1, len(shown) + 1))
+
+
+def test_ranking_keeps_the_spread_it_was_counted_with():
+    result = _compute_ranking(_votes(), {}, with_ratio=False, max_rank_spread=12)
+    assert result.max_rank_spread == 12
+
+
+def _llms_list(ranking, setting: int):
+    from backend.llms import data
+    from backend.llms.currency import CurrencyInfo
+
+    async def llms_data():
+        return SimpleNamespace(all={})
+
+    async def currency():
+        return CurrencyInfo(code="EUR", rate_from_usd=1.0, date=None, source="base")
+
+    async def app_settings():
+        return SimpleNamespace(
+            ranking_max_rank_spread=setting, ranking_grey_rank_spread=setting
+        )
+
+    patches = {
+        "get_llms_data": llms_data,
+        "get_ranking": lambda: ranking,
+        "get_currency_info": currency,
+        "get_app_settings": app_settings,
+    }
+    saved = {name: getattr(data, name) for name in patches}
+    for name, value in patches.items():
+        setattr(data, name, value)
+    try:
+        return asyncio.run(data.get_llms_list())
+    finally:
+        for name, value in saved.items():
+            setattr(data, name, value)
+
+
+def test_leaderboard_filters_with_the_ranking_spread_not_the_new_setting():
+    # The admin raised the spread after the last run: the ranks on hand were
+    # counted for 10, so the leaderboard must keep filtering with 10.
+    ranking = compute.RankingResult(timestamp=0.0, max_rank_spread=10)
+    assert _llms_list(ranking, setting=40).max_rank_spread == 10
+
+
+def test_leaderboard_falls_back_to_the_setting_for_an_older_ranking():
+    ranking = compute.RankingResult(timestamp=0.0)
+    assert _llms_list(ranking, setting=40).max_rank_spread == 40
+    assert _llms_list(None, setting=40).max_rank_spread == 40
 
 
 if __name__ == "__main__":

@@ -603,7 +603,7 @@
                 "platformName": "Nom de la plateforme",
                 "ranking": {
                     "maxRankSpread": "Écart de rang maximum",
-                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs.",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs. Pris en compte au prochain calcul du classement, dans l'heure.",
                     "greyRankSpread": "Écart de rang avant grisage",
                     "greyRankSpreadHelp": "Un modèle affiché est grisé si son rang peut varier de plus de ce nombre de places, vers le haut ou vers le bas. Mettez une valeur égale ou supérieure à l'écart de rang maximum pour ne griser aucun modèle.",
                     "minVotes": "Nombre minimum de votes",

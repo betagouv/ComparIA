@@ -606,7 +606,7 @@
                     "minVotes": "Minimum antal stemmer",
                     "minVotesHelp": "En model rangeres først, når den har dette antal stemmer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
                     "maxRankSpread": "Maksimal rangspredning",
-                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer.",
+                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
                     "greyRankSpread": "Rangspredning før gråtoning",
                     "greyRankSpreadHelp": "En vist model gråtones, hvis dens placering kan flytte sig mere end dette antal pladser op eller ned. Sæt værdien til den maksimale rangspredning eller højere for ikke at gråtone nogen."
                 },

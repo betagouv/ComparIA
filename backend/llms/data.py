@@ -277,7 +277,8 @@ class LLMList(BaseModel):
     models: list[APILLMData]
     style_coefficients: dict[str, float] | None
     # How far a model's rank may move either way and still be shown, see
-    # AppSettings.ranking_max_rank_spread.
+    # AppSettings.ranking_max_rank_spread. Taken from the ranking when it has
+    # one, so a changed setting waits for the ranks it was meant for.
     max_rank_spread: int
     # Past this many places either way a shown model is greyed out, see
     # AppSettings.ranking_grey_rank_spread.
@@ -297,7 +298,11 @@ async def get_llms_list() -> LLMList:
             "models": llms.all.values(),
             "data_timestamp": ranking.timestamp if ranking else None,
             "style_coefficients": ranking.style_coefficients if ranking else None,
-            "max_rank_spread": app_settings.ranking_max_rank_spread,
+            "max_rank_spread": (
+                ranking.max_rank_spread
+                if ranking and ranking.max_rank_spread is not None
+                else app_settings.ranking_max_rank_spread
+            ),
             "grey_rank_spread": app_settings.ranking_grey_rank_spread,
             "currency": currency,
         },
