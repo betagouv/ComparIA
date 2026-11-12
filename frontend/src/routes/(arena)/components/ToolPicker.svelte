@@ -29,11 +29,9 @@
     selected = getKeys(form).filter((k) => form[k]) as string[]
     applied = true
     close?.()
-    console.log('aply sel', selected)
   }
 
   function onClose() {
-    console.log('close', applied)
     if (!applied) {
       form = resetForm()
     }
