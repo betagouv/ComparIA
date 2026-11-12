@@ -66,6 +66,7 @@ from backend.selection_modes.services import (
     ModeUnavailableError,
     comparison_mode_key,
     get_public_modes,
+    keep_known_cohorts,
     pick_replacement_model,
     resolve_mode,
 )
@@ -398,6 +399,8 @@ async def add_first_text(
         mode = await resolve_mode(args.mode, args.locale, args.cohorts)
     except ModeUnavailableError:
         raise mode_unavailable()
+    # Stored and published with the comparison: only cohorts someone set up.
+    cohorts = await keep_known_cohorts(args.cohorts)
     enabled_tools = await keep_offered_tools(args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
@@ -430,7 +433,7 @@ async def add_first_text(
     caps = conversation_caps(await get_prompt_check())
     conversation = uuid4().hex
     if not reserve_conversation(
-        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, args.cohorts
+        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, cohorts
     ):
         logger.error(
             "Too many conversations started from this IP",
@@ -448,7 +451,7 @@ async def add_first_text(
             llms_data,
             anonymous_user_hash,
             request,
-            args.cohorts,
+            cohorts,
         )
     except HTTPException:
         # Refused for its characters, the conversation did not start.
@@ -463,7 +466,7 @@ async def add_first_text(
             anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
             participation_terms_version=participation_terms_version,
-            cohorts=args.cohorts,
+            cohorts=cohorts,
             mode=await comparison_mode_key(mode, args.custom_models_selection),
             custom_models_selection=args.custom_models_selection,
             enabled_tools=enabled_tools,

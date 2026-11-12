@@ -297,6 +297,10 @@ RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
 # it: this is a courtesy to the programme, not a guarantee, and a script that
 # sends it escapes the caps.
 RATELIMIT_EXEMPT_COHORTS = ("pix",)
+# Cohorts a comparison may record, besides those a selection mode names.
+# Anything else in `?c=` is dropped before the comparison is stored, so junk
+# from a URL never reaches the published dataset.
+KNOWN_COHORTS = ("pix",)
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

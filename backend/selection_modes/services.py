@@ -11,7 +11,7 @@ from uuid import UUID
 from sqlmodel import col, select
 
 from backend.arena.tools import get_offered_tools
-from backend.config import DEFAULT_SELECTION_MODE
+from backend.config import DEFAULT_SELECTION_MODE, KNOWN_COHORTS
 from backend.llms.data import LLMsData, get_llms_data
 from backend.llms.selection import (
     ModeRules,
@@ -74,6 +74,17 @@ async def find_selection_mode(key: str) -> SelectionModeBase | None:
 def parse_cohorts(cohorts: str | None) -> set[str]:
     """The cohorts a client declares, comma-separated as in `?c=`."""
     return {cohort.strip() for cohort in (cohorts or "").split(",") if cohort.strip()}
+
+
+async def keep_known_cohorts(cohorts: str | None) -> str:
+    """
+    The declared cohorts a comparison may record: the known ones and those a
+    selection mode names, sorted. The rest came from a URL and is dropped.
+    """
+    known = set(KNOWN_COHORTS) | {
+        cohort for mode in await get_selection_modes() for cohort in mode.cohorts
+    }
+    return ",".join(sorted(parse_cohorts(cohorts) & known))
 
 
 def in_audience(
