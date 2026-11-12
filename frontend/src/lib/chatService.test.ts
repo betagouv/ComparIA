@@ -6,6 +6,7 @@ import {
   type Comparison
 } from './chatService.svelte'
 import { ValidationError } from './fastapi-client'
+import { getLocale } from './i18n/runtime'
 
 const streamed = vi.hoisted(() => [] as { url: string; body: Record<string, unknown> }[])
 const arena = vi.hoisted(() => ({
@@ -106,5 +107,56 @@ describe('retry', () => {
     // still says why.
     expect(comparison.error).toBe('provider_error')
     expect(comparison.turns[0].status).toBe('error')
+  })
+})
+
+describe('askFirst', () => {
+  const args = { prompt_value: 'Bonjour', tools: [] as string[] }
+
+  function stubCohorts(value: string) {
+    vi.stubGlobal('sessionStorage', { getItem: () => value })
+  }
+
+  it('sends the mode key, the language and no selection when nothing is picked', async () => {
+    streamed.length = 0
+    stubCohorts('pix')
+
+    await getComparison(undefined).askFirst({ ...args, mode: 'legal', custom_models_selection: [] })
+
+    expect(streamed[0].body).toMatchObject({
+      mode: 'legal',
+      custom_models_selection: null,
+      locale: getLocale(),
+      cohorts: 'pix'
+    })
+  })
+
+  it('sends the picked models in any mode that lets the visitor pick', async () => {
+    streamed.length = 0
+    stubCohorts('')
+
+    await getComparison(undefined).askFirst({
+      ...args,
+      mode: 'champion',
+      custom_models_selection: ['a']
+    })
+
+    expect(streamed[0].body).toMatchObject({ mode: 'champion', custom_models_selection: ['a'] })
+  })
+
+  it('tells the visitor and keeps the key when the mode is no longer on offer', async () => {
+    stubCohorts('')
+    arena.refusal = Object.assign(new Error('Error 400'), {
+      status: 400,
+      detail: 'mode_unavailable'
+    })
+
+    const chat = getComparison(undefined)
+    const sent = await chat.askFirst({ ...args, mode: 'gone', custom_models_selection: [] })
+
+    arena.refusal = undefined
+    expect(sent).toBe(false)
+    expect(chat.promptErrorKey).toBe('mode_unavailable')
+    expect(chat.promptError).toMatch(/mode/i)
   })
 })
