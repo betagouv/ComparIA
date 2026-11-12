@@ -1,3 +1,4 @@
+export { default as ChipList } from './ChipList.svelte'
 export { default as FormCheckbox } from './FormCheckbox.svelte'
 export { default as FormCheckboxGroup } from './FormCheckboxGroup.svelte'
 export { default as FormField } from './FormField.svelte'
