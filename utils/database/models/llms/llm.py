@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
@@ -103,7 +104,36 @@ FIELDS = {
     "links": {
         "description": "List of links to display in LLM card.",
     },
+    "tags": {
+        "description": "Free labels such as 'legal' or 'sovereign'. Selection modes can draw only the models carrying some of them.",
+    },
 }
+
+_TAG = re.compile(r"^[a-z0-9][a-z0-9_-]{0,49}$")
+
+
+def normalize_tags(tags: list[str]) -> list[str]:
+    """
+    Lowercase, trim and deduplicate, so that 'Legal ' and 'legal' are one tag:
+    selection modes compare tags as plain strings.
+    """
+    normalized: list[str] = []
+    for tag in tags:
+        value = re.sub(r"\s+", "-", tag.strip().lower())
+        if not value:
+            continue
+        if not _TAG.match(value):
+            raise PydanticCustomError(
+                "invalid_tag",
+                "'{tag}' is not a tag: use letters, digits, '-' or '_'.",
+                {"tag": tag},
+            )
+        if value not in normalized:
+            normalized.append(value)
+    return normalized
+
+
+Tags = Annotated[list[str], AfterValidator(normalize_tags)]
 
 
 class Link(SQLModel):
@@ -182,6 +212,15 @@ class LLMDataBase(BaseDBModel):
             **FIELDS["links"],
         ),
         AfterValidator(jsonable_encoder),
+    ] = []
+    tags: Annotated[
+        Tags,
+        Field(
+            sa_type=JSONB,
+            sa_column_kwargs={"server_default": "[]"},
+            schema_extra={"json_schema_extra": {"optional": True}},
+            **FIELDS["tags"],
+        ),
     ] = []
 
 

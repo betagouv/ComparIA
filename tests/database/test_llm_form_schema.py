@@ -96,6 +96,17 @@ def test_llm_metadata_dates_are_date_only():
         LLMDataUpsert(**payload(release_date="2026-01-02T12:30:00"))
 
 
+def test_tags_are_normalised_so_modes_can_match_them():
+    llm = LLMDataUpsert(**payload(tags=[" Legal ", "legal", "Open data", ""]))
+    assert llm.tags == ["legal", "open-data"]
+    assert LLMDataUpsert(**payload()).tags == []
+
+
+def test_a_tag_that_is_not_a_slug_is_refused():
+    with pytest.raises(ValidationError, match="invalid_tag|is not a tag"):
+        LLMDataUpsert(**payload(tags=["légal!"]))
+
+
 def test_every_model_gets_the_arena_tools_unless_told_otherwise():
     assert LLMDataUpsert(**payload()).arena_tools is True
     assert LLMDataUpsert(**payload(arena_tools=False)).arena_tools is False
