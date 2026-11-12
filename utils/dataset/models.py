@@ -10,7 +10,7 @@ from pydantic import (
 )
 from sqlmodel import SQLModel
 
-from backend.config import CustomModelsSelection, SelectionMode, TurnChoice
+from backend.config import CustomModelsSelection, TurnChoice
 from backend.llms.models import APILLMDataBase, HiddenTags
 from utils.database.models import (
     LEGACY_PARTICIPATION_TERMS_VERSION,
@@ -72,7 +72,8 @@ class DatasetTurnMetadata(SQLModel):
 
 
 class DatasetComparisonBaseMetadata(SQLModel):
-    mode: SelectionMode
+    # A selection mode key; see utils/database/models/selection_mode.py.
+    mode: str
     custom_models_selection: CustomModelsSelection
     categories: list[str] | None
     languages: list[str] | None
