@@ -548,6 +548,36 @@
             "tokenLabel": "Write token"
         },
         "selectionModes": {
+            "criteria": {
+                "archs": "Architecture: {values}",
+                "arenaToolsNo": "Bring their own tools",
+                "arenaToolsYes": "Get the arena's tools",
+                "energy": "Energy class {values}",
+                "euNo": "Not hostable in the EU",
+                "euYes": "Hostable in the EU",
+                "excludeLabs": "Not from {names}",
+                "excludeLlms": "Except {names}",
+                "excludeTags": "Not tagged {tags}",
+                "inputs": "Accepts {values}",
+                "labs": "From {names}",
+                "licenses": "Licence: {names}",
+                "llms": "Only {names}",
+                "openWeights": "Open weights",
+                "paramsMax": "{max} billion parameters or less",
+                "paramsMin": "{min} billion parameters or more",
+                "paramsRange": "{min} to {max} billion parameters",
+                "priceOut": "Output at most ${price} per million tokens",
+                "proprietary": "Proprietary",
+                "rateLimitedNo": "Not rate limited",
+                "rateLimitedYes": "Rate limited only",
+                "releasedAfter": "Released from {date}",
+                "releasedBefore": "Released until {date}",
+                "releasedWithin": "Released in the last {days} days",
+                "sizes": "Size {values}",
+                "tags": "Tagged {tags}",
+                "tagsAll": "Tagged {tags} (all)",
+                "topRanked": "Top {count} of the ranking"
+            },
             "errors": {
                 "defaultChanged": "Another admin has just made a different mode the default. Reload the page, then save again.",
                 "forcedTools": "Tick at least one tool, or let the visitor choose.",
@@ -591,6 +621,24 @@
                 "newestHelp": "The more recent the release, the more often a model comes up.",
                 "uniform": "Every model as often",
                 "uniformHelp": "The usual draw."
+            },
+            "summary": {
+                "audience": "limited audience",
+                "differentLab": "different labs",
+                "differentSize": "different sizes",
+                "draw": "Draws 2 models among {count}",
+                "drawSplit": "Draws 1 model among {a} against 1 among {b}",
+                "fewerVotes": "favours models with few votes",
+                "forcedTools": "always with {tools}",
+                "newest": "favours recent models",
+                "noTools": "no tools",
+                "pickOne": "Visitor picks 1 model among {count}, the other is drawn",
+                "pickOneSplit": "Visitor picks 1 model, the other is drawn (pools of {a} and {b})",
+                "pickTwo": "Visitor picks up to 2 models among {count}",
+                "pickTwoSplit": "Visitor picks up to 2 models (pools of {a} and {b})",
+                "sameLab": "same lab",
+                "sameSize": "same size",
+                "someTools": "tools offered: {tools}"
             },
             "templates": {
                 "champion": {
@@ -649,6 +697,18 @@
                 "noneHelp": "The models answer with no tool at all.",
                 "visitor": "The visitor",
                 "visitorHelp": "The visitor switches on the tools they want among those on offer."
+            },
+            "unknownItem": "Deleted item",
+            "warnings": {
+                "forcedToolsOff": "None of the mode's tools is on offer, so the mode is not offered. Switch one on in the Tools page.",
+                "noValidPair": "The models found cannot be paired under the pairing rule.",
+                "poolAEmpty": "No model matches pool A.",
+                "poolBEmpty": "No model matches pool B.",
+                "poolEmpty": "No model matches these criteria.",
+                "singlePair": "Only one pair is possible: every visitor will get the same two models.",
+                "toolNotOffered": "Some chosen tools are switched off or unreachable, so the models will not get them.",
+                "unknownLlms": "Some chosen models no longer exist or are switched off. They are left out.",
+                "unknownTools": "Some chosen tools no longer exist."
             }
         },
         "settings": {

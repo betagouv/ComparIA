@@ -548,6 +548,36 @@
             "tokenLabel": "Jeton d'écriture"
         },
         "selectionModes": {
+            "criteria": {
+                "archs": "Architecture : {values}",
+                "arenaToolsNo": "Ont leurs propres outils",
+                "arenaToolsYes": "Reçoivent les outils de l'arène",
+                "energy": "Classe énergétique {values}",
+                "euNo": "Non hébergeables dans l'UE",
+                "euYes": "Hébergeables dans l'UE",
+                "excludeLabs": "Hors {names}",
+                "excludeLlms": "Sauf {names}",
+                "excludeTags": "Sans l'étiquette {tags}",
+                "inputs": "Acceptent {values}",
+                "labs": "De {names}",
+                "licenses": "Licence : {names}",
+                "llms": "Seulement {names}",
+                "openWeights": "Poids ouverts",
+                "paramsMax": "{max} milliards de paramètres ou moins",
+                "paramsMin": "{min} milliards de paramètres ou plus",
+                "paramsRange": "De {min} à {max} milliards de paramètres",
+                "priceOut": "Au plus {price} $ par million de jetons générés",
+                "proprietary": "Propriétaires",
+                "rateLimitedNo": "Sans limite d'usage",
+                "rateLimitedYes": "Usage limité seulement",
+                "releasedAfter": "Sortis à partir du {date}",
+                "releasedBefore": "Sortis jusqu'au {date}",
+                "releasedWithin": "Sortis il y a moins de {days} jours",
+                "sizes": "Taille {values}",
+                "tags": "Étiquetés {tags}",
+                "tagsAll": "Étiquetés {tags} (toutes)",
+                "topRanked": "Les {count} premiers du classement"
+            },
             "errors": {
                 "defaultChanged": "Un autre administrateur vient de choisir un autre mode par défaut. Rechargez la page, puis enregistrez à nouveau.",
                 "forcedTools": "Cochez au moins un outil, ou laissez le visiteur choisir.",
@@ -591,6 +621,24 @@
                 "newestHelp": "Plus un modèle est sorti récemment, plus il sort souvent.",
                 "uniform": "Tous les modèles aussi souvent",
                 "uniformHelp": "Le tirage habituel."
+            },
+            "summary": {
+                "audience": "public restreint",
+                "differentLab": "laboratoires différents",
+                "differentSize": "tailles différentes",
+                "draw": "Tire 2 modèles parmi {count}",
+                "drawSplit": "Tire 1 modèle parmi {a} contre 1 parmi {b}",
+                "fewerVotes": "favorise les modèles peu votés",
+                "forcedTools": "toujours avec {tools}",
+                "newest": "favorise les modèles récents",
+                "noTools": "sans outils",
+                "pickOne": "Le visiteur choisit 1 modèle parmi {count}, l'autre est tiré",
+                "pickOneSplit": "Le visiteur choisit 1 modèle, l'autre est tiré (groupes de {a} et {b})",
+                "pickTwo": "Le visiteur choisit jusqu'à 2 modèles parmi {count}",
+                "pickTwoSplit": "Le visiteur choisit jusqu'à 2 modèles (groupes de {a} et {b})",
+                "sameLab": "même laboratoire",
+                "sameSize": "même taille",
+                "someTools": "outils proposés : {tools}"
             },
             "templates": {
                 "champion": {
@@ -649,6 +697,18 @@
                 "noneHelp": "Les modèles répondent sans aucun outil.",
                 "visitor": "Le visiteur",
                 "visitorHelp": "Le visiteur active les outils qu'il veut parmi ceux proposés."
+            },
+            "unknownItem": "Élément supprimé",
+            "warnings": {
+                "forcedToolsOff": "Aucun outil du mode n'est disponible, le mode n'est donc pas proposé. Activez-en un dans la page Outils.",
+                "noValidPair": "Les modèles trouvés ne peuvent pas être appariés avec cette règle.",
+                "poolAEmpty": "Aucun modèle ne correspond au groupe A.",
+                "poolBEmpty": "Aucun modèle ne correspond au groupe B.",
+                "poolEmpty": "Aucun modèle ne correspond à ces critères.",
+                "singlePair": "Une seule paire est possible : tous les visiteurs auront les deux mêmes modèles.",
+                "toolNotOffered": "Certains outils choisis sont désactivés ou injoignables : les modèles ne les auront pas.",
+                "unknownLlms": "Certains modèles choisis n'existent plus ou sont désactivés. Ils sont ignorés.",
+                "unknownTools": "Certains outils choisis n'existent plus."
             }
         },
         "settings": {
