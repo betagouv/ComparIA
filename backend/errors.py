@@ -23,6 +23,11 @@ class UnavailableLLMsSelectionError(ValueError):
     disabled, or locked out of custom mode."""
 
 
+class NoValidPairError(ValueError):
+    """Raised when a selection mode cannot draw two different models that
+    its pairing rule allows."""
+
+
 class EmptyResponseError(RuntimeError):
     """Raised when a model API returns an empty response."""
 
