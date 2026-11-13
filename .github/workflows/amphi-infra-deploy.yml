@@ -6,7 +6,7 @@ permissions:
 on:
   push:
     branches:
-      - infra_proto_deploy
+      - feat/instance-path
 
 jobs:
   build-and-push:
@@ -36,7 +36,10 @@ jobs:
 
       - name: Package and push the chart
         run: |
+          # 0.2.x: the run number restarts with this workflow, and 0.1.x already
+          # holds 0.1.5, so the Instances that follow the newest chart would
+          # never pick a 0.1.1. The pinned Instances stay on their 0.1.x.
           helm package devops/helm/comparia \
-            --version "0.1.${{ github.run_number }}" \
+            --version "0.2.${{ github.run_number }}" \
             --app-version "${{ github.sha }}"
-          helm push "comparia-0.1.${{ github.run_number }}.tgz" "oci://${REGISTRY}"
+          helm push "comparia-0.2.${{ github.run_number }}.tgz" "oci://${REGISTRY}"
