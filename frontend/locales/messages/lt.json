@@ -28,7 +28,6 @@
             "none": "Jokių įrankių"
         },
         "compareModels": {
-            "count": "{count}/2 modeliai",
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
             "question": "Kuriuos modelius norėtumėte palyginti?"
         },

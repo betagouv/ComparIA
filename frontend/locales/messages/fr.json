@@ -131,12 +131,6 @@
                 "pii": "Données personnelles",
                 "spam": "Spam"
             },
-            "modes": {
-                "big-vs-small": "Grand contre petit",
-                "custom": "Choix manuel",
-                "random": "Aléatoire",
-                "small-models": "Petits modèles"
-            },
             "overview": {
                 "activityChartTitle": "Conversations et messages",
                 "activityDate": "Période",
@@ -547,6 +541,328 @@
             "tokenKeep": "Laisser vide pour garder le jeton enregistré.",
             "tokenLabel": "Jeton d'écriture"
         },
+        "selectionModes": {
+            "audience": {
+                "intro": "Laisser vide pour proposer le mode à tout le monde, tout le temps.",
+                "title": "Public et calendrier"
+            },
+            "criteria": {
+                "archs": "Architecture : {values}",
+                "arenaToolsNo": "Ont leurs propres outils",
+                "arenaToolsYes": "Reçoivent les outils de l'arène",
+                "energy": "Classe énergétique {values}",
+                "euNo": "Non hébergeables dans l'UE",
+                "euYes": "Hébergeables dans l'UE",
+                "excludeLabs": "Hors {names}",
+                "excludeLlms": "Sauf {names}",
+                "excludeTags": "Sans l'étiquette {tags}",
+                "inputs": "Acceptent {values}",
+                "labs": "De {names}",
+                "licenses": "Licence : {names}",
+                "llms": "Seulement {names}",
+                "openWeights": "Poids ouverts",
+                "paramsMax": "{max} milliards de paramètres ou moins",
+                "paramsMin": "{min} milliards de paramètres ou plus",
+                "paramsRange": "De {min} à {max} milliards de paramètres",
+                "priceOut": "Au plus {price} $ par million de jetons générés",
+                "proprietary": "Propriétaires",
+                "rateLimitedNo": "Sans limite d'usage",
+                "rateLimitedYes": "Usage limité seulement",
+                "releasedAfter": "Sortis à partir du {date}",
+                "releasedBefore": "Sortis jusqu'au {date}",
+                "releasedWithin": "Sortis il y a moins de {days} jours",
+                "sizes": "Taille {values}",
+                "tags": "Étiquetés {tags}",
+                "tagsAll": "Étiquetés {tags} (toutes)",
+                "topRanked": "Les {count} premiers du classement"
+            },
+            "draw": {
+                "intro": "Règles appliquées aux modèles tirés. Les modèles choisis par le visiteur y échappent : c'est son choix.",
+                "title": "Comment la paire est tirée"
+            },
+            "editor": {
+                "back": "Tous les modes",
+                "createTitle": "Nouveau mode",
+                "editTitle": "Modifier {label}",
+                "statusBad": "Non proposé : voir l'aperçu",
+                "statusOk": "{pairs} paires possibles : voir l'aperçu",
+                "unsaved": "Modifications non enregistrées"
+            },
+            "errors": {
+                "defaultChanged": "Un autre administrateur vient de choisir un autre mode par défaut. Rechargez la page, puis enregistrez à nouveau.",
+                "forcedTools": "Cochez au moins un outil, ou laissez le visiteur choisir.",
+                "keyImmutable": "La clé d'un mode enregistré ne peut pas changer.",
+                "keyTaken": "Un autre mode utilise déjà cette clé.",
+                "labelDefaultLocale": "Donnez un nom au mode dans la langue principale de l'instance.",
+                "labelRequired": "Donnez un nom au mode.",
+                "lastEnabled": "C'est le dernier mode proposé dans l'arène. Activez-en un autre d'abord.",
+                "notFound": "Ce mode n'existe plus. Rechargez la page.",
+                "paramsRange": "Le minimum dépasse le maximum.",
+                "pattern": "Utilisez seulement des lettres minuscules, des chiffres et des tirets.",
+                "releaseRange": "La période de sortie se termine avant de commencer.",
+                "tag": "Une étiquette ne contient que des lettres, des chiffres, '-' ou '_'.",
+                "tooSmall": "Cette valeur est trop petite.",
+                "window": "La fin arrive avant le début."
+            },
+            "filter": {
+                "activeTitle": "Modèles retenus",
+                "anyValue": "Indifférent",
+                "arenaToolsNo": "Apporte ses propres outils",
+                "arenaToolsYes": "Reçoit les outils de l'arène",
+                "clearAll": "Retirer tous les critères",
+                "everyModel": "Tous les modèles proposés. Ajoutez des critères ci-dessous pour restreindre.",
+                "groups": {
+                    "labsTags": "Laboratoires, étiquettes et outils",
+                    "models": "Modèles",
+                    "openness": "Ouverture",
+                    "size": "Taille"
+                },
+                "maybeArch": "Probablement {arch}",
+                "more": "Autres critères",
+                "moreSet": "Autres critères ({count} actifs)",
+                "openWeightsOnly": "Poids ouverts seulement",
+                "proprietaryOnly": "Propriétaires seulement",
+                "rateLimitedNone": "Aucun",
+                "rateLimitedOnly": "Seulement eux",
+                "tagsAll": "Toutes les étiquettes",
+                "tagsAny": "Au moins une étiquette",
+                "tagsInUse": "En usage : {tags}.",
+                "tagsNone": "Aucun modèle n'en a encore."
+            },
+            "gallery": {
+                "blank": "Mode vierge",
+                "blankHelp": "Deux modèles tirés parmi tous les modèles, sans restriction.",
+                "change": "Choisir un autre point de départ",
+                "intro": "Choisissez un point de départ. Tout reste modifiable, et rien n'est enregistré avant de cliquer sur Enregistrer.",
+                "startedBlank": "Point de départ : mode vierge",
+                "startedFrom": "Point de départ : {template}",
+                "title": "Partir de…"
+            },
+            "icons": {
+                "dice": "Dé",
+                "flash": "Lampe torche",
+                "global": "Globe",
+                "government": "Bâtiment public",
+                "group": "Groupe",
+                "health": "Santé",
+                "leaf": "Feuille",
+                "learning": "Apprentissage",
+                "mapPin": "Repère sur une carte",
+                "openSource": "Code ouvert",
+                "ruler": "Règle",
+                "scales": "Balance",
+                "search": "Loupe",
+                "shield": "Bouclier",
+                "sparkling": "Étincelles",
+                "stethoscope": "Stéthoscope",
+                "trophy": "Trophée"
+            },
+            "identity": {
+                "intro": "Comment le mode apparaît dans le menu des modes de l'arène.",
+                "keyFrozen": "Enregistrée sur chaque comparaison et publiée avec le jeu de données, elle ne peut pas changer.",
+                "labelOtherHelp": "Laisser vide pour afficher le nom dans la langue principale.",
+                "title": "Identité"
+            },
+            "list": {
+                "actions": "Actions",
+                "add": "Nouveau mode",
+                "check": "À vérifier",
+                "confirmDelete": "Supprimer",
+                "default": "Par défaut",
+                "delete": "Supprimer {label}",
+                "deleted": "{label} supprimé.",
+                "deleteTitle": "Supprimer {label} ?",
+                "deleteWarning": "Les visiteurs ne verront plus ce mode. Les comparaisons passées gardent sa clé, {key}, dans le jeu de données.",
+                "deleting": "Suppression…",
+                "edit": "Modifier {label}",
+                "enabled": "Proposé",
+                "intro": "L'arène propose ces modes dans cet ordre. Un mode qui ne peut pas tirer deux modèles n'est pas proposé aux visiteurs.",
+                "mode": "Mode",
+                "moved": "{label} déplacé en position {position} sur {total}.",
+                "moveDown": "Descendre {label}",
+                "moveUp": "Monter {label}",
+                "nobodyCovered": "Aucun mode activé n'est ouvert à tous en ce moment. Les visiteurs hors de ces publics ont un tirage aléatoire simple.",
+                "notViable": "Non proposé aux visiteurs",
+                "order": "Ordre",
+                "rule": "Règle",
+                "switch": "Proposer {label} dans l'arène",
+                "switchedOff": "{label} n'est plus proposé.",
+                "switchedOn": "{label} est proposé dans l'arène."
+            },
+            "multi": {
+                "clear": "Vider la sélection",
+                "noMatch": "Aucun résultat.",
+                "none": "Tous",
+                "search": "Rechercher dans {label}",
+                "searchPlaceholder": "Rechercher",
+                "selected": "{count} sélectionnés"
+            },
+            "pairing": {
+                "any": "Deux modèles différents, sans autre règle",
+                "anyHelp": "Aucune contrainte entre les deux côtés.",
+                "differentLab": "De laboratoires différents",
+                "differentLabHelp": "Jamais deux modèles du même laboratoire.",
+                "differentSize": "De tailles différentes",
+                "differentSizeHelp": "Jamais deux modèles de la même classe de taille.",
+                "sameLab": "Du même laboratoire",
+                "sameLabHelp": "Pour comparer entre eux les modèles d'un même laboratoire.",
+                "sameSize": "De même taille",
+                "sameSizeHelp": "Seuls des modèles de la même classe de taille s'affrontent."
+            },
+            "picks": {
+                "intro": "Dans une comparaison à l'aveugle, le visiteur ne découvre les noms qu'après avoir voté.",
+                "none": "Personne : compar:IA tire les deux modèles",
+                "noneHelp": "Un tirage à l'aveugle parmi les groupes ci-dessous.",
+                "one": "Le visiteur choisit un modèle",
+                "oneHelp": "Le visiteur choisit un modèle dans les groupes ; compar:IA tire l'autre. S'il n'en choisit aucun, les deux sont tirés.",
+                "title": "Qui choisit les modèles",
+                "two": "Le visiteur choisit jusqu'à deux modèles",
+                "twoHelp": "Le visiteur choisit un ou deux modèles dans les groupes ; compar:IA tire le reste."
+            },
+            "pool": {
+                "intro": "Les deux côtés sont tirés parmi ces modèles. Sans critère, tous les modèles proposés peuvent sortir.",
+                "title": "Modèles tirés"
+            },
+            "poolA": {
+                "intro": "Un côté de chaque comparaison est tiré parmi ces modèles."
+            },
+            "poolB": {
+                "intro": "L'autre côté est tiré parmi ces modèles.",
+                "switch": "Le côté B est tiré dans un autre groupe",
+                "switchHelp": "Pour opposer un type de modèle à un autre : petit contre grand, un laboratoire contre les autres, un champion contre des challengers."
+            },
+            "preview": {
+                "draw": "Tirer 5 exemples",
+                "drawing": "Tirage…",
+                "drawsNoPicks": "Tirés comme si le visiteur ne choisissait rien.",
+                "fromPoolA": "Tiré du groupe A",
+                "fromPoolB": "Tiré du groupe B",
+                "intro": "Ce que l'arène tirerait avec ces réglages, avant d'enregistrer. Se met à jour pendant la saisie.",
+                "invalid": "Ces réglages contiennent une erreur",
+                "loading": "Calcul de l'aperçu…",
+                "models": "{count} modèles",
+                "noModel": "Aucun modèle ne correspond.",
+                "notViable": "Les visiteurs ne verront pas ce mode",
+                "oneModel": "1 modèle",
+                "onePair": "Une seule paire possible",
+                "ownTools": "outils internes",
+                "ownToolsHelp": "Apporte ses propres outils : ne reçoit jamais ceux de l'arène.",
+                "pairs": "{count} paires possibles",
+                "title": "Aperçu",
+                "updating": "Mise à jour…",
+                "versus": "contre"
+            },
+            "publish": {
+                "intro": "Un mode désactivé n'est jamais proposé, et les demandes qui le citent sont refusées.",
+                "isDefaultHelp": "Présélectionné à l'arrivée d'un visiteur. Pour en changer, faites d'un autre mode le mode par défaut.",
+                "title": "Publication"
+            },
+            "sampling": {
+                "fewerVotes": "D'abord les modèles peu votés",
+                "fewerVotesHelp": "Les modèles qui ont peu de votes sortent plus souvent, pour que leur classement se stabilise plus vite.",
+                "newest": "D'abord les modèles récents",
+                "newestHelp": "Plus un modèle est sorti récemment, plus il sort souvent.",
+                "uniform": "Tous les modèles aussi souvent",
+                "uniformHelp": "Le tirage habituel."
+            },
+            "subtitle": "Quels modèles s'affrontent dans l'arène, qui les choisit et quels outils ils reçoivent.",
+            "summary": {
+                "audience": "public restreint",
+                "differentLab": "laboratoires différents",
+                "differentSize": "tailles différentes",
+                "draw": "Tire 2 modèles parmi {count}",
+                "drawSplit": "Tire 1 modèle parmi {a} contre 1 parmi {b}",
+                "fewerVotes": "favorise les modèles peu votés",
+                "forcedTools": "toujours avec {tools}",
+                "newest": "favorise les modèles récents",
+                "noTools": "sans outils",
+                "pickOne": "Le visiteur choisit 1 modèle parmi {count}, l'autre est tiré",
+                "pickOneSplit": "Le visiteur choisit 1 modèle, l'autre est tiré (groupes de {a} et {b})",
+                "pickTwo": "Le visiteur choisit jusqu'à 2 modèles parmi {count}",
+                "pickTwoSplit": "Le visiteur choisit jusqu'à 2 modèles (groupes de {a} et {b})",
+                "sameLab": "même laboratoire",
+                "sameSize": "même taille",
+                "someTools": "outils proposés : {tools}"
+            },
+            "templates": {
+                "champion": {
+                    "description": "Un modèle fixe contre tous les autres. Choisissez le champion dans le groupe A.",
+                    "title": "Champion contre challengers"
+                },
+                "european": {
+                    "description": "Deux modèles qui peuvent être hébergés dans l'Union européenne.",
+                    "title": "Hébergeables en Europe"
+                },
+                "fixed-pair": {
+                    "description": "Toujours les deux mêmes modèles, pour un atelier. Choisissez-les dans le groupe A.",
+                    "title": "Paire fixe"
+                },
+                "frugal": {
+                    "description": "Deux modèles parmi ceux qui consomment le moins d'énergie (classes A et B).",
+                    "title": "Modèles frugaux"
+                },
+                "new-models-first": {
+                    "description": "Les modèles qui ont peu de votes sortent plus souvent, pour que le classement se stabilise plus vite.",
+                    "title": "Nouveaux modèles d'abord"
+                },
+                "no-tools-expert": {
+                    "description": "Tire seulement les modèles étiquetés 'legal' (remplacez par votre étiquette) et ne leur donne aucun outil, quoi que demande le visiteur.",
+                    "title": "Arène experte sans outils"
+                },
+                "open-weights": {
+                    "description": "Deux modèles dont les poids sont publics.",
+                    "title": "Modèles ouverts seulement"
+                },
+                "small-vs-big": {
+                    "description": "Un modèle de 100 milliards de paramètres ou plus contre un de 60 milliards ou moins.",
+                    "title": "Petit contre grand"
+                },
+                "specialised-vs-generalist": {
+                    "description": "Un système qui a sa propre recherche documentaire (étiqueté 'specialised', remplacez par votre étiquette) contre un modèle généraliste qui a la recherche web. Le système ne reçoit jamais les outils de l'arène.",
+                    "title": "Système spécialisé contre généraliste outillé"
+                },
+                "speciality-set": {
+                    "description": "Les deux modèles d'une même étiquette, par exemple 'penal-law' (remplacez par la vôtre), sans outils.",
+                    "title": "Ensemble spécialisé"
+                },
+                "visitor-picks": {
+                    "description": "Le visiteur choisit un ou deux modèles, mais seulement parmi ceux du groupe A.",
+                    "title": "Le visiteur choisit dans un groupe"
+                },
+                "web-search": {
+                    "description": "Les deux modèles ont toujours la recherche web. Limitez ses sites dans les réglages de l'outil.",
+                    "title": "Toujours avec la recherche web"
+                }
+            },
+            "title": "Modes de sélection",
+            "tools": {
+                "forced": "Toujours activés",
+                "forcedHelp": "Les outils cochés sont toujours activés et le visiteur ne peut pas les désactiver.",
+                "intro": "Ce que les modèles peuvent utiliser pour répondre, comme la recherche web. Le serveur applique ce choix, quoi qu'envoie le navigateur du visiteur.",
+                "listForcedHelp": "Cochez au moins un outil.",
+                "listVisitorHelp": "Ne rien cocher pour proposer tous les outils. En cocher pour ne proposer que ceux-là.",
+                "none": "Aucun outil",
+                "noneHelp": "Les modèles répondent sans aucun outil.",
+                "noTools": "Aucun outil n'est encore configuré.",
+                "ownTools": "Jamais d'outils de l'arène pour : {names}. Ces modèles ont leurs propres outils, et le modèle en face garde ceux de l'arène.",
+                "switchedOff": "{key}, désactivé dans la page Outils",
+                "title": "Outils",
+                "visitor": "Le visiteur",
+                "visitorHelp": "Le visiteur active les outils qu'il veut parmi ceux proposés."
+            },
+            "unknownItem": "Élément supprimé",
+            "warnings": {
+                "forcedToolsOff": "Aucun outil du mode n'est disponible, le mode n'est donc pas proposé. Activez-en un dans la page Outils.",
+                "noValidPair": "Les modèles trouvés ne peuvent pas être appariés avec cette règle.",
+                "poolAEmpty": "Aucun modèle ne correspond au groupe A.",
+                "poolBEmpty": "Aucun modèle ne correspond au groupe B.",
+                "poolEmpty": "Aucun modèle ne correspond à ces critères.",
+                "singlePair": "Une seule paire est possible : tous les visiteurs auront les deux mêmes modèles.",
+                "toolNotOffered": "Certains outils choisis sont désactivés ou injoignables : les modèles ne les auront pas.",
+                "unknownLlms": "Certains modèles choisis n'existent plus ou sont désactivés. Ils sont ignorés.",
+                "unknownTools": "Certains outils choisis n'existent plus."
+            }
+        },
         "settings": {
             "authentification": {
                 "accessPolicy": {
@@ -915,11 +1231,15 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 modèles",
+            "countMax": "{count}/{max} modèles",
             "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
+            "helpOne": "Choisissez un modèle. L’autre sera tiré au hasard.",
             "noneSelected": "Aucun modèle choisi : la comparaison se fera entre deux modèles aléatoires.",
+            "pickOne": "Choisir un modèle",
+            "pickTwo": "Choisir les modèles",
             "question": "Quels modèles voulez-vous comparer ?",
-            "randomOnly": "Disponible au hasard uniquement"
+            "randomOnly": "Disponible au hasard uniquement",
+            "samePool": "Ne peut pas affronter le modèle choisi dans ce mode"
         },
         "modelSelection": "Sélection des modèles",
         "prompt": {
@@ -927,6 +1247,11 @@
             "placeholder": "Écrivez votre première requête ici"
         },
         "selectModels": {
+            "fallback": {
+                "description": "Deux modèles choisis au hasard parmi toute la liste",
+                "label": "Aléatoire",
+                "shortLabel": "Modèles aléatoires"
+            },
             "help": "Sélectionnez le mode de comparaison qui vous convient",
             "question": "Quels modèles voulez-vous comparer ?"
         },
@@ -937,13 +1262,16 @@
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
         "tools": {
+            "add": "Ajouter les outils",
             "clear": "Tout désélectionner",
             "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
             "count": "{count} outils",
+            "forced": "Toujours actif dans ce mode",
             "label": "Outils",
             "legend": "Outils",
             "locked": "Les outils sont fixés pour toute la conversation.",
-            "none": "Aucun outil"
+            "none": "Aucun outil",
+            "viewAll": "Voir tous les outils"
         },
         "webSearch": {
             "disabled": "Recherche web désactivée",
@@ -960,6 +1288,7 @@
             "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
             "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
             "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
+            "mode_unavailable": "Ce mode de comparaison n’est plus disponible. Le mode par défaut est maintenant sélectionné.",
             "model_unavailable": "Un des modèles choisis n’est plus disponible en sélection manuelle. Rechargez la page pour choisir parmi les modèles disponibles.",
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
@@ -1252,9 +1581,13 @@
         "missing_locales": "Traductions manquantes",
         "preview": "Aperçu utilisateur",
         "previewEmpty": "L’aperçu apparaîtra ici.",
+        "tags": {
+            "placeholder": "Saisir puis appuyer sur Entrée",
+            "remove": "Retirer {tag}"
+        },
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
-        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
+        "unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment quitter la page ?"
     },
     "general": {
         "document": {
@@ -1351,6 +1684,165 @@
             "conversations_same_models_per_ip_per_hour": {
                 "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
                 "label": "Conversations par IP et par heure avec les mêmes modèles"
+            }
+        },
+        "selection_mode_upsert": {
+            "cohorts": {
+                "help": "Proposé seulement aux visiteurs arrivés avec une de ces cohortes dans l'adresse, comme ?c=pix.",
+                "label": "Cohortes"
+            },
+            "description": {
+                "help": "Une ligne sous le nom, pour dire au visiteur ce qu'il va obtenir.",
+                "label": "Description"
+            },
+            "enabled": {
+                "help": "L'arène a besoin d'au moins un mode activé.",
+                "label": "Proposé dans l'arène"
+            },
+            "ends_at": {
+                "help": "Proposé jusqu'à cette heure (UTC).",
+                "label": "Fin"
+            },
+            "icon": {
+                "help": "Une des icônes proposées par le sélecteur.",
+                "label": "Icône"
+            },
+            "is_default": {
+                "help": "Présélectionné à l'arrivée d'un visiteur. Un seul mode est le mode par défaut : celui-ci remplace l'actuel.",
+                "label": "Mode par défaut"
+            },
+            "key": {
+                "help": "Lettres minuscules, chiffres et tirets. Enregistrée sur chaque comparaison et publiée avec le jeu de données : elle ne peut plus changer une fois le mode enregistré.",
+                "label": "Clé"
+            },
+            "label": {
+                "help": "Obligatoire dans la langue principale de l'instance. Affiché dans le menu des modes de l'arène.",
+                "label": "Nom"
+            },
+            "locales": {
+                "help": "Proposé seulement quand l'arène s'affiche dans une de ces langues.",
+                "label": "Langues"
+            },
+            "ModelFilter": {
+                "archs": {
+                    "label": "Architectures"
+                },
+                "arena_tools": {
+                    "help": "Réglé dans la fiche de chaque modèle. Un système qui a sa propre recherche documentaire ou ses propres outils derrière son point d'accès ne reçoit jamais ceux de l'arène.",
+                    "label": "Outils de l'arène"
+                },
+                "energy_classes": {
+                    "help": "De A, la consommation estimée la plus faible, à F, la plus forte.",
+                    "label": "Classes énergétiques"
+                },
+                "eu_hostable": {
+                    "label": "Hébergeable dans l'Union européenne"
+                },
+                "exclude_lab_ids": {
+                    "label": "Sauf ces laboratoires"
+                },
+                "exclude_llm_ids": {
+                    "label": "Sauf ces modèles"
+                },
+                "exclude_tags": {
+                    "label": "Sans ces étiquettes"
+                },
+                "inputs": {
+                    "help": "Le modèle accepte chacune d'elles.",
+                    "label": "Entrées acceptées"
+                },
+                "lab_ids": {
+                    "label": "Seulement ces laboratoires"
+                },
+                "license_ids": {
+                    "label": "Seulement ces licences"
+                },
+                "llm_ids": {
+                    "help": "Laisser vide pour garder tous les modèles qui remplissent les autres critères.",
+                    "label": "Seulement ces modèles"
+                },
+                "params_max": {
+                    "help": "En milliards.",
+                    "label": "Paramètres maximum"
+                },
+                "params_min": {
+                    "help": "En milliards.",
+                    "label": "Paramètres minimum"
+                },
+                "price_out_max": {
+                    "help": "En dollars américains par million de jetons générés.",
+                    "label": "Prix maximum en sortie"
+                },
+                "public_weights": {
+                    "help": "Oui : poids ouverts seulement. Non : propriétaires seulement.",
+                    "label": "Poids"
+                },
+                "rate_limited": {
+                    "help": "Les modèles à usage limité sont les plus coûteux, avec un plafond d'usage par visiteur.",
+                    "label": "Modèles à usage limité"
+                },
+                "released_after": {
+                    "label": "Sortis à partir du"
+                },
+                "released_before": {
+                    "label": "Sortis jusqu'au"
+                },
+                "released_within_days": {
+                    "help": "Par exemple 90 pour les trois derniers mois.",
+                    "label": "Sortis il y a moins de (jours)"
+                },
+                "size_classes": {
+                    "help": "En milliards de paramètres.",
+                    "label": "Classes de taille"
+                },
+                "tags": {
+                    "help": "Étiquettes ajoutées dans la fiche de chaque modèle.",
+                    "label": "Avec ces étiquettes"
+                },
+                "tags_match": {
+                    "help": "any : au moins une des étiquettes ; all : toutes.",
+                    "label": "Les modèles doivent porter"
+                },
+                "top_ranked": {
+                    "help": "Seulement les N premiers modèles du classement. Les modèles pas encore classés ne sont jamais retenus.",
+                    "label": "Parmi les mieux classés"
+                }
+            },
+            "pairing": {
+                "label": "Les deux modèles"
+            },
+            "pool_a": {
+                "help": "Modèles dans lesquels le côté A est tiré.",
+                "label": "Groupe A"
+            },
+            "pool_b": {
+                "help": "Modèles dans lesquels le côté B est tiré. Laisser vide pour tirer les deux côtés dans le groupe A.",
+                "label": "Groupe B"
+            },
+            "position": {
+                "help": "Ordre dans le menu des modes, du plus petit au plus grand.",
+                "label": "Position"
+            },
+            "sampling": {
+                "label": "Les modèles qui sortent le plus"
+            },
+            "short_label": {
+                "help": "Affiché sur le bouton du menu fermé. Laisser vide pour reprendre le nom.",
+                "label": "Nom court"
+            },
+            "starts_at": {
+                "help": "Proposé à partir de cette heure (UTC).",
+                "label": "Début"
+            },
+            "tool_keys": {
+                "help": "Avec « forced », les outils toujours activés. Avec « visitor », les seuls outils proposés ; laisser vide pour proposer tous les outils.",
+                "label": "Outils du mode"
+            },
+            "tools_policy": {
+                "label": "Qui décide"
+            },
+            "visitor_picks": {
+                "label": "Modèles choisis par le visiteur"
             }
         }
     },
@@ -1630,38 +2122,6 @@
         },
         "technical": {
             "title": "Caractéristiques techniques"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David contre Goliath",
-            "description": "Un petit modèle contre un grand, les deux tirés au hasard",
-            "label": "David contre Goliath",
-            "title": "Mode David contre Goliath"
-        },
-        "custom": {
-            "altLabel": "Sélection manuelle",
-            "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
-            "label": "Sélection manuelle",
-            "title": "Mode Sélection"
-        },
-        "random": {
-            "altLabel": "Modèles aléatoires",
-            "description": "Deux modèles choisis au hasard parmi toute la liste",
-            "label": "Aléatoire",
-            "title": "Mode Aléatoire"
-        },
-        "reasoning": {
-            "altLabel": "Modèles avec raisonnement",
-            "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-            "label": "Raisonnement",
-            "title": "Mode Raisonnement"
-        },
-        "small-models": {
-            "altLabel": "Modèles frugaux",
-            "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille",
-            "label": "Frugal",
-            "title": "Mode Frugal"
         }
     },
     "ranking": {

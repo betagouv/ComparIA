@@ -255,17 +255,12 @@ ORDBOGEN_STREAM_TIMEOUT = 60
 TurnChoice = Literal["both_good", "both_bad", "a_better", "b_better", "idk"]
 TURN_CHOICE: tuple[TurnChoice, ...] = get_args(TurnChoice)
 
-# Language model selection modes
-SelectionMode = Literal["random", "big-vs-small", "small-models", "custom"]
-SELECTION_MODES: tuple[SelectionMode, ...] = get_args(SelectionMode)
-DEFAULT_SELECTION_MODE: SelectionMode = "random"
+# Selection modes are rows in the 'selection_mode' table, designed in the
+# admin. This key is only the last resort when none is marked as the default.
+DEFAULT_SELECTION_MODE = "random"
 
 # Language model custom selection (tuple of 0, 1, or 2 model IDs, or None)
 CustomModelsSelection = tuple[str, ...] | None
-
-# Model parameter thresholds for categorization
-SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
-BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 
 # Rate limiting specifically for expensive models (openai models, etc.).
 # Keyed per anonymous session (the `anonymous_session` cookie hash), not per IP,
@@ -301,6 +296,10 @@ RATELIMIT_REPEATED_PROMPT_PER_HOUR = 30
 # it: this is a courtesy to the programme, not a guarantee, and a script that
 # sends it escapes the caps.
 RATELIMIT_EXEMPT_COHORTS = ("pix",)
+# Cohorts a comparison may record, besides those a selection mode names.
+# Anything else in `?c=` is dropped before the comparison is stored, so junk
+# from a URL never reaches the published dataset.
+KNOWN_COHORTS = ("pix",)
 
 # Cooldown for IPs that trip a prompt check too often (abuse / jailbreak
 # probing). Counts blocks and spam pattern hits in a rolling window; once an

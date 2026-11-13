@@ -3,7 +3,7 @@ import logging
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, time, timedelta
-from typing import Any, AsyncGenerator, Awaitable, TypeVar
+from typing import Any, AsyncGenerator, Awaitable, TypeVar, cast
 
 from fastapi.encoders import jsonable_encoder
 from psycopg.errors import QueryCanceled
@@ -17,7 +17,8 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from backend.config import settings
 from backend.statistics.projection import bucket_share, day_share, project
-from utils.database.models import Comparison, Turn, UserMessage
+from backend.utils.locale import get_locales_settings, pick_translation
+from utils.database.models import Comparison, SelectionMode, Turn, UserMessage
 from utils.database.models.llms import LLMData
 from utils.database.models.prompt_check import (
     PromptCheckCriterion,
@@ -26,6 +27,7 @@ from utils.database.models.prompt_check import (
 from utils.database.models.utils import escape_like
 from utils.database.prompt_checks import get_prompt_check
 from utils.database.session import get_activity_session
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.storage.redis import REDIS_ADMIN_ACTIVITY_KEY, get_redis_client
 
 from .models import (
@@ -37,6 +39,7 @@ from .models import (
     ActivityFilterOptions,
     ActivityFilters,
     ActivityLLM,
+    ActivityMode,
     ActivityOverview,
     ActivityPoint,
     ActivityPromptCheck,
@@ -228,11 +231,13 @@ async def _llms(session: AsyncSession) -> dict[uuid.UUID, ActivityLLM]:
     }
 
 
-async def get_filter_options(refresh: bool = False) -> ActivityFilterOptions:
+async def get_filter_options(
+    locale: SupportedLocale, refresh: bool = False
+) -> ActivityFilterOptions:
     # Imported here: the actions package pulls every data migration with it.
     from utils.database.actions.llm_analyze import Config as AnalyzeConfig
 
-    key = _cache_key("filters")
+    key = _cache_key(f"filters-{locale}")
     if not refresh and (cached := _read_cache(key, ActivityFilterOptions)):
         return cached
 
@@ -246,9 +251,36 @@ async def get_filter_options(refresh: bool = False) -> ActivityFilterOptions:
                 .order_by(Comparison.cohorts)
             )
         ).all()
+        mode_rows = (
+            await session.exec(
+                select(SelectionMode.key, SelectionMode.label).order_by(
+                    col(SelectionMode.position), col(SelectionMode.created_at)
+                )
+            )
+        ).all()
+        # A deleted mode still names its comparisons.
+        stored_modes = (
+            await session.exec(
+                select(Comparison.mode).distinct().order_by(Comparison.mode)
+            )
+        ).all()
 
+    locales = await get_locales_settings()
+
+    labels: dict[str, str] = {}
+    for mode_key, label in mode_rows:
+        try:
+            labels[mode_key] = pick_translation(
+                cast(TranslatableRaw[str], label), locale, locales
+            )[1]
+        except ValueError:
+            labels[mode_key] = mode_key
     options = ActivityFilterOptions(
         llms=sorted(llms.values(), key=lambda llm: llm.name.lower()),
+        modes=[
+            ActivityMode(key=mode_key, label=labels.get(mode_key, mode_key))
+            for mode_key in dict.fromkeys([*labels, *stored_modes])
+        ],
         cohorts=[cohort for cohort in cohorts if cohort],
         categories=[category.value for category in AnalyzeConfig.TXT360Category],
     )

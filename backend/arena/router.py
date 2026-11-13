@@ -51,7 +51,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.tools import get_offered_tools, keep_offered_tools
+from backend.arena.tools import get_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -60,9 +60,19 @@ from backend.config import (
     ALTCHA_UNVOTED_COMPARISONS,
     MAX_TURNS_PER_COMPARISON,
 )
-from backend.errors import UnavailableLLMsSelectionError
-from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
+from backend.errors import NoValidPairError, UnavailableLLMsSelectionError
+from backend.llms.data import LLMsData, get_llms_data
+from backend.selection_modes.services import (
+    ModeUnavailableError,
+    comparison_mode_key,
+    get_public_modes,
+    keep_known_cohorts,
+    pick_replacement_model,
+    resolve_mode,
+    tools_for_comparison,
+)
 from backend.survey.dependencies import require_answered_questions
+from backend.utils.locale import LocaleQuery
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -73,6 +83,7 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    SelectionModePublic,
     ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
@@ -317,6 +328,25 @@ async def get_tools() -> list[ToolPublic]:
     return [ToolPublic.model_validate(tool) for tool in await get_offered_tools()]
 
 
+@router.get("/selection-modes")
+async def get_selection_modes(
+    locale: LocaleQuery, cohorts: str | None = None
+) -> list[SelectionModePublic]:
+    """
+    The selection modes on offer for this visitor, in menu order, with exactly
+    one marked as the default. `cohorts` is comma-separated, as sent to
+    `add_first_text`.
+    """
+    return await get_public_modes(locale, cohorts)
+
+
+def mode_unavailable() -> HTTPException:
+    # An open tab still offers a mode an admin has since changed or turned off.
+    return HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST, detail="mode_unavailable"
+    )
+
+
 @router.post(
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
@@ -366,7 +396,15 @@ async def add_first_text(
         f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, {len(args.tools)} tools)",
         extra={"request": request},
     )
-    enabled_tools = await keep_offered_tools(args.tools)
+    try:
+        mode = await resolve_mode(args.mode, args.locale, args.cohorts)
+    except ModeUnavailableError:
+        raise mode_unavailable()
+    # Stored and published with the comparison: only cohorts someone set up.
+    cohorts = await keep_known_cohorts(args.cohorts)
+    # Decided by the mode, not the client: a mode without tools ignores the
+    # list it was sent, and the comparison keeps what is stored here.
+    enabled_tools = await tools_for_comparison(mode, args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
@@ -382,12 +420,14 @@ async def add_first_text(
     # Select LLMs
     llms_data = await get_llms_data()
     try:
-        llm_a_id, llm_b_id = llms_data.pick_two(args.mode, args.custom_models_selection)
+        llm_a_id, llm_b_id = llms_data.pick_two(mode, args.custom_models_selection)
     except UnavailableLLMsSelectionError:
         # An open tab still lists a model an admin has since locked or turned off.
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="model_unavailable"
         )
+    except NoValidPairError:
+        raise mode_unavailable()
 
     logger.info(
         f"Selected LLMs: '{llm_a_id}' vs '{llm_b_id}'", extra={"request": request}
@@ -396,7 +436,7 @@ async def add_first_text(
     caps = conversation_caps(await get_prompt_check())
     conversation = uuid4().hex
     if not reserve_conversation(
-        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, args.cohorts
+        get_ip(request), (llm_a_id, llm_b_id), caps, conversation, cohorts
     ):
         logger.error(
             "Too many conversations started from this IP",
@@ -414,7 +454,7 @@ async def add_first_text(
             llms_data,
             anonymous_user_hash,
             request,
-            args.cohorts,
+            cohorts,
         )
     except HTTPException:
         # Refused for its characters, the conversation did not start.
@@ -429,8 +469,8 @@ async def add_first_text(
             anonymous_user_hash=anonymous_user_hash if not user else None,
             user_id=user.id if user else None,
             participation_terms_version=participation_terms_version,
-            cohorts=args.cohorts,
-            mode=args.mode,
+            cohorts=cohorts,
+            mode=await comparison_mode_key(mode, args.custom_models_selection),
             custom_models_selection=args.custom_models_selection,
             enabled_tools=enabled_tools,
             llm_id_a=llm_a_id,
@@ -626,7 +666,9 @@ async def retry(
     if comparison.error and len(comparison.turns) == 1:
         # if error is from a specific model, reroll it
         if pos := comparison.error.pos:
-            if comparison.mode != "custom" and comparison.error.is_timeout:
+            # A drawn model that timed out was already swapped while streaming.
+            # Only a visitor's own pick is kept then, and may be swapped here.
+            if not comparison.custom_models_selection and comparison.error.is_timeout:
                 # Another timeout error occured even tho llms have been rerolled already
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

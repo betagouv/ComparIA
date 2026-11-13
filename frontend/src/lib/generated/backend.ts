@@ -27,7 +27,7 @@ export interface AuthConfig {
 }
 export interface ComparisonPublic {
   id: string;
-  mode: "random" | "big-vs-small" | "small-models" | "custom";
+  mode: string;
   custom_models_selection: string[] | null;
   enabled_tools: string[];
   error: ErrorDetails | null;
@@ -223,6 +223,10 @@ export interface APILLMData {
    * Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.
    */
   custom_selectable?: boolean;
+  /**
+   * Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.
+   */
+  arena_tools?: boolean;
   /**
    * The lab that developed the LLM, create it first if not already available
    */
@@ -498,6 +502,25 @@ export interface PublicVoteTag {
 }
 export interface PublicVoteTagsResponse {
   tags: PublicVoteTag[];
+}
+/**
+ * What a visitor is told about a mode on offer. Deliberately not derived from
+ * SelectionModeBase: the arena serves it without authentication, and the
+ * pools of a blind mode would tell a visitor what they are voting on.
+ */
+export interface SelectionModePublic {
+  key: string;
+  label: string;
+  short_label: string;
+  description?: string | null;
+  icon: string;
+  is_default: boolean;
+  visitor_picks: 0 | 1 | 2;
+  tools_policy: "visitor" | "none" | "forced";
+  tool_keys: string[];
+  llm_ids?: string[] | null;
+  llm_ids_a?: string[] | null;
+  llm_ids_b?: string[] | null;
 }
 export interface SurveyAnswerSubmit {
   answers: SurveyQuestionAnswer[];

@@ -12,7 +12,7 @@ import type {
   UserMessageRead,
   LinkupSearchTextResult as WebSearchResults
 } from '$lib/generated/backend'
-import { m } from '$lib/i18n/messages'
+import { getLocale } from '$lib/i18n/runtime'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
@@ -20,22 +20,12 @@ import { InternalError } from './fastapi-client'
 export type { APIRevealData, WebSearchResults }
 
 // PROMPT
-export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
-
 export interface APIModeAndPromptData {
   prompt_value: string
-  mode: Mode
+  /** A selection mode key, null for the backend's default mode. */
+  mode: string | null
   custom_models_selection: string[]
   tools: string[]
-}
-
-export type ModeInfos = {
-  value: Mode
-  title: string
-  label: string
-  alt_label: string
-  icon: string
-  description: string
 }
 
 // COMPARISON
@@ -110,28 +100,6 @@ export interface RevealData {
   selected: Bot | null
   modelsData: RevealModelData[]
   shareB64Data: APIRevealData['b64']
-}
-
-// DATA
-
-const MODES = [
-  { value: 'random', icon: 'i-ri-dice-line' },
-  { value: 'small-models', icon: 'i-ri-leaf-line' },
-  { value: 'big-vs-small', icon: 'i-ri-ruler-line' },
-  { value: 'custom', icon: 'i-ri-search-line' }
-] as const
-
-// Resolved on each call rather than at module load: the module is evaluated
-// once per server, before any request sets a locale, so a constant would carry
-// the base locale to every visitor.
-export function getModeInfos(): ModeInfos[] {
-  return MODES.map((item) => ({
-    ...item,
-    title: m[`modes.${item.value}.title`](),
-    label: m[`modes.${item.value}.label`](),
-    alt_label: m[`modes.${item.value}.altLabel`](),
-    description: m[`modes.${item.value}.description`]()
-  }))
 }
 
 // COMPARISON LOGIC
@@ -228,6 +196,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   let comparisonId_ = $state<Id>(comparisonId)
   let loading = $state(false)
   let promptError = $state<string>()
+  // The backend's key behind promptError, for callers that react to one.
+  let promptErrorKey = $state<string>()
   let promptWarnings = $state<string[]>()
   // Kept so "send anyway" resends the very same prompt: the backend serves the
   // verdict it already has for that text instead of moderating it again.
@@ -249,6 +219,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
   async function ask(url: string, body: Record<string, unknown>): Promise<boolean> {
     loading = true
     promptError = undefined
+    promptErrorKey = undefined
     promptWarnings = undefined
     const previousError = comparison?.error
     if (comparison) {
@@ -318,7 +289,8 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         comparison.error = 'timeout'
         if (turn) turn.status = 'error'
       } else if (isArenaErrorKey((err as ApiError).detail)) {
-        promptError = arenaErrorMessage((err as ApiError).detail as string)
+        promptErrorKey = (err as ApiError).detail as string
+        promptError = arenaErrorMessage(promptErrorKey)
       } else {
         throw err
       }
@@ -355,6 +327,10 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
     },
     set promptError(v: string | undefined) {
       promptError = v
+      promptErrorKey = undefined
+    },
+    get promptErrorKey() {
+      return promptErrorKey
     },
     get promptWarnings() {
       return promptWarnings
@@ -387,8 +363,11 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
       return await ask('/arena/add_first_text', {
         prompt_value: args.prompt_value,
         mode: args.mode,
-        custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
+        custom_models_selection: args.custom_models_selection.length
+          ? args.custom_models_selection
+          : null,
         tools: args.tools,
+        locale: getLocale(),
         cohorts
       })
     },

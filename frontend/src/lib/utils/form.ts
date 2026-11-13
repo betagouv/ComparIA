@@ -6,6 +6,7 @@ import type {
   FormInputProps,
   FormRadioGroupProps,
   FormSelectProps,
+  FormTagsInputProps,
   FormToggleProps
 } from '$components/form'
 import { getKeys, tryI18n } from '$lib/utils/commons'
@@ -20,6 +21,8 @@ export type JSONSchema = BaseJSONSchema & {
   optional?: boolean
   disabled?: boolean
   hidden?: boolean
+  // Shows an enum as radio buttons rather than a select
+  radio?: boolean
 }
 
 export type AnyFormItemComponent =
@@ -32,6 +35,7 @@ export type AnyFormItemComponent =
   | 'fieldset'
   | 'fieldset-item'
   | 'fieldset-list'
+  | 'tags'
   | 'translate' // FIXME To fully integrate
 
 export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
@@ -45,7 +49,10 @@ export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
   errors?: Record<string, string>
 }
 
-export type Option<T> = { value: T; label: string }
+export type Option<T> = { value: T; label: string; help?: string }
+
+// Text in several languages. Not rendered on its own yet: give it a field snippet.
+export type FormTranslateItemProps = BaseFormFieldProps<'translate'>
 
 export type AnyFormItemProps =
   | FormInputProps
@@ -56,6 +63,19 @@ export type AnyFormItemProps =
   | FormRadioGroupProps
   | FormFieldsetItemProps
   | FormFieldsetListProps
+  | FormTagsInputProps
+  | FormTranslateItemProps
+
+/**
+ * A titled group of fields in a form. An item is a field id, or a row of ids
+ * shown side by side on wider screens.
+ */
+export type FormSection = {
+  id: string
+  title: string
+  intro?: string
+  items: (string | string[])[]
+}
 
 export type FormItemSnippetProps = {
   'aria-describedby': string
@@ -64,12 +84,17 @@ export type FormItemSnippetProps = {
   required?: boolean
 }
 
+// Plain text values (tags, domains): typed one by one, no fixed choices.
+function isFreeString(schema: JSONSchema): boolean {
+  return schema.type === 'string' && !schema.enum && !schema.format && !schema.$ref
+}
+
 function parseSchema(
   schema: JSONSchema,
   id: string,
   i18nBaseKey?: string
 ): AnyFormItemProps | AnyFormItemProps[] {
-  const { properties, $defs, type, $ref, enum: $enum, optional, disabled, hidden } = schema
+  const { properties, $defs, type, $ref, enum: $enum, optional, disabled, hidden, radio } = schema
   const label = tryI18n(`${i18nBaseKey}.${id}.label`, schema.title)!
   const help = tryI18n(`${i18nBaseKey}.${id}.help`, schema.description)
   const baseProps = {
@@ -81,7 +106,9 @@ function parseSchema(
     hidden
   }
 
-  if (type === 'object') {
+  if (type === 'object' && !properties && schema.additionalProperties) {
+    return { ...baseProps, component: 'translate' }
+  } else if (type === 'object') {
     if (!properties) throw new Error('no properties')
 
     const subProps = getKeys(properties).map((k) => {
@@ -102,13 +129,24 @@ function parseSchema(
     const ref = $ref.replace('#/$defs/', '')
     if (!$defs || !(ref in $defs) || typeof $defs[ref] === 'boolean') throw new Error('defs err')
     const innerSchema = { ...$defs[ref], $defs }
-    return parseSchema(innerSchema, id, `${i18nBaseKey}.${ref}`)
+    const item = parseSchema(innerSchema, id, `${i18nBaseKey}.${ref}`) as AnyFormItemProps
+    // The field's own label, when it has one, rather than its type's
+    return { ...item, label: label ?? item.label, help: help ?? item.help }
   } else if ($enum) {
     const options = $enum.map((value) =>
       typeof value === 'string'
         ? { label: value as string, value: value as string }
         : (value as unknown as Option<string | null>)
     )
+    if (radio) {
+      return {
+        ...baseProps,
+        component: 'radio',
+        options,
+        // Options with a help line read better one under the other
+        inline: !options.some((option) => option.help)
+      } as FormRadioGroupProps
+    }
     if (optional) {
       options.push({ value: null, label: 'None' })
     }
@@ -146,6 +184,8 @@ function parseSchema(
         ...baseProps,
         component: 'checkbox-group'
       } as FormCheckboxGroupProps
+    } else if (isFreeString(inner)) {
+      return { ...baseProps, component: 'tags' }
     } else {
       return {
         ...baseProps,
@@ -169,4 +209,31 @@ export function getSchemaDefaults(schema: JSONSchema): Record<string, unknown> {
 
 export function getFormFields(schema: JSONSchema, i18nBaseKey: string) {
   return parseSchema(schema, '', i18nBaseKey) as AnyFormItemProps[]
+}
+
+/**
+ * The label of the field an error key points at. A nested field's key is its
+ * path, 'pool_a-params_min', and gets its parents' labels too.
+ */
+export function getItemLabel(items: AnyFormItemProps[], id: string): string | undefined {
+  const item = items.find((item) => item.id === id)
+  if (item) return item.label
+  const parent = items.find(
+    (item) =>
+      (item.component === 'fieldset-item' || item.component === 'fieldset-list') &&
+      id.startsWith(`${item.id}-`)
+  ) as FormFieldsetItemProps | FormFieldsetListProps | undefined
+  if (!parent) return
+  let rest = id.slice(parent.id.length + 1)
+  let subProps: AnyFormItemProps[]
+  if (parent.component === 'fieldset-list') {
+    // 'criteria-0-key': the index of the list item comes first
+    rest = rest.replace(/^\d+-/, '')
+    const item = parent.subProps
+    subProps = item.component === 'fieldset-item' ? item.subProps : [item]
+  } else {
+    subProps = parent.subProps
+  }
+  const label = getItemLabel(subProps, rest)
+  return label && `${parent.label} › ${label}`
 }

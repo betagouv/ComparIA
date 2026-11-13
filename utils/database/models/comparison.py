@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
 from backend.arena.reveal import RevealData, get_reveal_data
-from backend.config import CustomModelsSelection, SelectionMode
+from backend.config import CustomModelsSelection
 from utils.validation import StripAndEmptyAsNone
 
 from .turn import Turn, TurnPublic, TurnRead
@@ -72,7 +72,9 @@ class ComparisonBase(BaseDBModel):
     anonymous_user_hash: str | None = None
     participation_terms_version: str = LEGACY_PARTICIPATION_TERMS_VERSION
     cohorts: Annotated[str | None, StripAndEmptyAsNone] = None
-    mode: Annotated[SelectionMode, Field(sa_type=String)]
+    # The key of the selection mode it was drawn under. Not a foreign key: a
+    # deleted mode leaves its comparisons, and the dataset, with its key.
+    mode: Annotated[str, Field(sa_type=String)]
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
@@ -133,7 +135,7 @@ class ComparisonRead(ComparisonBase):
 
 class ComparisonPublic(SQLModel):
     id: uuid.UUID
-    mode: SelectionMode
+    mode: str
     custom_models_selection: CustomModelsSelection
     enabled_tools: list[str]
     error: ErrorDetails | None

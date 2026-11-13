@@ -61,3 +61,13 @@ describe('DSFR icons', () => {
     expect(declared().size).toBeLessThan(400)
   })
 })
+
+describe('selection mode icons', () => {
+  it('builds every icon an admin may give a mode', async () => {
+    // A mode's icon is data, which UnoCSS never sees: unlisted, it would
+    // render as a solid square.
+    const { default: config } = await import('../../uno.config')
+    const { MODE_ICONS } = await import('$lib/generated/constants')
+    expect(config.safelist).toEqual(expect.arrayContaining([...MODE_ICONS]))
+  })
+})

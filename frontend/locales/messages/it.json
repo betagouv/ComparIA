@@ -35,7 +35,6 @@
             "none": "Nessuno strumento"
         },
         "compareModels": {
-            "count": "{count}/2 modelli",
             "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
             "question": "Quali modelli desideri confrontare?"
         },
@@ -285,38 +284,6 @@
             },
             "estimated": "Dimensione stimata ({size})",
             "title": "Dimensioni {size}"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "Davide contro Golia",
-            "description": "Un modello piccolo contro uno grande, entrambi scelti a caso",
-            "label": "Davide contro Golia",
-            "title": "Modalità Davide contro Golia"
-        },
-        "custom": {
-            "altLabel": "Selezione manuale",
-            "description": "Riusciresti a riconoscere i due modelli che hai scelto?",
-            "label": "Selezione manuale",
-            "title": "Modalità di selezione"
-        },
-        "random": {
-            "altLabel": "Modelli casuali",
-            "description": "Due modelli scelti a caso dall'intera lista",
-            "label": "Casuale",
-            "title": "Modalità casuale"
-        },
-        "reasoning": {
-            "altLabel": "Modelli con ragionamento",
-            "description": "Due modelli selezionati a caso tra quelli ottimizzati per compiti complessi",
-            "label": "Ragionamento",
-            "title": "Modalità di ragionamento"
-        },
-        "small-models": {
-            "altLabel": "Modelli frugali",
-            "description": "Due modelli scelti a caso tra i più piccoli",
-            "label": "Frugale",
-            "title": "Modalità frugale"
         }
     },
     "ranking": {

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tick, type Snippet } from 'svelte'
-  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
+  import type { ClassValue, HTMLButtonAttributes, SvelteHTMLElements } from 'svelte/elements'
 
   let {
     id,
@@ -11,6 +11,7 @@
     disabled = false,
     maxHeight = 400,
     buttonClass = 'fr-select',
+    buttonProps,
     buttonLabel,
     onClose,
     contentSnippet,
@@ -25,6 +26,8 @@
     disabled?: boolean
     maxHeight?: number
     buttonClass?: ClassValue
+    // Extra attributes for the button, such as the id a form label points at
+    buttonProps?: HTMLButtonAttributes
     buttonLabel?: Snippet<[string]>
     onClose?: () => void
     contentSnippet?: Snippet<[close: (focusButton?: boolean) => void]>
@@ -117,22 +120,18 @@
     let offset = 4
 
     const { left, top, right, bottom, width: btnWidth } = buttonEl.getBoundingClientRect()
-    const contentHeight = contentEl.scrollHeight
     const contentWidth = contentEl.scrollWidth
     const { innerWidth, innerHeight } = window
 
-    // Vertical pos
-    let topPos: number
-    const preferredBelow = innerHeight - bottom >= contentHeight + offset * 2
-    const preferredAbove = top >= contentHeight + offset * 2
-
-    if (preferredBelow || !preferredAbove) {
-      isBelow = true
-      topPos = bottom + offset
-    } else {
-      isBelow = false
-      topPos = top - contentHeight - offset
-    }
+    // A list longer than maxHeight scrolls inside it. It opens on the side
+    // with room for it, else on the side with more room, and scrolls within
+    // that room so its end never goes off screen.
+    const wanted = Math.min(contentEl.scrollHeight, maxHeight)
+    const roomBelow = innerHeight - bottom - offset * 2
+    const roomAbove = top - offset * 2
+    isBelow = roomBelow >= wanted || roomBelow >= roomAbove
+    const contentHeight = Math.min(wanted, Math.max(isBelow ? roomBelow : roomAbove, 0))
+    let topPos = isBelow ? bottom + offset : top - contentHeight - offset
 
     // Clamp top to viewport
     if (topPos + contentHeight > innerHeight - offset) {
@@ -161,7 +160,7 @@
       left: `${leftPos}px`,
       'min-width': `${btnWidth}px`,
       'max-width': `${innerWidth - offset * 2}px`,
-      'max-height': `${Math.min(maxHeight, innerHeight - offset * 2)}px`
+      'max-height': `${contentHeight}px`
     }
   }
 
@@ -197,6 +196,7 @@
 
 <div class="dropdown relative inline-block">
   <button
+    {...buttonProps}
     bind:this={buttonEl}
     type="button"
     aria-haspopup={role ?? true}

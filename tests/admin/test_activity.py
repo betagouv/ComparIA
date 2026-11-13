@@ -26,10 +26,12 @@ from backend.activity.models import (  # noqa: E402
     ConversationFilters,
     StoppedMessageFilters,
 )
+from backend.utils.locale import LocalesSettings  # noqa: E402
 from utils.database import session as session_module  # noqa: E402
 from utils.database.models import (  # noqa: E402
     Comparison,
     LLMMessage,
+    SelectionMode,
     Turn,
     UserMessage,
 )
@@ -399,18 +401,63 @@ def test_the_stopped_messages_list_what_never_reached_the_models(activity, monke
     assert len(conversation.turns) == 1
 
 
-def test_the_filter_options_list_models_and_cohorts(activity):
+def test_the_filter_options_list_models_and_cohorts(activity, monkeypatch):
+    async def get_locales_settings():
+        return LocalesSettings(default="en", enabled=["en", "fr"])
+
+    monkeypatch.setattr(services, "get_locales_settings", get_locales_settings)
+
     async def scenario():
         llms = await add_llms()
         await add_comparison(llms, cohorts="pix")
-        await add_comparison(llms)
-        return await services.get_filter_options()
+        await add_comparison(llms, mode="deleted-mode")
+        async with session_module.get_session() as session:
+            session.add(
+                SelectionMode(
+                    key="random",
+                    label={"en": "Random", "fr": "Aléatoire"},
+                    icon="i-ri-dice-line",
+                )
+            )
+            await session.commit()
+        return await services.get_filter_options("fr")
 
     options = activity(scenario)
 
     assert [llm.name for llm in options.llms] == ["Alpha", "Beta"]
     assert options.cohorts == ["pix"]
     assert "Law & Justice" in options.categories
+    # The current modes named in the admin's language, then the bare keys
+    # only old comparisons still carry.
+    assert [(mode.key, mode.label) for mode in options.modes] == [
+        ("random", "Aléatoire"),
+        ("deleted-mode", "deleted-mode"),
+    ]
+
+
+def test_the_filter_options_are_cached_under_their_own_key(activity, monkeypatch):
+    async def get_locales_settings():
+        return LocalesSettings(default="en", enabled=["en", "fr"])
+
+    written: list[str] = []
+    monkeypatch.setattr(services, "get_locales_settings", get_locales_settings)
+    monkeypatch.setattr(
+        services, "_write_cache", lambda key, value: written.append(key)
+    )
+
+    async def scenario():
+        async with session_module.get_session() as session:
+            session.add(
+                SelectionMode(
+                    key="custom", label={"en": "Custom"}, icon="i-ri-dice-line"
+                )
+            )
+            await session.commit()
+        return await services.get_filter_options("fr")
+
+    activity(scenario)
+
+    assert written == [services._cache_key("filters-fr")]
 
 
 def test_a_bad_cursor_is_refused():

@@ -141,4 +141,40 @@ describe('Form', () => {
     expect(cancel).not.toHaveBeenCalled()
     confirm.mockRestore()
   })
+
+  it('lays out the items its sections list, in their order, under their titles', () => {
+    const { container, getByRole } = render(Form, {
+      props: {
+        id: 'mode',
+        items: [modalities, linkList],
+        sections: [
+          { id: 'second', title: 'Second', items: ['links'] },
+          { id: 'first', title: 'First', intro: 'Pick some', items: [['inputs']] }
+        ],
+        form: {},
+        onSubmit: () => {}
+      }
+    })
+
+    const titles = [...container.querySelectorAll('section h2')].map((h) => h.textContent)
+    expect(titles).toEqual(['Second', 'First'])
+    expect(getByRole('region', { name: 'First' }).textContent).toContain('Modalities')
+    expect(getByRole('region', { name: 'Second' }).textContent).not.toContain('Modalities')
+  })
+
+  it('names a nested field in the error summary, and only the message for others', () => {
+    const { container } = render(Form, {
+      props: {
+        id: 'mode',
+        items: [modalities],
+        form: {},
+        errors: { inputs: 'Pick one', unexpected: 'Server down' },
+        onSubmit: () => {}
+      }
+    })
+
+    const lines = [...container.querySelectorAll('#errors-mode li')].map((li) => li.textContent)
+    expect(lines[0]).toContain('"Modalities"')
+    expect(lines[1]?.trim()).toBe('Server down')
+  })
 })

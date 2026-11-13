@@ -7,8 +7,9 @@ import { getContext, setContext } from 'svelte'
 
 export const COHORT_STORAGE_KEY = 'comparia-cohorts'
 
-// for now possible cohort are just an hardcoded Array here - move to db ?
-const EXISTING_COHORTS = ['pix']
+// Any well-formed name: a selection mode may target a cohort the code does not
+// know. The backend keeps only the cohorts someone set up on the comparison.
+const COHORT = /^[a-z0-9-]{1,50}$/
 
 // Detect cohort from sessionStorage or URL parameters
 function detectCohorts(): string {
@@ -25,13 +26,23 @@ function detectCohorts(): string {
   if (!cohortsCommaSeparetedParam) return ''
 
   console.debug(`[COHORT] URL param c found: '${cohortsCommaSeparetedParam}'`)
-  const inputCohortList = cohortsCommaSeparetedParam.split(',')
+  return parseCohortsParam(cohortsCommaSeparetedParam)
+}
 
-  const validCohorts: string[] = inputCohortList.filter((item) => EXISTING_COHORTS.includes(item))
-  console.debug(`[COHORT] Valid cohorts after filtering '${validCohorts.join(',')}'`)
+/** The well-formed cohorts in a `?c=` value, sorted so the backend always sees the same string. */
+export function parseCohortsParam(param: string | null): string {
+  if (!param) return ''
+  const cohorts = param.split(',').filter((item) => COHORT.test(item))
+  return cohorts
+    .filter((item, index) => cohorts.indexOf(item) === index)
+    .sort()
+    .join(',')
+}
 
-  // rebuilding the string after sorting cohort names for consistant orders in the backend/db
-  return validCohorts.sort().join(',')
+/** The cohorts detected for this tab, or '' before detection or on the server. */
+export function storedCohorts(): string {
+  if (!browser) return ''
+  return sessionStorage.getItem(COHORT_STORAGE_KEY) ?? ''
 }
 
 /**

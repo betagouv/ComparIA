@@ -25,9 +25,11 @@ from starlette.requests import Request  # noqa: E402
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
+import backend.selection_modes.services as mode_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.llms.data import LLMsData  # noqa: E402
 from backend.llms.models import LLMDataEnabled  # noqa: E402
+from tests.arena.modes import resolve_seeded_mode, seeded_modes  # noqa: E402
 from tests.arena.test_ratelimit import default_prompt_check  # noqa: E402
 
 OPEN = uuid4()
@@ -72,6 +74,8 @@ def arena(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     monkeypatch.setattr(arena_router, "run_checks", run_checks)
     monkeypatch.setattr(arena_router, "get_llms_data", get_llms_data)
+    monkeypatch.setattr(arena_router, "resolve_mode", resolve_seeded_mode)
+    monkeypatch.setattr(mode_services, "get_selection_modes", seeded_modes)
     monkeypatch.setattr(arena_router, "get_prompt_check", default_prompt_check)
     monkeypatch.setattr(arena_router, "create_comparison", create_comparison)
     monkeypatch.setattr(arena_router, "charge_budget", lambda *_args: None)

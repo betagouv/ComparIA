@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { journeyChanges, journeyOf, nextQuery } from './filters'
+import { journeyChanges, journeyOf, modeKeys, modeLabel, nextQuery } from './filters'
 
 describe('the journey filter', () => {
   it('lists the stopped messages through their flag', () => {
@@ -21,5 +21,21 @@ describe('the journey filter', () => {
     expect(new URLSearchParams(nextQuery(pii, journeyChanges('voted', pii))).get('flag')).toBe(
       'pii'
     )
+  })
+})
+
+describe('modes', () => {
+  const known = [
+    { key: 'random', label: 'Aléatoire' },
+    { key: 'legal', label: 'Juridique' }
+  ]
+
+  it('lists the modes of the instance first, then keys only comparisons still carry', () => {
+    expect(modeKeys(known, { custom: 3, random: 10 })).toEqual(['random', 'legal', 'custom'])
+  })
+
+  it('names a mode by its label, and a deleted one by its key', () => {
+    expect(modeLabel(known, 'legal')).toBe('Juridique')
+    expect(modeLabel(known, 'custom')).toBe('custom')
   })
 })

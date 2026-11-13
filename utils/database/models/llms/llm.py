@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
@@ -13,7 +14,7 @@ from sqlmodel import Field, Relationship, SQLModel, String
 from utils.validation import NonEmptyStr, StripAndEmptyAsNone
 
 from ..utils import BaseDBModel
-from .constants import LLMArchKind, LLMStatus
+from .constants import LLMArchKind, LLMInput, LLMStatus
 from .endpoint import LLMEndpoint
 from .lab import LLMLab
 from .license import LLMLicense
@@ -51,6 +52,10 @@ FIELDS = {
     "custom_selectable": {
         "title": "Selectable in custom mode",
         "description": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
+    },
+    "arena_tools": {
+        "title": "Gets the arena's tools",
+        "description": "Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.",
     },
     "release_date": {},
     "knowledge_cutoff": {
@@ -99,7 +104,36 @@ FIELDS = {
     "links": {
         "description": "List of links to display in LLM card.",
     },
+    "tags": {
+        "description": "Free labels such as 'legal' or 'sovereign'. Selection modes can draw only the models carrying some of them.",
+    },
 }
+
+_TAG = re.compile(r"^[a-z0-9][a-z0-9_-]{0,49}$")
+
+
+def normalize_tags(tags: list[str]) -> list[str]:
+    """
+    Lowercase, trim and deduplicate, so that 'Legal ' and 'legal' are one tag:
+    selection modes compare tags as plain strings.
+    """
+    normalized: list[str] = []
+    for tag in tags:
+        value = re.sub(r"\s+", "-", tag.strip().lower())
+        if not value:
+            continue
+        if not _TAG.match(value):
+            raise PydanticCustomError(
+                "invalid_tag",
+                "'{tag}' is not a tag: use letters, digits, '-' or '_'.",
+                {"tag": tag},
+            )
+        if value not in normalized:
+            normalized.append(value)
+    return normalized
+
+
+Tags = Annotated[list[str], AfterValidator(normalize_tags)]
 
 
 class Link(SQLModel):
@@ -129,6 +163,14 @@ class LLMDataBase(BaseDBModel):
             **FIELDS["custom_selectable"],
         ),
     ]
+    arena_tools: Annotated[
+        bool,
+        Field(
+            default=True,
+            sa_column_kwargs={"server_default": true()},
+            **FIELDS["arena_tools"],
+        ),
+    ]
     lab_id: Annotated[UUID, Field(foreign_key="llm_lab.id", **FIELDS["lab_id"])]
     release_date: Annotated[date, Field(sa_type=Date, **FIELDS["release_date"])]
     knowledge_cutoff: Annotated[
@@ -154,7 +196,7 @@ class LLMDataBase(BaseDBModel):
         Field(default=None, sa_type=String, **FIELDS["quantization"]),
     ]
     inputs: Annotated[
-        list[Literal["text", "image", "audio", "video"]],
+        list[LLMInput],
         Field(sa_type=JSONB, **FIELDS["inputs"]),
     ]
     price_in: Annotated[float, Field(**FIELDS["price_in"])]
@@ -170,6 +212,15 @@ class LLMDataBase(BaseDBModel):
             **FIELDS["links"],
         ),
         AfterValidator(jsonable_encoder),
+    ] = []
+    tags: Annotated[
+        Tags,
+        Field(
+            sa_type=JSONB,
+            sa_column_kwargs={"server_default": "[]"},
+            schema_extra={"json_schema_extra": {"optional": True}},
+            **FIELDS["tags"],
+        ),
     ] = []
 
 

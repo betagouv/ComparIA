@@ -35,7 +35,6 @@
             "none": "Ninguna herramienta"
         },
         "compareModels": {
-            "count": "{count}/2 modelos",
             "help": "Si elige solo uno, el segundo sera elegido al azar",
             "question": "¿Qué modelo te gustaría elegir?"
         },

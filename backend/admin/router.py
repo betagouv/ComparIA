@@ -12,6 +12,7 @@ from backend.admin.activity import router as admin_activity_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
+from backend.admin.selection_modes import admin_selection_modes_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
     CannotDeleteSelfError,
@@ -122,6 +123,7 @@ router.include_router(admin_survey_router)
 router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
 router.include_router(admin_tools_router)
+router.include_router(admin_selection_modes_router)
 
 
 class UsersPage(BaseModel):

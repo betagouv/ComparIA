@@ -1,8 +1,9 @@
 """
 Manual mode with no model picked (no DB, no Redis).
 
-The arena used to accept `mode=custom` with an empty selection, draw two random
-models, and store the comparison as `custom`. It is now stored as `random`.
+The arena has always stored manual mode with nothing picked as `random`, and
+the dataset keeps that meaning: the seeded `custom` mode draws like `random`
+when nothing is picked. An empty selection is stored as no selection.
 
 Run with pytest, or directly:
     uv run python tests/arena/test_custom_mode_selection.py
@@ -56,10 +57,10 @@ def send_first_message(args):
         assert error.status_code == 503
 
 
-def test_custom_mode_without_models_is_random():
+def test_custom_mode_without_models_has_no_selection():
     for selection in ([], None):
         args = body(mode="custom", custom_models_selection=selection)
-        assert args.mode == "random"
+        assert args.mode == "custom"
         assert args.custom_models_selection is None
 
 
@@ -80,6 +81,6 @@ def test_custom_mode_without_models_is_stored_as_random():
 
 
 if __name__ == "__main__":
-    test_custom_mode_without_models_is_random()
+    test_custom_mode_without_models_has_no_selection()
     test_custom_mode_with_models_is_kept()
     test_custom_mode_without_models_is_stored_as_random()

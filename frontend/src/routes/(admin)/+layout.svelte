@@ -83,6 +83,12 @@
       isCurrent: () => page.url.pathname.includes('/admin/outils')
     },
     {
+      label: m['admin.selectionModes.title'](),
+      href: '/admin/modes-selection',
+      icon: 'i-ri-shuffle-line',
+      isCurrent: () => page.url.pathname.includes('/admin/modes-selection')
+    },
+    {
       label: m['actions.returnArena'](),
       href: '/',
       icon: 'i-ri-arrow-left-line'

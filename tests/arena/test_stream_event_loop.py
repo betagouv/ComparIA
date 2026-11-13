@@ -323,7 +323,9 @@ def fake_models(
         return SimpleNamespace(
             enabled={
                 llm_id: SimpleNamespace(
-                    id=llm_id, endpoint=SimpleNamespace(api_type="openai")
+                    id=llm_id,
+                    endpoint=SimpleNamespace(api_type="openai"),
+                    arena_tools=True,
                 )
                 for llm_id in pauses
             }

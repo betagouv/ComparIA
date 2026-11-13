@@ -25,7 +25,9 @@ from starlette.requests import Request  # noqa: E402
 
 import backend.arena.models as arena_models  # noqa: E402
 import backend.arena.router as arena_router  # noqa: E402
+import backend.selection_modes.services as mode_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
+from tests.arena.modes import resolve_seeded_mode, seeded_modes  # noqa: E402
 from tests.arena.test_ratelimit import default_prompt_check  # noqa: E402
 
 
@@ -78,16 +80,20 @@ def test_a_comparison_does_not_keep_the_matomo_visitor_id():
             cohorts="",
             altcha_token="valid",
         )
-        with patched(
-            arena_router,
-            get_current_terms_acceptance_version=get_current_terms_acceptance_version,
-            run_checks=run_checks,
-            get_llms_data=get_llms_data,
-            get_prompt_check=default_prompt_check,
-            create_comparison=create_comparison,
-            charge_budget=charge_budget,
-            reserve_conversation=lambda *_args, **_kwargs: True,
-            release_conversation=lambda *_args: None,
+        with (
+            patched(mode_services, get_selection_modes=seeded_modes),
+            patched(
+                arena_router,
+                get_current_terms_acceptance_version=get_current_terms_acceptance_version,
+                run_checks=run_checks,
+                get_llms_data=get_llms_data,
+                resolve_mode=resolve_seeded_mode,
+                get_prompt_check=default_prompt_check,
+                create_comparison=create_comparison,
+                charge_budget=charge_budget,
+                reserve_conversation=lambda *_args, **_kwargs: True,
+                release_conversation=lambda *_args: None,
+            ),
         ):
             try:
                 asyncio.run(arena_router.add_first_text(body, None, "b" * 64, request))

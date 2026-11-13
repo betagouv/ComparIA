@@ -104,7 +104,7 @@ export class StreamTimeoutError extends Error {
   }
 }
 
-type PydanticValidationError = { loc: string[]; msg: string }
+type PydanticValidationError = { loc: (string | number)[]; msg: string; type?: string }
 
 export class ValidationError extends Error {
   errors?: PydanticValidationError[]

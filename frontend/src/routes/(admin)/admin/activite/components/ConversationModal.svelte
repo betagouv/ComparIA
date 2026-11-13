@@ -2,10 +2,14 @@
   import { Alert, Button, Modal } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import { api } from '$lib/fastapi-client'
-  import type { ActivityConversation, ActivityConversationRow } from '$lib/generated/admin'
+  import type {
+    ActivityConversation,
+    ActivityConversationRow,
+    ActivityMode
+  } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { errorMessage, label, stageOf } from '../filters'
+  import { errorMessage, modeLabel, stageOf } from '../filters'
   import ConversationSummary from './ConversationSummary.svelte'
   import JourneyTrack from './JourneyTrack.svelte'
 
@@ -13,10 +17,12 @@
 
   let {
     rows,
+    modes,
     index = $bindable(null),
     hrefFor
   }: {
     rows: ActivityConversationRow[]
+    modes: ActivityMode[]
     /** The row shown, or null when the pop-up is closed. */
     index: number | null
     hrefFor: (id: string) => string
@@ -125,7 +131,7 @@
     >
       <span>{dateFormatter.format(new Date(row.created_at))}</span>
       <span aria-hidden="true">·</span>
-      <span>{label('modes', row.mode)}</span>
+      <span>{modeLabel(modes, row.mode)}</span>
       {#if row.categories.length}
         <span aria-hidden="true">·</span>
         <span>{row.categories.join(', ')}</span>

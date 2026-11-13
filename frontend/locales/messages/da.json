@@ -70,12 +70,6 @@
                 "allModels": "Alle modeller",
                 "allJourneys": "Alle forløb"
             },
-            "modes": {
-                "random": "Tilfældig",
-                "big-vs-small": "Stor mod lille",
-                "small-models": "Små modeller",
-                "custom": "Valgt manuelt"
-            },
             "choices": {
                 "a_better": "A er bedst",
                 "b_better": "B er bedst",
@@ -809,7 +803,6 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 modeller",
             "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt",
             "noneSelected": "Ingen model valgt: du sammenligner to tilfældige modeller.",
             "question": "Hvilke modeller vil du gerne sammenligne?",
@@ -1690,38 +1683,6 @@
         },
         "technical": {
             "title": "Tekniske egenskaber"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David mod Goliat-modelvalg",
-            "description": "En lille model mod en stor model, begge valgt tilfældigt",
-            "label": "David mod Goliat",
-            "title": "David mod Goliat-tilstand"
-        },
-        "custom": {
-            "altLabel": "Manuel modeludvælgelse",
-            "description": "Kan du genkende de to modeller, du valgte?",
-            "label": "Manuel udvælgelse",
-            "title": "Manuel udvælgelse"
-        },
-        "random": {
-            "altLabel": "Vilkårligt modelvalg",
-            "description": "To modeller valgt vilkårligt fra den fulde liste",
-            "label": "Tilfældig",
-            "title": "Tilfældig"
-        },
-        "reasoning": {
-            "altLabel": "Valg af ræsonnementmodel",
-            "description": "To tilfældigt udvalgte ræsonnementmodeller",
-            "label": "Ræsonnement",
-            "title": "Ræsonnement"
-        },
-        "small-models": {
-            "altLabel": "Sparsom modeludvælgelse",
-            "description": "To små modeller valgt tilfældigt",
-            "label": "Sparsom",
-            "title": "Sparetilstand"
         }
     },
     "ranking": {

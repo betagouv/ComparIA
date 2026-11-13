@@ -1,8 +1,9 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
-  import { getComparison, getModeInfos } from '$lib/chatService.svelte'
+  import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getSelectionModesContext } from '$lib/selectionModes.svelte'
   import { onDestroy } from 'svelte'
   import { page } from '$app/state'
   import type { ToolPublic } from '$lib/generated/backend'
@@ -34,8 +35,9 @@
   let voteReminder = $state(false)
   let voteReminderTimeout: ReturnType<typeof setTimeout> | undefined
 
-  const modeInfos = getModeInfos()
-  const mode = $derived(modeInfos.find((mode) => mode.value === comparator.comparison?.mode)!)
+  // Undefined once the mode is deleted, switched off, or not offered here.
+  const selectionModes = getSelectionModesContext()
+  const mode = $derived(selectionModes.find(comparator.comparison?.mode))
 
   const canContinue = $derived(
     !comparator.loading &&
@@ -128,13 +130,17 @@
       >
         {#if idx === 0}
           <div class="gap-2 md:gap-3 flex flex-wrap items-center">
-            <div
-              class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
-            >
-              <Icon icon={mode.icon} size="sm" class="text-primary" />
-              <strong>{mode.title}</strong>
-              <Tooltip id="mode-desc" text={mode.description} size="xs" />
-            </div>
+            {#if mode}
+              <div
+                class="cg-border md:me-0 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
+              >
+                <Icon icon={mode.icon} size="sm" class="text-primary" />
+                <strong>{mode.label}</strong>
+                {#if mode.description}
+                  <Tooltip id="mode-desc" text={mode.description} size="xs" />
+                {/if}
+              </div>
+            {/if}
 
             {#each activeTools as tool (tool.key)}
               <div

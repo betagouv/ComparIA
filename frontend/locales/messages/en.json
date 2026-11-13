@@ -131,12 +131,6 @@
                 "pii": "Personal data",
                 "spam": "Spam"
             },
-            "modes": {
-                "big-vs-small": "Big against small",
-                "custom": "Chosen by hand",
-                "random": "Random",
-                "small-models": "Small models"
-            },
             "overview": {
                 "activityChartTitle": "Conversations and messages",
                 "activityDate": "Period",
@@ -547,6 +541,328 @@
             "tokenKeep": "Leave empty to keep the token already stored.",
             "tokenLabel": "Write token"
         },
+        "selectionModes": {
+            "audience": {
+                "intro": "Leave empty to offer the mode to everyone, all the time.",
+                "title": "Audience and schedule"
+            },
+            "criteria": {
+                "archs": "Architecture: {values}",
+                "arenaToolsNo": "Bring their own tools",
+                "arenaToolsYes": "Get the arena's tools",
+                "energy": "Energy class {values}",
+                "euNo": "Not hostable in the EU",
+                "euYes": "Hostable in the EU",
+                "excludeLabs": "Not from {names}",
+                "excludeLlms": "Except {names}",
+                "excludeTags": "Not tagged {tags}",
+                "inputs": "Accepts {values}",
+                "labs": "From {names}",
+                "licenses": "Licence: {names}",
+                "llms": "Only {names}",
+                "openWeights": "Open weights",
+                "paramsMax": "{max} billion parameters or less",
+                "paramsMin": "{min} billion parameters or more",
+                "paramsRange": "{min} to {max} billion parameters",
+                "priceOut": "Output at most ${price} per million tokens",
+                "proprietary": "Proprietary",
+                "rateLimitedNo": "Not rate limited",
+                "rateLimitedYes": "Rate limited only",
+                "releasedAfter": "Released from {date}",
+                "releasedBefore": "Released until {date}",
+                "releasedWithin": "Released in the last {days} days",
+                "sizes": "Size {values}",
+                "tags": "Tagged {tags}",
+                "tagsAll": "Tagged {tags} (all)",
+                "topRanked": "Top {count} of the ranking"
+            },
+            "draw": {
+                "intro": "Rules applied to the drawn models. Models the visitor picks are exempt: they chose.",
+                "title": "How the pair is drawn"
+            },
+            "editor": {
+                "back": "All modes",
+                "createTitle": "New mode",
+                "editTitle": "Edit {label}",
+                "statusBad": "Not offered: see the preview",
+                "statusOk": "{pairs} possible pairs: see the preview",
+                "unsaved": "Unsaved changes"
+            },
+            "errors": {
+                "defaultChanged": "Another admin has just made a different mode the default. Reload the page, then save again.",
+                "forcedTools": "Tick at least one tool, or let the visitor choose.",
+                "keyImmutable": "The key of a saved mode cannot change.",
+                "keyTaken": "Another mode already uses this key.",
+                "labelDefaultLocale": "Give the mode a name in the instance's main language.",
+                "labelRequired": "Give the mode a name.",
+                "lastEnabled": "This is the last mode offered in the arena. Switch another one on first.",
+                "notFound": "This mode no longer exists. Reload the page.",
+                "paramsRange": "The minimum is above the maximum.",
+                "pattern": "Use only lowercase letters, digits and dashes.",
+                "releaseRange": "The release window ends before it starts.",
+                "tag": "A tag holds only letters, digits, '-' or '_'.",
+                "tooSmall": "This value is too small.",
+                "window": "The end comes before the start."
+            },
+            "filter": {
+                "activeTitle": "Models kept",
+                "anyValue": "Either",
+                "arenaToolsNo": "Brings its own tools",
+                "arenaToolsYes": "Takes the arena's tools",
+                "clearAll": "Remove every criterion",
+                "everyModel": "Every model on offer. Add criteria below to narrow it down.",
+                "groups": {
+                    "labsTags": "Labs, tags and tools",
+                    "models": "Models",
+                    "openness": "Openness",
+                    "size": "Size"
+                },
+                "maybeArch": "Probably {arch}",
+                "more": "More criteria",
+                "moreSet": "More criteria ({count} set)",
+                "openWeightsOnly": "Open weights only",
+                "proprietaryOnly": "Proprietary only",
+                "rateLimitedNone": "None",
+                "rateLimitedOnly": "Only those",
+                "tagsAll": "Every tag",
+                "tagsAny": "At least one tag",
+                "tagsInUse": "In use: {tags}.",
+                "tagsNone": "No model has a tag yet."
+            },
+            "gallery": {
+                "blank": "Blank mode",
+                "blankHelp": "Two models drawn among all models, no restriction.",
+                "change": "Choose another starting point",
+                "intro": "Pick a starting point. Everything stays editable, and nothing is saved before you press Save.",
+                "startedBlank": "Started from a blank mode",
+                "startedFrom": "Started from: {template}",
+                "title": "Start from…"
+            },
+            "icons": {
+                "dice": "Dice",
+                "flash": "Flashlight",
+                "global": "Globe",
+                "government": "Public building",
+                "group": "Group",
+                "health": "Health",
+                "leaf": "Leaf",
+                "learning": "Learning",
+                "mapPin": "Map pin",
+                "openSource": "Open source",
+                "ruler": "Ruler",
+                "scales": "Scales",
+                "search": "Magnifying glass",
+                "shield": "Shield",
+                "sparkling": "Sparkles",
+                "stethoscope": "Stethoscope",
+                "trophy": "Trophy"
+            },
+            "identity": {
+                "intro": "How the mode appears in the arena's mode menu.",
+                "keyFrozen": "Stored on every comparison and published with the dataset, so it cannot change.",
+                "labelOtherHelp": "Leave empty to show the name in the main language.",
+                "title": "Identity"
+            },
+            "list": {
+                "actions": "Actions",
+                "add": "New mode",
+                "check": "To check",
+                "confirmDelete": "Delete",
+                "default": "Default",
+                "delete": "Delete {label}",
+                "deleted": "{label} deleted.",
+                "deleteTitle": "Delete {label}?",
+                "deleteWarning": "Visitors will no longer see this mode. Past comparisons keep its key, {key}, in the dataset.",
+                "deleting": "Deleting…",
+                "edit": "Edit {label}",
+                "enabled": "Offered",
+                "intro": "The arena offers these modes in this order. A mode that cannot draw two models is not offered to visitors.",
+                "mode": "Mode",
+                "moved": "{label} moved to position {position} of {total}.",
+                "moveDown": "Move {label} down",
+                "moveUp": "Move {label} up",
+                "nobodyCovered": "No mode switched on is open to everyone right now. Visitors outside these audiences get a plain random draw.",
+                "notViable": "Not offered to visitors",
+                "order": "Order",
+                "rule": "Rule",
+                "switch": "Offer {label} in the arena",
+                "switchedOff": "{label} is no longer offered.",
+                "switchedOn": "{label} is offered in the arena."
+            },
+            "multi": {
+                "clear": "Clear the selection",
+                "noMatch": "No match.",
+                "none": "Any",
+                "search": "Search in {label}",
+                "searchPlaceholder": "Search",
+                "selected": "{count} selected"
+            },
+            "pairing": {
+                "any": "Any two different models",
+                "anyHelp": "No rule between the two sides.",
+                "differentLab": "From different labs",
+                "differentLabHelp": "Never two models from the same lab.",
+                "differentSize": "Of different sizes",
+                "differentSizeHelp": "Never two models of the same size class.",
+                "sameLab": "From the same lab",
+                "sameLabHelp": "To compare the models of one lab with each other.",
+                "sameSize": "Of the same size",
+                "sameSizeHelp": "Only models of the same size class face each other."
+            },
+            "picks": {
+                "intro": "In a blind comparison, the visitor learns the names only after voting.",
+                "none": "Nobody: compar:IA draws both models",
+                "noneHelp": "A blind draw among the pools below.",
+                "one": "The visitor picks one model",
+                "oneHelp": "The visitor picks one model among the pools; compar:IA draws the other. If they pick none, both are drawn.",
+                "title": "Who chooses the models",
+                "two": "The visitor picks up to two models",
+                "twoHelp": "The visitor picks one or two models among the pools; compar:IA draws what is left."
+            },
+            "pool": {
+                "intro": "Both sides are drawn from these models. With no criterion, every model on offer can come up.",
+                "title": "Models drawn"
+            },
+            "poolA": {
+                "intro": "One side of each comparison is drawn from these models."
+            },
+            "poolB": {
+                "intro": "The other side is drawn from these models.",
+                "switch": "Side B draws from a different pool",
+                "switchHelp": "For one kind of model against another: small against big, one lab against the rest, a champion against challengers."
+            },
+            "preview": {
+                "draw": "Draw 5 examples",
+                "drawing": "Drawing…",
+                "drawsNoPicks": "Drawn as if the visitor picked nothing.",
+                "fromPoolA": "From pool A",
+                "fromPoolB": "From pool B",
+                "intro": "What the arena would draw with these settings, before you save. Refreshes as you edit.",
+                "invalid": "These settings contain a mistake",
+                "loading": "Computing the preview…",
+                "models": "{count} models",
+                "noModel": "No model matches.",
+                "notViable": "Visitors will not see this mode",
+                "oneModel": "1 model",
+                "onePair": "Only one possible pair",
+                "ownTools": "own tools",
+                "ownToolsHelp": "Brings its own tools: never gets the arena's.",
+                "pairs": "{count} possible pairs",
+                "title": "Preview",
+                "updating": "Updating…",
+                "versus": "against"
+            },
+            "publish": {
+                "intro": "A mode switched off is never offered, and requests that name it are refused.",
+                "isDefaultHelp": "Preselected when a visitor arrives. To change it, make another mode the default.",
+                "title": "Publication"
+            },
+            "sampling": {
+                "fewerVotes": "Models with few votes first",
+                "fewerVotesHelp": "Models with few votes come up more often, so their ranking settles sooner.",
+                "newest": "Recent models first",
+                "newestHelp": "The more recent the release, the more often a model comes up.",
+                "uniform": "Every model as often",
+                "uniformHelp": "The usual draw."
+            },
+            "subtitle": "Which models face each other in the arena, who picks them and which tools they get.",
+            "summary": {
+                "audience": "limited audience",
+                "differentLab": "different labs",
+                "differentSize": "different sizes",
+                "draw": "Draws 2 models among {count}",
+                "drawSplit": "Draws 1 model among {a} against 1 among {b}",
+                "fewerVotes": "favours models with few votes",
+                "forcedTools": "always with {tools}",
+                "newest": "favours recent models",
+                "noTools": "no tools",
+                "pickOne": "Visitor picks 1 model among {count}, the other is drawn",
+                "pickOneSplit": "Visitor picks 1 model, the other is drawn (pools of {a} and {b})",
+                "pickTwo": "Visitor picks up to 2 models among {count}",
+                "pickTwoSplit": "Visitor picks up to 2 models (pools of {a} and {b})",
+                "sameLab": "same lab",
+                "sameSize": "same size",
+                "someTools": "tools offered: {tools}"
+            },
+            "templates": {
+                "champion": {
+                    "description": "One fixed model against every other model. Pick the champion in pool A.",
+                    "title": "Champion against challengers"
+                },
+                "european": {
+                    "description": "Two models that can be hosted in the European Union.",
+                    "title": "Hostable in Europe"
+                },
+                "fixed-pair": {
+                    "description": "Always the same two models, for a workshop. Pick both in pool A.",
+                    "title": "Fixed pair"
+                },
+                "frugal": {
+                    "description": "Two models among those that use the least energy (classes A and B).",
+                    "title": "Frugal models"
+                },
+                "new-models-first": {
+                    "description": "Models with few votes come up more often, so the ranking settles sooner.",
+                    "title": "New models first"
+                },
+                "no-tools-expert": {
+                    "description": "Draws only the models tagged 'legal' (change the tag to yours) and gives them no tools, whatever the visitor asks.",
+                    "title": "Expert arena without tools"
+                },
+                "open-weights": {
+                    "description": "Two models whose weights are public.",
+                    "title": "Open weights only"
+                },
+                "small-vs-big": {
+                    "description": "One model of 100 billion parameters or more against one of 60 billion or less.",
+                    "title": "Small against big"
+                },
+                "specialised-vs-generalist": {
+                    "description": "A system with its own retrieval (tagged 'specialised', change the tag to yours) against a general model that gets web search. The system is never given the arena's tools.",
+                    "title": "Specialised system vs generalist with tools"
+                },
+                "speciality-set": {
+                    "description": "Both models from one tag, such as 'penal-law' (change it to yours), with no tools.",
+                    "title": "Speciality set"
+                },
+                "visitor-picks": {
+                    "description": "The visitor picks one or two models, but only among the models of pool A.",
+                    "title": "Visitor picks within a pool"
+                },
+                "web-search": {
+                    "description": "Both models always get web search. Limit its sites in the tool settings.",
+                    "title": "Always with web search"
+                }
+            },
+            "title": "Selection modes",
+            "tools": {
+                "forced": "Always on",
+                "forcedHelp": "The ticked tools are always on and the visitor cannot switch them off.",
+                "intro": "What the models can use while they answer, such as web search. The server enforces it, whatever the visitor's browser sends.",
+                "listForcedHelp": "Tick at least one tool.",
+                "listVisitorHelp": "Leave everything unticked to offer every tool. Tick some to offer only those.",
+                "none": "No tools",
+                "noneHelp": "The models answer with no tool at all.",
+                "noTools": "No tool is set up yet.",
+                "ownTools": "Never given the arena's tools: {names}. They bring their own, and the model they face keeps the arena's.",
+                "switchedOff": "{key}, switched off in the Tools page",
+                "title": "Tools",
+                "visitor": "The visitor",
+                "visitorHelp": "The visitor switches on the tools they want among those on offer."
+            },
+            "unknownItem": "Deleted item",
+            "warnings": {
+                "forcedToolsOff": "None of the mode's tools is on offer, so the mode is not offered. Switch one on in the Tools page.",
+                "noValidPair": "The models found cannot be paired under the pairing rule.",
+                "poolAEmpty": "No model matches pool A.",
+                "poolBEmpty": "No model matches pool B.",
+                "poolEmpty": "No model matches these criteria.",
+                "singlePair": "Only one pair is possible: every visitor will get the same two models.",
+                "toolNotOffered": "Some chosen tools are switched off or unreachable, so the models will not get them.",
+                "unknownLlms": "Some chosen models no longer exist or are switched off. They are left out.",
+                "unknownTools": "Some chosen tools no longer exist."
+            }
+        },
         "settings": {
             "authentification": {
                 "accessPolicy": {
@@ -915,11 +1231,15 @@
     },
     "arenaHome": {
         "compareModels": {
-            "count": "{count}/2 models",
+            "countMax": "{count}/{max} models",
             "help": "If you only choose one, the second will be selected randomly",
+            "helpOne": "Choose one model. The other will be selected randomly.",
             "noneSelected": "No model picked: you will compare two random models.",
+            "pickOne": "Choose a model",
+            "pickTwo": "Choose your models",
             "question": "Which models would you like to compare?",
-            "randomOnly": "Only available at random"
+            "randomOnly": "Only available at random",
+            "samePool": "Cannot face the model you picked in this mode"
         },
         "modelSelection": "Model selection",
         "prompt": {
@@ -927,6 +1247,11 @@
             "placeholder": "Write your first prompt here"
         },
         "selectModels": {
+            "fallback": {
+                "description": "Two models chosen randomly from the full list",
+                "label": "Random",
+                "shortLabel": "Random model selection"
+            },
             "help": "Choose the comparison mode",
             "question": "Which models would you like to compare?"
         },
@@ -941,6 +1266,7 @@
             "clear": "Clear all",
             "contract": "Select tools that allow models to access other sources of information beyond their own knowledge.",
             "count": "{count} tools",
+            "forced": "Always on in this mode",
             "label": "Tools",
             "legend": "Tools",
             "locked": "Tools are fixed for the whole conversation.",
@@ -962,6 +1288,7 @@
             "captcha_unavailable": "The anti-robot check is unavailable, please try again.",
             "comparison_streaming": "Please wait for the models to finish answering.",
             "max_turns_reached": "This conversation has reached its length limit. Please start a new one.",
+            "mode_unavailable": "This comparison mode is no longer available. The default mode is now selected.",
             "model_unavailable": "One of the models you chose can no longer be picked by hand. Reload the page to choose from the models available.",
             "prompt_check": {
                 "generic": "Your message could not be sent because it breaks our terms of use. Please rephrase it.",
@@ -1254,6 +1581,10 @@
         "missing_locales": "Missing translations",
         "preview": "Preview",
         "previewEmpty": "The preview will appear here.",
+        "tags": {
+            "placeholder": "Type, then press Enter",
+            "remove": "Remove {tag}"
+        },
         "toastError": "Invalid data",
         "toastSuccess": "Data saved",
         "unsavedChanges": "You have unsaved changes. Are you sure you want to leave the page?"
@@ -1385,6 +1716,10 @@
                 "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
                 "label": "Arch"
             },
+            "arena_tools": {
+                "help": "Turn off for a system that brings its own retrieval or tools behind its endpoint. It is then always called without tools, even when the comparison has some, while the model it faces keeps them.",
+                "label": "Gets the arena's tools"
+            },
             "context_tokens": {
                 "help": "Size of its context window in tokens.",
                 "label": "Context Tokens"
@@ -1485,6 +1820,10 @@
                 "help": "System message to add in llm call if specified",
                 "label": "System Prompt"
             },
+            "tags": {
+                "help": "Free labels such as 'legal' or 'sovereign'. Selection modes can draw only the models carrying some of them.",
+                "label": "Tags"
+            },
             "updated_at": {
                 "label": "Updated At"
             }
@@ -1547,6 +1886,174 @@
             "required": {
                 "help": "When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.",
                 "label": "Required check"
+            }
+        },
+        "selection_mode_upsert": {
+            "cohorts": {
+                "help": "Offered only to visitors who came with one of these cohorts in the address, as in ?c=pix.",
+                "label": "Cohorts"
+            },
+            "created_at": {
+                "label": "Created At"
+            },
+            "description": {
+                "help": "One line under the name, to say what the visitor will get.",
+                "label": "Description"
+            },
+            "enabled": {
+                "help": "The arena needs at least one mode switched on.",
+                "label": "Offered in the arena"
+            },
+            "ends_at": {
+                "help": "Offered until this time (UTC).",
+                "label": "Ends at"
+            },
+            "icon": {
+                "help": "One of the icons the admin picker offers.",
+                "label": "Icon"
+            },
+            "id": {
+                "label": "Id"
+            },
+            "is_default": {
+                "help": "Preselected when a visitor arrives. Only one mode is the default: this one replaces the current one.",
+                "label": "Default mode"
+            },
+            "key": {
+                "help": "Lowercase letters, digits and dashes. Stored on every comparison and published with the dataset: it cannot be changed once saved.",
+                "label": "Key"
+            },
+            "label": {
+                "help": "Required in the instance's main language. Shown in the arena's mode menu.",
+                "label": "Name"
+            },
+            "locales": {
+                "help": "Offered only when the arena is shown in one of these languages.",
+                "label": "Languages"
+            },
+            "ModelFilter": {
+                "archs": {
+                    "label": "Architectures"
+                },
+                "arena_tools": {
+                    "help": "Set per model in the LLM form. A system with its own retrieval or tools behind its endpoint never gets the arena's.",
+                    "label": "Arena's tools"
+                },
+                "energy_classes": {
+                    "help": "From A, the lowest estimated consumption, to F, the highest.",
+                    "label": "Energy classes"
+                },
+                "eu_hostable": {
+                    "label": "Can be hosted in the European Union"
+                },
+                "exclude_lab_ids": {
+                    "label": "Except these labs"
+                },
+                "exclude_llm_ids": {
+                    "label": "Except these models"
+                },
+                "exclude_tags": {
+                    "label": "Without these tags"
+                },
+                "inputs": {
+                    "help": "The model accepts every one of these.",
+                    "label": "Accepted inputs"
+                },
+                "lab_ids": {
+                    "label": "Only these labs"
+                },
+                "license_ids": {
+                    "label": "Only these licences"
+                },
+                "llm_ids": {
+                    "help": "Leave empty to keep every model that meets the other criteria.",
+                    "label": "Only these models"
+                },
+                "params_max": {
+                    "help": "In billions.",
+                    "label": "Maximum parameters"
+                },
+                "params_min": {
+                    "help": "In billions.",
+                    "label": "Minimum parameters"
+                },
+                "price_out_max": {
+                    "help": "In US dollars per million output tokens.",
+                    "label": "Maximum output price"
+                },
+                "public_weights": {
+                    "help": "Yes: open weights only. No: proprietary only.",
+                    "label": "Weights"
+                },
+                "rate_limited": {
+                    "help": "Rate limited models are the expensive ones, with a usage cap per visitor.",
+                    "label": "Rate limited models"
+                },
+                "released_after": {
+                    "label": "Released on or after"
+                },
+                "released_before": {
+                    "label": "Released on or before"
+                },
+                "released_within_days": {
+                    "help": "For example 90 for the last three months.",
+                    "label": "Released in the last (days)"
+                },
+                "size_classes": {
+                    "help": "In billions of parameters.",
+                    "label": "Size classes"
+                },
+                "tags": {
+                    "help": "Tags set on the models in the LLM form.",
+                    "label": "With these tags"
+                },
+                "tags_match": {
+                    "help": "any: at least one of the tags; all: every tag.",
+                    "label": "Models must carry"
+                },
+                "top_ranked": {
+                    "help": "Only the N first models of the ranking. Models not ranked yet never match.",
+                    "label": "Among the best ranked"
+                }
+            },
+            "pairing": {
+                "label": "The two models"
+            },
+            "pool_a": {
+                "help": "Models side A is drawn from.",
+                "label": "Pool A"
+            },
+            "pool_b": {
+                "help": "Models side B is drawn from. Leave empty to draw both sides from pool A.",
+                "label": "Pool B"
+            },
+            "position": {
+                "help": "Order in the mode menu, smallest first.",
+                "label": "Position"
+            },
+            "sampling": {
+                "label": "Which models come up most"
+            },
+            "short_label": {
+                "help": "Shown on the closed menu button. Leave empty to reuse the name.",
+                "label": "Short name"
+            },
+            "starts_at": {
+                "help": "Offered from this time on (UTC).",
+                "label": "Starts at"
+            },
+            "tool_keys": {
+                "help": "With 'forced', the tools always on. With 'visitor', the only tools offered; leave empty to offer every tool.",
+                "label": "Tools of the mode"
+            },
+            "tools_policy": {
+                "label": "Who decides"
+            },
+            "updated_at": {
+                "label": "Updated At"
+            },
+            "visitor_picks": {
+                "label": "Models the visitor picks"
             }
         },
         "tool_upsert": {
@@ -1877,38 +2384,6 @@
         },
         "technical": {
             "title": "Technical characteristics"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David vs Goliath model selection",
-            "description": "One small model against one big model, both chosen randomly",
-            "label": "David vs Goliath",
-            "title": "David vs Goliath mode"
-        },
-        "custom": {
-            "altLabel": "Manual model selection",
-            "description": "Will you recognize the two models you chose?",
-            "label": "Manual selection",
-            "title": "Manual selection mode"
-        },
-        "random": {
-            "altLabel": "Random model selection",
-            "description": "Two models chosen randomly from the full list",
-            "label": "Random",
-            "title": "Random mode"
-        },
-        "reasoning": {
-            "altLabel": "Reasoning model selection",
-            "description": "Two reasoning models chosen randomly",
-            "label": "Reasoning",
-            "title": "Reasoning mode"
-        },
-        "small-models": {
-            "altLabel": "Frugal model selection",
-            "description": "Two small models chosen randomly",
-            "label": "Frugal",
-            "title": "Frugal mode"
         }
     },
     "ranking": {

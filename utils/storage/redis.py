@@ -1,7 +1,7 @@
 import hashlib
 import logging
 from functools import lru_cache, wraps
-from typing import Callable, Final, ParamSpec, TypeVar
+from typing import Awaitable, Callable, Final, ParamSpec, TypeVar
 from uuid import uuid4
 
 import redis
@@ -73,6 +73,7 @@ REDIS_MCP_SCHEMAS_KEY: Final[str] = (
 REDIS_TOOL_HEALTH_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}tool_health:{{tool_id}}"
 REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
+REDIS_SELECTION_MODES_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}selection_modes"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"
 REDIS_SUGGESTIONS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}suggestions"
 REDIS_VOTE_TAGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}vote_tags"
@@ -158,7 +159,9 @@ def maintenance_key_for_instance(instance: str) -> str:
     return f"{instance}:maintenance_mode"
 
 
-def redis_cache(redis_key: str, maxsize: int = 1) -> Callable[P, RT]:
+def redis_cache(
+    redis_key: str, maxsize: int = 1
+) -> Callable[[Callable[P, Awaitable[RT]]], Callable[P, Awaitable[RT]]]:
     """
     Decorator to cache a function's result based on a key stored in redis.
     Used for caching data from database for example with a multiple instances
@@ -166,7 +169,7 @@ def redis_cache(redis_key: str, maxsize: int = 1) -> Callable[P, RT]:
     Use `invalidate_cache(redis_key)` to reset cache of all instances.
     """
 
-    def decorator(func: Callable[P, RT]) -> Callable[P, RT]:
+    def decorator(func: Callable[P, Awaitable[RT]]) -> Callable[P, Awaitable[RT]]:
         @alru_cache(maxsize=maxsize)
         async def cached(
             cache_key: str | None, *args: P.args, **kwargs: P.kwargs

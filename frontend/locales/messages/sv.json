@@ -33,7 +33,6 @@
             "none": "Inget verktyg"
         },
         "compareModels": {
-            "count": "{count}/2 modeller",
             "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
             "question": "Vilka modeller vill du jämföra?"
         },
@@ -274,38 +273,6 @@
             },
             "estimated": "Uppskattad storlek ({size})",
             "title": "Storlek {size}"
-        }
-    },
-    "modes": {
-        "big-vs-small": {
-            "altLabel": "David mot Goliat",
-            "description": "En liten modell mot en stor, båda valda slumpmässigt",
-            "label": "David mot Goliat",
-            "title": "David mot Goliat-läget"
-        },
-        "custom": {
-            "altLabel": "Manuellt val",
-            "description": "Kommer du att känna igen de två modellerna du valde?",
-            "label": "Manuellt val",
-            "title": "Manuellt val"
-        },
-        "random": {
-            "altLabel": "Slumpmässigt val av modeller",
-            "description": "Två modeller utvalda slumpmässigt från hela listan",
-            "label": "Slump",
-            "title": "Slumpläge"
-        },
-        "reasoning": {
-            "altLabel": "Resonemangsmodeller",
-            "description": "Två modeller, optimerade för komplexa uppgifter, slumpmässigt utvalda",
-            "label": "Resonemang",
-            "title": "Resonemangsläge"
-        },
-        "small-models": {
-            "altLabel": "Sparsamma modeller",
-            "description": "Två slumpmässigt valda modeller, ur kategorin små modeller",
-            "label": "Sparsam",
-            "title": "Sparsamt läge"
         }
     },
     "ranking": {

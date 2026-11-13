@@ -1,5 +1,5 @@
 import type { ApiError } from '$lib/fastapi-client'
-import type { ActivityConversation, ActivityTurn } from '$lib/generated/admin'
+import type { ActivityConversation, ActivityMode, ActivityTurn } from '$lib/generated/admin'
 import { m } from '$lib/i18n/messages'
 
 /** Filters every tab reads, carried from one tab to the next. */
@@ -25,11 +25,23 @@ export const CONVERSATION_FILTERS = [
 ] as const
 
 export const PERIODS = ['24h', '7d', '30d', '90d', '365d', 'all'] as const
-export const MODES = ['random', 'big-vs-small', 'small-models', 'custom'] as const
 export const CHOICES = ['a_better', 'b_better', 'both_good', 'both_bad', 'idk'] as const
 export const FLAGS = ['pii', 'spam', 'error', 'archived', 'not_analyzed'] as const
 /** The `flag` that lists the messages the prompt check stopped instead. */
 export const STOPPED = 'stopped'
+
+/**
+ * The modes to count: the instance's modes first, in their menu order, then
+ * any key the counted comparisons still carry from a deleted mode.
+ */
+export function modeKeys(known: ActivityMode[], counted: Record<string, number>): string[] {
+  return [...new Set([...known.map((mode) => mode.key), ...Object.keys(counted)])]
+}
+
+/** A mode's name in the admin's language, or its key once the mode is gone. */
+export function modeLabel(known: ActivityMode[], key: string): string {
+  return known.find((mode) => mode.key === key)?.label ?? key
+}
 
 export function pick(params: URLSearchParams, keys: readonly string[]): URLSearchParams {
   const picked = new URLSearchParams()

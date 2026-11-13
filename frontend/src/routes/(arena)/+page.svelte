@@ -4,6 +4,7 @@
   import { fetchAndSolveSilently } from '$lib/captcha.svelte'
   import { getComparison, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getSelectionModesContext } from '$lib/selectionModes.svelte'
   import type { PageProps } from './$types'
   import { shouldShowInitialPrompt } from './arenaPageState'
   import { ErrorDisplay, PromptWarningModal, TOSModal, ViewChat, ViewPrompt } from './components'
@@ -32,9 +33,17 @@
   // initialization dies before the first turn is shown.
   let lastPromptArgs = $state<APIModeAndPromptData>()
 
+  const selectionModes = getSelectionModesContext()
+
   async function submitInitialPrompt(args: APIModeAndPromptData): Promise<void> {
     lastPromptArgs = args
     await runAfterAcceptance(() => comparator.askFirst(args))
+    // An admin changed or switched off the mode while this tab was open: the
+    // error says so, and the menu moves to what is on offer now.
+    if (comparator.promptErrorKey === 'mode_unavailable') {
+      await selectionModes.refresh()
+      selectionModes.selectDefault()
+    }
   }
 </script>
 

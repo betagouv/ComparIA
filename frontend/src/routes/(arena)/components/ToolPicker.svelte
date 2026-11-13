@@ -11,14 +11,25 @@
   export type ToolPickerProps = {
     tools: ToolPublic[]
     selected: string[]
+    /** The mode turns these tools on itself: shown, not offered. */
+    locked?: boolean
     disabled?: boolean
   }
 
-  let { tools, selected = $bindable(), disabled = false }: ToolPickerProps = $props()
+  let {
+    tools,
+    selected = $bindable(),
+    locked = false,
+    disabled = false
+  }: ToolPickerProps = $props()
 
   const modalId = 'fr-modal-tools'
 
-  let form = $state(resetForm())
+  // Starts over when another mode offers other tools, or picked them already.
+  let form = $derived.by(() => {
+    const toggles = $state(resetForm())
+    return toggles
+  })
   let applied = $state(false)
 
   function resetForm() {
@@ -29,11 +40,9 @@
     selected = getKeys(form).filter((k) => form[k]) as string[]
     applied = true
     close?.()
-    console.log('aply sel', selected)
   }
 
   function onClose() {
-    console.log('close', applied)
     if (!applied) {
       form = resetForm()
     }
@@ -55,7 +64,17 @@
   </FormToggle>
 {/snippet}
 
-{#if tools.length > 0}
+{#if locked && tools.length > 0}
+  <div
+    class="cg-border rounded-lg px-3 py-2 text-sm gap-2 md:w-auto bg-white flex w-full items-center border-dashed!"
+  >
+    <Icon icon="i-ri-lock-line" size="sm" class="text-primary" />
+    <span>
+      <strong>{tools.map((tool) => tool.label).join(', ')}</strong>
+      <span class="text-[--text-mention-grey]">· {m['arenaHome.tools.forced']()}</span>
+    </span>
+  </div>
+{:else if tools.length > 0}
   <Dropdown
     id="dropdown-tools"
     label={m['arenaHome.tools.label']()}
