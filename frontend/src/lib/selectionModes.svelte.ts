@@ -55,11 +55,23 @@ export function pickCurrentMode(modes: SelectionMode[], storedKey: string): Sele
   )
 }
 
-/** The models a mode still lets the visitor keep, trimmed to its pick limit. */
+/**
+ * The models a mode still lets the visitor keep, trimmed to its pick limit.
+ * A mode with two pools keeps a second pick only from the other pool.
+ */
 export function keepPickable(selection: string[], mode: SelectionMode): string[] {
   if (!mode.visitor_picks || !mode.llm_ids) return []
   const pool = mode.llm_ids
-  return selection.filter((id) => pool.includes(id)).slice(0, mode.visitor_picks)
+  const [first, second] = selection.filter((id) => pool.includes(id)).slice(0, mode.visitor_picks)
+  if (first === undefined) return []
+  if (second === undefined) return [first]
+  const { llm_ids_a: a, llm_ids_b: b } = mode
+  const facing =
+    !a ||
+    !b ||
+    (a.includes(first) && b.includes(second)) ||
+    (b.includes(first) && a.includes(second))
+  return facing ? [first, second] : [first]
 }
 
 /** The tools a mode lets the visitor keep. A forced mode decides on its own. */

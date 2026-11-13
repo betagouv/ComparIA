@@ -47,6 +47,17 @@ describe('keepPickable', () => {
     expect(keepPickable(['c', 'b', 'a'], pool)).toEqual(['b'])
   })
 
+  it('keeps a second pick only from the other pool', () => {
+    const split = mode('split', {
+      visitor_picks: 2,
+      llm_ids: ['a1', 'a2', 'b1'],
+      llm_ids_a: ['a1', 'a2'],
+      llm_ids_b: ['b1']
+    })
+    expect(keepPickable(['a1', 'a2'], split)).toEqual(['a1'])
+    expect(keepPickable(['b1', 'a2'], split)).toEqual(['b1', 'a2'])
+  })
+
   it('keeps nothing in a blind mode', () => {
     expect(keepPickable(['a'], mode('blind'))).toEqual([])
   })
