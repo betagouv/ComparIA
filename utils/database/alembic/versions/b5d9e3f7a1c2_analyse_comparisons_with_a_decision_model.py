@@ -8,7 +8,7 @@ or published until an admin picks one. Comparisons keep every score in
 analysis_scores.
 
 Revision ID: b5d9e3f7a1c2
-Revises: ec3f6414fa8b
+Revises: b6d1e8f3a2c5
 Create Date: 2026-10-28 00:00:00.000000
 
 """
@@ -23,7 +23,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "b5d9e3f7a1c2"
-down_revision: Union[str, Sequence[str], None] = "ec3f6414fa8b"
+down_revision: Union[str, Sequence[str], None] = "b6d1e8f3a2c5"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
