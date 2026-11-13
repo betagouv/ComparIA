@@ -109,6 +109,7 @@ jobs:
 
     env:
       INSTANCE_PATH: /fr
+      COMPARIA_INSTANCE_NAME: fr
       COMPARIA_DB_URI: postgresql://comparia:comparia@localhost:5432/comparia
       COMPARIA_REDIS_HOST: localhost
       COMPARIA_APP_URL: http://localhost:8080/fr
@@ -180,5 +181,5 @@ jobs:
       - name: Show the logs
         if: failure()
         run: |
-          for f in backend frontend; do echo "::group::$f"; cat "$RUNNER_TEMP/$f.log"; echo "::endgroup::"; done
-          docker logs proxy
+          for f in backend frontend; do echo "::group::$f"; cat "$RUNNER_TEMP/$f.log" || true; echo "::endgroup::"; done
+          docker logs proxy || true
