@@ -319,8 +319,6 @@ export interface AppSettingsPatch {
   homepage_url?: string | null;
   enabled_locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[] | null;
   default_locale?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv") | null;
-  analysis_endpoint_id?: string | null;
-  analysis_model?: string | null;
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
@@ -346,8 +344,6 @@ export interface AppSettingsPublic {
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
-  analysis_endpoint_id: string | null;
-  analysis_model: string | null;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   publish_hour: number;
   publish_timezone: string;
@@ -376,6 +372,83 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface DatasetCheckPublic {
+  /**
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
+   */
+  model?: string;
+  has_api_key: boolean;
+  /**
+   * The model reads it with every conversation. Say what the instance is and what is published.
+   */
+  description: string;
+  criteria: DatasetCheckCriterion[];
+  category_threshold: number;
+  language_threshold: number;
+  no_api_key?: boolean;
+  no_model?: boolean;
+  updated_at: string;
+  updated_by?: string | null;
+}
+export interface DatasetCheckCriterion {
+  /**
+   * Stored scores are filed by key: do not change it once the criterion is in use.
+   */
+  key: string;
+  label: string;
+  /**
+   * A closed question about the conversation (the `message`), answered yes or no.
+   */
+  question: string;
+  yes?: string;
+  no?: string;
+  threshold: number;
+  /**
+   * Personal data or spam: the published flag and the archiving reason.
+   */
+  reason?: "pii" | "spam";
+  [k: string]: unknown;
+}
+export interface DatasetCheckTryResult {
+  published: boolean;
+  excluded_by: string[];
+  categories: string[];
+  languages: string[];
+  scores: {
+    [k: string]: number;
+  };
+  latency_ms: number;
+  message?: string | null;
+  error?: string | null;
+}
+export interface DatasetCheckUpsert {
+  /**
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
+   */
+  model?: string;
+  /**
+   * Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.
+   */
+  api_key?: string | null;
+  /**
+   * The model reads it with every conversation. Say what the instance is and what is published.
+   */
+  description?: string;
+  /**
+   * A conversation that reaches the threshold of a criterion is not published.
+   *
+   * @maxItems 32
+   */
+  criteria?: DatasetCheckCriterion[];
+  /**
+   * A topic is given from this score. None reached: "Other".
+   */
+  category_threshold?: number;
+  /**
+   * A language is given from this score.
+   */
+  language_threshold?: number;
 }
 export interface InformationalLegalPage {
   mode?: "internal" | "external";
