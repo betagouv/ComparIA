@@ -268,18 +268,18 @@ async def get_filter_options(
     locales = await get_locales_settings()
 
     labels: dict[str, str] = {}
-    for key, label in mode_rows:
+    for mode_key, label in mode_rows:
         try:
-            labels[key] = pick_translation(
+            labels[mode_key] = pick_translation(
                 cast(TranslatableRaw[str], label), locale, locales
             )[1]
         except ValueError:
-            labels[key] = key
+            labels[mode_key] = mode_key
     options = ActivityFilterOptions(
         llms=sorted(llms.values(), key=lambda llm: llm.name.lower()),
         modes=[
-            ActivityMode(key=key, label=labels.get(key, key))
-            for key in dict.fromkeys([*labels, *stored_modes])
+            ActivityMode(key=mode_key, label=labels.get(mode_key, mode_key))
+            for mode_key in dict.fromkeys([*labels, *stored_modes])
         ],
         cohorts=[cohort for cohort in cohorts if cohort],
         categories=[category.value for category in AnalyzeConfig.TXT360Category],

@@ -435,6 +435,31 @@ def test_the_filter_options_list_models_and_cohorts(activity, monkeypatch):
     ]
 
 
+def test_the_filter_options_are_cached_under_their_own_key(activity, monkeypatch):
+    async def get_locales_settings():
+        return LocalesSettings(default="en", enabled=["en", "fr"])
+
+    written: list[str] = []
+    monkeypatch.setattr(services, "get_locales_settings", get_locales_settings)
+    monkeypatch.setattr(
+        services, "_write_cache", lambda key, value: written.append(key)
+    )
+
+    async def scenario():
+        async with session_module.get_session() as session:
+            session.add(
+                SelectionMode(
+                    key="custom", label={"en": "Custom"}, icon="i-ri-dice-line"
+                )
+            )
+            await session.commit()
+        return await services.get_filter_options("fr")
+
+    activity(scenario)
+
+    assert written == [services._cache_key("filters-fr")]
+
+
 def test_a_bad_cursor_is_refused():
     with pytest.raises(services.InvalidCursorError):
         services.decode_cursor("not-a-cursor")
