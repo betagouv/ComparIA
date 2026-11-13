@@ -31,9 +31,10 @@ export const load: LayoutLoad = async ({ data, fetch, url, untrack }) => {
     })
   ])
 
+  const toolKeys = tools.map((tool) => tool.key)
   const selectionModes: LoadedSelectionModes = modes.length
-    ? { modes, cohorts, fallback: false }
-    : { modes: fallbackModes(tools.map((tool) => tool.key)), cohorts, fallback: true }
+    ? { modes, cohorts, toolKeys, fallback: false }
+    : { modes: fallbackModes(toolKeys), cohorts, toolKeys, fallback: true }
 
   return { ...data, comparisons, tools, selectionModes }
 }

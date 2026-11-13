@@ -12,7 +12,9 @@ export type SelectionMode = SelectionModePublic
 export interface LoadedSelectionModes {
   modes: SelectionMode[]
   cohorts: string
-  /** The request failed and `modes` holds the built-in entry. */
+  /** The arena's tools, offered by the built-in entry. */
+  toolKeys: string[]
+  /** No mode is on offer and `modes` holds the built-in entry. */
   fallback: boolean
 }
 
@@ -110,9 +112,9 @@ export function initSelectionModesContext(loaded: LoadedSelectionModes): Selecti
   async function refresh() {
     try {
       const fetched = await fetchSelectionModes(fetch, storedCohorts())
-      if (!fetched.length) return
-      modes = fetched
-      fallback = false
+      // No mode is on offer any more: the backend then makes a plain draw.
+      fallback = !fetched.length
+      modes = fallback ? fallbackModes(loaded.toolKeys) : fetched
     } catch (error) {
       // Keep the menu the visitor already has.
       console.error(`Unable to refresh selection modes: ${(error as Error).message}`)
