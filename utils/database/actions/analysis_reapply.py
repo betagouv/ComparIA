@@ -6,6 +6,7 @@ from sqlmodel import col, select
 from utils.database.actions.llm_analyze import SCORED, update_from_scores
 from utils.database.dataset_checks import get_dataset_check
 from utils.database.models import Comparison
+from utils.database.models.dataset_check import DatasetCheckCriterion
 from utils.database.session import get_session
 
 logger = logging.getLogger("comparia.db")
@@ -21,12 +22,16 @@ async def analysis_reapply(*, commit: bool = False) -> None:
     'commit' to write it.
 
     A criterion added after a row was scored has no score on it and never
-    reaches its threshold there: only the model can apply a new rule.
+    reaches its threshold there: only the model can apply a new rule. For the
+    same reason a row held for a reason whose criteria were renamed, removed or
+    never scored on it is left alone, so reapplying never releases what the
+    stored scores cannot vouch for.
     """
     check = await get_dataset_check()
     criteria = check.typed_criteria
     changes: Counter[str] = Counter()
     unscored: Counter[str] = Counter()
+    left_alone: Counter[str] = Counter()
     last_id = None
     while True:
         async with get_session() as session:
@@ -49,6 +54,11 @@ async def analysis_reapply(*, commit: bool = False) -> None:
                 for c in criteria:
                     if c.key not in scores:
                         unscored[c.key] += 1
+                cannot_vouch = unjudged_holds(row, criteria, scores)
+                if cannot_vouch:
+                    for reason in cannot_vouch:
+                        left_alone[reason] += 1
+                    continue
                 new = update_from_scores(
                     scores,
                     stored.get("model", ""),
@@ -71,12 +81,38 @@ async def analysis_reapply(*, commit: bool = False) -> None:
         f"- {changes['categories']} with other topics",
         f"- {changes['languages']} with other languages",
     ]
+    for reason, count in left_alone.items():
+        lines.append(
+            f"{count} comparisons held for '{reason}' left alone: the stored "
+            "scores do not cover every criterion with that reason."
+        )
     for key, count in unscored.items():
         lines.append(
             f"Criterion '{key}' has no score on {count} comparisons: only the "
             "model can apply it there."
         )
     logger.warning("\n".join(lines))
+
+
+def unjudged_holds(
+    row: Comparison, criteria: list[DatasetCheckCriterion], scores: dict[str, float]
+) -> list[str]:
+    """The reasons a row is held for that the stored scores cannot re-judge:
+    no criterion has that reason any more, or one of them has no score on the
+    row. Releasing on a missing score would fail open."""
+    held = set()
+    if row.contains_pii:
+        held.add("pii")
+    if row.contains_spam:
+        held.add("spam")
+    if row.archived and row.archived_reason in ("pii", "spam"):
+        held.add(row.archived_reason)
+    unjudged = []
+    for reason in sorted(held):
+        of_reason = [c for c in criteria if c.reason == reason]
+        if not of_reason or any(c.key not in scores for c in of_reason):
+            unjudged.append(reason)
+    return unjudged
 
 
 def _apply(row: Comparison, new, changes: Counter) -> bool:
