@@ -519,15 +519,6 @@
             "regionLabel": "Region",
             "repoPathHelp": "I formatet organisation/arkiv. Rådatasættet sendes til det samme navn efterfulgt af -raw.",
             "repoPathLabel": "Arkiv",
-            "reviewerEndpointLabel": "Slutpunkt",
-            "reviewerEndpointNone": "Intet slutpunkt",
-            "reviewerHelp": "Denne model analyserer samtaler før offentliggørelse for at opdage personlige data og spam.",
-            "reviewerIncomplete": "Vælg et slutpunkt og angiv en model, eller lad begge felter stå tomme.",
-            "reviewerModelHelp": "Modellen, som slutpunktet forventer.",
-            "reviewerModelLabel": "Model",
-            "reviewerSave": "Gem analysemodellen",
-            "reviewerSuccess": "Analysemodel gemt",
-            "reviewerTitle": "Analysemodel",
             "runCounts": "Offentliggjorte samtaler: {published} · sat til side: {heldBack}.",
             "runCountsUnknown": "Denne kørsel genopbyggede ikke det åbne datasæt.",
             "runFailed": "Mislykkedes den {date}",
@@ -541,10 +532,47 @@
             "secureLabel": "Forbindelse via HTTPS",
             "subtitle": "Konfigurer destinationer og deres frekvens. Historikken samler alle publikationer.",
             "timezoneLabel": "Tidszone",
+            "voterIds": {
+                "title": "Vælger-id'er i det rå datasæt",
+                "help": "Tilføjer et pseudonymt id pr. vælger til det rå datasæt: det samme for alle sammenligninger fra en konto eller en anonym session. Det gør det muligt at samle én persons samtaler, for eksempel for at udelade nogen, der gentager den samme prompt. Det åbne datasæt indeholder det aldrig. Id'et kan ikke føres tilbage til kontoen eller sessionen og forsvinder, når kontoen slettes, eller når opbevaringsperioden udløber.",
+                "label": "Udgiv vælger-id'er i det rå datasæt",
+                "warning": "Alle, der modtager det rå datasæt, vil kunne forbinde én persons samtaler med hinanden. Kontrollér, at vilkårene dækker det. Et Hugging Face-repository, der modtager det rå datasæt, skal være privat eller lukket med manuel godkendelse, ellers mislykkes upload.",
+                "save": "Gem",
+                "success": "Indstillingen er gemt. Den gælder fra næste udgivelse."
+            },
             "title": "Datasætpublicering",
             "tokenHelp": "Et skrivebeskyttet token (read-only) består læsetjekket, men fejler ved første offentliggørelse.",
             "tokenKeep": "Lad feltet stå tomt for at beholde det gemte token.",
-            "tokenLabel": "Skrive-token"
+            "tokenLabel": "Skrive-token",
+            "datasetCheck": {
+                "title": "Analyse før offentliggørelse",
+                "help": "Før hver offentliggørelse læser beslutningsmodellen hver samtale, spørgsmål og svar medregnet. Den siger, om den indeholder personoplysninger eller spam, og angiver dens emner og sprog.",
+                "formTitle": "Indstillinger for analysen",
+                "noModel": "Ingen beslutningsmodel",
+                "noModelHint": "Intet analyseres, så ingen nye samtaler offentliggøres. Vælg en model nedenfor.",
+                "noKey": "Ingen OpenRouter-nøgle",
+                "noKeyHint": "Hverken her, på beskedtjekket eller i OPENROUTER_API_KEY: analysen kan ikke køre.",
+                "criteriaEmpty": "Ingen kriterier: kun emner og sprog analyseres.",
+                "reasons": {
+                    "pii": "Personoplysninger",
+                    "spam": "Spam"
+                },
+                "try": {
+                    "title": "Test en samtale",
+                    "label": "Samtale",
+                    "hint": "Indsæt den, som den er. Intet gemmes, og de ikke-gemte indstillinger ovenfor bruges.",
+                    "run": "Analysér",
+                    "empty": "Indsæt en samtale, der skal analyseres.",
+                    "published": "Ville blive offentliggjort",
+                    "excluded": "Ville ikke blive offentliggjort",
+                    "reached": "Tærskel nået",
+                    "notReached": "Under tærsklen",
+                    "categories": "Emner:",
+                    "languages": "Sprog:",
+                    "none": "ingen",
+                    "allScores": "Alle scorer"
+                }
+            }
         },
         "settings": {
             "authentification": {
@@ -598,7 +626,9 @@
                     "minVotes": "Minimum antal stemmer",
                     "minVotesHelp": "En model rangeres først, når den har dette antal stemmer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
                     "maxRankSpread": "Maksimal rangspredning",
-                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer."
+                    "maxRankSpreadHelp": "En model vises kun, hvis dens placering højst kan flytte sig dette antal pladser op eller ned. En højere værdi viser flere modeller, med mindre sikre placeringer. Træder i kraft ved næste opdatering af ranglisten, inden for en time.",
+                    "greyRankSpread": "Rangspredning før gråtoning",
+                    "greyRankSpreadHelp": "En vist model gråtones, hvis dens placering kan flytte sig mere end dette antal pladser op eller ned. Sæt værdien til den maksimale rangspredning eller højere for ikke at gråtone nogen."
                 },
                 "votesObjective": "Stemmemål"
             },
@@ -1393,6 +1423,58 @@
                 "help": "Samme grænse for ét modelpar. 0 slår den fra, tom går tilbage til instansens standard.",
                 "label": "Samtaler pr. IP pr. time med de samme modeller"
             }
+        },
+        "dataset_check_upsert": {
+            "api_key": {
+                "help": "Tom bruger analysen beskedtjekkets nøgle og derefter OPENROUTER_API_KEY.",
+                "label": "OpenRouter API-nøgle"
+            },
+            "category_threshold": {
+                "help": "Et emne tildeles fra denne score. Ingen nået: « Other ».",
+                "label": "Tærskel for emner"
+            },
+            "criteria": {
+                "help": "En samtale, der når et kriteriums tærskel, offentliggøres ikke.",
+                "label": "Udelukkelseskriterier"
+            },
+            "DatasetCheckCriterion": {
+                "key": {
+                    "help": "De gemte scorer arkiveres efter nøgle: skift den ikke, når kriteriet er i brug.",
+                    "label": "Nøgle"
+                },
+                "label": {
+                    "label": "Navn"
+                },
+                "no": {
+                    "label": "Tæller som nej"
+                },
+                "question": {
+                    "help": "Et lukket spørgsmål om samtalen (`message`), der besvares med ja eller nej.",
+                    "label": "Spørgsmål til modellen"
+                },
+                "reason": {
+                    "help": "Personoplysninger eller spam: det offentliggjorte flag og arkiveringsgrunden.",
+                    "label": "Grund"
+                },
+                "threshold": {
+                    "label": "Tærskel"
+                },
+                "yes": {
+                    "label": "Tæller som ja"
+                }
+            },
+            "description": {
+                "help": "Modellen læser den med hver samtale. Sig, hvad instansen er, og hvad der offentliggøres.",
+                "label": "Beskrivelse af instansen"
+            },
+            "language_threshold": {
+                "help": "Et sprog tildeles fra denne score.",
+                "label": "Tærskel for sprog"
+            },
+            "model": {
+                "help": "En beslutningsmodel fra OpenRouter. Tom analyseres og offentliggøres ingen samtaler.",
+                "label": "Beslutningsmodel"
+            }
         }
     },
     "header": {
@@ -1949,6 +2031,7 @@
                 "cols": {
                     "arch": "Arkitektur",
                     "consumption": "Gns. forbrug<br>(1.000 tokens)",
+                    "energy_class": "Energi",
                     "elo": "BT<br>tilfredshedsscore",
                     "license": "Licens",
                     "n_match": "Samlet antal stemmer",
@@ -1963,9 +2046,11 @@
                     "trust_range": "Konfidens (±)"
                 },
                 "estimation": "(estimering)",
+                "rankRange": "Kan placere sig mellem {best} og {worst}",
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
                     "consumption": "Målt i watttimer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Modellernes energiforbrug afhænger af deres størrelse og arkitektur. Vi vælger at vise de proprietære modeller, som vi ikke har gennemsigtige oplysninger om størrelse og arkitektur for, som ikke-analyseret (N/A).",
+                    "energy_class": "Energimærke fra A (mest effektiv) til F (mindst effektiv), baseret på den strøm, modellen bruger til at svare. De præcise tal findes under fanen Energifokus og i download. Proprietære modeller uden offentlig størrelse og arkitektur vises som N/A.",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
                     "price": "Vejledende pris for brug via en API, pr. million tokens, omregnet til den viste valuta. Input er den forespørgsel, der sendes, output er det svar, der genereres.",
                     "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
@@ -1979,7 +2064,8 @@
                 "label": "Vis placeringer"
             },
             "totalModels": "Total antal modeller:",
-            "totalVotes": "Total antal stemmer:"
+            "totalVotes": "Total antal stemmer:",
+            "uncertain": "Gråtonet: modeller, hvis placering stadig kan flytte sig mere end {count} pladser."
         },
         "title": "Fra stemmer til en rangering af modeller",
         "views": {

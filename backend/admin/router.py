@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel, Field
 
 from backend.admin.activity import router as admin_activity_router
+from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
@@ -83,7 +84,6 @@ from utils.database.models.auth import (
     UserPublic,
     UserUpsert,
 )
-from utils.database.models.llms import LLMEndpoint
 from utils.database.models.prompt_check import (
     Criteria,
     Description,
@@ -103,6 +103,7 @@ from utils.database.prompt_checks import (
 )
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
 from utils.validation import Translatable
@@ -119,6 +120,7 @@ router.include_router(admin_suggestions_router)
 router.include_router(admin_survey_router)
 router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
+router.include_router(admin_dataset_check_router)
 
 
 class UsersPage(BaseModel):
@@ -131,14 +133,14 @@ class UsersPage(BaseModel):
 class InviteBody(BaseModel):
     email: NormalizedEmail
     # The inviting admin's language: the best guess we have for the invitee's.
-    locale: str | None = Field(default=None, min_length=2, max_length=16)
+    locale: SupportedLocale | None = None
 
 
 class AdminLegalDocument(BaseModel):
     id: uuid.UUID
     kind: LegalDocumentKind
     version: str
-    content: dict[str, str]
+    content: TranslatableRaw[str]
     content_hash: str
     published_at: UtcTimestamp
     effective_at: UtcTimestamp
@@ -440,17 +442,17 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         ranking_min_votes=row.ranking_min_votes,
         ranking_max_rank_spread=row.ranking_max_rank_spread,
         survey_reask_after_days=row.survey_reask_after_days,
+        ranking_grey_rank_spread=row.ranking_grey_rank_spread,
         platform_name=row.platform_name,
         primary_color_light=row.primary_color_light,
         primary_color_dark=row.primary_color_dark,
         secondary_color_light=row.secondary_color_light,
         secondary_color_dark=row.secondary_color_dark,
         homepage_url=row.homepage_url,
-        analysis_endpoint_id=row.analysis_endpoint_id,
-        analysis_model=row.analysis_model,
         publish_frequency=row.publish_frequency,
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
+        dataset_voter_ids=row.dataset_voter_ids,
         has_custom_logo=row.logo is not None,
         logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
@@ -497,13 +499,6 @@ async def patch_settings(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Default locale must be part of the enabled locales",
             )
-    if body.analysis_endpoint_id:
-        async with get_session() as session:
-            if not await session.get(LLMEndpoint, body.analysis_endpoint_id):
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="Unknown LLM endpoint",
-                )
     patch = body.model_dump(exclude_unset=True)
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")

@@ -6,6 +6,8 @@ from sqlalchemy import Index, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from utils.i18n import SupportedLocale, TranslatableRaw
+
 from .utils import AutoDatetime, Datetime, ModelId, OptionalDatetime, UtcDatetime
 
 UserId = Annotated[uuid.UUID, Field(foreign_key="auth_user.id")]
@@ -161,7 +163,7 @@ class LegalDocument(SQLModel, table=True):
     id: ModelId
     kind: Annotated[LegalDocumentKind, Field(sa_type=String)]
     version: str
-    content: dict[str, str] = Field(sa_type=JSONB, nullable=False)
+    content: TranslatableRaw[str] = Field(sa_type=JSONB, nullable=False)
     content_hash: str = Field(index=True, min_length=64, max_length=64)
     published_at: UtcDatetime
     effective_at: Datetime
@@ -202,7 +204,7 @@ class ConsentLog(SQLModel, table=True):
     source_anonymous_consent_id: uuid.UUID | None = Field(
         default=None, foreign_key="anonymous_consent_log.id"
     )
-    language: str | None = Field(default=None, max_length=16)
+    language: Annotated[SupportedLocale | None, Field(sa_type=String, default=None)]
     purpose: Annotated[ConsentPurpose, Field(sa_type=String)] = (
         "terms_and_participation"
     )
@@ -225,7 +227,7 @@ class AnonymousConsentLog(SQLModel, table=True):
     document_id: uuid.UUID = Field(foreign_key="legal_document.id")
     terms_version: str
     document_hash: str = Field(min_length=64, max_length=64)
-    language: str = Field(max_length=16)
+    language: Annotated[SupportedLocale, Field(sa_type=String)]
     purpose: Annotated[ConsentPurpose, Field(sa_type=String)] = (
         "terms_and_participation"
     )

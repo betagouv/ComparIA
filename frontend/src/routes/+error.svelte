@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
@@ -23,7 +24,7 @@
         <ul class="fr-btns-group fr-btns-group--inline-md">
           {#if key === '404'}
             <li>
-              <Link button href="/" text={m['actions.home']()} />
+              <Link button href={resolve('/')} text={m['actions.home']()} />
             </li>
           {/if}
           <li>

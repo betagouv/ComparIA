@@ -74,3 +74,112 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: yarn build
+
+  # The application mounted under a path, as the Instances platform serves it:
+  # frontend built once with the placeholder and given its path at start, behind
+  # a Caddy that imitates the Gateway. Runs the home and models flows plus
+  # e2e/instance-path.test.ts, which fails when an asset, a redirect or a cookie
+  # path leaves the path. See frontend/README.md, "Serving under a path".
+  e2e-instance-path:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18@sha256:7157393f508fd8eb46119937fab39813783fe3e7d4c6316c45c12ce2ea25e61d
+        env:
+          POSTGRES_USER: comparia
+          POSTGRES_PASSWORD: comparia
+          POSTGRES_DB: comparia
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U comparia"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7@sha256:e9b2e45ecd47fbb69b877cf8d045d5cccaaaed52524b6e098b4abe8212994f73
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      INSTANCE_PATH: /fr
+      COMPARIA_INSTANCE_NAME: fr
+      COMPARIA_DB_URI: postgresql://comparia:comparia@localhost:5432/comparia
+      COMPARIA_REDIS_HOST: localhost
+      COMPARIA_APP_URL: http://localhost:8080/fr
+      LANGUIA_DEBUG: 'true'
+      MOCK_RESPONSE: 'true'
+      LOGDIR: /tmp/comparia-logs
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          python-version: '3.13'
+          enable-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Install frontend dependencies and browser
+        working-directory: frontend
+        run: |
+          yarn install --frozen-lockfile
+          yarn playwright install --with-deps chromium
+
+      - name: Start the backend
+        run: |
+          mkdir -p "$LOGDIR"
+          uv run --locked alembic upgrade head
+          nohup uv run --locked uvicorn backend.main:app --host 127.0.0.1 --port 8008 > "$RUNNER_TEMP/backend.log" 2>&1 &
+          curl -fsSL --retry 30 --retry-delay 2 --retry-all-errors --retry-connrefused -o /dev/null http://127.0.0.1:8008/api/models
+
+      - name: Build the frontend once, with the placeholder
+        working-directory: frontend
+        env:
+          INSTANCE_PATH_PLACEHOLDER: /__INSTANCE_PATH__
+        run: yarn build
+
+      # The entrypoint of the image, on the build: it puts INSTANCE_PATH where the
+      # placeholder is, then starts the server.
+      - name: Start the frontend under the path
+        working-directory: frontend
+        env:
+          BUILD_DIR: ${{ github.workspace }}/frontend/build
+          PORT: '3000'
+          ORIGIN: http://localhost:8080
+          PUBLIC_API_LOCAL_URL: http://127.0.0.1:8008
+        run: nohup ./docker-entrypoint.sh node build > "$RUNNER_TEMP/frontend.log" 2>&1 &
+
+      - name: Start the proxy
+        run: |
+          docker run -d --name proxy --network host \
+            -e INSTANCE_PATH \
+            -v "$PWD/frontend/e2e/instance-path.Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy@sha256:ce773ec7a742ce15ee6bf2bb5f65882b9e2a4487b10733e6f1484f86e6b5d8bc
+          curl -fsSL --retry 30 --retry-delay 2 --retry-all-errors --retry-connrefused -o /dev/null http://localhost:8080/fr/
+
+      - name: Run Playwright against the proxied address
+        working-directory: frontend
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:8080/fr
+        run: yarn playwright test e2e/demo.test.ts e2e/modeles.test.ts e2e/instance-path.test.ts
+
+      - name: Show the logs
+        if: failure()
+        run: |
+          for f in backend frontend; do echo "::group::$f"; cat "$RUNNER_TEMP/$f.log" || true; echo "::endgroup::"; done
+          docker logs proxy || true

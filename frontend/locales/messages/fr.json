@@ -460,6 +460,35 @@
             "colStatus": "Statut",
             "colTarget": "Cible",
             "createSuccess": "Destination ajoutée",
+            "datasetCheck": {
+                "criteriaEmpty": "Aucun critère : seuls les thèmes et les langues sont analysés.",
+                "formTitle": "Réglages de l'analyse",
+                "help": "Avant chaque publication, le modèle de décision lit chaque conversation, questions et réponses comprises. Il dit si elle contient des données personnelles ou du spam, et en donne les thèmes et les langues.",
+                "noKey": "Aucune clé OpenRouter",
+                "noKeyHint": "Ni ici, ni sur la vérification des messages, ni dans OPENROUTER_API_KEY : l'analyse ne peut pas tourner.",
+                "noModel": "Aucun modèle de décision",
+                "noModelHint": "Rien n'est analysé, donc aucune nouvelle conversation n'est publiée. Choisissez un modèle ci-dessous.",
+                "reasons": {
+                    "pii": "Données personnelles",
+                    "spam": "Spam"
+                },
+                "title": "Analyse avant publication",
+                "try": {
+                    "allScores": "Tous les scores",
+                    "categories": "Thèmes :",
+                    "empty": "Collez une conversation à analyser.",
+                    "excluded": "Ne serait pas publiée",
+                    "hint": "Collez-la telle quelle. Rien n'est enregistré, et les réglages non enregistrés ci-dessus sont utilisés.",
+                    "label": "Conversation",
+                    "languages": "Langues :",
+                    "none": "aucune",
+                    "notReached": "Sous le seuil",
+                    "published": "Serait publiée",
+                    "reached": "Seuil atteint",
+                    "run": "Analyser",
+                    "title": "Tester une conversation"
+                }
+            },
             "datasetNormal": "Ouvert",
             "datasetNormalHelp": "Tout ce que l'analyse a validé.",
             "datasetRaw": "Brut",
@@ -519,15 +548,6 @@
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
             "repoPathLabel": "Dépôt",
             "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
-            "reviewerEndpointLabel": "Endpoint",
-            "reviewerEndpointNone": "Aucun endpoint",
-            "reviewerHelp": "Ce modèle analyse les conversations avant publication pour détecter les données personnelles et le spam.",
-            "reviewerIncomplete": "Sélectionnez un endpoint et renseignez un modèle, ou laissez les deux champs vides.",
-            "reviewerModelHelp": "Identifiant du modèle attendu par l'endpoint.",
-            "reviewerModelLabel": "Modèle",
-            "reviewerSave": "Enregistrer le modèle d'analyse",
-            "reviewerSuccess": "Modèle d'analyse enregistré",
-            "reviewerTitle": "Modèle d'analyse",
             "runCounts": "Conversations publiées : {published} · mises de côté : {heldBack}.",
             "runCountsUnknown": "Cette publication n'a pas reconstruit le jeu ouvert.",
             "runFailed": "Échouée le {date}",
@@ -541,6 +561,14 @@
             "secureLabel": "Connexion en HTTPS",
             "subtitle": "Configurez les destinations et leur fréquence. L'historique regroupe toutes les publications.",
             "timezoneLabel": "Fuseau horaire",
+            "voterIds": {
+                "title": "Identifiants de votants dans le jeu brut",
+                "help": "Ajoute au jeu de données brut un identifiant pseudonyme par votant : le même pour toutes les comparaisons d'un compte, ou d'une session anonyme. Il permet de regrouper les conversations d'une même personne, par exemple pour écarter quelqu'un qui répète le même prompt. Le jeu ouvert ne le contient jamais. L'identifiant ne permet pas de retrouver le compte ni la session, et disparaît quand le compte est supprimé ou à la fin de la durée de conservation.",
+                "label": "Publier les identifiants de votants dans le jeu brut",
+                "warning": "Quiconque reçoit le jeu brut pourra relier entre elles les conversations d'une même personne. Vérifiez que les conditions d'utilisation le couvrent. Un dépôt Hugging Face qui reçoit le jeu brut doit être privé, ou fermé avec validation manuelle, sinon l'envoi échoue.",
+                "save": "Enregistrer",
+                "success": "Réglage enregistré. Il s'applique à la prochaine publication."
+            },
             "title": "Jeux de données",
             "tokenHelp": "Un jeton en lecture seule passe le test de lecture et échoue à la première publication.",
             "tokenKeep": "Laisser vide pour garder le jeton enregistré.",
@@ -595,7 +623,9 @@
                 "platformName": "Nom de la plateforme",
                 "ranking": {
                     "maxRankSpread": "Écart de rang maximum",
-                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs.",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs. Pris en compte au prochain calcul du classement, dans l'heure.",
+                    "greyRankSpread": "Écart de rang avant grisage",
+                    "greyRankSpreadHelp": "Un modèle affiché est grisé si son rang peut varier de plus de ce nombre de places, vers le haut ou vers le bas. Mettez une valeur égale ou supérieure à l'écart de rang maximum pour ne griser aucun modèle.",
                     "minVotes": "Nombre minimum de votes",
                     "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
                     "title": "Classement"
@@ -1152,198 +1182,56 @@
                 "name": "N/A"
             }
         },
-        "endpoint_upsert": {
-            "api_base": {
-                "help": "Base URL for the API endpoint.",
-                "label": "API base URL"
-            },
+        "dataset_check_upsert": {
             "api_key": {
-                "help": "if not given, all LLMs depending on this endpoint will be disabled.",
-                "label": "API secret key"
+                "help": "Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.",
+                "label": "Clé API OpenRouter"
             },
-            "api_type": {
-                "help": "API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).",
-                "label": "Api type"
+            "category_threshold": {
+                "help": "Un thème est attribué à partir de ce score. Aucun atteint : « Other ».",
+                "label": "Seuil des thèmes"
             },
-            "api_version": {
-                "help": "API version (optional)",
-                "label": "API version"
+            "criteria": {
+                "help": "Une conversation qui atteint le seuil d'un critère n'est pas publiée.",
+                "label": "Critères d'exclusion"
             },
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "name": {
-                "help": "Readable endpoint name (e.g. 'OpenRouter').",
-                "label": "Name"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "lab_upsert": {
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "logo": {
-                "help": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.",
-                "label": "Logo"
-            },
-            "name": {
-                "label": "Name"
-            },
-            "origin_country": {
-                "help": "A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.",
-                "label": "Origin Country"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "license_upsert": {
-            "commercial_use": {
-                "label": "Allows commercial use."
-            },
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "kind": {
-                "label": "Licence type"
-            },
-            "name": {
-                "help": "Licence name (e.g. 'Apache 2.0' or 'MIT').",
-                "label": "Name"
-            },
-            "reuse": {
-                "label": "Allows reuse/redistribution."
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "llm_upsert": {
-            "active_params": {
-                "help": "Active parameters in billions (only for MoE LLMs).",
-                "label": "Active Params"
-            },
-            "api_model_id": {
-                "help": "Complete identifier used for API calls.",
-                "label": "API model id"
-            },
-            "arch": {
-                "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
-                "label": "Arch"
-            },
-            "context_tokens": {
-                "help": "Size of its context window in tokens.",
-                "label": "Context Tokens"
-            },
-            "created_at": {
-                "label": "Created At"
-            },
-            "custom_selectable": {
-                "help": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
-                "label": "Selectable in custom mode"
-            },
-            "endpoint_id": {
-                "help": "The LLM's endpoint information, create it first if not already available",
-                "label": "Endpoint"
-            },
-            "eu_hostable": {
-                "help": "Whether the LLM is hostable in the EU.",
-                "label": "Eu Hostable"
-            },
-            "human_id": {
-                "help": "(legacy id), usually the LLM id specified in 'api_model_id'",
-                "label": "Readable id"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "inputs": {
-                "help": "What kind of media the LLM can have in input.",
-                "label": "Modalities"
-            },
-            "knowledge_cutoff": {
-                "help": "Date after which the LLM no longer has knowledge.",
-                "label": "Knowledge Cutoff"
-            },
-            "lab_id": {
-                "help": "The lab that developed the LLM, create it first if not already available",
-                "label": "Lab"
-            },
-            "license_id": {
-                "help": "The LLM's license, create it first if not already available",
-                "label": "License"
-            },
-            "links": {
-                "help": "List of links to display in LLM card.",
-                "label": "Links"
-            },
-            "name": {
-                "label": "Readable name"
-            },
-            "params": {
-                "help": "Total parameters in billions.",
-                "label": "Params"
-            },
-            "price_in": {
-                "help": "Price per million input tokens in USD.",
-                "label": "Price In"
-            },
-            "price_out": {
-                "help": "Price per million output tokens in USD.",
-                "label": "Price Out"
-            },
-            "public_training_code": {
-                "help": "Whether the LLM training code is public.",
-                "label": "Public Training Code"
-            },
-            "public_training_data": {
-                "help": "Whether the LLM training data is public.",
-                "label": "Public Training Data"
-            },
-            "public_weights": {
-                "help": "Whether the LLM weights are public.",
-                "label": "Public Weights"
-            },
-            "quantization": {
-                "help": "Quantization scheme applied (q4, q8, or None for full precision).",
-                "label": "Quantization"
-            },
-            "rate_limited": {
-                "help": "Apply rate limits (usually for high API costs LLMs).",
-                "label": "Rate Limited"
-            },
-            "release_date": {
-                "label": "Release Date"
-            },
-            "status": {
-                "help": "enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.",
-                "label": "Status"
-            },
-            "system_prompt": {
-                "help": "System message to add in llm call if specified",
-                "label": "System Prompt"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            },
-            "Link": {
-                "text": {
-                    "label": "Text"
+            "DatasetCheckCriterion": {
+                "key": {
+                    "help": "Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.",
+                    "label": "Identifiant"
                 },
-                "url": {
-                    "label": "Url"
+                "label": {
+                    "label": "Nom"
+                },
+                "no": {
+                    "label": "Compte comme non"
+                },
+                "question": {
+                    "help": "Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.",
+                    "label": "Question posée au modèle"
+                },
+                "reason": {
+                    "help": "Données personnelles ou spam : le drapeau publié et le motif d'archivage.",
+                    "label": "Motif"
+                },
+                "threshold": {
+                    "label": "Seuil"
+                },
+                "yes": {
+                    "label": "Compte comme oui"
                 }
+            },
+            "description": {
+                "help": "Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.",
+                "label": "Description de l'instance"
+            },
+            "language_threshold": {
+                "help": "Une langue est attribuée à partir de ce score.",
+                "label": "Seuil des langues"
+            },
+            "model": {
+                "help": "Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.",
+                "label": "Modèle de décision"
             }
         },
         "prompt_check_upsert": {
@@ -1961,6 +1849,7 @@
                 "cols": {
                     "arch": "Architecture",
                     "consumption": "Conso. moyenne<br>(1000 tokens)",
+                    "energy_class": "Énergie",
                     "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1975,9 +1864,11 @@
                     "trust_range": "Confiance (±)"
                 },
                 "estimation": "(estimation)",
+                "rankRange": "Rang possible entre {best} et {worst}",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
+                    "energy_class": "Étiquette énergie de A (le plus sobre) à F (le moins sobre), selon l'électricité utilisée par le modèle pour répondre. Les valeurs exactes sont dans l'onglet Focus énergie et dans le téléchargement. Les modèles propriétaires dont la taille et l'architecture ne sont pas publiques sont affichés en N/A.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "price": "Prix indicatif d’utilisation via API pour un million de jetons, converti dans la devise affichée. L’entrée correspond à la requête envoyée, la sortie à la réponse générée.",
                     "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
@@ -1991,7 +1882,8 @@
                 "label": "Afficher les rangs"
             },
             "totalModels": "Total modèles :",
-            "totalVotes": "Total votes :"
+            "totalVotes": "Total votes :",
+            "uncertain": "En grisé : modèles dont le rang peut encore varier de plus de {count} places."
         },
         "title": "Des votes… au classement des modèles",
         "views": {

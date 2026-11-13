@@ -13,10 +13,10 @@ def test_login_message_has_plain_text_and_accessible_html():
     message = _build_login_message("123456")
     parts = _parts(message)
 
-    assert message["Subject"] == "Votre code de connexion — Compar:IA"
+    assert message["Subject"] == "Your sign-in code — Compar:IA"
     assert "123456" in parts["text/plain"]
-    assert '<html lang="fr">' in parts["text/html"]
-    assert "Ce code expire dans 10&nbsp;minutes" in parts["text/html"]
+    assert '<html lang="en">' in parts["text/html"]
+    assert "This code expires in 10&nbsp;minutes" in parts["text/html"]
     assert 'role="presentation"' in parts["text/html"]
 
 
@@ -33,7 +33,7 @@ def test_invite_message_has_fallback_link_in_both_parts():
 
     assert link in parts["text/plain"]
     assert parts["text/html"].count(link) == 3
-    assert "Cette invitation expire dans 24&nbsp;heures" in parts["text/html"]
+    assert "This invitation expires in 24&nbsp;hours" in parts["text/html"]
 
 
 def test_invite_message_escapes_link_attributes():
@@ -82,17 +82,12 @@ def test_messages_use_the_configured_platform_name_without_fixed_subtitle():
     login_parts = _parts(login)
     invite_parts = _parts(invite)
 
-    assert login["Subject"] == "Votre code de connexion — Arène & Compagnie"
-    assert invite["Subject"] == "Vous êtes invité·e sur Arène & Compagnie"
+    assert login["Subject"] == "Your sign-in code — Arène & Compagnie"
+    assert invite["Subject"] == "You are invited to Arène & Compagnie"
     assert "Arène &amp; Compagnie" in login_parts["text/html"]
     assert "Arène &amp; Compagnie" in invite_parts["text/html"]
     assert platform_name in login_parts["text/plain"]
     assert platform_name in invite_parts["text/plain"]
-    assert (
-        "Comparez les modèles d’intelligence artificielle"
-        not in login_parts["text/html"]
-    )
-    assert "service numérique de l’État" not in login_parts["text/html"]
 
 
 def test_platform_name_cannot_inject_email_headers_or_html():
@@ -106,13 +101,13 @@ def test_platform_name_cannot_inject_email_headers_or_html():
     assert "&lt;script&gt;" in html
 
 
-def test_messages_follow_the_requested_locale_and_fall_back_to_french():
+def test_messages_follow_the_requested_locale_and_fall_back_to_default():
     danish = _build_login_message("123456", locale="da")
-    english = _build_invite_message("https://comparia.example/invite/t", locale="en")
+    french = _build_invite_message("https://comparia.example/invite/t", locale="fr")
     unknown = _build_login_message("123456", locale="lt")
 
     assert danish["Subject"] == "Din loginkode — Compar:IA"
     assert '<html lang="da">' in _parts(danish)["text/html"]
-    assert english["Subject"] == "You are invited to Compar:IA"
-    assert "24&nbsp;hours" in _parts(english)["text/html"]
-    assert unknown["Subject"] == "Votre code de connexion — Compar:IA"
+    assert french["Subject"] == "Vous êtes invité·e sur Compar:IA"
+    assert "24&nbsp;heures" in _parts(french)["text/html"]
+    assert unknown["Subject"] == "Your sign-in code — Compar:IA"

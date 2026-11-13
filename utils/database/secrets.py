@@ -28,11 +28,13 @@ ENCRYPTED_COLUMNS: tuple[tuple[type, str], ...] = (
     (PublishDestination, "config"),
 )
 # The columns that hold their tokens explicitly, decoded by hand: the
-# authenticator secrets as text, the OIDC client secret as bytes.
+# authenticator secrets as text, the OIDC client secret and the dataset's
+# voter key as bytes.
 TOKEN_COLUMNS: tuple[tuple[type, str], ...] = (
     (UserTotp, "secret_encrypted"),
     (UserTotp, "pending_secret_encrypted"),
     (AppSettings, "oidc_client_secret_encrypted"),
+    (AppSettings, "dataset_voter_key_encrypted"),
 )
 
 

@@ -5,6 +5,26 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface AuthConfig {
+  access_policy: "anonymous_first" | "sign_in_required";
+  methods: ("email_code" | "oidc")[];
+  smtp_configured: boolean;
+  domain_allowlist: string[];
+  platform_name: string;
+  primary_color_light: string;
+  primary_color_dark: string;
+  secondary_color_light: string;
+  secondary_color_dark: string;
+  homepage_url: string | null;
+  platform_url: string;
+  has_custom_logo: boolean;
+  logo_version: string | null;
+  enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  default_locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
+  oidc_enabled: boolean;
+  oidc_button_label: string | null;
+  oidc_has_button_logo: boolean;
+}
 export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
@@ -98,7 +118,7 @@ export interface Consumption {
 }
 export interface InformationalLegalPageContent {
   content: string;
-  locale: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
 }
 export interface InformationalLegalPageLinks {
   legal_notice?: InformationalLegalPageLink;
@@ -119,6 +139,7 @@ export interface LLMList {
     [k: string]: number;
   } | null;
   max_rank_spread: number;
+  grey_rank_spread: number;
   currency: CurrencyInfo;
 }
 /**
@@ -398,7 +419,7 @@ export interface PersonalRankingRow {
 export interface PublicLegalDocument {
   version: string;
   content_hash: string;
-  locale: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   content: string;
   published_at: string;
   effective_at: string;

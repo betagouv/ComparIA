@@ -8,7 +8,11 @@ from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from utils.utils import SUPPORTED_LOCALES
+from utils.i18n import (
+    DEFAULT_ENABLED_LOCALES,
+    DEFAULT_LOCALE,
+    SupportedLocale,
+)
 from utils.validation import is_secure_url
 
 from .publish import PublishFrequency
@@ -79,23 +83,6 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
-# What a new instance starts with, and what the migration backfills onto the
-# existing ones. Narrower than SUPPORTED_LOCALES: it, lt, nb-NO and sv ship too
-# few translated messages to be offered unasked, which is why prod carried
-# PUBLIC_DISABLED_LOCALES="lt,sv". An admin can still turn them on from
-# /admin/locales, which is the point of the setting.
-DEFAULT_ENABLED_LOCALES = ("da", "en", "fr")
-
-
-def _check_enabled_locales(value: list[str]) -> list[str]:
-    if not value:
-        raise ValueError("At least one locale must be enabled")
-    unknown = sorted(set(value) - set(SUPPORTED_LOCALES))
-    if unknown:
-        raise ValueError(f"Unsupported locales: {', '.join(unknown)}")
-    return value
-
-
 class AppSettings(SQLModel, table=True):
     """Singleton row (id=1) holding product settings editable from the admin panel."""
 
@@ -116,6 +103,9 @@ class AppSettings(SQLModel, table=True):
     # instance running a short campaign wants a shorter gap than one running
     # for a year.
     survey_reask_after_days: int = Field(default=7)
+    # Shown models whose rank could move by more than this many places are
+    # greyed out. At ranking_max_rank_spread or above, none is.
+    ranking_grey_rank_spread: int = Field(default=30)
     platform_name: str = Field(default="Compar:IA")
     legal_presentation: Annotated[dict | None, Field(sa_type=JSONB)] = None
     informational_legal_pages: Annotated[
@@ -130,23 +120,27 @@ class AppSettings(SQLModel, table=True):
         default=SECONDARY_COLOR_DARK_DEFAULT, max_length=7
     )
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
-    # The model that reads whole comparisons before publication and says
-    # whether they hold personal information or spam. It is not the arena's
-    # input guardrail: different check, different provider, its own setting.
-    analysis_endpoint_id: uuid.UUID | None = Field(
-        default=None, foreign_key="llm_endpoint.id"
-    )
-    analysis_model: str | None = Field(default=None, max_length=200)
     # When the publish run fires. 'off' until an instance asks for one.
     publish_frequency: Annotated[PublishFrequency, Field(sa_type=String)] = "off"
     publish_hour: int = Field(default=3)
     publish_timezone: str = Field(default="UTC", max_length=64)
+    # Whether the raw dataset carries a pseudonymous voter id per comparison,
+    # see utils/dataset/voters.py. Off until an instance decides to, since it
+    # lets whoever holds the raw dataset link one person's conversations.
+    dataset_voter_ids: bool = Field(default=False)
+    # Key of the voter pseudonyms, encrypted like every other secret at rest.
+    # Made the first time a raw dataset is built with voter ids, then kept so
+    # a voter has the same id from one publication to the next. Never sent to
+    # the admin panel.
+    dataset_voter_key_encrypted: Annotated[bytes | None, Field(sa_type=LargeBinary)] = (
+        None
+    )
     logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
     logo_content_type: str | None = None
-    enabled_locales: Annotated[list[str], Field(sa_type=JSONB)] = list(
+    enabled_locales: Annotated[list[SupportedLocale], Field(sa_type=JSONB)] = list(
         DEFAULT_ENABLED_LOCALES
     )
-    default_locale: str = Field(default="fr")
+    default_locale: Annotated[SupportedLocale, Field(sa_type=String)] = DEFAULT_LOCALE
     auth_methods: Annotated[list[str], Field(sa_type=JSONB)] = list(["email_code"])
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -184,21 +178,21 @@ class AppSettingsPublic(SQLModel):
     ranking_min_votes: int
     ranking_max_rank_spread: int
     survey_reask_after_days: int
+    ranking_grey_rank_spread: int
     platform_name: str
     primary_color_light: str
     primary_color_dark: str
     secondary_color_light: str
     secondary_color_dark: str
     homepage_url: str | None
-    analysis_endpoint_id: uuid.UUID | None
-    analysis_model: str | None
     publish_frequency: PublishFrequency
     publish_hour: int
     publish_timezone: str
+    dataset_voter_ids: bool
     has_custom_logo: bool
     logo_version: str | None = None
-    enabled_locales: list[str]
-    default_locale: str
+    enabled_locales: list[SupportedLocale]
+    default_locale: SupportedLocale
     auth_methods: list[str]
     oidc_issuer: str | None
     oidc_client_id: str | None
@@ -222,19 +216,19 @@ class AppSettingsPatch(SQLModel):
     ranking_min_votes: int | None = Field(default=None, ge=0, le=_INT_MAX)
     ranking_max_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
     survey_reask_after_days: int | None = Field(default=None, ge=0, le=365)
+    ranking_grey_rank_spread: int | None = Field(default=None, ge=0, le=_INT_MAX)
     platform_name: str | None = None
     primary_color_light: str | None = None
     primary_color_dark: str | None = None
     secondary_color_light: str | None = None
     secondary_color_dark: str | None = None
     homepage_url: str | None = Field(default=None, max_length=_HOMEPAGE_URL_MAX_LENGTH)
-    enabled_locales: list[str] | None = None
-    default_locale: str | None = None
-    analysis_endpoint_id: uuid.UUID | None = None
-    analysis_model: str | None = Field(default=None, max_length=200)
+    enabled_locales: list[SupportedLocale] | None = None
+    default_locale: SupportedLocale | None = None
     publish_frequency: PublishFrequency | None = None
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
+    dataset_voter_ids: bool | None = None
     auth_methods: list[str] | None = None
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -285,11 +279,23 @@ class AppSettingsPatch(SQLModel):
             raise ValueError(f"Unknown time zone: {value}")
         return value
 
-    @field_validator("ranking_min_votes", "ranking_max_rank_spread", mode="before")
+    @field_validator(
+        "ranking_min_votes",
+        "ranking_max_rank_spread",
+        "ranking_grey_rank_spread",
+        mode="before",
+    )
     @classmethod
     def ranking_threshold_not_null(cls, value: object) -> object:
         if value is None:
             raise ValueError("Leaderboard thresholds cannot be null")
+        return value
+
+    @field_validator("dataset_voter_ids", mode="before")
+    @classmethod
+    def dataset_voter_ids_not_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("dataset_voter_ids cannot be null")
         return value
 
     @field_validator(
@@ -325,11 +331,6 @@ class AppSettingsPatch(SQLModel):
     @field_validator("enabled_locales")
     @classmethod
     def validate_enabled_locales(cls, value: list[str] | None) -> list[str] | None:
-        return value if value is None else _check_enabled_locales(value)
-
-    @field_validator("default_locale")
-    @classmethod
-    def validate_default_locale(cls, value: str | None) -> str | None:
-        if value is not None and value not in SUPPORTED_LOCALES:
-            raise ValueError(f"Unsupported locale: {value}")
-        return value
+        if value is None or len(value) > 0:
+            return value
+        raise ValueError("At least one locale must be enabled")

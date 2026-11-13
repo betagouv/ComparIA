@@ -1,4 +1,5 @@
 import type { AdminSuggestion, AdminSuggestionCategory } from '$lib/generated/admin'
+import type { Locale } from '$lib/i18n/runtime'
 
 export type SuggestionStatus = AdminSuggestion['status']
 
@@ -16,6 +17,6 @@ export interface SuggestionsPage {
 export interface SuggestionFilters {
   search: string
   status: '' | SuggestionStatus
-  locale: string
+  locale: '' | Locale
   category_id: string
 }

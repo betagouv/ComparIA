@@ -38,7 +38,7 @@ describe('signInMethods', () => {
     expect(custom.oidcLabel).toBe('ProConnect')
     expect(custom.oidcLogoUrl).toBe('/auth/config/oidc/logo')
     const fallback = signInMethods({ oidc_button_label: null, oidc_has_button_logo: false })
-    expect(fallback.oidcLabel).toContain('fournisseur d’identité')
+    expect(fallback.oidcLabel).toContain('identity provider')
     expect(fallback.oidcLogoUrl).toBeNull()
   })
 })

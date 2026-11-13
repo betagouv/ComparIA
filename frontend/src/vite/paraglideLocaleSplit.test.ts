@@ -3,10 +3,11 @@ import {
   dropFallbackReexports,
   fallbackOf,
   localeLoaderModule,
-  splitLocaleImports
+  splitLocaleImports,
+  type Settings
 } from './paraglideLocaleSplit'
 
-const settings = { locales: ['da', 'fr', 'nb-NO'], baseLocale: 'fr' }
+const settings: Settings = { locales: ['da', 'fr', 'nb-NO'], baseLocale: 'fr' }
 
 const index = [
   '/* eslint-disable */',

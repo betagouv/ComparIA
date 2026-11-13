@@ -9,6 +9,7 @@
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
+  import { withoutInstancePath } from '$lib/routing'
   import type { SuggestionCategory } from '$lib/suggestions'
   import { sanitize } from '$lib/utils/commons'
   import { onMount, tick } from 'svelte'
@@ -81,7 +82,8 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     params.delete('vs')
     const qs = params.toString()
-    goto(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, { replaceState: true })
+    const path = withoutInstancePath(page.url.pathname)
+    goto(qs ? resolve(`${path}?${qs}`) : resolve(path), { replaceState: true })
   })
 
   function selectPartialText(start?: number, end?: number): void {

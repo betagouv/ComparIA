@@ -29,17 +29,17 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   ranking_min_votes: 0,
   ranking_max_rank_spread: 30,
   survey_reask_after_days: 7,
+  ranking_grey_rank_spread: 30,
   platform_name: 'ComparIA',
   primary_color_light: '#000091',
   primary_color_dark: '#8585F6',
   secondary_color_light: '#A558A0',
   secondary_color_dark: '#D176CF',
   homepage_url: null,
-  analysis_endpoint_id: null,
-  analysis_model: null,
   publish_frequency: 'off',
   publish_hour: 3,
   publish_timezone: 'UTC',
+  dataset_voter_ids: false,
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',
@@ -84,13 +84,19 @@ describe('admin customization page', () => {
     )
     const minVotes = container.querySelector<HTMLInputElement>('#settings-ranking-min-votes')!
     const spread = container.querySelector<HTMLInputElement>('#settings-ranking-max-rank-spread')!
+    const grey = container.querySelector<HTMLInputElement>('#settings-ranking-grey-rank-spread')!
 
     await fireEvent.input(minVotes, { target: { value: '50' } })
     await fireEvent.input(spread, { target: { value: '60' } })
+    await fireEvent.input(grey, { target: { value: '20' } })
     await fireEvent.submit(minVotes.closest('form')!)
 
     await waitFor(() => expect(api.request).toHaveBeenCalledTimes(2))
     const body = JSON.parse(vi.mocked(api.request).mock.calls[1][1]!.body as string)
-    expect(body).toMatchObject({ ranking_min_votes: 50, ranking_max_rank_spread: 60 })
+    expect(body).toMatchObject({
+      ranking_min_votes: 50,
+      ranking_max_rank_spread: 60,
+      ranking_grey_rank_spread: 20
+    })
   })
 })

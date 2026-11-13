@@ -6,6 +6,8 @@ from pydantic import AfterValidator, StringConstraints, field_validator
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.i18n import TranslatableRaw
+
 from .utils import BaseDBModel, OptionalDatetime
 
 VoteTagSign = Literal["positive", "negative"]
@@ -38,7 +40,7 @@ class VoteTagBase(BaseDBModel):
     reserved: bool = Field(default=False)
     # Per-locale labels, {'fr': 'Bien sourcee'}. Null for reserved tags, which
     # read their label from the translation files instead.
-    labels: Annotated[dict[str, str] | None, Field(sa_type=JSONB)] = None
+    labels: Annotated[TranslatableRaw[str] | None, Field(sa_type=JSONB)] = None
     display_order: int = Field(default=0, ge=0)
     archived_at: OptionalDatetime = Field(default=None, index=True)
     archived_by: uuid.UUID | None = Field(default=None, foreign_key="auth_user.id")
@@ -89,11 +91,11 @@ class VoteTagCreate(SQLModel):
     emoji: TagEmoji
     # One entry per language the instance serves. The key is derived from the
     # first label given, so at least one is required.
-    labels: dict[str, TagLabel]
+    labels: TranslatableRaw[TagLabel]
 
     @field_validator("labels")
     @classmethod
-    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+    def at_least_one_label(cls, value: TranslatableRaw[str]) -> TranslatableRaw[str]:
         if not value:
             raise ValueError("a tag needs at least one label")
         return value
@@ -101,11 +103,11 @@ class VoteTagCreate(SQLModel):
 
 class VoteTagUpdate(SQLModel):
     emoji: TagEmoji
-    labels: dict[str, TagLabel]
+    labels: TranslatableRaw[TagLabel]
 
     @field_validator("labels")
     @classmethod
-    def at_least_one_label(cls, value: dict[str, str]) -> dict[str, str]:
+    def at_least_one_label(cls, value: TranslatableRaw[str]) -> TranslatableRaw[str]:
         if not value:
             raise ValueError("a tag needs at least one label")
         return value
@@ -132,7 +134,7 @@ class AdminVoteTag(SQLModel):
     sign: VoteTagSign
     emoji: str
     reserved: bool
-    labels: dict[str, str] | None
+    labels: TranslatableRaw[str] | None
     display_order: int
     archived: bool
     # How many votes already carry this key. A tag nobody used can be deleted

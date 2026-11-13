@@ -1,28 +1,27 @@
 import glob
+import logging
 from typing import Any
 
+from utils.i18n import DEFAULT_LOCALE, SUPPORTED_LOCALES
 from utils.utils import (
+    FRONTEND_DIR,
     FRONTEND_I18N_DIR,
     FRONTEND_MAIN_I18N_FILE,
-    MAIN_LOCALE,
     read_json,
+    sort_dict,
     write_json,
 )
+
+logger = logging.getLogger("comparia.internal")
+
+
+PARAGLIDE_SETTINGS_FILE = FRONTEND_DIR / "comparia.inlang" / "settings.json"
 
 LOCALE_FILES = {
     path.split("/")[-1].replace(".json", ""): path
     for path in glob.glob(str(FRONTEND_I18N_DIR) + "/*.json")
 }
 ALL_LOCALES = set(LOCALE_FILES.keys())
-
-
-def sort_dict(data: dict[str, Any], deep: bool = True) -> dict[str, Any]:
-    items = [
-        (key, sort_dict(value) if isinstance(value, dict) else value)
-        for key, value in data.items()
-    ]
-
-    return dict(sorted(items, key=lambda i: i[0].lower()))
 
 
 def get_flatten_keys(d: dict[str, Any], parent_key="") -> set[str]:
@@ -83,10 +82,22 @@ def clean_locales():
     Remove stale keys in all locales files.
     """
     locales = ALL_LOCALES
-    locales.discard(MAIN_LOCALE)
+    locales.discard(DEFAULT_LOCALE)
 
-    # Remove {MAIN_LOCALE}.json no longer present keys in other locales files
+    # Remove {DEFAULT_LOCALE}.json no longer present keys in other locales files
     main_data = read_json(FRONTEND_MAIN_I18N_FILE)
     remove_stale_keys(get_flatten_keys(main_data), locales)
-    # Also sort {MAIN_LOCALE}.json
+    # Also sort {DEFAULT_LOCALE}.json
     write_json(FRONTEND_MAIN_I18N_FILE, sort_dict(main_data), indent=4)
+
+
+def update_paraglide_settings():
+    settings = read_json(PARAGLIDE_SETTINGS_FILE)
+    settings["baseLocale"] = DEFAULT_LOCALE
+    settings["locales"] = SUPPORTED_LOCALES
+    write_json(PARAGLIDE_SETTINGS_FILE, settings)
+
+    if extra_available_locales := ALL_LOCALES - set(SUPPORTED_LOCALES):
+        logger.warning(
+            f"Some extra locales available in '{FRONTEND_I18N_DIR}' but not in 'SUPPORTED_LOCALES': '{"', '".join(extra_available_locales)}'"
+        )

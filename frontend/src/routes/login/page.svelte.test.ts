@@ -22,7 +22,11 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn(), replaceState: mocks.replaceState }))
-vi.mock('$app/paths', () => ({ resolve: (path: string) => path, match: vi.fn() }))
+vi.mock('$app/paths', () => ({
+  resolve: (path: string) => path,
+  asset: (path: string) => path,
+  match: vi.fn()
+}))
 vi.mock('$app/state', () => ({ page: mocks.pageState }))
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => mocks.authContext }))
@@ -42,10 +46,6 @@ vi.mock('$lib/chatService.svelte', () => ({
 }))
 vi.mock('$lib/fastapi-client', () => ({
   api: { request: mocks.request, getPublicUrl: (path: string) => path }
-}))
-vi.mock('$lib/i18n/runtime', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('$lib/i18n/runtime')>()),
-  getLocale: () => 'fr'
 }))
 
 const terms = {

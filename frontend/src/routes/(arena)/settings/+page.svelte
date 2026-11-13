@@ -83,7 +83,7 @@
       })
       auth.user = null
       resetConsent()
-      window.location.href = '/'
+      window.location.href = resolve('/')
     } catch {
       eraseError = m['auth.settings.erase.failed']()
     } finally {

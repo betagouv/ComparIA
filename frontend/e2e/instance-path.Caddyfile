@@ -1,0 +1,27 @@
+# Imitates the Gateway of the Instances platform for the end-to-end run under a
+# path (see README, "Serving under a path"): the frontend keeps the path, the
+# API loses it, and anything else is a 404, so a link or an asset that leaves
+# the path fails instead of being answered by the wrong server.
+#
+# INSTANCE_PATH is the path, for example /fr. Listens on :8080, backend on
+# 127.0.0.1:8008, frontend on 127.0.0.1:3000.
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	handle {$INSTANCE_PATH}/api/* {
+		uri strip_prefix {$INSTANCE_PATH}
+		reverse_proxy 127.0.0.1:8008
+	}
+
+	@frontend path {$INSTANCE_PATH} {$INSTANCE_PATH}/*
+	handle @frontend {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	handle {
+		respond "outside the instance path" 404
+	}
+}

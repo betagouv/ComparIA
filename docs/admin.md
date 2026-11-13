@@ -43,7 +43,7 @@ Then sign in with an email code and set the app up again from `/settings`.
 
 **Vue d'ensemble** opens on the journey as a funnel: conversations started, those with at least one vote, those where the models were revealed, with the share that goes on at each step. Each step, and each group that stopped before the next one, opens the matching conversations. Under it sit the message counts, the activity over time, and the share of each vote and mode. Prompt checks have their own page under Vérifications. The counts are kept for five minutes; the link at the bottom computes them again. The period still under way is drawn as an estimate of what it will hold once full, read from how a typical day fills up, rather than as the drop its partial count would show.
 
-**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects, keywords and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
+**Conversations** lists every conversation, newest first, and can search the text of the messages. Each row shows the first message, the two models with the preferred one in bold, any comment, and how far the conversation went on the same steps as the funnel. Search and the journey filter narrow the list; the vote, topic and flag filters work from the address, which the overview's funnel links use. A click opens the conversation in a pop-up: each question, the start of both answers side by side with the preferred one marked, and the tags and comments left on each, with the full answer one click away; the arrows, or the left and right keys, step to the next row without closing it. Subjects and languages come from the analysis the publishing pipeline runs, so a conversation not analysed yet has none; keywords only show on conversations analysed before the decision model. Text the analysis flagged as personal data stays blurred until you ask to see it, and every conversation opened is logged with the admin who opened it.
 
 To try the panel at the size of a real instance on a debug database:
 
@@ -79,13 +79,13 @@ Adding models one by one through the panel is fine for a handful. For more, writ
 
 `/admin/customization` controls the platform name, logo, the four brand colours (primary and secondary, each in a light and a dark variant), the homepage link, and the vote target the public counter counts towards.
 
-It also sets two leaderboard thresholds: the votes a model needs before it is ranked (0 by default), and how many places its rank may move either way before it is hidden (30 by default). A small instance can relax them to show something while votes come in. The vote minimum applies at the next ranking update, within the hour.
+It also sets three leaderboard thresholds: the votes a model needs before it is ranked (0 by default), how many places its rank may move either way before it is hidden (30 by default), and how many before a shown model is greyed out (30 by default, which greys out nothing). A small instance can relax them to show something while votes come in, or raise the hide threshold and grey out the uncertain models instead. The vote minimum applies at the next ranking update, within the hour.
 
 ## Languages
 
 `/admin/locales` sets which languages the instance offers and which one it defaults to. The default has to be one of the enabled ones.
 
-Five locales are wired up: `fr`, `da`, `en`, `lt`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SUPPORTED_LOCALES` in `utils/utils.py`.
+Seven locales are wired up: `da`, `en`, `fr`, `it`, `lt`, `nb-NO`, `sv`. There are more translation files in `frontend/locales/messages/`, but a locale is only selectable once it is added to `SupportedLocale` in `utils/i18n.py` and `./comparia-cli internal i18n` has been run.
 
 ## Authentication
 
@@ -173,11 +173,42 @@ Two kinds of destination:
 
 Frequency is per destination: off, daily, weekly or monthly. You choose the frequency, not the hour.
 
+### Voter ids in the raw dataset
+
+Off by default. Turned on, the raw dataset carries `extra_metadata.voter_id` and `extra_metadata.voter_type` (`account` or `anonymous`) on each row, so whoever analyses it can group one person's comparisons: to leave out someone who replays the same prompt, or runs experiments. The open dataset never carries them.
+
+- The id is the same for every comparison of an account, or of an anonymous session (a browser, until its session cookie expires). An anonymous visitor who signs in and merges their history gets the account's id on it from the next run.
+- It is an HMAC of the internal identifier under a key made once per instance and stored encrypted, so it does not give away the account or the session, and stays the same from one run to the next.
+- It goes when the identifiers go: on account erasure, and when the retention period blanks them (24 months).
+- A Hugging Face repository has to be private, or gated with manual review, to receive the raw dataset while the ids are on; a new one is created private. The run cannot check an S3 bucket's access, so keep it private.
+
+Turning it on lets anyone holding the raw dataset link one person's conversations together, and with the survey answers once those are published. Cover it in the terms of use before turning it on.
+
 To check a run before trusting it with credentials:
 
 ```bash
 make dataset-export-dry-run   # builds the datasets, sends them nowhere
 ```
+
+### Analysis before publishing
+
+Before a run builds the open dataset, the decision model of the prompt checks reads each new conversation, the visitor's messages and both answers. It answers the exclusion criteria set on `/admin/publication` (personal data and spam to start with), one question per topic and one per language. A conversation that reaches the threshold of any exclusion criterion stays out of the open dataset; it still goes to the raw one. Topics and languages are tagged from their own thresholds, and a conversation with no topic over the threshold is tagged `Other`. The languages asked about are the instance's own, a few common ones, and "other". Partner cohorts (Pix) are never sent.
+
+A long conversation is read in windows of 8,000 characters, and each question keeps its highest score. One over about 300,000 characters is not sent and counts as failed. A conversation the model cannot score after three tries is marked failed and is never published. A refused key or no credits stops the run.
+
+The key comes from the panel, then from the prompt checks, then from `OPENROUTER_API_KEY`. With no model set, nothing is analysed, so no new conversation is published. The page has a test box for a pasted conversation, against the settings on screen, saved or not.
+
+Every score is kept on the conversation (`analysis_scores`). `short_summary` and `keywords` are no longer written: conversations analysed before keep theirs, newer ones publish `null`.
+
+Three commands help tune it:
+
+```bash
+make db-analysis-shadow SAMPLE=500   # scores conversations the old chat model analysed and compares, writes nothing
+make db-analysis-reapply             # what the current thresholds would change on scored conversations; COMMIT=1 writes it
+make db-analysis-rescore             # how many published conversations the model would score again; COMMIT=1 does it
+```
+
+Rescoring gives the published conversations the old chat model analysed, or that another decision model scored, new topics, languages and scores, and holds back those that reach an exclusion criterion. `EVERY=1` scores all published conversations, which a new criterion needs: reapplying only works with the criteria a conversation was scored on. Reapplying also leaves alone a conversation held for personal data or spam when a criterion with that reason was renamed, removed or never scored on it, so a changed criterion list never releases it. Held conversations are left alone and one the model cannot score keeps what it had, so rescoring never publishes anything that was not. Stopped and run again, it skips the conversations already done (not with `EVERY=1`). A conversation flagged for personal data is deleted 30 days after the analysis, so loosening a rule only releases what is still there.
 
 ## Prompt checks
 

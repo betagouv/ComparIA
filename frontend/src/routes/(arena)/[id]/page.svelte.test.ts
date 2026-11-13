@@ -14,7 +14,7 @@ const store = $state<{ comparisons: { id: string; mode: string; turns: never[] }
 })
 
 vi.mock('$app/navigation', () => ({ goto: mocks.goto }))
-vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
+vi.mock('$app/paths', () => ({ resolve: (path: string) => path, asset: (path: string) => path }))
 vi.mock('$app/state', () => ({ page: mocks.pageState }))
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => mocks.authContext }))
 vi.mock('$lib/authContext.svelte', async (importOriginal) => ({

@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import { resolve } from '$app/paths'
+  import { asset, resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Icon, Link } from '$components/dsfr'
   import type { LinkProps } from '$components/dsfr/Link.svelte'
@@ -86,7 +86,7 @@
     <img
       src={auth.config?.has_custom_logo
         ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
-        : '/orgs/comparia.png'}
+        : asset('/orgs/comparia.png')}
       aria-hidden="true"
       alt=""
       class="h-[35px]"
@@ -131,7 +131,7 @@
   {@const { icon: connectionIcon, text: connectionText, ...connectionProps } = connectionBtnProps}
   <div class="py-2 flex flex-col">
     {@render renderLink({
-      href: '/settings',
+      href: resolve('/settings'),
       label: m['seo.titles.settings'](),
       icon: 'i-ri-settings-4-line',
       class: 'text-sm! text-black! fr-sidemenu__link font-normal! before:content-none!'

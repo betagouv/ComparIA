@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { Badge, Icon, Link, Modal } from '$components/dsfr'
   import { getPlatformName } from '$lib/authContext.svelte'
   import { m } from '$lib/i18n/messages'
@@ -7,9 +8,9 @@
 
   const voteReasons = (
     [
-      { i18nKey: 'prefs', src: '/home/prefs.svg' },
-      { i18nKey: 'datasets', src: '/home/datasets.svg' },
-      { i18nKey: 'finetune', src: '/home/finetune.svg' }
+      { i18nKey: 'prefs', src: asset('/home/prefs.svg') },
+      { i18nKey: 'datasets', src: asset('/home/datasets.svg') },
+      { i18nKey: 'finetune', src: asset('/home/finetune.svg') }
     ] as const
   ).map(({ i18nKey, ...reason }) => ({
     ...reason,

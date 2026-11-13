@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
 from typing import Literal, get_args
+from urllib.parse import urlsplit
 
 from httpx import Timeout
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from utils.i18n import DEFAULT_LOCALE
 
 BACKEND_DIR = Path(__file__).parent
 ROOT_DIR = BACKEND_DIR.parent
@@ -34,8 +37,9 @@ class Settings(BaseSettings):
     # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
     # which described a country portal the project outgrew; the deployment manifests
     # have to carry the new name, since nothing falls back to the old one. The
-    # values themselves are unchanged, so Redis keys stay put.
-    COMPARIA_INSTANCE_NAME: str = "fr"
+    # deployments set it explicitly, so the Redis keys of fr and da stay put; the
+    # DEFAULT_LOCALE default only applies to local runs.
+    COMPARIA_INSTANCE_NAME: str = DEFAULT_LOCALE
 
     # Display currency. Model prices are stored in US dollars and converted for the UI.
     DISPLAY_CURRENCY: str = "EUR"
@@ -98,7 +102,10 @@ class Settings(BaseSettings):
     RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR: int = 20
     RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR: int = 5
 
-    # Public app origin, used to build absolute links in emails (e.g. invite links)
+    # Public URL of the app, used to build absolute links in emails (e.g. invite
+    # links). It may carry a path (`https://host/fr`) when the Instance is served
+    # under one: cookies are then scoped to it and the origin checks use the
+    # scheme and host alone.
     COMPARIA_APP_URL: str = "http://localhost:5173"
     # Public origin the backend itself answers on, used for the OIDC redirect_uri
     # the provider sends the browser back to. Deployed, the ingress puts the
@@ -142,6 +149,23 @@ class Settings(BaseSettings):
     def api_origin(self) -> str:
         """Origin the OIDC provider redirects the browser back to."""
         return self.COMPARIA_API_URL or self.COMPARIA_APP_URL
+
+    @property
+    def app_origin(self) -> str:
+        """Scheme and host of the public URL: what a browser sends as Origin."""
+        parts = urlsplit(self.COMPARIA_APP_URL)
+        return f"{parts.scheme}://{parts.netloc}"
+
+    @property
+    def instance_path(self) -> str:
+        """Path of the public URL, "" when it has none (`/fr`, never `/fr/`)."""
+        return urlsplit(self.COMPARIA_APP_URL).path.rstrip("/")
+
+    @property
+    def cookie_path(self) -> str:
+        """Path every cookie is set and deleted on, so that Instances sharing a
+        domain keep their sessions apart."""
+        return self.instance_path or "/"
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email

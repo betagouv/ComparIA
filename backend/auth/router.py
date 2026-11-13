@@ -3,7 +3,7 @@ import re
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Literal
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlsplit
 from uuid import UUID
 
 import redis
@@ -73,12 +73,13 @@ from backend.auth.totp import (
 )
 from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
-from backend.settings.legal import LEGAL_LOCALE_PATTERN, get_active_legal_document
+from backend.settings.legal import get_active_legal_document
 from backend.survey.services import signup_questions_answered
 from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 from utils.secrets import SecretUnreadableError, decrypt_secret
 from utils.storage.redis import (
     REDIS_ANONYMOUS_CONSENT_REQ,
@@ -112,8 +113,8 @@ class AuthConfig(BaseModel):
     has_custom_logo: bool
     # Goes in the logo URL, so the browser can keep the file for a year.
     logo_version: str | None
-    enabled_locales: list[str]
-    default_locale: str
+    enabled_locales: list[SupportedLocale]
+    default_locale: SupportedLocale
     # OIDC method description for the login page. `oidc_enabled` is derived
     # from the instance's `auth_methods` plus a complete provider config, so
     # the button only shows when OIDC would actually work.
@@ -126,7 +127,7 @@ class EmailRequestBody(BaseModel):
     email: NormalizedEmail
     altcha_payload: str
     # The language the visitor is reading the site in, for the email.
-    locale: str | None = Field(default=None, min_length=2, max_length=16)
+    locale: SupportedLocale | None = None
 
 
 class EmailVerifyBody(BaseModel):
@@ -183,9 +184,7 @@ class ConsentAssertion(BaseModel):
     terms_version: str = Field(min_length=1, max_length=64)
     terms_hash: str = Field(pattern=r"^[0-9a-f]{64}$")
     accepted_at: datetime
-    locale: str = Field(
-        min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
-    )
+    locale: SupportedLocale
     legal_information_acknowledged: Literal[True]
 
     @field_validator("accepted_at")
@@ -216,6 +215,11 @@ TOTP_CHALLENGE_COOKIE = "auth_totp_challenge"
 _TOTP_CHALLENGE_COOKIE_MAX_AGE = TOTP_CHALLENGE_TTL_MINUTES * 60
 
 
+def _delete_cookie(response: Response, name: str) -> None:
+    """A cookie is only deleted by a header naming the path it was set on."""
+    response.delete_cookie(name, path=settings.cookie_path)
+
+
 def _set_session_cookie(response: Response, token: str) -> None:
     response.set_cookie(
         SESSION_COOKIE,
@@ -224,6 +228,7 @@ def _set_session_cookie(response: Response, token: str) -> None:
         secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=settings.AUTH_SESSION_LENGTH_DAYS * 86400,
+        path=settings.cookie_path,
     )
 
 
@@ -235,7 +240,7 @@ def _set_login_cookie(response: Response, login: LoginResult) -> bool:
         return False
     # A session still open for another account must not outlive the email
     # step, or the visitor would be signed in as someone else in the meantime.
-    response.delete_cookie(SESSION_COOKIE)
+    _delete_cookie(response, SESSION_COOKIE)
     response.set_cookie(
         TOTP_CHALLENGE_COOKIE,
         login.token,
@@ -243,6 +248,7 @@ def _set_login_cookie(response: Response, login: LoginResult) -> bool:
         secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=_TOTP_CHALLENGE_COOKIE_MAX_AGE,
+        path=settings.cookie_path,
     )
     return True
 
@@ -258,7 +264,7 @@ def _reject_cross_site(request: Request) -> None:
     if not origin:
         return
     own_origin = f"{request.url.scheme}://{request.url.netloc}"
-    if origin.rstrip("/") not in (settings.COMPARIA_APP_URL, own_origin):
+    if origin.rstrip("/") not in (settings.app_origin, own_origin):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Cross-site request rejected.",
@@ -535,7 +541,7 @@ async def totp_verify(
             {"detail": "Sign-in expired, request a new email code."},
             status_code=status.HTTP_410_GONE,
         )
-        gone.delete_cookie(TOTP_CHALLENGE_COOKIE)
+        _delete_cookie(gone, TOTP_CHALLENGE_COOKIE)
         return gone
     except InvalidTotpCodeError:
         raise HTTPException(
@@ -545,7 +551,7 @@ async def totp_verify(
     except SecretUnreadableError:
         raise TotpSecretUnreadableError()
 
-    response.delete_cookie(TOTP_CHALLENGE_COOKIE)
+    _delete_cookie(response, TOTP_CHALLENGE_COOKIE)
     _set_session_cookie(response, token)
     user = await get_user_from_token(token)
     return {"email": user.email if user else None}
@@ -687,7 +693,15 @@ async def totp_confirm(
 # for it: a callback carrying someone else's state is a login CSRF attempt (an
 # attacker's half-finished sign-in replayed on a victim), not a sign-in.
 _OIDC_STATE_COOKIE = "oidc_state"
-_OIDC_STATE_COOKIE_PATH = "/api/auth/oidc"
+
+
+def _oidc_state_cookie_path() -> str:
+    # The directory of the callback URL the provider sends the browser back to:
+    # it carries the Instance path the Gateway strips before the request reaches
+    # this backend, and follows COMPARIA_API_URL when that one is set.
+    return urlsplit(oidc_callback_url()).path.removesuffix("/callback")
+
+
 _MAX_REDIRECT_LENGTH = 2048
 
 
@@ -786,7 +800,7 @@ async def oidc_login(
         secure=settings.COMPARIA_COOKIE_SECURE,
         samesite="lax",
         max_age=OIDC_STATE_TTL_SECONDS,
-        path=_OIDC_STATE_COOKIE_PATH,
+        path=_oidc_state_cookie_path(),
     )
     return response
 
@@ -834,7 +848,7 @@ async def oidc_callback(
     response = await _complete_oidc_sign_in(request, code, state, error)
     response.delete_cookie(
         _OIDC_STATE_COOKIE,
-        path=_OIDC_STATE_COOKIE_PATH,
+        path=_oidc_state_cookie_path(),
         secure=settings.COMPARIA_COOKIE_SECURE,
         httponly=True,
         samesite="lax",
@@ -1032,13 +1046,13 @@ async def logout(request: Request, response: Response) -> None:
     challenge_token = request.cookies.get(TOTP_CHALLENGE_COOKIE)
     if challenge_token:
         await revoke_totp_challenge(challenge_token)
-    response.delete_cookie(SESSION_COOKIE)
-    response.delete_cookie(TOTP_CHALLENGE_COOKIE)
+    _delete_cookie(response, SESSION_COOKIE)
+    _delete_cookie(response, TOTP_CHALLENGE_COOKIE)
 
 
 @router.get("/me")
 async def get_me(request: Request) -> dict:
-    token = request.cookies.get("auth_session")
+    token = request.cookies.get(SESSION_COOKIE)
     if not token:
         return {"user": None}
     user = await get_user_from_token(token)
@@ -1079,17 +1093,17 @@ async def erase_account(
             detail="Email confirmation does not match the signed-in account.",
         )
     await erase_user_account(user.id)
-    response.delete_cookie("auth_session")
+    _delete_cookie(response, SESSION_COOKIE)
 
 
 @router.post("/logout-all", status_code=status.HTTP_204_NO_CONTENT)
 async def logout_all(request: Request, response: Response) -> None:
-    token = request.cookies.get("auth_session")
+    token = request.cookies.get(SESSION_COOKIE)
     if token:
         user = await get_user_from_token(token)
         if user:
             await revoke_all_user_sessions(user.id)
-    response.delete_cookie("auth_session")
+    _delete_cookie(response, SESSION_COOKIE)
 
 
 @router.post("/consent", status_code=status.HTTP_204_NO_CONTENT)
@@ -1102,7 +1116,7 @@ async def accept_consent(
         document,
         body.consent.locale,
         body.consent.accepted_at,
-        request.cookies.get("auth_session"),
+        request.cookies.get(SESSION_COOKIE),
     )
 
 

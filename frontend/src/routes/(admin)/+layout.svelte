@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { NavBar } from '$components/layout'
   import type { NavLink } from '$components/layout/NavBar.svelte'
@@ -15,70 +16,70 @@
   const navLinks: NavLink[] = $derived([
     {
       label: m['admin.nav.activity'](),
-      href: '/admin/activite',
+      href: resolve('/admin/activite'),
       icon: 'i-ri-line-chart-line',
-      isCurrent: () => page.url.pathname.startsWith('/admin/activite')
+      isCurrent: () => page.url.pathname.startsWith(resolve('/admin/activite'))
     },
     {
       label: m['admin.nav.customization'](),
-      href: '/admin/customization',
+      href: resolve('/admin/customization'),
       icon: 'i-ri-palette-line'
     },
     {
       label: m['admin.nav.locales'](),
-      href: '/admin/locales',
+      href: resolve('/admin/locales'),
       icon: 'i-ri-translate-2'
     },
     {
       label: m['admin.nav.authentification'](),
-      href: '/admin/authentification',
+      href: resolve('/admin/authentification'),
       icon: 'i-ri-fingerprint-line'
     },
     {
       label: m['admin.nav.legal'](),
-      href: '/admin/legal',
+      href: resolve('/admin/legal'),
       icon: 'i-ri-file-shield-2-line',
-      isCurrent: () => page.url.pathname.startsWith('/admin/legal')
+      isCurrent: () => page.url.pathname.startsWith(resolve('/admin/legal'))
     },
     {
       label: m['admin.nav.users'](),
-      href: '/admin/utilisateurs',
+      href: resolve('/admin/utilisateurs'),
       icon: 'i-ri-user-settings-line'
     },
     {
       label: m['admin.nav.suggestions'](),
-      href: '/admin/suggestions',
+      href: resolve('/admin/suggestions'),
       icon: 'i-ri-lightbulb-line'
     },
     {
       label: m['admin.nav.voteTags'](),
-      href: '/admin/vote-tags',
+      href: resolve('/admin/vote-tags'),
       icon: 'i-ri-price-tag-3-line'
     },
     {
       label: m['admin.nav.survey'](),
-      href: '/admin/survey',
+      href: resolve('/admin/survey'),
       icon: 'i-ri-questionnaire-line'
     },
     {
       label: m['admin.nav.promptChecks'](),
-      href: '/admin/prompt-checks',
+      href: resolve('/admin/prompt-checks'),
       icon: 'i-ri-shield-check-line'
     },
     {
       label: m['admin.nav.publishing'](),
-      href: '/admin/publication',
+      href: resolve('/admin/publication'),
       icon: 'i-ri-upload-cloud-line'
     },
     {
       label: m['admin.nav.llms'](),
-      href: '/admin/llms/llms',
+      href: resolve('/admin/llms/llms'),
       icon: 'i-ri-ai-agent-line',
-      isCurrent: () => page.url.pathname.includes('/admin/llms')
+      isCurrent: () => page.url.pathname.includes(resolve('/admin/llms'))
     },
     {
       label: m['actions.returnArena'](),
-      href: '/',
+      href: resolve('/'),
       icon: 'i-ri-arrow-left-line'
     }
   ])

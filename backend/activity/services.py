@@ -230,7 +230,7 @@ async def _llms(session: AsyncSession) -> dict[uuid.UUID, ActivityLLM]:
 
 async def get_filter_options(refresh: bool = False) -> ActivityFilterOptions:
     # Imported here: the actions package pulls every data migration with it.
-    from utils.database.actions.llm_analyze import Config as AnalyzeConfig
+    from utils.database.actions.llm_analyze import TXT360Category
 
     key = _cache_key("filters")
     if not refresh and (cached := _read_cache(key, ActivityFilterOptions)):
@@ -250,7 +250,7 @@ async def get_filter_options(refresh: bool = False) -> ActivityFilterOptions:
     options = ActivityFilterOptions(
         llms=sorted(llms.values(), key=lambda llm: llm.name.lower()),
         cohorts=[cohort for cohort in cohorts if cohort],
-        categories=[category.value for category in AnalyzeConfig.TXT360Category],
+        categories=[category.value for category in TXT360Category],
     )
     _write_cache(key, options)
     return options

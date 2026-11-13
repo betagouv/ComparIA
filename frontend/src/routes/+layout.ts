@@ -1,6 +1,7 @@
-import type { AuthConfig, AuthUser } from '$lib/auth.svelte'
+import type { AuthUser } from '$lib/auth.svelte'
 import { api } from '$lib/fastapi-client'
 import type {
+  AuthConfig,
   InformationalLegalPageLinks,
   LLMList,
   PublicSurveyResponse
@@ -22,10 +23,12 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
     api.request<InformationalLegalPageLinks>('/settings/legal/informational-pages-links', {
       fetch
     }),
+    // The route has its trailing slash: FastAPI would redirect '/survey' to it
+    // with a Location that has no Instance path.
     // A survey outage must never take a page down: both degrade exactly
     // like no questions being configured at all.
     api
-      .request<PublicSurveyResponse>('/survey', {
+      .request<PublicSurveyResponse>('/survey/', {
         fetch,
         searchParams: { locale }
       })
