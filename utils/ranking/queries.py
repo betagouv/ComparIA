@@ -60,6 +60,14 @@ async def fetch_votes() -> list[dict]:
             # 'archived != True' skips rows whose archived is NULL: test the
             # flag itself.
             .where(col(Comparison.contains_pii).is_not(True))
+            # A turn started after the reveal was voted on knowing which
+            # model is which. The arena refuses those now, older ones remain.
+            .where(
+                or_(
+                    col(Comparison.revealed_at).is_(None),
+                    col(Turn.created_at) <= col(Comparison.revealed_at),
+                )
+            )
             .where(
                 col(Turn.choice).in_(["both_good", "both_bad", "a_better", "b_better"])
             )

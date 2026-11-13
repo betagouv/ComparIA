@@ -103,7 +103,10 @@ def _push_to_huggingface(
     published = repo_id.split("/")[-1]
 
     api = HfApi(token=config.token)
-    api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
+    if dataset == "raw":
+        _require_closed_repo(config, dataset)
+    else:
+        api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
 
     operations: list = [
         CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(path))
@@ -153,38 +156,11 @@ def _push_to_s3(config: S3Config, dataset: Datasets, build_dir: Path) -> None:
     logger.info(f"Uploaded the '{dataset}' dataset to '{config.bucket}/{folder}'.")
 
 
-def _has_voter_ids(build_dir: Path) -> bool:
-    """
-    Whether the raw parquet holds any voter id, read from the column statistics
-    rather than the setting: the file about to leave is what counts. A row
-    group without statistics counts as holding some.
-    """
-    import pyarrow.parquet as pq
-
-    path = build_dir / f"{LOCAL_NAMES['raw']}.parquet"
-    if not path.exists():
-        return False
-    metadata = pq.ParquetFile(path).metadata
-    columns = [
-        i
-        for i in range(metadata.num_columns)
-        if metadata.schema.column(i).path == "extra_metadata.voter_id"
-    ]
-    if not columns:
-        return False
-    for group in range(metadata.num_row_groups):
-        row_group = metadata.row_group(group)
-        stats = row_group.column(columns[0]).statistics
-        if stats is None or not stats.has_null_count:
-            return True
-        if stats.null_count < row_group.num_rows:
-            return True
-    return False
-
-
 def _require_closed_repo(config: HuggingFaceConfig, dataset: Datasets) -> None:
     """
-    Refuse voter ids on a repository anyone can read, before anything is sent.
+    Refuse the raw dataset on a repository anyone can read, before anything is
+    sent: it holds every conversation, the held-back ones and the voter ids
+    included.
 
     A private repository qualifies, and so does a public one gated with manual
     review, which is how the raw datasets have been shared with researchers.
@@ -204,9 +180,8 @@ def _require_closed_repo(config: HuggingFaceConfig, dataset: Datasets) -> None:
     if info.private or info.gated == "manual":
         return
     raise DestinationError(
-        f"'{repo_id}' is readable by anyone, and the raw dataset carries voter "
-        "ids: make the repository private or gated with manual review, or turn "
-        "the voter ids off"
+        f"'{repo_id}' is readable by anyone, and the raw dataset holds every "
+        "conversation: make the repository private or gated with manual review"
     )
 
 
@@ -217,12 +192,9 @@ def publish(
     Send every built dataset to every destination that asked for it. One
     destination failing does not stop the others, and the run still fails.
 
-    A raw dataset that carries voter ids only goes to a closed Hugging Face
-    repository. An S3 bucket is private unless its owner opened it, which the
+    The raw dataset only goes to a closed Hugging Face repository. An S3 bucket is private unless its owner opened it, which the
     run cannot check.
     """
-    raw_dir = built.get("raw")
-    raw_has_voter_ids = raw_dir is not None and _has_voter_ids(raw_dir)
     failures: list[str] = []
 
     for destination in destinations:
@@ -239,8 +211,6 @@ def publish(
                 continue
             try:
                 if isinstance(config, HuggingFaceConfig):
-                    if dataset == "raw" and raw_has_voter_ids:
-                        _require_closed_repo(config, dataset)
                     _push_to_huggingface(config, dataset, build_dir)
                 else:
                     _push_to_s3(config, dataset, build_dir)
