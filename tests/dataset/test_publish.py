@@ -133,8 +133,8 @@ def test_one_destination_failing_does_not_hide_the_others(monkeypatch):
 class FakeHub:
     """Stands in for HfApi: records what was created and committed."""
 
-    def __init__(self, public: set[str] = set()):
-        self.public = public
+    def __init__(self, public: set[str] | None = None):
+        self.public = public or set()
         self.created: dict[str, bool | None] = {}
         self.committed: list[str] = []
 
@@ -145,7 +145,7 @@ class FakeHub:
         self.created[repo_id] = private
 
     def repo_info(self, repo_id, repo_type):
-        return SimpleNamespace(private=repo_id not in self.public)
+        return SimpleNamespace(private=repo_id not in self.public, gated=False)
 
     def list_repo_files(self, repo_id, repo_type):
         return []
@@ -164,11 +164,11 @@ def push_with(monkeypatch, hub: FakeHub, dataset: str, build_dir: Path):
     publish_module._push_to_huggingface(config, dataset, build_dir)
 
 
-def test_only_the_raw_repository_is_created_private(monkeypatch, tmp_path):
+def test_the_open_dataset_repository_is_created_as_before(monkeypatch, tmp_path):
     hub = FakeHub()
     push_with(monkeypatch, hub, "normal", tmp_path)
-    push_with(monkeypatch, hub, "raw", tmp_path)
-    assert hub.created == {"org/comparia": False, "org/comparia-raw": True}
+    assert hub.created == {"org/comparia": None}
+    assert hub.committed == ["org/comparia"]
 
 
 def test_the_raw_dataset_never_goes_to_a_public_repository(monkeypatch, tmp_path):

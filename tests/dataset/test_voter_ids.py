@@ -113,12 +113,6 @@ def _raw_build(tmp_path, voters):
     return tmp_path / "comparisons-raw"
 
 
-def test_the_send_reads_the_ids_from_the_file(tmp_path):
-    assert publish_module._has_voter_ids(_raw_build(tmp_path / "with", VOTERS))
-    assert not publish_module._has_voter_ids(_raw_build(tmp_path / "without", None))
-    assert not publish_module._has_voter_ids(tmp_path / "nothing")
-
-
 class FakeHfApi:
     def __init__(self, private: bool = False, gated=False, exists: bool = True):
         self.info = SimpleNamespace(private=private, gated=gated)
@@ -129,6 +123,8 @@ class FakeHfApi:
 
     def create_repo(self, repo_id, **kwargs):
         self.created.append(kwargs)
+        if not self.exists:
+            self.info.private = kwargs.get("private", False)
         self.exists = True
 
     def repo_info(self, repo_id, repo_type):
@@ -194,12 +190,13 @@ def test_a_new_repository_for_ids_starts_private(monkeypatch, tmp_path):
     assert api.committed
 
 
-def test_without_ids_the_send_is_as_before(monkeypatch, tmp_path):
+def test_without_ids_the_raw_dataset_still_needs_a_closed_repository(
+    monkeypatch, tmp_path
+):
     api = FakeHfApi()
-    _send(monkeypatch, _raw_build(tmp_path, None), api)
-    assert api.committed
-    # No visibility check: the push goes as it did before the switch.
-    assert api.info_calls == 0
+    with pytest.raises(DestinationError, match="readable by anyone"):
+        _send(monkeypatch, _raw_build(tmp_path, None), api)
+    assert not api.committed
 
 
 def _load_twice(database, **settings):
