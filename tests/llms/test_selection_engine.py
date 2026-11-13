@@ -22,6 +22,7 @@ from backend.llms.selection import (
     draw_pair,
     enabled_tools,
     filter_pool,
+    picker_llm_ids,
     replacement_pool,
     viability,
 )
@@ -227,6 +228,14 @@ def test_a_pairing_rule_that_cannot_be_met_fails_the_draw():
     llms = catalogue(llm("a1", lab_id=LAB_A), llm("a2", lab_id=LAB_A))
     with pytest.raises(NoValidPairError):
         draw_pair(SelectionModeRules(pairing="different_lab"), llms)
+
+
+def test_the_picker_leaves_out_a_model_the_pairing_leaves_alone():
+    llms = catalogue(
+        llm("a1", lab_id=LAB_A), llm("a2", lab_id=LAB_A), llm("b1", lab_id=LAB_B)
+    )
+    mode = SelectionModeRules(visitor_picks=1, pairing="same_lab")
+    assert set(picker_llm_ids(mode, llms)) == ids("a1", "a2")
 
 
 def test_a_single_model_pool_fails_the_draw():

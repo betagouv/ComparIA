@@ -261,12 +261,28 @@ def picker_llm_ids(
     today: date | None = None,
 ) -> list[UUID]:
     """
-    The models the arena's picker lists: every model in the pools. Locked ones
-    (not custom_selectable) are listed too, greyed out, so a visitor sees they
-    only come up at random; the draw still refuses them as a pick.
+    The models the arena's picker lists: every model in the pools that the
+    pairing rule lets face a model of the other pool. Locked ones (not
+    custom_selectable) are listed too, greyed out, so a visitor sees they only
+    come up at random; the draw still refuses them as a pick.
     """
     pool_a, pool_b = pools(mode, llms_data, ranking, today)
-    return list(dict.fromkeys([*pool_a, *pool_b]))
+    enabled = llms_data.enabled
+
+    def pairable(llm_id: UUID, others: Sequence[UUID]) -> bool:
+        return any(
+            pair_allowed(mode.pairing, enabled[llm_id], enabled[other])
+            for other in others
+        )
+
+    return list(
+        dict.fromkeys(
+            [
+                *(llm_id for llm_id in pool_a if pairable(llm_id, pool_b)),
+                *(llm_id for llm_id in pool_b if pairable(llm_id, pool_a)),
+            ]
+        )
+    )
 
 
 def _check_picks(
