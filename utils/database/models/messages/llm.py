@@ -12,17 +12,17 @@ from utils.validation import StripAndEmptyAsNone
 from ..utils import ModelId, OptionalDatetime
 
 
-class AgentTraceReasoning(BaseModel):
+class AgentTraceReasoning(BaseModel, extra="forbid"):
     type: Literal["reasoning"] = "reasoning"
     content: str
 
 
-class AgentTraceIntermediateContent(BaseModel):
+class AgentTraceIntermediateContent(BaseModel, extra="forbid"):
     type: Literal["intermediate_content"] = "intermediate_content"
     content: str
 
 
-class AgentTraceToolCall(BaseModel):
+class AgentTraceToolCall(BaseModel, extra="forbid"):
     type: Literal["tool_call"] = "tool_call"
     tool_call_id: str
     name: str
@@ -53,7 +53,7 @@ class ToolSource(BaseModel):
     favicon: str | None = None
 
 
-class AgentTraceToolResult(BaseModel):
+class AgentTraceToolResult(BaseModel, extra="forbid"):
     type: Literal["tool_result"] = "tool_result"
     tool_call_id: str
     name: str

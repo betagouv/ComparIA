@@ -104,12 +104,10 @@ export interface LLMMessageCreate {
 export interface AgentTraceReasoning {
   type?: "reasoning";
   content: string;
-  [k: string]: unknown;
 }
 export interface AgentTraceIntermediateContent {
   type?: "intermediate_content";
   content: string;
-  [k: string]: unknown;
 }
 export interface AgentTraceToolCall {
   type?: "tool_call";
@@ -121,7 +119,6 @@ export interface AgentTraceToolCall {
   arguments?: {
     [k: string]: unknown;
   } | null;
-  [k: string]: unknown;
 }
 export interface AgentTraceToolResult {
   type?: "tool_result";
@@ -131,7 +128,6 @@ export interface AgentTraceToolResult {
   duration_ms: number;
   content: string;
   results?: ToolSource[];
-  [k: string]: unknown;
 }
 /**
  * One piece of evidence a tool handed back.
