@@ -1190,6 +1190,24 @@
             "showAll": "Show all",
             "source": "1 source",
             "sources": "{count} sources",
+            "state": {
+                "reasoning": {
+                    "pending": "Reasoning in progress…",
+                    "finished": "Reasoning completed"
+                },
+                "intermediate_content": {
+                    "pending": "Commentary in progress…",
+                    "finished": "Commentary completed"
+                },
+                "tool": {
+                    "pending": "Tool call “{name}“ in progress…",
+                    "finished": "Tool call “{name}“ completed"
+                },
+                "web_search": {
+                    "pending": "Web search in progress…",
+                    "finished": "Web search completed"
+                }
+            },
             "thinking": "Thinking"
         },
         "announce": {
@@ -1225,7 +1243,11 @@
             "result": "1 result",
             "results": "{count} results",
             "running": "Searching…",
-            "sources": "{count} source(s)"
+            "sources": "{count} source(s)",
+            "label": {
+                "tool": "Call “{name}“: “{request}“",
+                "web_search": "Search “{request}“"
+            }
         },
         "webSearch": {
             "label": "Associated Web search results."

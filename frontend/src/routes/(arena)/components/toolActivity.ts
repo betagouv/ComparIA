@@ -1,17 +1,80 @@
-import type { AgentTraceToolCall, AgentTraceToolResult } from '$lib/generated/backend'
+import type {
+  AgentTraceIntermediateContent,
+  AgentTraceReasoning,
+  AgentTraceToolCall,
+  AgentTraceToolResult
+} from '$lib/generated/backend'
 import type { ExternalHref } from '$lib/routing'
 import { isSafeWebSource } from '$lib/utils/commons'
 
-export type ActivityStep =
-  | { type: 'reasoning'; content: string }
-  | { type: 'tool'; call: AgentTraceToolCall; result: AgentTraceToolResult | null }
+export type APITraceReasoning = Required<AgentTraceReasoning>
+export type APITraceIntermediateContent = Required<AgentTraceIntermediateContent>
+export type APITraceToolCall = Required<AgentTraceToolCall>
+export type APITraceToolResult = Required<AgentTraceToolResult>
+export type APIAnyTraceItem =
+  APITraceReasoning | APITraceIntermediateContent | APITraceToolCall | APITraceToolResult
+export type APITrace = APIAnyTraceItem[]
+export type TraceStatus = APITraceToolResult['status'] | 'pending'
 
 export type WebSource = { url: ExternalHref; name: string; favicon: string | null }
 
 export type TextSegment = { text: string; url?: ExternalHref }
 
-export function isWebSearch(call: AgentTraceToolCall) {
-  return (call.tool || call.name) === 'web_search'
+export function toolName(call: APITraceToolCall) {
+  return call.label || call.name
+}
+
+export function mergeTraceTools(trace: APITrace, reasoning: string) {
+  type TraceToolMerged = {
+    type: 'tool_call'
+    isWebSearch: boolean
+    id: string
+    children: {
+      call: APITraceToolCall
+      result?: APITraceToolResult
+    }[]
+  }
+  type TraceItem = APITraceReasoning | APITraceIntermediateContent | TraceToolMerged
+  type NotAgentTraceToolResult = Exclude<APIAnyTraceItem, APITraceToolResult>
+
+  const toolResults = new Map<string, APITraceToolResult>()
+  const items: NotAgentTraceToolResult[] = []
+  for (const item of trace) {
+    if (item.type === 'tool_result') toolResults.set(item.tool_call_id, item)
+    else items.push(item)
+  }
+
+  let tracedReasoning = ''
+  const mergedItems = items.reduce((mergeItems, item) => {
+    if (item.type === 'tool_call') {
+      const last = mergeItems.at(-1)
+      const id = `tool:${item.tool || toolName(item)}`
+      if (last && last.type === 'tool_call' && id === last.id) {
+        last.children.push({ call: item, result: toolResults.get(item.tool_call_id) })
+        return mergeItems
+      }
+      mergeItems.push({
+        type: 'tool_call',
+        id,
+        isWebSearch: (item.tool || item.name) === 'web_search',
+        children: [{ call: item, result: toolResults.get(item.tool_call_id) }]
+      })
+    } else {
+      if (item.type === 'reasoning') {
+        tracedReasoning = item.content.trim()
+      }
+      mergeItems.push(item)
+    }
+    return mergeItems
+  }, [] as TraceItem[])
+
+  // Reasoning streams before the trace records it.
+  const liveReasoning = reasoning.trim()
+  if (liveReasoning && liveReasoning !== tracedReasoning) {
+    mergedItems.push({ type: 'reasoning', content: liveReasoning })
+  }
+
+  return mergedItems
 }
 
 function sourceFavicon(url: string, favicon?: string | null) {
@@ -44,9 +107,9 @@ export function decodeEntities(text: string) {
 }
 
 /** Sources with an http(s) address, once each, in the order they came. */
-export function webSources(results: AgentTraceToolResult[]): WebSource[] {
+export function webSources(result?: APITraceToolResult): WebSource[] | null {
   const sources: WebSource[] = []
-  for (const source of results.flatMap((result) => result.results ?? [])) {
+  for (const source of result?.results ?? []) {
     const url = source.url
     if (!url || !isSafeWebSource(url) || sources.some((seen) => seen.url === url)) continue
     sources.push({
@@ -55,11 +118,12 @@ export function webSources(results: AgentTraceToolResult[]): WebSource[] {
       favicon: sourceFavicon(url, source.favicon)
     })
   }
+  if (!sources.length) return null
   return sources
 }
 
 /** The one argument a visitor would recognise as what the model asked for. */
-export function toolRequest(call: AgentTraceToolCall): string | null {
+export function toolRequest(call: APITraceToolCall): string | null {
   const args = call.arguments
   if (!args) return null
   const preferredKeys = ['query', 'request', 'subject', 'name', 'title', 'url']
@@ -76,7 +140,8 @@ export function toolRequest(call: AgentTraceToolCall): string | null {
 }
 
 /** What a tool answered, as text, when it gave no web sources to list. */
-export function toolResultText(result: AgentTraceToolResult): string | null {
+export function toolResultText(result?: APITraceToolResult): string | null {
+  if (!result) return null
   const sourceContent = (result.results ?? [])
     .map((source) => source.content || source.name)
     .filter(Boolean)

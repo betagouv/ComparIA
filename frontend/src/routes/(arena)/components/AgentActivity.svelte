@@ -1,18 +1,13 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
-  import type { AgentTraceToolCall } from '$lib/generated/backend'
+  import type { AgentTraceToolCall, AgentTraceToolResult } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
   import { SvelteSet } from 'svelte/reactivity'
-  import {
-    isWebSearch,
-    linkify,
-    toolRequest,
-    toolResultText,
-    webSources,
-    type ActivityStep,
-    type WebSource
-  } from './toolActivity'
+  import { linkify, toolRequest, toolResultText, webSources, type WebSource } from './toolActivity'
 
+  export type ActivityStep =
+    | { type: 'reasoning'; content: string }
+    | { type: 'tool'; call: AgentTraceToolCall; result: AgentTraceToolResult | null }
   export type AgentActivityProps = {
     id: string
     /** Consecutive reasoning and tool calls, with no answer text between them. */
@@ -38,6 +33,10 @@
   }
 
   const SOURCE_LIMIT = 5
+
+  export function isWebSearch(call: AgentTraceToolCall) {
+    return (call.tool || call.name) === 'web_search'
+  }
 
   function toolName(call: AgentTraceToolCall) {
     return call.label || call.name
@@ -73,7 +72,7 @@
       const results = row.steps.flatMap((step) =>
         step.type === 'tool' && step.result ? [step.result] : []
       )
-      row.sources = webSources(results)
+      row.sources = webSources({ result: results })
       const calls = row.steps.filter((step) => step.type === 'tool')
       if (calls.length && calls.every((step) => step.result?.status === 'error')) {
         row.icon = 'i-ri-error-warning-line'
@@ -111,7 +110,7 @@
 
   function favicons(sources: WebSource[]) {
     return [
-      ...new Set(sources.flatMap((source) => (source.favicon ? [source.favicon] : [])))
+      ...new Set(sources?.flatMap((source) => (source.favicon ? [source.favicon] : [])))
     ].slice(0, 3)
   }
 
@@ -194,7 +193,7 @@
             {:else if row.calls}
               <span class="agent-activity__request">{row.calls}</span>
             {/if}
-            {#if row.sources.length > 0}
+            {#if row.sources}
               <span class="agent-activity__count gap-1 flex shrink-0 items-center">
                 {#if icons.length > 0}
                   <span class="agent-activity__favicons flex" aria-hidden="true">
@@ -225,7 +224,7 @@
                 {#if step.type === 'reasoning'}
                   <div>{@render longText(key, step.content)}</div>
                 {:else}
-                  {@const sources = step.result ? webSources([step.result]) : []}
+                  {@const sources = webSources(step.result) || []}
                   {@const text =
                     step.result && !sources.length ? toolResultText(step.result) : null}
                   {@const request = row.request ? null : toolRequest(step.call)}
