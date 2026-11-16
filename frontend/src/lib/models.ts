@@ -10,7 +10,7 @@ import type {
 import type { Archs, EnergyClasses, MaybeArchs } from '$lib/generated/constants'
 import { MAYBE_ARCHS } from '$lib/generated/constants'
 import { propsToAttrs } from '$lib/utils/commons'
-import { toShortDate } from '$lib/utils/data'
+import { toSearchString, toShortDate } from '$lib/utils/data'
 import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 import { getLocale } from './i18n/runtime'
@@ -333,7 +333,7 @@ export function parseModel(model: APILLMData, revisedRankData?: ModelRevisedRank
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       }
     },
-    search: [model.human_id, model.name, model.lab.name].join(' '),
+    search: toSearchString([model.human_id, model.name, model.lab.name]),
     data: revisedRankData ? { ...model.data!, ...revisedRankData } : null,
     links: checkLinks(model.links)
   }
@@ -510,7 +510,7 @@ export function joinPersonalRanking(
       id: row.llm_id,
       model,
       generalRank: generalRanks[row.llm_id] ?? null,
-      search: model?.search ?? row.name
+      search: model?.search ?? toSearchString([row.name])
     }
   })
 }

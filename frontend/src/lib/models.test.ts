@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import type { PersonalRankingRow } from '$lib/generated/backend'
+import type { APILLMData, PersonalRankingRow } from '$lib/generated/backend'
 import {
   assignRankClasses,
   isModelNew,
   joinPersonalRanking,
   MAX_RANK_CLASS,
+  parseModel,
   rankClassSpans,
   type BotModel
 } from './models'
@@ -117,7 +118,7 @@ describe('joinPersonalRanking', () => {
 
     expect(row.model).toBeNull()
     expect(row.name).toBe('Retired model')
-    expect(row.search).toBe('Retired model')
+    expect(row.search).toBe('retired model')
   })
 
   it('gives no general rank to a model the general ranking does not hold', () => {
@@ -138,5 +139,27 @@ describe('joinPersonalRanking', () => {
     )
 
     expect(rows.map((row) => row.id)).toEqual(['b', 'a'])
+  })
+})
+
+describe('parseModel search text', () => {
+  const llm = {
+    id: 'gemma',
+    human_id: 'gemma-4-31b',
+    name: 'Gemma 4 31B',
+    lab: { name: 'Google', id: 'google' },
+    license: { kind: 'open-source' },
+    release_date: '2026-08-01',
+    arch: 'dense',
+    size_class: 'M',
+    wh_per_million_token: 10
+  } as unknown as APILLMData
+
+  it('is lowercase, so a lowercased query finds names and labs written with capitals', () => {
+    const { search } = parseModel(llm)
+
+    expect(search).toBe('gemma-4-31b gemma 4 31b google')
+    expect(search.includes('Google'.toLowerCase())).toBe(true)
+    expect(search.includes('gemma 4')).toBe(true)
   })
 })
