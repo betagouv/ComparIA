@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   getComparison,
   parseAPIComparison,
@@ -112,9 +112,16 @@ describe('retry', () => {
 describe('askFirst', () => {
   const ids = ['gemma', 'mistral']
 
+  // This file runs in Node, which may have no sessionStorage.
+  beforeEach(() => {
+    vi.stubGlobal('sessionStorage', { getItem: () => '' })
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('sends the chosen model ids in manual mode', async () => {
     streamed.length = 0
-    sessionStorage.setItem('comparia-cohorts', '')
 
     await getComparison(undefined).askFirst({
       mode: 'custom',
@@ -132,7 +139,6 @@ describe('askFirst', () => {
     'sends no model ids in %s mode, even if some are saved',
     async (mode) => {
       streamed.length = 0
-      sessionStorage.setItem('comparia-cohorts', '')
 
       await getComparison(undefined).askFirst({
         mode,
