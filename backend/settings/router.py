@@ -16,7 +16,7 @@ from backend.settings.legal import (
     get_active_legal_document,
     get_legal_presentation,
 )
-from backend.utils.locale import LocaleQuery, get_locales_settings
+from backend.utils.locale import LocaleQuery, get_locales_settings, pick_translation
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.i18n import SupportedLocale
 
@@ -66,16 +66,18 @@ async def _active_document(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=LEGAL_DOCUMENT_NOT_PUBLISHED
         )
-    if content := document.content.get(locale):
-        return document, content, locale
-    locales = await get_locales_settings()
-    if content := document.content.get(locales.default):
-        return document, content, locales.default
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="No published document is available for this locale.",
-    )
+    # Text in another language beats blocking every visitor on a document
+    # that is in force but was written under a locale this instance dropped.
+    try:
+        locale, content = pick_translation(
+            document.content, locale, await get_locales_settings()
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No published document is available for this locale.",
+        ) from exc
+    return document, content, locale
 
 
 def _cache_headers(*parts: str) -> dict[str, str]:

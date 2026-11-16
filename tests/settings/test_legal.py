@@ -320,7 +320,7 @@ def legal_document(**overrides) -> LegalDocument:
 
 
 @contextmanager
-def public_client(presentation=None, document=None):
+def public_client(presentation=None, document=None, **locales):
     document = document or legal_document()
 
     async def active_document(_kind):
@@ -332,7 +332,7 @@ def public_client(presentation=None, document=None):
     app = FastAPI()
     app.include_router(settings_router.router)
     with (
-        mock_settings(),
+        mock_settings(**locales),
         patch.object(settings_router, "get_active_legal_document", active_document),
         patch.object(settings_router, "get_legal_presentation", get_presentation),
     ):
@@ -362,9 +362,33 @@ def test_public_terms_say_when_nothing_is_published():
     assert nothing.json()["detail"] == settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
 
 
-def test_public_terms_in_no_readable_locale_are_not_unpublished():
+def test_public_terms_fall_back_to_another_enabled_locale():
     with public_client(document=legal_document(content={"da": "Vilkår"})) as client:
-        missing = client.get("/settings/legal/terms", params={"locale": "en"})
+        terms = client.get("/settings/legal/terms", params={"locale": "en"})
+
+    assert terms.status_code == 200
+    assert terms.json()["locale"] == "da"
+    assert terms.json()["content"] == "Vilkår"
+
+
+def test_public_terms_written_under_a_disabled_locale_are_still_served():
+    document = legal_document(content={"fr": "Vilkår"})
+    with public_client(
+        document=document, default_locale="da", enabled_locales=["da", "en"]
+    ) as client:
+        terms = client.get("/settings/legal/terms", params={"locale": "da"})
+        privacy = client.get("/settings/legal/privacy_policy", params={"locale": "da"})
+
+    assert terms.status_code == 200
+    assert terms.json()["locale"] == "fr"
+    assert terms.json()["content"] == "Vilkår"
+    assert privacy.status_code == 200
+    assert privacy.json()["content"] == "Vilkår"
+
+
+def test_public_terms_with_no_text_are_not_unpublished():
+    with public_client(document=legal_document(content={})) as client:
+        missing = client.get("/settings/legal/terms")
 
     assert missing.status_code == 404
     assert missing.json()["detail"] != settings_router.LEGAL_DOCUMENT_NOT_PUBLISHED
