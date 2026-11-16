@@ -108,3 +108,40 @@ describe('retry', () => {
     expect(comparison.turns[0].status).toBe('error')
   })
 })
+
+describe('askFirst', () => {
+  const ids = ['gemma', 'mistral']
+
+  it('sends the chosen model ids in manual mode', async () => {
+    streamed.length = 0
+    sessionStorage.setItem('comparia-cohorts', '')
+
+    await getComparison(undefined).askFirst({
+      mode: 'custom',
+      custom_models_selection: ids,
+      prompt_value: 'Bonjour',
+      web_search: false
+    })
+
+    expect(streamed).toHaveLength(1)
+    expect(streamed[0].url).toBe('/arena/add_first_text')
+    expect(streamed[0].body).toMatchObject({ mode: 'custom', custom_models_selection: ids })
+  })
+
+  it.each(['random', 'small-models', 'big-vs-small'] as const)(
+    'sends no model ids in %s mode, even if some are saved',
+    async (mode) => {
+      streamed.length = 0
+      sessionStorage.setItem('comparia-cohorts', '')
+
+      await getComparison(undefined).askFirst({
+        mode,
+        custom_models_selection: ids,
+        prompt_value: 'Bonjour',
+        web_search: false
+      })
+
+      expect(streamed[0].body).toMatchObject({ mode, custom_models_selection: null })
+    }
+  )
+})
