@@ -40,8 +40,6 @@
   })
 </script>
 
-<svelte:window onresize={() => (kept = null)} />
-
 <div class="md:w-full md:min-w-0 md:flex-1 flex w-[80vw] flex-col">
   <div
     class={[
