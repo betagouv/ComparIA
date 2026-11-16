@@ -50,6 +50,29 @@ describe('LegalDocument', () => {
     expect(container.querySelector('.fr-alert')?.textContent).toContain('fransk')
   })
 
+  it.each([
+    ['da', 'en', 'engelsk'],
+    ['en', 'fr', 'French'],
+    ['fr', 'en', 'anglais']
+  ] as const)(
+    'names the language it substitutes, not always French: %s reader, %s document',
+    (reader, documentLocale, name) => {
+      getLocale.mockReturnValue(reader)
+
+      const { container } = render(LegalDocument, { ...document, locale: documentLocale })
+
+      expect(container.querySelector('.fr-alert')?.textContent).toContain(name)
+    }
+  )
+
+  it('never claims a non-French document is French', () => {
+    getLocale.mockReturnValue('da')
+
+    const { container } = render(LegalDocument, { ...document, locale: 'en' })
+
+    expect(container.querySelector('.fr-alert')?.textContent).not.toContain('fransk')
+  })
+
   it('stays quiet when the document is in the requested language', () => {
     getLocale.mockReturnValue('fr')
 

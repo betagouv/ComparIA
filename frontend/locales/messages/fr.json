@@ -1147,7 +1147,7 @@
     },
     "general": {
         "document": {
-            "frenchOnly": "Ce document n’est publié qu’en français pour le moment.",
+            "otherLanguage": "Ce document n’est publié qu’en {language} pour le moment.",
             "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
             "version": "Version {version}, applicable depuis le {date}."
         },
