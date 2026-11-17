@@ -3,6 +3,7 @@
   import Expandable from '$components/Expandable.svelte'
   import { MarkdownCode as Markdown } from '$components/markdown'
 
+  import { getToolsContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { SvelteSet } from 'svelte/reactivity'
   import IconList from './IconList.svelte'
@@ -29,6 +30,8 @@
     pending
   }: { id: string; trace: APITrace; reasoning: string; pending: boolean } = $props()
 
+  const tools = getToolsContext()
+
   // Long lists and answers the visitor chose to see in full.
   let expanded = new SvelteSet<string>()
 
@@ -43,11 +46,13 @@
   type TraceItemWebSearch = {
     type: 'web_search'
     name: string
+    key: string
     children: TraceItemToolChild<WebSource[]>[]
   }
   type TraceItemTool = {
     type: 'tool'
     name: string
+    key: string
     children: TraceItemToolChild<string>[]
   }
   type AnyTraceItemTool = TraceItemTool | TraceItemWebSearch
@@ -63,6 +68,7 @@
         return {
           type: item.isWebSearch ? 'web_search' : 'tool',
           name: toolName(item.children[0].call),
+          key: item.children[0].call.tool,
           children: item.children.map((child) => ({
             request: toolRequest(child.call),
             function: child.call.name,
@@ -110,7 +116,11 @@
           .filter((v) => typeof v === 'string')
       }
     }
-    return { icons: ['i-ri-tools-line'], count: item.children.length }
+    const tool = tools.all.find((tool) => tool.key === item.key)
+    return {
+      icons: [tool?.logo_url || tool?.icon || 'i-ri-tools-line'],
+      count: item.children.length
+    }
   }
 
   function isLong(content: string | WebSource[]) {
@@ -119,11 +129,6 @@
     } else {
       return content.length > 5
     }
-  }
-
-  function hideBrokenImage(event: Event) {
-    const image = event.currentTarget
-    if (image instanceof HTMLImageElement) image.hidden = true
   }
 
   function site(url: string) {
@@ -248,7 +253,7 @@
                 {#if status === 'error'}
                   <Icon {...getIconProps('error')} />
                 {/if}
-                <IconList {...getToolIcons(item)} />
+                <IconList {...getToolIcons(item)} fallbackIcon="i-ri-tools-line" />
               {/if}
             {/snippet}
 
