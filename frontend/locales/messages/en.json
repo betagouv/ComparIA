@@ -1329,7 +1329,12 @@
         "previewEmpty": "The preview will appear here.",
         "toastError": "Invalid data",
         "toastSuccess": "Data saved",
-        "unsavedChanges": "You have unsaved changes. Are you sure you want to leave the page?"
+        "unsavedChanges": "You have unsaved changes. Are you sure you want to leave the page?",
+        "upload": {
+            "browse": "Browse files",
+            "remove": "Remove image",
+            "current": "Current uploaded image"
+        }
     },
     "general": {
         "document": {
