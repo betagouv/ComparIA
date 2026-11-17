@@ -939,6 +939,7 @@ export interface ToolAdmin {
    */
   enabled?: boolean;
   has_secret?: boolean;
+  logo_url?: string | null;
 }
 export interface ToolUpsert {
   id?: string;

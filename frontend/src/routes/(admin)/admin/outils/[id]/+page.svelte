@@ -5,11 +5,12 @@
   import { FormInput, type FormInputProps } from '$components/form'
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
   import Form from '$components/form/Form.svelte'
+  import FormUpload from '$components/form/FormUpload.svelte'
   import { api } from '$lib/fastapi-client'
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { useFormSchema } from '$lib/stores/form.svelte'
+  import { onFormError, resetFormErrors, useFormSchema } from '$lib/stores/form.svelte'
   import type { PageProps } from './$types'
 
   type ToolTestResult = {
@@ -102,6 +103,26 @@
       useToast((error as Error).message, 6000, 'error')
     } finally {
       removing = false
+    }
+  }
+
+  async function onLogoUpdate(file: File | null) {
+    resetFormErrors(form.errors)
+
+    let body: FormData | undefined = undefined
+    if (file) {
+      body = new FormData()
+      body.append('file', file)
+    }
+    try {
+      await api.request<typeof data.formProps.data>(
+        `/admin/tools/tool/${data.formProps.data.id}/logo`,
+        { method: file ? 'PUT' : 'DELETE', body, headers: {} }
+      )
+      await invalidate('admin:tools')
+      useToast(file ? 'Logo updated' : 'Logo deleted', 4000)
+    } catch (e) {
+      onFormError(e, form.errors)
     }
   }
 
@@ -217,7 +238,16 @@
       allowed_domains: allowedDomains,
       blocked_domains: blockedDomains
     }}
-  />
+  >
+    <FormUpload
+      id="file"
+      label="Logo"
+      accept="image/png,image/jpeg,image/svg+xml,image/webp"
+      current={data.formProps.data.logo_url}
+      errors={form.errors}
+      onUpdate={onLogoUpdate}
+    />
+  </Form>
 
   <section class="mt-6! p-6 cg-border max-w-[700px]" aria-labelledby="tool-test-title">
     <h2 id="tool-test-title" class="text-xl!">{m['admin.tools.test']()}</h2>

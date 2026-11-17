@@ -514,4 +514,5 @@ export interface ToolPublic {
   key: string;
   label: string;
   description?: string | null;
+  logo_url?: string | null;
 }
