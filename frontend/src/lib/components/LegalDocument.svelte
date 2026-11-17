@@ -2,6 +2,7 @@
   import { MarkdownCode as Markdown, stripLeadingTitle } from '$components/markdown'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
+  import { formatLanguage } from '$lib/languageName'
 
   let {
     version,
@@ -10,8 +11,8 @@
     locale
   }: { version: string; effectiveAt: string; content: string; locale: Locale } = $props()
 
-  // The backend serves the French document when the requested locale has none,
-  // so say it rather than passing the substitution off as a translation.
+  // The backend serves another language's document when the requested locale has
+  // none, so name that language rather than passing it off as a translation.
   const substituted = $derived(locale !== getLocale())
 
   // The date a document takes effect is one fact, not one per reader, so it is
@@ -28,7 +29,9 @@
 </script>
 
 {#if substituted}
-  <p class="fr-alert fr-alert--info">{m['general.document.frenchOnly']()}</p>
+  <p class="fr-alert fr-alert--info">
+    {m['general.document.otherLanguage']({ language: formatLanguage(locale, getLocale()) })}
+  </p>
 {/if}
 
 <p class="fr-text--sm text-grey">{m['general.document.version']({ version, date })}</p>

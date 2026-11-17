@@ -294,9 +294,9 @@
                 "title": "Privatlivspolitik"
             },
             "terms": {
-                "contentLabel": "Indhold af brugsbetingelser",
-                "draftTitle": "Nye brugsbetingelser",
-                "emptyDescription": "Publicér brugsbetingelserne før åbning af arenaen for offentligheden.",
+                "contentLabel": "Indhold af brugsvilkår",
+                "draftTitle": "Nye brugsvilkår",
+                "emptyDescription": "Publicér brugsvilkårene før åbning af arenaen for offentligheden.",
                 "subtitle": "Dokument, hvis accept er obligatorisk.",
                 "title": "Vilkår"
             }
@@ -1147,16 +1147,16 @@
     },
     "general": {
         "document": {
-            "frenchOnly": "Dette dokument er indtil videre kun offentliggjort på fransk.",
+            "otherLanguage": "Dette dokument er indtil videre kun offentliggjort på {language}.",
             "unavailable": "Dette dokument er ikke tilgængeligt for øjeblikket. Prøv venligst igen senere.",
             "version": "Version {version}, gældende fra {date}."
         },
         "privacy_policy": {
             "optOutTitle": "Fravælg måling af besøg",
-            "title": "Fortrolighedspolitik"
+            "title": "Privatlivspolitik"
         },
         "terms": {
-            "title": "Brugsbetingelser"
+            "title": "Brugsvilkår"
         }
     },
     "generated": {
@@ -2211,11 +2211,11 @@
         "titles": {
             "accessibility": "Erklæring om tilgængelighed",
             "arene": "Chat",
-            "privacy_policy": "Fortrolighedspolitik",
+            "privacy_policy": "Privatlivspolitik",
             "invite": "Invitation",
             "login": "Log ind",
             "legal_notice": "Om os",
-            "terms": "Brugsbetingelser",
+            "terms": "Brugsvilkår",
             "modeles": "Modelliste",
             "ranking": "Rangliste",
             "ecodesign": "Erklæring om bæredygtigt design",

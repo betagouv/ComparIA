@@ -4,6 +4,7 @@
   import type { InformationalPageKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
+  import { formatLanguage } from '$lib/languageName'
   import type { PageProps } from './$types'
 
   const { data, params }: PageProps = $props()
@@ -17,10 +18,14 @@
   <div class="fr-container">
     <h1 id="main-title" class="mb-8!">{title}</h1>
     {#if data.page}
-      <!-- The backend serves the default document when the requested locale has none,
-      so say it rather than passing the substitution off as a translation. -->
+      <!-- The backend serves another language's document when the requested locale has
+      none, so name that language rather than passing it off as a translation. -->
       {#if data.page.locale !== getLocale()}
-        <p class="fr-alert fr-alert--info mb-4!">{m['general.document.frenchOnly']()}</p>
+        <p class="fr-alert fr-alert--info mb-4!">
+          {m['general.document.otherLanguage']({
+            language: formatLanguage(data.page.locale, getLocale())
+          })}
+        </p>
       {/if}
       <Markdown message={stripLeadingTitle(data.page.content)} sanitize_html variant="document" />
     {:else}
