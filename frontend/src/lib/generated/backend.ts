@@ -515,4 +515,5 @@ export interface ToolPublic {
   label: string;
   description?: string | null;
   logo_url?: string | null;
+  enabled: boolean;
 }
