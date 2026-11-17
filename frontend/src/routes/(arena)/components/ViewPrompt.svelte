@@ -6,7 +6,6 @@
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
-  import type { ToolPublic } from '$lib/generated/backend'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
@@ -22,14 +21,12 @@
     onPrompt,
     promptError,
     loading,
-    suggestions,
-    tools
+    suggestions
   }: {
     onPrompt: (args: APIModeAndPromptData) => void | Promise<void>
     promptError?: string
     loading: boolean
     suggestions: SuggestionCategory[]
-    tools: ToolPublic[]
   } = $props()
 
   let promptEl = $state<HTMLTextAreaElement>()
@@ -213,7 +210,7 @@
             {models}
             disabled={loading}
           />
-          <ToolPicker {tools} bind:selected={selectedTools} disabled={loading} />
+          <ToolPicker bind:selected={selectedTools} disabled={loading} />
         </div>
 
         <Button

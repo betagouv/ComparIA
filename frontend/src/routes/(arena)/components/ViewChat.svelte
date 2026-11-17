@@ -4,7 +4,7 @@
   import TextPrompt from '$components/TextPrompt.svelte'
   import ToolCard from '$components/ToolCard.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
-  import type { ToolPublic } from '$lib/generated/backend'
+  import { getToolsContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
@@ -12,19 +12,18 @@
 
   let {
     comparisonId,
-    runAfterAcceptance,
-    tools
+    runAfterAcceptance
   }: {
     comparisonId: string
     runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
-    tools: ToolPublic[]
   } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
 
+  const tools = getToolsContext()
   const activeTools = $derived(
     (comparator.comparison?.enabled_tools ?? []).map((key) =>
-      tools.find((tool) => tool.key === key)!
+      tools.all.find((tool) => tool.key === key)!
     )
   )
 
@@ -133,33 +132,31 @@
                 {mode.title}
                 <Tooltip id="mode-desc" text={mode.description} size="xs" />
               </div>
-              <Dropdown
-                id="dropdown-tools"
-                label={m['chatbot.tools.enabled']()}
-                buttonClass="fr-select text-xs! ps-2! pe-8! py-1! shadow-none! bg-transparent! cg-border rounded-lg! flex! items-center gap-1"
-              >
-                {#snippet buttonLabel(label)}
-                  <Icon icon="i-ri-tools-line" class="text-primary" block size="xs" />
-                  {label}
-                  <IconList
-                    icons={activeTools.map(
-                      (tool) =>
-                        tool.logo_url ||
-                        (tool.key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line')
-                    )}
-                    count={null}
-                    fallbackIcon="i-ri-tools-line"
-                  />
-                {/snippet}
+              {#if activeTools.length}
+                <Dropdown
+                  id="dropdown-tools"
+                  label={m['chatbot.tools.enabled']()}
+                  buttonClass="fr-select text-xs! ps-2! pe-8! py-1! shadow-none! bg-transparent! cg-border rounded-lg! flex! items-center gap-1"
+                >
+                  {#snippet buttonLabel(label)}
+                    <Icon icon="i-ri-tools-line" class="text-primary" block size="xs" />
+                    {label}
+                    <IconList
+                      icons={activeTools.map((tool) => tool.logo_url || tool.icon)}
+                      count={null}
+                      fallbackIcon="i-ri-tools-line"
+                    />
+                  {/snippet}
 
-                <ul class="m-0 p-2 gap-1 flex list-none flex-col">
-                  {#each activeTools as tool (tool.key)}
-                    <li class="m-0! p-0">
-                      <ToolCard {tool} size="xs" />
-                    </li>
-                  {/each}
-                </ul>
-              </Dropdown>
+                  <ul class="m-0 p-2 gap-1 flex list-none flex-col">
+                    {#each activeTools as tool (tool.key)}
+                      <li class="m-0! p-0">
+                        <ToolCard {tool} size="xs" />
+                      </li>
+                    {/each}
+                  </ul>
+                </Dropdown>
+              {/if}
             </div>
           </div>
         {/if}

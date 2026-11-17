@@ -4,18 +4,18 @@
   import { Button, Icon, Modal } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
   import { FormToggle } from '$components/form'
-  import type { ToolPublic } from '$lib/generated/backend'
+  import { getToolsContext, type Tool } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { fromEntries, getKeys } from '$lib/utils/commons'
 
   export type ToolPickerProps = {
-    tools: ToolPublic[]
     selected: string[]
     disabled?: boolean
   }
 
-  let { tools, selected = $bindable(), disabled = false }: ToolPickerProps = $props()
+  let { selected = $bindable(), disabled = false }: ToolPickerProps = $props()
 
+  const tools = $derived(getToolsContext().enabled)
   const modalId = 'fr-modal-tools'
 
   let form = $state(fromEntries(tools.map((tool) => [tool.key, selected.includes(tool.key)])))
@@ -42,7 +42,7 @@
   }
 </script>
 
-{#snippet toolToggle(tool: ToolPublic, kind: 'dropdown' | 'modal' = 'dropdown')}
+{#snippet toolToggle(tool: Tool, kind: 'dropdown' | 'modal' = 'dropdown')}
   <FormToggle
     id="tool-{tool.key}-{kind}"
     bind:value={form[tool.key]}

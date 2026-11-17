@@ -1,9 +1,11 @@
+import { globalContext } from '$lib/testing/mockContexts'
 import { fireEvent, render, screen } from '@testing-library/svelte'
+import type { ComponentProps } from 'svelte'
 import { describe, expect, it, vi } from 'vitest'
 import MessageBot from './MessageBot.svelte'
-import type { ComponentProps } from 'svelte'
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
+vi.mock('$lib/global.svelte', async (importOriginal) => globalContext(importOriginal))
 
 const turnSide = (llm_msg: Record<string, unknown>) => ({
   status: 'complete' as const,

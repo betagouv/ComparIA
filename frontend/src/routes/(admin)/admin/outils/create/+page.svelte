@@ -283,7 +283,8 @@
             tool={{
               key,
               label: label.trim() || m['admin.tools.wizard.present.label'](),
-              description: description.trim()
+              description: description.trim(),
+              icon: key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'
             }}
           />
         </div>

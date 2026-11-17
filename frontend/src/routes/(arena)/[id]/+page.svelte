@@ -7,9 +7,6 @@
   import { getComparison } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { TOSModal, ViewChat } from '../components'
-  import type { PageProps } from './$types'
-
-  const { data }: PageProps = $props()
 
   const id = $derived(page.params.id)
   const comparator = $derived(getComparison(id))
@@ -57,6 +54,6 @@
   {/snippet}
 
   {#if comparator.comparison}
-    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} tools={data.tools} />
+    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
   {/if}
 </PageLayout>

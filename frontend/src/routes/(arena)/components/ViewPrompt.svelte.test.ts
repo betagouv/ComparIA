@@ -1,3 +1,4 @@
+import { globalContext } from '$lib/testing/mockContexts'
 import { fireEvent, render } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ViewPrompt from './ViewPrompt.svelte'
@@ -18,12 +19,12 @@ vi.mock('$lib/chatService.svelte', () => ({
     }
   ]
 }))
+vi.mock('$lib/global.svelte', async (importOriginal) => globalContext(importOriginal))
 
 const props = {
   loading: false,
   onPrompt: vi.fn(),
-  suggestions: [],
-  tools: []
+  suggestions: []
 }
 
 describe('ViewPrompt', () => {
