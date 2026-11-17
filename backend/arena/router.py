@@ -3,9 +3,10 @@ import logging
 from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 
+from backend.admin.logos import logo_response
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
@@ -74,6 +75,7 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    Tool,
     ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
@@ -84,6 +86,7 @@ from utils.database.prompt_checks import (
     get_prompt_check,
     save_prompt_check_result,
 )
+from utils.database.session import get_session
 
 logger = logging.getLogger("languia")
 
@@ -342,6 +345,22 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
 async def get_tools() -> list[ToolPublic]:
     """Tools a visitor may offer to the models on this instance."""
     return [ToolPublic.model_validate(tool) for tool in await get_offered_tools()]
+
+
+@router.get("/tools/logo/{tool_id}", response_class=Response)
+async def get_lab_logo(tool_id: UUID) -> Response:
+    async with get_session() as session:
+        tool = await session.get(Tool, tool_id)
+        if tool is None or tool.logo is None or tool.logo_content_type is None:
+            raise HTTPException(status_code=404, detail="tool_logo_not_found")
+
+        return logo_response(
+            tool.logo,
+            tool.logo_content_type,
+            # The URL carries the logo version, so a new upload is a new
+            # URL and the old bytes can stay in the browser for a year.
+            "public, max-age=31536000, immutable",
+        )
 
 
 @router.post(

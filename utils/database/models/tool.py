@@ -3,12 +3,13 @@ from typing import Annotated, Literal
 
 from pydantic import model_validator
 from pydantic_core import PydanticCustomError
+from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
 from utils.validation import NonEmptyStr
 
-from .utils import BaseDBModel
+from .utils import BaseDBModel, logo_version
 
 # How a tool is carried out. "builtin" names a function we ship; the key must
 # exist in the arena's built-in registry. "mcp" points at a server whose
@@ -102,6 +103,15 @@ class Tool(ToolBase, table=True):
     # moment it calls the provider or the server.
     secret_encrypted: str | None = None
 
+    logo: Annotated[bytes | None, Field(sa_type=LargeBinary)] = None
+    logo_content_type: str | None = None
+
+    @property
+    def logo_url(self) -> str | None:
+        if self.logo:
+            return f"/arena/tools/logo/{self.id}?v={logo_version(self.logo)}"
+        return None
+
 
 class ToolUpsert(ToolBase):
     # Write-only: left empty, the stored credential is kept. Removing it has
@@ -133,6 +143,7 @@ class ToolAdmin(ToolBase):
     never the credential."""
 
     has_secret: bool = False
+    logo_url: str | None = None
 
 
 class ToolPublic(SQLModel):
@@ -147,3 +158,4 @@ class ToolPublic(SQLModel):
     key: str
     label: str
     description: str | None = None
+    logo_url: str | None = None

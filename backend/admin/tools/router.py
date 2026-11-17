@@ -1,7 +1,7 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import select
 
 from backend.admin.tools.models import (
@@ -20,6 +20,7 @@ from backend.admin.tools.services import (
     tool_usage,
     tools_health,
     upsert_tool,
+    upsert_tool_logo,
 )
 from utils.database.models import Tool, ToolAdmin, ToolUpsert
 from utils.database.session import get_session
@@ -82,6 +83,24 @@ async def switch(tool_id: UUID, body: ToolSwitch) -> ToolAdmin:
 async def delete_secret(tool_id: UUID) -> ToolAdmin:
     async with get_session() as session:
         row = await clear_tool_secret(tool_id, session)
+        if not row:
+            raise HTTPException(status_code=404, detail="tool_not_found")
+        return to_admin(row)
+
+
+@router.put("/tool/{tool_id}/logo")
+async def upsert_logo(tool_id: UUID, file: UploadFile) -> ToolAdmin:
+    async with get_session() as session:
+        row = await upsert_tool_logo(tool_id, session, file=file)
+        if not row:
+            raise HTTPException(status_code=404, detail="tool_not_found")
+        return to_admin(row)
+
+
+@router.delete("/tool/{tool_id}/logo")
+async def delete_logo(tool_id: UUID) -> ToolAdmin:
+    async with get_session() as session:
+        row = await upsert_tool_logo(tool_id, session, file=None)
         if not row:
             raise HTTPException(status_code=404, detail="tool_not_found")
         return to_admin(row)

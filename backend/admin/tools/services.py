@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import httpx
+from fastapi import UploadFile
 from linkup import (
     LinkupAuthenticationError,
     LinkupClient,
@@ -13,6 +14,7 @@ from linkup import (
 from sqlalchemy import text
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from backend.admin.logos import read_logo
 from backend.admin.tools.models import (
     ToolDraft,
     ToolFunction,
@@ -24,6 +26,7 @@ from backend.admin.tools.models import (
 from backend.arena.mcp_tools import list_server_functions
 from backend.arena.web_search import WEB_SEARCH_TOOL_NAME, web_search_config
 from backend.config import (
+    LAB_LOGO_BOX,
     TOOL_HEALTH_TTL,
     TOOL_USAGE_DAYS,
     WEB_SEARCH_TOOL_TIMEOUT_SECONDS,
@@ -40,6 +43,7 @@ def to_admin(row: Tool) -> ToolAdmin:
     return ToolAdmin(
         **row.model_dump(exclude={"secret_encrypted"}),
         has_secret=bool(row.secret_encrypted),
+        logo_url=row.logo_url,
     )
 
 
@@ -68,6 +72,21 @@ async def clear_tool_secret(tool_id: UUID, session: AsyncSession) -> Tool | None
     await session.commit()
     await session.refresh(row)
     return row
+
+
+async def upsert_tool_logo(
+    tool_id: UUID, session: AsyncSession, file: UploadFile | None
+) -> Tool | None:
+    logo, content_type = await read_logo(file, LAB_LOGO_BOX) if file else (None, None)
+    tool = await session.get(Tool, tool_id)
+    if tool is None:
+        return None
+    tool.logo = logo
+    tool.logo_content_type = content_type
+    session.add(tool)
+    await session.commit()
+    await session.refresh(tool)
+    return tool
 
 
 def _status_code(error: BaseException) -> int | None:
