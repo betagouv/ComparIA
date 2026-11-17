@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/state'
   import Dropdown from '$components/Dropdown.svelte'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
@@ -9,27 +8,24 @@
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import IconList from './IconList.svelte'
 
   let {
     comparisonId,
-    runAfterAcceptance
+    runAfterAcceptance,
+    tools
   }: {
     comparisonId: string
     runAfterAcceptance: (action: () => unknown | Promise<unknown>) => Promise<void>
+    tools: ToolPublic[]
   } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
 
-  // The picker lives on the prompt view, which is gone once a conversation has
-  // started. Without this the selection silently disappears from view.
-  const toolLabels = $derived(
-    new Map(((page.data.tools ?? []) as ToolPublic[]).map((tool) => [tool.key, tool.label]))
-  )
   const activeTools = $derived(
-    (comparator.comparison?.enabled_tools ?? []).map((key) => ({
-      key,
-      label: toolLabels.get(key) ?? key
-    }))
+    (comparator.comparison?.enabled_tools ?? []).map((key) =>
+      tools.find((tool) => tool.key === key)!
+    )
   )
 
   let prompt = $state('')
@@ -140,12 +136,22 @@
               <Dropdown
                 id="dropdown-tools"
                 label={m['chatbot.tools.enabled']()}
-                buttonClass="fr-select text-xs! ps-2! pe-8! py-1! shadow-none! bg-transparent! cg-border rounded-lg!"
+                buttonClass="fr-select text-xs! ps-2! pe-8! py-1! shadow-none! bg-transparent! cg-border rounded-lg! flex! items-center gap-1"
               >
                 {#snippet buttonLabel(label)}
-                  <Icon icon="i-ri-tools-line" class="text-primary" size="xs" />
+                  <Icon icon="i-ri-tools-line" class="text-primary" block size="xs" />
                   {label}
+                  <IconList
+                    icons={activeTools.map(
+                      (tool) =>
+                        tool.logo_url ||
+                        (tool.key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line')
+                    )}
+                    count={null}
+                    fallbackIcon="i-ri-tools-line"
+                  />
                 {/snippet}
+
                 <ul class="m-0 p-2 gap-1 flex list-none flex-col">
                   {#each activeTools as tool (tool.key)}
                     <li class="m-0! p-0">

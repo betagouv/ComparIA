@@ -161,16 +161,7 @@
             hideExternalIcon
             class="text-grey! gap-2 text-sm! flex! w-full items-center bg-none!"
           >
-            {#if source.favicon}
-              <img
-                src={source.favicon}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                onerror={hideBrokenImage}
-                class="h-[14px] w-[14px] shrink-0"
-              />
-            {/if}
+            <Icon src={source.favicon} icon="i-ri-global-line" size="xs" />
             <span class="truncate">{source.name}</span>
             <span class="text-xs text-nowrap">{site(source.url)}</span>
           </Link>

@@ -89,6 +89,6 @@
       tools={data.tools}
     />
   {:else}
-    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} />
+    <ViewChat comparisonId={comparator.comparisonId!} {runAfterAcceptance} tools={data.tools} />
   {/if}
 </PageLayout>

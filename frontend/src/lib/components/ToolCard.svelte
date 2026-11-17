@@ -16,6 +16,7 @@
   >
     <Icon
       icon={tool.key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'}
+      src={tool.logo_url}
       class="text-primary m-auto"
       {size}
       block
@@ -24,7 +25,7 @@
 
   <div class="lh-tight! h-fit place-self-center">
     <strong>{tool.label}</strong><br />
-    {#if tool.description}
+    {#if size == 'sm' && tool.description}
       <span class="text-grey text-[11px]">{tool.description}</span>
     {/if}
   </div>
