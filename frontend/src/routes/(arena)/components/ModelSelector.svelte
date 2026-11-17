@@ -200,9 +200,13 @@
                   <label {...labelProps}>
                     {@render input(opt, {
                       'aria-controls': opt.value != 'custom' ? 'modal-mode-selection' : '',
-                      // An already checked radio fires no change event.
+                      // Opening the picker removes this radio before the browser fires its
+                      // change event, and an already checked radio fires none, so set the
+                      // mode here.
                       onclick: () => {
-                        if (opt.value === 'custom') showModelsSelection = true
+                        if (opt.value !== 'custom') return
+                        mode = 'custom'
+                        showModelsSelection = true
                       }
                     })}
                     <Icon icon={opt.icon} block class="text-primary me-3" />
