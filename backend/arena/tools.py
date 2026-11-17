@@ -13,11 +13,7 @@ from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal
 
 from backend.config import TOOL_REJECTION_TTL
-from utils.storage.redis import (
-    REDIS_TOOLS_REJECTED_KEY,
-    get_redis_client,
-    hash_content,
-)
+from utils.storage.redis import REDIS_TOOLS_REJECTED_KEY, get_redis_client, hash_content
 
 if TYPE_CHECKING:
     from utils.database.models import Tool
@@ -162,6 +158,18 @@ async def get_enabled_tools() -> list["Tool"]:
         rows = await session.exec(
             select(Tool).where(Tool.enabled).order_by(Tool.created_at)
         )
+        return list(rows.all())
+
+
+async def get_all_tools() -> list["Tool"]:
+    """All tools, in display order."""
+    from sqlmodel import select
+
+    from utils.database.models import Tool
+    from utils.database.session import get_session
+
+    async with get_session() as session:
+        rows = await session.exec(select(Tool).order_by(Tool.created_at))
         return list(rows.all())
 
 

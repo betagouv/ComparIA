@@ -52,7 +52,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.tools import get_offered_tools, keep_offered_tools
+from backend.arena.tools import can_run, get_all_tools, keep_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -343,8 +343,18 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
 
 @router.get("/tools")
 async def get_tools() -> list[ToolPublic]:
-    """Tools a visitor may offer to the models on this instance."""
-    return [ToolPublic.model_validate(tool) for tool in await get_offered_tools()]
+    """
+    All tools even if disabled.
+    We still need the full list to properly display logos/name in comparisons with previously enabled tools.
+    """
+    return [
+        ToolPublic(
+            **tool.model_dump(exclude={"enabled"}),
+            enabled=tool.enabled and can_run(tool),
+            logo_url=tool.logo_url,
+        )
+        for tool in await get_all_tools()
+    ]
 
 
 @router.get("/tools/logo/{tool_id}", response_class=Response)

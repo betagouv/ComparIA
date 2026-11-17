@@ -159,3 +159,4 @@ class ToolPublic(SQLModel):
     label: str
     description: str | None = None
     logo_url: str | None = None
+    enabled: bool
