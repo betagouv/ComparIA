@@ -1,3 +1,4 @@
+import { globalContext } from '$lib/testing/mockContexts'
 import { fireEvent, render } from '@testing-library/svelte'
 import { flushSync } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -5,6 +6,7 @@ import ViewPrompt from './ViewPrompt.svelte'
 
 const toast = vi.hoisted(() => vi.fn())
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: toast }))
+vi.mock('$lib/global.svelte', async (importOriginal) => globalContext(importOriginal))
 
 const model = (id: string, human_id: string, name: string, lab: string) => ({
   id,
@@ -64,7 +66,7 @@ describe('manual model selection', () => {
     const onPrompt = vi.fn()
     const view = render(ViewPrompt, { ...props, onPrompt })
 
-    await realClick(view.getByRole('radio', { name: /Sélection manuelle/, hidden: true }))
+    await realClick(view.getByRole('menuitem', { name: /Sélection manuelle/, hidden: true }))
     await fireEvent.click(view.getByLabelText(/Gemma 4 31B/, { selector: 'input' }))
     await fireEvent.click(view.getByLabelText(/Mistral Small 4/, { selector: 'input' }))
 
@@ -81,7 +83,7 @@ describe('manual model selection', () => {
     const onPrompt = vi.fn()
     const view = render(ViewPrompt, { ...props, onPrompt })
 
-    await realClick(view.getByRole('radio', { name: /Sélection manuelle/, hidden: true }))
+    await realClick(view.getByRole('menuitem', { name: /Sélection manuelle/, hidden: true }))
     await fireEvent.click(view.getByLabelText(/Qwen 3.8 27B/, { selector: 'input' }))
 
     await fireEvent.input(view.getByRole('textbox'), { target: { value: 'Bonjour' } })
