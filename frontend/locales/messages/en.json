@@ -41,6 +41,8 @@
         "returnHome": "Return to homepage",
         "scrollLeft": "Scroll left",
         "scrollRight": "Scroll right",
+        "scrollToBottom": "Scroll to bottom",
+        "scrollToTop": "Scroll to top",
         "searchModel": "Search for a model",
         "seeMore": "See more",
         "selectLanguage": "Select a language"
@@ -1191,21 +1193,21 @@
             "source": "1 source",
             "sources": "{count} sources",
             "state": {
-                "reasoning": {
-                    "pending": "Reasoning in progress…",
-                    "finished": "Reasoning completed"
-                },
                 "intermediate_content": {
-                    "pending": "Commentary in progress…",
-                    "finished": "Commentary completed"
+                    "finished": "Commentary completed",
+                    "pending": "Commentary in progress…"
+                },
+                "reasoning": {
+                    "finished": "Reasoning completed",
+                    "pending": "Reasoning in progress…"
                 },
                 "tool": {
-                    "pending": "Tool call “{name}“ in progress…",
-                    "finished": "Tool call “{name}“ completed"
+                    "finished": "Tool call “{name}“ completed",
+                    "pending": "Tool call “{name}“ in progress…"
                 },
                 "web_search": {
-                    "pending": "Web search in progress…",
-                    "finished": "Web search completed"
+                    "finished": "Web search completed",
+                    "pending": "Web search in progress…"
                 }
             },
             "thinking": "Thinking"
@@ -1238,16 +1240,16 @@
         "tools": {
             "done": "Done",
             "enabled": "Enabled Tools",
+            "label": {
+                "tool": "Call “{name}“: “{request}“",
+                "web_search": "Search “{request}“"
+            },
             "none": "No tool used",
             "noResult": "No result",
             "result": "1 result",
             "results": "{count} results",
             "running": "Searching…",
-            "sources": "{count} source(s)",
-            "label": {
-                "tool": "Call “{name}“: “{request}“",
-                "web_search": "Search “{request}“"
-            }
+            "sources": "{count} source(s)"
         },
         "webSearch": {
             "label": "Associated Web search results."
@@ -1332,8 +1334,8 @@
         "unsavedChanges": "You have unsaved changes. Are you sure you want to leave the page?",
         "upload": {
             "browse": "Browse files",
-            "remove": "Remove image",
-            "current": "Current uploaded image"
+            "current": "Current uploaded image",
+            "remove": "Remove image"
         }
     },
     "general": {

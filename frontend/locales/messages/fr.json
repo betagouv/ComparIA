@@ -41,6 +41,8 @@
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
+        "scrollToBottom": "Défiler jusqu'en bas",
+        "scrollToTop": "Remonter jusqu'en haut",
         "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue"
@@ -1188,6 +1190,24 @@
             "showAll": "Tout afficher",
             "source": "1 source",
             "sources": "{count} sources",
+            "state": {
+                "intermediate_content": {
+                    "finished": "Commentaire terminé",
+                    "pending": "Commentaire en cours…"
+                },
+                "reasoning": {
+                    "finished": "Réflexion terminée",
+                    "pending": "Réflexion en cours…"
+                },
+                "tool": {
+                    "finished": "Utilisation de l'outil « {name} » terminé",
+                    "pending": "Utilisation de l'outil « {name} » en cours…"
+                },
+                "web_search": {
+                    "finished": "Recherche sur le web terminée",
+                    "pending": "Recherche sur le web en cours…"
+                }
+            },
             "thinking": "Réfléchit"
         },
         "announce": {
@@ -1209,6 +1229,7 @@
             }
         },
         "loading": "Chargement des réponses",
+        "parameters": "Paramètres de la discussion",
         "reasoning": {
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
@@ -1216,6 +1237,11 @@
         "revealButton": "Terminer et découvrir les modèles",
         "tools": {
             "done": "Terminé",
+            "enabled": "Outils activés",
+            "label": {
+                "tool": "Requête « {name} »: « {request} »",
+                "web_search": "Recherche « {request} »"
+            },
             "none": "Aucun outil utilisé",
             "noResult": "Aucun résultat",
             "result": "1 résultat",

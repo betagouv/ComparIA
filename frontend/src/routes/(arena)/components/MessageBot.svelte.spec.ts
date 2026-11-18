@@ -191,13 +191,13 @@ describe('MessageBot', () => {
         }
       ]
     }
-    const { container } = render(MessageBot, {
+    render(MessageBot, {
       ...props(message),
       turnSide: { ...turnSide(message), status: 'generating' }
     } as unknown as ComponentProps<typeof MessageBot>)
 
     expect(screen.getByRole('button', { name: /Utilisation de l'outil/ })).toBeTruthy()
-    expect(container.querySelector('[role="status"]')).toBeTruthy()
+    expect(screen.getByLabelText('Chargement des réponses')).toBeTruthy()
   })
 
   it('shows reasoning as a chip like the tools', async () => {
