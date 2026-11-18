@@ -26,9 +26,9 @@
   let {
     id,
     trace,
-    reasoning,
-    pending
-  }: { id: string; trace: APITrace; reasoning: string; pending: boolean } = $props()
+    reasoning = '',
+    pending = false
+  }: { id: string; trace: APITrace; reasoning?: string; pending?: boolean } = $props()
 
   const tools = getToolsContext()
 

@@ -26,7 +26,7 @@ describe('decodeEntities', () => {
 
 describe('webSources', () => {
   it('keeps each http address once and decodes its title', () => {
-    const sources = webSources([
+    const sources = webSources(
       result({
         results: [
           { name: 'L&#039;aide', url: 'https://example.com/a' },
@@ -34,9 +34,9 @@ describe('webSources', () => {
           { name: 'Trap', url: 'javascript:alert(1)' }
         ]
       })
-    ])
+    )
 
-    expect(sources.map((source) => [source.name, source.url])).toEqual([
+    expect(sources?.map((source) => [source.name, source.url])).toEqual([
       ["L'aide", 'https://example.com/a']
     ])
   })
@@ -49,6 +49,8 @@ describe('toolRequest', () => {
         type: 'tool_call',
         tool_call_id: 'call-1',
         name: 'search',
+        label: 'Données publiques',
+        tool: 'datagouv',
         arguments_json: '',
         arguments: { page: 2, query: 'logements' }
       })

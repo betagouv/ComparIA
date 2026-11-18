@@ -41,7 +41,7 @@ describe('MessageBot', () => {
     expect(column?.classList.contains('md:min-w-0')).toBe(true)
   })
 
-  it('interposes intermediate content and tool calls before the final answer', () => {
+  it('interposes intermediate content and tool calls before the final answer', async () => {
     render(
       MessageBot,
       props({
@@ -103,8 +103,12 @@ describe('MessageBot', () => {
       })
     )
 
+    for (const btn of screen.getAllByRole('button', { expanded: false })) {
+      await fireEvent.click(btn)
+    }
+
     const preamble = screen.getByText('I will verify this first.')
-    const firstTool = screen.getByRole('button', { name: /Recherche web/ })
+    const firstTool = screen.getByRole('button', { name: /Recherche sur le web/ })
     const middle = screen.getByText('I found a lead and will verify it.')
     const secondTool = screen.getByRole('button', { name: /Jurisprudence/ })
     const answer = screen.getByText('Answer informed by the search.')
@@ -139,7 +143,7 @@ describe('MessageBot', () => {
   })
 
   it('keeps reasoning and tool calls that follow each other in one list of steps', () => {
-    const { container } = render(
+    render(
       MessageBot,
       props({
         role: 'assistant',
@@ -160,15 +164,18 @@ describe('MessageBot', () => {
       })
     )
 
-    expect(container.querySelectorAll('.agent-activity__steps')).toHaveLength(1)
     expect(
       screen
         .getAllByRole('button', { expanded: false })
         .map((step) => step.textContent!.replace(/\s+/g, ' ').trim())
-    ).toEqual(['Réflexion', 'Documentation SvelteKit « load »', 'Réflexion'])
+    ).toEqual([
+      'Réflexion terminée',
+      "Utilisation de l'outil « Documentation SvelteKit » en cours… 1",
+      'Réflexion terminée'
+    ])
   })
 
-  it('shows the live step instead of the loading line while the model works', () => {
+  it('shows the live step and the loading line while the model works', () => {
     const message = {
       role: 'assistant',
       generation_id: 'generation-a',
@@ -189,8 +196,8 @@ describe('MessageBot', () => {
       turnSide: { ...turnSide(message), status: 'generating' }
     } as unknown as ComponentProps<typeof MessageBot>)
 
-    expect(container.querySelector('.agent-activity__live')).toBeTruthy()
-    expect(container.querySelector('[role="status"]')).toBeNull()
+    expect(screen.getByRole('button', { name: /Utilisation de l'outil/ })).toBeTruthy()
+    expect(container.querySelector('[role="status"]')).toBeTruthy()
   })
 
   it('shows reasoning as a chip like the tools', async () => {
@@ -209,7 +216,7 @@ describe('MessageBot', () => {
       })
     )
 
-    await fireEvent.click(screen.getByRole('button', { name: 'Réflexion' }))
+    await fireEvent.click(screen.getByRole('button', { name: /Réflexion terminée/ }))
     expect(screen.getByText('I should verify this carefully.')).toBeTruthy()
     expect(container.querySelector('.fr-accordion')).toBeNull()
   })
