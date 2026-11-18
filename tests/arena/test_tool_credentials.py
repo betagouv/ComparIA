@@ -199,20 +199,31 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
 
     rows = [
         _web_search_row(),
-        Tool(key="datagouv", label="Données", kind="mcp", url="https://x.fr/mcp"),
+        Tool(
+            key="datagouv",
+            label="Données",
+            kind="mcp",
+            url="https://x.fr/mcp",
+            enabled=True,
+        ),
         Tool(key="half_done", label="Pas fini", kind="mcp"),
     ]
 
-    async def get_enabled_tools() -> list[Tool]:
+    async def get_all_tools() -> list[Tool]:
         return rows
 
+    def can_run(tool) -> bool:
+        return False if tool.key == "web_search" else True
+
     with (
-        patch.object(tools, "get_enabled_tools", get_enabled_tools),
-        patch.object(web_search.settings, "LINKUP_API_KEY", None),
+        patch.object(router, "can_run", can_run),
+        patch.object(router, "get_all_tools", get_all_tools),
     ):
         offered = await router.get_tools()
 
-    assert [tool.key for tool in offered] == ["datagouv"]
+    assert offered[0].key == "web_search" and offered[0].enabled == False
+    assert offered[1].key == "datagouv" and offered[1].enabled == True
+    assert offered[2].key == "half_done" and offered[2].enabled == False
 
 
 def test_a_comparison_keeps_only_tools_on_offer():

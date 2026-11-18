@@ -118,7 +118,7 @@ def test_public_shape_never_carries_server_credentials():
     )
     served = ToolPublic.model_validate(row, from_attributes=True).model_dump()
 
-    assert set(served) == {"key", "label", "description"}
+    assert set(served) == {"key", "label", "description", "enabled", "logo_url"}
     assert "secret-token" not in str(served)
     assert "mcp.data.gouv.fr" not in str(served)
 
