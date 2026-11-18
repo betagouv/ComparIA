@@ -28,7 +28,6 @@
             "contract": "När de är påslagna erbjuds de valda verktygen till båda de jämförda modellerna, som fritt får använda dem eller inte.",
             "count": "{count} verktyg",
             "label": "Verktyg",
-            "legend": "Verktyg",
             "locked": "Verktygen är låsta för hela samtalet.",
             "none": "Inget verktyg"
         },
@@ -50,24 +49,12 @@
             "generateAnother": "Skapa ett nytt meddelande",
             "title": "Förslag på prompter"
         },
-        "title": "Hur kan jag hjälpa dig idag?",
-        "webSearch": {
-            "disabled": "Webbsökning inaktiverad",
-            "enabled": "Webbsökning aktiverad",
-            "help": "Varje modell avgör själv om det är användbart att göra en sökning.",
-            "label": "Tillåt webbsökning",
-            "tooltip": "Tillåt modellerna att söka efter information online och citera nyare källor. <strong>Varje modell väljer själv om den ska använda verktyget</strong> utifrån ditt meddelande.<br>Om du inte tillåter det svarar modellerna endast utifrån vad de lärde sig under träningen och kan inte kontrollera information online."
-        }
+        "title": "Hur kan jag hjälpa dig idag?"
     },
     "chatbot": {
         "tools": {
-            "done": "Klart",
             "noResult": "Inget resultat",
-            "none": "Inget verktyg användes",
-            "result": "1 resultat",
-            "results": "{count} resultat",
-            "running": "Söker…",
-            "sources": "{count} källa/källor"
+            "running": "Söker…"
         },
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
         "conversation": "Konversation",

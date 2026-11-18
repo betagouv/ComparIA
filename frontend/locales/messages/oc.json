@@ -1,12 +1,6 @@
 {
     "arenaHome": {
         "title": "Cossí vos pòdi ajudar uèi ?",
-        "webSearch": {
-            "label": "Recèrca web",
-            "enabled": "Recèrca web activada",
-            "disabled": "Recèrca web desactivada",
-            "tooltip": "Activatz la recèrca web per permetre als modèls d'utilizar de fonts en linha e de citar d'informacions mai recentas.<br><strong>Sens la recèrca web</strong>, los modèls respondon en se basant sus çò qu'an aprés pendent lor formacion (lors donadas d'entrenament). Pòdon pas verificar las informacions en linha ; doncas, los faches fòrça recents o fòrça especifics pòdon èsser incomplets."
-        },
         "modelSelection": "Seleccion dels modèls",
         "prompt": {
             "label": "Escrivètz vòstre primièr messatge"
@@ -14,11 +8,8 @@
     },
     "chatbot": {
         "tools": {
-            "done": "Acabat",
             "noResult": "Cap de resultat",
-            "none": "Cap d'aisina pas utilizada",
-            "running": "Recèrca en cors…",
-            "sources": "{count} font(s)"
+            "running": "Recèrca en cors…"
         },
         "webSearch": {
             "label": "Autorizar la recèrca web"

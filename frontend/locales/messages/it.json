@@ -30,7 +30,6 @@
             "contract": "Una volta attivati, gli strumenti selezionati sono proposti ai due modelli confrontati, che restano liberi di usarli o meno.",
             "count": "{count} strumenti",
             "label": "Strumenti",
-            "legend": "Strumenti",
             "locked": "Gli strumenti sono fissati per tutta la conversazione.",
             "none": "Nessuno strumento"
         },
@@ -52,22 +51,12 @@
             "generateAnother": "Genera un altro messaggio",
             "title": "Suggerimenti rapidi"
         },
-        "title": "Come posso esserti d'aiuto oggi?",
-        "webSearch": {
-            "disabled": "Ricerca web disabilitata",
-            "enabled": "Ricerca web abilitata",
-            "help": "Ogni modello decide autonomamente se è utile effettuare una ricerca.",
-            "label": "Consenti la ricerca web",
-            "tooltip": "Consenti ai modelli di cercare informazioni online e citare fonti più recenti. <strong>Ogni modello decide autonomamente se usare questo strumento</strong> in base al tuo messaggio.<br>Se non lo consenti, i modelli rispondono solo in base a ciò che hanno appreso durante l’addestramento e non possono verificare informazioni online."
-        }
+        "title": "Come posso esserti d'aiuto oggi?"
     },
     "chatbot": {
         "tools": {
-            "done": "Fatto",
             "noResult": "Nessun risultato",
-            "none": "Nessuno strumento utilizzato",
-            "running": "Ricerca in corso…",
-            "sources": "{count} fonte/i"
+            "running": "Ricerca in corso…"
         },
         "continuePrompt": "Continua la conversazione…",
         "conversation": "Conversazione",

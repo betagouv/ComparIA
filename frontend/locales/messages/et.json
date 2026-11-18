@@ -28,7 +28,6 @@
             "contract": "Kui need on sisse lülitatud, pakutakse valitud tööriistu mõlemale võrreldavale mudelile, kes võivad neid kasutada või mitte.",
             "count": "{count} tööriista",
             "label": "Tööriistad",
-            "legend": "Tööriistad",
             "locked": "Tööriistad on kogu vestluseks kinnitatud.",
             "none": "Ühtegi tööriista"
         },
@@ -50,22 +49,12 @@
             "generateAnother": "Genereeri veel üks viip",
             "title": "Soovitatud viibad"
         },
-        "title": "Millega sind täna aidata saan?",
-        "webSearch": {
-            "disabled": "Veebiotsing deaktiveeritud",
-            "enabled": "Veebiotsing aktiveeritud",
-            "help": "Iga mudel otsustab ise, kas otsingu tegemine on kasulik.",
-            "label": "Luba veebiotsing",
-            "tooltip": "Luba mudelitel otsida veebist teavet ja viidata uuematele allikatele. <strong>Iga mudel otsustab sinu sõnumi põhjal ise, kas seda tööriista kasutada</strong>.<br>Kui sa seda ei luba, vastavad mudelid ainult treeningu käigus õpitu põhjal ega saa teavet veebist kontrollida."
-        }
+        "title": "Millega sind täna aidata saan?"
     },
     "chatbot": {
         "tools": {
-            "done": "Valmis",
             "noResult": "Tulemusi pole",
-            "none": "Ühtegi tööriista ei kasutatud",
-            "running": "Otsin…",
-            "sources": "{count} allikas(t)"
+            "running": "Otsin…"
         },
         "continuePrompt": "Jätka nende keelemudelitega vestlemist",
         "conversation": "Vestlus",

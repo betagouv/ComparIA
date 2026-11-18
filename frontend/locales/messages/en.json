@@ -993,17 +993,9 @@
             "contract": "Select tools that allow models to access other sources of information beyond their own knowledge.",
             "count": "{count} tools",
             "label": "Tools",
-            "legend": "Tools",
             "locked": "Tools are fixed for the whole conversation.",
             "none": "No tool",
             "viewAll": "View all tools"
-        },
-        "webSearch": {
-            "disabled": "Web search disabled",
-            "enabled": "Web search enabled",
-            "help": "Each model decides whether running a search would be useful.",
-            "label": "Allow web search",
-            "tooltip": "Allow the models to search for information online and cite more recent sources. <strong>Each model independently chooses whether to use this tool</strong> based on your message.<br>If you do not allow it, the models answer only from what they learned during training and cannot verify information online."
         }
     },
     "arene": {
@@ -1180,18 +1172,10 @@
     },
     "chatbot": {
         "activity": {
-            "allSources": "All sources ({count})",
-            "calling": "Consulting",
-            "calls": "{count} calls",
             "collapse": "Show less",
             "failed": "The tool did not answer",
-            "reading": "Reading the results",
             "reasoning": "Reasoning",
-            "searches": "{count} searches",
-            "searching": "Searching the web",
             "showAll": "Show all",
-            "source": "1 source",
-            "sources": "{count} sources",
             "state": {
                 "intermediate_content": {
                     "finished": "Commentary completed",
@@ -1209,8 +1193,7 @@
                     "finished": "Web search completed",
                     "pending": "Web search in progress…"
                 }
-            },
-            "thinking": "Thinking"
+            }
         },
         "announce": {
             "generating": "The models are writing their answers…",
@@ -1238,18 +1221,13 @@
         },
         "revealButton": "Finish and discover the models",
         "tools": {
-            "done": "Done",
             "enabled": "Enabled Tools",
             "label": {
                 "tool": "Call “{name}“: “{request}“",
                 "web_search": "Search “{request}“"
             },
-            "none": "No tool used",
             "noResult": "No result",
-            "result": "1 result",
-            "results": "{count} results",
-            "running": "Searching…",
-            "sources": "{count} source(s)"
+            "running": "Searching…"
         },
         "webSearch": {
             "label": "Associated Web search results."
