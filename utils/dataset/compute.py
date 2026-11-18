@@ -24,7 +24,6 @@ from uuid import UUID
 from async_lru import alru_cache
 from sqlmodel import and_, col, or_, select
 
-from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
 from backend.settings.legal import get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
@@ -36,6 +35,7 @@ from utils.database.models import (
 )
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage
+from utils.database.models.messages.user import merge_web_search_with_content
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms

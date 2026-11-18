@@ -6,9 +6,29 @@ from pydantic import FieldSerializationInfo, computed_field, field_serializer
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
-from backend.arena.web_search import merge_web_search_with_content
+from backend.config import WEB_SEARCH_INTRO
 
 from ..utils import AutoDatetime, ModelId
+
+
+def merge_web_search_with_content(
+    content: str, web_search_results: list[LinkupSearchTextResult] | list[dict]
+) -> str:
+    # A message read from the database holds the results as the dicts the
+    # JSONB column returns, not as results.
+    results = [LinkupSearchTextResult.model_validate(r) for r in web_search_results]
+    return "\n\n".join(
+        [
+            content,
+            WEB_SEARCH_INTRO,
+            "\n\n---\n\n".join(
+                [
+                    f"Source: {result.name} ({result.url})\n{result.content}".strip()
+                    for result in results
+                ]
+            ),
+        ]
+    )
 
 
 class UserMessageBase(SQLModel):

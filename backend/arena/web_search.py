@@ -309,26 +309,6 @@ def web_search_tool_spec(row: "Tool | None" = None) -> ToolSpec | None:
     )
 
 
-def merge_web_search_with_content(
-    content: str, web_search_results: list[LinkupSearchTextResult] | list[dict]
-) -> str:
-    # A message read from the database holds the results as the dicts the
-    # JSONB column returns, not as results.
-    results = [LinkupSearchTextResult.model_validate(r) for r in web_search_results]
-    return "\n\n".join(
-        [
-            content,
-            WEB_SEARCH_INTRO,
-            "\n\n---\n\n".join(
-                [
-                    f"Source: {result.name} ({result.url})\n{result.content}".strip()
-                    for result in results
-                ]
-            ),
-        ]
-    )
-
-
 def get_cached_web_search(
     prompt: str, scope: str = ""
 ) -> list[LinkupSearchTextResult] | None:
