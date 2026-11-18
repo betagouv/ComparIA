@@ -235,9 +235,9 @@ def conversation_text(comparison: Comparison) -> str:
     for turn in comparison.turns:
         # The read model, not the table one: only it merges the results.
         user = UserMessageRead.model_validate(turn.user_msg, from_attributes=True)
-        content = user.model_dump(
-            include={"content"}, context={"merge_web_search": True}
-        )["content"]
+        content = user.model_dump(include={"content"}, context={"merge_sources": True})[
+            "content"
+        ]
         parts.append(f"[user]: {content}")
         for side in ("a", "b"):
             message = getattr(turn, f"llm_msg_{side}")
