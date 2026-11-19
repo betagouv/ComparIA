@@ -19,6 +19,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 from async_lru import alru_cache
@@ -34,7 +35,7 @@ from utils.database.models import (
     SurveyQuestion,
 )
 from utils.database.models.llms import LLMData
-from utils.database.models.messages import LLMMessage
+from utils.database.models.messages import LLMMessage, tool_evidence
 from utils.database.models.messages.user import merge_web_search_with_content
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
@@ -337,29 +338,17 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # revalidate_instances="never"): no stripping, no constraint checks. The
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
-    response = {
+    response: dict[str, Any] = {
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }
-    if msg.agent_trace:
-        # agent_trace is the JSONB column's raw decoded value (list of plain
-        # dicts, not AgentTraceEvent instances).
-        queries = [
-            {"name": event["name"], "arguments": event["arguments_json"]}
-            for event in msg.agent_trace
-            if event.get("type") == "tool_call"
-        ]
-        sources = [
-            source
-            for event in msg.agent_trace
-            if event.get("type") == "tool_result"
-            for source in event.get("results") or []
-        ]
-        if queries:
-            response["tool_queries"] = queries
-        if sources:
-            response["tool_sources"] = sources
+    # The publication check reads the same two lists (`conversation_text`).
+    queries, sources = tool_evidence(msg.agent_trace)
+    if queries:
+        response["tool_queries"] = queries
+    if sources:
+        response["tool_sources"] = sources
     if msg.agent_stop_reason:
         response["agent_stop_reason"] = msg.agent_stop_reason
     return response

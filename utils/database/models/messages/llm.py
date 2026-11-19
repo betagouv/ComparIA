@@ -70,6 +70,34 @@ AgentTraceEvent = (
     | AgentTraceToolResult
 )
 
+
+def tool_evidence(
+    agent_trace: list[dict[str, Any]] | list[AgentTraceEvent] | None,
+) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
+    """What a model searched for and what its tools handed back, as published.
+
+    The dataset export and the check that screens it before publication both
+    read this, so nothing reaches the dataset that the check did not read.
+    Takes the trace as stored (plain dicts) or as models.
+    """
+    events = [
+        event if isinstance(event, dict) else event.model_dump()
+        for event in agent_trace or []
+    ]
+    queries = [
+        {"name": event["name"], "arguments": event["arguments_json"]}
+        for event in events
+        if event.get("type") == "tool_call"
+    ]
+    sources = [
+        source
+        for event in events
+        if event.get("type") == "tool_result"
+        for source in event.get("results") or []
+    ]
+    return queries, sources
+
+
 # Why the model stopped using tools. "completed" means it decided it was done;
 # every other value means we cut it off, and the difference matters when reading
 # tool-use behaviour out of the data.
