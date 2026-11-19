@@ -1,19 +1,22 @@
 <script lang="ts">
+  import { api } from '$lib/fastapi-client'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   type IconProps = {
     icon: string
+    src?: string | null
     size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg'
     block?: boolean
   } & SvelteHTMLElements['span']
 
-  let { icon, size = 'md', block = false, ...props }: IconProps = $props()
+  let { icon, src: src_, size = 'md', block = false, ...props }: IconProps = $props()
 
   const classes = $derived([
     `${icon.startsWith('i-') ? '' : 'fr-icon-'}${icon} fr-icon--${size}`,
     { block: block },
     props.class
   ])
+  let src = $derived(src_ ? (src_.startsWith('/') ? api.getPublicUrl(src_) : src_) : src_)
 
   // The glyph comes from a CSS pseudo-element, so the span holds no text. Named
   // icons need role="img" or the name is dropped as prohibited on a generic
@@ -23,7 +26,18 @@
   const ariaHidden = $derived(props['aria-hidden'] ?? (named ? undefined : true))
 </script>
 
-<span {...props} {role} aria-hidden={ariaHidden} class={classes}></span>
+{#if src}
+  <img
+    {src}
+    {...props}
+    loading="lazy"
+    aria-hidden={ariaHidden}
+    onerror={() => (src = null)}
+    class={[`block fr-icon--${size}`, props.class]}
+  />
+{:else}
+  <span {...props} {role} aria-hidden={ariaHidden} class={classes}></span>
+{/if}
 
 <style>
   /* set icon-size on element itself for div to set its size in block mode */

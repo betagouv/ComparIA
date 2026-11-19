@@ -4,7 +4,7 @@
 
   export type FormFieldProps = {
     formItem: Snippet<[FormItemSnippetProps]>
-  } & BaseFormFieldProps<'input' | 'select' | 'checkbox' | 'radio'>
+  } & BaseFormFieldProps<'input' | 'select' | 'checkbox' | 'radio' | 'upload'>
 </script>
 
 <script lang="ts">

@@ -24,6 +24,7 @@ from backend.arena.conversation import (
     bot_response_async,
 )
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
+from backend.arena.tools import ToolSpec, resolve_tools
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
 from backend.llms.data import get_llms_data, pick_replacement_model
@@ -62,7 +63,9 @@ def error_code(e: Exception) -> ErrorCode:
 class SSEEventMsgChunk(TypedDict):
     type: Literal["chunk"]
     pos: BotPos
-    llm_msg: LLMMessageCreate
+    # `LLMMessageCreate` as JSON, without `agent_trace` when it has not changed
+    # since the previous chunk. See `chunk_message`.
+    llm_msg: dict[str, Any]
 
 
 class SSEEventMsgComplete(TypedDict):
@@ -127,6 +130,30 @@ def format_sse_event(data: AnySSEEvent) -> str:
     return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
+def chunk_message(llm_msg: LLMMessageCreate, send_trace: bool) -> dict[str, Any]:
+    """What one chunk tells the browser about a message being written.
+
+    A chunk goes out every few words, and resending every tool step and result
+    with each one streamed megabytes for a short tool-using answer. Steps are
+    only ever appended, so the trace goes out only when a step was added, and
+    the browser keeps the last one it got otherwise.
+
+    A tool result's raw `content` is left out when its sources say the same
+    thing, which is what the arena shows in that case; the saved message keeps
+    both.
+    """
+    data = llm_msg.model_dump(
+        mode="json",
+        exclude=(None if send_trace else {"agent_trace"}),
+    )
+    for event in data.get("agent_trace") or []:
+        if event["type"] == "tool_result" and any(
+            source.get("content") or source.get("name") for source in event["results"]
+        ):
+            event["content"] = ""
+    return data
+
+
 async def stream_llm_response(
     pos: BotPos,
     llm: LLMDataEnabled,
@@ -134,6 +161,7 @@ async def stream_llm_response(
     turn_index: int,
     messages: list[AnyMessageRead],
     request: Request | None = None,
+    tools: list[ToolSpec] | None = None,
 ) -> AsyncGenerator[AnySSEEventMsg]:
     """
     Stream a single LLM response using Server-Sent Events format.
@@ -153,10 +181,20 @@ async def stream_llm_response(
     try:
         # Stream responses from bot_response_async generator
         async with aclosing(
-            bot_response_async(pos, llm, turn, turn_index, messages, request)
+            bot_response_async(
+                pos, llm, turn, turn_index, messages, request, tools=tools
+            )
         ) as llm_msgs:
+            sent_steps: int | None = None
             async for llm_msg in llm_msgs:
-                yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
+                steps = len(llm_msg.agent_trace or [])
+                send_trace = steps != sent_steps
+                sent_steps = steps
+                yield {
+                    "type": "chunk",
+                    "pos": pos,
+                    "llm_msg": chunk_message(llm_msg, send_trace),
+                }
 
         yield {"type": "complete", "pos": pos}
 
@@ -217,6 +255,9 @@ async def stream_comparison_messages(
     """
     turn_index = len(comparison.turns) - 1
     llms_data = (await get_llms_data()).enabled
+    # Resolved once for the turn: both models are offered exactly the same set,
+    # and a configured tool is looked up once rather than once per model.
+    tools = await resolve_tools(comparison.enabled_tools)
 
     try:
         # Create async generators for both models
@@ -228,6 +269,7 @@ async def stream_comparison_messages(
                 turn_index,
                 _get_messages(comparison, pos),
                 request,
+                tools,
             )
             for pos in BOT_POS
         }
@@ -289,6 +331,7 @@ async def stream_comparison_messages(
                                     turn_index,
                                     _get_messages(comparison, e.pos),
                                     request,
+                                    tools,
                                 )
                                 retried[e.pos] = True
                                 yield {"type": "swap", "pos": e.pos}

@@ -42,7 +42,7 @@ from utils.database.models.comparison import (
     ComparisonLLMAnalysisUpdate,
 )
 from utils.database.models.dataset_check import DatasetCheck, DatasetCheckCriterion
-from utils.database.models.messages import UserMessageRead
+from utils.database.models.messages import UserMessageRead, tool_evidence
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.runs import PUBLISHABLE
@@ -227,7 +227,8 @@ def language_questions(codes: list[str]) -> list[Question]:
 
 def conversation_text(comparison: Comparison) -> str:
     """The comparison as it is published: each visitor message, web search
-    results included, then both answers, reasoning included."""
+    results included, then for each model what it searched for, what its tools
+    handed back, its reasoning and its answer."""
     parts = []
     for side in ("a", "b"):
         if system := getattr(comparison, f"system_msg_{side}"):
@@ -235,14 +236,22 @@ def conversation_text(comparison: Comparison) -> str:
     for turn in comparison.turns:
         # The read model, not the table one: only it merges the results.
         user = UserMessageRead.model_validate(turn.user_msg, from_attributes=True)
-        content = user.model_dump(
-            include={"content"}, context={"merge_web_search": True}
-        )["content"]
-        parts.append(f"[user]: {content}")
+        parts.append(f"[user]: {user.content}")
         for side in ("a", "b"):
             message = getattr(turn, f"llm_msg_{side}")
             if not message:
                 continue
+            queries, sources = tool_evidence(message.agent_trace)
+            for query in queries:
+                parts.append(
+                    f"[model {side}, tool query]: {query['name']} {query['arguments']}"
+                )
+            for source in sources:
+                fields = (source.get(key) for key in ("name", "url", "content"))
+                parts.append(
+                    f"[model {side}, tool source]: "
+                    + "\n".join(str(field) for field in fields if field)
+                )
             if message.reasoning_content:
                 parts.append(f"[model {side}, reasoning]: {message.reasoning_content}")
             if message.content:

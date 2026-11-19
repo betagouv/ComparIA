@@ -19,12 +19,12 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 from async_lru import alru_cache
 from sqlmodel import and_, col, or_, select
 
-from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
 from backend.settings.legal import get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
@@ -35,7 +35,7 @@ from utils.database.models import (
     SurveyQuestion,
 )
 from utils.database.models.llms import LLMData
-from utils.database.models.messages import LLMMessage
+from utils.database.models.messages import LLMMessage, tool_evidence
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms
@@ -337,11 +337,20 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # revalidate_instances="never"): no stripping, no constraint checks. The
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
-    return {
+    response: dict[str, Any] = {
         "content": msg.content,
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }
+    # The publication check reads the same two lists (`conversation_text`).
+    queries, sources = tool_evidence(msg.agent_trace)
+    if queries:
+        response["tool_queries"] = queries
+    if sources:
+        response["tool_sources"] = sources
+    if msg.agent_stop_reason:
+        response["agent_stop_reason"] = msg.agent_stop_reason
+    return response
 
 
 async def comparison_to_turns(
@@ -397,16 +406,9 @@ async def comparison_to_turns(
 
         msg_a, msg_b = turn.llm_msg_a, turn.llm_msg_b
 
-        raw_content = turn.user_msg.content
-        content = (
-            merge_web_search_with_content(raw_content, turn.user_msg.web_search_results)
-            if turn.user_msg.web_search_results
-            else raw_content
-        )
         user_entry = {
             "role": turn.user_msg.role,
-            "content": content,
-            "user_content": raw_content,
+            "content": turn.user_msg.content,
         }
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
@@ -451,6 +453,7 @@ async def comparison_to_turns(
         )
     comp_meta = {
         **base_meta,
+        "available_tools": list(comp.enabled_tools or []),
         "total_tokens_a": _total(turns_metadata, "tokens_a"),
         "total_tokens_b": _total(turns_metadata, "tokens_b"),
         "total_conso_a": _total(turns_metadata, "conso_a"),
@@ -500,8 +503,23 @@ def _reference_rows() -> list[dict]:
     front instead of inferred from a first batch where they may be all-null.
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
-    user = {"role": "user", "content": "x", "user_content": "x"}
-    assistant = {"content": "x", "reasoning_content": "x", "role": "assistant"}
+    user = {"role": "user", "content": "x"}
+    assistant = {
+        "content": "x",
+        "reasoning_content": "x",
+        "role": "assistant",
+        "tool_queries": [{"name": "x", "arguments": "x"}],
+        "tool_sources": [
+            {
+                "type": "text",
+                "name": "x",
+                "url": "https://x",
+                "content": "x",
+                "favicon": "x",
+            }
+        ],
+        "agent_stop_reason": "completed",
+    }
     system = {"role": "system", "content": "x"}
     return [
         {
@@ -533,6 +551,7 @@ def _reference_rows() -> list[dict]:
                 "languages": ["x"],
                 "short_summary": "x",
                 "participation_terms_version": LEGACY_PARTICIPATION_TERMS_VERSION,
+                "available_tools": ["x"],
                 "total_tokens_a": 1,
                 "total_tokens_b": 1,
                 "total_conso_a": 1.0,

@@ -313,6 +313,7 @@ def comparison_between(fast: str, slow: str):
         system_msg_b=None,
         mode="random",
         custom_models_selection=None,
+        enabled_tools=[],
         error=None,
     )
 
@@ -330,7 +331,7 @@ def fake_models(
     """
 
     async def bot_response_async(
-        pos, llm, turn, turn_index, messages, request=None
+        pos, llm, turn, turn_index, messages, request=None, tools=None
     ) -> AsyncGenerator[LLMMessageCreate]:
         msg = LLMMessageCreate()
         try:
@@ -390,7 +391,7 @@ def test_a_slow_model_does_not_hold_back_or_cut_the_other(monkeypatch):
     # And the slow one arrives whole: no word lost to a cancelled read.
     slow_chunks = [e for e in events if e["type"] == "chunk" and e["pos"] == "b"]
     assert len(slow_chunks) == 3
-    assert slow_chunks[-1]["llm_msg"].content == "undeuxtrois"
+    assert slow_chunks[-1]["llm_msg"]["content"] == "undeuxtrois"
     assert order[-1] == ("complete", None)
     assert all(e["type"] != "error" for e in events)
     assert not errors
@@ -460,7 +461,7 @@ def test_a_model_that_times_out_is_swapped_while_the_other_streams(monkeypatch):
     events = asyncio.run(collect())
     answers = {
         pos: [
-            e["llm_msg"].content
+            e["llm_msg"]["content"]
             for e in events
             if e["type"] == "chunk" and e["pos"] == pos
         ]

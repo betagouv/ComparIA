@@ -5,7 +5,6 @@ from contextlib import asynccontextmanager
 from datetime import datetime, time, timedelta
 from typing import Any, AsyncGenerator, Awaitable, TypeVar
 
-from fastapi.encoders import jsonable_encoder
 from psycopg.errors import QueryCanceled
 from pydantic import BaseModel
 from sqlalchemy import and_, exists, literal, not_, or_
@@ -19,10 +18,7 @@ from backend.config import settings
 from backend.statistics.projection import bucket_share, day_share, project
 from utils.database.models import Comparison, Turn, UserMessage
 from utils.database.models.llms import LLMData
-from utils.database.models.prompt_check import (
-    PromptCheckCriterion,
-    PromptCheckResult,
-)
+from utils.database.models.prompt_check import PromptCheckCriterion, PromptCheckResult
 from utils.database.models.utils import escape_like
 from utils.database.prompt_checks import get_prompt_check
 from utils.database.session import get_activity_session
@@ -622,11 +618,6 @@ async def get_conversation(comparison_id: uuid.UUID) -> ActivityConversation | N
                     id=turn.id,
                     created_at=turn.created_at,
                     prompt=turn.user_msg.content if turn.user_msg else "",
-                    web_search_results=(
-                        jsonable_encoder(turn.user_msg.web_search_results)
-                        if turn.user_msg and turn.user_msg.web_search_results
-                        else None
-                    ),
                     answer_a=_answer(turn.llm_msg_a),
                     answer_b=_answer(turn.llm_msg_b),
                     choice=turn.choice,

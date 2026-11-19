@@ -182,7 +182,6 @@ class ActivityTurn(BaseModel):
     id: uuid.UUID
     created_at: datetime
     prompt: str
-    web_search_results: list[dict] | None
     answer_a: ActivityAnswer | None
     answer_b: ActivityAnswer | None
     choice: TurnChoice | None

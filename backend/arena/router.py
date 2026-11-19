@@ -3,14 +3,14 @@ import logging
 from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 
+from backend.admin.logos import logo_response
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
-    drop_flagged_results,
     issue_warning_token,
     run_prompt_check,
 )
@@ -25,6 +25,7 @@ from backend.arena.services import (
     set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
+    update_comparison_tool_capability,
     update_turn,
     update_turn_vote,
 )
@@ -51,7 +52,7 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.web_search import keep_search_results, search_web
+from backend.arena.tools import can_run, get_all_tools, keep_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -74,6 +75,8 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
+    Tool,
+    ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
     TurnVoteChoice,
@@ -83,6 +86,7 @@ from utils.database.prompt_checks import (
     get_prompt_check,
     save_prompt_check_result,
 )
+from utils.database.session import get_session
 
 logger = logging.getLogger("languia")
 
@@ -337,6 +341,38 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
     return generate_challenge(ALTCHA_MAX_NUMBER)
 
 
+@router.get("/tools")
+async def get_tools() -> list[ToolPublic]:
+    """
+    All tools even if disabled.
+    We still need the full list to properly display logos/name in comparisons with previously enabled tools.
+    """
+    return [
+        ToolPublic(
+            **tool.model_dump(exclude={"enabled"}),
+            enabled=tool.enabled and can_run(tool),
+            logo_url=tool.logo_url,
+        )
+        for tool in await get_all_tools()
+    ]
+
+
+@router.get("/tools/logo/{tool_id}", response_class=Response)
+async def get_lab_logo(tool_id: UUID) -> Response:
+    async with get_session() as session:
+        tool = await session.get(Tool, tool_id)
+        if tool is None or tool.logo is None or tool.logo_content_type is None:
+            raise HTTPException(status_code=404, detail="tool_logo_not_found")
+
+        return logo_response(
+            tool.logo,
+            tool.logo_content_type,
+            # The URL carries the logo version, so a new upload is a new
+            # URL and the old bytes can stay in the browser for a year.
+            "public, max-age=31536000, immutable",
+        )
+
+
 @router.post(
     "/add_first_text",
     dependencies=[Depends(assert_not_rate_limited), Depends(assert_not_block_cooldown)],
@@ -383,9 +419,10 @@ async def add_first_text(
     # who read the logs are not the audience the user wrote for. What is left is
     # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, web_search={args.web_search})",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, {len(args.tools)} tools)",
         extra={"request": request},
     )
+    enabled_tools = await keep_offered_tools(args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
@@ -441,18 +478,6 @@ async def add_first_text(
         raise
     check = (await save_prompt_check_result(check)) if check else None
 
-    web_search_results = None
-    if args.web_search:
-        web_search_results = await search_web(args.prompt_value)
-        if web_search_results:
-            web_search_results = keep_search_results(
-                args.prompt_value, web_search_results
-            )
-        if web_search_results:
-            web_search_results = await drop_flagged_results(web_search_results)
-        if web_search_results:
-            logger.info("Web search returned context", extra={"request": request})
-
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
@@ -463,6 +488,7 @@ async def add_first_text(
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
+            enabled_tools=enabled_tools,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
         )
@@ -492,7 +518,6 @@ async def add_first_text(
         comparison, turn = await add_comparison_turn(
             comparison.id,
             args.prompt_value,
-            web_search_results,
             prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
@@ -508,6 +533,7 @@ async def add_first_text(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -604,6 +630,7 @@ async def add_text(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -700,6 +727,7 @@ async def retry(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
