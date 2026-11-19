@@ -138,18 +138,13 @@ def chunk_message(llm_msg: LLMMessageCreate, send_trace: bool) -> dict[str, Any]
     only ever appended, so the trace goes out only when a step was added, and
     the browser keeps the last one it got otherwise.
 
-    `web_search_results` is never sent: it copies the web search sources already
-    in the trace, and the arena reads them from there. A tool result's raw
-    `content` is left out when its sources say the same thing, which is what the
-    arena shows in that case; the saved message keeps both.
+    A tool result's raw `content` is left out when its sources say the same
+    thing, which is what the arena shows in that case; the saved message keeps
+    both.
     """
     data = llm_msg.model_dump(
         mode="json",
-        exclude=(
-            {"web_search_results"}
-            if send_trace
-            else {"web_search_results", "agent_trace"}
-        ),
+        exclude=(None if send_trace else {"agent_trace"}),
     )
     for event in data.get("agent_trace") or []:
         if event["type"] == "tool_result" and any(

@@ -77,10 +77,7 @@
             "finished": "Resonnement ferdig",
             "inProgress": "Resonnerer…"
         },
-        "revealButton": "Avslør modellene",
-        "webSearch": {
-            "label": "Tilknyttede nettsøkresultater."
-        }
+        "revealButton": "Avslør modellene"
     },
     "closeModal": "Lukk popup-vinduet",
     "components": {

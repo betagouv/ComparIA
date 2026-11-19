@@ -77,10 +77,7 @@
             "finished": "Razonamiento completado",
             "inProgress": "Razonando…"
         },
-        "revealButton": "Termina y descubre los modelos",
-        "webSearch": {
-            "label": "Resultados de búsqueda web asociados."
-        }
+        "revealButton": "Termina y descubre los modelos"
     },
     "closeModal": "Cerrar ventana emergente",
     "components": {

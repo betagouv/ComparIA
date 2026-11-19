@@ -52,13 +52,6 @@ TRUNCATE = text(
 LLM_ID = None
 NOW = datetime(2026, 10, 5, 12, 0)
 MODEL = "test/decider"
-WEB_SEARCH_RESULT = {
-    "type": "text",
-    "name": "Annuaire",
-    "url": "https://example.org",
-    "content": "Jean Dupont, jean.dupont@example.org",
-    "favicon": "",
-}
 SCORES = json.dumps({"model": MODEL, "scores": {"pii": 0.0, "spam": 0.0}})
 
 
@@ -94,7 +87,7 @@ def run(scenario, monkeypatch):
     return asyncio.run(main())
 
 
-async def add(execute, *, scores="NULL", web_search=None, **fields) -> uuid.UUID:
+async def add(execute, *, scores="NULL", **fields) -> uuid.UUID:
     """A published comparison the chat model analysed, unless `fields` say
     otherwise. `scores` is SQL, so the JSON value null can be stored."""
     row = {
@@ -130,13 +123,11 @@ async def add(execute, *, scores="NULL", web_search=None, **fields) -> uuid.UUID
         comparison=comparison_id,
     )
     await execute(
-        "INSERT INTO user_message (id, created_at, turn_id, role, content, "
-        "web_search_results) VALUES (:id, :at, :turn, 'user', "
-        "'Qui contacter ?', CAST(:web_search AS jsonb))",
+        "INSERT INTO user_message (id, created_at, turn_id, role, content) "
+        "VALUES (:id, :at, :turn, 'user', 'Qui contacter ?')",
         id=uuid.uuid4(),
         at=NOW,
         turn=turn_id,
-        web_search=json.dumps(web_search) if web_search else None,
     )
     return comparison_id
 
@@ -215,34 +206,6 @@ def test_rescore_takes_only_what_the_open_dataset_publishes(monkeypatch):
             ).all()
         assert picked == expected
         assert len(every) == 4
-
-    run(scenario, monkeypatch)
-
-
-def test_the_analysis_reads_the_web_search_results_stored(monkeypatch):
-    async def scenario(execute, get_session):
-        comparison_id = await add(
-            execute,
-            web_search=[WEB_SEARCH_RESULT],
-        )
-        row = await fetch(get_session, comparison_id)
-        assert "jean.dupont@example.org" in llm_analyze.conversation_text(row)
-
-    run(scenario, monkeypatch)
-
-
-def test_the_dataset_exports_the_web_search_results_stored(monkeypatch):
-    async def no_llms():
-        return {}
-
-    monkeypatch.setattr(compute, "get_llms_data", no_llms)
-    monkeypatch.setattr(compute, "get_llms_human_ids", no_llms)
-
-    async def scenario(execute, get_session):
-        comparison_id = await add(execute, web_search=[WEB_SEARCH_RESULT])
-        row = await fetch(get_session, comparison_id)
-        [exported] = await compute.comparison_to_turns(row)
-        assert "jean.dupont@example.org" in json.dumps(exported, default=str)
 
     run(scenario, monkeypatch)
 

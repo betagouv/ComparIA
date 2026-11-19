@@ -9,15 +9,14 @@ import type {
   ComparisonPublic,
   LLMMessageCreate,
   TurnPublic,
-  UserMessageRead,
-  LinkupSearchTextResult as WebSearchResults
+  UserMessageRead
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
 
-export type { APIRevealData, WebSearchResults }
+export type { APIRevealData }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'

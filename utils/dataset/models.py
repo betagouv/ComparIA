@@ -191,21 +191,11 @@ class DatasetTurn(SQLModel):
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        msgs = [
-            self.user_msg.model_dump(
-                include={"role", "content", "user_content"},
-                context={"merge_sources": True},
-            )
-        ]
+        msgs = [self.user_msg.model_dump(include={"role", "content"})]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
             response = llm_msg.model_dump(
                 include={"role", "content", "reasoning_content"}
             )
-            if llm_msg.web_search_results:
-                response["web_search_results"] = [
-                    result.model_dump(mode="json")
-                    for result in llm_msg.web_search_results
-                ]
             if llm_msg.agent_trace:
                 queries = [
                     {"name": event["name"], "arguments": event["arguments_json"]}

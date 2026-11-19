@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
-from linkup import LinkupSearchTextResult
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Index, text
 from sqlalchemy.dialects.postgresql import JSONB
@@ -124,9 +123,6 @@ class LLMMessageBase(SQLModel):
     generation_id: str | None = None
     tokens: int | None = None
     is_cached: bool = False
-    web_search_results: Annotated[
-        list[LinkupSearchTextResult] | None, Field(sa_type=JSONB)
-    ] = None
     agent_trace: Annotated[list[AgentTraceEvent] | None, Field(sa_type=JSONB)] = None
     agent_stop_reason: Annotated[AgentStopReason | None, Field(sa_type=String)] = None
 

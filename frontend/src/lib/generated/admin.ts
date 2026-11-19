@@ -65,11 +65,6 @@ export interface ActivityTurn {
   id: string;
   created_at: string;
   prompt: string;
-  web_search_results:
-    | {
-        [k: string]: unknown;
-      }[]
-    | null;
   answer_a: ActivityAnswer | null;
   answer_b: ActivityAnswer | null;
   choice: ("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null;

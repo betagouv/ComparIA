@@ -17,7 +17,6 @@ from pydantic import BaseModel, Field, ValidationError
 from backend.arena.checks import drop_flagged_results
 from backend.arena.tools import ToolResult, ToolSpec
 from backend.config import (
-    WEB_SEARCH_INTRO,
     WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH,
     WEB_SEARCH_MAX_RESULTS_PER_CALL,
     WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH,

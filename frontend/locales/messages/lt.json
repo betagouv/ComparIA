@@ -70,10 +70,7 @@
             "finished": "Mąstymas baigtas",
             "inProgress": "Mąstoma…"
         },
-        "revealButton": "Atskleisti modelius",
-        "webSearch": {
-            "label": "Susiję paieškos internete rezultatai."
-        }
+        "revealButton": "Atskleisti modelius"
     },
     "closeModal": "Uždaryti iškylantį langą",
     "components": {

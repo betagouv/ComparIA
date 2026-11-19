@@ -1065,9 +1065,6 @@
             "inProgress": "Tænker…"
         },
         "revealButton": "Afslør modellerne",
-        "webSearch": {
-            "label": "Tilknyttede websøgeresultater."
-        },
         "tools": {
             "noResult": "Intet resultat",
             "running": "Søger…"

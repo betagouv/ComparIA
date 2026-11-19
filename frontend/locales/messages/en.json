@@ -1228,9 +1228,6 @@
             },
             "noResult": "No result",
             "running": "Searching…"
-        },
-        "webSearch": {
-            "label": "Associated Web search results."
         }
     },
     "closeModal": "Close the popup",

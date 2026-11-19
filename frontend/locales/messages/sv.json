@@ -75,10 +75,7 @@
             "finished": "Resonemang avslutat",
             "inProgress": "Resonemang pågår…"
         },
-        "revealButton": "Visa vilka modeller som användes",
-        "webSearch": {
-            "label": "Tillhörande webbsökresultat."
-        }
+        "revealButton": "Visa vilka modeller som användes"
     },
     "closeModal": "Stäng modalfönstret",
     "components": {
