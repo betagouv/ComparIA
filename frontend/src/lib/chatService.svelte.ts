@@ -292,7 +292,12 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
             } else if (event.type === 'chunk') {
               turn.status = 'generating'
               turn[event.pos].status = 'generating'
-              turn[event.pos].llm_msg = event.llm_msg
+              // The backend sends the tool steps only when one was added.
+              const previousTrace = turn[event.pos].llm_msg?.agent_trace
+              turn[event.pos].llm_msg =
+                'agent_trace' in event.llm_msg
+                  ? event.llm_msg
+                  : { ...event.llm_msg, agent_trace: previousTrace }
             } else if (event.type === 'complete') {
               if (event.pos) {
                 turn[event.pos].status = 'complete'
