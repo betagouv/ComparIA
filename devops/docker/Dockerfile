@@ -3,14 +3,14 @@
 ARG UV_VERSION=0.7.2
 FROM ghcr.io/astral-sh/uv:${UV_VERSION}@sha256:3b898ca84fbe7628c5adcd836c1de78a0f1ded68344d019af8478d4358417399 AS uv
 
-FROM public.ecr.aws/docker/library/python:3.13-slim@sha256:ffb752e139c0a19692a43af8d8523b274222dd68eebad5d583b45c2201c6e30a AS builder
+FROM public.ecr.aws/docker/library/python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS builder
 COPY --from=uv /uv /usr/local/bin/uv
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --group data
 
-FROM public.ecr.aws/docker/library/python:3.13-slim@sha256:ffb752e139c0a19692a43af8d8523b274222dd68eebad5d583b45c2201c6e30a AS runtime
+FROM public.ecr.aws/docker/library/python:3.15-slim@sha256:65a65fc7b30b06cb6df4930fd4650697cb23f4c2698ab81fc87e4b031bc36928 AS runtime
 
 # Install runtime dependencies and a non-root user to run the app as
 RUN apt-get update -y && apt-get install -y curl postgresql-client && rm -rf /var/lib/apt/lists/* \
