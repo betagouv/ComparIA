@@ -228,6 +228,46 @@ def test_the_web_search_results_are_read_as_published():
     assert "jean.dupont@example.org" in llm_analyze.conversation_text(comp)
 
 
+def test_what_tools_handed_back_is_read_as_published():
+    from utils.dataset.compute import _llm_response_entry
+
+    comp = comparison(("Qui contacter à la mairie ?", "Voici", "Voilà"))
+    # As stored: the JSONB column decodes to plain dicts.
+    comp.turns[0].llm_msg_a.agent_trace = [
+        {
+            "type": "tool_call",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "arguments_json": '{"q": "mairie de Saint-Lô"}',
+        },
+        {
+            "type": "tool_result",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "status": "success",
+            "duration_ms": 12,
+            "content": "{}",
+            "results": [
+                {
+                    "name": "Accueil",
+                    "url": "https://example.org/accueil",
+                    "content": "Jean Dupont, 06 12 34 56 78",
+                }
+            ],
+        },
+    ]
+
+    text = llm_analyze.conversation_text(comp)
+
+    published = _llm_response_entry(comp.turns[0].llm_msg_a)
+    for query in published["tool_queries"]:
+        assert query["arguments"] in text
+    for source in published["tool_sources"]:
+        assert source["content"] in text
+        assert source["url"] in text
+    assert "06 12 34 56 78" in text
+
+
 @pytest.mark.parametrize("value", [-0.2, 1.5, float("nan"), float("inf"), "0.5", True])
 def test_an_answer_that_is_not_a_probability_fails_the_comparison(monkeypatch, value):
     decider = Decider(lambda key, text: value if key == "pii" else 0.0)
