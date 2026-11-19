@@ -6,14 +6,14 @@ from backend.activity.models import (
     ActivityStoppedMessagesPage,
 )
 from backend.admin.dataset_check import DatasetCheckTryResult
-from backend.admin.llms.health import LLMHealth
-from backend.admin.router import (
+from backend.admin.legal import (
     AdminLegalDocument,
     InformationalLegalPage,
     LegalPresentationTranslatable,
     LegalStatuses,
     PublishLegalDocumentBody,
 )
+from backend.admin.llms.health import LLMHealth
 from utils.database.models.app_settings import AppSettingsPatch, AppSettingsPublic
 from utils.database.models.auth import UserPublic, UserUpsert
 from utils.database.models.dataset_check import DatasetCheckPublic, DatasetCheckUpsert
