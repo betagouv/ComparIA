@@ -63,7 +63,9 @@ def error_code(e: Exception) -> ErrorCode:
 class SSEEventMsgChunk(TypedDict):
     type: Literal["chunk"]
     pos: BotPos
-    llm_msg: LLMMessageCreate
+    # `LLMMessageCreate` as JSON, without `agent_trace` when it has not changed
+    # since the previous chunk. See `chunk_message`.
+    llm_msg: dict[str, Any]
 
 
 class SSEEventMsgComplete(TypedDict):
@@ -128,6 +130,35 @@ def format_sse_event(data: AnySSEEvent) -> str:
     return f"data: {json.dumps(jsonable_encoder(data))}\n\n"
 
 
+def chunk_message(llm_msg: LLMMessageCreate, send_trace: bool) -> dict[str, Any]:
+    """What one chunk tells the browser about a message being written.
+
+    A chunk goes out every few words, and resending every tool step and result
+    with each one streamed megabytes for a short tool-using answer. Steps are
+    only ever appended, so the trace goes out only when a step was added, and
+    the browser keeps the last one it got otherwise.
+
+    `web_search_results` is never sent: it copies the web search sources already
+    in the trace, and the arena reads them from there. A tool result's raw
+    `content` is left out when its sources say the same thing, which is what the
+    arena shows in that case; the saved message keeps both.
+    """
+    data = llm_msg.model_dump(
+        mode="json",
+        exclude=(
+            {"web_search_results"}
+            if send_trace
+            else {"web_search_results", "agent_trace"}
+        ),
+    )
+    for event in data.get("agent_trace") or []:
+        if event["type"] == "tool_result" and any(
+            source.get("content") or source.get("name") for source in event["results"]
+        ):
+            event["content"] = ""
+    return data
+
+
 async def stream_llm_response(
     pos: BotPos,
     llm: LLMDataEnabled,
@@ -159,8 +190,16 @@ async def stream_llm_response(
                 pos, llm, turn, turn_index, messages, request, tools=tools
             )
         ) as llm_msgs:
+            sent_steps: int | None = None
             async for llm_msg in llm_msgs:
-                yield {"type": "chunk", "pos": pos, "llm_msg": llm_msg}
+                steps = len(llm_msg.agent_trace or [])
+                send_trace = steps != sent_steps
+                sent_steps = steps
+                yield {
+                    "type": "chunk",
+                    "pos": pos,
+                    "llm_msg": chunk_message(llm_msg, send_trace),
+                }
 
         yield {"type": "complete", "pos": pos}
 
