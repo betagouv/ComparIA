@@ -63,27 +63,7 @@ export interface UserMessageRead {
   created_at?: string;
   role?: "user";
   content: string;
-  web_search_results?: LinkupSearchTextResult[] | null;
   turn_id?: string | null;
-  user_content: string;
-  [k: string]: unknown;
-}
-/**
- * A text result from a Linkup search.
- *
- * Attributes:
- *     type: The type of the search result, in this case "text".
- *     name: The name of the search result.
- *     url: The URL of the search result.
- *     content: The text of the search result.
- *     favicon: The favicon URL of the search result, if available.
- */
-export interface LinkupSearchTextResult {
-  type: "text";
-  name: string;
-  url: string;
-  content: string;
-  favicon: string;
   [k: string]: unknown;
 }
 export interface LLMMessageCreate {
@@ -94,7 +74,6 @@ export interface LLMMessageCreate {
   updated_at?: string | null;
   content?: string;
   reasoning_content?: string | null;
-  web_search_results?: LinkupSearchTextResult[] | null;
   agent_trace?:
     (AgentTraceReasoning | AgentTraceIntermediateContent | AgentTraceToolCall | AgentTraceToolResult)[] | null;
   agent_stop_reason?:

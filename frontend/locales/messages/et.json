@@ -75,10 +75,7 @@
             "finished": "Arutlemine lõpetatud",
             "inProgress": "Arutlemine on käimas …"
         },
-        "revealButton": "Näita mudeleid",
-        "webSearch": {
-            "label": "Seotud veebiotsingu tulemused."
-        }
+        "revealButton": "Näita mudeleid"
     },
     "closeModal": "Sulge hüpikaken",
     "components": {

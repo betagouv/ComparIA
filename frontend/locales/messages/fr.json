@@ -1226,9 +1226,6 @@
             },
             "noResult": "Aucun résultat",
             "running": "Recherche en cours…"
-        },
-        "webSearch": {
-            "label": "Résultats de recherche Web associés."
         }
     },
     "closeModal": "Fermer la fenêtre modale",

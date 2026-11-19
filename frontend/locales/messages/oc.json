@@ -10,9 +10,6 @@
         "tools": {
             "noResult": "Cap de resultat",
             "running": "Recèrca en cors…"
-        },
-        "webSearch": {
-            "label": "Autorizar la recèrca web"
         }
     }
 }

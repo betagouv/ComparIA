@@ -171,10 +171,7 @@
           <Tooltip id="pending-mode-desc" text={selectedMode.description} size="xs" />
         </div>
 
-        <MessageUser
-          id="pending-user-message"
-          message={{ content: prompt, user_content: prompt }}
-        />
+        <MessageUser id="pending-user-message" message={{ content: prompt }} />
       </div>
 
       <Pending message={m['chatbot.loading']()} class="m-auto" aria-hidden="true" />
