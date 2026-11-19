@@ -6,7 +6,6 @@ from uuid import UUID, uuid4
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 
-from backend.admin.logos import logo_response
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
@@ -64,6 +63,7 @@ from backend.config import (
 from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.survey.dependencies import require_answered_questions
+from backend.utils.logos import logo_response
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,

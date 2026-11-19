@@ -11,7 +11,6 @@ from pydantic import BaseModel, Field
 from backend.admin.activity import router as admin_activity_router
 from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.llms import admin_llms_router
-from backend.admin.logos import read_logo
 from backend.admin.publishing import router as admin_publishing_router
 from backend.admin.services import (
     CannotDeleteLastAdminError,
@@ -72,6 +71,7 @@ from backend.settings.legal import (
     list_legal_documents,
     publish_legal_document,
 )
+from backend.utils.logos import read_logo
 from utils.database.models.app_settings import (
     AppSettings,
     AppSettingsPatch,

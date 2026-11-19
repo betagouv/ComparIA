@@ -14,7 +14,6 @@ from linkup import (
 from sqlalchemy import text
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.admin.logos import read_logo
 from backend.admin.tools.models import (
     ToolDraft,
     ToolFunction,
@@ -31,6 +30,7 @@ from backend.config import (
     TOOL_USAGE_DAYS,
     WEB_SEARCH_TOOL_TIMEOUT_SECONDS,
 )
+from backend.utils.logos import read_logo
 from utils.database.models import Tool, ToolAdmin, ToolUpsert
 from utils.secrets import encrypt_secret
 from utils.storage.redis import REDIS_TOOL_HEALTH_KEY, get_redis_client, hash_content

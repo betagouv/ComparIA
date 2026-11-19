@@ -6,10 +6,10 @@ from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import SQLModel, select
 
 from backend.admin.llms.health import LLMHealth, check_llm_health
-from backend.admin.logos import read_logo
 from backend.config import LAB_LOGO_BOX
 from backend.llms.data import get_llms_data
 from backend.utils.countries import get_ranking
+from backend.utils.logos import read_logo
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
