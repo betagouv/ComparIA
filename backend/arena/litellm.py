@@ -168,8 +168,7 @@ async def litellm_stream_iter(
 
     is_ordbogen = bool(endpoint.base_url and "ordbogen.ai" in endpoint.base_url)
     api_messages: list[dict[str, Any]] = [
-        message.model_dump(include={"role", "content"}, context={"merge_sources": True})
-        for message in messages
+        message.model_dump(include={"role", "content"}) for message in messages
     ]
     base_kwargs: dict[str, Any] = {
         "timeout": ORDBOGEN_GLOBAL_TIMEOUT if is_ordbogen else GLOBAL_TIMEOUT,

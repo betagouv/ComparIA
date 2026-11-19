@@ -36,7 +36,6 @@ from utils.database.models import (
 )
 from utils.database.models.llms import LLMData
 from utils.database.models.messages import LLMMessage, tool_evidence
-from utils.database.models.messages.user import merge_web_search_with_content
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms
@@ -407,16 +406,9 @@ async def comparison_to_turns(
 
         msg_a, msg_b = turn.llm_msg_a, turn.llm_msg_b
 
-        raw_content = turn.user_msg.content
-        content = (
-            merge_web_search_with_content(raw_content, turn.user_msg.web_search_results)
-            if turn.user_msg.web_search_results
-            else raw_content
-        )
         user_entry = {
             "role": turn.user_msg.role,
-            "content": content,
-            "user_content": raw_content,
+            "content": turn.user_msg.content,
         }
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
@@ -511,7 +503,7 @@ def _reference_rows() -> list[dict]:
     front instead of inferred from a first batch where they may be all-null.
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
-    user = {"role": "user", "content": "x", "user_content": "x"}
+    user = {"role": "user", "content": "x"}
     assistant = {
         "content": "x",
         "reasoning_content": "x",

@@ -102,7 +102,6 @@ from utils.database.prompt_checks import (
     is_out_of_credits,
     update_prompt_check,
 )
-from utils.database.session import get_session
 from utils.database.settings import get_app_settings, update_app_settings
 from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.secrets import encrypt_secret

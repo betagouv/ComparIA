@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import TYPE_CHECKING, TypeVar
 
 from fastapi import HTTPException, status
-from linkup import LinkupSearchTextResult
 from sqlmodel import and_, col, select, update
 
 from backend.arena.tools import model_rejects_tools
@@ -178,7 +177,6 @@ async def set_comparison_revealed(comparison_id: uuid.UUID) -> None:
 async def add_comparison_turn(
     comparison_id: uuid.UUID,
     prompt: str,
-    web_search_results: list[LinkupSearchTextResult] | None = None,
     prompt_check_result: PromptCheckResult | None = None,
 ) -> tuple[ComparisonRead, TurnRead]:
     async with get_session() as session:
@@ -186,14 +184,7 @@ async def add_comparison_turn(
             TurnCreate(
                 comparison_id=comparison_id,
                 prompt_check_result=prompt_check_result,
-                user_msg=UserMessage(
-                    content=prompt,
-                    web_search_results=(
-                        [w.model_dump() for w in web_search_results]
-                        if web_search_results
-                        else None
-                    ),
-                ),
+                user_msg=UserMessage(content=prompt),
             )
         )
         new_turn_id = db_turn.id
@@ -218,10 +209,6 @@ async def add_comparison_turn(
 def _llm_message_for_persistence(message: LLMMessageCreate) -> LLMMessage:
     """Build a DB message whose JSONB fields contain JSON-native values."""
     db_message = LLMMessage.model_validate(message)
-    if message.web_search_results:
-        db_message.web_search_results = [
-            result.model_dump(mode="json") for result in message.web_search_results
-        ]
     if message.agent_trace:
         db_message.agent_trace = [
             event.model_dump(mode="json") for event in message.agent_trace

@@ -12,7 +12,6 @@ from datetime import datetime
 from typing import AsyncGenerator, Literal
 
 from fastapi import Request
-from linkup import LinkupSearchTextResult
 from litellm.litellm_core_utils.token_counter import token_counter
 from pydantic import BaseModel
 
@@ -23,7 +22,6 @@ from backend.arena.cache import (
 )
 from backend.arena.litellm import litellm_stream_iter
 from backend.arena.tools import ToolSpec
-from backend.arena.web_search import WEB_SEARCH_TOOL_NAME
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
 from utils.database.models import (
@@ -83,29 +81,6 @@ async def _stream_cached_response(
     llm_msg.updated_at = datetime.now()
 
     yield llm_msg
-
-
-def _mirror_web_search_results(llm_msg: LLMMessageCreate) -> None:
-    """
-    Copy web search sources out of the trace into their own column.
-
-    The column duplicates the trace and is kept only so the results accordion on
-    older comparisons and the dataset keep working. Drop it with the accordion.
-    """
-    results = [
-        LinkupSearchTextResult(
-            type="text",
-            name=source.name,
-            url=source.url or "",
-            content=source.content,
-            favicon=source.favicon or "",
-        )
-        for event in llm_msg.agent_trace or []
-        if event.type == "tool_result" and event.name == WEB_SEARCH_TOOL_NAME
-        for source in event.results
-    ]
-    if results:
-        llm_msg.web_search_results = results
 
 
 async def bot_response_async(
@@ -173,15 +148,9 @@ async def bot_response_async(
     # Process streaming response chunks and update current message
     async with aclosing(stream_iter):
         async for llm_msg in stream_iter:
-            _mirror_web_search_results(llm_msg)
             # Tool results are independently displayable and should reach the UI
             # before the final answer starts streaming.
-            if (
-                llm_msg.content
-                or llm_msg.reasoning_content
-                or llm_msg.web_search_results
-                or llm_msg.agent_trace
-            ):
+            if llm_msg.content or llm_msg.reasoning_content or llm_msg.agent_trace:
                 yield llm_msg
 
     duration = (llm_msg.updated_at - llm_msg.created_at).total_seconds()

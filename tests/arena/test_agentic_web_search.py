@@ -1086,76 +1086,7 @@ async def _test_response_cache_is_bypassed_when_tools_are_available():
     assert messages[-1] == "Fresh answer."
 
 
-def test_web_search_sources_reach_their_own_column():
-    asyncio.run(_test_web_search_sources_reach_their_own_column())
-
-
-async def _test_web_search_sources_reach_their_own_column():
-    integration.settings.COMPARIA_DB_URI = (
-        integration.settings.COMPARIA_DB_URI
-        or "postgresql://test:test@localhost:5432/test"
-    )
-    from backend.arena import conversation
-
-    result = LinkupSearchTextResult(
-        type="text",
-        name="Example",
-        url="https://example.com/news",
-        content="Fresh information",
-        favicon="",
-    )
-
-    async def fake_stream_iter(*, msg, **kwargs):
-        now = datetime.now()
-        msg.created_at = now
-        msg.responded_at = now
-        msg.updated_at = now
-        msg.generation_id = "sourced"
-        msg.tokens = 2
-        msg.agent_trace = [
-            AgentTraceToolResult(
-                tool_call_id="call-1",
-                name=web_search.WEB_SEARCH_TOOL_NAME,
-                status="success",
-                duration_ms=12,
-                content='{"results":[]}',
-                results=[result],
-            )
-        ]
-        yield msg
-        msg.content = "Sourced answer."
-        yield msg
-
-    turn = SimpleNamespace(
-        user_msg=UserMessage(content="Current events?"),
-        llm_msg_a=None,
-        llm_msg_b=None,
-    )
-    llm = SimpleNamespace(
-        id="model-a",
-        human_id="model-a",
-        endpoint=SimpleNamespace(api_model_id="model-a"),
-    )
-
-    with patch.object(conversation, "litellm_stream_iter", fake_stream_iter):
-        streamed = [
-            message.web_search_results
-            async for message in conversation.bot_response_async(
-                pos="a",
-                llm=llm,
-                turn=turn,
-                turn_index=0,
-                messages=[turn.user_msg],
-                tools=_web_search_tools(),
-            )
-        ]
-
-    # The results accordion reads this column while the answer is still coming.
-    assert streamed[0] == [result]
-    assert streamed[-1] == [result]
-
-
-def test_search_results_are_json_native_at_persistence_boundary():
+def test_complex_fields_are_json_native_at_persistence_boundary():
     integration.settings.COMPARIA_DB_URI = (
         integration.settings.COMPARIA_DB_URI
         or "postgresql://test:test@localhost:5432/test"
@@ -1178,7 +1109,6 @@ def test_search_results_are_json_native_at_persistence_boundary():
             updated_at=now,
             generation_id="test-generation",
             tokens=10,
-            web_search_results=[result],
             agent_trace=[
                 AgentTraceToolCall(
                     tool_call_id="call-1",
@@ -1198,12 +1128,10 @@ def test_search_results_are_json_native_at_persistence_boundary():
         )
     )
 
-    assert db_message.web_search_results == [result.model_dump(mode="json")]
     assert [event["type"] for event in db_message.agent_trace] == [
         "tool_call",
         "tool_result",
     ]
-    json.dumps(db_message.web_search_results)
     json.dumps(db_message.agent_trace)
 
 

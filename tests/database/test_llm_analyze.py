@@ -214,20 +214,6 @@ def test_a_folded_spelling_is_scored_on_the_exclusion_criteria_only(monkeypatch)
     assert updates[0][1].contains_spam
 
 
-def test_the_web_search_results_are_read_as_published():
-    comp = comparison(("Qui contacter ?", "Voici", "Voilà"))
-    comp.turns[0].user_msg.web_search_results = [
-        LinkupSearchTextResult(
-            type="text",
-            name="Annuaire",
-            url="https://example.org",
-            favicon="",
-            content="Jean Dupont, jean.dupont@example.org",
-        )
-    ]
-    assert "jean.dupont@example.org" in llm_analyze.conversation_text(comp)
-
-
 def test_what_tools_handed_back_is_read_as_published():
     from utils.dataset.compute import _llm_response_entry
 
