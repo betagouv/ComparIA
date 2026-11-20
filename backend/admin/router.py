@@ -1,6 +1,5 @@
 import logging
 import time
-import uuid
 from datetime import datetime
 from types import SimpleNamespace
 from typing import Literal
@@ -13,23 +12,10 @@ from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.legal import router as admin_legal_router
 from backend.admin.llms import admin_llms_router
 from backend.admin.publishing import router as admin_publishing_router
-from backend.admin.services import (
-    CannotDeleteLastAdminError,
-    CannotDeleteSelfError,
-    CannotDemoteLastAdminError,
-    CannotResetOwnTotpError,
-    EmailAlreadyExistsError,
-    cancel_user_invite,
-    create_user,
-    delete_user,
-    get_user,
-    list_users,
-    reset_user_totp,
-    update_user,
-)
 from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.survey import router as admin_survey_router
 from backend.admin.tools import admin_tools_router
+from backend.admin.users import admin_users_router
 from backend.admin.vote_tags import router as admin_vote_tags_router
 from backend.arena.checks import (
     list_decision_models,
@@ -39,14 +25,12 @@ from backend.arena.checks import (
     write_cached_scores,
 )
 from backend.auth.dependencies import RequiredAdmin, require_admin
-from backend.auth.email import send_invite_link
 from backend.auth.oidc import (
     check_oidc_connection,
     connection_test_passed,
     oidc_available,
     oidc_config_fingerprint,
 )
-from backend.auth.services import create_invite
 from backend.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     INSTANCE_LOGO_BOX,
@@ -60,7 +44,6 @@ from utils.database.models.app_settings import (
     AppSettingsPublic,
     OIDCConnectionTest,
 )
-from utils.database.models.auth import NormalizedEmail, UserPublic, UserUpsert
 from utils.database.models.prompt_check import (
     Criteria,
     Description,
@@ -79,7 +62,6 @@ from utils.database.prompt_checks import (
     update_prompt_check,
 )
 from utils.database.settings import get_app_settings, update_app_settings
-from utils.i18n import SupportedLocale
 from utils.secrets import encrypt_secret
 from utils.utils import FormJsonSchema
 
@@ -98,129 +80,7 @@ router.include_router(admin_vote_tags_router)
 router.include_router(admin_publishing_router)
 router.include_router(admin_dataset_check_router)
 router.include_router(admin_tools_router)
-
-
-class UsersPage(BaseModel):
-    items: list[UserPublic]
-    total: int
-    page: int
-    page_size: int
-
-
-class InviteBody(BaseModel):
-    email: NormalizedEmail
-    # The inviting admin's language: the best guess we have for the invitee's.
-    locale: SupportedLocale | None = None
-
-
-@router.get("/users", response_model=UsersPage)
-async def get_users(
-    search: str | None = Query(default=None),
-    page: int = Query(default=1, ge=1),
-    page_size: int = Query(default=50, ge=1, le=200),
-) -> UsersPage:
-    rows, total = await list_users(search=search, page=page, page_size=page_size)
-    return UsersPage(items=rows, total=total, page=page, page_size=page_size)
-
-
-@router.get("/users/schema")
-async def get_user_schema():
-    return UserUpsert.model_json_schema(schema_generator=FormJsonSchema)
-
-
-@router.post("/users", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
-async def create_user_route(body: UserUpsert) -> UserPublic:
-    try:
-        return await create_user(body)
-    except EmailAlreadyExistsError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
-        )
-
-
-@router.get("/users/{user_id}", response_model=UserPublic)
-async def get_user_route(user_id: uuid.UUID) -> UserPublic:
-    user = await get_user(user_id)
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return user
-
-
-@router.put("/users/{user_id}", response_model=UserPublic)
-async def update_user_route(user_id: uuid.UUID, body: UserUpsert) -> UserPublic:
-    try:
-        user = await update_user(user_id, body)
-    except CannotDemoteLastAdminError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot demote the last remaining admin",
-        )
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    return user
-
-
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_user(
-    user_id: uuid.UUID,
-    current_user: RequiredAdmin,
-) -> None:
-    try:
-        deleted = await delete_user(user_id, current_user.id)
-    except CannotDeleteSelfError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot delete your own account",
-        )
-    except CannotDeleteLastAdminError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot delete the last remaining admin",
-        )
-    if not deleted:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-
-@router.post("/users/invite", status_code=status.HTTP_204_NO_CONTENT)
-async def invite_user(
-    body: InviteBody,
-    current_user: RequiredAdmin,
-) -> None:
-    token = await create_invite(body.email, invited_by=current_user.id)
-    link = f"{settings.COMPARIA_APP_URL}/invite/{token}"
-    app_settings = await get_app_settings()
-    await send_invite_link(
-        body.email,
-        link,
-        platform_name=app_settings.platform_name,
-        primary_color=app_settings.primary_color_light,
-        secondary_color=app_settings.secondary_color_light,
-        locale=body.locale or app_settings.default_locale,
-    )
-
-
-@router.delete("/users/{user_id}/invite", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_user_invite(user_id: uuid.UUID) -> None:
-    canceled = await cancel_user_invite(user_id)
-    if not canceled:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-
-@router.delete("/users/{user_id}/totp", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_user_totp(user_id: uuid.UUID, current_user: RequiredAdmin) -> None:
-    try:
-        reset = await reset_user_totp(user_id, current_user.id)
-    except CannotResetOwnTotpError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Change your own authenticator from your account page",
-        )
-    if not reset:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    # Who reset whom is worth a line in the log: the target's next sign-in
-    # needs only an email code until they enrol again.
-    logger.info(f"[AUTH] TOTP reset for user {user_id} by admin {current_user.id}")
+router.include_router(admin_users_router)
 
 
 def _current_connection_test(row: AppSettings) -> OIDCConnectionTest | None:

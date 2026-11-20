@@ -23,12 +23,12 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
 
-import backend.admin.services as admin_services  # noqa: E402
+import backend.admin.users.services as users_services  # noqa: E402
 import backend.auth.email as email  # noqa: E402
 import backend.auth.inactivity as inactivity  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401
-from backend.admin.services import create_user  # noqa: E402
+from backend.admin.users.services import create_user  # noqa: E402
 from backend.auth.email import (  # noqa: E402
     _build_inactivity_message,
     send_inactivity_warning,
@@ -349,7 +349,7 @@ def test_reviving_a_deleted_account_restarts_its_inactivity_clock(path):
         with patched(auth_services, get_session=get_session):
             asyncio.run(create_invite(deleted.email, invited_by=uuid.uuid4()))
     else:
-        with patched(admin_services, get_session=get_session):
+        with patched(users_services, get_session=get_session):
             asyncio.run(create_user(UserUpsert(email=deleted.email, role="user")))
 
     assert deleted.deleted_at is None

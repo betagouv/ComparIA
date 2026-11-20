@@ -24,6 +24,7 @@ from fastapi import FastAPI  # noqa: E402
 from sqlmodel import select  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
+import backend.admin.users.router as users_router  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 import utils.database.models  # noqa: E402,F401 needed before importing the router
 from backend.auth.dependencies import require_admin  # noqa: E402
@@ -145,11 +146,8 @@ def instance(provider=None):
             consume_state=consume_state,
             get_redis_client=lambda: redis,
         ),
-        patched(
-            admin_router,
-            get_app_settings=get_app_settings,
-            send_invite_link=send_invite_link,
-        ),
+        patched(users_router, send_invite_link=send_invite_link),
+        patched(admin_router, get_app_settings=get_app_settings),
     ):
         yield outbox
 
