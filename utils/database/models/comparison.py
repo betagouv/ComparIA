@@ -114,7 +114,7 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
     archived_at: OptionalDatetime = None
 
-    # Learnt by trying (backend/arena/tools.py), not decided in advance: null
+    # Learnt by trying (backend/tools/services.py), not decided in advance: null
     # when no tool was offered to that side this conversation, so "not
     # applicable" and "declined" stay distinguishable when ranking is filtered.
     tool_capable_a: bool | None = None

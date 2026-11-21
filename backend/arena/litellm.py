@@ -19,12 +19,6 @@ import litellm
 # for every visitor during a worker's first comparison.
 import openai.resources  # noqa: F401
 
-from backend.arena.tools import (
-    ToolResult,
-    ToolSpec,
-    model_rejects_tools,
-    remember_tool_rejection,
-)
 from backend.config import (
     GLOBAL_TIMEOUT,
     MAX_IDENTICAL_TOOL_CALLS,
@@ -37,6 +31,8 @@ from backend.config import (
     settings,
 )
 from backend.errors import ContextTooLongError
+from backend.tools.models import ToolResult, ToolSpec
+from backend.tools.services import model_rejects_tools, remember_tool_rejection
 from utils.database.models.messages.llm import (
     AgentStopReason,
     AgentTraceIntermediateContent,

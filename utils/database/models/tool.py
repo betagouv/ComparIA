@@ -109,7 +109,7 @@ class Tool(ToolBase, table=True):
     @property
     def logo_url(self) -> str | None:
         if self.logo:
-            return f"/arena/tools/logo/{self.id}?v={logo_version(self.logo)}"
+            return f"/tools/logo/{self.id}?v={logo_version(self.logo)}"
         return None
 
 

@@ -81,8 +81,6 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
-    # No tool table yet (backend/arena/tools.py): web search is the only tool
-    # a comparison can ever offer today.
     available_tools: list[str]
     total_tokens_a: int | None
     total_tokens_b: int | None

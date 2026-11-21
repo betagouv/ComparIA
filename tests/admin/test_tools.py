@@ -19,7 +19,7 @@ from linkup import LinkupAuthenticationError, LinkupNoResultError  # noqa: E402
 
 from backend.admin.tools import admin_tools_router  # noqa: E402
 from backend.admin.tools import services  # noqa: E402
-from backend.arena import web_search  # noqa: E402
+from backend.tools import web_search  # noqa: E402
 from utils.database.models import Tool  # noqa: E402
 from utils.database.session import get_session  # noqa: E402
 from utils.secrets import decrypt_secret  # noqa: E402
