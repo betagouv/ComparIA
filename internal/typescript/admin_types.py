@@ -1,4 +1,4 @@
-from backend.activity.models import (
+from backend.admin.activity.models import (
     ActivityConversation,
     ActivityConversationsPage,
     ActivityFilterOptions,

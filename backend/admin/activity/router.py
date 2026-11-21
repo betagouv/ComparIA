@@ -6,7 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, status
 
-from backend.activity.models import (
+from backend.admin.activity.models import (
     ActivityConversation,
     ActivityConversationsPage,
     ActivityFilterOptions,
@@ -16,7 +16,7 @@ from backend.activity.models import (
     ConversationFilters,
     StoppedMessageFilters,
 )
-from backend.activity.services import (
+from backend.admin.activity.services import (
     InvalidCursorError,
     QueryTimedOutError,
     get_conversation,

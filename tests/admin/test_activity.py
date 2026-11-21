@@ -20,8 +20,8 @@ os.environ.setdefault("LOG_FORMAT", "RAW")
 # table: load it before the test cluster is built, or later tests truncate a
 # table that was never created.
 import utils.database.actions  # noqa: E402, F401
-from backend.activity import services  # noqa: E402
-from backend.activity.models import (  # noqa: E402
+from backend.admin.activity import services  # noqa: E402
+from backend.admin.activity.models import (  # noqa: E402
     ActivityFilters,
     ConversationFilters,
     StoppedMessageFilters,

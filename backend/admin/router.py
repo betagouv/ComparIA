@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from backend.admin.activity import router as admin_activity_router
+from backend.admin.activity import admin_activity_router
 from backend.admin.dataset_check import router as admin_dataset_check_router
 from backend.admin.legal import router as admin_legal_router
 from backend.admin.llms import admin_llms_router
