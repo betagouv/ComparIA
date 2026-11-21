@@ -13,7 +13,7 @@ from backend.admin.suggestions import router as admin_suggestions_router
 from backend.admin.survey import router as admin_survey_router
 from backend.admin.tools import admin_tools_router
 from backend.admin.users import admin_users_router
-from backend.admin.vote_tags import router as admin_vote_tags_router
+from backend.admin.vote_tags import admin_vote_tags_router
 from backend.auth.dependencies import require_admin
 
 logger = logging.getLogger("languia")

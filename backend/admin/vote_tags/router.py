@@ -2,8 +2,7 @@ import uuid
 
 from fastapi import APIRouter, HTTPException, status
 
-from backend.auth.dependencies import RequiredAdmin
-from backend.vote_tags.services import (
+from backend.admin.vote_tags.services import (
     ReservedVoteTagError,
     VoteTagAlreadyExistsError,
     VoteTagInUseError,
@@ -17,6 +16,7 @@ from backend.vote_tags.services import (
     set_vote_tag_archived,
     update_vote_tag,
 )
+from backend.auth.dependencies import RequiredAdmin
 from utils.database.models.vote_tag import (
     AdminVoteTag,
     AdminVoteTagsResponse,
