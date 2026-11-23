@@ -11,7 +11,7 @@
   import DatasetVoterIds from '$components/admin/DatasetVoterIds.svelte'
   import { DatasetCheck, DestinationForm, Overview, ReservationManagement } from './components'
   import { formatDate, runStatus, runVariant, type Run } from './components/format'
-  import { closeModal } from './components/modal'
+  import { closeModal } from '$lib/helpers/modal'
 
   let { data }: PageProps = $props()
 

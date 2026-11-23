@@ -8,6 +8,7 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { untrack } from 'svelte'
   import type { ActivityConversationRow } from '$lib/generated/admin'
+  import { closeModal, discloseModal } from '$lib/helpers/modal'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { toRelativeTime } from '$lib/utils/data'
   import {
@@ -27,6 +28,7 @@
     sideVerdict,
     stageOf
   } from '../filters'
+  import { isReserveBlock, PARTNER_HAS_IT, reserveBlockLabel } from '../../reservation'
   import type { PageProps } from './$types'
 
   let { data }: PageProps = $props()
@@ -106,13 +108,13 @@
     } catch (error) {
       // The backend names why it refused, the list may be out of date.
       const { status, detail } = error as ApiError
-      if (status === 409 && detail === 'partner_has_it') {
+      if (status === 409 && detail === PARTNER_HAS_IT) {
         // A run sent it to the partner since the list loaded.
         askUnreserve(row)
       } else {
         useToast(
-          status === 409 && typeof detail === 'string'
-            ? label('reserveBlocks', detail)
+          status === 409 && isReserveBlock(detail)
+            ? reserveBlockLabel(detail)
             : m['admin.activity.errors.generic'](),
           6000,
           'error'
@@ -123,27 +125,21 @@
     }
   }
 
-  function unreserveModal(action: 'disclose' | 'conceal') {
-    const element = document.getElementById('fr-modal-unreserve')
-    // @ts-expect-error - DSFR is globally available
-    if (element) window.dsfr(element).modal[action]()
-  }
-
   function askUnreserve(row: ActivityConversationRow) {
     toUnreserve = row
-    unreserveModal('disclose')
+    discloseModal('fr-modal-unreserve')
   }
 
   // Unreserving puts the conversation in the next open dataset: once the
   // partner has it, that spoils their evaluation, so ask first. The backend
   // asks too when the list is out of date.
   function unreserve(row: ActivityConversationRow) {
-    if (row.reserved_sent) askUnreserve(row)
+    if (row.reserved_with_partner) askUnreserve(row)
     else setReserved(row, false)
   }
 
   async function confirmUnreserve() {
-    unreserveModal('conceal')
+    closeModal('fr-modal-unreserve')
     if (toUnreserve) await setReserved(toUnreserve, false, true)
     toUnreserve = undefined
   }
@@ -425,7 +421,7 @@
     <Button
       variant="secondary"
       text={m['admin.activity.reservation.cancel']()}
-      onclick={() => unreserveModal('conceal')}
+      onclick={() => closeModal('fr-modal-unreserve')}
     />
     <Button text={m['admin.activity.reservation.unreserveConfirm']()} onclick={confirmUnreserve} />
   </div>

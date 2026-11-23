@@ -4,7 +4,7 @@
   import type { AdminPublishDestination } from '$lib/generated/admin'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { closeModal, discloseModal } from './modal'
+  import { closeModal, discloseModal } from '$lib/helpers/modal'
 
   let { onsaved }: { onsaved: () => Promise<void> } = $props()
 

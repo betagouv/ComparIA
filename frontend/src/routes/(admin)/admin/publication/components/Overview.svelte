@@ -39,7 +39,7 @@
     <h2 class="fr-text--sm text-grey mb-2!">{m['admin.publishing.reservedTitle']()}</h2>
     <p class="fr-h4 mb-1!">{status.reserved}</p>
     <p class="fr-text--sm mb-2!">
-      {m['admin.publishing.overviewReservedSent']({ sent: status.reserved_sent })}
+      {m['admin.publishing.overviewReservedSent']({ sent: status.reserved_with_partner })}
     </p>
     <a
       class="fr-link fr-text--sm"

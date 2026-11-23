@@ -2,7 +2,7 @@
   import { Button } from '$components/dsfr'
   import type { ActivityConversationRow } from '$lib/generated/admin'
   import { m } from '$lib/i18n/messages'
-  import { label } from '../filters'
+  import { reserveBlockLabel } from '../../reservation'
 
   let {
     row,
@@ -35,7 +35,7 @@
   />
 {:else if row.reserve_block}
   <span class="fr-text--xs mb-0! text-[--text-mention-grey]">
-    {label('reserveBlocks', row.reserve_block)}
+    {reserveBlockLabel(row.reserve_block)}
   </span>
 {:else}
   <Button

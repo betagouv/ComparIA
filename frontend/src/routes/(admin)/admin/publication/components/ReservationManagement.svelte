@@ -2,9 +2,10 @@
   import { Button, Modal } from '$components/dsfr'
   import { api, type ApiError } from '$lib/fastapi-client'
   import type { AdminPublishStatus } from '$lib/generated/admin'
+  import { closeModal } from '$lib/helpers/modal'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
-  import { closeModal } from './modal'
+  import { PARTNER_HAS_IT } from '../../reservation'
 
   let { status, onreleased }: { status: AdminPublishStatus; onreleased: () => Promise<void> } =
     $props()
@@ -16,15 +17,18 @@
     busy = true
     try {
       // The warning's figure: the backend refuses if the partner has more.
-      await api.request(`/admin/publishing/reservations?sent=${status.reserved_sent}`, {
-        method: 'DELETE'
-      })
+      await api.request(
+        `/admin/publishing/reservations?with_partner=${status.reserved_with_partner}`,
+        {
+          method: 'DELETE'
+        }
+      )
       useToast(m['admin.publishing.releaseSuccess']({ count }), 4000)
       closeModal('fr-modal-release-reserved')
       await onreleased()
     } catch (error) {
       const { status: code, detail, message } = error as ApiError
-      if (code === 409 && detail === 'partner_has_it') {
+      if (code === 409 && detail === PARTNER_HAS_IT) {
         // A run sent more since the page loaded: show the new figure.
         await onreleased()
         useToast(m['admin.publishing.releaseChanged'](), 6000, 'error')
@@ -60,7 +64,7 @@
   <h2 id="fr-modal-title-release-reserved" class="fr-modal__title">
     {m['admin.publishing.releaseTitle']({ count: status.reserved })}
   </h2>
-  <p>{m['admin.publishing.releaseWarning']({ sent: status.reserved_sent })}</p>
+  <p>{m['admin.publishing.releaseWarning']({ sent: status.reserved_with_partner })}</p>
 
   <div class="mt-6 gap-4 sm:flex-row sm:justify-end flex flex-col-reverse">
     <Button

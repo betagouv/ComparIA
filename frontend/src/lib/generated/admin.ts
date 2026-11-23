@@ -135,7 +135,7 @@ export interface ActivityConversationRow {
   has_error: boolean;
   reserved_at: string | null;
   reserve_block?: ("publishing" | "published" | "pii" | "cohort" | "analysis_failed") | null;
-  reserved_sent: boolean;
+  reserved_with_partner: boolean;
   [k: string]: unknown;
 }
 export interface ActivityFilterOptions {
@@ -236,7 +236,7 @@ export interface AdminPublishRun {
 export interface AdminPublishStatus {
   runs: AdminPublishRun[];
   reserved: number;
-  reserved_sent: number;
+  reserved_with_partner: number;
 }
 export interface AdminSuggestion {
   id: string;
