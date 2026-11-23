@@ -40,13 +40,13 @@ def exercise_export(monkeypatch, tmp_path, datasets):
     monkeypatch.setattr(run, "publish", lambda *args: events.append("publish"))
 
     @asynccontextmanager
-    async def sending(sent):
+    async def recording_sendings(sent):
         assert sent == datasets
         events.append("start")
         yield
         events.append("finish")
 
-    monkeypatch.setattr(run, "sending", sending)
+    monkeypatch.setattr(run, "recording_sendings", recording_sendings)
 
     asyncio.run(
         run._export(

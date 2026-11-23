@@ -589,8 +589,8 @@ async def list_conversations(
                 archived=bool(archived),
                 has_error=bool(has_error),
                 reserved_at=reserved_at,
-                reserved_sent=bool(reserved_at)
-                and reservations.sent(first_reserved_at),
+                reserved_with_partner=bool(reserved_at)
+                and reservations.partner_may_have(first_reserved_at),
             )
         )
 

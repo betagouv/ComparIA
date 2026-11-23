@@ -737,7 +737,7 @@ def _datasets(comp: Comparison) -> set[str]:
     keeps = {
         "normal": not row["excluded"],
         "raw": True,
-        "reserved": compute._reserved(row),
+        "reserved": compute._is_reserved(row),
     }
     return {dataset for dataset, kept in keeps.items() if kept}
 

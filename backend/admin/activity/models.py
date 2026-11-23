@@ -126,7 +126,7 @@ class ActivityConversationRow(BaseModel):
     # Why it cannot be reserved, for one that is not.
     reserve_block: ReserveBlock | None = None
     # Whether a run may have sent it to the partner, for one that is reserved.
-    reserved_sent: bool
+    reserved_with_partner: bool
 
 
 class StoppedMessageFilters(ActivityFilters):

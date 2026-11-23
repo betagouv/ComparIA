@@ -337,7 +337,7 @@ def test_the_list_says_what_can_be_reserved_and_filters_on_it(activity):
 
     rows = {row.id: row for row in page.items}
     assert rows[reserved].reserved_at and rows[reserved].reserve_block is None
-    assert not rows[reserved].reserved_sent
+    assert not rows[reserved].reserved_with_partner
     assert rows[pix].reserve_block == "cohort"
     assert rows[waiting].reserve_block is None
     assert rows[failed].reserve_block == "analysis_failed"

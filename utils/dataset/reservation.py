@@ -24,16 +24,13 @@ from datetime import UTC, datetime
 from typing import Literal, NamedTuple, Protocol
 
 from sqlalchemy import false, text
-from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
-from sqlalchemy.pool import NullPool
 from sqlmodel import col, func, select, update
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.config import settings
 from utils.database.models import Comparison
 from utils.database.models.publish import PublishDataset, PublishSending
 from utils.database.models.utils import utc_now
-from utils.database.session import _async_url, get_session
+from utils.database.session import get_session, own_connection
 
 # Not the publish job's, which a run holds from start to end: a reservation
 # only has to wait for a run to record its start.
@@ -74,7 +71,7 @@ class ReservationState(NamedTuple):
     # What the open dataset and the partner may have received, on the scale
     # of Comparison.created_at.
     open_sent_until: datetime | None
-    reserved_sent_until: datetime | None
+    partner_sent_until: datetime | None
 
     def block(self, comparison: Reservable) -> ReserveBlock | None:
         if self.publishing:
@@ -92,15 +89,15 @@ class ReservationState(NamedTuple):
             return "analysis_failed"
         return None
 
-    def sent(self, first_reserved_at: datetime | None) -> bool:
+    def partner_may_have(self, first_reserved_at: datetime | None) -> bool:
         """
         Whether the partner may already have this comparison: it was reserved
         before a run sent the reserved dataset, if not since.
         """
         return bool(
             first_reserved_at
-            and self.reserved_sent_until
-            and first_reserved_at <= self.reserved_sent_until
+            and self.partner_sent_until
+            and first_reserved_at <= self.partner_sent_until
         )
 
 
@@ -118,7 +115,7 @@ async def _lock(session: AsyncSession) -> None:
     await session.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": LOCK_KEY})
 
 
-async def _sending(
+async def _sending_status(
     session: AsyncSession, dataset: PublishDataset
 ) -> tuple[bool, datetime | None]:
     """Whether a run is sending the dataset now, and until when it ever sent it."""
@@ -134,13 +131,13 @@ async def _sending(
 
 
 async def _state(session: AsyncSession) -> ReservationState:
-    publishing, open_sent_until = await _sending(session, "normal")
-    sending_reserved, reserved_sent_until = await _sending(session, "reserved")
+    publishing, open_sent_until = await _sending_status(session, "normal")
+    sending_reserved, partner_sent_until = await _sending_status(session, "reserved")
     return ReservationState(
         publishing=publishing,
         open_sent_until=open_sent_until,
         # A run sending the reserved dataset may take anything reserved so far.
-        reserved_sent_until=datetime.now() if sending_reserved else reserved_sent_until,
+        partner_sent_until=datetime.now() if sending_reserved else partner_sent_until,
     )
 
 
@@ -151,21 +148,7 @@ async def reservation_state() -> ReservationState:
 
 
 @asynccontextmanager
-async def _own_connection() -> AsyncIterator[AsyncConnection]:
-    # Not the pool's: the export needs both of the pool's connections, and
-    # this one has to outlive them all.
-    engine = create_async_engine(
-        _async_url(settings.COMPARIA_DB_URI), poolclass=NullPool
-    )
-    try:
-        async with engine.connect() as connection:
-            yield connection
-    finally:
-        await engine.dispose()
-
-
-@asynccontextmanager
-async def sending(datasets: list[PublishDataset]) -> AsyncIterator[None]:
+async def recording_sendings(datasets: list[PublishDataset]) -> AsyncIterator[None]:
     """
     Record the datasets a run may send before it reads any comparison, and
     close them once it is over, however it ended: a run that failed half way
@@ -174,21 +157,21 @@ async def sending(datasets: list[PublishDataset]) -> AsyncIterator[None]:
     if not datasets:
         yield
         return
-    async with _own_connection() as alive:
+    async with own_connection() as alive:
         await alive.exec_driver_sql(f"SELECT pg_advisory_lock_shared({ALIVE_LOCK_KEY})")
         # The lock belongs to the session and outlives the commit, which keeps
         # the connection from sitting in a transaction for the whole run.
         await alive.commit()
-        ids = await _start_sending(datasets)
+        ids = await _record_sendings(datasets)
         try:
             yield
         finally:
-            await _finish_sending(ids)
+            await _close_sendings(ids)
 
 
 async def close_abandoned_sendings() -> None:
     """Close the sendings of runs whose process died, when no run is going."""
-    async with _own_connection() as connection:
+    async with own_connection() as connection:
         taken = await connection.exec_driver_sql(
             f"SELECT pg_try_advisory_lock({ALIVE_LOCK_KEY})"
         )
@@ -196,10 +179,10 @@ async def close_abandoned_sendings() -> None:
         if not taken.scalar():
             return
         # A run starting now waits for the lock, so it cannot be closed early.
-        await _finish_sending()
+        await _close_sendings()
 
 
-async def _start_sending(datasets: list[PublishDataset]) -> list[uuid.UUID]:
+async def _record_sendings(datasets: list[PublishDataset]) -> list[uuid.UUID]:
     async with get_session() as session:
         await _lock(session)
         sendings = [
@@ -212,7 +195,7 @@ async def _start_sending(datasets: list[PublishDataset]) -> list[uuid.UUID]:
         return ids
 
 
-async def _finish_sending(ids: list[uuid.UUID] | None = None) -> None:
+async def _close_sendings(ids: list[uuid.UUID] | None = None) -> None:
     """Without ids, every sending left open."""
     query = update(PublishSending).where(
         col(PublishSending.sent_until).is_(None)
@@ -263,7 +246,7 @@ async def unreserve(comparison_id: uuid.UUID, confirmed: bool = False) -> bool:
         if comparison.reserved_at is None:
             return True
         state = await _state(session)
-        if not confirmed and state.sent(comparison.first_reserved_at):
+        if not confirmed and state.partner_may_have(comparison.first_reserved_at):
             raise PartnerMayHaveItError
         comparison.reserved_at = None
         session.add(comparison)
@@ -271,14 +254,14 @@ async def unreserve(comparison_id: uuid.UUID, confirmed: bool = False) -> bool:
         return True
 
 
-async def unreserve_all(confirmed_sent: int) -> int:
+async def unreserve_all(confirmed_with_partner: int) -> int:
     """
-    How many were reserved. `confirmed_sent` is how many the admin was told
+    How many were reserved. `confirmed_with_partner` is how many the admin was told
     the partner may have: a run that sent more since needs them told again.
     """
     async with get_session() as session:
         await _lock(session)
-        if (await _counts(session)).sent > confirmed_sent:
+        if (await _counts(session)).with_partner > confirmed_with_partner:
             raise PartnerMayHaveItError
         result = await session.exec(
             update(Comparison)
@@ -300,11 +283,11 @@ async def reserved_ids() -> list[str]:
 class ReservedCounts(NamedTuple):
     reserved: int
     # Of those, how many the partner may already have.
-    sent: int
+    with_partner: int
 
 
 async def _counts(session: AsyncSession) -> ReservedCounts:
-    sent_until = (await _state(session)).reserved_sent_until
+    sent_until = (await _state(session)).partner_sent_until
     sent = col(Comparison.first_reserved_at) <= sent_until if sent_until else false()
     counts = await session.exec(
         select(func.count(), func.count().filter(sent)).where(

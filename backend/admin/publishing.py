@@ -53,7 +53,7 @@ def _missing_secret(exc: MissingSecretError) -> HTTPException:
     )
 
 
-def _place(config: dict, dataset: PublishDataset) -> tuple[str, ...]:
+def _repository_or_bucket(config: dict, dataset: PublishDataset) -> tuple[str, ...]:
     # Who can read it is set per repository on Hugging Face, and usually per
     # bucket on S3, whatever the prefix.
     if config["kind"] == "huggingface":
@@ -77,9 +77,9 @@ async def _check_reserved_apart(
     for main, other in (("reserved", "normal"), ("normal", "reserved")):
         if main not in body.datasets:
             continue
-        place = _place(config, main)
+        target = _repository_or_bucket(config, main)
         if any(
-            _place(row.config, other) == place
+            _repository_or_bucket(row.config, other) == target
             for row in destinations
             if other in row.datasets
         ):
@@ -119,20 +119,20 @@ async def get_status() -> AdminPublishStatus:
     return AdminPublishStatus(
         runs=[AdminPublishRun.model_validate(run.model_dump()) for run in runs],
         reserved=reserved.reserved,
-        reserved_sent=reserved.sent,
+        reserved_with_partner=reserved.with_partner,
     )
 
 
 @router.delete("/reservations", response_model=AdminReleasedReservations)
 async def release_reservations(
-    current_user: RequiredAdmin, sent: int
+    current_user: RequiredAdmin, with_partner: int
 ) -> AdminReleasedReservations:
     """
     Every reserved comparison goes back to the open dataset at the next run.
-    `sent` is how many of them the admin was warned the partner has.
+    `with_partner` is how many of them the admin was warned the partner has.
     """
     try:
-        released = await unreserve_all(confirmed_sent=sent)
+        released = await unreserve_all(confirmed_with_partner=with_partner)
     except PartnerMayHaveItError:
         raise UnreserveUnconfirmedError()
     logger.info(

@@ -296,7 +296,7 @@ class AdminPublishStatus(SQLModel):
     runs: list[AdminPublishRun]
     # Reserved now, and how many of those a run already sent to the partner.
     reserved: int
-    reserved_sent: int
+    reserved_with_partner: int
 
 
 class AdminReleasedReservations(SQLModel):

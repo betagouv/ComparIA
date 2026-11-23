@@ -163,7 +163,7 @@ def test_what_the_open_dataset_may_have_sent_cannot_be_reserved(database):
 def test_nothing_can_be_reserved_while_the_open_dataset_is_sent(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
-        async with reservation.sending(["normal"]):
+        async with reservation.recording_sendings(["normal"]):
             with pytest.raises(CannotReserveError) as refused:
                 await reservation.reserve(comparison_id)
             assert refused.value.reason == "publishing"
@@ -181,7 +181,7 @@ def test_a_run_waits_for_a_reservation_to_land_before_it_reads(database):
         async with get_session() as session:
             # What reserve() holds from its check to its write.
             await reservation._lock(session)
-            starting = asyncio.create_task(reservation._start_sending(["normal"]))
+            starting = asyncio.create_task(reservation._record_sendings(["normal"]))
             await asyncio.sleep(0.3)
             assert not starting.done()
             await session.commit()
@@ -207,7 +207,7 @@ def test_what_was_sent_is_remembered_once_the_destination_is_gone(database):
             destination_id = destination.id
             session.add(destination)
             await session.commit()
-        async with reservation.sending(["normal"]):
+        async with reservation.recording_sendings(["normal"]):
             pass
         async with get_session() as session:
             await session.delete(await session.get(PublishDestination, destination_id))
@@ -228,7 +228,7 @@ def test_a_run_that_died_is_closed_as_if_it_sent_everything(database):
             **SHAREABLE,
         )
         # Recorded, then the process died without holding the lock any more.
-        await reservation._start_sending(["normal"])
+        await reservation._record_sendings(["normal"])
         await reservation.close_abandoned_sendings()
         state = await reservation.reservation_state()
         assert not state.publishing
@@ -243,7 +243,7 @@ def test_a_run_still_going_is_not_closed_for_dead(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
         # Started by hand, so the publish job's own lock says nothing of it.
-        async with reservation.sending(["normal"]):
+        async with reservation.recording_sendings(["normal"]):
             await reservation.close_abandoned_sendings()
             assert (await reservation.reservation_state()).publishing
             with pytest.raises(CannotReserveError) as refused:
@@ -266,7 +266,7 @@ def test_reserving_after_unreserving_remembers_the_partner_has_it(database):
             assert comparison
             first_reserved_at = comparison.first_reserved_at
         state = await reservation.reservation_state()
-        assert state.sent(first_reserved_at)
+        assert state.partner_may_have(first_reserved_at)
         assert await reservation.reserved_counts() == (1, 1)
 
     database(scenario)
@@ -328,7 +328,7 @@ def test_unreserving_during_a_reserved_run_takes_a_confirmation(database):
     async def scenario():
         comparison_id = await add_comparison(await add_llms(), **SHAREABLE)
         await reservation.reserve(comparison_id)
-        async with reservation.sending(["reserved"]):
+        async with reservation.recording_sendings(["reserved"]):
             with pytest.raises(PartnerMayHaveItError):
                 await reservation.unreserve(comparison_id)
 
@@ -364,13 +364,13 @@ def test_the_counts_say_what_the_partner_already_has(database):
 
         assert await reservation.reserved_counts() == (2, 1)
         state = await reservation.reservation_state()
-        assert state.sent(await reserved_at(sent))
-        assert not state.sent(await reserved_at(kept))
+        assert state.partner_may_have(await reserved_at(sent))
+        assert not state.partner_may_have(await reserved_at(kept))
 
         # The admin was told of none the partner has, and it has one.
         with pytest.raises(PartnerMayHaveItError):
-            await reservation.unreserve_all(confirmed_sent=0)
-        assert await reservation.unreserve_all(confirmed_sent=1) == 2
+            await reservation.unreserve_all(confirmed_with_partner=0)
+        assert await reservation.unreserve_all(confirmed_with_partner=1) == 2
         assert await reservation.reserved_counts() == (0, 0)
 
     database(scenario)

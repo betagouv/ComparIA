@@ -328,7 +328,7 @@ def _held_back(extra_meta: dict) -> bool:
     )
 
 
-def _reserved(row: dict) -> bool:
+def _is_reserved(row: dict) -> bool:
     # The mirror of runs.RESERVED.
     extra_meta = row["extra_metadata"]
     return extra_meta["reserved_at"] is not None and _shareable(extra_meta)
@@ -645,7 +645,7 @@ def _build_exporters(
             exporters[dataset] = StreamingDatasetExporter(
                 name,
                 export_base_path / name,
-                keep=_reserved,
+                keep=_is_reserved,
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
                 empty_ok=True,
