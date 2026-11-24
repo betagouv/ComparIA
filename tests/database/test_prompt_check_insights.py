@@ -17,13 +17,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
+import backend.admin.prompt_check as pc_admin_module
 import backend.arena.checks as checks
-from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
-from utils.database.models.prompt_check import (
-    DEFAULT_CRITERIA,
-    PromptCheck,
-)
+from utils.database.models.prompt_check import DEFAULT_CRITERIA, PromptCheck
 
 MODEL = "perplexity/pplx-decider-v1.2-20261016"
 
@@ -63,7 +60,7 @@ def stored_check(**changes: dict) -> PromptCheck:
 def redis(monkeypatch: pytest.MonkeyPatch) -> FakeRedis:
     client = FakeRedis()
     monkeypatch.setattr(checks, "get_redis_client", lambda: client)
-    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", "test-key")
+    monkeypatch.setattr(pc_admin_module.settings, "OPENROUTER_API_KEY", "test-key")
     return client
 
 
@@ -71,7 +68,7 @@ def use_stored(monkeypatch: pytest.MonkeyPatch, check: PromptCheck) -> None:
     async def get_prompt_check():
         return check
 
-    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(pc_admin_module, "get_prompt_check", get_prompt_check)
 
 
 def stub_moderate(
@@ -87,13 +84,13 @@ def stub_moderate(
             raise error
         return checks.Scores(scores)
 
-    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
+    monkeypatch.setattr(pc_admin_module, "score_prompt", score_prompt)
     return calls
 
 
 def run_try(**body):
     return asyncio.run(
-        admin_router.try_prompt_check(admin_router.PromptCheckTryBody(**body))
+        pc_admin_module.try_prompt_check(pc_admin_module.PromptCheckTryBody(**body))
     )
 
 
@@ -149,7 +146,7 @@ def test_try_uses_the_unsaved_description(
         seen.append(check.description)
         return checks.Scores({})
 
-    monkeypatch.setattr(admin_router, "score_prompt", score_prompt)
+    monkeypatch.setattr(pc_admin_module, "score_prompt", score_prompt)
 
     run_try(text="bonjour", description="Arène santé.")
 
@@ -208,7 +205,7 @@ def test_try_reuses_the_cached_scores(
 def test_try_without_an_api_key_reports_an_error(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
-    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", "")
+    monkeypatch.setattr(pc_admin_module.settings, "OPENROUTER_API_KEY", "")
     use_stored(monkeypatch, stored_check())
     calls = stub_moderate(monkeypatch, {"pii": 0.9})
 
@@ -216,7 +213,7 @@ def test_try_without_an_api_key_reports_an_error(
 
     assert result.decision == "error"
     assert result.scores == {}
-    assert result.message == admin_router.NO_API_KEY_MESSAGE
+    assert result.message == pc_admin_module.NO_API_KEY_MESSAGE
     assert calls == []
 
 
@@ -230,7 +227,7 @@ def test_try_reports_a_failed_call(
 
     assert result.decision == "error"
     assert result.scores == {}
-    assert result.message == admin_router.CALL_FAILED_MESSAGE
+    assert result.message == pc_admin_module.CALL_FAILED_MESSAGE
     assert "too slow" in result.error
     assert checks.REDIS_CHECK_FAILURES_KEY not in redis.store
 
@@ -239,7 +236,7 @@ def test_try_rejects_a_malformed_criterion(
     monkeypatch: pytest.MonkeyPatch, redis: FakeRedis
 ) -> None:
     with pytest.raises(Exception):
-        admin_router.PromptCheckTryBody(
+        pc_admin_module.PromptCheckTryBody(
             text="bonjour", criteria=[{"key": "Not A Key", "threshold": 0.5}]
         )
 

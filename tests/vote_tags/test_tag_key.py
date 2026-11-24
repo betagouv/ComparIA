@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-from backend.vote_tags.services import _tag_key  # noqa: E402
+from backend.admin.vote_tags.services import _tag_key  # noqa: E402
 from utils.database.models.vote_tag import RESERVED_KEYS  # noqa: E402
 
 

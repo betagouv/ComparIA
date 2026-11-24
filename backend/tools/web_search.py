@@ -15,7 +15,6 @@ from linkup import LinkupClient, LinkupSearchResults, LinkupSearchTextResult
 from pydantic import BaseModel, Field, ValidationError
 
 from backend.arena.checks import drop_flagged_results
-from backend.arena.tools import ToolResult, ToolSpec
 from backend.config import (
     WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH,
     WEB_SEARCH_MAX_RESULTS_PER_CALL,
@@ -23,6 +22,7 @@ from backend.config import (
     WEB_SEARCH_TOOL_TIMEOUT_SECONDS,
     settings,
 )
+from backend.tools.models import ToolResult, ToolSpec, read_secret
 from utils.storage.redis import REDIS_WEB_SEARCH_KEY, get_redis_client, hash_content
 
 if TYPE_CHECKING:
@@ -109,8 +109,6 @@ class WebSearchConfig:
 
 def web_search_config(row: "Tool | None" = None) -> WebSearchConfig | None:
     """The row's key and filters, the key falling back on LINKUP_API_KEY."""
-    from backend.arena.tools import read_secret
-
     api_key = (read_secret(row) if row else None) or settings.LINKUP_API_KEY
     if not api_key:
         return None

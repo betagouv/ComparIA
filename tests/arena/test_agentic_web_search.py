@@ -12,8 +12,9 @@ from linkup import LinkupSearchTextResult
 from pydantic import BaseModel
 
 from backend.arena import litellm as integration
-from backend.arena import tools, web_search
-from backend.arena.tools import resolve_builtin_tools
+from backend.tools import services, web_search
+from backend.tools.models import ToolResult, ToolSpec
+from backend.tools.services import resolve_builtin_tools
 from utils.database.models import (
     AgentTraceToolCall,
     AgentTraceToolResult,
@@ -374,7 +375,7 @@ async def _test_tools_are_offered_whatever_the_provider():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
@@ -421,7 +422,7 @@ async def _test_provider_rejection_answers_and_is_remembered():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(services, "get_redis_client", lambda: redis),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
@@ -436,7 +437,7 @@ async def _test_provider_rejection_answers_and_is_remembered():
             pass
 
         # Asserted inside the patch: the rejection lives in Redis.
-        assert tools.model_rejects_tools("scaleway/mistral-small")
+        assert services.model_rejects_tools("scaleway/mistral-small")
 
     assert message.content == "Fallback answer."
     assert "tools" in calls[0]
@@ -481,7 +482,7 @@ async def _test_a_router_with_no_tool_capable_endpoint_is_a_rejection_too():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(services, "get_redis_client", lambda: redis),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
@@ -495,7 +496,7 @@ async def _test_a_router_with_no_tool_capable_endpoint_is_a_rejection_too():
         ):
             pass
 
-        assert tools.model_rejects_tools("openrouter/meta-llama/llama-4-scout")
+        assert services.model_rejects_tools("openrouter/meta-llama/llama-4-scout")
 
     assert message.content == "Fallback answer."
     assert ["tools" in call for call in calls] == [True, False]
@@ -518,7 +519,7 @@ async def _test_a_model_that_is_gone_still_fails_with_or_without_tools():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         try:
@@ -559,10 +560,10 @@ async def _test_remembered_rejection_skips_the_wasted_request():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(services, "get_redis_client", lambda: redis),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
-        tools.remember_tool_rejection("scaleway/mistral-small")
+        services.remember_tool_rejection("scaleway/mistral-small")
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
             llm=_llm("scaleway/mistral-small"),
@@ -596,7 +597,7 @@ async def _test_unrelated_bad_request_is_not_swallowed():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: redis),
+        patch.object(services, "get_redis_client", lambda: redis),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
@@ -886,7 +887,7 @@ async def _test_tool_call_budget_forces_a_final_answer():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
         patch.object(web_search, "search_web", fake_search),
     ):
@@ -1150,8 +1151,8 @@ def _tool_call_delta(*calls: tuple[str, str, str]) -> dict[str, Any]:
     }
 
 
-def _spy_tool(name: str, run) -> tools.ToolSpec:
-    return tools.ToolSpec(
+def _spy_tool(name: str, run) -> ToolSpec:
+    return ToolSpec(
         name=name,
         schema={
             "type": "function",
@@ -1175,13 +1176,13 @@ async def _test_calls_in_one_round_run_concurrently():
     in_flight = 0
     peak = 0
 
-    async def slow(_arguments: str) -> tools.ToolResult:
+    async def slow(_arguments: str) -> ToolResult:
         nonlocal in_flight, peak
         in_flight += 1
         peak = max(peak, in_flight)
         await asyncio.sleep(0.05)
         in_flight -= 1
-        return tools.ToolResult(content="{}", status="success")
+        return ToolResult(content="{}", status="success")
 
     responses = [
         AsyncChunkStream(
@@ -1217,7 +1218,7 @@ async def _test_calls_in_one_round_run_concurrently():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -1246,9 +1247,9 @@ async def _test_time_budget_stops_tool_use_and_is_recorded():
     """Past the deadline the model is offered no tools and must answer."""
     calls: list[dict[str, Any]] = []
 
-    async def slow(_arguments: str) -> tools.ToolResult:
+    async def slow(_arguments: str) -> ToolResult:
         await asyncio.sleep(0.05)
-        return tools.ToolResult(content="{}", status="success")
+        return ToolResult(content="{}", status="success")
 
     def tool_round(response_id: str, call_id: str):
         return AsyncChunkStream(
@@ -1281,7 +1282,7 @@ async def _test_time_budget_stops_tool_use_and_is_recorded():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(integration, "TOOL_TIME_BUDGET_SECONDS", 0.01),
     ):
         message = LLMMessageCreate()
@@ -1321,7 +1322,7 @@ async def _test_finishing_normally_records_completion():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
         message = LLMMessageCreate()
@@ -1346,8 +1347,8 @@ async def _test_context_overflow_sheds_tool_rounds_and_still_answers():
     """A conversation that outgrows its window answers instead of failing."""
     sent: list[list[dict[str, Any]]] = []
 
-    async def quick(_arguments: str) -> tools.ToolResult:
-        return tools.ToolResult(content='{"results": []}', status="success")
+    async def quick(_arguments: str) -> ToolResult:
+        return ToolResult(content='{"results": []}', status="success")
 
     state = {"round": 0}
 
@@ -1383,7 +1384,7 @@ async def _test_context_overflow_sheds_tool_rounds_and_still_answers():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -1415,10 +1416,10 @@ async def _test_a_round_over_the_cap_still_runs_what_it_can():
     """
     executed = 0
 
-    async def spy(_arguments: str) -> tools.ToolResult:
+    async def spy(_arguments: str) -> ToolResult:
         nonlocal executed
         executed += 1
-        return tools.ToolResult(content="{}", status="success")
+        return ToolResult(content="{}", status="success")
 
     over = integration.MAX_TOOL_CALLS + 1
     responses = [
@@ -1452,7 +1453,7 @@ async def _test_a_round_over_the_cap_still_runs_what_it_can():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
     ):
         message = LLMMessageCreate()
         async for _ in integration.litellm_stream_iter(
@@ -1557,7 +1558,7 @@ async def _test_identical_repeated_calls_are_refused_and_marked():
 
     with (
         patch.object(integration.litellm, "acompletion", fake_completion),
-        patch.object(tools, "get_redis_client", lambda: FakeRedis()),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
         patch.object(web_search.settings, "LINKUP_API_KEY", "test"),
         patch.object(web_search, "search_web", fake_search),
     ):

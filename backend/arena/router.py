@@ -3,10 +3,9 @@ import logging
 from typing import Annotated, AsyncGenerator, Sequence
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
-from backend.admin.logos import logo_response
 from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
@@ -52,7 +51,6 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.tools import can_run, get_all_tools, keep_offered_tools
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -64,6 +62,7 @@ from backend.config import (
 from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.survey.dependencies import require_answered_questions
+from backend.tools.services import keep_offered_tools
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -75,8 +74,6 @@ from utils.database.models import (
     ComparisonCreate,
     ComparisonPublic,
     ComparisonRead,
-    Tool,
-    ToolPublic,
     TurnPublic,
     TurnVoteAnnotate,
     TurnVoteChoice,
@@ -86,7 +83,6 @@ from utils.database.prompt_checks import (
     get_prompt_check,
     save_prompt_check_result,
 )
-from utils.database.session import get_session
 
 logger = logging.getLogger("languia")
 
@@ -339,38 +335,6 @@ async def get_challenge(anonymous_user_hash: RequiredAnomymous) -> dict:
     if unvoted_comparisons(anonymous_user_hash) >= ALTCHA_UNVOTED_COMPARISONS:
         return generate_challenge(ALTCHA_HARD_MAX_NUMBER)
     return generate_challenge(ALTCHA_MAX_NUMBER)
-
-
-@router.get("/tools")
-async def get_tools() -> list[ToolPublic]:
-    """
-    All tools even if disabled.
-    We still need the full list to properly display logos/name in comparisons with previously enabled tools.
-    """
-    return [
-        ToolPublic(
-            **tool.model_dump(exclude={"enabled"}),
-            enabled=tool.enabled and can_run(tool),
-            logo_url=tool.logo_url,
-        )
-        for tool in await get_all_tools()
-    ]
-
-
-@router.get("/tools/logo/{tool_id}", response_class=Response)
-async def get_lab_logo(tool_id: UUID) -> Response:
-    async with get_session() as session:
-        tool = await session.get(Tool, tool_id)
-        if tool is None or tool.logo is None or tool.logo_content_type is None:
-            raise HTTPException(status_code=404, detail="tool_logo_not_found")
-
-        return logo_response(
-            tool.logo,
-            tool.logo_content_type,
-            # The URL carries the logo version, so a new upload is a new
-            # URL and the old bytes can stay in the browser for a year.
-            "public, max-age=31536000, immutable",
-        )
 
 
 @router.post(

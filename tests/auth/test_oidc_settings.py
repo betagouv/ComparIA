@@ -21,6 +21,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
+import backend.admin.settings as admin_settings_module  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
 from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 from utils.database.models.auth import User  # noqa: E402
@@ -105,7 +106,7 @@ def admin_client(row=None):
     app.include_router(admin_router.router)
     app.dependency_overrides[require_admin] = _admin
 
-    with patched(admin_router, get_app_settings=get_app_settings):
+    with patched(admin_settings_module, get_app_settings=get_app_settings):
         yield TestClient(app, raise_server_exceptions=True)
 
 
@@ -148,7 +149,7 @@ def test_patch_oidc_settings_encrypts_client_secret():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -199,7 +200,7 @@ def test_patch_null_client_secret_clears_the_stored_value():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -244,7 +245,7 @@ def test_patch_oidc_enabled_auth_method_is_accepted():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -319,7 +320,7 @@ def test_patch_issuer_accepts_plain_http_on_localhost_only():
     refused = ["http://localhost.evil.test", "http://127.0.0.1.evil.test"]
     with (
         admin_client() as client,
-        patched(admin_router, update_app_settings=update_app_settings),
+        patched(admin_settings_module, update_app_settings=update_app_settings),
     ):
         for issuer in accepted:
             response = client.patch("/admin/settings", json={"oidc_issuer": issuer})

@@ -21,9 +21,9 @@ from backend.arena.cache import (
     store_cached_response,
 )
 from backend.arena.litellm import litellm_stream_iter
-from backend.arena.tools import ToolSpec
 from backend.errors import EmptyResponseError
 from backend.llms.models import LLMDataEnabled
+from backend.tools.models import ToolSpec
 from utils.database.models import (
     BotPos,
     LLMMessageCreate,

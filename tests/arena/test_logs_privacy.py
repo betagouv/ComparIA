@@ -25,8 +25,8 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 import pytest  # noqa: E402
 
 import backend.arena.session as session  # noqa: E402
-import backend.arena.web_search as web_search  # noqa: E402
 import backend.auth.email as email  # noqa: E402
+import backend.tools.web_search as web_search  # noqa: E402
 
 PROMPT = "Je m'appelle Camille Martin et j'habite 12 rue des Lilas"
 IP = "203.0.113.7"

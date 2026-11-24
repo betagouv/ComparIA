@@ -13,7 +13,6 @@ import time
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, AsyncIterator, Awaitable, Callable, cast
 
-from backend.arena.tools import ToolResult, ToolSpec, read_secret
 from backend.config import (
     MCP_CALL_TIMEOUT_SECONDS,
     MCP_DISCOVERY_TIMEOUT_SECONDS,
@@ -21,6 +20,7 @@ from backend.config import (
     MCP_SCHEMA_STALE_TTL,
     MCP_SCHEMA_TTL,
 )
+from backend.tools.models import ToolResult, ToolSpec, read_secret
 from utils.database.models.messages.llm import ToolSource
 from utils.storage.redis import REDIS_MCP_SCHEMAS_KEY, get_redis_client, hash_content
 

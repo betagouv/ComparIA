@@ -4,11 +4,7 @@ from datetime import datetime
 from sqlmodel import col, func, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.auth.services import (
-    drop_user_totp,
-    find_user_by_email,
-    revoke_user_access,
-)
+from backend.auth.services import drop_user_totp, find_user_by_email, revoke_user_access
 from utils.database.models.auth import (
     InviteToken,
     LoginCode,

@@ -24,11 +24,12 @@ from backend.arena.conversation import (
     bot_response_async,
 )
 from backend.arena.services import update_comparison_error, update_comparison_llm_id
-from backend.arena.tools import ToolSpec, resolve_tools
 from backend.config import CustomModelsSelection, SelectionMode, settings
 from backend.errors import ChatError, ContextTooLongError, EmptyResponseError
 from backend.llms.data import get_llms_data, pick_replacement_model
 from backend.llms.models import LLMDataEnabled
+from backend.tools.models import ToolSpec
+from backend.tools.services import resolve_tools
 from utils.database.models import (
     BOT_POS,
     BotPos,
@@ -161,7 +162,7 @@ async def stream_llm_response(
     turn_index: int,
     messages: list[AnyMessageRead],
     request: Request | None = None,
-    tools: list[ToolSpec] | None = None,
+    tools: list["ToolSpec"] | None = None,
 ) -> AsyncGenerator[AnySSEEventMsg]:
     """
     Stream a single LLM response using Server-Sent Events format.

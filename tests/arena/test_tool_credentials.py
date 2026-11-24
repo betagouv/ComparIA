@@ -12,7 +12,8 @@ from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from backend.arena import mcp_tools, tools, web_search
+from backend.tools import mcp_tools, services, web_search
+from backend.tools.models import read_secret
 from tests.arena.test_mcp_tools import SERVER_SCHEMAS, FakeRedis, _listing, _with_redis
 from utils.database.models import Tool, ToolUpsert
 from utils.secrets import encrypt_secret
@@ -45,16 +46,16 @@ def test_the_environment_key_still_serves_a_row_without_one():
 def test_no_key_anywhere_means_web_search_is_not_offered():
     row = _web_search_row()
     with patch.object(web_search.settings, "LINKUP_API_KEY", None):
-        assert tools.resolve_builtin_tools([row]) == []
-        assert tools.can_run(row) is False
+        assert services.resolve_builtin_tools([row]) == []
+        assert services.can_run(row) is False
 
 
 def test_a_credential_no_key_opens_is_treated_as_missing():
     """A rotated-away key must take the tool off offer, not fail every call."""
     row = _web_search_row(secret_encrypted="not-a-fernet-token")
     with patch.object(web_search.settings, "LINKUP_API_KEY", None):
-        assert tools.read_secret(row) is None
-        assert tools.can_run(row) is False
+        assert read_secret(row) is None
+        assert services.can_run(row) is False
 
 
 def test_domain_filters_reach_linkup_and_the_model():
@@ -80,7 +81,7 @@ async def _test_domain_filters_reach_linkup_and_the_model():
         patch.object(web_search, "LinkupClient", FakeClient),
         patch.object(web_search.settings, "CACHE_ENABLED", False),
     ):
-        [spec] = tools.resolve_builtin_tools([row])
+        [spec] = services.resolve_builtin_tools([row])
         await spec.run(json.dumps({"query": "droit au chômage"}))
 
     assert calls[0]["api_key"] == "key"
@@ -139,13 +140,14 @@ def test_the_server_is_sent_the_decrypted_credential():
         secret_encrypted=encrypt_secret("X-API-Key: s3cret"),
     )
 
-    assert mcp_tools._headers(tools.read_secret(row)) == {"X-API-Key": "s3cret"}
+    assert mcp_tools._headers(read_secret(row)) == {"X-API-Key": "s3cret"}
 
 
 def test_an_mcp_row_without_an_address_cannot_run():
-    assert tools.can_run(Tool(key="m", label="M", kind="mcp")) is False
+    assert services.can_run(Tool(key="m", label="M", kind="mcp")) is False
     assert (
-        tools.can_run(Tool(key="m", label="M", kind="mcp", url="https://x.fr")) is True
+        services.can_run(Tool(key="m", label="M", kind="mcp", url="https://x.fr"))
+        is True
     )
 
 
@@ -195,7 +197,7 @@ def test_the_picker_leaves_out_tools_that_cannot_run():
 
 async def _test_the_picker_leaves_out_tools_that_cannot_run():
     """Picked, such a tool would be dropped from the turn without a word."""
-    from backend.arena import router
+    from backend.tools import router
 
     rows = [
         _web_search_row(),
@@ -240,8 +242,8 @@ async def _test_a_comparison_keeps_only_tools_on_offer():
     async def get_enabled_tools() -> list[Tool]:
         return rows
 
-    with patch.object(tools, "get_enabled_tools", get_enabled_tools):
-        kept = await tools.keep_offered_tools(
+    with patch.object(services, "get_enabled_tools", get_enabled_tools):
+        kept = await services.keep_offered_tools(
             ["datagouv", "half_done", "made_up", "datagouv"]
         )
 

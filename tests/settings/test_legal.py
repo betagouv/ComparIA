@@ -27,7 +27,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.settings.router as settings_router  # noqa: E402
 import backend.utils.locale as locale_module
-from backend.admin.router import (  # noqa: E402
+from backend.admin.legal import (  # noqa: E402
     PublishLegalDocumentBody,
     _to_admin_legal_document,
 )

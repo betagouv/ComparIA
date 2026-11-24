@@ -20,12 +20,9 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
+import backend.admin.settings as admin_settings_module  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
-from tests.auth.fake_oidc_provider import (  # noqa: E402
-    ISSUER,
-    FakeProvider,
-    serving,
-)
+from tests.auth.fake_oidc_provider import ISSUER, FakeProvider, serving  # noqa: E402
 from tests.auth.test_oidc_settings import (  # noqa: E402
     _admin,
     _configured_oidc_row,
@@ -54,7 +51,7 @@ def admin_session(row, provider=None):
     with (
         serving(provider or FakeProvider()),
         patched(
-            admin_router,
+            admin_settings_module,
             get_app_settings=get_app_settings,
             update_app_settings=update_app_settings,
         ),

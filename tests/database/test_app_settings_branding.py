@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
-from backend.admin.router import _to_app_settings_public
+from backend.admin.settings import _to_app_settings_public
 from backend.auth import router as auth_router
 from utils.database.models.app_settings import (
     PRIMARY_COLOR_DARK_DEFAULT,

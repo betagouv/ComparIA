@@ -19,7 +19,6 @@ from pydantic import (
     field_validator,
 )
 
-from backend.admin.logos import logo_response
 from backend.arena.captcha import verify_altcha_token
 from backend.arena.services import merge_anonymous_comparisons
 from backend.auth.dependencies import (
@@ -75,6 +74,7 @@ from backend.config import RATELIMIT_ANONYMOUS_CONSENTS_PER_HOUR, settings
 from backend.errors import RoleRequiredError, TotpSecretUnreadableError
 from backend.settings.legal import get_active_legal_document
 from backend.survey.services import signup_questions_answered
+from backend.utils.logos import logo_response
 from backend.utils.user import get_ip, ip_bucket
 from utils.database.models.auth import LegalDocument, NormalizedEmail, User
 from utils.database.models.utils import as_naive_utc

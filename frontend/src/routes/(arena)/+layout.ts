@@ -9,7 +9,7 @@ export const load: LayoutLoad = async ({ data, fetch }) => {
   const [comparisons, tools] = await Promise.all([
     queryComparisons(fetch, true),
     // Without the tools list the arena still works, only with no picker.
-    api.request<ToolPublic[]>('/arena/tools', { fetch }).catch((error) => {
+    api.request<ToolPublic[]>('/tools', { fetch }).catch((error) => {
       console.error(`Unable to load tools: ${error.message}`)
       return [] as ToolPublic[]
     })

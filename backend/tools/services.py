@@ -7,61 +7,24 @@ is the tool's own business.
 """
 
 import asyncio
-import json
 import logging
-from dataclasses import dataclass, field, replace
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable, Literal
+from dataclasses import replace
+from typing import TYPE_CHECKING, Callable, Iterable
+
+from sqlmodel import select
 
 from backend.config import TOOL_REJECTION_TTL
+from backend.tools.mcp_tools import resolve_mcp_tools
+from backend.tools.models import ToolSpec
+from backend.tools.web_search import web_search_tool_spec
+from utils.database.models import Tool
+from utils.database.session import get_session
 from utils.storage.redis import REDIS_TOOLS_REJECTED_KEY, get_redis_client, hash_content
 
 if TYPE_CHECKING:
     from utils.database.models import Tool
 
 logger = logging.getLogger("languia")
-
-ToolStatus = Literal["success", "empty", "error"]
-
-
-@dataclass(frozen=True)
-class ToolResult:
-    """What a tool hands back: text for the model, plus what to record."""
-
-    content: str
-    status: ToolStatus
-    results: list[Any] = field(default_factory=list)
-
-    @classmethod
-    def error(cls, message: str) -> "ToolResult":
-        return cls(
-            content=json.dumps({"error": message}, ensure_ascii=False), status="error"
-        )
-
-    @classmethod
-    def empty(cls, message: str) -> "ToolResult":
-        return cls(
-            content=json.dumps({"results": [], "message": message}, ensure_ascii=False),
-            status="empty",
-        )
-
-
-@dataclass(frozen=True)
-class ToolSpec:
-    """One tool as the loop sees it."""
-
-    name: str
-    # OpenAI-style {"type": "function", "function": {...}} schema.
-    schema: dict[str, Any]
-    # Takes the raw JSON arguments string emitted by the model.
-    run: Callable[[str], Awaitable[ToolResult]]
-    # Shown to visitors. One MCP row exposes several functions under a single
-    # label, so this cannot be derived from the name.
-    label: str = ""
-    # Key of the tool row this came from, so calls can be counted per tool.
-    tool: str = ""
-
-    def display_label(self) -> str:
-        return self.label or self.name
 
 
 def _rejection_key(model: str) -> str:
@@ -92,28 +55,7 @@ def remember_tool_rejection(model: str) -> None:
         logger.warning("Could not store tool rejection: %s", e)
 
 
-def read_secret(row: "Tool") -> str | None:
-    """
-    The row's credential in clear, or None.
-
-    A credential no configured key opens is treated as missing: the tool stops
-    being offered rather than failing every call it would make.
-    """
-    from utils.secrets import SecretUnreadableError, decrypt_secret
-
-    if not row.secret_encrypted:
-        return None
-    try:
-        return decrypt_secret(row.secret_encrypted)
-    except SecretUnreadableError:
-        logger.error("The credential of tool '%s' cannot be decrypted", row.key)
-        return None
-
-
 def _builtin_registry() -> dict[str, Callable[["Tool"], ToolSpec | None]]:
-    # Imported here so tool modules can depend on the shapes above.
-    from backend.arena.web_search import web_search_tool_spec
-
     return {"web_search": web_search_tool_spec}
 
 
@@ -149,11 +91,6 @@ def can_run(row: "Tool") -> bool:
 
 async def get_enabled_tools() -> list["Tool"]:
     """Tools an administrator has switched on, in display order."""
-    from sqlmodel import select
-
-    from utils.database.models import Tool
-    from utils.database.session import get_session
-
     async with get_session() as session:
         rows = await session.exec(
             select(Tool).where(Tool.enabled).order_by(Tool.created_at)
@@ -163,11 +100,6 @@ async def get_enabled_tools() -> list["Tool"]:
 
 async def get_all_tools() -> list["Tool"]:
     """All tools, in display order."""
-    from sqlmodel import select
-
-    from utils.database.models import Tool
-    from utils.database.session import get_session
-
     async with get_session() as session:
         rows = await session.exec(select(Tool).order_by(Tool.created_at))
         return list(rows.all())
@@ -220,8 +152,6 @@ async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
     This is the only place that knows one kind of tool from another. A key that
     is not enabled, or whose tool is not configured, yields nothing.
     """
-    from backend.arena.mcp_tools import resolve_mcp_tools
-
     wanted = set(keys)
     if not wanted:
         return []

@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, TypeVar
 from fastapi import HTTPException, status
 from sqlmodel import and_, col, select, update
 
-from backend.arena.tools import model_rejects_tools
 from backend.llms.data import get_llms_data
+from backend.tools.services import model_rejects_tools
 from utils.database.models import (
     BOT_POS,
     BotPos,

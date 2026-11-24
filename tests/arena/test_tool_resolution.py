@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from backend.arena import tools, web_search
+from backend.tools import services, web_search
 from utils.database.models import Tool
 
 
@@ -25,7 +25,7 @@ def _with_enabled(rows: list[Tool]):
     async def get_enabled_tools() -> list[Tool]:
         return [row for row in rows if row.enabled]
 
-    return patch.object(tools, "get_enabled_tools", get_enabled_tools)
+    return patch.object(services, "get_enabled_tools", get_enabled_tools)
 
 
 def test_enabled_row_yields_a_specification():
@@ -37,7 +37,7 @@ async def _test_enabled_row_yields_a_specification():
         _with_enabled(_rows(("web_search", True))),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
-        specs = await tools.resolve_tools(["web_search"])
+        specs = await services.resolve_tools(["web_search"])
 
     assert [spec.name for spec in specs] == ["web_search"]
 
@@ -52,7 +52,7 @@ async def _test_disabled_row_yields_nothing():
         _with_enabled(_rows(("web_search", False))),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
-        specs = await tools.resolve_tools(["web_search"])
+        specs = await services.resolve_tools(["web_search"])
 
     assert specs == []
 
@@ -67,7 +67,7 @@ async def _test_unknown_key_is_ignored_rather_than_raising():
         _with_enabled(_rows(("web_search", True))),
         patch.object(web_search.settings, "LINKUP_API_KEY", "configured-for-test"),
     ):
-        specs = await tools.resolve_tools(["retired_tool"])
+        specs = await services.resolve_tools(["retired_tool"])
 
     assert specs == []
 
@@ -80,8 +80,8 @@ async def _test_selecting_nothing_never_touches_the_database():
     async def explode() -> list[Tool]:
         raise AssertionError("resolution should short-circuit on an empty selection")
 
-    with patch.object(tools, "get_enabled_tools", explode):
-        assert await tools.resolve_tools([]) == []
+    with patch.object(services, "get_enabled_tools", explode):
+        assert await services.resolve_tools([]) == []
 
 
 def test_unconfigured_tool_yields_nothing():
@@ -94,7 +94,7 @@ async def _test_unconfigured_tool_yields_nothing():
         _with_enabled(_rows(("web_search", True))),
         patch.object(web_search.settings, "LINKUP_API_KEY", None),
     ):
-        specs = await tools.resolve_tools(["web_search"])
+        specs = await services.resolve_tools(["web_search"])
 
     assert specs == []
 

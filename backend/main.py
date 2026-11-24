@@ -19,6 +19,7 @@ from backend.settings.router import router as settings_router
 from backend.statistics import router as statistics_router
 from backend.suggestions.router import router as suggestions_router
 from backend.survey.router import router as survey_router
+from backend.tools.router import router as tools_router
 from backend.utils.countries import get_vote_count
 from backend.vote_tags.router import router as vote_tags_router
 from utils.database.settings import get_app_settings
@@ -174,6 +175,7 @@ api_router.include_router(admin_router)
 api_router.include_router(settings_router)
 api_router.include_router(statistics_router)
 api_router.include_router(ranking_router)
+api_router.include_router(tools_router)
 
 
 @api_router.get("/counter")

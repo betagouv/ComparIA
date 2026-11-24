@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from sqlmodel import select
 
-from backend.admin.logos import logo_response
 from backend.llms.data import LLMList, get_llms_list
+from backend.utils.logos import logo_response
 from utils.database.models.llms import LLMLab
 from utils.database.session import get_session
 
