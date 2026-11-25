@@ -89,6 +89,7 @@ def _settings_row(**overrides):
         homepage_url=None,
         logo=None,
         logo_version=None,
+        cookie_banner_enabled=False,
         enabled_locales=["fr"],
         default_locale="fr",
     )

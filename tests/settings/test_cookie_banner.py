@@ -5,6 +5,7 @@ Run with pytest, or directly:
     uv run python tests/settings/test_cookie_banner.py
 """
 
+import asyncio
 import os
 import sys
 import uuid
@@ -24,6 +25,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 import backend.admin.legal as admin_legal  # noqa: E402
 import backend.admin.router as admin_router  # noqa: E402
 import backend.admin.settings as admin_settings  # noqa: E402
+import backend.auth.router as auth_router  # noqa: E402
 import backend.settings.informational_legal as informational_legal  # noqa: E402
 import backend.utils.locale as locale_module  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
@@ -256,3 +258,17 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             case()
             print(f"ok {name}")
+
+
+def test_public_config_says_whether_the_banner_is_on():
+    for enabled in (False, True):
+        row = _settings_row(cookie_banner_enabled=enabled)
+
+        async def get_app_settings(row=row):
+            return row
+
+        with patch.object(auth_router, "get_app_settings", get_app_settings):
+            config = asyncio.run(auth_router.get_config())
+
+        assert config.cookie_banner_enabled is enabled
+

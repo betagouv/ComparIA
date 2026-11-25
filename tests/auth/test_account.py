@@ -169,6 +169,7 @@ def test_public_config_carries_the_deployment_url():
             homepage_url=None,
             logo=None,
             logo_version=None,
+            cookie_banner_enabled=False,
             enabled_locales=["fr"],
             default_locale="fr",
         )

@@ -121,6 +121,7 @@ class AuthConfig(BaseModel):
     oidc_enabled: bool
     oidc_button_label: str | None
     oidc_has_button_logo: bool
+    cookie_banner_enabled: bool
 
 
 class EmailRequestBody(BaseModel):
@@ -300,6 +301,7 @@ async def get_config() -> AuthConfig:
         oidc_enabled=oidc_available(app_settings),
         oidc_button_label=app_settings.oidc_button_label,
         oidc_has_button_logo=app_settings.oidc_button_logo is not None,
+        cookie_banner_enabled=app_settings.cookie_banner_enabled,
     )
 
 
