@@ -241,6 +241,23 @@
                 "title": "Accessibility statement"
             },
             "back": "Back to legal documents",
+            "cookies": {
+                "title": "Cookies",
+                "subtitle": "The cookie banner and its text.",
+                "switchLabel": "Show the cookie banner",
+                "switchHelp": "Visitors are asked before audience measurement runs and before their settings are kept.",
+                "switchedOn": "Cookie banner turned on",
+                "switchedOff": "Cookie banner turned off",
+                "formTitle": "Edit the banner text",
+                "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
+                "clearLocale": "Clear this language",
+                "bannerTitle": "Banner title",
+                "description": "Introductory text",
+                "audienceMeasurementLabel": "Name of audience measurement",
+                "audienceMeasurementDescription": "What audience measurement does",
+                "rememberedSettingsLabel": "Name of remembered settings",
+                "rememberedSettingsDescription": "What remembered settings keep"
+            },
             "document": {
                 "backToWriting": "Back to writing",
                 "confirm": "I have reread the document and understand that this version can no longer be changed.",
@@ -274,6 +291,7 @@
                     "status": "Status",
                     "title": "Item"
                 },
+                "off": "Off",
                 "published": "Published",
                 "subtitle": "Each piece of content has its own space for editing and publishing.",
                 "title": "Legal documents and journeys",
@@ -1316,6 +1334,11 @@
         "retry": "Try again",
         "saveFailed": "Your choice could not be saved. Check your connection, then try again.",
         "saving": "Saving…"
+    },
+    "cookieBanner": {
+        "acceptAll": "Accept all",
+        "refuseAll": "Refuse all",
+        "choose": "Choose"
     },
     "errors": {
         "404": {

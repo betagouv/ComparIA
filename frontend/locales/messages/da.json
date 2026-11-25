@@ -249,6 +249,7 @@
                     "status": "Status",
                     "title": "Element"
                 },
+                "off": "Slået fra",
                 "published": "Publiceret",
                 "subtitle": "Hvert indhold har sit eget område til administration og udgivelse.",
                 "title": "Juridiske dokumenter og forløb",

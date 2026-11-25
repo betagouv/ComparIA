@@ -241,6 +241,23 @@
                 "title": "Déclaration d’accessibilité"
             },
             "back": "Retour aux documents juridiques",
+            "cookies": {
+                "title": "Cookies",
+                "subtitle": "Le bandeau cookies et son texte.",
+                "switchLabel": "Afficher le bandeau cookies",
+                "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience et avant que leurs réglages soient gardés.",
+                "switchedOn": "Bandeau cookies activé",
+                "switchedOff": "Bandeau cookies désactivé",
+                "formTitle": "Modifier le texte du bandeau",
+                "textDescription": "Le bandeau s’affiche sur la première page ouverte, jusqu’à ce que la personne réponde.",
+                "clearLocale": "Vider cette langue",
+                "bannerTitle": "Titre du bandeau",
+                "description": "Texte introductif",
+                "audienceMeasurementLabel": "Nom de la mesure d’audience",
+                "audienceMeasurementDescription": "Ce que fait la mesure d’audience",
+                "rememberedSettingsLabel": "Nom des réglages mémorisés",
+                "rememberedSettingsDescription": "Ce que gardent les réglages mémorisés"
+            },
             "document": {
                 "backToWriting": "Revenir à la rédaction",
                 "confirm": "J’ai relu le document et je comprends que cette version ne pourra plus être modifiée.",
@@ -274,6 +291,7 @@
                     "status": "Status",
                     "title": "Élement"
                 },
+                "off": "Désactivé",
                 "published": "Publié",
                 "subtitle": "Chaque contenu dispose de son propre espace de gestion et de publication.",
                 "title": "Documents et parcours juridiques",
@@ -1316,6 +1334,11 @@
         "retry": "Réessayer",
         "saveFailed": "Votre choix n’a pas pu être enregistré. Vérifiez votre connexion puis réessayez.",
         "saving": "Enregistrement…"
+    },
+    "cookieBanner": {
+        "acceptAll": "Tout accepter",
+        "refuseAll": "Tout refuser",
+        "choose": "Choisir"
     },
     "errors": {
         "404": {
