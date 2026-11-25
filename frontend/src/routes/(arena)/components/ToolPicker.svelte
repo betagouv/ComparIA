@@ -19,6 +19,10 @@
   const modalId = 'fr-modal-tools'
 
   let form = $state(fromEntries(tools.map((tool) => [tool.key, selected.includes(tool.key)])))
+  // Counted against the tools on offer: the prompt preselects web search,
+  // which an instance may not offer, and the server drops such keys anyway.
+  const selectedCount = $derived(tools.filter((tool) => selected.includes(tool.key)).length)
+  const formCount = $derived(tools.filter((tool) => form[tool.key]).length)
   let applied = $state(false)
 
   function resetForm(full = false) {
@@ -71,7 +75,7 @@
       <span
         class="ms-1 bg-primary text-white px-2 text-xs inline-block rounded-full py-[3px] align-top"
       >
-        {selected.length}
+        {selectedCount}
       </span>
     {/snippet}
 
@@ -142,11 +146,11 @@
             class="text-sm place-self-center whitespace-nowrap text-[--text-mention-grey]"
             aria-live="polite"
           >
-            {selected.length === 0
+            {formCount === 0
               ? m['arenaHome.tools.none']()
-              : m['arenaHome.tools.count']({ count: Object.values(form).filter((v) => v).length })}
+              : m['arenaHome.tools.count']({ count: formCount })}
           </div>
-          {#if selected.length > 0}
+          {#if formCount > 0}
             <Button
               variant="tertiary"
               text={m['arenaHome.tools.clear']()}

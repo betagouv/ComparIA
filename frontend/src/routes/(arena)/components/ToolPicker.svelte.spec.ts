@@ -70,6 +70,23 @@ describe('ToolPicker', () => {
     expect(container.querySelector('button')?.textContent).toContain('Outils 1')
   })
 
+  it('does not count a selected tool that is not on offer', () => {
+    const { container } = render(ToolPicker, {
+      props: { selected: ['datagouv', 'not_offered'] }
+    })
+
+    expect(container.querySelector('button')?.textContent).toContain('Outils 1')
+  })
+
+  it('counts the toggles of the modal as they change', async () => {
+    const { container } = render(ToolPicker, { props: { selected: [] } })
+    const dialog = within(container.ownerDocument.getElementById('fr-modal-tools')!)
+
+    expect(dialog.getByText('Aucun outil')).toBeInTheDocument()
+    await fireEvent.click(container.ownerDocument.getElementById('tool-datagouv-modal')!)
+    expect(dialog.getByText('1 outils')).toBeInTheDocument()
+  })
+
   it('keeps the same compact label with multiple selected tools', () => {
     const { container } = render(ToolPicker, {
       props: { selected: ['web_search', 'datagouv'] }
