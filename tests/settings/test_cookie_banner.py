@@ -32,6 +32,11 @@ from tests.auth.test_oidc_settings import _settings_row  # noqa: E402
 from utils.database.models.app_settings import AppSettings  # noqa: E402
 
 BANNER_URL = "/admin/legal/cookies"
+# Pages with no content at all trip the status listing on their own.
+EXTERNAL_PAGES = {
+    key: {"mode": "external", "external_url": "https://example.test"}
+    for key in ("legal_notice", "accessibility", "ecodesign")
+}
 
 
 def banner_payload(**overrides):
@@ -54,11 +59,7 @@ def admin_client(cookie_banner=None, cookie_banner_enabled=False, signed_in=True
         cookie_banner=cookie_banner,
         cookie_banner_enabled=cookie_banner_enabled,
         legal_presentation=None,
-        # Pages with no content at all trip the status listing on their own.
-        informational_legal_pages={
-            key: {"mode": "external", "external_url": "https://example.test"}
-            for key in ("legal_notice", "accessibility", "ecodesign")
-        },
+        informational_legal_pages=EXTERNAL_PAGES,
         default_locale="fr",
         enabled_locales=["fr", "en"],
     )
@@ -203,6 +204,51 @@ def test_admin_turns_the_switch_on_through_the_settings():
 def test_the_switch_is_off_on_a_new_instance():
     assert AppSettings().cookie_banner_enabled is False
     assert AppSettings().cookie_banner is None
+
+
+def test_switch_and_text_survive_a_save_to_the_database(database):
+    from backend.admin.legal import (
+        get_admin_legal_pages_status,
+        get_cookie_banner,
+        put_cookie_banner,
+    )
+    from backend.admin.settings import get_settings, patch_settings
+    from utils.database.models.app_settings import AppSettingsPatch
+    from utils.database.models.auth import User
+    from utils.database.session import get_session
+    from utils.database.settings import update_app_settings
+
+    sent = legal.CookieBannerTranslatable.model_validate(
+        {"fr": banner_payload(), "en": banner_payload(title="Cookies here")}
+    )
+
+    async def scenario():
+        admin = User(email="admin@example.test", role="admin")
+        async with get_session() as session:
+            session.add(admin)
+            await session.commit()
+            await session.refresh(admin)
+        await update_app_settings(
+            {
+                "enabled_locales": ["fr", "en"],
+                "default_locale": "fr",
+                "informational_legal_pages": EXTERNAL_PAGES,
+            },
+            updated_by=admin.id,
+        )
+        await put_cookie_banner(sent, admin)
+        await patch_settings(AppSettingsPatch(cookie_banner_enabled=True), admin)
+        return (
+            await get_cookie_banner(),
+            await get_settings(),
+            await get_admin_legal_pages_status(),
+        )
+
+    banner, settings, status = database(scenario)
+
+    assert banner == sent
+    assert settings.cookie_banner_enabled is True
+    assert status["cookies"] == {"published": True, "missing_locales": False}
 
 
 if __name__ == "__main__":
