@@ -1,9 +1,16 @@
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
 
 from utils.database.models import BotPos, ErrorCode
+
+if TYPE_CHECKING:
+    from utils.dataset.reservation import ReserveBlock
+
+# The detail of the 409 for a release the partner may already have: the admin
+# panel tells it from a ReserveBlock by this value.
+PARTNER_HAS_IT = "partner_has_it"
 
 # from enum import StrEnum
 # TODO raise errors with error keys and add i18n on front
@@ -124,3 +131,19 @@ class ActivityQueryTimeoutError(HTTPException):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="activity_query_timeout",
         )
+
+
+class ReserveBlockedError(HTTPException):
+    """A comparison that cannot go to a partner. The detail is the reason, as
+    utils/dataset/reservation.py names it."""
+
+    def __init__(self, reason: "ReserveBlock") -> None:
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=reason)
+
+
+class UnreserveUnconfirmedError(HTTPException):
+    """Unreserving what the partner may already have, unconfirmed: the page
+    asks the admin, then sends the request again."""
+
+    def __init__(self) -> None:
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=PARTNER_HAS_IT)
