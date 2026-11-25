@@ -21,11 +21,7 @@
   const comparator = $derived(getComparison(comparisonId))
 
   const tools = getToolsContext()
-  const activeTools = $derived(
-    (comparator.comparison?.enabled_tools ?? []).map((key) =>
-      tools.all.find((tool) => tool.key === key)!
-    )
-  )
+  const activeTools = $derived(tools.pick(comparator.comparison?.enabled_tools ?? []))
 
   let prompt = $state('')
   let voteReminder = $state(false)

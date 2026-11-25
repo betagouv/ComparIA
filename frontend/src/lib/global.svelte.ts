@@ -32,6 +32,9 @@ export type Tool = ToolPublic & { icon: string }
 export type ToolsContext = {
   all: Tool[]
   enabled: Tool[]
+  // The tools behind stored keys. A key the list does not know, because the
+  // tools could not be loaded or the tool is gone, is left out.
+  pick: (keys: string[]) => Tool[]
 }
 const [getToolsContext, setToolsContext] = createContext<ToolsContext>()
 
@@ -50,6 +53,9 @@ export function _createToolsContext(source: () => ToolPublic[]) {
     },
     get enabled() {
       return tools.filter((tool) => tool.enabled)
+    },
+    pick(keys) {
+      return keys.flatMap((key) => tools.find((tool) => tool.key === key) ?? [])
     }
   }
 
