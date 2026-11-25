@@ -111,6 +111,9 @@ class AppSettings(SQLModel, table=True):
     informational_legal_pages: Annotated[
         dict, Field(sa_type=JSONB, default_factory=dict)
     ]
+    # Off until an instance whose law asks for cookie consent turns it on.
+    cookie_banner_enabled: bool = Field(default=False)
+    cookie_banner: Annotated[dict | None, Field(sa_type=JSONB)] = None
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
     primary_color_dark: str = Field(default=PRIMARY_COLOR_DARK_DEFAULT, max_length=7)
     secondary_color_light: str = Field(
@@ -189,6 +192,7 @@ class AppSettingsPublic(SQLModel):
     publish_hour: int
     publish_timezone: str
     dataset_voter_ids: bool
+    cookie_banner_enabled: bool
     has_custom_logo: bool
     logo_version: str | None = None
     enabled_locales: list[SupportedLocale]
@@ -229,6 +233,7 @@ class AppSettingsPatch(SQLModel):
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
     dataset_voter_ids: bool | None = None
+    cookie_banner_enabled: bool | None = None
     auth_methods: list[str] | None = None
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -291,11 +296,11 @@ class AppSettingsPatch(SQLModel):
             raise ValueError("Leaderboard thresholds cannot be null")
         return value
 
-    @field_validator("dataset_voter_ids", mode="before")
+    @field_validator("dataset_voter_ids", "cookie_banner_enabled", mode="before")
     @classmethod
-    def dataset_voter_ids_not_null(cls, value: object) -> object:
+    def switch_not_null(cls, value: object, info: ValidationInfo) -> object:
         if value is None:
-            raise ValueError("dataset_voter_ids cannot be null")
+            raise ValueError(f"{info.field_name} cannot be null")
         return value
 
     @field_validator(

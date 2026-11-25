@@ -8,6 +8,7 @@ from backend.admin.activity.models import (
 from backend.admin.dataset_check import DatasetCheckTryResult
 from backend.admin.legal import (
     AdminLegalDocument,
+    CookieBannerTranslatable,
     InformationalLegalPage,
     LegalPresentationTranslatable,
     LegalStatuses,

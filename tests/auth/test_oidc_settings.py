@@ -65,6 +65,7 @@ def _settings_row(**overrides):
         publish_hour=3,
         publish_timezone="UTC",
         dataset_voter_ids=False,
+        cookie_banner_enabled=False,
         enabled_locales=["fr"],
         default_locale="fr",
         auth_methods=["email_code"],
