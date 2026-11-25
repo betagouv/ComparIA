@@ -97,7 +97,8 @@ const INSTANCE_CONFIG_TTL_MS = 20_000
 type InstanceConfig = {
   enabled_locales: string[]
   default_locale: string
-  cookie_banner_enabled: boolean
+  // null until the backend has answered once.
+  cookie_banner_enabled: boolean | null
 }
 
 // Cached per Node process (same rationale as maintenanceCache below). The
@@ -107,7 +108,7 @@ let instanceConfigCache: { promise: Promise<InstanceConfig>; checkedAt: number }
 let lastInstanceConfig: InstanceConfig = {
   enabled_locales: [],
   default_locale: '',
-  cookie_banner_enabled: false
+  cookie_banner_enabled: null
 }
 
 function getInstanceConfig(): Promise<InstanceConfig> {
@@ -121,7 +122,7 @@ function getInstanceConfig(): Promise<InstanceConfig> {
           lastInstanceConfig = {
             enabled_locales: config.enabled_locales ?? [],
             default_locale: config.default_locale ?? '',
-            cookie_banner_enabled: config.cookie_banner_enabled ?? false
+            cookie_banner_enabled: config.cookie_banner_enabled ?? null
           }
           return lastInstanceConfig
         })
@@ -188,8 +189,8 @@ export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
 }
 
 // Audience measurement reaches the page only when the visitor's consent, or a
-// switched-off banner, allows it. A cold start with the backend down reads the
-// switch as off, so Matomo loads then, as it did before the banner existed.
+// switched-off banner, allows it. A cold start with the backend down leaves it
+// out: the switch may be on, and nobody has been asked.
 export const matomoHandle: Handle = ({ event, resolve }) => {
   const { loadMeasurement } = event.locals.cookieConsent
   return resolve(event, {

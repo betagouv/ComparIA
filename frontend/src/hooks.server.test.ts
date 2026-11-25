@@ -170,6 +170,19 @@ describe('server-side API requests', () => {
   })
 })
 
+describe('cookie banner switch on a cold process', () => {
+  it('leaves Matomo out and the banner closed when the switch cannot be read', async () => {
+    vi.resetModules()
+    const fresh = await import('./hooks.server')
+    request.mockRejectedValue(new Error('backend down'))
+    const event = { locals: {} as App.Locals, cookies: { get: () => undefined } }
+    await fresh.cookieBannerHandle({ event, resolve } as never)
+
+    expect(event.locals.cookieBannerEnabled).toBeNull()
+    expect(event.locals.cookieConsent).toMatchObject({ showBanner: false, loadMeasurement: false })
+  })
+})
+
 describe('cookie banner switch', () => {
   async function bannerEnabled() {
     const event = { locals: {} as App.Locals, cookies: { get: () => undefined } }
