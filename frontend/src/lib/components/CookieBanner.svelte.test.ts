@@ -102,6 +102,22 @@ describe('CookieBanner', () => {
     expect(onClose).toHaveBeenCalledTimes(2)
   })
 
+  it('previews with both kinds shown, and without adding a landmark to the page', () => {
+    const { getByRole, queryByRole } = render(CookieBanner, { text, preview: true })
+
+    expect(queryByRole('region')).toBeNull()
+    expect(getByRole('checkbox', { name: /Audience measurement/ })).toBeInTheDocument()
+    expect(getByRole('checkbox', { name: /Remembered settings/ })).toBeInTheDocument()
+  })
+
+  it('opens the privacy policy in a new tab from the preview, keeping the admin form', () => {
+    const { getByRole } = render(CookieBanner, { text, preview: true })
+    const link = getByRole('link', { name: /Politique de confidentialité/ })
+
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener')
+  })
+
   it('does not take focus the first time it asks', async () => {
     const { getByRole } = renderBanner()
     await new Promise((r) => setTimeout(r))

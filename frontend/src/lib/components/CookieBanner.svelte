@@ -67,7 +67,7 @@
 <!-- Escape is caught for the whole banner, from whichever control has focus. -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <section
-  aria-labelledby="{id}-title"
+  aria-labelledby={preview ? undefined : `${id}-title`}
   onkeydown={handleKeydown}
   class={[
     'p-4 md:p-6 bg-white overflow-y-auto',
@@ -93,7 +93,13 @@
 
     <p class="fr-text--sm mb-0!">
       {text.description}
-      <Link href={PRIVACY_POLICY_PATH} text={m['consent.links.privacy_policy']()} size="sm" />
+      <!-- In the admin preview, a new tab keeps the unsaved form. -->
+      <Link
+        href={PRIVACY_POLICY_PATH}
+        text={m['consent.links.privacy_policy']()}
+        size="sm"
+        {...preview ? { target: '_blank', rel: 'noopener' } : {}}
+      />
     </p>
 
     <div class="gap-3 flex flex-wrap">
