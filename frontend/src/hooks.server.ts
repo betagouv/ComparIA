@@ -176,8 +176,14 @@ export const handleError: HandleServerError = async ({ error, event }) => {
   console.error(error)
 }
 
+// Read once per request: the page, its Matomo tag and the
+// browser (through the root layout) all follow this one switch value.
 export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
   event.locals.cookieBannerEnabled = (await getInstanceConfig()).cookie_banner_enabled
+  event.locals.cookieConsent = decideCookieConsent(
+    event.locals.cookieBannerEnabled,
+    event.cookies.get(COOKIE_CONSENT_NAME)
+  )
   return resolve(event)
 }
 
@@ -185,10 +191,7 @@ export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
 // switched-off banner, allows it. A cold start with the backend down reads the
 // switch as off, so Matomo loads then, as it did before the banner existed.
 export const matomoHandle: Handle = ({ event, resolve }) => {
-  const { loadMeasurement } = decideCookieConsent(
-    event.locals.cookieBannerEnabled,
-    event.cookies.get(COOKIE_CONSENT_NAME)
-  )
+  const { loadMeasurement } = event.locals.cookieConsent
   return resolve(event, {
     transformPageChunk: ({ html }) =>
       fillMatomoPlaceholder(html, { url: MATOMO_URL, id: MATOMO_ID }, loadMeasurement)

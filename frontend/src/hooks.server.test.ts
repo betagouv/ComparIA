@@ -27,6 +27,18 @@ const { authWallHandle, cookieBannerHandle, handleFetch, matomoHandle, metricsHa
 
 const resolve = vi.fn(async () => new Response('page'))
 
+// Runs the switch handle the way the hook sequence does, a minute after the
+// last call so the config cache is always stale.
+let clock = Date.now()
+async function localsFor(switchOn: boolean, jar: Record<string, string | undefined> = {}) {
+  clock += 60_000
+  vi.setSystemTime(clock)
+  request.mockResolvedValue({ cookie_banner_enabled: switchOn })
+  const event = { locals: {} as App.Locals, cookies: { get: (name: string) => jar[name] } }
+  await cookieBannerHandle({ event, resolve: async () => new Response() } as never)
+  return event.locals
+}
+
 function eventWith(cookie?: string, anonymousSession?: string) {
   const deleted: string[] = []
   const jar: Record<string, string | undefined> = {
@@ -160,7 +172,7 @@ describe('server-side API requests', () => {
 
 describe('cookie banner switch', () => {
   async function bannerEnabled() {
-    const event = { locals: {} as App.Locals }
+    const event = { locals: {} as App.Locals, cookies: { get: () => undefined } }
     await cookieBannerHandle({ event, resolve } as never)
     return event.locals.cookieBannerEnabled
   }
@@ -197,6 +209,18 @@ describe('cookie banner switch', () => {
     request.mockRejectedValue(new Error('backend down'))
     expect(await bannerEnabled()).toBe(true)
   })
+
+  it('decides the consent once for the rest of the request', async () => {
+    const locals = await localsFor(true, {
+      comparia_cookie_consent: `1.1.0.${Math.floor(Date.now() / 1000)}`
+    })
+
+    expect(locals.cookieConsent).toEqual({
+      showBanner: false,
+      loadMeasurement: true,
+      keepSettings: false
+    })
+  })
 })
 
 describe('request metrics', () => {
@@ -231,11 +255,11 @@ describe('audience measurement', () => {
     'n0nce'
   )
 
+  beforeEach(() => vi.useFakeTimers({ toFake: ['Date'] }))
+  afterEach(() => vi.useRealTimers())
+
   async function render(switchOn: boolean, consent?: string) {
-    const event = {
-      locals: { cookieBannerEnabled: switchOn },
-      cookies: { get: (name: string) => (name === 'comparia_cookie_consent' ? consent : undefined) }
-    }
+    const event = { locals: await localsFor(switchOn, { comparia_cookie_consent: consent }) }
     let html = ''
     await matomoHandle({
       event,
