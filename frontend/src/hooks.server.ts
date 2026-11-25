@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
 import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
 import { COOKIE_CONSENT_NAME, decideCookieConsent } from '$lib/cookieConsent'
-import { cookieMaxAge, defineCustomServerStrategy } from '$lib/i18n/runtime'
+import { cookieMaxAge, defineCustomServerStrategy, type Locale } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { fillMatomoPlaceholder } from '$lib/matomo'
@@ -95,8 +95,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 const INSTANCE_CONFIG_TTL_MS = 20_000
 
 type InstanceConfig = {
-  enabled_locales: string[]
-  default_locale: string
+  enabled_locales: Locale[]
+  default_locale?: Locale
   // null until the backend has answered once.
   cookie_banner_enabled: boolean | null
 }
@@ -107,7 +107,6 @@ type InstanceConfig = {
 let instanceConfigCache: { promise: Promise<InstanceConfig>; checkedAt: number } | null = null
 let lastInstanceConfig: InstanceConfig = {
   enabled_locales: [],
-  default_locale: '',
   cookie_banner_enabled: null
 }
 
@@ -121,7 +120,7 @@ function getInstanceConfig(): Promise<InstanceConfig> {
         .then((config) => {
           lastInstanceConfig = {
             enabled_locales: config.enabled_locales ?? [],
-            default_locale: config.default_locale ?? '',
+            default_locale: config.default_locale,
             cookie_banner_enabled: config.cookie_banner_enabled ?? null
           }
           return lastInstanceConfig
@@ -159,10 +158,11 @@ defineCustomServerStrategy('custom-url', {
 
     const requested = new URL(request.url).searchParams.get('locale')
     for (const candidate of [requested, cookieLocale]) {
-      if (candidate && enabled_locales.includes(candidate)) return candidate
+      const enabled = enabled_locales.find((locale) => locale === candidate)
+      if (enabled) return enabled
     }
 
-    return default_locale || undefined
+    return default_locale
   }
 })
 
