@@ -63,7 +63,7 @@ describe('cookie banner administration', () => {
     await waitFor(() => expect(toggle).toBeChecked())
   })
 
-  it('previews the banner with its text and three buttons', async () => {
+  it('previews the banner with its text, both kinds and its buttons', async () => {
     const { getByLabelText, getByTestId } = renderPage()
 
     await fireEvent.input(getByLabelText('Titre du bandeau'), {
@@ -74,7 +74,7 @@ describe('cookie banner administration', () => {
     await waitFor(() => expect(preview).toHaveTextContent('Vos cookies'))
     expect(preview).toHaveTextContent('Mesure d’audience')
     expect(preview).toHaveTextContent('Réglages mémorisés')
-    for (const name of ['Tout accepter', 'Tout refuser', 'Choisir']) {
+    for (const name of ['Tout refuser', 'Enregistrer mes choix', 'Choisir']) {
       expect(within(preview).getByRole('button', { name })).toBeInTheDocument()
     }
   })

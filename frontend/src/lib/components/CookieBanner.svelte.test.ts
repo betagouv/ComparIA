@@ -19,16 +19,26 @@ function renderBanner(props: { choice?: CookieChoice | null; onClose?: () => voi
 }
 
 describe('CookieBanner', () => {
-  it('shows the text and three buttons of equal weight', () => {
+  it('shows the text, with refusing as easy to find as accepting', () => {
     const { getByRole, getByText } = renderBanner()
 
     expect(getByRole('region', { name: text.title })).toBeInTheDocument()
     expect(getByText(text.description)).toBeInTheDocument()
-    const buttons = ['Tout accepter', 'Tout refuser', 'Choisir'].map((name) =>
-      getByRole('button', { name })
+    const accept = getByRole('button', { name: 'Tout accepter' })
+    const refuse = getByRole('button', { name: 'Tout refuser' })
+    expect(refuse.className).toBe(accept.className)
+    expect(getByRole('button', { name: 'Choisir' })).toBeInTheDocument()
+  })
+
+  it('swaps accept all for save once people choose', async () => {
+    const { getByRole, queryByRole } = renderBanner()
+
+    await fireEvent.click(getByRole('button', { name: 'Choisir' }))
+
+    expect(queryByRole('button', { name: 'Tout accepter' })).toBeNull()
+    expect(getByRole('button', { name: 'Enregistrer mes choix' }).className).toBe(
+      getByRole('button', { name: 'Tout refuser' }).className
     )
-    const classes = buttons.map((button) => button.className)
-    expect(new Set(classes).size).toBe(1)
   })
 
   it('links to the privacy policy', () => {
