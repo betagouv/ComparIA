@@ -3,6 +3,7 @@
 // given mid-visit and stops it on a withdrawal.
 
 import type { CookieChoice } from '$lib/cookieConsent'
+import { secureAttribute } from '$lib/cookies'
 
 export type MatomoConfig = { url: string; id: string }
 
@@ -103,7 +104,7 @@ function deleteTrackingCookies() {
   const host = location.hostname
   for (const name of names) {
     for (const domain of ['', `; domain=${host}`, `; domain=.${host}`]) {
-      document.cookie = `${name}=; Path=/; Max-Age=0${domain}`
+      document.cookie = `${name}=; Path=/; Max-Age=0${domain}${secureAttribute()}`
     }
   }
 }

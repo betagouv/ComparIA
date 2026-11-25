@@ -6,19 +6,17 @@ import {
   serializeCookieConsent,
   type CookieChoice
 } from '$lib/cookieConsent'
+import { readCookie, secureAttribute } from '$lib/cookies'
 import { createContext } from 'svelte'
 
 export type CookieConsentListener = (choice: CookieChoice, previous: CookieChoice | null) => void
 
 function readConsentCookie(): string | null {
-  const prefix = `${COOKIE_CONSENT_NAME}=`
-  const cookie = document.cookie.split('; ').find((c) => c.startsWith(prefix))
-  return cookie ? cookie.slice(prefix.length) : null
+  return readCookie(COOKIE_CONSENT_NAME) ?? null
 }
 
 function writeConsentCookie(value: string) {
-  const secure = location.protocol === 'https:' ? '; Secure' : ''
-  document.cookie = `${COOKIE_CONSENT_NAME}=${value}; Path=/; Max-Age=${COOKIE_CONSENT_MAX_AGE}; SameSite=Lax${secure}`
+  document.cookie = `${COOKIE_CONSENT_NAME}=${value}; Path=/; Max-Age=${COOKIE_CONSENT_MAX_AGE}; SameSite=Lax${secureAttribute()}`
 }
 
 export function createCookieConsent({
