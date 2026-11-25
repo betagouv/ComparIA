@@ -120,7 +120,7 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.albertKey`            | at least one of these four | `ALBERT_KEY` |
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |
 | `secrets.ordbogenApiKey`       | at least one of these four | `ORDBOGEN_API_KEY` |
-| `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, enables web search      |
+| `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, the Linkup key web search falls back on when none is set at `/admin/outils`. Web search is switched on there |
 | `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
 | `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
 | `secrets.metricsToken`         | no       | `METRICS_TOKEN`, bearer token protecting `/metrics` |

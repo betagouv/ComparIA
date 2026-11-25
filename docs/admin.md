@@ -75,6 +75,18 @@ Adding models one by one through the panel is fine for a handful. For more, writ
 
 `./comparia-cli llms export` writes the current catalogue to `data/llms-data.json`, which is the easiest way to see what the format looks like.
 
+## Tools
+
+`/admin/outils` lists the tools visitors can offer to both models before a comparison: web search, built in, and the MCP servers added here. A tool sends queries the models write from visitor prompts to an outside service, so every tool starts switched off, web search included, and an admin turns each one on from the list.
+
+Each row shows whether the tool answers now, how many calls models made to it over the last 30 days and how many failed, and a switch that offers or withdraws it at once. Every tool is tested when the list opens and the verdict is kept for 10 minutes; "Revérifier" tests them all again. A tool missing its credential or its address is left out of the visitor picker even when switched on.
+
+**Web search** goes through Linkup. Its page takes the Linkup key, falling back on `LINKUP_API_KEY` when empty, and either the only sites results may come from or sites they never come from, not both.
+
+**MCP servers** are added in four steps at `/admin/outils/create`: the address and an optional credential, which must pass a connection test; the functions offered to models, all of them when none is ticked, so functions the server adds later are offered too; the name and description visitors see; then a summary. A credential is a token sent as `Authorization: Bearer`, or a whole header written as `Name: value`.
+
+Credentials are stored encrypted with `COMPARIA_ENCRYPTION_KEY` and never shown again; the page only says whether one is set. The test button runs the tool with what is saved and says why it failed: credential refused, no credit left, server not answering, timeout or no address. A tool can also carry a logo, shown in the picker and next to its steps in the answers.
+
 ## Customization
 
 `/admin/customization` controls the platform name, logo, the four brand colours (primary and secondary, each in a light and a dark variant), the homepage link, and the vote target the public counter counts towards.
