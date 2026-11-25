@@ -1338,7 +1338,9 @@
     "cookieBanner": {
         "acceptAll": "Tout accepter",
         "refuseAll": "Tout refuser",
-        "choose": "Choisir"
+        "choose": "Choisir",
+        "close": "Fermer",
+        "save": "Enregistrer mes choix"
     },
     "errors": {
         "404": {
