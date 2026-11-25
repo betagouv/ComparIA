@@ -40,6 +40,7 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   publish_hour: 3,
   publish_timezone: 'UTC',
   dataset_voter_ids: false,
+  cookie_banner_enabled: false,
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',
