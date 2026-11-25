@@ -11,9 +11,11 @@ from backend.settings.informational_legal import (
     get_informational_legal_pages_links,
 )
 from backend.settings.legal import (
+    CookieBanner,
     LegalPresentation,
     UtcTimestamp,
     get_active_legal_document,
+    get_cookie_banner,
     get_legal_presentation,
 )
 from backend.utils.locale import LocaleQuery, get_locales_settings
@@ -132,3 +134,22 @@ async def public_privacy_policy(
         published_at=document.published_at,
         effective_at=document.effective_at,
     )
+
+
+class PublicCookieBanner(CookieBanner):
+    locale: SupportedLocale
+
+
+@router.get("/legal/cookies", response_model=PublicCookieBanner)
+async def public_cookie_banner(
+    request: Request,
+    response: Response,
+    locale: LocaleQuery,
+):
+    locale, banner = await get_cookie_banner(locale)
+    payload = PublicCookieBanner(locale=locale, **banner.model_dump())
+    headers = _cache_headers(payload.model_dump_json())
+    if request.headers.get("if-none-match") == headers["ETag"]:
+        return Response(status_code=status.HTTP_304_NOT_MODIFIED, headers=headers)
+    response.headers.update(headers)
+    return payload

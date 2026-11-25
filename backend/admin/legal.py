@@ -23,8 +23,8 @@ from backend.settings.legal import (
     LegalPresentationTranslatable,
     UtcTimestamp,
     get_active_legal_document,
-    get_cookie_banners,
     get_legal_presentations,
+    get_written_cookie_banners,
     list_legal_documents,
     publish_legal_document,
 )
@@ -89,7 +89,7 @@ async def get_admin_legal_pages_status() -> LegalStatuses:
         "missing_locales": enabled_locales != participation_locales,
     }
 
-    cookie_banner_locales = set((await get_cookie_banners()).root)
+    cookie_banner_locales = set((await get_written_cookie_banners()).root)
     status["cookies"] = {
         "published": settings.cookie_banner_enabled,
         "missing_locales": not enabled_locales <= cookie_banner_locales,
@@ -226,7 +226,8 @@ async def put_participation_presentation(
 
 @router.get("/cookies", response_model=CookieBannerTranslatable)
 async def get_cookie_banner() -> CookieBannerTranslatable:
-    return await get_cookie_banners()
+    # What the admin wrote, not the public text: the form saves it back whole.
+    return await get_written_cookie_banners()
 
 
 @router.put("/cookies", response_model=CookieBannerTranslatable)

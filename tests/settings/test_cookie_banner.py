@@ -27,6 +27,7 @@ import backend.admin.router as admin_router  # noqa: E402
 import backend.admin.settings as admin_settings  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 import backend.settings.informational_legal as informational_legal  # noqa: E402
+import backend.settings.router as settings_router  # noqa: E402
 import backend.utils.locale as locale_module  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
 from backend.settings import legal  # noqa: E402
@@ -112,7 +113,7 @@ def test_banner_text_falls_back_when_what_is_stored_no_longer_validates():
 
 def test_admin_replaces_the_whole_text_and_reads_it_back():
     sent = {"fr": banner_payload(), "en": banner_payload(title="  Cookies here  ")}
-    with admin_client() as (client, _):
+    with admin_client() as (client, row):
         saved = client.put(BANNER_URL, json=sent)
         read_back = client.get(BANNER_URL).json()
 
@@ -120,6 +121,19 @@ def test_admin_replaces_the_whole_text_and_reads_it_back():
     assert set(read_back) == {"fr", "en"}
     assert read_back["fr"] == banner_payload()
     assert read_back["en"]["title"] == "Cookies here"
+
+
+def test_admin_reads_back_only_the_languages_they_wrote():
+    with admin_client(
+        cookie_banner={"fr": banner_payload()}, cookie_banner_enabled=True
+    ) as (client, row):
+        body = client.get(BANNER_URL).json()
+        client.put(BANNER_URL, json=body)
+        status = cookies_status(client)
+
+    assert set(body) == {"fr"}
+    assert set(row.cookie_banner) == {"fr"}
+    assert status == {"published": True, "missing_locales": True}
 
 
 def test_blank_text_and_unknown_fields_are_refused():
@@ -272,3 +286,85 @@ def test_public_config_says_whether_the_banner_is_on():
 
         assert config.cookie_banner_enabled is enabled
 
+
+PUBLIC_URL = "/settings/legal/cookies"
+
+
+@contextmanager
+def public_client(cookie_banner=None, default_locale="fr", enabled_locales=None):
+    row = SimpleNamespace(
+        cookie_banner=cookie_banner,
+        default_locale=default_locale,
+        enabled_locales=enabled_locales or [default_locale],
+    )
+
+    async def get_app_settings():
+        return row
+
+    app = FastAPI()
+    app.include_router(settings_router.router)
+    with (
+        patch.object(locale_module, "get_app_settings", get_app_settings),
+        patch.object(legal, "get_app_settings", get_app_settings),
+    ):
+        yield TestClient(app), row
+
+
+def test_public_text_is_in_the_asked_locale():
+    with public_client(enabled_locales=["fr", "en"]) as (client, _):
+        response = client.get(PUBLIC_URL, params={"locale": "en"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "locale": "en",
+        **legal.FALLBACK_COOKIE_BANNERS.root["en"].model_dump(),
+    }
+
+
+def test_public_text_falls_back_to_the_instance_default():
+    stored = {"da": banner_payload(title="Cookies her")}
+    with public_client(stored, default_locale="da") as (client, _):
+        missing = client.get(PUBLIC_URL, params={"locale": "sv"}).json()
+        no_locale = client.get(PUBLIC_URL).json()
+
+    assert missing["locale"] == "da"
+    assert missing["title"] == "Cookies her"
+    assert no_locale["locale"] == "da"
+
+
+def test_public_text_shows_the_default_in_a_language_the_admin_has_not_written():
+    stored = {"en": banner_payload(title="Cookies here")}
+    with public_client(stored, enabled_locales=["fr", "en"]) as (client, _):
+        body = client.get(PUBLIC_URL, params={"locale": "fr"}).json()
+
+    assert body == {
+        "locale": "fr",
+        **legal.FALLBACK_COOKIE_BANNERS.root["fr"].model_dump(),
+    }
+
+
+def test_public_text_falls_back_to_any_language_with_text():
+    stored = {"sv": banner_payload(title="Kakor")}
+    with public_client(stored, default_locale="it", enabled_locales=["it", "sv"]) as (
+        client,
+        _,
+    ):
+        body = client.get(PUBLIC_URL, params={"locale": "it"}).json()
+
+    assert body["locale"] == "sv"
+    assert body["title"] == "Kakor"
+
+
+def test_public_text_is_revalidated_with_an_etag():
+    with public_client() as (client, row):
+        first = client.get(PUBLIC_URL)
+        etag = first.headers["ETag"]
+        cached = client.get(PUBLIC_URL, headers={"If-None-Match": etag})
+        row.cookie_banner = {"fr": banner_payload(title="Nouveau titre")}
+        edited = client.get(PUBLIC_URL, headers={"If-None-Match": etag})
+
+    assert first.headers["Cache-Control"] == "no-cache"
+    assert cached.status_code == 304
+    assert edited.status_code == 200
+    assert edited.headers["ETag"] != etag
+    assert edited.json()["title"] == "Nouveau titre"

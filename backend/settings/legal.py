@@ -198,8 +198,7 @@ FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
                 "title": "Cookies sur ce site",
                 "description": (
                     "Nous utilisons des cookies seulement si vous l’acceptez. "
-                    "Refuser ne vous empêche pas d’utiliser le site. Vous pouvez "
-                    "changer d’avis à tout moment depuis le lien « Cookies »."
+                    "Refuser ne vous empêche pas d’utiliser le site."
                 ),
                 "audience_measurement_label": "Mesure d’audience",
                 "audience_measurement_description": (
@@ -217,8 +216,7 @@ FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
                 "title": "Cookies on this site",
                 "description": (
                     "We only use cookies if you agree. Refusing does not stop you "
-                    "using the site. You can change your mind at any time from "
-                    "the “Cookies” link."
+                    "using the site."
                 ),
                 "audience_measurement_label": "Audience measurement",
                 "audience_measurement_description": (
@@ -236,8 +234,7 @@ FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
                 "title": "Cookies på dette websted",
                 "description": (
                     "Vi bruger kun cookies, hvis du siger ja. Du kan bruge "
-                    "webstedet, selv om du siger nej. Du kan altid ændre dit valg "
-                    "via linket »Cookies«."
+                    "webstedet, selv om du siger nej."
                 ),
                 "audience_measurement_label": "Besøgsstatistik",
                 "audience_measurement_description": (
@@ -255,7 +252,7 @@ FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
 )
 
 
-async def get_cookie_banners() -> CookieBannerTranslatable:
+async def get_written_cookie_banners() -> CookieBannerTranslatable:
     """Return the admin's banner text, or the default when there is none or it
     no longer validates."""
     app_settings = await get_app_settings()
@@ -266,6 +263,23 @@ async def get_cookie_banners() -> CookieBannerTranslatable:
             pass
 
     return FALLBACK_COOKIE_BANNERS
+
+
+async def get_cookie_banners() -> CookieBannerTranslatable:
+    """The admin's banner text, with the default in every language they have
+    not written."""
+    written = await get_written_cookie_banners()
+    return CookieBannerTranslatable.model_validate(
+        {**FALLBACK_COOKIE_BANNERS.root, **written.root}
+    )
+
+
+async def get_cookie_banner(
+    locale: SupportedLocale | None = None,
+) -> tuple[SupportedLocale, CookieBanner]:
+    locales = await get_locales_settings()
+    banners = await get_cookie_banners()
+    return pick_translation(banners.root, locale, locales)
 
 
 class DuplicateLegalDocumentError(ValueError):
