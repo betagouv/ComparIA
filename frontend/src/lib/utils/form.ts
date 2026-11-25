@@ -33,6 +33,7 @@ export type AnyFormItemComponent =
   | 'fieldset-item'
   | 'fieldset-list'
   | 'translate' // FIXME To fully integrate
+  | 'upload' // FIXME To fully integrate
 
 export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
   id: string

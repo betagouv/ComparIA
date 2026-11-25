@@ -9,15 +9,14 @@ import type {
   ComparisonPublic,
   LLMMessageCreate,
   TurnPublic,
-  UserMessageRead,
-  LinkupSearchTextResult as WebSearchResults
+  UserMessageRead
 } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { COHORT_STORAGE_KEY } from '$lib/stores/cohortStore.svelte'
 import { createContext } from 'svelte'
 import { InternalError } from './fastapi-client'
 
-export type { APIRevealData, WebSearchResults }
+export type { APIRevealData }
 
 // PROMPT
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models'
@@ -26,7 +25,7 @@ export interface APIModeAndPromptData {
   prompt_value: string
   mode: Mode
   custom_models_selection: string[]
-  web_search: boolean
+  tools: string[]
 }
 
 export type ModeInfos = {
@@ -116,9 +115,9 @@ export interface RevealData {
 
 const MODES = [
   { value: 'random', icon: 'i-ri-dice-line' },
-  { value: 'custom', icon: 'i-ri-search-line' },
   { value: 'small-models', icon: 'i-ri-leaf-line' },
-  { value: 'big-vs-small', icon: 'i-ri-ruler-line' }
+  { value: 'big-vs-small', icon: 'i-ri-ruler-line' },
+  { value: 'custom', icon: 'i-ri-search-line' }
 ] as const
 
 // Resolved on each call rather than at module load: the module is evaluated
@@ -292,7 +291,12 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
             } else if (event.type === 'chunk') {
               turn.status = 'generating'
               turn[event.pos].status = 'generating'
-              turn[event.pos].llm_msg = event.llm_msg
+              // The backend sends the tool steps only when one was added.
+              const previousTrace = turn[event.pos].llm_msg?.agent_trace
+              turn[event.pos].llm_msg =
+                'agent_trace' in event.llm_msg
+                  ? event.llm_msg
+                  : { ...event.llm_msg, agent_trace: previousTrace }
             } else if (event.type === 'complete') {
               if (event.pos) {
                 turn[event.pos].status = 'complete'
@@ -388,7 +392,7 @@ export function getComparison<Id extends string | undefined>(comparisonId: Id) {
         prompt_value: args.prompt_value,
         mode: args.mode,
         custom_models_selection: args.mode === 'custom' ? args.custom_models_selection : null,
-        web_search: args.web_search,
+        tools: args.tools,
         cohorts
       })
     },

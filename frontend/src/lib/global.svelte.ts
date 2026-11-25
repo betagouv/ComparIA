@@ -1,5 +1,6 @@
+import type { ToolPublic } from '$lib/generated/backend'
 import { getLocale, locales, setLocale, type Locale } from '$lib/i18n/runtime'
-import { getContext, setContext } from 'svelte'
+import { createContext, getContext, setContext } from 'svelte'
 import { getAuthContext } from './authContext.svelte'
 
 export type LocaleDesc = { short: string; long: string }
@@ -26,6 +27,48 @@ export function setVotesContext(votes: VotesData) {
 export function getVotesContext() {
   return getContext<VotesData>('votes')
 }
+
+export type Tool = ToolPublic & { icon: string }
+export type ToolsContext = {
+  all: Tool[]
+  enabled: Tool[]
+  // The tools behind stored keys. A key the list does not know, because the
+  // tools could not be loaded or the tool is gone, is left out.
+  pick: (keys: string[]) => Tool[]
+}
+const [getToolsContext, setToolsContext] = createContext<ToolsContext>()
+
+export function _createToolsContext(source: () => ToolPublic[]) {
+  const data = $derived(source())
+  const tools = $derived(
+    data.map((tool) => ({
+      ...tool,
+      icon: tool.key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'
+    }))
+  )
+
+  const state: ToolsContext = {
+    get all() {
+      return tools
+    },
+    get enabled() {
+      return tools.filter((tool) => tool.enabled)
+    },
+    pick(keys) {
+      return keys.flatMap((key) => tools.find((tool) => tool.key === key) ?? [])
+    }
+  }
+
+  return state
+}
+
+export function provideToolsContext(source: () => ToolPublic[]) {
+  const state = _createToolsContext(source)
+  setToolsContext(state)
+  return state
+}
+
+export { getToolsContext }
 
 export function getLocalesContext() {
   // Query current locale only once, on change a page reload occurs

@@ -69,6 +69,7 @@ export interface SSECompleteEvent {
 export interface SSEChunkEvent {
   type: 'chunk'
   pos: Bot
+  /** Without `agent_trace` when no tool step was added since the last chunk. */
   llm_msg: AssistantMessage
 }
 

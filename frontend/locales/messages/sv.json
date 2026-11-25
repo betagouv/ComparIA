@@ -24,6 +24,13 @@
         "selectLanguage": "Välj språk"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "När de är påslagna erbjuds de valda verktygen till båda de jämförda modellerna, som fritt får använda dem eller inte.",
+            "count": "{count} verktyg",
+            "label": "Verktyg",
+            "locked": "Verktygen är låsta för hela samtalet.",
+            "none": "Inget verktyg"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
@@ -42,15 +49,13 @@
             "generateAnother": "Skapa ett nytt meddelande",
             "title": "Förslag på prompter"
         },
-        "title": "Hur kan jag hjälpa dig idag?",
-        "webSearch": {
-            "disabled": "Webbsökning inaktiverad",
-            "enabled": "Webbsökning aktiverad",
-            "label": "Webbsökning",
-            "tooltip": "Aktivera webbsökning för att låta modellerna använda onlinekällor och citera mer aktuell information.<br><strong>Utan webbsökning</strong> svarar modellerna baserat på vad de lärde sig under träning (deras träningsdata). De kan inte verifiera information online, så mycket nya eller specifika fakta kan vara ofullständiga."
-        }
+        "title": "Hur kan jag hjälpa dig idag?"
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Inget resultat",
+            "running": "Söker…"
+        },
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
         "conversation": "Konversation",
         "errors": {
@@ -70,10 +75,7 @@
             "finished": "Resonemang avslutat",
             "inProgress": "Resonemang pågår…"
         },
-        "revealButton": "Visa vilka modeller som användes",
-        "webSearch": {
-            "label": "Tillhörande webbsökresultat."
-        }
+        "revealButton": "Visa vilka modeller som användes"
     },
     "closeModal": "Stäng modalfönstret",
     "components": {

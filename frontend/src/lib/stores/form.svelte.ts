@@ -22,6 +22,15 @@ export function updateFormErrors(error: ValidationError, errorsState: FormErrors
   }
 }
 
+export function onFormError(e: unknown, errors: FormErrors) {
+  if (e instanceof ValidationError) {
+    updateFormErrors(e, errors)
+    useToast(m['form.toastError'](), 6000, 'error')
+  } else {
+    useToast((e as Error).message, 6000, 'error')
+  }
+}
+
 type UseFormOptions<T extends object, K extends keyof T = never> = {
   url: string
   initialData: () => T
@@ -75,12 +84,7 @@ export function useForm<T extends object, K extends keyof T = never>({
       savedBaseline = JSON.stringify(form)
       await onSuccess?.(updated)
     } catch (e) {
-      if (e instanceof ValidationError) {
-        updateFormErrors(e, errors)
-        useToast(m['form.toastError'](), 6000, 'error')
-      } else {
-        useToast((e as Error).message, 6000, 'error')
-      }
+      onFormError(e, errors)
     } finally {
       isBusy = false
     }

@@ -1,17 +1,18 @@
 <script lang="ts">
   import Copy from '$components/Copy.svelte'
-  import { Icon } from '$components/dsfr'
+  import { Button, Icon } from '$components/dsfr'
   import { MarkdownCode as Markdown } from '$components/markdown'
-  import Pending from '$components/Pending.svelte'
   import type {
     APIVoteAnnotate,
     Bot,
     ComparisonTurnSide,
     TurnChoice
   } from '$lib/chatService.svelte'
+  import { useScroller } from '$lib/helpers/useScroller.svelte'
   import { m } from '$lib/i18n/messages'
-  import { sanitize } from '$lib/utils/commons'
   import { VoteAnnotate } from '.'
+  import AgentTrace from './AgentTrace.svelte'
+  import type { APITrace } from './toolActivity'
 
   export type MessageBotProps = {
     id: string
@@ -31,16 +32,25 @@
 
   const message = $derived(turnSide.llm_msg!)
 
+  const trace = $derived((message.agent_trace as APITrace) ?? [])
+  const generating = $derived(turnSide.status === 'generating')
+
   let annotations = $derived({
     keyword_annotations: turnSide.keyword_annotations,
     custom_annotation: turnSide.custom_annotation
   })
+
+  const scroller = useScroller()
+
+  function onScrollClick() {
+    scroller[scroller.isAtBottom ? 'scrollToTop' : 'scrollToBottom']()
+  }
 </script>
 
-<div class="md:w-full flex w-[80vw] flex-col">
+<div class="md:w-full md:min-w-0 md:flex-1 flex w-[80vw] flex-col">
   <div
     class={[
-      'message-bot cg-border rounded-lg! bg-white flex h-full flex-col',
+      'message-bot cg-border rounded-lg! bg-white flex h-full flex-col overflow-hidden',
       {
         'outline-2 -outline-offset-2': !!prefKind,
         'outline-red': prefKind === 'negative',
@@ -50,7 +60,7 @@
   >
     <div class="px-4 py-2 flex items-center">
       <div class="c-bot-disk-{bot}"></div>
-      <h2 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h2>
+      <h3 class="ms-2! mb-0! text-sm! me-auto">{m[`models.names.${bot}`]()}</h3>
       <Copy value={message.content} />
     </div>
 
@@ -58,44 +68,74 @@
          user cannot reach the part below the fold. -->
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div
-      class="px-4 overflow-scroll"
+      class="flex h-full flex-col overflow-scroll"
       tabindex="0"
       role="group"
       aria-label={m[`models.names.${bot}`]()}
+      {@attach scroller.attach}
     >
-      {#if message.reasoning_content?.trim()}
-        <section class="fr-accordion mb-8 py-2">
-          <div class="fr-highlight ms-0! ps-0!">
-            <h3 class="fr-accordion__title ms-1!">
-              <button
-                type="button"
-                class="fr-accordion__btn text-primary! bg-transparent!"
-                aria-expanded="true"
-                aria-controls="reasoning-{id}"
-              >
-                <Icon icon="i-ri-brain-2-line" class="text-primary me-1" />
-                {#if message.content === '' && turnSide.status === 'generating'}
-                  {m['chatbot.reasoning.inProgress']()}
-                {:else}
-                  {m['chatbot.reasoning.finished']()}
-                {/if}
-              </button>
-            </h3>
-            <div id="reasoning-{id}" class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]">
-              <div class="px-5 py-4">
-                {@html sanitize(message.reasoning_content.split('\n').join('<br>'))}
-              </div>
+      <div class="px-4 pb-4">
+        {#if trace.length || message.reasoning_content}
+          <AgentTrace
+            {id}
+            {trace}
+            reasoning={message.reasoning_content ?? ''}
+            pending={generating && !message.content.trim()}
+          />
+        {/if}
+
+        <Markdown message={message.content} chatbot />
+      </div>
+
+      {#if scroller.canScroll || generating}
+        <div
+          class="bottom-0 mx-1 pb-3 to-white sticky mt-auto flex justify-center bg-gradient-to-b from-transparent to-90%"
+        >
+          {#snippet loadingIcon()}
+            <div
+              class="loading-icon size-6 text-primary relative inline-block"
+              aria-label={m['chatbot.loading']()}
+            >
+              {#each [1, 2, 3, 4] as dot (dot)}
+                <div
+                  class={[
+                    'top-2 absolute size-[6px] rounded-full bg-current ease-[cubic-bezier(0,1,1,0)]',
+                    {
+                      'left-0 [animation:grow_0.6s_infinite]': dot === 1,
+                      'left-0 [animation:move_0.6s_infinite]': dot === 2,
+                      'left-[9px] [animation:move_0.6s_infinite]': dot === 3,
+                      'left-[18px] [animation:shrink_0.6s_infinite]': dot === 4
+                    }
+                  ]}
+                ></div>
+              {/each}
             </div>
-          </div>
-        </section>
-      {/if}
+          {/snippet}
 
-      <Markdown message={message.content} chatbot />
-    </div>
+          {#if scroller.canScroll}
+            <Button
+              id="scroll-btn"
+              variant="tertiary"
+              class={['p-2! not-hover:bg-white! min-h-0!', { generating }]}
+              onclick={onScrollClick}
+            >
+              <span class="sr-only">
+                {m[scroller.isAtBottom ? 'actions.scrollToTop' : 'actions.scrollToBottom']()}
+              </span>
 
-    <div class="mt-5">
-      {#if turnSide.status === 'generating'}
-        <Pending message={m['chatbot.loading']()} />
+              {#if generating}
+                {@render loadingIcon()}
+              {/if}
+              <Icon
+                icon={scroller.isAtBottom ? 'i-ri-arrow-up-line' : 'i-ri-arrow-down-line'}
+                block
+                class={{ hidden: generating }}
+              />
+            </Button>
+          {:else if generating}
+            {@render loadingIcon()}
+          {/if}
+        </div>
       {/if}
     </div>
 
@@ -110,3 +150,44 @@
     {/if}
   </div>
 </div>
+
+<style>
+  :global(#scroll-btn.generating) {
+    &:focus,
+    &:hover {
+      .loading-icon {
+        display: none;
+      }
+      :global(.hidden) {
+        display: block;
+      }
+    }
+  }
+
+  @keyframes -global-grow {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes -global-move {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(9px, 0);
+    }
+  }
+
+  @keyframes -global-shrink {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+</style>

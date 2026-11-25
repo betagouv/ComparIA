@@ -19,10 +19,7 @@ os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 
 from linkup import LinkupSearchTextResult  # noqa: E402
 
-from backend.arena.web_search import (  # noqa: E402
-    RESULT_CHARS,
-    keep_search_results,
-)
+from backend.tools.web_search import RESULT_CHARS, keep_search_results  # noqa: E402
 
 
 def page(

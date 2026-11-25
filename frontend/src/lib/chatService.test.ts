@@ -10,7 +10,8 @@ import { ValidationError } from './fastapi-client'
 const streamed = vi.hoisted(() => [] as { url: string; body: Record<string, unknown> }[])
 const arena = vi.hoisted(() => ({
   comparisons: [] as unknown[],
-  refusal: undefined as Error | undefined
+  refusal: undefined as Error | undefined,
+  events: [] as unknown[]
 }))
 
 vi.mock('$app/navigation', () => ({ goto: vi.fn() }))
@@ -21,10 +22,10 @@ vi.mock('$lib/captcha.svelte', () => ({
 vi.mock('$lib/fastapi-client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/fastapi-client')>()),
   api: {
-    // eslint-disable-next-line require-yield
     async *stream(url: string, body: Record<string, unknown>) {
       if (arena.refusal) throw arena.refusal
       streamed.push({ url, body })
+      yield* arena.events
     }
   }
 }))
@@ -150,4 +151,27 @@ describe('askFirst', () => {
       expect(streamed[0].body).toMatchObject({ mode, custom_models_selection: null })
     }
   )
+})
+
+describe('streamed chunks', () => {
+  it('keeps the tool steps already shown when a chunk carries none', async () => {
+    const comparison = {
+      id: 'tools-id',
+      turns: [{ id: 'turn-id', status: 'error', a: {}, b: {} }]
+    } as unknown as Comparison
+    const steps = [{ type: 'tool_call', tool_call_id: '1', name: 'search', arguments_json: '{}' }]
+    arena.comparisons = [comparison]
+    arena.events = [
+      { type: 'chunk', pos: 'a', llm_msg: { content: '', agent_trace: steps } },
+      { type: 'chunk', pos: 'a', llm_msg: { content: 'Voici' } },
+      { type: 'chunk', pos: 'a', llm_msg: { content: 'Voici la réponse' } }
+    ]
+
+    await getComparison('tools-id').retry()
+
+    arena.events = []
+    arena.comparisons = []
+    expect(comparison.turns[0].a.llm_msg?.content).toBe('Voici la réponse')
+    expect(comparison.turns[0].a.llm_msg?.agent_trace).toEqual(steps)
+  })
 })

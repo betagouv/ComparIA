@@ -13,8 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
+import backend.admin.prompt_check as pc_admin_module
 import backend.arena.checks as checks
-from backend.admin import router as admin_router
 from utils.database import prompt_checks as prompt_checks_module
 from utils.database.models.prompt_check import (
     DEFAULT_CRITERIA,
@@ -65,10 +65,10 @@ def db(monkeypatch: pytest.MonkeyPatch) -> FakeSession:
         yield session
 
     monkeypatch.setattr(prompt_checks_module, "get_session", get_session)
-    monkeypatch.setattr(admin_router, "get_consecutive_failures", lambda: 0)
-    monkeypatch.setattr(admin_router, "is_key_rejected", lambda: False)
-    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: False)
-    monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 0)
+    monkeypatch.setattr(pc_admin_module, "get_consecutive_failures", lambda: 0)
+    monkeypatch.setattr(pc_admin_module, "is_key_rejected", lambda: False)
+    monkeypatch.setattr(pc_admin_module, "is_out_of_credits", lambda: False)
+    monkeypatch.setattr(pc_admin_module, "get_warnings_shown", lambda: 0)
     return session
 
 
@@ -117,15 +117,15 @@ def test_admin_reading_reports_health(
     async def get_prompt_check():
         return seeded_row()
 
-    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(pc_admin_module, "get_prompt_check", get_prompt_check)
     monkeypatch.setattr(
-        admin_router,
+        pc_admin_module,
         "get_consecutive_failures",
         lambda: prompt_checks_module.UNHEALTHY_AFTER_FAILURES,
     )
-    monkeypatch.setattr(admin_router, "get_warnings_shown", lambda: 12)
+    monkeypatch.setattr(pc_admin_module, "get_warnings_shown", lambda: 12)
 
-    status = asyncio.run(admin_router.read_prompt_check())
+    status = asyncio.run(pc_admin_module.read_prompt_check())
 
     assert status.healthy is False
     assert status.consecutive_failures == prompt_checks_module.UNHEALTHY_AFTER_FAILURES
@@ -139,9 +139,9 @@ def test_a_working_check_reads_as_healthy(
     async def get_prompt_check():
         return seeded_row()
 
-    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(pc_admin_module, "get_prompt_check", get_prompt_check)
 
-    status = asyncio.run(admin_router.read_prompt_check())
+    status = asyncio.run(pc_admin_module.read_prompt_check())
 
     assert status.healthy is True
     assert status.consecutive_failures == 0
@@ -153,10 +153,10 @@ def test_a_rejected_key_reads_as_unhealthy(
     async def get_prompt_check():
         return seeded_row()
 
-    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
-    monkeypatch.setattr(admin_router, "is_key_rejected", lambda: True)
+    monkeypatch.setattr(pc_admin_module, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(pc_admin_module, "is_key_rejected", lambda: True)
 
-    status = asyncio.run(admin_router.read_prompt_check())
+    status = asyncio.run(pc_admin_module.read_prompt_check())
 
     assert status.key_rejected is True
     assert status.healthy is False
@@ -169,10 +169,10 @@ def test_running_out_of_credits_reads_as_unhealthy(
     async def get_prompt_check():
         return seeded_row()
 
-    monkeypatch.setattr(admin_router, "get_prompt_check", get_prompt_check)
-    monkeypatch.setattr(admin_router, "is_out_of_credits", lambda: True)
+    monkeypatch.setattr(pc_admin_module, "get_prompt_check", get_prompt_check)
+    monkeypatch.setattr(pc_admin_module, "is_out_of_credits", lambda: True)
 
-    status = asyncio.run(admin_router.read_prompt_check())
+    status = asyncio.run(pc_admin_module.read_prompt_check())
 
     assert status.out_of_credits is True
     assert status.healthy is False
@@ -191,9 +191,9 @@ def test_a_check_with_no_key_at_all_says_so(
     missing: bool,
 ) -> None:
     db.row.api_key = stored
-    monkeypatch.setattr(admin_router.settings, "OPENROUTER_API_KEY", env)
+    monkeypatch.setattr(pc_admin_module.settings, "OPENROUTER_API_KEY", env)
 
-    status = admin_router._to_prompt_check_status(db.row)
+    status = pc_admin_module._to_prompt_check_status(db.row)
 
     assert status.no_api_key is missing
     assert status.has_api_key is (stored is not None)
@@ -232,7 +232,7 @@ def put_check(**changes):
         "criteria": DEFAULT_CRITERIA,
     }
     body = PromptCheckUpsert(**(seeded | changes))
-    return asyncio.run(admin_router.put_prompt_check(body, CurrentUser()))
+    return asyncio.run(pc_admin_module.put_prompt_check(body, CurrentUser()))
 
 
 def test_saving_replaces_the_criteria(
@@ -282,7 +282,7 @@ def test_removing_the_key_falls_back_to_the_environment(
 ) -> None:
     db.row.api_key = "sk-stored"
 
-    result = asyncio.run(admin_router.delete_prompt_check_api_key(CurrentUser()))
+    result = asyncio.run(pc_admin_module.delete_prompt_check_api_key(CurrentUser()))
 
     assert db.row.api_key is None
     assert result.has_api_key is False
@@ -308,7 +308,7 @@ def test_write_invalidates_the_cache(db: FakeSession, invalidations: list[str]) 
 
 
 def test_the_form_schema_holds_the_criteria() -> None:
-    schema = asyncio.run(admin_router.read_prompt_check_schema())
+    schema = asyncio.run(pc_admin_module.read_prompt_check_schema())
 
     assert list(schema["properties"]) == [
         "enabled",
@@ -383,7 +383,7 @@ def test_the_model_list_comes_from_openrouter(monkeypatch: pytest.MonkeyPatch) -
 
     serve_models(monkeypatch, handler)
 
-    models = asyncio.run(admin_router.read_prompt_check_models())
+    models = asyncio.run(pc_admin_module.read_prompt_check_models())
 
     assert asked[0].params["output_modalities"] == "decisions"
     assert [(m.id, m.name) for m in models] == [
@@ -397,19 +397,19 @@ def test_the_model_list_is_empty_when_openrouter_is_down(
 ) -> None:
     serve_models(monkeypatch, lambda request: httpx.Response(503))
 
-    assert asyncio.run(admin_router.read_prompt_check_models()) == []
+    assert asyncio.run(pc_admin_module.read_prompt_check_models()) == []
 
 
 def test_unset_conversation_caps_report_the_settings_defaults(
     db: FakeSession, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    settings = admin_router.settings
+    settings = pc_admin_module.settings
     monkeypatch.setattr(settings, "RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR", 20)
     monkeypatch.setattr(
         settings, "RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR", 5
     )
 
-    status = asyncio.run(admin_router.read_prompt_check())
+    status = asyncio.run(pc_admin_module.read_prompt_check())
 
     # Empty in the form, with the default it falls back to beside it.
     assert status.conversations_per_ip_per_hour is None

@@ -22,9 +22,9 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 import pytest  # noqa: E402
 from PIL import Image  # noqa: E402
 
-from backend.admin.logos import normalize_logo  # noqa: E402
 from backend.config import LAB_LOGO_BOX, LOGO_UPLOAD_MAX_SIZE  # noqa: E402
 from backend.errors import LogoRejectedError  # noqa: E402
+from backend.utils.logos import normalize_logo  # noqa: E402
 
 SVG = b'<svg xmlns="http://www.w3.org/2000/svg"><circle r="4"/></svg>'
 

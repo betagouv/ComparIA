@@ -1357,21 +1357,21 @@ def test_a_plain_user_is_refused_before_the_authenticator_is_looked_at():
 
 
 def test_an_admin_cannot_reset_their_own_authenticator():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
 
     me = uuid.uuid4()
-    with pytest.raises(admin_services.CannotResetOwnTotpError):
-        asyncio.run(admin_services.reset_user_totp(me, me))
+    with pytest.raises(users_services.CannotResetOwnTotpError):
+        asyncio.run(users_services.reset_user_totp(me, me))
 
 
 def test_resetting_a_peer_drops_the_authenticator_and_their_sessions():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
 
     peer = User(email="peer@example.org", role="admin")
     session = FakeSession(peer, [peer.id])
 
-    with fake_session(session, admin_services):
-        assert asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
+    with fake_session(session, users_services):
+        assert asyncio.run(users_services.reset_user_totp(peer.id, uuid.uuid4()))
 
     deleted = {s.table.name for s in session.statements if s.is_delete}
     assert deleted == {"auth_totp", "auth_totp_challenge", "auth_invite_token"}
@@ -1381,13 +1381,13 @@ def test_resetting_a_peer_drops_the_authenticator_and_their_sessions():
 
 
 def test_resetting_an_unenrolled_or_missing_peer_is_not_found():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
 
     peer = User(email="peer@example.org", role="admin")
-    with fake_session(FakeSession(peer, []), admin_services):
-        assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
-    with fake_session(FakeSession(None), admin_services):
-        assert not asyncio.run(admin_services.reset_user_totp(peer.id, uuid.uuid4()))
+    with fake_session(FakeSession(peer, []), users_services):
+        assert not asyncio.run(users_services.reset_user_totp(peer.id, uuid.uuid4()))
+    with fake_session(FakeSession(None), users_services):
+        assert not asyncio.run(users_services.reset_user_totp(peer.id, uuid.uuid4()))
 
 
 @contextlib.contextmanager
@@ -1396,12 +1396,13 @@ def admin_routed(admin, **fakes):
     from fastapi.testclient import TestClient
 
     import backend.admin.router as admin_router
+    import backend.admin.users.router as users_router
     from backend.auth.dependencies import require_admin
 
     app = FastAPI()
     app.include_router(admin_router.router)
     app.dependency_overrides[require_admin] = lambda: admin
-    with patched(admin_router, **fakes):
+    with patched(users_router, **fakes):
         yield TestClient(app)
 
 
@@ -1422,12 +1423,12 @@ def test_the_reset_route_answers_once_the_service_has_done_its_work():
 
 
 def test_the_reset_route_maps_the_service_answers():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
 
     admin = User(email="admin@example.org", role="admin")
 
     async def own(*_args):
-        raise admin_services.CannotResetOwnTotpError()
+        raise users_services.CannotResetOwnTotpError()
 
     async def missing(*_args):
         return False
@@ -1494,7 +1495,7 @@ def test_the_cli_reset_is_wired_into_comparia_cli():
 
 
 def test_demoting_an_admin_forgets_their_authenticator_and_sessions():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
     from utils.database.models.auth import UserUpsert
 
     class Count:
@@ -1511,10 +1512,10 @@ def test_demoting_an_admin_forgets_their_authenticator_and_sessions():
     session = FakeSession(admin)
     session.exec = lambda _s: _count()
     session.refresh = refresh
-    with fake_session(session, admin_services):
-        with patched(admin_services, _user_public=_public):
+    with fake_session(session, users_services):
+        with patched(users_services, _user_public=_public):
             asyncio.run(
-                admin_services.update_user(
+                users_services.update_user(
                     admin.id, UserUpsert(email=admin.email, role="user")
                 )
             )
@@ -1532,7 +1533,7 @@ def test_deleting_an_admin_closes_every_way_back_in():
     """A soft-deleted account can be revived by an invite or a manual add,
     so nothing from before may still open it: no session, no email code,
     no invite link, no authenticator."""
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
 
     class Count:
         def one(self):
@@ -1544,8 +1545,8 @@ def test_deleting_an_admin_closes_every_way_back_in():
     admin = User(email="admin@example.org", role="admin")
     session = FakeSession(admin)
     session.exec = lambda _s: _count()
-    with fake_session(session, admin_services):
-        assert asyncio.run(admin_services.delete_user(admin.id, uuid.uuid4()))
+    with fake_session(session, users_services):
+        assert asyncio.run(users_services.delete_user(admin.id, uuid.uuid4()))
 
     assert {s.table.name for s in session.statements if s.is_delete} == {
         "auth_totp",
@@ -1560,7 +1561,7 @@ def test_deleting_an_admin_closes_every_way_back_in():
 
 
 def test_cancelling_an_invite_closes_every_way_back_in_too():
-    import backend.admin.services as admin_services
+    import backend.admin.users.services as users_services
     from utils.database.models.auth import InviteToken
 
     admin = User(email="admin@example.org", role="admin")
@@ -1576,8 +1577,8 @@ def test_cancelling_an_invite_closes_every_way_back_in_too():
         pass
 
     session.delete = delete
-    with fake_session(session, admin_services):
-        assert asyncio.run(admin_services.cancel_user_invite(admin.id))
+    with fake_session(session, users_services):
+        assert asyncio.run(users_services.cancel_user_invite(admin.id))
 
     assert [
         u["revoked_at"] is not None

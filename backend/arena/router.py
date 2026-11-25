@@ -10,7 +10,6 @@ from backend.arena.captcha import generate_challenge, solved_max_number
 from backend.arena.checks import (
     PromptCheckResult,
     count_warning_shown,
-    drop_flagged_results,
     issue_warning_token,
     run_prompt_check,
 )
@@ -25,6 +24,7 @@ from backend.arena.services import (
     set_comparison_revealed,
     update_comparison_error,
     update_comparison_llm_id,
+    update_comparison_tool_capability,
     update_turn,
     update_turn_vote,
 )
@@ -51,7 +51,6 @@ from backend.arena.streaming import (
     format_sse_event,
     stream_comparison_messages,
 )
-from backend.arena.web_search import keep_search_results, search_web
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous, RequiredUser
 from backend.auth.services import get_current_terms_acceptance_version
 from backend.config import (
@@ -63,6 +62,7 @@ from backend.config import (
 from backend.errors import UnavailableLLMsSelectionError
 from backend.llms.data import LLMsData, get_llms_data, pick_replacement_model
 from backend.survey.dependencies import require_answered_questions
+from backend.tools.services import keep_offered_tools
 from backend.utils.user import get_ip
 from backend.vote_tags.services import (
     UnknownVoteTagError,
@@ -383,9 +383,10 @@ async def add_first_text(
     # who read the logs are not the audience the user wrote for. What is left is
     # the shape of the request, which is what the logs are read for anyway.
     logger.info(
-        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, web_search={args.web_search})",
+        f"'/add_first_text' called in mode '{args.mode}' ({len(args.prompt_value)} chars, {len(args.tools)} tools)",
         extra={"request": request},
     )
+    enabled_tools = await keep_offered_tools(args.tools)
 
     assert_captcha_paid(args.altcha_token, anonymous_user_hash)
     check = await run_checks(
@@ -441,18 +442,6 @@ async def add_first_text(
         raise
     check = (await save_prompt_check_result(check)) if check else None
 
-    web_search_results = None
-    if args.web_search:
-        web_search_results = await search_web(args.prompt_value)
-        if web_search_results:
-            web_search_results = keep_search_results(
-                args.prompt_value, web_search_results
-            )
-        if web_search_results:
-            web_search_results = await drop_flagged_results(web_search_results)
-        if web_search_results:
-            logger.info("Web search returned context", extra={"request": request})
-
     # Initialize comparison and save it to db
     comparison = await create_comparison(
         ComparisonCreate(
@@ -463,6 +452,7 @@ async def add_first_text(
             cohorts=args.cohorts,
             mode=args.mode,
             custom_models_selection=args.custom_models_selection,
+            enabled_tools=enabled_tools,
             llm_id_a=llm_a_id,
             llm_id_b=llm_b_id,
         )
@@ -492,7 +482,6 @@ async def add_first_text(
         comparison, turn = await add_comparison_turn(
             comparison.id,
             args.prompt_value,
-            web_search_results,
             prompt_check_result=check,
         )
         store_comparison_metadata(comparison.id, is_streaming=True)
@@ -508,6 +497,7 @@ async def add_first_text(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -604,6 +594,7 @@ async def add_text(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 
@@ -700,6 +691,7 @@ async def retry(
 
             if not comparison.error:
                 await update_turn(turn.id, turn.llm_msg_a, turn.llm_msg_b)
+            await update_comparison_tool_capability(comparison)
         finally:
             store_comparison_metadata(comparison.id, is_streaming=False)
 

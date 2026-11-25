@@ -1,3 +1,4 @@
+import { globalContext } from '$lib/testing/mockContexts'
 import { render } from '@testing-library/svelte'
 import { flushSync } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -34,6 +35,7 @@ vi.mock('$lib/chatService.svelte', () => ({
   }),
   getModeInfos: () => [{ value: 'random', icon: 'i-ri-dice-line', title: 'Aléatoire' }]
 }))
+vi.mock('$lib/global.svelte', async (importOriginal) => globalContext(importOriginal))
 
 function visit(path: string) {
   const url = new URL(`http://localhost${path}`)

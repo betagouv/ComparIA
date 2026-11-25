@@ -2,8 +2,7 @@ import uuid
 
 from fastapi import APIRouter, HTTPException, status
 
-from backend.auth.dependencies import RequiredAdmin
-from backend.survey.services import (
+from backend.admin.survey.services import (
     SurveyOptionUnknownError,
     SurveyOrderMismatchError,
     SurveyQuestionInUseError,
@@ -17,6 +16,7 @@ from backend.survey.services import (
     set_archived,
     update_question,
 )
+from backend.auth.dependencies import RequiredAdmin
 from utils.database.models.survey import (
     AdminSurveyQuestion,
     AdminSurveyResponse,

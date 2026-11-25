@@ -22,6 +22,7 @@ from utils.database.models import (
     UserMessageRead,
 )
 from utils.database.models.llms.constants import LLMStatus
+from utils.database.models.messages import published_answer, tool_evidence
 from utils.dataset.voters import VoterType
 
 # Same two datasets a destination subscribes to, kept in one place so the two
@@ -81,6 +82,7 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
+    available_tools: list[str]
     total_tokens_a: int | None
     total_tokens_b: int | None
     total_conso_a: float | None  # None for legacy comparisons with empty llm_id
@@ -188,16 +190,20 @@ class DatasetTurn(SQLModel):
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        msgs = [
-            self.user_msg.model_dump(
-                include={"role", "content", "user_content"},
-                context={"merge_web_search": True},
-            )
-        ]
+        msgs = [self.user_msg.model_dump(include={"role", "content"})]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
-            msgs.append(
-                llm_msg.model_dump(include={"role", "content", "reasoning_content"})
+            response = llm_msg.model_dump(
+                include={"role", "content", "reasoning_content"}
             )
+            response["content"] = published_answer(llm_msg.content, llm_msg.agent_trace)
+            queries, sources = tool_evidence(llm_msg.agent_trace)
+            if queries:
+                response["tool_queries"] = queries
+            if sources:
+                response["tool_sources"] = sources
+            if llm_msg.agent_stop_reason:
+                response["agent_stop_reason"] = llm_msg.agent_stop_reason
+            msgs.append(response)
         return msgs
 
 

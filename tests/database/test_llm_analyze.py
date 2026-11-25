@@ -214,18 +214,66 @@ def test_a_folded_spelling_is_scored_on_the_exclusion_criteria_only(monkeypatch)
     assert updates[0][1].contains_spam
 
 
-def test_the_web_search_results_are_read_as_published():
-    comp = comparison(("Qui contacter ?", "Voici", "Voilà"))
-    comp.turns[0].user_msg.web_search_results = [
-        LinkupSearchTextResult(
-            type="text",
-            name="Annuaire",
-            url="https://example.org",
-            favicon="",
-            content="Jean Dupont, jean.dupont@example.org",
-        )
+def test_what_tools_handed_back_is_read_as_published():
+    from utils.dataset.compute import _llm_response_entry
+
+    comp = comparison(("Qui contacter à la mairie ?", "Voici", "Voilà"))
+    # As stored: the JSONB column decodes to plain dicts.
+    comp.turns[0].llm_msg_a.agent_trace = [
+        {
+            "type": "tool_call",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "arguments_json": '{"q": "mairie de Saint-Lô"}',
+        },
+        {
+            "type": "tool_result",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "status": "success",
+            "duration_ms": 12,
+            "content": "{}",
+            "results": [
+                {
+                    "name": "Accueil",
+                    "url": "https://example.org/accueil",
+                    "content": "Jean Dupont, 06 12 34 56 78",
+                }
+            ],
+        },
     ]
-    assert "jean.dupont@example.org" in llm_analyze.conversation_text(comp)
+
+    text = llm_analyze.conversation_text(comp)
+
+    published = _llm_response_entry(comp.turns[0].llm_msg_a)
+    for query in published["tool_queries"]:
+        assert query["arguments"] in text
+    for source in published["tool_sources"]:
+        assert source["content"] in text
+        assert source["url"] in text
+    assert "06 12 34 56 78" in text
+
+
+def test_text_written_before_a_tool_call_is_published_and_read():
+    from utils.dataset.compute import _llm_response_entry
+
+    comp = comparison(("Qui contacter à la mairie ?", "C'est Jean Dupont.", "Voilà"))
+    # The arena moves text written before a tool call out of `content`; the
+    # visitor still read it, above the tool step.
+    comp.turns[0].llm_msg_a.agent_trace = [
+        {"type": "intermediate_content", "content": "Je cherche l'annuaire. "},
+        {
+            "type": "tool_call",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "arguments_json": "{}",
+        },
+    ]
+
+    published = _llm_response_entry(comp.turns[0].llm_msg_a)
+
+    assert published["content"] == "Je cherche l'annuaire.\n\nC'est Jean Dupont."
+    assert published["content"] in llm_analyze.conversation_text(comp)
 
 
 @pytest.mark.parametrize("value", [-0.2, 1.5, float("nan"), float("inf"), "0.5", True])

@@ -26,6 +26,13 @@
         "selectLanguage": "Seleziona una lingua"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Una volta attivati, gli strumenti selezionati sono proposti ai due modelli confrontati, che restano liberi di usarli o meno.",
+            "count": "{count} strumenti",
+            "label": "Strumenti",
+            "locked": "Gli strumenti sono fissati per tutta la conversazione.",
+            "none": "Nessuno strumento"
+        },
         "compareModels": {
             "count": "{count}/2 modelli",
             "help": "Se ne scegli solo uno, il secondo verrà selezionato casualmente",
@@ -44,15 +51,13 @@
             "generateAnother": "Genera un altro messaggio",
             "title": "Suggerimenti rapidi"
         },
-        "title": "Come posso esserti d'aiuto oggi?",
-        "webSearch": {
-            "disabled": "Ricerca web disabilitata",
-            "enabled": "Ricerca web abilitata",
-            "label": "Ricerca web",
-            "tooltip": "Abilitare la ricerca web permette ai modelli di utilizzare fonti online e citare informazioni più recenti.<br> <strong>> Senza la ricerca web</strong>, i modelli rispondono in base a quanto appreso durante la formazione (i dati di formazione). Non potendo verificare le informazioni online, le informazioni più recenti o specifiche potrebbero risultare incomplete."
-        }
+        "title": "Come posso esserti d'aiuto oggi?"
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Nessun risultato",
+            "running": "Ricerca in corso…"
+        },
         "continuePrompt": "Continua la conversazione…",
         "conversation": "Conversazione",
         "errors": {
@@ -72,10 +77,7 @@
             "finished": "Ragionamento completato",
             "inProgress": "Ragionamento in corso…"
         },
-        "revealButton": "Termina e rivela i modelli",
-        "webSearch": {
-            "label": "Risultati di ricerca web associati."
-        }
+        "revealButton": "Termina e rivela i modelli"
     },
     "closeModal": "Chiudi la finestra popup",
     "components": {

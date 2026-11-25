@@ -26,6 +26,13 @@
         "selectLanguage": "Velg språk"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Når de er slått på, tilbys de valgte verktøyene til begge modellene som sammenlignes, og de står fritt til å bruke dem eller ikke.",
+            "count": "{count} verktøy",
+            "label": "Verktøy",
+            "locked": "Verktøyene er låst for hele samtalen.",
+            "none": "Ingen verktøy"
+        },
         "compareModels": {
             "count": "{count}/2 modeller",
             "help": "Hvis du bare velger én, velges den andre tilfeldig",
@@ -44,15 +51,13 @@
             "generateAnother": "Generer et nytt prompt",
             "title": "Foreslått prompt"
         },
-        "title": "Hva kan jeg hjelpe deg med i dag?",
-        "webSearch": {
-            "disabled": "Nettsøk deaktivert",
-            "enabled": "Nettsøk aktivert",
-            "label": "Nettsøk",
-            "tooltip": "Aktiver nettsøk for å la modellene bruke nettkilder og sitere mer oppdatert informasjon.<br><strong>Uten nettsøk</strong> svarer modellene basert på det de lærte under trening (treningsdataene sine). De kan ikke verifisere informasjon på nettet, så svært nye eller svært spesifikke fakta kan være ufullstendige."
-        }
+        "title": "Hva kan jeg hjelpe deg med i dag?"
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Ingen resultater",
+            "running": "Søker…"
+        },
         "continuePrompt": "Fortsett samtalen med KI-modellene",
         "conversation": "Samtale",
         "errors": {
@@ -72,10 +77,7 @@
             "finished": "Resonnement ferdig",
             "inProgress": "Resonnerer…"
         },
-        "revealButton": "Avslør modellene",
-        "webSearch": {
-            "label": "Tilknyttede nettsøkresultater."
-        }
+        "revealButton": "Avslør modellene"
     },
     "closeModal": "Lukk popup-vinduet",
     "components": {
