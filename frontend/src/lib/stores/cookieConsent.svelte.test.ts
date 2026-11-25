@@ -90,6 +90,20 @@ describe('cookie consent store', () => {
     expect(consent.bannerOpen).toBe(false)
   })
 
+  it('gives focus back to whatever reopened the banner', () => {
+    setCookie(serializeCookieConsent({ measurement: true, preferences: true }, now))
+    const consent = create()
+    const link = document.body.appendChild(document.createElement('button'))
+    link.focus()
+
+    consent.reopen()
+    link.blur()
+    consent.save({ measurement: false, preferences: true })
+
+    expect(link).toHaveFocus()
+    link.remove()
+  })
+
   it('never opens when the switch is off', () => {
     const consent = create(false)
     consent.reopen()

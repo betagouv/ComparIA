@@ -34,6 +34,8 @@ export function createCookieConsent({
   let loaded = $state(false)
   let value = $state(typeof document === 'undefined' ? null : readConsentCookie())
   let reopened = $state(false)
+  // Where focus goes back once a reopened banner closes.
+  let opener: HTMLElement | null = null
   let listeners: CookieConsentListener[] = []
 
   const consent = $derived(parseCookieConsent(value, now()))
@@ -41,6 +43,13 @@ export function createCookieConsent({
     consent ? { measurement: consent.measurement, preferences: consent.preferences } : null
   )
   const decision = $derived(decideCookieConsent(enabled(), value, now()))
+
+  function hide() {
+    if (!reopened) return
+    reopened = false
+    opener?.focus()
+    opener = null
+  }
 
   return {
     get choice() {
@@ -57,16 +66,15 @@ export function createCookieConsent({
       loaded = true
     },
     reopen() {
+      opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
       reopened = true
     },
-    close() {
-      reopened = false
-    },
+    close: hide,
     save(next: CookieChoice) {
       const previous = choice
       value = serializeCookieConsent(next, now())
       writeConsentCookie(value)
-      reopened = false
+      hide()
       for (const listener of listeners) listener(next, previous)
     },
     onChange(listener: CookieConsentListener) {
