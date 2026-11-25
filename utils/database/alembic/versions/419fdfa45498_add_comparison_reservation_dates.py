@@ -1,7 +1,7 @@
 """add comparison reservation dates
 
 Revision ID: 419fdfa45498
-Revises: 916eea14b9ff
+Revises: 5ecd49d77967
 Create Date: 2026-10-26 16:09:40.659855
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = '419fdfa45498'
-down_revision: Union[str, Sequence[str], None] = '916eea14b9ff'
+down_revision: Union[str, Sequence[str], None] = '5ecd49d77967'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
