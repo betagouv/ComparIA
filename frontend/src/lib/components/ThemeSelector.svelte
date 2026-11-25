@@ -4,12 +4,11 @@
   import systemPictoSrc from '@gouvfr/dsfr/dist/artwork/pictograms/system/system.svg?no-inline'
   import { Select } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { isScheme, type Scheme } from '$lib/theme'
   import { onMount } from 'svelte'
 
-  type Theme = 'light' | 'dark' | 'system'
-
   let { variant = 'modal' }: { variant?: 'modal' | 'select' } = $props()
-  let selectedTheme = $state<Theme>('system')
+  let selectedTheme = $state<Scheme>('system')
 
   const options = [
     { value: 'light', label: m['components.theme.options.light'](), imgSrc: lightPictoSrc },
@@ -20,16 +19,16 @@
       subLabel: m['components.theme.options.systemSub'](),
       imgSrc: systemPictoSrc
     }
-  ] satisfies { value: Theme; label: string; subLabel?: string; imgSrc: string }[]
+  ] satisfies { value: Scheme; label: string; subLabel?: string; imgSrc: string }[]
 
   onMount(() => {
     const scheme = document.documentElement.getAttribute('data-fr-scheme')
-    if (scheme === 'light' || scheme === 'dark' || scheme === 'system') selectedTheme = scheme
+    if (isScheme(scheme)) selectedTheme = scheme
   })
 
   function applyTheme(event: Event) {
     const value = (event.currentTarget as HTMLSelectElement).value
-    if (value !== 'light' && value !== 'dark' && value !== 'system') return
+    if (!isScheme(value)) return
 
     selectedTheme = value
     // @ts-expect-error - DSFR is globally available
