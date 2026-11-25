@@ -1340,7 +1340,8 @@
         "refuseAll": "Tout refuser",
         "choose": "Choisir",
         "close": "Fermer",
-        "save": "Enregistrer mes choix"
+        "save": "Enregistrer mes choix",
+        "link": "Cookies"
     },
     "errors": {
         "404": {
