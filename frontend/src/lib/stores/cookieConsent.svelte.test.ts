@@ -40,6 +40,11 @@ describe('cookie consent store', () => {
     expect(consent.decision.keepSettings).toBe(true)
   })
 
+  it('tells whether the switch is on', () => {
+    expect(create(true).enabled).toBe(true)
+    expect(create(false).enabled).toBe(false)
+  })
+
   it('opens the banner when nobody has answered', () => {
     const consent = create()
     expect(consent.bannerOpen).toBe(true)
