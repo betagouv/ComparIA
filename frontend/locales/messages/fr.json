@@ -988,12 +988,14 @@
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
         "tools": {
+            "add": "Ajouter les outils",
             "clear": "Tout désélectionner",
             "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
             "count": "{count} outils",
             "label": "Outils",
             "locked": "Les outils sont fixés pour toute la conversation.",
-            "none": "Aucun outil"
+            "none": "Aucun outil",
+            "viewAll": "Voir tous les outils"
         }
     },
     "arene": {
@@ -1304,7 +1306,12 @@
         "previewEmpty": "L’aperçu apparaîtra ici.",
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
-        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
+        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?",
+        "upload": {
+            "browse": "Parcourir les fichiers",
+            "current": "Image actuelle",
+            "remove": "Supprimer l'image"
+        }
     },
     "general": {
         "document": {
