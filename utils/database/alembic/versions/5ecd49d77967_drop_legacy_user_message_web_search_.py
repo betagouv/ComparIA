@@ -1,8 +1,8 @@
-"""drop legacy user_message & llm_message 'web_search_results'
+"""drop legacy user message web search results
 
-Revision ID: 916eea14b9ff
-Revises: 2929a279d82e
-Create Date: 2026-11-19 12:18:39.095240
+Revision ID: 5ecd49d77967
+Revises: 474ca11099d1
+Create Date: 2026-11-25 13:07:29.752734
 
 """
 
@@ -10,13 +10,12 @@ from dataclasses import dataclass
 from typing import Literal, Sequence, Union
 
 import sqlalchemy as sa
-import sqlmodel
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "916eea14b9ff"
-down_revision: Union[str, Sequence[str], None] = "2929a279d82e"
+revision: str = "5ecd49d77967"
+down_revision: Union[str, Sequence[str], None] = "474ca11099d1"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -89,20 +88,11 @@ def upgrade() -> None:
         )
 
     op.drop_column("user_message", "web_search_results")
-    op.drop_column("llm_message", "web_search_results")
 
 
 def downgrade() -> None:
     op.add_column(
         "user_message",
-        sa.Column(
-            "web_search_results",
-            postgresql.JSONB(astext_type=sa.Text()),
-            nullable=True,
-        ),
-    )
-    op.add_column(
-        "llm_message",
         sa.Column(
             "web_search_results",
             postgresql.JSONB(astext_type=sa.Text()),
