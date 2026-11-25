@@ -6,8 +6,7 @@ Create Date: 2026-11-25 13:07:29.752734
 
 """
 
-from dataclasses import dataclass
-from typing import Literal, Sequence, Union
+from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
@@ -22,71 +21,40 @@ depends_on: Union[str, Sequence[str], None] = None
 
 WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"
 
-
-@dataclass
-class _LinkupSearchTextResult:
-    """A text result from a Linkup search.
-
-    Attributes:
-        type: The type of the search result, in this case "text".
-        name: The name of the search result.
-        url: The URL of the search result.
-        content: The text of the search result.
-        favicon: The favicon URL of the search result, if available.
-    """
-
-    type: Literal["text"]
-    name: str
-    url: str
-    content: str
-    favicon: str
-
-
-def merge_web_search_with_content(content: str, web_search_results: list[dict]) -> str:
-    results = [_LinkupSearchTextResult(**r) for r in web_search_results]
-    return "\n\n".join(
-        [
-            content,
-            WEB_SEARCH_INTRO,
-            "\n\n---\n\n".join(
-                [
-                    f"Source: {result.name} ({result.url})\n{result.content}".strip()
-                    for result in results
-                ]
+# Appends the search results to the message, as the model received them:
+#   content, intro, then "Source: name (url)\ncontent" per result,
+#   joined by "\n\n" and the results by "\n\n---\n\n".
+# Done in the database: reading the rows into the migration process runs it
+# out of memory on production.
+MERGE_WEB_SEARCH_INTO_CONTENT = r"""
+UPDATE user_message AS m
+SET content = m.content || E'\n\n' || :intro || E'\n\n' || s.sources
+FROM (
+    SELECT
+        um.id,
+        string_agg(
+            btrim(
+                'Source: ' || coalesce(r.value ->> 'name', '')
+                || ' (' || coalesce(r.value ->> 'url', '') || ')' || E'\n'
+                || coalesce(r.value ->> 'content', ''),
+                E' \t\n\r\f\v'
             ),
-        ]
-    )
+            E'\n\n---\n\n' ORDER BY r.position
+        ) AS sources
+    FROM user_message AS um
+    CROSS JOIN LATERAL jsonb_array_elements(um.web_search_results)
+        WITH ORDINALITY AS r(value, position)
+    WHERE jsonb_typeof(um.web_search_results) = 'array'
+    GROUP BY um.id
+) AS s
+WHERE m.id = s.id
+"""
 
 
 def upgrade() -> None:
-    conn = op.get_bind()
-
-    messages = sa.table(
-        "user_message",
-        sa.column("id", sa.Uuid()),
-        sa.column("content", sa.Text()),
-        sa.column("web_search_results", postgresql.JSONB),
+    op.get_bind().execute(
+        sa.text(MERGE_WEB_SEARCH_INTO_CONTENT), {"intro": WEB_SEARCH_INTRO}
     )
-
-    rows = conn.execute(
-        sa.select(
-            messages.c.id, messages.c.content, messages.c.web_search_results
-        ).where(messages.c.web_search_results.is_not(None))
-    ).mappings()
-
-    for row in rows:
-        results = row["web_search_results"] or []
-        if not results:
-            continue
-
-        merged_content = merge_web_search_with_content(row["content"], results)
-
-        conn.execute(
-            messages.update()
-            .where(messages.c.id == row["id"])
-            .values(content=merged_content)
-        )
-
     op.drop_column("user_message", "web_search_results")
 
 
