@@ -349,6 +349,45 @@ async def _test_reasoning_only_tool_round_is_retried_for_a_final_answer():
     assert message.agent_stop_reason == "completed"
 
 
+def test_an_empty_answer_with_no_activity_is_not_retried():
+    asyncio.run(_test_an_empty_answer_with_no_activity_is_not_retried())
+
+
+async def _test_an_empty_answer_with_no_activity_is_not_retried():
+    """Only reasoning or tool activity earns the schema-free retry."""
+    calls: list[dict[str, Any]] = []
+
+    async def fake_completion(**kwargs):
+        calls.append(kwargs)
+        return AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="empty",
+                    delta={"role": "assistant", "content": ""},
+                    finish_reason="stop",
+                )
+            ]
+        )
+
+    with (
+        patch.object(integration.litellm, "acompletion", fake_completion),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("unused", lambda _arguments: None)],
+        ):
+            pass
+
+    assert len(calls) == 1
+    assert message.content == ""
+
+
 def test_disabled_search_does_not_expose_tools():
     asyncio.run(_test_disabled_search_does_not_expose_tools())
 
@@ -1543,6 +1582,7 @@ if __name__ == "__main__":
     tests = [
         test_model_can_search_then_stream_final_answer,
         test_reasoning_only_tool_round_is_retried_for_a_final_answer,
+        test_an_empty_answer_with_no_activity_is_not_retried,
         test_disabled_search_does_not_expose_tools,
         test_tools_are_offered_whatever_the_provider,
         test_provider_rejection_answers_and_is_remembered,

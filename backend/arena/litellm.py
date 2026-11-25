@@ -349,11 +349,14 @@ async def litellm_stream_iter(
                 not round_content.strip()
                 and not msg.content.strip()
                 and tools_were_offered
+                # Reasoning or tool activity, this round or an earlier one.
+                and msg.agent_trace
                 and final_answer_retry_count == 0
             ):
                 # Some providers end a tool-assisted round after emitting only
                 # private reasoning. Give them one schema-free request to turn
-                # the gathered evidence into an answer for the visitor.
+                # the gathered evidence into an answer for the visitor. A model
+                # that did nothing at all is not asked twice.
                 final_answer_retry_count += 1
                 tools_available = False
                 continue
