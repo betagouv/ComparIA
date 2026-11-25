@@ -9,13 +9,15 @@
   const { data }: PageProps = $props()
 
   const pages = $derived(
-    (['participation', ...LEGAL_DOCUMENT_KEYS, ...INFORMATIONAL_PAGE_KEYS] as const).map((id) => ({
-      id,
-      title: m[`admin.legal.${id}.title`](),
-      desc: m[`admin.legal.${id}.subtitle`](),
-      href: resolve(`/admin/legal/${id}`),
-      status: data.status[id]
-    }))
+    (['participation', 'cookies', ...LEGAL_DOCUMENT_KEYS, ...INFORMATIONAL_PAGE_KEYS] as const).map(
+      (id) => ({
+        id,
+        title: m[`admin.legal.${id}.title`](),
+        desc: m[`admin.legal.${id}.subtitle`](),
+        href: resolve(`/admin/legal/${id}`),
+        status: data.status[id]
+      })
+    )
   )
   const cols = (['title', 'desc', 'status'] as const).map((id) => ({
     id,
@@ -38,6 +40,9 @@
           {#if page.status.missing_locales}
             <Badge size="sm" text={m['form.missing_locales']()} variant="yellow" />
           {/if}
+        {:else if page.id === 'cookies'}
+          <!-- An instance may leave the banner off on purpose. -->
+          <Badge size="sm" text={m['admin.legal.hub.off']()} />
         {:else}
           <Badge size="sm" text={m['admin.legal.hub.toComplete']()} variant="red" />
         {/if}
