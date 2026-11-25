@@ -47,7 +47,8 @@ FIELDS = {
     },
     "enabled": {
         "description": (
-            "Disabled tools are never offered to a model nor shown to a visitor."
+            "Disabled tools are never offered to a model nor in the visitor "
+            "picker. Their name and logo still label past comparisons."
         )
     },
     "secret": {

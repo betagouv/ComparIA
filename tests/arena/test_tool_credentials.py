@@ -204,11 +204,17 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
         Tool(
             key="datagouv",
             label="Données",
+            description="Jeux de données publics.",
             kind="mcp",
             url="https://x.fr/mcp",
             enabled=True,
         ),
-        Tool(key="half_done", label="Pas fini", kind="mcp"),
+        Tool(
+            key="half_done",
+            label="Pas fini",
+            description="Brouillon de l'admin.",
+            kind="mcp",
+        ),
     ]
 
     async def get_all_tools() -> list[Tool]:
@@ -226,6 +232,9 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
     assert offered[0].key == "web_search" and offered[0].enabled == False
     assert offered[1].key == "datagouv" and offered[1].enabled == True
     assert offered[2].key == "half_done" and offered[2].enabled == False
+    # Kept to name past comparisons, without what only the picker shows.
+    assert offered[1].description == "Jeux de données publics."
+    assert offered[2].label == "Pas fini" and offered[2].description is None
 
 
 def test_a_comparison_keeps_only_tools_on_offer():

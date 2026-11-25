@@ -930,7 +930,7 @@ export interface ToolAdmin {
    */
   blocked_domains?: string[] | null;
   /**
-   * Disabled tools are never offered to a model nor shown to a visitor.
+   * Disabled tools are never offered to a model nor in the visitor picker. Their name and logo still label past comparisons.
    */
   enabled?: boolean;
   has_secret?: boolean;
@@ -973,7 +973,7 @@ export interface ToolUpsert {
    */
   blocked_domains?: string[] | null;
   /**
-   * Disabled tools are never offered to a model nor shown to a visitor.
+   * Disabled tools are never offered to a model nor in the visitor picker. Their name and logo still label past comparisons.
    */
   enabled?: boolean;
   /**

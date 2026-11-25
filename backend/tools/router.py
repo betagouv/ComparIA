@@ -16,17 +16,22 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 @router.get("")
 async def get_tools() -> list[ToolPublic]:
     """
-    All tools even if disabled.
-    We still need the full list to properly display logos/name in comparisons with previously enabled tools.
+    Every tool, on offer or not: a past comparison still names the tools it
+    used once they are switched off. Only tools on offer reach the picker, so
+    the others are served without the description the picker shows.
     """
-    return [
-        ToolPublic(
-            **tool.model_dump(exclude={"enabled"}),
-            enabled=tool.enabled and can_run(tool),
-            logo_url=tool.logo_url,
+    served = []
+    for tool in await get_all_tools():
+        on_offer = tool.enabled and can_run(tool)
+        served.append(
+            ToolPublic(
+                **tool.model_dump(exclude={"enabled", "description"}),
+                description=tool.description if on_offer else None,
+                enabled=on_offer,
+                logo_url=tool.logo_url,
+            )
         )
-        for tool in await get_all_tools()
-    ]
+    return served
 
 
 @router.get("/logo/{tool_id}", response_class=Response)

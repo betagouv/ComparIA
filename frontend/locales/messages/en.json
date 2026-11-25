@@ -1677,7 +1677,7 @@
                 "label": "Description"
             },
             "enabled": {
-                "help": "Disabled tools are never offered to a model nor shown to a visitor.",
+                "help": "Disabled tools are never offered to a model nor in the visitor picker. Their name and logo still label past comparisons.",
                 "label": "Enabled"
             },
             "id": {
