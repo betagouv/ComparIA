@@ -24,6 +24,7 @@ export interface AuthConfig {
   oidc_enabled: boolean;
   oidc_button_label: string | null;
   oidc_has_button_logo: boolean;
+  cookie_banner_enabled: boolean;
 }
 export interface ComparisonPublic {
   id: string;
@@ -442,6 +443,15 @@ export interface PersonalRankingRow {
   losses: number;
   ties: number;
   [k: string]: unknown;
+}
+export interface PublicCookieBanner {
+  title: string;
+  description: string;
+  audience_measurement_label: string;
+  audience_measurement_description: string;
+  remembered_settings_label: string;
+  remembered_settings_description: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
 }
 export interface PublicLegalDocument {
   version: string;

@@ -5,7 +5,7 @@ from backend.settings.informational_legal import (
     InformationalLegalPageContent,
     InformationalLegalPageLinks,
 )
-from backend.settings.router import PublicLegalDocument
+from backend.settings.router import PublicCookieBanner, PublicLegalDocument
 from utils.database.models import ComparisonPublic, ToolPublic
 from utils.database.models.survey import (
     MySurveyAnswer,
