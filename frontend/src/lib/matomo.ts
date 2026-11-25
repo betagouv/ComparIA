@@ -1,4 +1,8 @@
 // Audience measurement, loaded only when the cookie consent decision allows it.
+// The server writes the tracker into the page; the browser starts it on a yes
+// given mid-visit and stops it on a withdrawal.
+
+import type { CookieChoice } from '$lib/cookieConsent'
 
 export type MatomoConfig = { url: string; id: string }
 
@@ -59,5 +63,79 @@ export function fillMatomoPlaceholder(html: string, config: MatomoConfig, load: 
     return MARKUP.replace('%nonce%', () => nonce)
       .replaceAll('%matomo_url%', () => config.url)
       .replaceAll('%matomo_id%', () => config.id)
+  })
+}
+
+type Paq = { push: (command: unknown[]) => void }
+
+declare global {
+  interface Window {
+    _paq?: Paq
+  }
+}
+
+// The browser twin of MARKUP's script, for a yes given after the page loaded.
+function startMatomo({ url, id }: MatomoConfig) {
+  const paq: Paq = (window._paq = window._paq || ([] as unknown[][]))
+  paq.push(['enableLinkTracking'])
+  if (/^\/invite\/[^/]+/.test(location.pathname)) {
+    paq.push(['setCustomUrl', location.origin + '/invite/<redacted>'])
+  }
+  paq.push(['trackPageView'])
+  paq.push(['setTrackerUrl', `${url}/matomo.php`])
+  paq.push(['setSiteId', id])
+  const script = document.createElement('script')
+  script.async = true
+  script.src = `${url}/matomo.js`
+  document.head.appendChild(script)
+  document.getElementById(CONFIG_ID)?.remove()
+}
+
+// Matomo's tracking cookies. mtm_consent_removed is left alone: it is the
+// opt-out the privacy page writes, and deleting it would undo a refusal.
+const TRACKING_COOKIE = /^(_pk_|mtm_consent$|mtm_cookie_consent$)/
+
+function deleteTrackingCookies() {
+  const names = document.cookie
+    .split('; ')
+    .map((cookie) => cookie.split('=')[0])
+    .filter((name) => TRACKING_COOKIE.test(name))
+  const host = location.hostname
+  for (const name of names) {
+    for (const domain of ['', `; domain=${host}`, `; domain=.${host}`]) {
+      document.cookie = `${name}=; Path=/; Max-Age=0${domain}`
+    }
+  }
+}
+
+function stopMatomo() {
+  // requireConsent stops tracking for the rest of the visit without writing a
+  // cookie, unlike optUserOut or forgetConsentGiven.
+  window._paq?.push(['requireConsent'])
+  window._paq?.push(['deleteCookies'])
+  deleteTrackingCookies()
+}
+
+function readConfig(): MatomoConfig | null {
+  const element = document.getElementById(CONFIG_ID)
+  if (!element) return null
+  return { url: element.dataset.url ?? '', id: element.dataset.id ?? '' }
+}
+
+export function followMeasurementConsent(consent: {
+  onChange: (listener: (choice: CookieChoice, previous: CookieChoice | null) => void) => () => void
+}): () => void {
+  return consent.onChange((choice, previous) => {
+    if (!choice.measurement) {
+      stopMatomo()
+    } else if (previous?.measurement !== true) {
+      const config = readConfig()
+      if (config) {
+        startMatomo(config)
+      } else {
+        // Only reached after a withdrawal earlier in this visit.
+        window._paq?.push(['setConsentGiven'])
+      }
+    }
   })
 }

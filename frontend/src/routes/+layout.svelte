@@ -17,6 +17,7 @@
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { provideLegalLinksContext } from '$lib/informational-pages.svelte'
+  import { followMeasurementConsent } from '$lib/matomo'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
   import { provideCookieConsentContext } from '$lib/stores/cookieConsent.svelte'
@@ -49,6 +50,7 @@
 
   onMount(() => {
     cookieConsent.load()
+    const stopFollowingConsent = followMeasurementConsent(cookieConsent)
 
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
@@ -56,6 +58,8 @@
       params.delete('locale')
       goto(resolve(`${page.url.pathname}?${params}${page.url.hash}`))
     }
+
+    return stopFollowingConsent
   })
 
   // svelte-ignore state_referenced_locally
