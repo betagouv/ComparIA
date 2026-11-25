@@ -2,8 +2,8 @@
 // The server writes the tracker into the page; the browser starts it on a yes
 // given mid-visit and stops it on a withdrawal.
 
-import type { CookieChoice } from '$lib/cookieConsent'
 import { secureAttribute } from '$lib/cookies'
+import type { CookieConsentListener } from '$lib/stores/cookieConsent.svelte'
 
 export type MatomoConfig = { url: string; id: string }
 
@@ -124,7 +124,7 @@ function readConfig(): MatomoConfig | null {
 }
 
 export function followMeasurementConsent(consent: {
-  onChange: (listener: (choice: CookieChoice, previous: CookieChoice | null) => void) => () => void
+  onChange: (listener: CookieConsentListener) => () => void
 }): () => void {
   return consent.onChange((choice, previous) => {
     if (!choice.measurement) {
