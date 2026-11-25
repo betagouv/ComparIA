@@ -362,12 +362,13 @@ ALTCHA_UNVOTED_COMPARISONS = 5
 ALTCHA_HARD_MAX_NUMBER = ALTCHA_MAX_NUMBER * 10
 
 
-# Wall-clock seconds a model may spend in tools across one response. This is the
-# real limit: the counters below are runaway guards, set high enough that hitting
-# one is a defect rather than ordinary behaviour.
+# Wall-clock seconds a model may spend in tools across one response, counted
+# while its tools run, not while it writes. This is the real limit: the
+# counters below are runaway guards, set high enough that hitting one is a
+# defect rather than ordinary behaviour.
 TOOL_TIME_BUDGET_SECONDS = 60.0
 # Calls in one round run concurrently, so this bounds work rather than waiting;
-# rounds are sequential and the deadline above is what the visitor actually feels.
+# rounds are sequential and the budget above is what the visitor actually feels.
 MAX_TOOL_CALLS = 15
 MAX_TOOL_ROUNDS = 6
 # Times one exact (tool, arguments) pair may run in a single response. A model

@@ -1302,6 +1302,70 @@ async def _test_time_budget_stops_tool_use_and_is_recorded():
     assert message.agent_stop_reason == "deadline"
 
 
+def test_time_the_model_takes_to_write_is_not_spent_from_the_tool_budget():
+    asyncio.run(_test_time_the_model_takes_to_write_is_not_spent_from_the_tool_budget())
+
+
+async def _test_time_the_model_takes_to_write_is_not_spent_from_the_tool_budget():
+    """A slow model with fast tools keeps its tools for its next round."""
+    calls: list[dict[str, Any]] = []
+
+    async def fast(_arguments: str) -> ToolResult:
+        return ToolResult(content="{}", status="success")
+
+    def tool_round(response_id: str, call_id: str):
+        return AsyncChunkStream(
+            [
+                _chunk(response_id=response_id, delta={"role": "assistant"}),
+                _chunk(
+                    response_id=response_id,
+                    delta=_tool_call_delta((call_id, "fast", "{}")),
+                    finish_reason="tool_calls",
+                ),
+            ]
+        )
+
+    responses = [
+        tool_round("round-1", "call-1"),
+        tool_round("round-2", "call-2"),
+        AsyncChunkStream(
+            [
+                _chunk(
+                    response_id="final",
+                    delta={"role": "assistant", "content": "Answer."},
+                    finish_reason="stop",
+                )
+            ]
+        ),
+    ]
+
+    async def slow_completion(**kwargs):
+        calls.append(kwargs)
+        # Longer than the whole tool budget, on every request.
+        await asyncio.sleep(0.05)
+        return responses.pop(0)
+
+    with (
+        patch.object(integration.litellm, "acompletion", slow_completion),
+        patch.object(services, "get_redis_client", lambda: FakeRedis()),
+        patch.object(integration, "TOOL_TIME_BUDGET_SECONDS", 0.02),
+    ):
+        message = LLMMessageCreate()
+        async for _ in integration.litellm_stream_iter(
+            llm=_llm(),
+            messages=[UserMessage(content="Hello")],
+            msg=message,
+            temperature=0.7,
+            max_new_tokens=100,
+            tools=[_spy_tool("fast", fast)],
+        ):
+            pass
+
+    assert "tools" in calls[1]
+    assert message.content == "Answer."
+    assert message.agent_stop_reason == "completed"
+
+
 def test_finishing_normally_records_completion():
     asyncio.run(_test_finishing_normally_records_completion())
 
@@ -1497,6 +1561,7 @@ if __name__ == "__main__":
         test_search_results_are_json_native_at_persistence_boundary,
         test_calls_in_one_round_run_concurrently,
         test_time_budget_stops_tool_use_and_is_recorded,
+        test_time_the_model_takes_to_write_is_not_spent_from_the_tool_budget,
         test_finishing_normally_records_completion,
         test_context_overflow_sheds_tool_rounds_and_still_answers,
         test_a_round_over_the_cap_still_runs_what_it_can,

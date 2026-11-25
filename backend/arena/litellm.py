@@ -214,16 +214,17 @@ async def litellm_stream_iter(
     # Set the first time we refuse to offer tools again, so that "the model was
     # done" and "we stopped it" stay distinguishable.
     stopped_by: AgentStopReason | None = None
-    deadline = monotonic() + TOOL_TIME_BUDGET_SECONDS
+    # Spent only while tools run: the time the model takes to write is not
+    # the tools' to pay for.
+    tool_seconds_left = TOOL_TIME_BUDGET_SECONDS
 
     while True:
-        seconds_left = deadline - monotonic()
         if tools_available and stopped_by is None:
             if tool_call_count >= MAX_TOOL_CALLS:
                 stopped_by = "call_limit"
             elif tool_round_count >= MAX_TOOL_ROUNDS:
                 stopped_by = "round_limit"
-            elif seconds_left <= 0:
+            elif tool_seconds_left <= 0:
                 stopped_by = "deadline"
 
         call_kwargs = {
@@ -405,7 +406,6 @@ async def litellm_stream_iter(
         # model asked for while the external calls are in flight.
         yield msg
 
-        seconds_left = deadline - monotonic()
         # Refuse only the calls past the cap, never the whole round: a model
         # asking for one more than it may have still gets the rest of its work
         # done, instead of a batch of errors and nothing to answer from.
@@ -439,7 +439,7 @@ async def litellm_stream_iter(
                         tools_by_name.get(tool_name),
                         tool_name,
                         arguments_json,
-                        seconds_left,
+                        tool_seconds_left,
                     )
                 )
         if repeat_refusals:
@@ -449,7 +449,9 @@ async def litellm_stream_iter(
             stopped_by = "repeat_limit"
         # Calls emitted together run together: running them in turn would spend
         # the whole budget on work that overlaps.
+        round_started_at = monotonic()
         outcomes = await asyncio.gather(*pending)
+        tool_seconds_left -= monotonic() - round_started_at
 
         for (tool_call_id, tool_name, _), (result, duration_ms) in zip(
             requested, outcomes
