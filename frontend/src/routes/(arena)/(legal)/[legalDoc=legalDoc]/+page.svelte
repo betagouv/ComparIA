@@ -1,13 +1,16 @@
 <script lang="ts">
   import LegalDocument from '$components/LegalDocument.svelte'
   import MatomoOptOut from '$components/MatomoOptOut.svelte'
+  import { Button } from '$components/dsfr'
   import { SeoHead } from '$components/layout'
   import type { LegalDocumentKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
+  import { getCookieConsentContext } from '$lib/stores/cookieConsent.svelte'
   import type { PageProps } from './$types'
 
   const { data, params }: PageProps = $props()
   const legalDocKey = $derived(params.legalDoc as LegalDocumentKeys)
+  const cookieConsent = getCookieConsentContext()
 </script>
 
 <SeoHead title={m[`seo.titles.${legalDocKey}`]()} />
@@ -27,8 +30,16 @@
       <p class="fr-alert fr-alert--error" role="alert">{m['general.document.unavailable']()}</p>
     {/if}
 
-    <!-- The published policy is sanitized Markdown and cannot carry the script. -->
-    {#if legalDocKey === 'privacy_policy' && data.matomoUrl}
+    {#if legalDocKey === 'privacy_policy' && cookieConsent.enabled}
+      <!-- The opt-out iframe would load Matomo before the visitor says yes. -->
+      <h2 id="cookie-choice-title">{m['general.privacy_policy.cookiesTitle']()}</h2>
+      <Button
+        variant="secondary"
+        text={m['cookieBanner.manage']()}
+        onclick={() => cookieConsent.reopen()}
+      />
+    {:else if legalDocKey === 'privacy_policy' && data.matomoUrl}
+      <!-- The published policy is sanitized Markdown and cannot carry the script. -->
       <h2 id="matomo-opt-out-title">{m['general.privacy_policy.optOutTitle']()}</h2>
       <MatomoOptOut url={data.matomoUrl} />
     {/if}

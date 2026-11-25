@@ -1341,7 +1341,8 @@
         "choose": "Choose",
         "close": "Close",
         "save": "Save my choices",
-        "link": "Cookies"
+        "link": "Cookies",
+        "manage": "Manage cookies"
     },
     "errors": {
         "404": {
@@ -1394,6 +1395,7 @@
         },
         "privacy_policy": {
             "optOutTitle": "Opting out of audience measurement",
+            "cookiesTitle": "Your cookie choices",
             "title": "Privacy policy"
         },
         "terms": {

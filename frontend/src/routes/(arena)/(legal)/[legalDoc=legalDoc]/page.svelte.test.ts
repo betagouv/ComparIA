@@ -1,7 +1,12 @@
-import { render } from '@testing-library/svelte'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render } from '@testing-library/svelte'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PageData, PageProps } from './$types'
 import Page from './+page.svelte'
+
+const cookieConsent = vi.hoisted(() => ({ enabled: false, reopen: vi.fn() }))
+vi.mock('$lib/stores/cookieConsent.svelte', () => ({
+  getCookieConsentContext: () => cookieConsent
+}))
 
 const policy = {
   version: '1',
@@ -12,11 +17,15 @@ const policy = {
   effective_at: '2026-07-01T00:00:00Z'
 }
 
-function optOuts(data: { privacyPolicy: typeof policy | null; matomoUrl: string | null }) {
-  const { container } = render(Page, {
+function renderPolicy(data: { privacyPolicy: typeof policy | null; matomoUrl: string | null }) {
+  return render(Page, {
     data: data as unknown as PageData,
     params: { legalDoc: 'privacy_policy' }
   } as PageProps)
+}
+
+function optOuts(data: { privacyPolicy: typeof policy | null; matomoUrl: string | null }) {
+  const { container } = renderPolicy(data)
   return {
     divs: container.querySelectorAll('#matomo-opt-out'),
     scripts: [...container.querySelectorAll('script')].map((script) => script.src)
@@ -53,5 +62,33 @@ describe('privacy page', () => {
       expect(divs).toHaveLength(0)
       expect(scripts).toHaveLength(0)
     }
+  })
+})
+
+describe('privacy page with the cookie banner on', () => {
+  afterEach(() => {
+    cookieConsent.enabled = false
+    cookieConsent.reopen.mockClear()
+  })
+
+  it('reopens the banner instead of loading the Matomo opt-out', async () => {
+    cookieConsent.enabled = true
+    const { container, getByRole } = renderPolicy({
+      privacyPolicy: policy,
+      matomoUrl: 'https://stats.example.org'
+    })
+
+    expect(container.querySelectorAll('#matomo-opt-out')).toHaveLength(0)
+    expect(container.querySelectorAll('script')).toHaveLength(0)
+
+    await fireEvent.click(getByRole('button', { name: 'Gérer les cookies' }))
+    expect(cookieConsent.reopen).toHaveBeenCalledOnce()
+  })
+
+  it('offers the cookie choice even without Matomo', () => {
+    cookieConsent.enabled = true
+    const { getByRole } = renderPolicy({ privacyPolicy: policy, matomoUrl: null })
+
+    expect(getByRole('button', { name: 'Gérer les cookies' })).toBeTruthy()
   })
 })

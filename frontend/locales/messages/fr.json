@@ -1341,7 +1341,8 @@
         "choose": "Choisir",
         "close": "Fermer",
         "save": "Enregistrer mes choix",
-        "link": "Cookies"
+        "link": "Cookies",
+        "manage": "Gérer les cookies"
     },
     "errors": {
         "404": {
@@ -1394,6 +1395,7 @@
         },
         "privacy_policy": {
             "optOutTitle": "Vous opposer à la mesure d’audience",
+            "cookiesTitle": "Vos choix de cookies",
             "title": "Politique de confidentialité"
         },
         "terms": {
