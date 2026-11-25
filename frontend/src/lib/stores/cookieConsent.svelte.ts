@@ -25,7 +25,8 @@ export function createCookieConsent({
   enabled,
   now = () => undefined
 }: {
-  enabled: () => boolean
+  // null when the server could not read the switch.
+  enabled: () => boolean | null
   now?: () => Date | undefined
 }) {
   // The answer is known as soon as the browser creates the store, so nothing
@@ -53,7 +54,7 @@ export function createCookieConsent({
 
   return {
     get enabled() {
-      return enabled()
+      return enabled() === true
     },
     get choice() {
       return choice
@@ -62,7 +63,7 @@ export function createCookieConsent({
       return decision
     },
     get bannerOpen() {
-      return loaded && enabled() && (decision.showBanner || reopened)
+      return loaded && enabled() === true && (decision.showBanner || reopened)
     },
     load() {
       value = readConsentCookie()

@@ -15,7 +15,7 @@ function readCookie() {
     ?.split('=')[1]
 }
 
-function create(enabled = true) {
+function create(enabled: boolean | null = true) {
   const consent = createCookieConsent({ enabled: () => enabled, now: () => now })
   consent.load()
   return consent
@@ -43,6 +43,13 @@ describe('cookie consent store', () => {
   it('tells whether the switch is on', () => {
     expect(create(true).enabled).toBe(true)
     expect(create(false).enabled).toBe(false)
+  })
+
+  it('stays closed and offers no reopening while the switch is unknown', () => {
+    const consent = create(null)
+    expect(consent.enabled).toBe(false)
+    expect(consent.bannerOpen).toBe(false)
+    expect(consent.decision.loadMeasurement).toBe(false)
   })
 
   it('opens the banner when nobody has answered', () => {
