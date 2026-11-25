@@ -22,6 +22,7 @@ from utils.database.models import (
     UserMessageRead,
 )
 from utils.database.models.llms.constants import LLMStatus
+from utils.database.models.messages import published_answer, tool_evidence
 from utils.dataset.voters import VoterType
 
 # Same two datasets a destination subscribes to, kept in one place so the two
@@ -194,22 +195,12 @@ class DatasetTurn(SQLModel):
             response = llm_msg.model_dump(
                 include={"role", "content", "reasoning_content"}
             )
-            if llm_msg.agent_trace:
-                queries = [
-                    {"name": event["name"], "arguments": event["arguments_json"]}
-                    for event in llm_msg.agent_trace
-                    if event.get("type") == "tool_call"
-                ]
-                sources = [
-                    source
-                    for event in llm_msg.agent_trace
-                    if event.get("type") == "tool_result"
-                    for source in event.get("results") or []
-                ]
-                if queries:
-                    response["tool_queries"] = queries
-                if sources:
-                    response["tool_sources"] = sources
+            response["content"] = published_answer(llm_msg.content, llm_msg.agent_trace)
+            queries, sources = tool_evidence(llm_msg.agent_trace)
+            if queries:
+                response["tool_queries"] = queries
+            if sources:
+                response["tool_sources"] = sources
             if llm_msg.agent_stop_reason:
                 response["agent_stop_reason"] = llm_msg.agent_stop_reason
             msgs.append(response)

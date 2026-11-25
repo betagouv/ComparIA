@@ -35,7 +35,11 @@ from utils.database.models import (
     SurveyQuestion,
 )
 from utils.database.models.llms import LLMData
-from utils.database.models.messages import LLMMessage, tool_evidence
+from utils.database.models.messages import (
+    LLMMessage,
+    published_answer,
+    tool_evidence,
+)
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms
@@ -338,7 +342,7 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
     response: dict[str, Any] = {
-        "content": msg.content,
+        "content": published_answer(msg.content, msg.agent_trace),
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }

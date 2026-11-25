@@ -42,7 +42,11 @@ from utils.database.models.comparison import (
     ComparisonLLMAnalysisUpdate,
 )
 from utils.database.models.dataset_check import DatasetCheck, DatasetCheckCriterion
-from utils.database.models.messages import UserMessageRead, tool_evidence
+from utils.database.models.messages import (
+    UserMessageRead,
+    published_answer,
+    tool_evidence,
+)
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
 from utils.dataset.runs import PUBLISHABLE
@@ -254,8 +258,8 @@ def conversation_text(comparison: Comparison) -> str:
                 )
             if message.reasoning_content:
                 parts.append(f"[model {side}, reasoning]: {message.reasoning_content}")
-            if message.content:
-                parts.append(f"[model {side}]: {message.content}")
+            if answer := published_answer(message.content, message.agent_trace):
+                parts.append(f"[model {side}]: {answer}")
     return "\n\n".join(parts)
 
 

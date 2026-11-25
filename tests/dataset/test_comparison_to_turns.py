@@ -162,6 +162,13 @@ AGENT_TRACE = [
 ]
 
 
+# The arena moves text written before a tool call out of `content`.
+TRACE_WITH_TEXT_BEFORE_CALL = [
+    {"type": "intermediate_content", "content": "Let me check."},
+    *AGENT_TRACE[1:],
+]
+
+
 def llm_msg(
     content="answer",
     tokens=120,
@@ -427,6 +434,20 @@ def equivalent_cases():
         archived=False,
     )
 
+    yield "text written before a tool call", comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a1", 100, agent_trace=TRACE_WITH_TEXT_BEFORE_CALL),
+                llm_msg("b1", 90),
+            )
+        ],
+        enabled_tools=["web_search"],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
     yield "no tool offered -> available_tools empty", comparison(
         [turn(user_msg(), llm_msg("a", 10), llm_msg("b", 10))],
         cohorts="c",
@@ -659,7 +680,27 @@ def tool_export_value_cases():
         assert "tool_queries" not in row["response_a"][1]
         assert "agent_stop_reason" not in row["response_a"][1]
 
+    text_before_call = comparison(
+        [
+            turn(
+                user_msg("q"),
+                llm_msg("a1", 100, agent_trace=TRACE_WITH_TEXT_BEFORE_CALL),
+                llm_msg("b1", 90),
+            )
+        ],
+        enabled_tools=["web_search"],
+        cohorts="c",
+        llm_analyzed=True,
+        archived=False,
+    )
+
+    def check_text_before_call(row):
+        # What the visitor read: the text above the tool step, then the answer.
+        assert row["response_a"][1]["content"] == "Let me check.\n\na1"
+        assert row["response_b"][1]["content"] == "b1"
+
     yield "tools offered and used on side a only", with_tools, check_with_tools
+    yield "text before a tool call", text_before_call, check_text_before_call
     yield "no tool offered", no_tools, check_no_tools
 
 

@@ -70,19 +70,26 @@ AgentTraceEvent = (
 )
 
 
+AgentTraceInput = list[dict[str, Any]] | list[AgentTraceEvent] | None
+
+
+def _trace_events(agent_trace: AgentTraceInput) -> list[dict[str, Any]]:
+    """The trace as stored (plain dicts) or as models, read as dicts."""
+    return [
+        event if isinstance(event, dict) else event.model_dump()
+        for event in agent_trace or []
+    ]
+
+
 def tool_evidence(
-    agent_trace: list[dict[str, Any]] | list[AgentTraceEvent] | None,
+    agent_trace: AgentTraceInput,
 ) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
     """What a model searched for and what its tools handed back, as published.
 
     The dataset export and the check that screens it before publication both
     read this, so nothing reaches the dataset that the check did not read.
-    Takes the trace as stored (plain dicts) or as models.
     """
-    events = [
-        event if isinstance(event, dict) else event.model_dump()
-        for event in agent_trace or []
-    ]
+    events = _trace_events(agent_trace)
     queries = [
         {"name": event["name"], "arguments": event["arguments_json"]}
         for event in events
@@ -95,6 +102,23 @@ def tool_evidence(
         for source in event.get("results") or []
     ]
     return queries, sources
+
+
+def published_answer(content: str | None, agent_trace: AgentTraceInput) -> str | None:
+    """The answer as the visitor read it, as published.
+
+    Text a model writes before calling a tool leaves `content` for the trace,
+    where the interface shows it between the tool steps. The dataset and the
+    check that screens it put it back, in order, ahead of the final answer.
+    """
+    parts = [
+        event["content"]
+        for event in _trace_events(agent_trace)
+        if event.get("type") == "intermediate_content"
+    ]
+    if not parts:
+        return content
+    return "\n\n".join(part.strip() for part in [*parts, content or ""] if part.strip())
 
 
 # Why the model stopped using tools. "completed" means it decided it was done;

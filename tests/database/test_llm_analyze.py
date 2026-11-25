@@ -254,6 +254,28 @@ def test_what_tools_handed_back_is_read_as_published():
     assert "06 12 34 56 78" in text
 
 
+def test_text_written_before_a_tool_call_is_published_and_read():
+    from utils.dataset.compute import _llm_response_entry
+
+    comp = comparison(("Qui contacter à la mairie ?", "C'est Jean Dupont.", "Voilà"))
+    # The arena moves text written before a tool call out of `content`; the
+    # visitor still read it, above the tool step.
+    comp.turns[0].llm_msg_a.agent_trace = [
+        {"type": "intermediate_content", "content": "Je cherche l'annuaire. "},
+        {
+            "type": "tool_call",
+            "tool_call_id": "1",
+            "name": "annuaire",
+            "arguments_json": "{}",
+        },
+    ]
+
+    published = _llm_response_entry(comp.turns[0].llm_msg_a)
+
+    assert published["content"] == "Je cherche l'annuaire.\n\nC'est Jean Dupont."
+    assert published["content"] in llm_analyze.conversation_text(comp)
+
+
 @pytest.mark.parametrize("value", [-0.2, 1.5, float("nan"), float("inf"), "0.5", True])
 def test_an_answer_that_is_not_a_probability_fails_the_comparison(monkeypatch, value):
     decider = Decider(lambda key, text: value if key == "pii" else 0.0)
