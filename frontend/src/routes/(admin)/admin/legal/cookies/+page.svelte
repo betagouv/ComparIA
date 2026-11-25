@@ -79,7 +79,7 @@
 
   function isValid(locale: Locale) {
     const banner = form.form[locale]
-    return !!banner && Object.values(banner).filter(Boolean).length === 6
+    return !!banner && Object.values(banner).filter(Boolean).length === fields.length
   }
 
   const fields = [
