@@ -1,9 +1,14 @@
+import { readFileSync } from 'node:fs'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { request, countRequest, privateEnv } = vi.hoisted(() => ({
   request: vi.fn(),
   countRequest: vi.fn(),
-  privateEnv: { AUTH_ACCESS_POLICY: 'sign_in_required' } as Record<string, string>
+  privateEnv: {
+    AUTH_ACCESS_POLICY: 'sign_in_required',
+    MATOMO_ID: '42',
+    MATOMO_URL: 'https://stats.test'
+  } as Record<string, string>
 }))
 
 vi.mock('$env/dynamic/private', () => ({ env: privateEnv }))
@@ -17,7 +22,7 @@ vi.mock('$lib/metrics', () => ({
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle, cookieBannerHandle, handleFetch, metricsHandle } =
+const { authWallHandle, cookieBannerHandle, handleFetch, matomoHandle, metricsHandle } =
   await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
@@ -215,5 +220,75 @@ describe('request metrics', () => {
   it('puts every unmatched path under one label', async () => {
     expect(await count('/x/random-1', null)).toMatchObject({ route: 'unmatched' })
     expect(await count('/invite/abc123/x', null)).toMatchObject({ route: 'unmatched' })
+  })
+})
+
+describe('audience measurement', () => {
+  // What SvelteKit hands to transformPageChunk: the template with its own
+  // placeholders already filled in.
+  const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8').replaceAll(
+    '%sveltekit.nonce%',
+    'n0nce'
+  )
+
+  async function render(switchOn: boolean, consent?: string) {
+    const event = {
+      locals: { cookieBannerEnabled: switchOn },
+      cookies: { get: (name: string) => (name === 'comparia_cookie_consent' ? consent : undefined) }
+    }
+    let html = ''
+    await matomoHandle({
+      event,
+      resolve: async (
+        _event: unknown,
+        opts?: { transformPageChunk?: (input: { html: string; done: boolean }) => string }
+      ) => {
+        html = opts?.transformPageChunk?.({ html: template, done: true }) ?? template
+        return new Response(html)
+      }
+    } as never)
+    return html
+  }
+
+  const now = Math.floor(Date.now() / 1000)
+
+  it('loads Matomo for everyone when the banner is off', async () => {
+    const html = await render(false)
+
+    expect(html).toContain('<script nonce="n0nce">\n      var _paq')
+    expect(html).toContain("_paq.push(['trackPageView'])")
+    expect(html).toContain("var u = 'https://stats.test/'")
+    expect(html).toContain("_paq.push(['setSiteId', '42'])")
+    expect(html).toContain('src="https://stats.test/matomo.php?idsite=42&amp;rec=1"')
+    expect(html).toContain("location.origin + '/invite/<redacted>'")
+  })
+
+  it('leaves Matomo out until the visitor answers', async () => {
+    const html = await render(true)
+
+    expect(html).not.toContain('_paq')
+    expect(html).not.toContain('matomo.php')
+  })
+
+  it('loads Matomo once the visitor accepts audience measurement', async () => {
+    const html = await render(true, `1.1.0.${now}`)
+
+    expect(html).toContain("_paq.push(['trackPageView'])")
+    expect(html).toContain('matomo.php?idsite=42')
+  })
+
+  it('leaves Matomo out when the visitor refused audience measurement', async () => {
+    const html = await render(true, `1.0.1.${now}`)
+
+    expect(html).not.toContain('_paq')
+    expect(html).not.toContain('matomo.php')
+  })
+
+  it('tells the browser where Matomo lives, without contacting it, until a yes', async () => {
+    const html = await render(true)
+
+    expect(html).toContain(
+      '<template id="matomo-config" data-url="https://stats.test" data-id="42"></template>'
+    )
   })
 })

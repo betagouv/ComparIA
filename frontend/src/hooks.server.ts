@@ -1,9 +1,11 @@
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
 import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
+import { COOKIE_CONSENT_NAME, decideCookieConsent } from '$lib/cookieConsent'
 import { cookieMaxAge, defineCustomServerStrategy } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
+import { fillMatomoPlaceholder } from '$lib/matomo'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
@@ -179,6 +181,20 @@ export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
   return resolve(event)
 }
 
+// Audience measurement reaches the page only when the visitor's consent, or a
+// switched-off banner, allows it. A cold start with the backend down reads the
+// switch as off, so Matomo loads then, as it did before the banner existed.
+export const matomoHandle: Handle = ({ event, resolve }) => {
+  const { loadMeasurement } = decideCookieConsent(
+    event.locals.cookieBannerEnabled,
+    event.cookies.get(COOKIE_CONSENT_NAME)
+  )
+  return resolve(event, {
+    transformPageChunk: ({ html }) =>
+      fillMatomoPlaceholder(html, { url: MATOMO_URL, id: MATOMO_ID }, loadMeasurement)
+  })
+}
+
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
@@ -198,8 +214,6 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
           .replaceAll('%lang%', locale)
           .replace('%scheme%', event.cookies.get('scheme') || 'system')
           .replace('%theme%', event.cookies.get('theme') || 'system')
-          .replaceAll('%matomo_id%', MATOMO_ID)
-          .replaceAll('%matomo_url%', MATOMO_URL)
       }
     })
   })
@@ -319,5 +333,6 @@ export const handle = sequence(
   authWallHandle,
   metricsHandle,
   cookieBannerHandle,
+  matomoHandle,
   paraglideHandle
 )

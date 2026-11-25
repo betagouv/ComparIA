@@ -1,0 +1,63 @@
+// Audience measurement, loaded only when the cookie consent decision allows it.
+
+export type MatomoConfig = { url: string; id: string }
+
+// app.html carries `<!-- matomo %sveltekit.nonce% -->`, filled in by the server.
+const PLACEHOLDER = /<!-- matomo (\S*) -->/
+
+// The same markup app.html held before the consent banner existed.
+const MARKUP = `<!-- Matomo -->
+    <script nonce="%nonce%">
+      var _paq = (window._paq = window._paq || [])
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['enableLinkTracking'])
+      /* No HeatmapSessionRecording: it captured mouse movement and DOM changes
+         for the whole visit, and nobody watched the recordings. */
+      /* An invite link is a sign-in credential; keep the token off the
+         analytics host. */
+      if (/^\\/invite\\/[^/]+/.test(location.pathname)) {
+        _paq.push(['setCustomUrl', location.origin + '/invite/<redacted>'])
+      }
+      _paq.push(['trackPageView'])
+      ;(function () {
+        var u = '%matomo_url%/'
+        _paq.push(['setTrackerUrl', u + 'matomo.php'])
+        _paq.push(['setSiteId', '%matomo_id%'])
+        var d = document,
+          g = d.createElement('script'),
+          s = d.getElementsByTagName('script')[0]
+        g.async = true
+        g.src = u + 'matomo.js'
+        s.parentNode.insertBefore(g, s)
+      })()
+    </script>
+    <noscript
+      ><p>
+        <img
+          referrerpolicy="no-referrer-when-downgrade"
+          src="%matomo_url%/matomo.php?idsite=%matomo_id%&amp;rec=1"
+          style="border: 0"
+          alt=""
+        /></p
+    ></noscript>
+    <!-- End Matomo Code -->`
+
+const CONFIG_ID = 'matomo-config'
+
+function escapeAttribute(value: string): string {
+  return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
+}
+
+// Without consent the page still says where Matomo lives, in an inert element,
+// so the browser can start it if the visitor says yes later. An instance with
+// no Matomo gets neither.
+export function fillMatomoPlaceholder(html: string, config: MatomoConfig, load: boolean): string {
+  return html.replace(PLACEHOLDER, (_match, nonce: string) => {
+    if (!config.url || !config.id) return ''
+    if (!load)
+      return `<template id="${CONFIG_ID}" data-url="${escapeAttribute(config.url)}" data-id="${escapeAttribute(config.id)}"></template>`
+    return MARKUP.replace('%nonce%', () => nonce)
+      .replaceAll('%matomo_url%', () => config.url)
+      .replaceAll('%matomo_id%', () => config.id)
+  })
+}
