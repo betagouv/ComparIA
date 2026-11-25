@@ -35,7 +35,7 @@
 
   onMount(() => {
     // Someone who reopened the banner is sent into it. On a first visit it
-    // waits first in the tab order instead of pulling focus off the page.
+    // waits right after the skip links instead of pulling focus off the page.
     if (choice && !preview) titleEl?.focus()
   })
 

@@ -4,6 +4,7 @@ import type {
   AuthConfig,
   InformationalLegalPageLinks,
   LLMList,
+  PublicCookieBanner,
   PublicSurveyResponse
 } from '$lib/generated/backend'
 import type { VotesData } from '$lib/global.svelte'
@@ -11,9 +12,25 @@ import { getLocale } from '$lib/i18n/runtime'
 import { emptySurvey } from '$lib/survey.svelte'
 import type { LayoutLoad } from './$types'
 
-export const load: LayoutLoad = async ({ fetch, depends }) => {
+export const load: LayoutLoad = async ({ data: serverData, fetch, depends }) => {
   depends('survey:signup')
   const locale = getLocale()
+
+  // The switch the server rendered with, not a fresh read: the browser must
+  // ask exactly when the server held Matomo back.
+  const { cookieBannerEnabled } = serverData
+  // Without its text the banner stays hidden, which only puts off the question.
+  const cookieBannerRequest = cookieBannerEnabled
+    ? api
+        .request<PublicCookieBanner>('/settings/legal/cookies', {
+          fetch,
+          searchParams: { locale }
+        })
+        .catch((error: Error) => {
+          console.error(`Unable to load the cookie banner: ${error.message}`)
+          return null
+        })
+    : Promise.resolve(null)
 
   const [votes, data, authConfig, auth, informationalPagesLinks, survey] = await Promise.all([
     api.request<VotesData>('/counter', { fetch }),
@@ -35,12 +52,15 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
         return emptySurvey
       })
   ])
+  const cookieBanner = await cookieBannerRequest
 
   return {
     data,
     votes,
     auth: { user: auth.user, config: authConfig },
     informationalPagesLinks,
-    survey
+    survey,
+    cookieBannerEnabled,
+    cookieBanner
   }
 }
