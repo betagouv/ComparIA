@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { request, countRequest, privateEnv } = vi.hoisted(() => ({
   request: vi.fn(),
@@ -17,7 +17,8 @@ vi.mock('$lib/metrics', () => ({
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle, handleFetch, metricsHandle } = await import('./hooks.server')
+const { authWallHandle, cookieBannerHandle, handleFetch, metricsHandle } =
+  await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
@@ -149,6 +150,47 @@ describe('server-side API requests', () => {
     } as never)
 
     expect(await response.text()).toBe('')
+  })
+})
+
+describe('cookie banner switch', () => {
+  async function bannerEnabled() {
+    const event = { locals: {} as App.Locals }
+    await cookieBannerHandle({ event, resolve } as never)
+    return event.locals.cookieBannerEnabled
+  }
+
+  beforeEach(() => {
+    request.mockReset()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('reads the switch from the instance config, once per cache window', async () => {
+    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'))
+    request.mockResolvedValue({ cookie_banner_enabled: false })
+    expect(await bannerEnabled()).toBe(false)
+
+    request.mockResolvedValue({ cookie_banner_enabled: true })
+    expect(await bannerEnabled()).toBe(false)
+    expect(request).toHaveBeenCalledTimes(1)
+
+    vi.setSystemTime(new Date('2026-01-01T00:01:00Z'))
+    expect(await bannerEnabled()).toBe(true)
+    expect(request).toHaveBeenCalledWith('/auth/config')
+  })
+
+  it('keeps the last known switch when the backend is down', async () => {
+    vi.setSystemTime(new Date('2026-01-01T00:02:00Z'))
+    request.mockResolvedValue({ cookie_banner_enabled: true })
+    expect(await bannerEnabled()).toBe(true)
+
+    vi.setSystemTime(new Date('2026-01-01T00:03:00Z'))
+    request.mockRejectedValue(new Error('backend down'))
+    expect(await bannerEnabled()).toBe(true)
   })
 })
 

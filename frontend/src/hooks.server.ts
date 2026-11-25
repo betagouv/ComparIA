@@ -90,39 +90,48 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
   return response
 }
 
-const LOCALE_SETTINGS_TTL_MS = 20_000
+const INSTANCE_CONFIG_TTL_MS = 20_000
 
-type LocaleSettings = { enabled_locales: string[]; default_locale: string }
+type InstanceConfig = {
+  enabled_locales: string[]
+  default_locale: string
+  cookie_banner_enabled: boolean
+}
 
 // Cached per Node process (same rationale as maintenanceCache below). The
 // in-flight promise is cached rather than its result, so a cold process fires
 // one request instead of one per concurrent render.
-let localeSettingsCache: { promise: Promise<LocaleSettings>; checkedAt: number } | null = null
-let lastLocaleSettings: LocaleSettings = { enabled_locales: [], default_locale: '' }
+let instanceConfigCache: { promise: Promise<InstanceConfig>; checkedAt: number } | null = null
+let lastInstanceConfig: InstanceConfig = {
+  enabled_locales: [],
+  default_locale: '',
+  cookie_banner_enabled: false
+}
 
-function getLocaleSettings(): Promise<LocaleSettings> {
+function getInstanceConfig(): Promise<InstanceConfig> {
   const now = Date.now()
-  if (!localeSettingsCache || now - localeSettingsCache.checkedAt >= LOCALE_SETTINGS_TTL_MS) {
-    localeSettingsCache = {
+  if (!instanceConfigCache || now - instanceConfigCache.checkedAt >= INSTANCE_CONFIG_TTL_MS) {
+    instanceConfigCache = {
       checkedAt: now,
       promise: api
-        .request<Partial<LocaleSettings>>('/auth/config')
+        .request<Partial<InstanceConfig>>('/auth/config')
         .then((config) => {
-          lastLocaleSettings = {
+          lastInstanceConfig = {
             enabled_locales: config.enabled_locales ?? [],
-            default_locale: config.default_locale ?? ''
+            default_locale: config.default_locale ?? '',
+            cookie_banner_enabled: config.cookie_banner_enabled ?? false
           }
-          return lastLocaleSettings
+          return lastInstanceConfig
         })
         .catch((error) => {
           // Fail open: keep serving the last known settings, and let Paraglide's
           // own strategies decide if we never managed to read any.
-          logger.error('Locale settings fetch failed', { error: `${error}` })
-          return lastLocaleSettings
+          logger.error('Instance config fetch failed', { error: `${error}` })
+          return lastInstanceConfig
         })
     }
   }
-  return localeSettingsCache.promise
+  return instanceConfigCache.promise
 }
 
 defineCustomServerStrategy('custom-url', {
@@ -136,7 +145,7 @@ defineCustomServerStrategy('custom-url', {
   // we want when the backend is unreachable and we have nothing to enforce.
   getLocale: async (request) => {
     if (!request) return
-    const { enabled_locales, default_locale } = await getLocaleSettings()
+    const { enabled_locales, default_locale } = await getInstanceConfig()
     if (!enabled_locales.length) return
 
     const cookieLocale = request.headers
@@ -163,6 +172,11 @@ export const handleError: HandleServerError = async ({ error, event }) => {
     redirect(302, `/login?redirect=${encodeURIComponent(path)}`)
   }
   console.error(error)
+}
+
+export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
+  event.locals.cookieBannerEnabled = (await getInstanceConfig()).cookie_banner_enabled
+  return resolve(event)
 }
 
 // creating a handle to use the paraglide middleware
@@ -304,5 +318,6 @@ export const handle = sequence(
   maintenanceHandle,
   authWallHandle,
   metricsHandle,
+  cookieBannerHandle,
   paraglideHandle
 )
