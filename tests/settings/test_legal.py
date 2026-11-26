@@ -295,6 +295,22 @@ def test_presentation_uses_defaults_when_not_configured():
     assert result == legal.FALLBACK_PRESENTATIONS.root["fr"]
 
 
+def test_default_presentation_names_outside_providers_and_published_data():
+    expected = {
+        "fr": (
+            "fournisseurs extérieurs",
+            "hors de l’Union européenne",
+            "jeux de données publiés",
+        ),
+        "en": ("outside providers", "outside the European Union", "published openly"),
+        "da": ("eksterne udbydere", "uden for EU", "offentliggøres frit"),
+    }
+    for locale, phrases in expected.items():
+        introduction = legal.FALLBACK_PRESENTATIONS.root[locale].arena.introduction
+        for phrase in phrases:
+            assert phrase in introduction, (locale, phrase)
+
+
 def test_default_presentation_follows_the_visitor_locale():
     with mock_settings(default_locale="da"):
         english = asyncio.run(legal.get_legal_presentation("en"))

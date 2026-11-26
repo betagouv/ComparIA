@@ -75,8 +75,11 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Avant de commencer",
                     "introduction": (
-                        "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
-                        "aucune donnée sensible ou permettant d’identifier une personne."
+                        "Vos messages sont transmis aux modèles d’IA comparés, hébergés par "
+                        "des fournisseurs extérieurs, dont certains hors de l’Union "
+                        "européenne. Ne saisissez aucune donnée sensible ou permettant "
+                        "d’identifier une personne. Les conversations et les votes alimentent "
+                        "des jeux de données publiés en accès libre."
                     ),
                     "checkbox_label": (
                         "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
@@ -97,8 +100,10 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Before you start",
                     "introduction": (
-                        "Your messages are sent to the AI models being compared. Do not "
-                        "enter sensitive data or anything that identifies a person."
+                        "Your messages are sent to the AI models being compared, which "
+                        "outside providers run, some of them outside the European Union. Do "
+                        "not enter sensitive data or anything that identifies a person. "
+                        "Conversations and votes feed datasets that are published openly."
                     ),
                     "checkbox_label": (
                         "I have read and accept the terms of use. I understand that taking "
@@ -117,9 +122,10 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Før du starter",
                     "introduction": (
-                        "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
-                        "ikke følsomme oplysninger eller noget, der kan identificere en "
-                        "person."
+                        "Dine beskeder sendes til de AI-modeller, der sammenlignes, og som "
+                        "drives af eksterne udbydere, nogle af dem uden for EU. Skriv ikke "
+                        "følsomme oplysninger eller noget, der kan identificere en person. "
+                        "Samtaler og stemmer indgår i datasæt, der offentliggøres frit."
                     ),
                     "checkbox_label": (
                         "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
