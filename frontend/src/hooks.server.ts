@@ -7,6 +7,7 @@ import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
 import { fillMatomoPlaceholder, measurementInUse, type MeasurementSetting } from '$lib/matomo'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
+import { serverMatomo } from '$lib/server/matomo'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
@@ -193,10 +194,7 @@ export const handleError: HandleServerError = async ({ error, event }) => {
 export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
   const config = await getInstanceConfig()
   event.locals.cookieBannerEnabled = config.cookie_banner_enabled
-  event.locals.measurement = measurementInUse(config.measurement, {
-    MATOMO_URL: env.MATOMO_URL,
-    MATOMO_ID: env.MATOMO_ID
-  })
+  event.locals.measurement = measurementInUse(config.measurement, serverMatomo())
   event.locals.cookieConsent = decideCookieConsent(
     { switchOn: event.locals.cookieBannerEnabled, measured: event.locals.measurement !== null },
     event.cookies.get(COOKIE_CONSENT_NAME)
