@@ -265,6 +265,7 @@
                 "switchedOff": "Cookie banner turned off",
                 "switchedOn": "Cookie banner turned on",
                 "switchHelp": "Visitors are asked before audience measurement runs.",
+                "switchNothingToAsk": "No audience measurement, so there is nothing to ask.",
                 "switchLabel": "Show the cookie banner",
                 "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
                 "title": "Cookies and audience measurement"

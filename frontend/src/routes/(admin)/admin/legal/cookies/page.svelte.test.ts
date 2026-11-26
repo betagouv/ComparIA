@@ -208,6 +208,52 @@ describe('cookie banner administration', () => {
     await waitFor(() => expect(toggle).toBeChecked())
   })
 
+  it.each([
+    ['off', false, serverMatomo],
+    ['left to a server with no Matomo', null, noServerMatomo]
+  ])('greys out the banner switch when measurement is %s', (_case, matomoEnabled, server) => {
+    const { getByRole } = renderPage(true, matomoEnabled, ownMatomo, server)
+    const toggle = getByRole('checkbox', { name: /Afficher le bandeau cookies/ })
+
+    expect(toggle).toBeDisabled()
+    expect(toggle).toBeChecked()
+    expect(toggle).toHaveAccessibleDescription(
+      'Aucune mesure d’audience, donc aucune question à poser.'
+    )
+  })
+
+  it.each([
+    ['on', true, noServerMatomo],
+    ['left to a server with Matomo', null, serverMatomo]
+  ])('lets the banner switch move when measurement is %s', (_case, matomoEnabled, server) => {
+    const { getByRole } = renderPage(false, matomoEnabled, ownMatomo, server)
+
+    expect(getByRole('checkbox', { name: /Afficher le bandeau cookies/ })).toBeEnabled()
+  })
+
+  it('greys out the banner switch once measurement is saved off', async () => {
+    const { getByRole } = renderPage()
+    const toggle = getByRole('checkbox', { name: /Afficher le bandeau cookies/ })
+
+    await fireEvent.click(getByRole('radio', { name: 'Désactivée' }))
+
+    await waitFor(() => expect(toggle).toBeDisabled())
+  })
+
+  it('keeps the banner switch as saved until On is saved', async () => {
+    const { getByRole, getByLabelText } = renderPage(false, false, ownMatomo, noServerMatomo)
+    const toggle = getByRole('checkbox', { name: /Afficher le bandeau cookies/ })
+
+    await fireEvent.click(getByRole('radio', { name: 'Activée, avec mon Matomo' }))
+    expect(toggle).toBeDisabled()
+
+    mocks.request.mockResolvedValueOnce({ matomo_enabled: true, ...ownMatomo })
+    await fireEvent.input(getByLabelText(/Identifiant du site/), { target: { value: '12' } })
+    await fireEvent.click(getByRole('button', { name: 'Activer la mesure d’audience' }))
+
+    await waitFor(() => expect(toggle).toBeEnabled())
+  })
+
   it('previews the banner with its text and its two buttons', async () => {
     const { getByLabelText, getByTestId } = renderPage()
 

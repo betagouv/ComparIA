@@ -13,7 +13,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { Locale } from '$lib/i18n/runtime'
-  import { measurementInUse, type Measurement } from '$lib/matomo'
+  import { measurementInUse, type Measurement, type MeasurementSetting } from '$lib/matomo'
   import { useForm } from '$lib/stores/form.svelte'
   import { getKeys } from '$lib/utils/commons'
   import { CookieBannerPreview } from './components'
@@ -54,11 +54,12 @@
   type MeasurementChoice = 'server' | 'on' | 'off'
   const toChoice = (setting: boolean | null): MeasurementChoice =>
     setting === null ? 'server' : setting ? 'on' : 'off'
-  // Undefined until saved here: a saved null must win over the loaded value.
-  let savedMeasurement = $state<boolean | null>()
-  const measurementSetting = $derived(
-    savedMeasurement === undefined ? data.settings.matomo_enabled : savedMeasurement
-  )
+  // Undefined until saved here. The switch and its notes follow the saved
+  // setting, what visitors get, not a choice or typing not yet saved.
+  let savedMatomo = $state<MeasurementSetting>()
+  const matomoSetting = $derived(savedMatomo ?? data.settings)
+  const measurementSetting = $derived(matomoSetting.matomo_enabled)
+  const measurement = $derived(measurementInUse(matomoSetting, data.serverMatomo))
   let measurementChoice = $derived<MeasurementChoice>(toChoice(measurementSetting))
   // Off keeps the stored address and id, so On again shows them. Seeded once,
   // so that saving the banner text leaves unsaved typing alone.
@@ -97,7 +98,11 @@
         method: 'PATCH',
         body: JSON.stringify(body)
       })
-      savedMeasurement = settings.matomo_enabled
+      savedMatomo = {
+        matomo_enabled: settings.matomo_enabled,
+        matomo_url: settings.matomo_url,
+        matomo_site_id: settings.matomo_site_id
+      }
       // As stored: a trailing slash is dropped.
       matomoUrl = settings.matomo_url ?? ''
       matomoSiteId = settings.matomo_site_id ?? ''
@@ -229,7 +234,10 @@
   <Toggle
     id="cookie_banner_enabled"
     label={m['admin.legal.cookies.switchLabel']()}
-    help={m['admin.legal.cookies.switchHelp']()}
+    help={measurement
+      ? m['admin.legal.cookies.switchHelp']()
+      : m['admin.legal.cookies.switchNothingToAsk']()}
+    disabled={!measurement}
     labelPos="right"
     groupClass="mb-8!"
     bind:value={() => enabled, (value) => setEnabled(value)}
