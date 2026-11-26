@@ -229,7 +229,7 @@
   label={m['chatbot.activity.reasoning']()}
   labelClass="font-bold"
   expanded={true}
-  class="px-3! py-4! mb-3 text-xs rounded-md bg-[#FBFBFB]"
+  class="px-3! py-4! mb-3 text-xs rounded-md bg-[--background-alt-grey]"
 >
   {#snippet content()}
     <ol class="ms-4! b-s-1 border-[--grey-925-125]">
@@ -239,7 +239,7 @@
           <Expandable
             id={itemId}
             class="text-black"
-            labelClass="bg-[#FBFBFB]"
+            labelClass="bg-[--background-alt-grey]"
             contentClass="text-grey ps-5"
           >
             {#snippet label()}
