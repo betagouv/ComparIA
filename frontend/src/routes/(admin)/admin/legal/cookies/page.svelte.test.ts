@@ -68,6 +68,16 @@ describe('cookie banner administration', () => {
     expect(getByRole('heading', { level: 1 })).toHaveTextContent('Cookies et mesure d’audience')
   })
 
+  // The page has no padding of its own, and the radio group's negative margin
+  // scrolled it sideways on a phone.
+  it('keeps the measurement and banner settings off the page edge', () => {
+    const { getByRole } = renderPage(false, true, ownMatomo)
+    const padded = (element: HTMLElement) => element.closest('.px-4')
+
+    expect(padded(getByRole('group', { name: /Mesure d’audience/ }))).not.toBeNull()
+    expect(padded(getByRole('checkbox', { name: /Afficher le bandeau cookies/ }))).not.toBeNull()
+  })
+
   it.each([
     ['the server setting', null, /^Réglage du serveur/],
     ['on', true, 'Activée, avec mon Matomo'],

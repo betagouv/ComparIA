@@ -191,66 +191,69 @@
   backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
   noPadding
 >
-  <FormRadioGroup
-    id="matomo_enabled"
-    label={m['admin.legal.cookies.measurementLabel']()}
-    options={[
-      {
-        value: 'server',
-        label: m['admin.legal.cookies.measurementServer'](),
-        help: serverMeans
-      },
-      { value: 'on', label: m['admin.legal.cookies.measurementOn']() },
-      { value: 'off', label: m['admin.legal.cookies.measurementOff']() }
-    ]}
-    bind:value={
-      () => measurementChoice, (value) => value && setMeasurement(value as MeasurementChoice)
-    }
-  />
-
-  {#if measurementChoice === 'on'}
-    <form onsubmit={switchOn} class="mb-8! max-w-[720px]">
-      <Input
-        id="matomo_url"
-        type="url"
-        label={m['admin.legal.cookies.matomoUrlLabel']()}
-        help={m['admin.legal.cookies.matomoUrlHint']()}
-        placeholder="https://stats.example.org"
-        bind:value={matomoUrl}
-        error={matomoErrors.matomo_url}
-      />
-      <Input
-        id="matomo_site_id"
-        inputmode="numeric"
-        label={m['admin.legal.cookies.matomoSiteIdLabel']()}
-        help={m['admin.legal.cookies.matomoSiteIdHint']()}
-        bind:value={matomoSiteId}
-        error={matomoErrors.matomo_site_id}
-      />
-      <Button type="submit" text={m['admin.legal.cookies.measurementSwitchOn']()} />
-    </form>
-  {/if}
-
-  <Toggle
-    id="cookie_banner_enabled"
-    label={m['admin.legal.cookies.switchLabel']()}
-    help={measurement
-      ? m['admin.legal.cookies.switchHelp']()
-      : m['admin.legal.cookies.switchNothingToAsk']()}
-    disabled={!measurement}
-    labelPos="right"
-    groupClass="mb-8!"
-    bind:value={() => enabled, (value) => setEnabled(value)}
-  />
-
-  {#if measurement && !enabled}
-    <Alert
-      small
-      variant="warning"
-      title={m['admin.legal.cookies.switchExemption']()}
-      class="mb-8! max-w-[720px]"
+  <!-- The page has no padding of its own: the form below pads itself. -->
+  <div class="px-4 md:px-6">
+    <FormRadioGroup
+      id="matomo_enabled"
+      label={m['admin.legal.cookies.measurementLabel']()}
+      options={[
+        {
+          value: 'server',
+          label: m['admin.legal.cookies.measurementServer'](),
+          help: serverMeans
+        },
+        { value: 'on', label: m['admin.legal.cookies.measurementOn']() },
+        { value: 'off', label: m['admin.legal.cookies.measurementOff']() }
+      ]}
+      bind:value={
+        () => measurementChoice, (value) => value && setMeasurement(value as MeasurementChoice)
+      }
     />
-  {/if}
+
+    {#if measurementChoice === 'on'}
+      <form onsubmit={switchOn} class="mb-8! max-w-[720px]">
+        <Input
+          id="matomo_url"
+          type="url"
+          label={m['admin.legal.cookies.matomoUrlLabel']()}
+          help={m['admin.legal.cookies.matomoUrlHint']()}
+          placeholder="https://stats.example.org"
+          bind:value={matomoUrl}
+          error={matomoErrors.matomo_url}
+        />
+        <Input
+          id="matomo_site_id"
+          inputmode="numeric"
+          label={m['admin.legal.cookies.matomoSiteIdLabel']()}
+          help={m['admin.legal.cookies.matomoSiteIdHint']()}
+          bind:value={matomoSiteId}
+          error={matomoErrors.matomo_site_id}
+        />
+        <Button type="submit" text={m['admin.legal.cookies.measurementSwitchOn']()} />
+      </form>
+    {/if}
+
+    <Toggle
+      id="cookie_banner_enabled"
+      label={m['admin.legal.cookies.switchLabel']()}
+      help={measurement
+        ? m['admin.legal.cookies.switchHelp']()
+        : m['admin.legal.cookies.switchNothingToAsk']()}
+      disabled={!measurement}
+      labelPos="right"
+      groupClass="mb-8!"
+      bind:value={() => enabled, (value) => setEnabled(value)}
+    />
+
+    {#if measurement && !enabled}
+      <Alert
+        small
+        variant="warning"
+        title={m['admin.legal.cookies.switchExemption']()}
+        class="mb-8! max-w-[720px]"
+      />
+    {/if}
+  </div>
 
   <Form id="cookies" label={m['admin.legal.cookies.formTitle']()} {...form} stickyFooter>
     <FormTranslate id="cookies-form" bind:value={form.form} {isValid}>
