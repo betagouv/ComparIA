@@ -5,7 +5,11 @@ import type { PageData, PageProps } from './$types'
 import { load as loadRootLayout } from '../../../+layout.server'
 import Page from './+page.svelte'
 
-const cookieConsent = vi.hoisted(() => ({ asking: false, reopen: vi.fn() }))
+const cookieConsent = vi.hoisted(() => ({
+  asking: false,
+  decision: { showBanner: false, loadMeasurement: true },
+  reopen: vi.fn()
+}))
 vi.mock('$lib/stores/cookieConsent.svelte', () => ({
   getCookieConsentContext: () => cookieConsent
 }))
@@ -83,6 +87,18 @@ describe('privacy page', () => {
     expect(scripts).toEqual([
       'https://own-stats.example.org/matomo/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=fr&showIntro=1'
     ])
+  })
+
+  it('leaves the opt-out out while the tracker is held back', () => {
+    cookieConsent.decision = { showBanner: false, loadMeasurement: false }
+    try {
+      const { divs, scripts } = optOuts({ privacyPolicy: policy, measurement: stats })
+
+      expect(divs).toHaveLength(0)
+      expect(scripts).toHaveLength(0)
+    } finally {
+      cookieConsent.decision = { showBanner: false, loadMeasurement: true }
+    }
   })
 
   it('leaves the opt-out out when nothing is measured', () => {
