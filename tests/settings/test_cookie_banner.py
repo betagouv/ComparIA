@@ -46,10 +46,6 @@ def banner_payload(**overrides):
     payload = {
         "title": "Cookies",
         "description": "Nous utilisons des cookies.",
-        "audience_measurement_label": "Mesure d’audience",
-        "audience_measurement_description": "Compter les visites.",
-        "remembered_settings_label": "Réglages mémorisés",
-        "remembered_settings_description": "Garder la langue et le thème.",
     }
     payload.update(overrides)
     return payload
@@ -101,14 +97,14 @@ def test_banner_text_falls_back_to_the_default_when_nothing_is_stored():
     assert response.status_code == 200
     body = response.json()
     assert set(body) == {"fr", "en", "da"}
-    assert body["en"]["title"] == "Cookies on this site"
+    assert body["en"]["title"] == "Audience measurement"
 
 
 def test_banner_text_falls_back_when_what_is_stored_no_longer_validates():
     with admin_client(cookie_banner={"fr": {"title": "Cookies"}}) as (client, _):
         body = client.get(BANNER_URL).json()
 
-    assert body["fr"]["title"] == "Cookies sur ce site"
+    assert body["fr"]["title"] == "Mesure d’audience"
 
 
 def test_admin_replaces_the_whole_text_and_reads_it_back():

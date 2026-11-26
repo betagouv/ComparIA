@@ -167,19 +167,8 @@ async def get_legal_presentation(
 class CookieBanner(BaseModel, extra="forbid"):
     title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=2_000)
-    audience_measurement_label: str = Field(min_length=1, max_length=200)
-    audience_measurement_description: str = Field(min_length=1, max_length=2_000)
-    remembered_settings_label: str = Field(min_length=1, max_length=200)
-    remembered_settings_description: str = Field(min_length=1, max_length=2_000)
 
-    @field_validator(
-        "title",
-        "description",
-        "audience_measurement_label",
-        "audience_measurement_description",
-        "remembered_settings_label",
-        "remembered_settings_description",
-    )
+    @field_validator("title", "description")
     @classmethod
     def normalize_copy(cls, value: str) -> str:
         value = value.strip()
@@ -190,61 +179,34 @@ class CookieBanner(BaseModel, extra="forbid"):
 
 CookieBannerTranslatable = Translatable[CookieBanner]
 
-# What visitors read until an admin writes their own banner text.
+# What visitors read until an admin writes their own banner text. The banner
+# asks about audience measurement only: language, theme and arena choices are
+# settings people pick themselves, which need no consent.
 FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
     CookieBannerTranslatable.model_validate(
         {
             "fr": {
-                "title": "Cookies sur ce site",
+                "title": "Mesure d’audience",
                 "description": (
-                    "Nous utilisons des cookies seulement si vous l’acceptez. "
-                    "Refuser ne vous empêche pas d’utiliser le site."
-                ),
-                "audience_measurement_label": "Mesure d’audience",
-                "audience_measurement_description": (
-                    "Compter les visites et les pages vues, sans vous identifier, "
-                    "pour savoir comment le site est utilisé et l’améliorer."
-                ),
-                "remembered_settings_label": "Réglages mémorisés",
-                "remembered_settings_description": (
-                    "Garder votre langue, votre thème et vos choix dans l’arène "
-                    "d’une visite à l’autre. Sinon, ils sont effacés à la "
-                    "fermeture de l’onglet."
+                    "Nous aimerions compter les visites et les pages vues, sans "
+                    "vous identifier, pour améliorer le site. Cela dépose un "
+                    "cookie. Refuser ne vous empêche pas d’utiliser le site."
                 ),
             },
             "en": {
-                "title": "Cookies on this site",
+                "title": "Audience measurement",
                 "description": (
-                    "We only use cookies if you agree. Refusing does not stop you "
-                    "using the site."
-                ),
-                "audience_measurement_label": "Audience measurement",
-                "audience_measurement_description": (
-                    "Count visits and page views, without identifying you, to "
-                    "learn how the site is used and improve it."
-                ),
-                "remembered_settings_label": "Remembered settings",
-                "remembered_settings_description": (
-                    "Keep your language, theme and arena choices from one visit "
-                    "to the next. Otherwise they are cleared when you close the "
-                    "tab."
+                    "We would like to count visits and page views, without "
+                    "identifying you, to improve the site. This sets a cookie. "
+                    "Refusing does not stop you using the site."
                 ),
             },
             "da": {
-                "title": "Cookies på dette websted",
+                "title": "Besøgsstatistik",
                 "description": (
-                    "Vi bruger kun cookies, hvis du siger ja. Du kan bruge "
-                    "webstedet, selv om du siger nej."
-                ),
-                "audience_measurement_label": "Besøgsstatistik",
-                "audience_measurement_description": (
-                    "Tælle besøg og sidevisninger, uden at identificere dig, for "
-                    "at se, hvordan webstedet bruges, og forbedre det."
-                ),
-                "remembered_settings_label": "Gemte indstillinger",
-                "remembered_settings_description": (
-                    "Huske dit sprog, dit tema og dine valg i arenaen fra besøg "
-                    "til besøg. Ellers slettes de, når du lukker fanen."
+                    "Vi vil gerne tælle besøg og sidevisninger, uden at "
+                    "identificere dig, for at forbedre webstedet. Det sætter en "
+                    "cookie. Du kan bruge webstedet, selv om du siger nej."
                 ),
             },
         }
