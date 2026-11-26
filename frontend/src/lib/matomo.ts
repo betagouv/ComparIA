@@ -6,6 +6,15 @@ import { secureAttribute } from '$lib/cookies'
 import type { CookieConsentListener } from '$lib/stores/cookieConsent.svelte'
 
 export type MatomoConfig = { url: string; id: string }
+// The Matomo a request measures with, or null when nothing is measured.
+export type Measurement = MatomoConfig | null
+
+// For now the server's environment alone decides, and both values are needed.
+export function measurementInUse(env: { MATOMO_URL?: string; MATOMO_ID?: string }): Measurement {
+  const url = env.MATOMO_URL || ''
+  const id = env.MATOMO_ID || ''
+  return url && id ? { url, id } : null
+}
 
 // app.html carries `<!-- matomo %sveltekit.nonce% -->`, filled in by the server.
 const PLACEHOLDER = /<!-- matomo (\S*) -->/

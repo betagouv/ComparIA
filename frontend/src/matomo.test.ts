@@ -1,4 +1,4 @@
-import { fillMatomoPlaceholder } from '$lib/matomo'
+import { fillMatomoPlaceholder, measurementInUse } from '$lib/matomo'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
@@ -25,5 +25,22 @@ describe('Matomo tracker', () => {
       expect(page).not.toContain('matomo-config')
       expect(page).not.toContain('<!-- matomo')
     }
+  })
+})
+
+describe('measurement in use', () => {
+  it('follows the Matomo address and site id the server was given', () => {
+    expect(measurementInUse({ MATOMO_URL: 'https://stats.test', MATOMO_ID: '1' })).toEqual({
+      url: 'https://stats.test',
+      id: '1'
+    })
+  })
+
+  it.each([
+    ['no address', { MATOMO_ID: '1' }],
+    ['no site id', { MATOMO_URL: 'https://stats.test', MATOMO_ID: '' }],
+    ['neither', {}]
+  ])('is none when the server has %s', (_case, env) => {
+    expect(measurementInUse(env)).toBeNull()
   })
 })
