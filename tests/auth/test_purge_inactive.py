@@ -23,12 +23,12 @@ os.environ.setdefault("LOG_FORMAT", "JSON")
 
 import pytest  # noqa: E402
 
-import backend.admin.services as admin_services  # noqa: E402
+import backend.admin.users.services as users_services  # noqa: E402
 import backend.auth.email as email  # noqa: E402
 import backend.auth.inactivity as inactivity  # noqa: E402
 import backend.auth.services as auth_services  # noqa: E402
 import utils.database.models  # noqa: E402,F401
-from backend.admin.services import create_user  # noqa: E402
+from backend.admin.users.services import create_user  # noqa: E402
 from backend.auth.email import (  # noqa: E402
     _build_inactivity_message,
     send_inactivity_warning,
@@ -349,7 +349,7 @@ def test_reviving_a_deleted_account_restarts_its_inactivity_clock(path):
         with patched(auth_services, get_session=get_session):
             asyncio.run(create_invite(deleted.email, invited_by=uuid.uuid4()))
     else:
-        with patched(admin_services, get_session=get_session):
+        with patched(users_services, get_session=get_session):
             asyncio.run(create_user(UserUpsert(email=deleted.email, role="user")))
 
     assert deleted.deleted_at is None
@@ -505,21 +505,20 @@ def _parts(message):
 
 def test_warning_message_is_written_in_the_instance_language():
     message = _build_inactivity_message(
-        datetime(2025, 9, 1), datetime(2026, 10, 1), platform_name="Arène & Co"
+        datetime(2025, 9, 1), datetime(2026, 10, 1), platform_name="Arena & Co"
     )
     parts = _parts(message)
 
     assert (
         message["Subject"]
-        == "Votre compte Arène & Co sera supprimé le 1er octobre 2026"
+        == "Your Arena & Co account will be deleted on 1 October 2026"
     )
-    assert "depuis le 1er septembre 2025" in parts["text/plain"]
-    assert "pour le conserver :" in parts["text/plain"]
-    assert "pour le conserver&nbsp;:" in parts["text/html"]
-    assert "Arène &amp; Co" in parts["text/html"]
-    assert '<html lang="fr">' in parts["text/html"]
-    assert "Message automatique envoyé par Arène &amp; Co." in parts["text/html"]
-    assert "deleted on" not in parts["text/plain"]
+    assert "since 1 September 2025" in parts["text/plain"]
+    assert "to keep it:" in parts["text/plain"]
+    assert "Arena &amp; Co" in parts["text/html"]
+    assert '<html lang="en">' in parts["text/html"]
+    assert "Automatic message sent by Arena &amp; Co." in parts["text/html"]
+    assert "supprimé le" not in parts["text/plain"]
 
     danish = _parts(
         _build_inactivity_message(
@@ -530,23 +529,27 @@ def test_warning_message_is_written_in_the_instance_language():
     assert "slettet den 1. oktober 2026" in danish["text/plain"]
 
 
-def test_warning_message_follows_the_locale_and_falls_back_to_french():
-    english = _build_inactivity_message(
-        datetime(2025, 9, 1), datetime(2026, 10, 1), locale="en-GB"
+def test_warning_message_follows_the_locale_and_falls_back_to_default():
+    french = _build_inactivity_message(
+        datetime(2025, 9, 1), datetime(2026, 10, 1), locale="fr"
     )
     unknown = _build_inactivity_message(
         datetime(2025, 9, 1), datetime(2026, 10, 1), locale="lt"
     )
-    parts = _parts(english)
+    parts_fr = _parts(french)
+    parts_un = _parts(unknown)
 
+    assert "depuis le 1er septembre 2025" in parts_fr["text/plain"]
+    assert "rien à faire" in parts_fr["text/plain"]
+    assert '<html lang="fr">' in parts_fr["text/html"]
     assert (
-        english["Subject"] == "Your Compar:IA account will be deleted on 1 October 2026"
+        french["Subject"] == "Votre compte Compar:IA sera supprimé le 1er octobre 2026"
     )
-    assert "since 1 September 2025" in parts["text/plain"]
-    assert "nothing to do" in parts["text/plain"]
-    assert '<html lang="en">' in parts["text/html"]
+    assert "since 1 September 2025" in parts_un["text/plain"]
+    assert "nothing to do" in parts_un["text/plain"]
+    assert '<html lang="en">' in parts_un["text/html"]
     assert (
-        unknown["Subject"] == "Votre compte Compar:IA sera supprimé le 1er octobre 2026"
+        unknown["Subject"] == "Your Compar:IA account will be deleted on 1 October 2026"
     )
 
 

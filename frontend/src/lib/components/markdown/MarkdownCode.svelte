@@ -295,6 +295,15 @@
   /* CUSTOM */
   span :global(p) {
     font-size: 14px;
+    &:only-child {
+      margin: 0;
+    }
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
   span.user :global(p) {
     font-weight: 500;

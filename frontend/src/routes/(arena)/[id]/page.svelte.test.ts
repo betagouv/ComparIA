@@ -1,3 +1,4 @@
+import { globalContext } from '$lib/testing/mockContexts'
 import { render } from '@testing-library/svelte'
 import { flushSync } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -14,7 +15,7 @@ const store = $state<{ comparisons: { id: string; mode: string; turns: never[] }
 })
 
 vi.mock('$app/navigation', () => ({ goto: mocks.goto }))
-vi.mock('$app/paths', () => ({ resolve: (path: string) => path }))
+vi.mock('$app/paths', () => ({ resolve: (path: string) => path, asset: (path: string) => path }))
 vi.mock('$app/state', () => ({ page: mocks.pageState }))
 vi.mock('$lib/auth.svelte', () => ({ getAuthContext: () => mocks.authContext }))
 vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
@@ -34,6 +35,7 @@ vi.mock('$lib/chatService.svelte', () => ({
   }),
   getModeInfos: () => [{ value: 'random', icon: 'i-ri-dice-line', title: 'Aléatoire' }]
 }))
+vi.mock('$lib/global.svelte', async (importOriginal) => globalContext(importOriginal))
 
 function visit(path: string) {
   const url = new URL(`http://localhost${path}`)

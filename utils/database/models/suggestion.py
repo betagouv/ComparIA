@@ -6,9 +6,10 @@ from pydantic import StringConstraints
 from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel, String
 
+from utils.i18n import SupportedLocale
+
 from .utils import AutoDatetime, ModelId, OptionalDatetime
 
-SuggestionLocale = Literal["fr", "da", "sv"]
 SUGGESTION_CATEGORY_TITLE_MAX_LENGTH = 100
 SUGGESTION_CATEGORY_DESCRIPTION_MAX_LENGTH = 300
 SUGGESTION_CATEGORY_TOOLTIP_MAX_LENGTH = 300
@@ -58,7 +59,7 @@ class SuggestionCategory(SQLModel, table=True):
     )
 
     id: ModelId
-    locale: Annotated[SuggestionLocale, Field(sa_type=String(2), index=True)]
+    locale: Annotated[SupportedLocale, Field(sa_type=String(), index=True)]
     key: str = Field(max_length=100)
     title: str = Field(max_length=255)
     description: str = Field(max_length=1_000)
@@ -97,7 +98,7 @@ class SuggestionCreate(SQLModel):
 
 
 class SuggestionCategoryCreate(SQLModel):
-    locale: SuggestionLocale
+    locale: SupportedLocale
     title: CategoryTitle
     description: CategoryDescription
     icon: CategoryIcon
@@ -130,7 +131,7 @@ class PublicSuggestionsResponse(SQLModel):
 class AdminSuggestion(SQLModel):
     id: uuid.UUID
     text: str
-    locale: SuggestionLocale
+    locale: SupportedLocale
     category_id: uuid.UUID
     category_title: str
     status: Literal["available", "archived"]
@@ -140,7 +141,7 @@ class AdminSuggestion(SQLModel):
 
 class AdminSuggestionCategory(SQLModel):
     id: uuid.UUID
-    locale: SuggestionLocale
+    locale: SupportedLocale
     key: str
     title: str
     description: str

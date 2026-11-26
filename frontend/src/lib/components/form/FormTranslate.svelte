@@ -7,37 +7,35 @@
 <script lang="ts">
   import { Segmented } from '$components/dsfr'
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
-  import { getAuthContext } from '$lib/authContext.svelte'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import type { AnyFormItemProps, BaseFormFieldProps } from '$lib/utils/form'
   import type { Snippet } from 'svelte'
 
-  const auth = getAuthContext()
+  const locales = getLocalesContext()
 
   // FIXME handle error display, form.ts integration
   let {
     id,
     value = $bindable({}),
-    locale = $bindable(auth.config.default_locale),
+    locale = $bindable(locales.default),
     subProps,
     isValid = (locale) => !!value[locale],
     subSnippet,
     ...props
   }: Omit<FormFieldsetItemProps, 'component'> & {
     value: Record<string, unknown>
-    locale?: string
-    isValid?: (locale: string) => boolean
-    subSnippet?: Snippet<[locale: string, label: string]>
+    locale?: Locale
+    isValid?: (locale: Locale) => boolean
+    subSnippet?: Snippet<[locale: Locale, label: string]>
   } = $props()
 
-  const locales = $derived(getLocales(auth.config.enabled_locales))
-  const label = $derived(locales.find((l) => locale === l.code)!.long)
+  const label = $derived(locales.getLabel(locale))
   const options = $derived(
-    locales.map((locale) => ({
-      value: locale.code,
-      label: locale.long,
-      icon: isValid(locale.code) ? 'i-ri-checkbox-fill' : 'i-ri-checkbox-blank-line'
+    locales.enabledOptions.map((opt) => ({
+      ...opt,
+      icon: isValid(opt.value) ? 'i-ri-checkbox-fill' : 'i-ri-checkbox-blank-line'
     }))
   )
 </script>

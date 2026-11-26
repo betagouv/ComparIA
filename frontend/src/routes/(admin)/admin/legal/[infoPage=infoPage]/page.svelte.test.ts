@@ -8,9 +8,9 @@ const mocks = vi.hoisted(() => ({ request: vi.fn(), toast: vi.fn() }))
 vi.mock('$lib/fastapi-client', () => ({ api: { request: mocks.request } }))
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: mocks.toast }))
 vi.mock('$lib/authContext.svelte', () => ({
-  getAuthContext: () => ({ config: { default_locale: 'fr' } }),
+  getAuthContext: () => ({ config: { default_locale: 'fr', enabled_locales: ['fr', 'en'] } }),
   getPlatformName: () => 'Compar:IA',
-  tryGetAuthContext: () => ({ config: { default_locale: 'fr' } })
+  tryGetAuthContext: () => ({ config: { default_locale: 'fr', enabled_locales: ['fr', 'en'] } })
 }))
 
 const pages = {

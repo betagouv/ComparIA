@@ -48,6 +48,7 @@ async def anonymous_middleware(request: Request, call_next):
             secure=settings.COMPARIA_COOKIE_SECURE,
             samesite="lax",
             max_age=settings.ANONYMOUS_SESSION_LENGTH_DAYS * 86400,
+            path=settings.cookie_path,
         )
 
     return response

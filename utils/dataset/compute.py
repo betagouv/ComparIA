@@ -4,7 +4,8 @@ Build the ComparIA datasets from PostgreSQL.
 This script:
 1. Fetches Comparisons from the database
 2. Validate data with Dataset* models
-3. Filters out archived, errored, not analyzed and specific cohorts (Pix, do-not-track) for the public dataset
+3. Filters out archived, errored, not analyzed, reserved and specific cohorts (Pix, do-not-track) for the public dataset
+   Keeps only reserved comparisons, among those safe to share, for the reserved dataset
 4. Exports to parquet (+ a small sample tsv/jsonl preview)
 
 Sending the result to the configured destinations is publish.py's business.
@@ -17,14 +18,15 @@ Required env vars: COMPARIA_DB_URI
 
 import json
 import logging
+import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 from async_lru import alru_cache
 from sqlmodel import and_, col, or_, select
 
-from backend.arena.web_search import merge_web_search_with_content
 from backend.llms.models import APILLMDataBase
 from backend.settings.legal import get_active_legal_document
 from backend.vote_tags.services import get_all_vote_tags
@@ -35,9 +37,14 @@ from utils.database.models import (
     SurveyQuestion,
 )
 from utils.database.models.llms import LLMData
-from utils.database.models.messages import LLMMessage
+from utils.database.models.messages import (
+    LLMMessage,
+    published_answer,
+    tool_evidence,
+)
 from utils.database.session import get_session
 from utils.database.utils import get_db_comparisons_counts, get_db_comparisons_stream
+from utils.dataset.voters import VoterPseudonyms, load_voter_pseudonyms
 
 from .export import StreamingDatasetExporter
 from .models import (
@@ -48,7 +55,8 @@ from .models import (
     RespondentAnswers,
 )
 from .publish import LOCAL_NAMES
-from .runs import PUBLISHABLE
+from .reservation import reserved_ids
+from .runs import PUBLISHABLE, RESERVED
 
 logger = logging.getLogger("comparia.dataset")
 
@@ -287,7 +295,11 @@ async def count_dataset_rows(datasets: list[Datasets]):
     try:
         logger.info("Counting rows for each dataset...")
         counts = await get_db_comparisons_counts(
-            {"normal": PUBLISHABLE, "raw": col(Comparison.id) != None}
+            {
+                "normal": PUBLISHABLE,
+                "raw": col(Comparison.id) != None,
+                "reserved": RESERVED,
+            }
         )
 
         for dataset, count in counts.items():
@@ -295,6 +307,31 @@ async def count_dataset_rows(datasets: list[Datasets]):
     except Exception as e:
         logger.error(f"An error occurred while counting rows.")
         raise
+
+
+def _shareable(extra_meta: dict) -> bool:
+    # The mirror of runs.SHAREABLE.
+    return bool(
+        not extra_meta["cohorts"]
+        and not extra_meta["contains_pii"]
+        and extra_meta["llm_analyzed"] is True
+    )
+
+
+def _held_back(extra_meta: dict) -> bool:
+    """Whether the open dataset leaves a comparison out, a reservation aside."""
+    return bool(
+        not _shareable(extra_meta)
+        or extra_meta["archived"] is not False
+        or extra_meta["contains_spam"]
+        or extra_meta["error"] is not None
+    )
+
+
+def _is_reserved(row: dict) -> bool:
+    # The mirror of runs.RESERVED.
+    extra_meta = row["extra_metadata"]
+    return extra_meta["reserved_at"] is not None and _shareable(extra_meta)
 
 
 def _conso(llm: LLMData | None, msg: LLMMessage | None) -> float | None:
@@ -336,16 +373,30 @@ def _llm_response_entry(msg: LLMMessage) -> dict:
     # revalidate_instances="never"): no stripping, no constraint checks. The
     # only comparisons it dropped were those that hit a TypeError in the
     # tokens/latency/duration math below, which we reproduce by construction.
-    return {
-        "content": msg.content,
+    response: dict[str, Any] = {
+        "content": published_answer(msg.content, msg.agent_trace),
         "reasoning_content": msg.reasoning_content,
         "role": msg.role,
     }
+    # The publication check reads the same two lists (`conversation_text`).
+    queries, sources = tool_evidence(msg.agent_trace)
+    if queries:
+        response["tool_queries"] = queries
+    if sources:
+        response["tool_sources"] = sources
+    if msg.agent_stop_reason:
+        response["agent_stop_reason"] = msg.agent_stop_reason
+    return response
 
 
-async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
+async def comparison_to_turns(
+    db_comparison: Comparison, voters: VoterPseudonyms | None = None
+) -> list[dict]:
     """
     Flatten a Comparison into one row per turn.
+
+    With `voters`, extra_metadata carries the voter's pseudonymous id. Only the
+    raw dataset keeps extra_metadata, so the open one never sees it.
 
     Reads ORM attributes directly instead of routing the whole nested object
     graph (turns, user/assistant/system messages, full conversations) through
@@ -391,16 +442,9 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
 
         msg_a, msg_b = turn.llm_msg_a, turn.llm_msg_b
 
-        raw_content = turn.user_msg.content
-        content = (
-            merge_web_search_with_content(raw_content, turn.user_msg.web_search_results)
-            if turn.user_msg.web_search_results
-            else raw_content
-        )
         user_entry = {
             "role": turn.user_msg.role,
-            "content": content,
-            "user_content": raw_content,
+            "content": turn.user_msg.content,
         }
         response_a = [user_entry] + ([_llm_response_entry(msg_a)] if msg_a else [])
         response_b = [user_entry] + ([_llm_response_entry(msg_b)] if msg_b else [])
@@ -445,6 +489,7 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
         )
     comp_meta = {
         **base_meta,
+        "available_tools": list(comp.enabled_tools or []),
         "total_tokens_a": _total(turns_metadata, "tokens_a"),
         "total_tokens_b": _total(turns_metadata, "tokens_b"),
         "total_conso_a": _total(turns_metadata, "conso_a"),
@@ -452,15 +497,13 @@ async def comparison_to_turns(db_comparison: Comparison) -> list[dict]:
     }
     extra_meta = DatasetComparisonExtraMetadata.model_validate(comp).model_dump()
 
-    excluded = bool(
-        extra_meta["cohorts"]
-        or extra_meta["archived"] is not False
-        or extra_meta["contains_pii"]
-        or extra_meta["contains_spam"]
-        or extra_meta["error"] is not None
-        or extra_meta["llm_analyzed"] is not True
-    )
+    excluded = _held_back(extra_meta) or extra_meta["reserved_at"] is not None
     comparison_id = str(comp.id)
+
+    if voters is not None:
+        extra_meta["voter_id"], extra_meta["voter_type"] = voters(
+            comp.user_id, comp.anonymous_user_hash
+        )
 
     return [
         {
@@ -489,8 +532,23 @@ def _reference_rows() -> list[dict]:
     front instead of inferred from a first batch where they may be all-null.
     The equivalence test pins that this matches real `comparison_to_turns` output.
     """
-    user = {"role": "user", "content": "x", "user_content": "x"}
-    assistant = {"content": "x", "reasoning_content": "x", "role": "assistant"}
+    user = {"role": "user", "content": "x"}
+    assistant = {
+        "content": "x",
+        "reasoning_content": "x",
+        "role": "assistant",
+        "tool_queries": [{"name": "x", "arguments": "x"}],
+        "tool_sources": [
+            {
+                "type": "text",
+                "name": "x",
+                "url": "https://x",
+                "content": "x",
+                "favicon": "x",
+            }
+        ],
+        "agent_stop_reason": "completed",
+    }
     system = {"role": "system", "content": "x"}
     return [
         {
@@ -522,6 +580,7 @@ def _reference_rows() -> list[dict]:
                 "languages": ["x"],
                 "short_summary": "x",
                 "participation_terms_version": LEGACY_PARTICIPATION_TERMS_VERSION,
+                "available_tools": ["x"],
                 "total_tokens_a": 1,
                 "total_tokens_b": 1,
                 "total_conso_a": 1.0,
@@ -529,6 +588,8 @@ def _reference_rows() -> list[dict]:
             },
             "extra_metadata": {
                 "cohorts": "x",
+                "voter_id": "x",
+                "voter_type": "account",
                 "error": {
                     "code": "provider_error",
                     "message": "x",
@@ -541,6 +602,7 @@ def _reference_rows() -> list[dict]:
                 "archived": False,
                 "archived_reason": "spam",
                 "archived_at": datetime(2024, 1, 1),
+                "reserved_at": datetime(2024, 1, 1),
             },
             # JSON-encoded string, not a struct: the question key set is
             # admin-editable (new questions can be published at any time), so
@@ -553,6 +615,12 @@ def _reference_rows() -> list[dict]:
     ]
 
 
+def _clear(export_dir: Path) -> None:
+    # A build that keeps no row writes no parquet. One left from an earlier
+    # build would then be sent as this one's, with comparisons reserved since.
+    shutil.rmtree(export_dir, ignore_errors=True)
+
+
 def _build_exporters(
     datasets: list[Datasets], export_base_path: Path
 ) -> dict[Datasets, StreamingDatasetExporter]:
@@ -560,6 +628,7 @@ def _build_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter] = {}
     for dataset in datasets:
         name = LOCAL_NAMES[dataset]
+        _clear(export_base_path / name)
         if dataset == "normal":
             exporters[dataset] = StreamingDatasetExporter(
                 name,
@@ -567,6 +636,19 @@ def _build_exporters(
                 keep=lambda row: not row["excluded"],
                 drop_columns=("excluded", "extra_metadata"),
                 schema_rows=schema_rows,
+            )
+        elif dataset == "reserved":
+            # The open dataset's columns, so a partner's code reads both.
+            # Nothing reserved is normal, before the first reservation or
+            # after a release: the partner's copy then empties like any other
+            # snapshot, rather than going on showing what was released.
+            exporters[dataset] = StreamingDatasetExporter(
+                name,
+                export_base_path / name,
+                keep=_is_reserved,
+                drop_columns=("excluded", "extra_metadata"),
+                schema_rows=schema_rows,
+                empty_ok=True,
             )
         else:
             exporters[dataset] = StreamingDatasetExporter(
@@ -577,6 +659,7 @@ def _build_exporters(
 
 async def stream_to_exporters(
     exporters: dict[Datasets, StreamingDatasetExporter],
+    voters: VoterPseudonyms | None = None,
 ) -> None:
     """
     Single pass over the DB: turn each Comparison into rows and feed every
@@ -588,7 +671,7 @@ async def stream_to_exporters(
 
     async for db_comp in get_db_comparisons_stream():
         try:
-            turns = await comparison_to_turns(db_comp)
+            turns = await comparison_to_turns(db_comp, voters)
         except Exception:
             logger.exception(f"Failed to parse Comparison '{db_comp.id}', skipping...")
             failed_comparison_ids.append(str(db_comp.id))
@@ -619,7 +702,7 @@ async def stream_to_exporters(
             f"{len(failed_comparison_ids)} comparisons could not be properly parsed: \n"
             + "\n".join(f"- '{id_}'" for id_ in failed_comparison_ids)
         )
-    if total_rows == 0:
+    if total_rows == 0 and not all(exp.empty_ok for exp in exporters.values()):
         raise Exception("No rows produced, aborting export")
 
 
@@ -627,6 +710,7 @@ def _write_normal_from_raw_parquet(
     raw_parquet_path: Path,
     repo_name: str,
     export_dir: Path,
+    reserved_ids: list[str],
 ) -> int:
     """
     Regenerate the normal dataset from the raw parquet without hitting the DB.
@@ -634,6 +718,9 @@ def _write_normal_from_raw_parquet(
     converting large nested columns to Python objects.
     Sample files are written from the first 1000 filtered rows (not random,
     but fast and memory-bounded).
+    Reservations come from `reserved_ids`, what is reserved now, rather than
+    from the `excluded` column: that one says what was reserved when the raw
+    parquet was built, and would hold back what was released since.
     """
     import pyarrow as pa
     import pyarrow.compute as pc
@@ -645,6 +732,7 @@ def _write_normal_from_raw_parquet(
     export_dir.mkdir(exist_ok=True)
     parquet_path = export_dir / f"{repo_name}.parquet"
 
+    reserved_now = pa.array(reserved_ids, type=pa.string())
     reader = pq.ParquetFile(raw_parquet_path)
     writer: pq.ParquetWriter | None = None
     sample_batches: list[pa.Table] = []
@@ -652,7 +740,12 @@ def _write_normal_from_raw_parquet(
 
     for batch in reader.iter_batches(batch_size=10_000):
         table = pa.Table.from_batches([batch])
-        table = table.filter(pc.equal(table.column("excluded"), False))
+        # The metadata is small: the large columns stay in Arrow.
+        held_back = pa.array(
+            [_held_back(meta) for meta in table.column("extra_metadata").to_pylist()]
+        )
+        reserved = pc.is_in(table.column("comparison_id"), value_set=reserved_now)
+        table = table.filter(pc.invert(pc.or_(held_back, reserved)))
         table = table.drop(DROP_COLS)
         metadata_index = table.schema.get_field_index("metadata")
         metadata = table.column(metadata_index)
@@ -842,7 +935,10 @@ async def process_datasets(
         logger.info(f"Cache mode: reading from {raw_parquet_path}")
         normal_name = LOCAL_NAMES["normal"]
         normal_export_dir = export_base_path / normal_name
-        _write_normal_from_raw_parquet(raw_parquet_path, normal_name, normal_export_dir)
+        _clear(normal_export_dir)
+        _write_normal_from_raw_parquet(
+            raw_parquet_path, normal_name, normal_export_dir, await reserved_ids()
+        )
         await write_vote_tags_vocabulary(normal_export_dir)
         await write_models_metadata(normal_export_dir)
         return {"normal": normal_export_dir}
@@ -851,9 +947,14 @@ async def process_datasets(
         logger.warning(
             f"Cache requested but raw parquet not found at {raw_parquet_path}, running full export"
         )
+    # Read at the start of each build, from the database: the publish job
+    # runs for days and has to see the switch as it is now.
+    voters = await load_voter_pseudonyms() if "raw" in datasets else None
+    if voters is not None:
+        logger.info("The raw dataset carries pseudonymous voter ids.")
     logger.info(f"Streaming datasets to local files: {', '.join(datasets)}…")
     exporters = _build_exporters(datasets, export_base_path)
-    await stream_to_exporters(exporters)
+    await stream_to_exporters(exporters, voters)
 
     built = {dataset: export_base_path / LOCAL_NAMES[dataset] for dataset in exporters}
     for export_dir in built.values():

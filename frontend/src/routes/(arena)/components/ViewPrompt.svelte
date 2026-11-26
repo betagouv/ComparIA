@@ -2,20 +2,21 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
-  import { Button, Icon, Toggle, Tooltip } from '$components/dsfr'
+  import { Button, Icon, Tooltip } from '$components/dsfr'
   import Pending from '$components/Pending.svelte'
   import TextPrompt from '$components/TextPrompt.svelte'
   import { getModeInfos, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
+  import { withoutInstancePath } from '$lib/routing'
   import type { SuggestionCategory } from '$lib/suggestions'
-  import { sanitize } from '$lib/utils/commons'
   import { onMount, tick } from 'svelte'
   import { SvelteURLSearchParams } from 'svelte/reactivity'
   import GuidedPromptSuggestions from './GuidedPromptSuggestions.svelte'
   import MessageUser from './MessageUser.svelte'
   import ModelSelector from './ModelSelector.svelte'
+  import ToolPicker from './ToolPicker.svelte'
 
   let {
     onPrompt,
@@ -46,7 +47,7 @@
     }
     return []
   })
-  let webSearch = $state(false)
+  let selectedTools = $state<string[]>(['web_search'])
   let submitting = $state(false)
 
   const disabled = $derived(prompt == '' || !!promptError || loading || submitting)
@@ -81,7 +82,8 @@
     const params = new SvelteURLSearchParams(page.url.searchParams)
     params.delete('vs')
     const qs = params.toString()
-    goto(qs ? resolve(`${page.url.pathname}?${qs}`) : page.url.pathname, { replaceState: true })
+    const path = withoutInstancePath(page.url.pathname)
+    goto(qs ? resolve(`${path}?${qs}`) : resolve(path), { replaceState: true })
   })
 
   function selectPartialText(start?: number, end?: number): void {
@@ -110,7 +112,7 @@
         mode: mode.value,
         custom_models_selection: modelsSelection.value,
         prompt_value: prompt,
-        web_search: webSearch
+        tools: selectedTools
       })
     } finally {
       submitting = false
@@ -171,10 +173,7 @@
           <Tooltip id="pending-mode-desc" text={selectedMode.description} size="xs" />
         </div>
 
-        <MessageUser
-          id="pending-user-message"
-          message={{ content: prompt, user_content: prompt }}
-        />
+        <MessageUser id="pending-user-message" message={{ content: prompt }} />
       </div>
 
       <Pending message={m['chatbot.loading']()} class="m-auto" aria-hidden="true" />
@@ -210,21 +209,7 @@
             {models}
             disabled={loading}
           />
-          <Toggle
-            id="web-search"
-            bind:value={webSearch}
-            checkedLabel={m['arenaHome.webSearch.enabled']()}
-            uncheckedLabel={m['arenaHome.webSearch.disabled']()}
-            hideCheckLabel
-            labelPos="right"
-            class="font-medium w-full! text-[14px]!"
-            groupClass="grow my-auto"
-          >
-            {m['arenaHome.webSearch.label']()}
-            <Tooltip id="web-search-tooltip" size="sm" class="ms-1">
-              {@html sanitize(m['arenaHome.webSearch.tooltip']())}
-            </Tooltip>
-          </Toggle>
+          <ToolPicker bind:selected={selectedTools} disabled={loading} />
         </div>
 
         <Button

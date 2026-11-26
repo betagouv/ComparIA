@@ -5,10 +5,31 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export interface AuthConfig {
+  access_policy: "anonymous_first" | "sign_in_required";
+  methods: ("email_code" | "oidc")[];
+  smtp_configured: boolean;
+  domain_allowlist: string[];
+  platform_name: string;
+  primary_color_light: string;
+  primary_color_dark: string;
+  secondary_color_light: string;
+  secondary_color_dark: string;
+  homepage_url: string | null;
+  platform_url: string;
+  has_custom_logo: boolean;
+  logo_version: string | null;
+  enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  default_locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
+  oidc_enabled: boolean;
+  oidc_button_label: string | null;
+  oidc_has_button_logo: boolean;
+}
 export interface ComparisonPublic {
   id: string;
   mode: "random" | "big-vs-small" | "small-models" | "custom";
   custom_models_selection: string[] | null;
+  enabled_tools: string[];
   error: ErrorDetails | null;
   turns: TurnPublic[];
   revealed: boolean;
@@ -42,27 +63,7 @@ export interface UserMessageRead {
   created_at?: string;
   role?: "user";
   content: string;
-  web_search_results?: LinkupSearchTextResult[] | null;
   turn_id?: string | null;
-  user_content: string;
-  [k: string]: unknown;
-}
-/**
- * A text result from a Linkup search.
- *
- * Attributes:
- *     type: The type of the search result, in this case "text".
- *     name: The name of the search result.
- *     url: The URL of the search result.
- *     content: The text of the search result.
- *     favicon: The favicon URL of the search result, if available.
- */
-export interface LinkupSearchTextResult {
-  type: "text";
-  name: string;
-  url: string;
-  content: string;
-  favicon: string;
   [k: string]: unknown;
 }
 export interface LLMMessageCreate {
@@ -73,6 +74,52 @@ export interface LLMMessageCreate {
   updated_at?: string | null;
   content?: string;
   reasoning_content?: string | null;
+  agent_trace?:
+    (AgentTraceReasoning | AgentTraceIntermediateContent | AgentTraceToolCall | AgentTraceToolResult)[] | null;
+  agent_stop_reason?:
+    ("completed" | "deadline" | "call_limit" | "round_limit" | "context_exceeded" | "repeat_limit") | null;
+  [k: string]: unknown;
+}
+export interface AgentTraceReasoning {
+  type?: "reasoning";
+  content: string;
+}
+export interface AgentTraceIntermediateContent {
+  type?: "intermediate_content";
+  content: string;
+}
+export interface AgentTraceToolCall {
+  type?: "tool_call";
+  tool_call_id: string;
+  name: string;
+  label?: string;
+  tool?: string;
+  arguments_json: string;
+  arguments?: {
+    [k: string]: unknown;
+  } | null;
+}
+export interface AgentTraceToolResult {
+  type?: "tool_result";
+  tool_call_id: string;
+  name: string;
+  status: "success" | "empty" | "error";
+  duration_ms: number;
+  content: string;
+  results?: ToolSource[];
+}
+/**
+ * One piece of evidence a tool handed back.
+ *
+ * Deliberately not Linkup's shape: an MCP server returns text with no address,
+ * and the trace has to hold both. Reads back the rows written before this
+ * existed, whose extra Linkup fields are simply ignored.
+ */
+export interface ToolSource {
+  name?: string;
+  url?: string | null;
+  content?: string;
+  favicon?: string | null;
   [k: string]: unknown;
 }
 export interface RevealData {
@@ -98,7 +145,7 @@ export interface Consumption {
 }
 export interface InformationalLegalPageContent {
   content: string;
-  locale: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
 }
 export interface InformationalLegalPageLinks {
   legal_notice?: InformationalLegalPageLink;
@@ -119,6 +166,7 @@ export interface LLMList {
     [k: string]: number;
   } | null;
   max_rank_spread: number;
+  grey_rank_spread: number;
   currency: CurrencyInfo;
 }
 /**
@@ -398,7 +446,7 @@ export interface PersonalRankingRow {
 export interface PublicLegalDocument {
   version: string;
   content_hash: string;
-  locale: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   content: string;
   published_at: string;
   effective_at: string;
@@ -433,4 +481,18 @@ export interface SurveyAnswerSubmit {
 export interface SurveyQuestionAnswer {
   question_id: string;
   value: string | string[] | null;
+}
+/**
+ * What a visitor is told about a tool.
+ *
+ * Deliberately not derived from ToolBase: the arena serves this without
+ * authentication, and inheriting would hand out the server address and its
+ * credentials the moment either is added to the row.
+ */
+export interface ToolPublic {
+  key: string;
+  label: string;
+  description?: string | null;
+  logo_url?: string | null;
+  enabled: boolean;
 }

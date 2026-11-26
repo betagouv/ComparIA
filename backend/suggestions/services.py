@@ -19,10 +19,10 @@ from utils.database.models.suggestion import (
     SuggestionCategory,
     SuggestionCategoryCreate,
     SuggestionCreate,
-    SuggestionLocale,
 )
 from utils.database.models.utils import escape_like
 from utils.database.session import get_session
+from utils.i18n import DEFAULT_LOCALE, SupportedLocale
 from utils.storage.redis import REDIS_SUGGESTIONS_KEY, invalidate_cache, redis_cache
 
 
@@ -88,7 +88,7 @@ def _to_admin_suggestion(
 
 @redis_cache(REDIS_SUGGESTIONS_KEY)
 async def list_public_suggestions(
-    locale: SuggestionLocale,
+    locale: SupportedLocale,
 ) -> PublicSuggestionsResponse:
     async with get_session() as session:
         result = await session.exec(
@@ -128,10 +128,11 @@ async def list_admin_suggestions(
     *,
     search: str | None = None,
     status: str | None = None,
-    locale: SuggestionLocale | None = None,
+    locale: SupportedLocale | None = None,
     category_id: uuid.UUID | None = None,
     page: int = 1,
     page_size: int = 50,
+    default_locale: SupportedLocale = DEFAULT_LOCALE,
 ) -> tuple[list[AdminSuggestion], int, list[AdminSuggestionCategory]]:
     async with get_session() as session:
         available_suggestion = aliased(PromptSuggestion)
@@ -174,7 +175,7 @@ async def list_admin_suggestions(
             statement.order_by(
                 col(SuggestionCategory.archived_at).is_(None).desc(),
                 category_has_available_suggestions.desc(),
-                (col(SuggestionCategory.locale) == "fr").desc(),
+                (col(SuggestionCategory.locale) == default_locale).desc(),
                 col(SuggestionCategory.locale),
                 col(SuggestionCategory.display_order),
                 nulls_first(col(PromptSuggestion.archived_at)),
@@ -187,7 +188,7 @@ async def list_admin_suggestions(
             select(SuggestionCategory).order_by(
                 col(SuggestionCategory.archived_at).is_(None).desc(),
                 category_has_available_suggestions.desc(),
-                (col(SuggestionCategory.locale) == "fr").desc(),
+                (col(SuggestionCategory.locale) == default_locale).desc(),
                 col(SuggestionCategory.locale),
                 col(SuggestionCategory.display_order),
             )

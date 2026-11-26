@@ -7,7 +7,7 @@
   import FormCheckbox from '$components/form/FormCheckbox.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import UserPreview from '$components/UserPreview.svelte'
-  import { getAuthContext } from '$lib/authContext.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import type { PublishLegalDocumentBody } from '$lib/generated/admin'
   import type { LegalDocumentKeys } from '$lib/generated/constants'
   import { m } from '$lib/i18n/messages'
@@ -18,8 +18,8 @@
 
   const kind = $derived(params.legalDoc as LegalDocumentKeys)
 
-  const auth = getAuthContext()
-  const defaultLocale = $derived(auth.config.default_locale)
+  const locales = getLocalesContext()
+  const defaultLocale = $derived(locales.default)
   let selectedLocale = $derived(defaultLocale)
   let step = $state<'write' | 'review'>('write')
 

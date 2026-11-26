@@ -60,7 +60,7 @@
   rows={sortedRows}
 >
   {#snippet headerLeft()}
-    <Link button icon="add-line" text={m['words.add']()} href={`${baseRoute}/create`} />
+    <Link button icon="add-line" text={m['words.add']()} href={resolve(`${baseRoute}/create`)} />
   {/snippet}
 
   {#snippet cell(endpoint, col)}

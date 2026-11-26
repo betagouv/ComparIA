@@ -1,9 +1,9 @@
 import { goto } from '$app/navigation'
 import { resolve } from '$app/paths'
+import type { AuthCtx, AuthUser } from '$lib/authContext.svelte'
 import { updateComparisonsContext, type ComparisonsCtx } from '$lib/chatService.svelte'
 import { resetConsent } from '$lib/consent'
 import { api } from '$lib/fastapi-client'
-import type { AuthCtx, AuthUser } from '$lib/authContext.svelte'
 
 // The context lives in authContext.svelte.ts so that components which only read
 // it are not made to import this module's API client and navigation helpers.
@@ -11,7 +11,6 @@ export {
   getAuthContext,
   setAuthContext,
   tryGetAuthContext,
-  type AuthConfig,
   type AuthCtx,
   type AuthUser
 } from '$lib/authContext.svelte'

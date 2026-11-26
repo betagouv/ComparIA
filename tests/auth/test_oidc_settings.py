@@ -21,6 +21,7 @@ from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
+import backend.admin.settings as admin_settings_module  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
 from tests.auth.fake_oidc_provider import ENCRYPTED_CLIENT_SECRET  # noqa: E402
 from utils.database.models.auth import User  # noqa: E402
@@ -50,6 +51,7 @@ def _settings_row(**overrides):
         ranking_min_votes=0,
         ranking_max_rank_spread=30,
         survey_reask_after_days=7,
+        ranking_grey_rank_spread=30,
         platform_name="Test",
         primary_color_light="#000091",
         primary_color_dark="#8585F6",
@@ -59,11 +61,10 @@ def _settings_row(**overrides):
         logo=None,
         logo_version=None,
         logo_content_type=None,
-        analysis_endpoint_id=None,
-        analysis_model=None,
         publish_frequency="off",
         publish_hour=3,
         publish_timezone="UTC",
+        dataset_voter_ids=False,
         enabled_locales=["fr"],
         default_locale="fr",
         auth_methods=["email_code"],
@@ -105,7 +106,7 @@ def admin_client(row=None):
     app.include_router(admin_router.router)
     app.dependency_overrides[require_admin] = _admin
 
-    with patched(admin_router, get_app_settings=get_app_settings):
+    with patched(admin_settings_module, get_app_settings=get_app_settings):
         yield TestClient(app, raise_server_exceptions=True)
 
 
@@ -148,7 +149,7 @@ def test_patch_oidc_settings_encrypts_client_secret():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -199,7 +200,7 @@ def test_patch_null_client_secret_clears_the_stored_value():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -244,7 +245,7 @@ def test_patch_oidc_enabled_auth_method_is_accepted():
     app.dependency_overrides[require_admin] = _admin
 
     with patched(
-        admin_router,
+        admin_settings_module,
         get_app_settings=get_app_settings,
         update_app_settings=update_app_settings,
     ):
@@ -319,7 +320,7 @@ def test_patch_issuer_accepts_plain_http_on_localhost_only():
     refused = ["http://localhost.evil.test", "http://127.0.0.1.evil.test"]
     with (
         admin_client() as client,
-        patched(admin_router, update_app_settings=update_app_settings),
+        patched(admin_settings_module, update_app_settings=update_app_settings),
     ):
         for issuer in accepted:
             response = client.patch("/admin/settings", json={"oidc_issuer": issuer})

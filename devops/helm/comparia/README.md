@@ -53,6 +53,8 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | ------------------------- | ------- | ------------------------------------- |
 | `replicaCount.backend`    | `1`     | Backend replica count                 |
 | `replicaCount.frontend`   | `1`     | Frontend replica count                |
+| `topologySpreadConstraints.backend` | `[]` | Spread of the backend pods over the cluster; the chart adds the `labelSelector` |
+| `topologySpreadConstraints.frontend` | `[]` | Same for the frontend pods |
 | `service.backend.port`    | `80`    | Backend Service port                  |
 | `service.frontend.port`   | `80`    | Frontend Service port                 |
 | `resources.backend`       | see `values.yaml` | Backend requests/limits    |
@@ -81,7 +83,7 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | `config.sentryEnvironment` | `prod`              |                                                        |
 | `config.matomoUrl`         | `""`                | `MATOMO_URL`. Left empty, the env vars are omitted and no analytics are loaded |
 | `config.matomoId`          | `""`                | `MATOMO_ID`. Only rendered when `config.matomoUrl` is set |
-| `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install |
+| `config.appUrl`            | `""`                | `COMPARIA_APP_URL`, public origin used to build absolute links in emails (login codes). Left empty, falls back to the app's own dev default — set this for a real install. The path of the URL, if any (`https://example.org/fr`), is the Instance path: the frontend gets it as `INSTANCE_PATH` and its readiness probe hits `<path>/`. There is no separate base-path value. The chart's own Ingress serves a URL without a path |
 | `config.apiUrl`            | `""`                | `COMPARIA_API_URL`, origin the backend answers on, used as the OIDC callback origin (`<apiUrl>/api/auth/oidc/callback`). Left empty, the callback uses `config.appUrl`, which is right when the ingress serves the backend under `/api` of the app origin. Only matters for OIDC sign-in; login starts are refused when the origin it came in on differs from it |
 | `config.clientIpHeader`    | `""`                | `COMPARIA_CLIENT_IP_HEADER`, header an edge proxy (WAF, CDN) sets to the real client IP, used by the per-IP rate limits and cooldowns. Left empty, the backend sees the ingress pod IP, so those limits are shared by all visitors. Only set it when the origin cannot be reached without going through that edge, since anyone reaching it directly can forge the header |
 | `config.adminEmails`       | `[]`                | `ADMIN_EMAILS`, promoted to the admin role on startup, created if absent. Left empty, nobody can reach `/api/admin` |
@@ -120,7 +122,7 @@ Otherwise, the chart renders a `Secret` from these values:
 | `secrets.albertKey`            | at least one of these four | `ALBERT_KEY` |
 | `secrets.hfInferenceKey`       | at least one of these four | `HF_INFERENCE_KEY` |
 | `secrets.ordbogenApiKey`       | at least one of these four | `ORDBOGEN_API_KEY` |
-| `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, enables web search      |
+| `secrets.linkupApiKey`         | no       | `LINKUP_API_KEY`, the Linkup key web search falls back on when none is set at `/admin/outils`. Web search is switched on there |
 | `secrets.smtpUsername`         | no       | `SMTP_USERNAME`. Only relevant when `config.smtp.host` is set |
 | `secrets.smtpPassword`         | no       | `SMTP_PASSWORD`. Only relevant when `config.smtp.host` is set |
 | `secrets.metricsToken`         | no       | `METRICS_TOKEN`, bearer token protecting `/metrics` |

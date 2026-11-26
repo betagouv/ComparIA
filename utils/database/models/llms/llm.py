@@ -219,10 +219,27 @@ class LLMDataUpsert(LLMDataBase):
     @model_validator(mode="after")
     def check_endpoint(self):
         """
-        Disable LLM if endpoint is not defined.
+        Refuse an enabled LLM with no endpoint or no API model ID.
+
+        It cannot be called, so it used to be saved as disabled instead, and
+        an admin who enabled it found it hidden everywhere without being told.
         """
         if self.status == "enabled" and (not self.endpoint_id or not self.api_model_id):
-            self.status = "disabled"
+            missing = [
+                name
+                for name, value in (
+                    ("endpoint_id", self.endpoint_id),
+                    ("api_model_id", self.api_model_id),
+                )
+                if not value
+            ]
+            raise PydanticCustomError(
+                "missing_endpoint",
+                "An enabled LLM needs an endpoint and an API model ID (missing: "
+                "{missing}). Fill them in, or set the status to archived or "
+                "disabled.",
+                {"missing": ", ".join(missing)},
+            )
         return self
 
 

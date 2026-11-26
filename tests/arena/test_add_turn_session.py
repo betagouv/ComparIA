@@ -23,6 +23,9 @@ class FakeSession:
     def add(self, _item):
         pass
 
+    async def exec(self, _statement):
+        pass
+
     async def commit(self):
         pass
 

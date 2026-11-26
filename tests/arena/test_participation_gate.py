@@ -35,7 +35,6 @@ from utils.database.models.comparison import (  # noqa: E402
 DOCUMENT = LegalDocument(
     kind="terms",
     version="2026.07",
-    language="fr",
     content="Conditions publiées",
     content_hash="a" * 64,
     effective_at=datetime(2026, 7, 1),

@@ -20,8 +20,8 @@ os.environ.setdefault("LOG_FORMAT", "RAW")
 # table: load it before the test cluster is built, or later tests truncate a
 # table that was never created.
 import utils.database.actions  # noqa: E402, F401
-from backend.activity import services  # noqa: E402
-from backend.activity.models import (  # noqa: E402
+from backend.admin.activity import services  # noqa: E402
+from backend.admin.activity.models import (  # noqa: E402
     ActivityFilters,
     ConversationFilters,
     StoppedMessageFilters,
@@ -297,6 +297,52 @@ def test_the_list_filters_on_what_was_said_and_how_it_was_voted(activity):
     # Flagged conversations are archived: asking for them brings them back.
     assert by_pii == [flagged]
     assert by_revealed == [revealed]
+
+
+def test_the_list_says_what_can_be_reserved_and_filters_on_it(activity):
+    from utils.dataset.reservation import reserve
+
+    async def scenario():
+        llms = await add_llms()
+        cleared = {"llm_analyzed": True, "contains_pii": False}
+        reserved = await add_comparison(llms, **cleared)
+        await reserve(reserved)
+        # Archived by analysis after it was reserved: still listed as reserved.
+        archived = await add_comparison(llms, **cleared, archived=True)
+        await reserve(archived)
+        pix = await add_comparison(llms, **cleared, cohorts="pix")
+        waiting = await add_comparison(llms, llm_analyzed=None)
+        failed = await add_comparison(llms, llm_analyzed=False)
+        page = await services.list_conversations(ConversationFilters())
+        only_reserved = await services.list_conversations(
+            ConversationFilters(reserved=True)
+        )
+        not_reserved = await services.list_conversations(
+            ConversationFilters(reserved=False)
+        )
+        return (
+            reserved,
+            archived,
+            pix,
+            waiting,
+            failed,
+            page,
+            only_reserved,
+            not_reserved,
+        )
+
+    reserved, archived, pix, waiting, failed, page, only_reserved, not_reserved = (
+        activity(scenario)
+    )
+
+    rows = {row.id: row for row in page.items}
+    assert rows[reserved].reserved_at and rows[reserved].reserve_block is None
+    assert not rows[reserved].reserved_with_partner
+    assert rows[pix].reserve_block == "cohort"
+    assert rows[waiting].reserve_block is None
+    assert rows[failed].reserve_block == "analysis_failed"
+    assert {row.id for row in only_reserved.items} == {reserved, archived}
+    assert {row.id for row in not_reserved.items} == {pix, waiting, failed}
 
 
 def test_a_conversation_reads_in_full_without_who_wrote_it(activity):

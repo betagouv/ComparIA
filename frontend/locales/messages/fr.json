@@ -41,6 +41,8 @@
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
+        "scrollToBottom": "Défiler jusqu'en bas",
+        "scrollToTop": "Remonter jusqu'en haut",
         "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue"
@@ -167,12 +169,35 @@
                 "refresh": "Actualiser",
                 "unvoted": "Sans vote : {count} messages ({share})"
             },
+            "reservation": {
+                "any": "Réservées ou non",
+                "badge": "Réservée",
+                "cancel": "Annuler",
+                "column": "Réservation",
+                "label": "Réservation",
+                "notReserved": "Non réservées",
+                "reserve": "Réserver",
+                "reserved": "Réservées pour un partenaire",
+                "reserveLabel": "Réserver pour un partenaire : {prompt}",
+                "unreserve": "Ne plus réserver",
+                "unreserveConfirm": "Ne plus réserver",
+                "unreserveLabel": "Ne plus réserver : {prompt}",
+                "unreserveTitle": "Remettre cette conversation dans le jeu ouvert ?",
+                "unreserveWarning": "Le partenaire l'a déjà reçue. La publier gâche son évaluation."
+            },
+            "reserveBlocks": {
+                "analysis_failed": "Échec de l'analyse",
+                "cohort": "Cohorte",
+                "pii": "Données personnelles",
+                "published": "Déjà publiée",
+                "publishing": "Publication en cours"
+            },
             "stages": {
                 "commented": "Commentée",
                 "revealed": "Révélée",
                 "started": "Sans vote",
-                "voted": "Votée",
-                "stopped": "Refusés ou prévenus"
+                "stopped": "Refusés ou prévenus",
+                "voted": "Votée"
             },
             "stopped": {
                 "caption": "Messages refusés ou prévenus",
@@ -302,6 +327,25 @@
             }
         },
         "llms": {
+            "health": {
+                "button": "Tester les modèles",
+                "column": "Santé",
+                "errors": {
+                    "emptyResponse": "Réponse vide",
+                    "keyRejected": "Clé refusée",
+                    "modelNotFound": "Modèle introuvable",
+                    "noCredits": "Crédit épuisé",
+                    "notConfigured": "Clé manquante",
+                    "providerError": "Erreur du fournisseur",
+                    "rateLimited": "Trop de requêtes",
+                    "requestFailed": "Test impossible",
+                    "timeout": "Délai dépassé"
+                },
+                "healthy": "{latency} ms",
+                "progress": "Test en cours : {done} sur {total}",
+                "summaryFailed": "Sans réponse : {failed} sur {total}",
+                "summaryHealthy": "Tous les modèles répondent"
+            },
             "subTitle": "LLMs, labs, licenses and endpoints.",
             "title": "LLMs data configuration"
         },
@@ -316,6 +360,7 @@
             "publishing": "Jeux de données",
             "suggestions": "Suggestions",
             "survey": "Sondage",
+            "tools": "Outils",
             "users": "Utilisateurs",
             "voteTags": "Étiquettes de vote"
         },
@@ -379,6 +424,17 @@
                 "action": "Action",
                 "threshold": "Seuil"
             },
+            "criteria": {
+                "add": "Ajouter un critère",
+                "empty": "Aucun critère : aucun message n'est vérifié.",
+                "messages": {
+                    "generic": "Général",
+                    "pii": "Données personnelles",
+                    "self_harm": "Détresse (avec numéro d'aide)"
+                },
+                "new": "Nouveau critère",
+                "remove": "Retirer"
+            },
             "health": {
                 "failures": "{count} échecs consécutifs",
                 "keyRejected": "OpenRouter refuse la clé",
@@ -414,11 +470,11 @@
                 },
                 "periodLabel": "Période affichée",
                 "periods": {
-                    "all": "Depuis le début",
-                    "7d": "7 derniers jours",
                     "30d": "30 derniers jours",
+                    "365d": "12 derniers mois",
+                    "7d": "7 derniers jours",
                     "90d": "90 derniers jours",
-                    "365d": "12 derniers mois"
+                    "all": "Depuis le début"
                 },
                 "proceeded": "{count} envoyés quand même",
                 "subtitle": "Suivez les détections et les décisions prises sur la période sélectionnée.",
@@ -435,18 +491,7 @@
                 "warningsTitle": "Avertissements affichés, depuis le début"
             },
             "subtitle": "Quand un message remplit l'un de vos critères, vous décidez de ce qui arrive à la personne : rien, un avertissement qu'elle peut passer, ou un refus.",
-            "title": "Vérifications des messages",
-            "criteria": {
-                "add": "Ajouter un critère",
-                "empty": "Aucun critère : aucun message n'est vérifié.",
-                "messages": {
-                    "generic": "Général",
-                    "pii": "Données personnelles",
-                    "self_harm": "Détresse (avec numéro d'aide)"
-                },
-                "new": "Nouveau critère",
-                "remove": "Retirer"
-            }
+            "title": "Vérifications des messages"
         },
         "publishing": {
             "accessKeyLabel": "Clé d'accès",
@@ -460,11 +505,45 @@
             "colStatus": "Statut",
             "colTarget": "Cible",
             "createSuccess": "Destination ajoutée",
+            "datasetCheck": {
+                "criteriaEmpty": "Aucun critère : seuls les thèmes et les langues sont analysés.",
+                "formTitle": "Réglages de l'analyse",
+                "help": "Avant chaque publication, le modèle de décision lit chaque conversation, questions et réponses comprises. Il dit si elle contient des données personnelles ou du spam, et en donne les thèmes et les langues.",
+                "noKey": "Aucune clé OpenRouter",
+                "noKeyHint": "Ni ici, ni sur la vérification des messages, ni dans OPENROUTER_API_KEY : l'analyse ne peut pas tourner.",
+                "noModel": "Aucun modèle de décision",
+                "noModelHint": "Rien n'est analysé, donc aucune nouvelle conversation n'est publiée. Choisissez un modèle ci-dessous.",
+                "reasons": {
+                    "pii": "Données personnelles",
+                    "spam": "Spam"
+                },
+                "title": "Analyse avant publication",
+                "try": {
+                    "allScores": "Tous les scores",
+                    "categories": "Thèmes :",
+                    "empty": "Collez une conversation à analyser.",
+                    "excluded": "Ne serait pas publiée",
+                    "hint": "Collez-la telle quelle. Rien n'est enregistré, et les réglages non enregistrés ci-dessus sont utilisés.",
+                    "label": "Conversation",
+                    "languages": "Langues :",
+                    "none": "aucune",
+                    "notReached": "Sous le seuil",
+                    "published": "Serait publiée",
+                    "reached": "Seuil atteint",
+                    "run": "Analyser",
+                    "title": "Tester une conversation"
+                }
+            },
+            "datasetNone": "Aucun",
+            "datasetNoneHelp": "Pour une destination qui ne reçoit que le jeu brut.",
             "datasetNormal": "Ouvert",
             "datasetNormalHelp": "Tout ce que l'analyse a validé.",
             "datasetRaw": "Brut",
             "datasetRawHelp": "Toutes les conversations, y compris celles mises de côté. À ne pas publier en clair.",
+            "datasetReserved": "Réservé",
+            "datasetReservedHelp": "Les conversations réservées pour un partenaire. Envoyez-les dans un lieu privé : sur Hugging Face, leur dépôt est créé privé ; un bucket S3 doit déjà l'être.",
             "datasetsError": "Une destination reçoit au moins un jeu de données.",
+            "datasetsHelp": "Le jeu ouvert et le jeu réservé ne vont jamais au même endroit : sinon, les conversations réservées deviendraient publiques.",
             "datasetsLabel": "Jeux de données envoyés ici",
             "delete": "Supprimer",
             "deleteConfirm": "Supprimer la destination « {name} » ?",
@@ -505,10 +584,17 @@
             "kindS3": "Bucket S3",
             "lastRun": "Historique des publications",
             "lastRunNever": "Aucune publication enregistrée.",
+            "manageTitle": "Gestion des réservations",
             "nameLabel": "Nom",
             "nextRun": "Prochaine publication : {date}",
             "nextRunNever": "Aucune publication programmée.",
             "noDestinations": "Aucune destination : la publication ne part nulle part.",
+            "overview": "Vue d'ensemble",
+            "overviewLastRun": "Dernière publication",
+            "overviewNoPartner": "Aucune destination active ne reçoit le jeu réservé.",
+            "overviewPartners": "Le jeu réservé part vers",
+            "overviewPartnersHelp": "Chacune reçoit toutes les conversations réservées.",
+            "overviewReservedSent": "dont {sent} déjà envoyées au partenaire",
             "prefixHelp": "Ajouté devant chaque fichier, pour partager un bucket entre plusieurs instances.",
             "prefixLabel": "Préfixe",
             "publishing": "Publication…",
@@ -516,21 +602,23 @@
             "publishStarted": "Publication démarrée",
             "rawWarning": "Cette destination reçoit le jeu brut, qui contient les conversations mises de côté pour données personnelles. Vérifiez qu'elle est privée.",
             "regionLabel": "Région",
+            "releaseAll": "Publier toutes les conversations réservées…",
+            "releaseChanged": "Le partenaire a reçu d'autres conversations depuis le chargement de la page. Relisez l'avertissement avant de publier.",
+            "releaseConfirm": "Publier",
+            "releaseSuccess": "{count} conversations rejoindront le jeu ouvert à la prochaine publication.",
+            "releaseTitle": "Publier {count} conversations réservées ?",
+            "releaseWarning": "Elles rejoignent le jeu ouvert à la prochaine publication. {sent} ont déjà été envoyées au partenaire : les publier gâche son évaluation. Impossible à annuler.",
             "repoPathHelp": "Sous la forme organisation/dépôt. Le jeu de données brut part vers le même nom suivi de -raw.",
             "repoPathLabel": "Dépôt",
             "requestPending": "Publication demandée il y a {duration}, en attente du job de publication",
-            "reviewerEndpointLabel": "Endpoint",
-            "reviewerEndpointNone": "Aucun endpoint",
-            "reviewerHelp": "Ce modèle analyse les conversations avant publication pour détecter les données personnelles et le spam.",
-            "reviewerIncomplete": "Sélectionnez un endpoint et renseignez un modèle, ou laissez les deux champs vides.",
-            "reviewerModelHelp": "Identifiant du modèle attendu par l'endpoint.",
-            "reviewerModelLabel": "Modèle",
-            "reviewerSave": "Enregistrer le modèle d'analyse",
-            "reviewerSuccess": "Modèle d'analyse enregistré",
-            "reviewerTitle": "Modèle d'analyse",
+            "reservedHelp": "Elles restent hors du jeu ouvert et vont aux destinations qui reçoivent le jeu réservé. Le jeu brut les garde.",
+            "reservedSee": "Voir les conversations réservées",
+            "reservedTitle": "Conversations réservées",
+            "reservedWarning": "Cette destination reçoit les conversations réservées pour un partenaire. Vérifiez que seul ce partenaire y a accès.",
             "runCounts": "Conversations publiées : {published} · mises de côté : {heldBack}.",
             "runCountsUnknown": "Cette publication n'a pas reconstruit le jeu ouvert.",
             "runFailed": "Échouée le {date}",
+            "runReserved": "Réservées : {reserved}.",
             "runRunning": "En cours depuis {date}",
             "runSucceeded": "Réussie le {date}",
             "save": "Enregistrer",
@@ -539,12 +627,21 @@
             "secretKeep": "Laisser vide pour garder les clés enregistrées.",
             "secretKeyLabel": "Clé secrète",
             "secureLabel": "Connexion en HTTPS",
+            "settingsTitle": "Paramètres",
             "subtitle": "Configurez les destinations et leur fréquence. L'historique regroupe toutes les publications.",
             "timezoneLabel": "Fuseau horaire",
             "title": "Jeux de données",
             "tokenHelp": "Un jeton en lecture seule passe le test de lecture et échoue à la première publication.",
             "tokenKeep": "Laisser vide pour garder le jeton enregistré.",
-            "tokenLabel": "Jeton d'écriture"
+            "tokenLabel": "Jeton d'écriture",
+            "voterIds": {
+                "help": "Ajoute au jeu de données brut un identifiant pseudonyme par votant : le même pour toutes les comparaisons d'un compte, ou d'une session anonyme. Il permet de regrouper les conversations d'une même personne, par exemple pour écarter quelqu'un qui répète le même prompt. Le jeu ouvert ne le contient jamais. L'identifiant ne permet pas de retrouver le compte ni la session, et disparaît quand le compte est supprimé ou à la fin de la durée de conservation.",
+                "label": "Publier les identifiants de votants dans le jeu brut",
+                "save": "Enregistrer",
+                "success": "Réglage enregistré. Il s'applique à la prochaine publication.",
+                "title": "Identifiants de votants dans le jeu brut",
+                "warning": "Quiconque reçoit le jeu brut pourra relier entre elles les conversations d'une même personne. Vérifiez que les conditions d'utilisation le couvrent. Un dépôt Hugging Face qui reçoit le jeu brut doit être privé, ou fermé avec validation manuelle, sinon l'envoi échoue."
+            }
         },
         "settings": {
             "authentification": {
@@ -594,8 +691,10 @@
                 },
                 "platformName": "Nom de la plateforme",
                 "ranking": {
+                    "greyRankSpread": "Écart de rang avant grisage",
+                    "greyRankSpreadHelp": "Un modèle affiché est grisé si son rang peut varier de plus de ce nombre de places, vers le haut ou vers le bas. Mettez une valeur égale ou supérieure à l'écart de rang maximum pour ne griser aucun modèle.",
                     "maxRankSpread": "Écart de rang maximum",
-                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs.",
+                    "maxRankSpreadHelp": "Un modèle n'est affiché que si son rang peut varier d'au plus ce nombre de places, vers le haut comme vers le bas. Une valeur plus haute affiche plus de modèles, avec des rangs moins sûrs. Pris en compte au prochain calcul du classement, dans l'heure.",
                     "minVotes": "Nombre minimum de votes",
                     "minVotesHelp": "Un modèle n'est classé qu'à partir de ce nombre de votes. Pris en compte au prochain calcul du classement, dans l'heure.",
                     "title": "Classement"
@@ -760,6 +859,112 @@
             "title": "Suggestions de prompts",
             "validation": "Saisissez une suggestion et choisissez une catégorie."
         },
+        "tools": {
+            "errors": {
+                "invalid_credential": "Le fournisseur refuse l'identifiant.",
+                "no_credential": "Aucune clé : ni sur l'outil, ni sur le serveur.",
+                "no_credit": "Le compte du fournisseur n'a plus de crédit.",
+                "no_url": "Renseignez l'adresse du serveur MCP.",
+                "timeout": "Le serveur a mis trop de temps à répondre.",
+                "unknown_builtin": "Aucun outil intégré ne porte cette clé.",
+                "unreachable": "Le serveur ne répond pas ou renvoie une erreur."
+            },
+            "functionsHint": "Aucune case cochée : toutes les fonctions sont proposées, y compris celles que le serveur ajoutera plus tard. Cochez-en pour ne proposer que celles-là.",
+            "functionsLegend": "Fonctions proposées aux modèles",
+            "functionsUntested": "Testez l'outil pour lister les fonctions du serveur.",
+            "list": {
+                "add": "Ajouter un serveur MCP",
+                "builtin": "Intégré",
+                "calls": "Utilisations (30 j)",
+                "enabled": "Activé",
+                "failures": "dont {count} en échec",
+                "health": {
+                    "checking": "Vérification…",
+                    "invalid_credential": "Identifiant refusé",
+                    "no_credential": "Aucune clé",
+                    "no_credit": "Plus de crédit",
+                    "no_url": "Aucune adresse",
+                    "ok": "Répond",
+                    "timeout": "Trop lent",
+                    "title": "État",
+                    "unknown": "Inconnu",
+                    "unknown_builtin": "Outil inconnu",
+                    "unreachable": "Ne répond pas"
+                },
+                "intro": "Les outils activés sont proposés aux visiteurs avant chaque comparaison. Désactivez-en un pour le retirer tout de suite, sans perdre sa configuration.",
+                "label": "Outil",
+                "recheck": "Revérifier",
+                "rechecking": "Vérification…",
+                "switch": "Activer {label}",
+                "switchedOff": "« {label} » n'est plus proposé aux visiteurs.",
+                "switchedOn": "« {label} » est proposé aux visiteurs."
+            },
+            "remove": "Retirer l'identifiant",
+            "removeConfirm": "Confirmer le retrait",
+            "removed": "Identifiant retiré.",
+            "secretHintBuiltin": "La clé API du fournisseur. Laissez vide pour garder la clé enregistrée ; sans clé enregistrée, celle du serveur (LINKUP_API_KEY) sert.",
+            "secretHintMcp": "Un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Laissez vide pour garder celui enregistré.",
+            "secretSet": "Identifiant enregistré",
+            "secretUnset": "Aucun identifiant",
+            "test": "Tester l'outil",
+            "testFailed": "Le test a échoué",
+            "testHint": "Le test utilise la configuration enregistrée : enregistrez d'abord vos changements.",
+            "testing": "Test en cours…",
+            "testOk": "L'outil répond.",
+            "testOkFunctions": "Le serveur répond et propose {count} fonctions.",
+            "wizard": {
+                "connect": {
+                    "hint": "Un serveur MCP donne aux modèles de nouvelles fonctions : chercher dans des données, lire une documentation. Indiquez son adresse et testez la connexion. Rien n'est enregistré avant la dernière étape.",
+                    "mustTest": "Testez la connexion pour continuer.",
+                    "secret": "Identifiant (facultatif)",
+                    "secretHint": "Laissez vide si le serveur est public. Sinon, un jeton, envoyé comme « Authorization: Bearer », ou un en-tête entier sous la forme « Nom: valeur ». Il est chiffré et ne s'affiche plus ensuite.",
+                    "test": "Tester la connexion",
+                    "title": "Se connecter au serveur MCP",
+                    "url": "Adresse du serveur",
+                    "urlHint": "L'adresse HTTP du serveur MCP, souvent terminée par /mcp."
+                },
+                "limit": {
+                    "all": "Tout cocher",
+                    "count": "{count} sur {total}",
+                    "hint": "Les modèles ne voient que les fonctions cochées. Tout laisser coché propose aussi celles que le serveur ajoutera plus tard.",
+                    "needOne": "Cochez au moins une fonction.",
+                    "none": "Tout décocher",
+                    "title": "Choisir les fonctions"
+                },
+                "next": "Continuer",
+                "present": {
+                    "description": "Description",
+                    "descriptionHint": "Une phrase qui dit ce que l'outil permet de faire.",
+                    "hint": "Ce nom et cette phrase apparaissent quand un visiteur choisit ses outils, avant une comparaison.",
+                    "key": "Identifiant technique : {key}",
+                    "label": "Nom",
+                    "preview": "Ce que voit le visiteur",
+                    "title": "Présenter l'outil aux visiteurs"
+                },
+                "progress": "Étapes de l'ajout",
+                "review": {
+                    "allFunctions": "Toutes ({count}), et celles ajoutées plus tard",
+                    "create": "Créer l'outil",
+                    "created": "« {label} » est ajouté.",
+                    "creating": "Création…",
+                    "edit": "Modifier",
+                    "enable": "Proposer aux visiteurs dès maintenant",
+                    "enableHint": "Sinon, l'outil est créé désactivé et vous l'activez plus tard depuis la liste.",
+                    "failed": "L'outil n'a pas été créé",
+                    "functions": "Fonctions",
+                    "noDescription": "Aucune",
+                    "secret": "Identifiant",
+                    "title": "Vérifier et créer"
+                },
+                "steps": {
+                    "connect": "Connecter",
+                    "limit": "Limiter",
+                    "present": "Présenter",
+                    "review": "Créer"
+                },
+                "stepState": "Étape {current} sur {total}"
+            }
+        },
         "voteTags": {
             "active": "Active",
             "addTitle": "Ajouter une étiquette",
@@ -829,11 +1034,15 @@
             "title": "Suggestions de requêtes"
         },
         "title": "Comment puis-je vous aider aujourd'hui ?",
-        "webSearch": {
-            "disabled": "Recherche web désactivée",
-            "enabled": "Recherche web activée",
-            "label": "Recherche web",
-            "tooltip": "Activez la recherche sur le Web pour permettre aux modèles d'utiliser des sources en ligne et de citer des informations plus récentes.<br><strong>Sans la recherche sur le Web</strong>, les modèles répondent en se basant sur ce qu'ils ont appris pendant leur formation (leurs données d'entraînement). Ils ne peuvent pas vérifier les informations en ligne ; par conséquent, les faits très récents ou très spécifiques peuvent être incomplets."
+        "tools": {
+            "add": "Ajouter les outils",
+            "clear": "Tout désélectionner",
+            "contract": "Une fois activés, les outils sélectionnés sont proposés aux deux modèles comparés, qui restent libres de les utiliser ou non.",
+            "count": "{count} outils",
+            "label": "Outils",
+            "locked": "Les outils sont fixés pour toute la conversation.",
+            "none": "Aucun outil",
+            "viewAll": "Voir tous les outils"
         }
     },
     "arene": {
@@ -841,9 +1050,9 @@
             "block_cooldown": "Trop de messages bloqués ont été envoyés depuis votre connexion. Veuillez patienter avant de réessayer.",
             "captcha_failed": "Vérification anti-robot échouée, veuillez réessayer.",
             "captcha_unavailable": "Vérification anti-robot indisponible, veuillez réessayer.",
+            "comparison_model_unavailable": "Un des modèles de cette comparaison n’est plus disponible. Lancez une nouvelle comparaison pour continuer.",
             "comparison_streaming": "Veuillez attendre la fin de la réponse des modèles.",
             "max_turns_reached": "Cette conversation a atteint sa limite d’échanges. Veuillez en démarrer une nouvelle.",
-            "comparison_model_unavailable": "Un des modèles de cette comparaison n’est plus disponible. Lancez une nouvelle comparaison pour continuer.",
             "model_unavailable": "Un des modèles choisis n’est plus disponible en sélection manuelle. Rechargez la page pour choisir parmi les modèles disponibles.",
             "prompt_check": {
                 "generic": "Votre message n'a pas pu être envoyé car il enfreint nos conditions d'utilisation. Veuillez le reformuler.",
@@ -1009,6 +1218,30 @@
         "success": "Vous êtes connecté !"
     },
     "chatbot": {
+        "activity": {
+            "collapse": "Réduire",
+            "failed": "L'outil n'a pas répondu",
+            "reasoning": "Réflexion",
+            "showAll": "Tout afficher",
+            "state": {
+                "intermediate_content": {
+                    "finished": "Commentaire terminé",
+                    "pending": "Commentaire en cours…"
+                },
+                "reasoning": {
+                    "finished": "Réflexion terminée",
+                    "pending": "Réflexion en cours…"
+                },
+                "tool": {
+                    "finished": "Utilisation de l'outil « {name} » terminé",
+                    "pending": "Utilisation de l'outil « {name} » en cours…"
+                },
+                "web_search": {
+                    "finished": "Recherche sur le web terminée",
+                    "pending": "Recherche sur le web en cours…"
+                }
+            }
+        },
         "announce": {
             "generating": "Les modèles rédigent leur réponse…",
             "ready": "Les deux réponses sont prêtes."
@@ -1028,13 +1261,20 @@
             }
         },
         "loading": "Chargement des réponses",
+        "parameters": "Paramètres de la discussion",
         "reasoning": {
             "finished": "Raisonnement terminé",
             "inProgress": "Raisonnement en cours…"
         },
         "revealButton": "Terminer et découvrir les modèles",
-        "webSearch": {
-            "label": "Résultats de recherche Web associés."
+        "tools": {
+            "enabled": "Outils activés",
+            "label": {
+                "tool": "Requête « {name} »: « {request} »",
+                "web_search": "Recherche « {request} »"
+            },
+            "noResult": "Aucun résultat",
+            "running": "Recherche en cours…"
         }
     },
     "closeModal": "Fermer la fenêtre modale",
@@ -1113,11 +1353,16 @@
         "previewEmpty": "L’aperçu apparaîtra ici.",
         "toastError": "Données invalides",
         "toastSuccess": "Données enregistrées avec succès",
-        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?"
+        "unsavedChanges": "Vous avez des changements non modifiés. Êtes-vous sûr de vouloir quitter la page ?",
+        "upload": {
+            "browse": "Parcourir les fichiers",
+            "current": "Image actuelle",
+            "remove": "Supprimer l'image"
+        }
     },
     "general": {
         "document": {
-            "frenchOnly": "Ce document n’est publié qu’en français pour le moment.",
+            "otherLanguage": "Ce document n’est publié qu’en {language} pour le moment.",
             "unavailable": "Ce document n’est pas disponible pour le moment. Merci de réessayer plus tard.",
             "version": "Version {version}, applicable depuis le {date}."
         },
@@ -1152,204 +1397,70 @@
                 "name": "N/A"
             }
         },
-        "endpoint_upsert": {
-            "api_base": {
-                "help": "Base URL for the API endpoint.",
-                "label": "API base URL"
-            },
+        "dataset_check_upsert": {
             "api_key": {
-                "help": "if not given, all LLMs depending on this endpoint will be disabled.",
-                "label": "API secret key"
+                "help": "Laissée vide, l'analyse utilise la clé de la vérification des messages, puis OPENROUTER_API_KEY.",
+                "label": "Clé API OpenRouter"
             },
-            "api_type": {
-                "help": "API format (e.g. 'openrouter' or 'openai' for OpenAI-compatible APIs).",
-                "label": "Api type"
+            "category_threshold": {
+                "help": "Un thème est attribué à partir de ce score. Aucun atteint : « Other ».",
+                "label": "Seuil des thèmes"
             },
-            "api_version": {
-                "help": "API version (optional)",
-                "label": "API version"
+            "criteria": {
+                "help": "Une conversation qui atteint le seuil d'un critère n'est pas publiée.",
+                "label": "Critères d'exclusion"
             },
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "name": {
-                "help": "Readable endpoint name (e.g. 'OpenRouter').",
-                "label": "Name"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "lab_upsert": {
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "logo": {
-                "help": "An icon name from https://lobehub.com/fr/icons or a filename (e.g. 'ai2.svg') from `frontend/static/orgs/ai/`.",
-                "label": "Logo"
-            },
-            "name": {
-                "label": "Name"
-            },
-            "origin_country": {
-                "help": "A 2 letter code from https://en.wikipedia.org/wiki/ISO_3166-1.",
-                "label": "Origin Country"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "license_upsert": {
-            "commercial_use": {
-                "label": "Allows commercial use."
-            },
-            "created_at": {
-                "label": "Created At"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "kind": {
-                "label": "Licence type"
-            },
-            "name": {
-                "help": "Licence name (e.g. 'Apache 2.0' or 'MIT').",
-                "label": "Name"
-            },
-            "reuse": {
-                "label": "Allows reuse/redistribution."
-            },
-            "updated_at": {
-                "label": "Updated At"
-            }
-        },
-        "llm_upsert": {
-            "active_params": {
-                "help": "Active parameters in billions (only for MoE LLMs).",
-                "label": "Active Params"
-            },
-            "api_model_id": {
-                "help": "Complete identifier used for API calls.",
-                "label": "API model id"
-            },
-            "arch": {
-                "help": "LLM architecture, Use `maybe-*` if information is not confirmed.",
-                "label": "Arch"
-            },
-            "context_tokens": {
-                "help": "Size of its context window in tokens.",
-                "label": "Context Tokens"
-            },
-            "created_at": {
-                "label": "Created At"
-            },
-            "custom_selectable": {
-                "help": "Whether visitors can pick this LLM themselves in custom mode. When off, it shows greyed out there and only comes up in random draws.",
-                "label": "Selectable in custom mode"
-            },
-            "endpoint_id": {
-                "help": "The LLM's endpoint information, create it first if not already available",
-                "label": "Endpoint"
-            },
-            "eu_hostable": {
-                "help": "Whether the LLM is hostable in the EU.",
-                "label": "Eu Hostable"
-            },
-            "human_id": {
-                "help": "(legacy id), usually the LLM id specified in 'api_model_id'",
-                "label": "Readable id"
-            },
-            "id": {
-                "label": "Id"
-            },
-            "inputs": {
-                "help": "What kind of media the LLM can have in input.",
-                "label": "Modalities"
-            },
-            "knowledge_cutoff": {
-                "help": "Date after which the LLM no longer has knowledge.",
-                "label": "Knowledge Cutoff"
-            },
-            "lab_id": {
-                "help": "The lab that developed the LLM, create it first if not already available",
-                "label": "Lab"
-            },
-            "license_id": {
-                "help": "The LLM's license, create it first if not already available",
-                "label": "License"
-            },
-            "links": {
-                "help": "List of links to display in LLM card.",
-                "label": "Links"
-            },
-            "name": {
-                "label": "Readable name"
-            },
-            "params": {
-                "help": "Total parameters in billions.",
-                "label": "Params"
-            },
-            "price_in": {
-                "help": "Price per million input tokens in USD.",
-                "label": "Price In"
-            },
-            "price_out": {
-                "help": "Price per million output tokens in USD.",
-                "label": "Price Out"
-            },
-            "public_training_code": {
-                "help": "Whether the LLM training code is public.",
-                "label": "Public Training Code"
-            },
-            "public_training_data": {
-                "help": "Whether the LLM training data is public.",
-                "label": "Public Training Data"
-            },
-            "public_weights": {
-                "help": "Whether the LLM weights are public.",
-                "label": "Public Weights"
-            },
-            "quantization": {
-                "help": "Quantization scheme applied (q4, q8, or None for full precision).",
-                "label": "Quantization"
-            },
-            "rate_limited": {
-                "help": "Apply rate limits (usually for high API costs LLMs).",
-                "label": "Rate Limited"
-            },
-            "release_date": {
-                "label": "Release Date"
-            },
-            "status": {
-                "help": "enabled: callable and displayed in llm list + rankings; archived: not callable but displayed in llm list + rankings; disabled: not callable and hidden in llm list + rankings.",
-                "label": "Status"
-            },
-            "system_prompt": {
-                "help": "System message to add in llm call if specified",
-                "label": "System Prompt"
-            },
-            "updated_at": {
-                "label": "Updated At"
-            },
-            "Link": {
-                "text": {
-                    "label": "Text"
+            "DatasetCheckCriterion": {
+                "key": {
+                    "help": "Les scores enregistrés sont rangés par identifiant : ne le changez plus une fois le critère en service.",
+                    "label": "Identifiant"
                 },
-                "url": {
-                    "label": "Url"
+                "label": {
+                    "label": "Nom"
+                },
+                "no": {
+                    "label": "Compte comme non"
+                },
+                "question": {
+                    "help": "Une question fermée sur la conversation (le `message`), à laquelle on répond par oui ou non.",
+                    "label": "Question posée au modèle"
+                },
+                "reason": {
+                    "help": "Données personnelles ou spam : le drapeau publié et le motif d'archivage.",
+                    "label": "Motif"
+                },
+                "threshold": {
+                    "label": "Seuil"
+                },
+                "yes": {
+                    "label": "Compte comme oui"
                 }
+            },
+            "description": {
+                "help": "Le modèle la lit avec chaque conversation. Dites ce qu'est l'instance et ce qui est publié.",
+                "label": "Description de l'instance"
+            },
+            "language_threshold": {
+                "help": "Une langue est attribuée à partir de ce score.",
+                "label": "Seuil des langues"
+            },
+            "model": {
+                "help": "Un modèle de décision d'OpenRouter. Vide, aucune conversation n'est analysée ni publiée.",
+                "label": "Modèle de décision"
             }
         },
         "prompt_check_upsert": {
             "api_key": {
                 "help": "Laissée vide, la vérification utilise OPENROUTER_API_KEY.",
                 "label": "Clé API OpenRouter"
+            },
+            "conversations_per_ip_per_hour": {
+                "help": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure"
+            },
+            "conversations_same_models_per_ip_per_hour": {
+                "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
+                "label": "Conversations par IP et par heure avec les mêmes modèles"
             },
             "criteria": {
                 "label": "Critères"
@@ -1396,14 +1507,6 @@
             "required": {
                 "help": "Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.",
                 "label": "Vérification obligatoire"
-            },
-            "conversations_per_ip_per_hour": {
-                "help": "Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.",
-                "label": "Conversations par IP et par heure"
-            },
-            "conversations_same_models_per_ip_per_hour": {
-                "help": "La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.",
-                "label": "Conversations par IP et par heure avec les mêmes modèles"
             }
         }
     },
@@ -1962,6 +2065,7 @@
                     "arch": "Architecture",
                     "consumption": "Conso. moyenne<br>(1000 tokens)",
                     "elo": "Score de<br> satisfaction BT",
+                    "energy_class": "Énergie",
                     "license": "Licence",
                     "n_match": "Total votes",
                     "name": "Modèle",
@@ -1975,10 +2079,12 @@
                     "trust_range": "Confiance (±)"
                 },
                 "estimation": "(estimation)",
+                "rankRange": "Rang possible entre {best} et {worst}",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "consumption": "Mesurée en milliwattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
+                    "energy_class": "Étiquette énergie de A (le plus sobre) à F (le moins sobre), selon l'électricité utilisée par le modèle pour répondre. Les valeurs exactes sont dans l'onglet Focus énergie et dans le téléchargement. Les modèles propriétaires dont la taille et l'architecture ne sont pas publiques sont affichés en N/A.",
                     "price": "Prix indicatif d’utilisation via API pour un million de jetons, converti dans la devise affichée. L’entrée correspond à la requête envoyée, la sortie à la réponse générée.",
                     "rank": "Classe de modèles que les votes ne permettent pas de départager. Chaque modèle d'une classe est statistiquement indiscernable du premier de sa classe. Les classes sont calculées sur l'ensemble du classement : elles ne changent pas quand vous filtrez ou triez le tableau. La dernière classe regroupe tous les modèles situés en dessous.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
@@ -1991,7 +2097,8 @@
                 "label": "Afficher les rangs"
             },
             "totalModels": "Total modèles :",
-            "totalVotes": "Total votes :"
+            "totalVotes": "Total votes :",
+            "uncertain": "En grisé : modèles dont le rang peut encore varier de plus de {count} places."
         },
         "title": "Des votes… au classement des modèles",
         "views": {

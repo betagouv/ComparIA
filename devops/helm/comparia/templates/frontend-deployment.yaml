@@ -12,6 +12,7 @@ regardless of the backend's CORS config.
 {{- else if .Values.ingress.host }}
 {{- $probeHost = .Values.ingress.host }}
 {{- end }}
+{{- $instancePath := include "comparia.instancePath" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,6 +38,16 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.frontend }}
+      topologySpreadConstraints:
+        {{- range . }}
+        - {{- toYaml . | nindent 10 }}
+          labelSelector:
+            matchLabels:
+              {{- include "comparia.selectorLabels" $ | nindent 14 }}
+              app.kubernetes.io/component: frontend
+        {{- end }}
+      {{- end }}
       containers:
         - name: frontend
           image: {{ include "comparia.frontendImage" . | quote }}
@@ -52,7 +63,7 @@ spec:
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ $instancePath }}/
               port: http
               {{- if $probeHost }}
               httpHeaders:
@@ -68,6 +79,10 @@ spec:
           env:
             - name: PORT
               value: "80"
+            {{- if $instancePath }}
+            - name: INSTANCE_PATH
+              value: {{ $instancePath | quote }}
+            {{- end }}
             - name: PUBLIC_API_URL
               value: {{ .Values.frontend.publicApiUrl | quote }}
             - name: PUBLIC_API_LOCAL_URL

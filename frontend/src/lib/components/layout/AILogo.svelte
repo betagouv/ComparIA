@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { api } from '$lib/fastapi-client'
   import type { HTMLImgAttributes } from 'svelte/elements'
 
@@ -36,7 +37,7 @@
 {:else if logo?.includes('.')}
   <img
     {...props}
-    src="/orgs/ai/{logo}"
+    src={asset(`/orgs/ai/${logo}`)}
     class={['object-contain', sizeClass, inverted, props.class]}
   />
 {:else}

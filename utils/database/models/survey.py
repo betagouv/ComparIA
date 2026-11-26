@@ -7,6 +7,8 @@ from sqlalchemy import Index, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.i18n import TranslatableRaw
+
 from .utils import BaseDBModel, OptionalDatetime, UtcDatetime
 
 # Closed answers only. Free text is where people type their employer, their
@@ -45,7 +47,7 @@ class SurveyOption(SQLModel):
     # the value stored in an answer and published in the dataset. Renaming the
     # label is free, renaming the key would silently split a column in two.
     key: Annotated[str, Field(max_length=100)]
-    labels: dict[str, str]
+    labels: TranslatableRaw[str]
     # Removing an option archives it. Answers already given keep resolving,
     # and the option stops being offered.
     archived: bool = False
@@ -60,7 +62,7 @@ class SurveyQuestionBase(BaseDBModel):
     required: bool = Field(default=False)
     input_type: Annotated[SurveyInputType, Field(sa_type=String)]
     # Per-locale question text, {'fr': "Quelle est votre tranche d'age ?"}.
-    labels: Annotated[dict[str, str], Field(sa_type=JSONB)]
+    labels: Annotated[TranslatableRaw[str], Field(sa_type=JSONB)]
     options: Annotated[list[dict], Field(sa_type=JSONB)]
     # Whether answers reach the published dataset. Off by default: an admin
     # adding a question for internal segmentation should not have to know the
@@ -202,7 +204,7 @@ def _no_control_chars(value: str) -> str:
     return value
 
 
-def _validate_labels(value: dict[str, str], what: str) -> dict[str, str]:
+def _validate_labels(value: TranslatableRaw[str], what: str) -> TranslatableRaw[str]:
     if not value:
         raise ValueError(f"a {what} needs at least one label")
     for label in value.values():
@@ -225,12 +227,12 @@ class SurveyOptionWrite(SQLModel):
     # already exists. Sending it back is what keeps the key, and every answer
     # pointing at it, attached to the row the admin is editing.
     key: str | None = None
-    labels: dict[str, OptionLabel]
+    labels: TranslatableRaw[OptionLabel]
     archived: bool = False
 
     @field_validator("labels")
     @classmethod
-    def check_labels(cls, value: dict[str, str]) -> dict[str, str]:
+    def check_labels(cls, value: TranslatableRaw[str]) -> TranslatableRaw[str]:
         return _validate_labels(value, "option")
 
 
@@ -239,13 +241,13 @@ class SurveyQuestionCreate(SQLModel):
     input_type: SurveyInputType
     # One entry per language the instance serves. The key is derived from the
     # first label given, so at least one is required.
-    labels: dict[str, QuestionLabel]
+    labels: TranslatableRaw[QuestionLabel]
     options: list[SurveyOptionWrite]
     published: bool = False
 
     @field_validator("labels")
     @classmethod
-    def check_labels(cls, value: dict[str, str]) -> dict[str, str]:
+    def check_labels(cls, value: TranslatableRaw[str]) -> TranslatableRaw[str]:
         return _validate_labels(value, "question")
 
     @field_validator("options")
@@ -256,13 +258,13 @@ class SurveyQuestionCreate(SQLModel):
 
 class SurveyQuestionUpdate(SQLModel):
     required: bool
-    labels: dict[str, QuestionLabel]
+    labels: TranslatableRaw[QuestionLabel]
     options: list[SurveyOptionWrite]
     published: bool
 
     @field_validator("labels")
     @classmethod
-    def check_labels(cls, value: dict[str, str]) -> dict[str, str]:
+    def check_labels(cls, value: TranslatableRaw[str]) -> TranslatableRaw[str]:
         return _validate_labels(value, "question")
 
     @field_validator("options")
@@ -287,7 +289,7 @@ class SurveyQuestionOrder(SQLModel):
 
 class AdminSurveyOption(SQLModel):
     key: str
-    labels: dict[str, str]
+    labels: TranslatableRaw[str]
     archived: bool
     # How many answers already carry this key.
     answer_count: int
@@ -298,7 +300,7 @@ class AdminSurveyQuestion(SQLModel):
     key: str
     required: bool
     input_type: SurveyInputType
-    labels: dict[str, str]
+    labels: TranslatableRaw[str]
     options: list[AdminSurveyOption]
     published: bool
     revision: int

@@ -23,6 +23,13 @@ replicaCount:
   backend: 1
   frontend: 1
 
+## -- How the pods of a component are spread over the cluster, for example one per node when
+## possible: `[{maxSkew: 1, topologyKey: kubernetes.io/hostname, whenUnsatisfiable: ScheduleAnyway}]`.
+## The chart adds the labelSelector of the component, do not set one.
+topologySpreadConstraints:
+  backend: []
+  frontend: []
+
 service:
   backend:
     port: 80
@@ -100,6 +107,8 @@ config:
 
   ## -- Public origin used to build absolute links in emails (e.g. login codes). Left empty, the
   ## app falls back to its own dev default (http://localhost:5173) -- set this for a real install.
+  ## The path of this URL, if any (https://example.org/fr), is the path the Instance is served under:
+  ## the frontend gets it as INSTANCE_PATH and its readiness probe hits it.
   appUrl: ""
   ## -- Origin the backend answers on, `COMPARIA_API_URL`. The OIDC provider sends the browser back to
   ## `<apiUrl>/api/auth/oidc/callback`. Leave empty when the ingress serves the backend under /api of

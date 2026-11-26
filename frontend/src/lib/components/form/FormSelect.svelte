@@ -13,7 +13,7 @@
     disabled,
     options,
     ...props
-  }: FormSelectProps & { value: string | null } = $props()
+  }: Omit<FormSelectProps, 'component'> & { value: string | null } = $props()
 </script>
 
 <FormField {...props} component="select">

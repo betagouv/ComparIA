@@ -1,16 +1,12 @@
 <script lang="ts">
-  import { getAuthContext } from '$lib/auth.svelte'
   import Dropdown from '$components/Dropdown.svelte'
-  import { getLocales } from '$lib/global.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getLocale, setLocale } from '$lib/i18n/runtime'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   let { id, ...props }: { id: string } & SvelteHTMLElements['nav'] = $props()
 
-  const auth = getAuthContext()
-  const locales = $derived(getLocales(auth.config.enabled_locales))
-  const currentLocale = getLocale()
+  const locales = getLocalesContext()
 </script>
 
 <nav
@@ -20,22 +16,21 @@
 >
   <Dropdown
     id="dropdown-{id}"
-    label={locales.find((locale) => locale.code === currentLocale)?.short ??
-      currentLocale.toUpperCase()}
+    label={locales.getLabel(locales.current, 'short')}
     title={m['actions.selectLanguage']()}
     buttonClass="fr-translate__btn rounded-sm!"
     closeOnSelect
   >
     <ul class="fr-sidemenu__list">
-      {#each locales as locale (locale.code)}
+      {#each locales.enabledOptions as locale (locale.value)}
         <li class="fr-sidemenu__item">
           <button
             class="fr-sidemenu__link py-2! font-normal! font-sm!"
-            lang={locale.code}
-            aria-current={locale.code == currentLocale}
-            onclick={() => setLocale(locale.code)}
+            lang={locale.value}
+            aria-current={locale.value == locales.current}
+            onclick={() => (locales.current = locale.value)}
           >
-            {locale.long}
+            {locale.label}
           </button>
         </li>
       {/each}

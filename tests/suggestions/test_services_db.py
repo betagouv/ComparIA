@@ -49,6 +49,7 @@ from utils.database.models.suggestion import (
     SuggestionCategory,
     SuggestionCreate,
 )
+from utils.i18n import SupportedLocale
 
 requires_test_db = pytest.mark.skipif(
     not TEST_DB_URI,
@@ -104,11 +105,15 @@ def _run(scenario: Callable[[AsyncSession], Awaitable[Any]]) -> Any:
 
 
 def _category(
-    category_id: uuid.UUID, key: str, title: str, locale: str, display_order: int
+    category_id: uuid.UUID,
+    key: str,
+    title: str,
+    locale: SupportedLocale,
+    display_order: int,
 ) -> SuggestionCategory:
     return SuggestionCategory(
         id=category_id,
-        locale=locale,  # type: ignore[arg-type]
+        locale=locale,
         key=key,
         title=title,
         description=f"Description {title}",

@@ -5,7 +5,7 @@ from cyclopts import App
 from utils.logger import configure_logger
 
 from .archs import generate_archs_i18n, generate_archs_json_schema
-from .i18n import clean_locales
+from .i18n import clean_locales, update_paraglide_settings
 from .i18n_schemas import generate_admin_schemas_i18n
 from .typescript.generate_frontend_types import (
     generate_frontend_constants,
@@ -29,6 +29,7 @@ def i18n():
     clean_locales()
     generate_archs_i18n()
     generate_admin_schemas_i18n()
+    update_paraglide_settings()
 
 
 def run_all():

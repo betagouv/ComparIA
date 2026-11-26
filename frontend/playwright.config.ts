@@ -3,11 +3,15 @@ import { defineConfig } from '@playwright/test'
 // PLAYWRIGHT_BASE_URL points the suite at a server that is already up, which is
 // how the accessibility sweep is meant to run: it needs the backend, so
 // building a preview here would not be enough on its own.
-const baseURL = process.env.PLAYWRIGHT_BASE_URL
+//
+// An app served under a path, such as http://localhost:8080/fr, needs the
+// trailing slash so that the relative addresses of the tests ('./models') stay
+// under that path, where '/models' would leave it.
+const baseURL = process.env.PLAYWRIGHT_BASE_URL?.replace(/\/*$/, '/')
 
 export default defineConfig({
   testDir: 'e2e',
-  use: { baseURL: baseURL ?? 'http://localhost:4173' },
+  use: { baseURL: baseURL ?? 'http://localhost:4173/' },
   webServer: baseURL
     ? undefined
     : {

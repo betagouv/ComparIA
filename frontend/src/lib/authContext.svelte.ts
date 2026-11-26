@@ -1,3 +1,4 @@
+import type { AuthConfig } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 import { createContext } from 'svelte'
 
@@ -6,30 +7,6 @@ export interface AuthUser {
   role: string
   totp_enabled: boolean
   questions_answered: boolean
-}
-
-export interface AuthConfig {
-  access_policy: 'anonymous_first' | 'sign_in_required'
-  methods: ('email_code' | 'oidc')[]
-  smtp_configured: boolean
-  domain_allowlist: string[]
-  platform_name: string
-  platform_url: string
-  has_custom_logo: boolean
-  logo_version: string | null
-  primary_color_light: string
-  primary_color_dark: string
-  secondary_color_light: string
-  secondary_color_dark: string
-  homepage_url: string | null
-  enabled_locales: string[]
-  default_locale: string
-  // OIDC method description for the login page. `oidc_enabled` is derived
-  // server-side from `methods` plus a complete provider config, so the button
-  // only renders when OIDC would actually work.
-  oidc_enabled: boolean
-  oidc_button_label: string | null
-  oidc_has_button_logo: boolean
 }
 
 export type AuthCtx = {

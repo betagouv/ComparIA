@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
 from backend.auth.dependencies import OptionalUser, RequiredAnomymous
@@ -13,6 +13,7 @@ from backend.survey.services import (
     my_answers,
     submit_answers,
 )
+from backend.utils.locale import LocaleQuery
 from utils.database.models.auth import User
 from utils.database.models.survey import PublicSurveyResponse, SurveyAnswerSubmit
 from utils.database.session import get_session
@@ -35,7 +36,7 @@ def _respondent(
 async def get_questions(
     user: OptionalUser,
     anonymous_user_hash: RequiredAnomymous,
-    locale: str = Query(default="fr"),
+    locale: LocaleQuery,
 ) -> PublicSurveyResponse:
     user_id, anon_hash = _respondent(user, anonymous_user_hash)
     questions = await list_questions(locale)

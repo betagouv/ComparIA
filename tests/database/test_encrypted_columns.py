@@ -346,6 +346,7 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
     _fernet.cache_clear()
     old_totp_token = EncryptedStr().process_bind_param("JBSWY3DP", None)
     old_oidc_token = EncryptedStr().process_bind_param("client-secret", None)
+    old_voter_token = EncryptedStr().process_bind_param("voter-key", None)
     settings.COMPARIA_ENCRYPTION_KEY = f"{current},{old_key}"
     _fernet.cache_clear()
     try:
@@ -360,7 +361,11 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
                 totp(EncryptedStr().process_bind_param("fresh", None)),
             ],
             app_settings=[
-                AppSettings(id=1, oidc_client_secret_encrypted=old_oidc_token.encode())
+                AppSettings(
+                    id=1,
+                    oidc_client_secret_encrypted=old_oidc_token.encode(),
+                    dataset_voter_key_encrypted=old_voter_token.encode(),
+                )
             ],
         )
 
@@ -370,13 +375,17 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
         assert session.commits == 1
         assert len(session.statements) == 5
         assert all(s._for_update_arg is not None for s in session.statements)
-        assert len(session.added) == 6
-        rewritten = session.added[-2]
+        # One add per secret: the settings row holds two.
+        assert len(session.added) == 7
+        rewritten = session.added[-3]
         assert rewritten.secret_encrypted != old_totp_token
         assert decrypt_secret(rewritten.secret_encrypted) == "JBSWY3DP"
         oidc = session.added[-1].oidc_client_secret_encrypted
         assert isinstance(oidc, bytes) and oidc != old_oidc_token.encode()
         assert decrypt_secret(oidc.decode()) == "client-secret"
+        voter = session.added[-1].dataset_voter_key_encrypted
+        assert isinstance(voter, bytes) and voter != old_voter_token.encode()
+        assert decrypt_secret(voter.decode()) == "voter-key"
         infos = [
             r.getMessage() for r in caplog.records if "rows rewritten" in r.getMessage()
         ]
@@ -385,7 +394,7 @@ def test_rotation_locks_and_rewrites_every_secret_in_one_transaction(caplog):
             "[SECRETS] prompt_check: 1 rows rewritten",
             "[SECRETS] publish_destination: 1 rows rewritten",
             "[SECRETS] auth_totp: 1 rows rewritten",
-            "[SECRETS] app_settings: 1 rows rewritten",
+            "[SECRETS] app_settings: 2 rows rewritten",
         ]
     finally:
         settings.COMPARIA_ENCRYPTION_KEY = current

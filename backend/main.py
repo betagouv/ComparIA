@@ -19,6 +19,7 @@ from backend.settings.router import router as settings_router
 from backend.statistics import router as statistics_router
 from backend.suggestions.router import router as suggestions_router
 from backend.survey.router import router as survey_router
+from backend.tools.router import router as tools_router
 from backend.utils.countries import get_vote_count
 from backend.vote_tags.router import router as vote_tags_router
 from utils.database.settings import get_app_settings
@@ -61,20 +62,24 @@ if not settings.METRICS_TOKEN and not settings.LANGUIA_DEBUG:
 
 # Deployments serve front and API from one origin through Caddy, so the extra
 # dev origins are only needed when running the front separately in debug mode.
-origins = [settings.COMPARIA_APP_URL, *settings.COMPARIA_CORS_ORIGINS]
-if settings.LANGUIA_DEBUG:
-    origins += [
-        "http://localhost",
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:8000",
-        "http://localhost:8001",
-        "http://localhost:8002",
-        "http://localhost:8008",
-    ]
+# An Origin header holds no path: the public URL is reduced to scheme and host.
+def cors_origins() -> list[str]:
+    origins = [settings.app_origin, *settings.COMPARIA_CORS_ORIGINS]
+    if settings.LANGUIA_DEBUG:
+        origins += [
+            "http://localhost",
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://localhost:8000",
+            "http://localhost:8001",
+            "http://localhost:8002",
+            "http://localhost:8008",
+        ]
+    return origins
+
 
 app.middleware("http")(auth_middleware)
 app.middleware("http")(anonymous_middleware)
@@ -97,16 +102,21 @@ async def maintenance_middleware(request: Request, call_next):
 
 app.middleware("http")(maintenance_middleware)
 
+
 # Registered after auth/anonymous/maintenance so it wraps them (Starlette builds
 # the stack with the last-registered middleware outermost), otherwise auth_middleware
 # short-circuits CORS preflight/401 responses before CORS headers are added.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allow_headers=["content-type"],
-)
+def install_cors(app: FastAPI) -> None:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins(),
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+        allow_headers=["content-type"],
+    )
+
+
+install_cors(app)
 
 
 # Registered last so it wraps every other middleware, including CORS: the
@@ -174,6 +184,7 @@ api_router.include_router(admin_router)
 api_router.include_router(settings_router)
 api_router.include_router(statistics_router)
 api_router.include_router(ranking_router)
+api_router.include_router(tools_router)
 
 
 @api_router.get("/counter")

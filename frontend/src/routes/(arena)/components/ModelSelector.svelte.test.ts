@@ -14,10 +14,12 @@ Element.prototype.animate ??= vi.fn(() => ({
 describe('ModelSelector', () => {
   it('reopens the model picker when manual selection is clicked again', async () => {
     const view = render(ModelSelector, { models: [], mode: 'custom', modelsSelection: [] })
-    expect(view.queryByLabelText('Rechercher un modèle')).toBeNull()
+    expect(
+      (view.container.ownerDocument.getElementById('modal-models-selection') as HTMLDialogElement)
+        .open
+    ).toBeFalsy()
 
-    await fireEvent.click(view.getByRole('radio', { name: /Sélection manuelle/, hidden: true }))
-
+    await fireEvent.click(view.getByRole('menuitem', { name: /Sélection manuelle/ }))
     expect(view.getByLabelText('Rechercher un modèle')).toBeInTheDocument()
   })
 
@@ -25,11 +27,11 @@ describe('ModelSelector', () => {
     const view = render(ModelSelector, { models: [], mode: 'custom', modelsSelection: [] })
 
     await fireEvent(
-      view.container.ownerDocument.getElementById('modal-mode-selection')!,
+      view.container.ownerDocument.getElementById('modal-models-selection')!,
       new Event('dsfr.conceal')
     )
 
-    expect(view.getByRole('radio', { name: /Aléatoire/, hidden: true })).toBeChecked()
+    expect(view.getByRole('menuitem', { name: /Aléatoire/, hidden: true })).toBeChecked()
     expect(toast).toHaveBeenCalledWith(
       'Aucun modèle choisi : la comparaison se fera entre deux modèles aléatoires.',
       5000
@@ -40,11 +42,11 @@ describe('ModelSelector', () => {
     const view = render(ModelSelector, { models: [], mode: 'custom', modelsSelection: ['a'] })
 
     await fireEvent(
-      view.container.ownerDocument.getElementById('modal-mode-selection')!,
+      view.container.ownerDocument.getElementById('modal-models-selection')!,
       new Event('dsfr.conceal')
     )
 
-    expect(view.getByRole('radio', { name: /Sélection manuelle/, hidden: true })).toBeChecked()
+    expect(view.getByRole('menuitem', { name: /Sélection manuelle/, hidden: true })).toBeChecked()
     expect(toast).not.toHaveBeenCalled()
   })
 })

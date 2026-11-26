@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ["LOG_FORMAT"] = "JSON"
 
-from backend.admin.router import put_admin_informational_legal_page
+from backend.admin.legal import put_admin_informational_legal_page
 from backend.settings import informational_legal
 from backend.settings.informational_legal import (
     InformationalLegalPage,
@@ -65,7 +65,7 @@ def test_admin_update_replaces_the_single_unversioned_configuration() -> None:
             informational_legal, "get_app_settings", AsyncMock(return_value=settings)
         ),
         patch(
-            "backend.admin.router.update_app_settings", new_callable=AsyncMock
+            "backend.admin.legal.update_app_settings", new_callable=AsyncMock
         ) as update,
     ):
         returned = asyncio.run(

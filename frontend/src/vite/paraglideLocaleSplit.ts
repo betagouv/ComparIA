@@ -1,3 +1,4 @@
+import type { Locale } from '$lib/i18n/runtime'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import type { Plugin } from 'vite'
@@ -38,7 +39,7 @@ type Options = {
   outdir: string
 }
 
-export type Settings = { locales: string[]; baseLocale: string }
+export type Settings = { locales: Locale[]; baseLocale: Locale }
 
 export const VIRTUAL_ID = 'virtual:locale-messages'
 const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID
@@ -64,7 +65,7 @@ function fail(message: string): never {
 
 // Which locale a messages/<locale>.js file re-exports untranslated keys from,
 // or undefined when it is complete.
-export function fallbackOf(code: string, locale: string, baseLocale: string): string | undefined {
+export function fallbackOf(code: string, locale: Locale, baseLocale: Locale): Locale | undefined {
   const targets = new Set<string>()
   for (const line of code.split('\n')) {
     const match = line.match(REEXPORT_LINE)
@@ -126,10 +127,10 @@ export function splitLocaleImports(code: string, { locales, baseLocale }: Settin
 // loadLocaleMessages() would otherwise fail as "undefined is not an object".
 export function localeLoaderModule(
   { locales, baseLocale }: Settings,
-  fallbacks: Map<string, string>,
+  fallbacks: Map<Locale, Locale>,
   messagesDir: string
 ): string {
-  const load = (locale: string) => `import(${JSON.stringify(resolve(messagesDir, `${locale}.js`))})`
+  const load = (locale: Locale) => `import(${JSON.stringify(resolve(messagesDir, `${locale}.js`))})`
   const loaders = locales
     .map((locale) => {
       const fallback = fallbacks.get(locale)
@@ -164,7 +165,7 @@ export function paraglideLocaleSplit({ project, outdir }: Options): Plugin {
     isBuild && (plugin.environment ? plugin.environment.name === 'client' : !ssr)
 
   const fallbacksOf = () => {
-    const fallbacks = new Map<string, string>()
+    const fallbacks = new Map<Locale, Locale>()
     for (const locale of settings.locales) {
       const file = readFileSync(resolve(messagesDir, `${locale}.js`), 'utf8')
       const fallback = fallbackOf(file, locale, settings.baseLocale)

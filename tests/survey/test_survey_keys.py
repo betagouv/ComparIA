@@ -25,7 +25,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 os.environ.setdefault("COMPARIA_DB_URI", "postgresql://x/y")
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
-from backend.survey.services import _key, _validate_answers  # noqa: E402
+from backend.admin.survey.services import _key  # noqa: E402
+from backend.survey.services import _validate_answers  # noqa: E402
 from utils.database.models.survey import (  # noqa: E402
     SurveyQuestion,
     SurveyQuestionAnswer,

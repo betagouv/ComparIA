@@ -26,6 +26,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from PIL import Image  # noqa: E402
 
 import backend.admin.router as admin_router  # noqa: E402
+import backend.admin.settings as admin_settings_module  # noqa: E402
 import backend.auth.router as auth_router  # noqa: E402
 from backend.auth.dependencies import require_admin  # noqa: E402
 from backend.config import LOGO_SVG_MAX_SIZE, LOGO_UPLOAD_MAX_SIZE  # noqa: E402
@@ -78,8 +79,8 @@ def logo_app(row=None, *, as_admin=True):
         app.dependency_overrides[require_admin] = _admin
 
     with (
-        patched(admin_router, get_app_settings=get_app_settings),
-        patched(admin_router, update_app_settings=update_app_settings),
+        patched(admin_settings_module, get_app_settings=get_app_settings),
+        patched(admin_settings_module, update_app_settings=update_app_settings),
         patched(auth_router, get_app_settings=get_app_settings),
     ):
         yield TestClient(app), row

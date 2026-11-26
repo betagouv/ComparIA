@@ -29,6 +29,14 @@ logger = logging.getLogger("comparia.dataset")
 LOCAL_NAMES: dict[Datasets, str] = {
     "normal": "comparisons",
     "raw": "comparisons-raw",
+    "reserved": "comparisons-reserved",
+}
+
+# What a dataset's repository adds to the configured path on Hugging Face.
+HF_REPO_SUFFIXES: dict[Datasets, str] = {
+    "normal": "",
+    "raw": "-raw",
+    "reserved": "-reserved",
 }
 
 # Files a build produces, as suffixes of the base name.
@@ -89,7 +97,7 @@ def _built_files(
 
 
 def _hf_repo(config: HuggingFaceConfig, dataset: Datasets) -> str:
-    return config.repo_path + ("-raw" if dataset == "raw" else "")
+    return config.repo_path + HF_REPO_SUFFIXES[dataset]
 
 
 def _push_to_huggingface(
@@ -103,7 +111,13 @@ def _push_to_huggingface(
     published = repo_id.split("/")[-1]
 
     api = HfApi(token=config.token)
-    api.create_repo(repo_id, repo_type="dataset", exist_ok=True)
+    if dataset == "raw":
+        _require_closed_repo(config, dataset)
+    else:
+        # Only the open dataset is meant for everyone. A repository that already
+        # exists keeps its visibility: this only decides how a new one starts.
+        private = None if dataset == "normal" else True
+        api.create_repo(repo_id, repo_type="dataset", private=private, exist_ok=True)
 
     operations: list = [
         CommitOperationAdd(path_in_repo=name, path_or_fileobj=str(path))
@@ -153,12 +167,44 @@ def _push_to_s3(config: S3Config, dataset: Datasets, build_dir: Path) -> None:
     logger.info(f"Uploaded the '{dataset}' dataset to '{config.bucket}/{folder}'.")
 
 
+def _require_closed_repo(config: HuggingFaceConfig, dataset: Datasets) -> None:
+    """
+    Refuse the raw dataset on a repository anyone can read, before anything is
+    sent: it holds every conversation, the held-back ones and the voter ids
+    included.
+
+    A private repository qualifies, and so does a public one gated with manual
+    review, which is how the raw datasets have been shared with researchers.
+    A gate anyone gets through by clicking does not. A repository that does
+    not exist yet is created private, so the push finds it closed.
+    """
+    from huggingface_hub import HfApi
+    from huggingface_hub.utils import RepositoryNotFoundError
+
+    repo_id = _hf_repo(config, dataset)
+    api = HfApi(token=config.token)
+    try:
+        info = api.repo_info(repo_id, repo_type="dataset")
+    except RepositoryNotFoundError:
+        api.create_repo(repo_id, repo_type="dataset", private=True)
+        return
+    if info.private or info.gated == "manual":
+        return
+    raise DestinationError(
+        f"'{repo_id}' is readable by anyone, and the raw dataset holds every "
+        "conversation: make the repository private or gated with manual review"
+    )
+
+
 def publish(
     destinations: list[PublishDestination], built: dict[Datasets, Path]
 ) -> None:
     """
     Send every built dataset to every destination that asked for it. One
     destination failing does not stop the others, and the run still fails.
+
+    The raw dataset only goes to a closed Hugging Face repository. An S3 bucket is private unless its owner opened it, which the
+    run cannot check.
     """
     failures: list[str] = []
 

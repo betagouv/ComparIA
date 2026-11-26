@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
 from typing import Literal, get_args
+from urllib.parse import urlsplit
 
 from httpx import Timeout
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from utils.i18n import DEFAULT_LOCALE
 
 BACKEND_DIR = Path(__file__).parent
 ROOT_DIR = BACKEND_DIR.parent
@@ -34,8 +37,9 @@ class Settings(BaseSettings):
     # namespace and to seed the default locale. Renamed from DEFAULT_COUNTRY_PORTAL,
     # which described a country portal the project outgrew; the deployment manifests
     # have to carry the new name, since nothing falls back to the old one. The
-    # values themselves are unchanged, so Redis keys stay put.
-    COMPARIA_INSTANCE_NAME: str = "fr"
+    # deployments set it explicitly, so the Redis keys of fr and da stay put; the
+    # DEFAULT_LOCALE default only applies to local runs.
+    COMPARIA_INSTANCE_NAME: str = DEFAULT_LOCALE
 
     # Display currency. Model prices are stored in US dollars and converted for the UI.
     DISPLAY_CURRENCY: str = "EUR"
@@ -98,7 +102,10 @@ class Settings(BaseSettings):
     RATELIMIT_CONVERSATIONS_PER_IP_PER_HOUR: int = 20
     RATELIMIT_CONVERSATIONS_SAME_MODELS_PER_IP_PER_HOUR: int = 5
 
-    # Public app origin, used to build absolute links in emails (e.g. invite links)
+    # Public URL of the app, used to build absolute links in emails (e.g. invite
+    # links). It may carry a path (`https://host/fr`) when the Instance is served
+    # under one: cookies are then scoped to it and the origin checks use the
+    # scheme and host alone.
     COMPARIA_APP_URL: str = "http://localhost:5173"
     # Public origin the backend itself answers on, used for the OIDC redirect_uri
     # the provider sends the browser back to. Deployed, the ingress puts the
@@ -142,6 +149,23 @@ class Settings(BaseSettings):
     def api_origin(self) -> str:
         """Origin the OIDC provider redirects the browser back to."""
         return self.COMPARIA_API_URL or self.COMPARIA_APP_URL
+
+    @property
+    def app_origin(self) -> str:
+        """Scheme and host of the public URL: what a browser sends as Origin."""
+        parts = urlsplit(self.COMPARIA_APP_URL)
+        return f"{parts.scheme}://{parts.netloc}"
+
+    @property
+    def instance_path(self) -> str:
+        """Path of the public URL, "" when it has none (`/fr`, never `/fr/`)."""
+        return urlsplit(self.COMPARIA_APP_URL).path.rstrip("/")
+
+    @property
+    def cookie_path(self) -> str:
+        """Path every cookie is set and deleted on, so that Instances sharing a
+        domain keep their sessions apart."""
+        return self.instance_path or "/"
 
     # SMTP (Brevo relay or any SMTP provider)
     # If unset, login codes are logged to console instead of being sent by email
@@ -358,5 +382,41 @@ ALTCHA_REPLAY_TTL_SECONDS = 3600  # 1 hour Redis TTL for used challenges
 ALTCHA_UNVOTED_COMPARISONS = 5
 ALTCHA_HARD_MAX_NUMBER = ALTCHA_MAX_NUMBER * 10
 
-# Web search intro for LLM
-WEB_SEARCH_INTRO = "Here is some recent information from a web search. Use it to answer the user's question if it's relevant:\n\n"
+
+# Wall-clock seconds a model may spend in tools across one response, counted
+# while its tools run, not while it writes. This is the real limit: the
+# counters below are runaway guards, set high enough that hitting one is a
+# defect rather than ordinary behaviour.
+TOOL_TIME_BUDGET_SECONDS = 60.0
+# Calls in one round run concurrently, so this bounds work rather than waiting;
+# rounds are sequential and the budget above is what the visitor actually feels.
+MAX_TOOL_CALLS = 15
+MAX_TOOL_ROUNDS = 6
+# Times one exact (tool, arguments) pair may run in a single response. A model
+# repeating itself is stuck, not thorough: the repeats are refused and it is
+# told to answer from what it has.
+MAX_IDENTICAL_TOOL_CALLS = 3
+# How long we remember that an endpoint refused tool schemas
+TOOL_REJECTION_TTL = 86_400  # 24h
+
+# MCP servers. Listing happens while the visitor waits for a first token, so it
+# gets a much shorter leash than the call itself.
+MCP_DISCOVERY_TIMEOUT_SECONDS = 5
+MCP_CALL_TIMEOUT_SECONDS = 20
+# How long a discovered schema list is used without asking again, and how long it
+# stays usable as a fallback when the server can no longer be reached.
+MCP_SCHEMA_TTL = 900  # 15 min
+MCP_SCHEMA_STALE_TTL = 86_400  # 24h
+MCP_MAX_RESULT_LENGTH = 12_000
+# The tools list checks every tool when it opens. Long enough that reopening
+# it does not call each server (and spend a web search) again; short enough
+# that an outage shows within the hour.
+TOOL_HEALTH_TTL = 600  # 10 min
+# Calls counted in the tools list.
+TOOL_USAGE_DAYS = 30
+
+# Web search
+WEB_SEARCH_MAX_RESULTS_PER_CALL = 8
+WEB_SEARCH_MAX_RESULT_CONTENT_LENGTH = 4_000
+WEB_SEARCH_MAX_TOTAL_CONTENT_LENGTH = 12_000
+WEB_SEARCH_TOOL_TIMEOUT_SECONDS = 10

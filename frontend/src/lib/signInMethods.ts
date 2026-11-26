@@ -1,5 +1,5 @@
-import type { AuthConfig } from '$lib/authContext.svelte'
 import { api } from '$lib/fastapi-client'
+import type { AuthConfig } from '$lib/generated/backend'
 import { m } from '$lib/i18n/messages'
 
 export type SignInTab = { id: 'email' | 'sso'; label: string }

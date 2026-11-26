@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { resolve } from '$app/paths'
+  import { asset, resolve } from '$app/paths'
   import { page } from '$app/state'
   import { Button, Checkbox, Link } from '$components/dsfr'
   import { SeoHead } from '$components/layout'
@@ -119,7 +119,7 @@
       <img
         src={auth.config?.has_custom_logo
           ? api.getPublicUrl('/auth/config/logo', { v: auth.config.logo_version ?? '' })
-          : '/orgs/comparia.png'}
+          : asset('/orgs/comparia.png')}
         aria-hidden="true"
         alt=""
         class="h-[35px]"
@@ -138,7 +138,7 @@
     <div class="my-10 mx-8 md:max-w-[350px]">
       {#if checkStatus === 'invalid'}
         <p class="text-sm! mb-6!">{m['invite.invalid']()}</p>
-        <Link button href="/login" text={m['invite.backToLogin']()} />
+        <Link button href={resolve('/login')} text={m['invite.backToLogin']()} />
       {:else if checkStatus === 'valid'}
         {#if terms}
           <Checkbox

@@ -14,6 +14,7 @@ from sqlmodel import col, select
 
 from backend.config import TurnChoice
 from backend.survey.services import my_answers
+from backend.utils.locale import get_locales_settings
 from utils.database.models.auth import ConsentLog, User
 from utils.database.models.comparison import Comparison
 from utils.database.models.llms import LLMData
@@ -21,7 +22,7 @@ from utils.database.models.survey import MySurveyAnswer, SurveyAnswer, SurveyAns
 from utils.database.models.turn import Turn
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
-from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 
 EXPORT_SCHEMA_VERSION = 1
 
@@ -34,7 +35,7 @@ class ExportedAccount(BaseModel):
 class ExportedConsent(BaseModel):
     terms_version: str
     document_hash: str | None
-    locale: str | None
+    locale: SupportedLocale | None
     purpose: str
     accepted_at: datetime
 
@@ -174,8 +175,8 @@ async def build_account_export(user: User) -> AccountDataExport:
         # The export is a document for the person, not a page rendered in
         # their current session locale, so it always resolves labels in the
         # instance's default language.
-        default_locale = (await get_app_settings()).default_locale
-        survey_answers = await my_answers(default_locale, user.id, None)
+        locales = await get_locales_settings()
+        survey_answers = await my_answers(locales.default, user.id, None)
 
     return AccountDataExport(
         exported_at=utc_now(),

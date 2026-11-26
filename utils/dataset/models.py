@@ -22,8 +22,10 @@ from utils.database.models import (
     UserMessageRead,
 )
 from utils.database.models.llms.constants import LLMStatus
+from utils.database.models.messages import published_answer, tool_evidence
+from utils.dataset.voters import VoterType
 
-# Same two datasets a destination subscribes to, kept in one place so the two
+# Same datasets a destination subscribes to, kept in one place so the two
 # lists cannot drift apart.
 Datasets = PublishDataset
 
@@ -80,6 +82,7 @@ class DatasetComparisonBaseMetadata(SQLModel):
 
 
 class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
+    available_tools: list[str]
     total_tokens_a: int | None
     total_tokens_b: int | None
     total_conso_a: float | None  # None for legacy comparisons with empty llm_id
@@ -88,6 +91,10 @@ class DatasetComparisonMetadata(DatasetComparisonBaseMetadata):
 
 class DatasetComparisonExtraMetadata(SQLModel):
     cohorts: str | None
+    # Raw dataset only, and only once an instance turns it on, see
+    # utils/dataset/voters.py. Not read from the comparison: set by the export.
+    voter_id: str | None = None
+    voter_type: VoterType | None = None
     error: ErrorDetails | None
     llm_analyzed: bool | None = None
     contains_pii: bool | None = None
@@ -95,6 +102,7 @@ class DatasetComparisonExtraMetadata(SQLModel):
     archived: bool | None = None
     archived_reason: ArchivedReason | None
     archived_at: datetime | None
+    reserved_at: datetime | None = None
 
 
 class DatasetTurn(SQLModel):
@@ -183,16 +191,20 @@ class DatasetTurn(SQLModel):
     # HELPERS
 
     def parse_response(self, side: BotPos) -> list[dict]:
-        msgs = [
-            self.user_msg.model_dump(
-                include={"role", "content", "user_content"},
-                context={"merge_web_search": True},
-            )
-        ]
+        msgs = [self.user_msg.model_dump(include={"role", "content"})]
         if llm_msg := getattr(self, f"llm_msg_{side}"):
-            msgs.append(
-                llm_msg.model_dump(include={"role", "content", "reasoning_content"})
+            response = llm_msg.model_dump(
+                include={"role", "content", "reasoning_content"}
             )
+            response["content"] = published_answer(llm_msg.content, llm_msg.agent_trace)
+            queries, sources = tool_evidence(llm_msg.agent_trace)
+            if queries:
+                response["tool_queries"] = queries
+            if sources:
+                response["tool_sources"] = sources
+            if llm_msg.agent_stop_reason:
+                response["agent_stop_reason"] = llm_msg.agent_stop_reason
+            msgs.append(response)
         return msgs
 
 
@@ -232,6 +244,7 @@ class DatasetComparison(SQLModel):
         if any(
             [
                 bool(self.extra_metadata_.cohorts),
+                self.extra_metadata_.reserved_at is not None,
                 self.extra_metadata_.archived is not False,
                 bool(self.extra_metadata_.contains_pii),
                 bool(self.extra_metadata_.contains_spam),

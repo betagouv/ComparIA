@@ -1,13 +1,13 @@
 import { api } from '$lib/fastapi-client'
+import { getLocale } from '$lib/i18n/runtime'
 import type { PublicSuggestions } from '$lib/suggestions'
 import { emptyVoteTags, type PublicVoteTags } from '$lib/voteTags'
 import type { LayoutServerLoad } from './$types'
 
 const emptySuggestions: PublicSuggestions = { categories: [] }
 
-export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
-  const locale = cookies.get('PARAGLIDE_LOCALE') ?? 'fr'
-  const options = { fetch, searchParams: { locale } }
+export const load: LayoutServerLoad = async ({ fetch }) => {
+  const options = { fetch, searchParams: { locale: getLocale() } }
 
   const [suggestions, voteTags] = await Promise.all([
     api.request<PublicSuggestions>('/suggestions', options).catch((error: Error) => {

@@ -22,6 +22,7 @@ from .comparison import (
     ErrorCode,
     ErrorDetails,
 )
+from .dataset_check import DatasetCheck, DatasetCheckPublic, DatasetCheckUpsert
 from .exchange_rate import ExchangeRate
 from .messages import *
 from .prompt_check import (
@@ -78,6 +79,7 @@ from .survey import (
     SurveyQuestionOrder,
     SurveyQuestionUpdate,
 )
+from .tool import Tool, ToolAdmin, ToolKind, ToolPublic, ToolUpsert
 from .turn import (
     Turn,
     TurnCreate,

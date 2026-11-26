@@ -12,6 +12,7 @@ from backend.config import settings
 from utils.database.models.auth import AuthSession, ConsentLog, InviteToken, User
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale
 
 logger = logging.getLogger("languia")
 
@@ -148,7 +149,7 @@ async def find_inactive_users(
     return report
 
 
-async def _consent_language(session, user: User) -> str | None:
+async def _consent_language(session, user: User) -> SupportedLocale | None:
     """The language the person last accepted the terms in, if recorded."""
     result = await session.exec(
         select(ConsentLog.language)

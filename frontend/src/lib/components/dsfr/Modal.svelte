@@ -1,6 +1,7 @@
 <script lang="ts">
   import { teleport } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
+  import type { Snippet } from 'svelte'
   import type { ClassValue, HTMLDialogAttributes } from 'svelte/elements'
   import { Button } from '.'
 
@@ -8,11 +9,13 @@
     id,
     titleId,
     locked = false,
+    class: className,
     sizeClass = 'fr-col-12 fr-col-md-8 fr-col-lg-6',
     contentClass,
     headerClass,
     teleport: doTeleport,
     onClose,
+    footer,
     children
   }: {
     id: string
@@ -23,6 +26,7 @@
     headerClass?: ClassValue
     teleport?: boolean
     onClose?: () => void
+    footer?: Snippet
   } & HTMLDialogAttributes = $props()
 
   // DSFR announces a real close with this event, the same way ModelInfoModal
@@ -54,7 +58,7 @@
   bind:this={dialog}
   aria-labelledby={titleId}
   {id}
-  class="fr-modal"
+  class={['fr-modal', className]}
   data-fr-concealing-backdrop={(!locked).toString()}
   {...dsfrEvents}
   {@attach doTeleport && teleport('modals')}
@@ -78,6 +82,12 @@
           <div class={['fr-modal__content', contentClass]}>
             {@render children?.()}
           </div>
+
+          {#if footer}
+            <div class="fr-modal__footer p-4! md:px-5! mt-0!">
+              {@render footer()}
+            </div>
+          {/if}
         </div>
       </div>
     </div>

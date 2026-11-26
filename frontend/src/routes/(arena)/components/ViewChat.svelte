@@ -1,10 +1,14 @@
 <script lang="ts">
+  import Dropdown from '$components/Dropdown.svelte'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import TextPrompt from '$components/TextPrompt.svelte'
+  import ToolCard from '$components/ToolCard.svelte'
   import { getComparison, getModeInfos } from '$lib/chatService.svelte'
+  import { getToolsContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { onDestroy } from 'svelte'
   import { GroupedMessages, PromptWarningModal, RevealArea, VoteModal } from '.'
+  import IconList from './IconList.svelte'
 
   let {
     comparisonId,
@@ -15,6 +19,9 @@
   } = $props()
 
   const comparator = $derived(getComparison(comparisonId))
+
+  const tools = getToolsContext()
+  const activeTools = $derived(tools.pick(comparator.comparison?.enabled_tools ?? []))
 
   let prompt = $state('')
   let voteReminder = $state(false)
@@ -113,12 +120,40 @@
         autoScroll={!comparator.comparison?.revealed}
       >
         {#if idx === 0}
-          <div
-            class="cg-border md:me-3 rounded-lg! bg-white py-1 text-sm mb-3 md:mb-0 px-10 md:py-3 min-w-fit self-start border-dashed! text-center"
-          >
-            <Icon icon={mode.icon} size="sm" class="text-primary" />
-            <strong>{mode.title}</strong>
-            <Tooltip id="mode-desc" text={mode.description} size="xs" />
+          <div class="cg-border rounded-lg! py-2 px-3 grow border-dashed!">
+            <p class="mb-1! text-xs! font-bold">{m['chatbot.parameters']()}</p>
+            <div class="text-xs gap-2 flex">
+              <div class="cg-border rounded-lg! px-2 py-1">
+                <Icon icon={mode.icon} size="xs" class="text-primary" />
+                {mode.title}
+                <Tooltip id="mode-desc" text={mode.description} size="xs" />
+              </div>
+              {#if activeTools.length}
+                <Dropdown
+                  id="dropdown-tools"
+                  label={m['chatbot.tools.enabled']()}
+                  buttonClass="fr-select text-xs! ps-2! pe-8! py-1! shadow-none! bg-transparent! cg-border rounded-lg! flex! items-center gap-1"
+                >
+                  {#snippet buttonLabel(label)}
+                    <Icon icon="i-ri-tools-line" class="text-primary" block size="xs" />
+                    {label}
+                    <IconList
+                      icons={activeTools.map((tool) => tool.logo_url || tool.icon)}
+                      count={null}
+                      fallbackIcon="i-ri-tools-line"
+                    />
+                  {/snippet}
+
+                  <ul class="m-0 p-2 gap-1 flex list-none flex-col">
+                    {#each activeTools as tool (tool.key)}
+                      <li class="m-0! p-0">
+                        <ToolCard {tool} size="xs" />
+                      </li>
+                    {/each}
+                  </ul>
+                </Dropdown>
+              {/if}
+            </div>
           </div>
         {/if}
       </GroupedMessages>

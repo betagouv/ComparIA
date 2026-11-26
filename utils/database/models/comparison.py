@@ -76,6 +76,9 @@ class ComparisonBase(BaseDBModel):
     custom_models_selection: Annotated[CustomModelsSelection, Field(sa_type=JSONB)] = (
         None
     )
+    # Tool keys the visitor selected, fixed for the whole comparison so that
+    # every turn ran under the same conditions.
+    enabled_tools: Annotated[list[str], Field(sa_type=JSONB)] = []
     revealed: bool = False
     revealed_at: OptionalDatetime = None
 
@@ -99,11 +102,31 @@ class ComparisonWithAnalyzeData(ComparisonBase):
     keywords: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
     categories: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
     languages: Annotated[list[str] | None, Field(sa_type=JSONB)] = None
+    # Every score the decision model gave and the model id, so a threshold can
+    # move later without asking the model again. None before the decision model,
+    # stored as SQL NULL: the JSON value null would pass 'IS NOT NULL'.
+    analysis_scores: Annotated[dict | None, Field(sa_type=JSONB(none_as_null=True))] = (
+        None
+    )
 
     # archived metadata
     archived: bool | None = None
     archived_reason: Annotated[ArchivedReason | None, Field(sa_type=String)] = None
     archived_at: OptionalDatetime = None
+
+    # Learnt by trying (backend/tools/services.py), not decided in advance: null
+    # when no tool was offered to that side this conversation, so "not
+    # applicable" and "declined" stay distinguishable when ranking is filtered.
+    tool_capable_a: bool | None = None
+    tool_capable_b: bool | None = None
+
+    # Set aside for a partner's evaluation: kept out of the open dataset and
+    # sent to the destinations receiving the reserved one. The date tells
+    # whether a reserved run has already sent it. See utils/dataset/reservation.py.
+    reserved_at: OptionalDatetime = None
+    # Kept when it is unreserved: a partner who received it keeps it, and
+    # reserving it again must still say so.
+    first_reserved_at: OptionalDatetime = None
 
 
 class Comparison(ComparisonWithAnalyzeData, table=True):
@@ -126,6 +149,7 @@ class ComparisonPublic(SQLModel):
     id: uuid.UUID
     mode: SelectionMode
     custom_models_selection: CustomModelsSelection
+    enabled_tools: list[str]
     error: ErrorDetails | None
     turns: list[TurnPublic]
     revealed: bool
@@ -183,10 +207,10 @@ class ComparisonLLMAnalysisUpdate(SQLModel):
     llm_analyzed: Literal[True] = True
     contains_pii: bool
     contains_spam: bool
-    short_summary: str
-    keywords: list[str]
+    # short_summary and keywords are no longer written: old rows keep theirs.
     categories: list[str]
     languages: list[str]
+    analysis_scores: dict
 
     @computed_field  # type: ignore[prop-decorator]
     @property

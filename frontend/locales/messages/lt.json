@@ -19,6 +19,13 @@
         "selectLanguage": "Pasirinkite kalbą"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Įjungti įrankiai siūlomi abiem lyginamiems modeliams, kurie gali juos naudoti arba ne.",
+            "count": "{count} įrankiai",
+            "label": "Įrankiai",
+            "locked": "Įrankiai nustatomi visam pokalbiui.",
+            "none": "Jokių įrankių"
+        },
         "compareModels": {
             "count": "{count}/2 modeliai",
             "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
@@ -37,15 +44,13 @@
             "generateAnother": "Sukurti dar vieną užklausą",
             "title": "Siūlomos užklausos"
         },
-        "title": "Kaip galime Jums padėti?",
-        "webSearch": {
-            "disabled": "Paieška internete išjungta",
-            "enabled": "Paieška internete įjungta",
-            "label": "Paieška internete",
-            "tooltip": "Įjunkite paiešką internete, kad modeliai galėtų naudoti internetinius šaltinius ir cituoti naujesnę informaciją.<br><strong>Be paieškos internete</strong> modeliai atsako remdamiesi tuo, ką išmoko mokymo metu (savo mokymo duomenimis). Jie negali patikrinti informacijos internete, todėl labai nauji ar labai specifiniai faktai gali būti neišsamūs."
-        }
+        "title": "Kaip galime Jums padėti?"
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Rezultatų nėra",
+            "running": "Ieškoma…"
+        },
         "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
         "conversation": "Pokalbis",
         "errors": {
@@ -65,10 +70,7 @@
             "finished": "Mąstymas baigtas",
             "inProgress": "Mąstoma…"
         },
-        "revealButton": "Atskleisti modelius",
-        "webSearch": {
-            "label": "Susiję paieškos internete rezultatai."
-        }
+        "revealButton": "Atskleisti modelius"
     },
     "closeModal": "Uždaryti iškylantį langą",
     "components": {

@@ -33,6 +33,7 @@ from utils.database.models.comparison import (
 )
 from utils.database.models.utils import as_naive_utc, utc_now
 from utils.database.session import get_session
+from utils.i18n import SupportedLocale
 
 if TYPE_CHECKING:
     from sqlmodel.ext.asyncio.session import AsyncSession
@@ -537,7 +538,7 @@ async def drop_user_totp(session: "AsyncSession", user_id: uuid.UUID) -> None:
 async def record_user_consent(
     user_id: uuid.UUID,
     document: LegalDocument,
-    locale: str,
+    locale: SupportedLocale,
     accepted_at: datetime,
     auth_session_token: str | None,
 ) -> None:
@@ -572,7 +573,7 @@ async def record_user_consent(
 async def record_anonymous_consent(
     anonymous_user_hash: str,
     document: LegalDocument,
-    locale: str,
+    locale: SupportedLocale,
     accepted_at: datetime,
 ) -> None:
     async with get_session() as session:

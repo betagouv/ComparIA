@@ -64,6 +64,13 @@ REDIS_OIDC_STATE_PREFIX: Final[str] = f"{REDIS_INSTANCE_PREFIX}oidc_state:"
 REDIS_WEB_SEARCH_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}web_search_cache:{{prompt_hash}}"
 )
+REDIS_TOOLS_REJECTED_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}tools_rejected:{{model_hash}}"
+)
+REDIS_MCP_SCHEMAS_KEY: Final[str] = (
+    f"{REDIS_INSTANCE_PREFIX}mcp_schemas:{{server_hash}}"
+)
+REDIS_TOOL_HEALTH_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}tool_health:{{tool_id}}"
 REDIS_MAINTENANCE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}maintenance_mode"
 REDIS_LLMS_DATA_CACHE_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}llms_data"
 REDIS_APP_SETTINGS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}app_settings"
@@ -110,6 +117,9 @@ REDIS_CHECK_SCORES_KEY: Final[str] = (
 # worker and replica: a sorted set of call stamps scored by when they lapse. One
 # pool, since an instance calls with one key at a time.
 REDIS_CHECK_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}prompt_check_calls"
+# The same, for the publish run's analysis: its own pool, so a run never takes
+# calls from visitors' prompt checks.
+REDIS_ANALYSIS_CALLS_KEY: Final[str] = f"{REDIS_INSTANCE_PREFIX}analysis_calls"
 REDIS_CHECK_WARNING_TOKEN_KEY: Final[str] = (
     f"{REDIS_INSTANCE_PREFIX}prompt_check_warning_token:{{token}}"
 )

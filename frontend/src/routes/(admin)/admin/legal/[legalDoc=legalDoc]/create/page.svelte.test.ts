@@ -14,7 +14,7 @@ vi.mock('$lib/fastapi-client', async (importOriginal) => ({
 vi.mock('$lib/helpers/useToast.svelte', () => ({ useToast: vi.fn() }))
 vi.mock('$lib/authContext.svelte', async (importOriginal) => ({
   ...(await importOriginal<typeof import('$lib/authContext.svelte')>()),
-  getAuthContext: () => ({ config: { default_locale: 'fr' } })
+  getAuthContext: () => ({ config: { default_locale: 'fr', enabled_locales: ['fr'] } })
 }))
 
 function publishedBody(endpoint: string) {

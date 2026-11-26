@@ -83,3 +83,18 @@ tests:
           path: metadata.annotations["nginx.ingress.kubernetes.io/rewrite-target"]
       - hasDocuments:
           count: 1
+
+  - it: stays valid with a public URL without a path
+    set:
+      ingress.enabled: true
+      ingress.host: comparia.example.com
+      config.appUrl: https://comparia.example.com
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: spec.rules[0].host
+          value: comparia.example.com
+      - equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /

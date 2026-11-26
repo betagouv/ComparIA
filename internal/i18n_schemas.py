@@ -1,3 +1,4 @@
+from utils.database.models.dataset_check import DatasetCheckUpsert
 from utils.database.models.llms import (
     LLMDataUpsert,
     LLMEndpointUpsert,
@@ -5,6 +6,7 @@ from utils.database.models.llms import (
     LLMLicenseUpsert,
 )
 from utils.database.models.prompt_check import PromptCheckUpsert
+from utils.database.models.tool import ToolUpsert
 from utils.utils import (
     FRONTEND_MAIN_I18N_FILE,
     FormJsonSchema,
@@ -48,6 +50,8 @@ def generate_admin_schemas_i18n():
         "lab_upsert": LLMLabUpsert,
         "llm_upsert": LLMDataUpsert,
         "prompt_check_upsert": PromptCheckUpsert,
+        "dataset_check_upsert": DatasetCheckUpsert,
+        "tool_upsert": ToolUpsert,
     }
     schemas = {
         k: model.model_json_schema(schema_generator=FormJsonSchema)

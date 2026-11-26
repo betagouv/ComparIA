@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { asset } from '$app/paths'
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import RadioGroupCard from '$components/RadioGroupCard.svelte'
   import { m } from '$lib/i18n/messages'
@@ -96,10 +97,15 @@
           <!-- One <img>, two sources. Rendering both and hiding one in CSS
                downloaded both every time. 48em is the md breakpoint. -->
           <picture>
-            <source media="(min-width: 48em)" srcset="/iasummit.png" width="110" height="35" />
+            <source
+              media="(min-width: 48em)"
+              srcset={asset('/iasummit.png')}
+              width="110"
+              height="35"
+            />
             <img
               class="md:mb-3 me-2 md:me-0 md:w-[110px] md:block inline-block w-[24px] object-contain dark:invert"
-              src="/iasummit-small.png"
+              src={asset('/iasummit-small.png')}
               alt={title}
             />
           </picture>

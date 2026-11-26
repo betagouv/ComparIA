@@ -1,9 +1,11 @@
 import logging
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from urllib.parse import urlparse
 
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_engine
+from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -78,6 +80,23 @@ def get_engine() -> AsyncEngine | None:
         )
         _engine = create_async_engine(_async_url(settings.COMPARIA_DB_URI), **options)
     return _engine
+
+
+@asynccontextmanager
+async def own_connection() -> AsyncIterator[AsyncConnection]:
+    """
+    A connection outside the pool, for what has to outlive the pool's own:
+    the export needs both of the pool's connections for itself, and an
+    advisory lock held for a whole run needs one that is never given back.
+    """
+    engine = create_async_engine(
+        _async_url(settings.COMPARIA_DB_URI), poolclass=NullPool
+    )
+    try:
+        async with engine.connect() as connection:
+            yield connection
+    finally:
+        await engine.dispose()
 
 
 _activity_engine: AsyncEngine | None = None

@@ -5,8 +5,11 @@ from uuid import UUID
 from fastapi import APIRouter, HTTPException, UploadFile
 from sqlmodel import SQLModel, select
 
-from backend.admin.logos import read_logo
+from backend.admin.llms.health import LLMHealth, check_llm_health
 from backend.config import LAB_LOGO_BOX
+from backend.llms.data import get_llms_data
+from backend.utils.countries import get_ranking
+from backend.utils.logos import read_logo
 from utils.database.models.llms import (
     LLMData,
     LLMDataUpsert,
@@ -80,6 +83,14 @@ async def get_data():
             ]
             db_data["labs"] = [_to_lab_public(lab) for lab in db_data["labs"]]
 
+        # Read from the ranking job, which counts every model's votes, so
+        # disabled models and those under the vote minimum show theirs too.
+        ranking = get_ranking()
+        db_data["vote_counts"] = {
+            str(llm_id): n
+            for llm_id, n in (ranking.vote_counts if ranking else {}).items()
+        }
+
         return db_data
     except Exception as e:
         logger.error(f"[DB] Error loading LLMsData: {e}")
@@ -102,6 +113,14 @@ async def upsert_llm(body: LLMDataUpsert) -> LLMData:
         await session.refresh(db_llm)
         invalidate_cache(REDIS_LLMS_DATA_CACHE_KEY)
         return db_llm
+
+
+@router.post("/llm/{llm_id}/health")
+async def test_llm_health(llm_id: UUID) -> LLMHealth:
+    llm = (await get_llms_data()).enabled.get(llm_id)
+    if llm is None:
+        return LLMHealth(healthy=False, error="not_configured")
+    return await check_llm_health(llm)
 
 
 @router.post("/endpoint")

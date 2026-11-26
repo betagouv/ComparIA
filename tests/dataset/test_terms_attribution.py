@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 os.environ.setdefault("LOG_FORMAT", "JSON")
 
+from tests.dataset.test_reservation import extra  # noqa: E402
 from utils.database.models import LEGACY_PARTICIPATION_TERMS_VERSION  # noqa: E402
 from utils.dataset import compute  # noqa: E402
 from utils.dataset.models import DatasetComparisonBaseMetadata  # noqa: E402
@@ -53,15 +54,16 @@ def test_rows_from_an_old_raw_cache_receive_the_legacy_marker():
             pa.table(
                 {
                     "response_id": ["historical-response"],
+                    "comparison_id": ["historical-comparison"],
                     "excluded": [False],
-                    "extra_metadata": [{"archived": False}],
+                    "extra_metadata": [extra()],
                     "metadata": [{"mode": "random"}],
                 }
             ),
             raw_path,
         )
 
-        compute._write_normal_from_raw_parquet(raw_path, "dataset", output)
+        compute._write_normal_from_raw_parquet(raw_path, "dataset", output, [])
         exported = pq.read_table(output / "dataset.parquet")
 
     assert "participation_terms_version" not in exported.column_names

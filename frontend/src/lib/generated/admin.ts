@@ -65,11 +65,6 @@ export interface ActivityTurn {
   id: string;
   created_at: string;
   prompt: string;
-  web_search_results:
-    | {
-        [k: string]: unknown;
-      }[]
-    | null;
   answer_a: ActivityAnswer | null;
   answer_b: ActivityAnswer | null;
   choice: ("both_good" | "both_bad" | "a_better" | "b_better" | "idk") | null;
@@ -133,11 +128,14 @@ export interface ActivityConversationRow {
   comment: string | null;
   revealed: boolean;
   categories: string[];
-  llm_analyzed: boolean;
+  llm_analyzed: boolean | null;
   contains_pii: boolean;
   contains_spam: boolean;
   archived: boolean;
   has_error: boolean;
+  reserved_at: string | null;
+  reserve_block?: ("publishing" | "published" | "pii" | "cohort" | "analysis_failed") | null;
+  reserved_with_partner: boolean;
   [k: string]: unknown;
 }
 export interface ActivityFilterOptions {
@@ -203,7 +201,7 @@ export interface AdminPublishDestination {
   name: string;
   kind: "huggingface" | "s3";
   config: HuggingFaceConfigPublic | S3ConfigPublic;
-  datasets: ("normal" | "raw")[];
+  datasets: ("normal" | "raw" | "reserved")[];
   enabled: boolean;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   next_run_at?: string | null;
@@ -233,14 +231,17 @@ export interface AdminPublishRun {
   error: string | null;
   held_back: number | null;
   published: number | null;
+  reserved: number | null;
 }
 export interface AdminPublishStatus {
   runs: AdminPublishRun[];
+  reserved: number;
+  reserved_with_partner: number;
 }
 export interface AdminSuggestion {
   id: string;
   text: string;
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   category_id: string;
   category_title: string;
   status: "available" | "archived";
@@ -249,7 +250,7 @@ export interface AdminSuggestion {
 }
 export interface AdminSuggestionCategory {
   id: string;
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   key: string;
   title: string;
   description: string;
@@ -310,19 +311,19 @@ export interface AppSettingsPatch {
   ranking_min_votes?: number | null;
   ranking_max_rank_spread?: number | null;
   survey_reask_after_days?: number | null;
+  ranking_grey_rank_spread?: number | null;
   platform_name?: string | null;
   primary_color_light?: string | null;
   primary_color_dark?: string | null;
   secondary_color_light?: string | null;
   secondary_color_dark?: string | null;
   homepage_url?: string | null;
-  enabled_locales?: string[] | null;
-  default_locale?: string | null;
-  analysis_endpoint_id?: string | null;
-  analysis_model?: string | null;
+  enabled_locales?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[] | null;
+  default_locale?: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv") | null;
   publish_frequency?: ("off" | "daily" | "weekly" | "monthly") | null;
   publish_hour?: number | null;
   publish_timezone?: string | null;
+  dataset_voter_ids?: boolean | null;
   auth_methods?: string[] | null;
   oidc_issuer?: string | null;
   oidc_client_id?: string | null;
@@ -337,21 +338,21 @@ export interface AppSettingsPublic {
   ranking_min_votes: number;
   ranking_max_rank_spread: number;
   survey_reask_after_days: number;
+  ranking_grey_rank_spread: number;
   platform_name: string;
   primary_color_light: string;
   primary_color_dark: string;
   secondary_color_light: string;
   secondary_color_dark: string;
   homepage_url: string | null;
-  analysis_endpoint_id: string | null;
-  analysis_model: string | null;
   publish_frequency: "off" | "daily" | "weekly" | "monthly";
   publish_hour: number;
   publish_timezone: string;
+  dataset_voter_ids: boolean;
   has_custom_logo: boolean;
   logo_version?: string | null;
-  enabled_locales: string[];
-  default_locale: string;
+  enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
+  default_locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   auth_methods: string[];
   oidc_issuer: string | null;
   oidc_client_id: string | null;
@@ -372,6 +373,83 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface DatasetCheckPublic {
+  /**
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
+   */
+  model?: string;
+  has_api_key: boolean;
+  /**
+   * The model reads it with every conversation. Say what the instance is and what is published.
+   */
+  description: string;
+  criteria: DatasetCheckCriterion[];
+  category_threshold: number;
+  language_threshold: number;
+  no_api_key?: boolean;
+  no_model?: boolean;
+  updated_at: string;
+  updated_by?: string | null;
+}
+export interface DatasetCheckCriterion {
+  /**
+   * Stored scores are filed by key: do not change it once the criterion is in use.
+   */
+  key: string;
+  label: string;
+  /**
+   * A closed question about the conversation (the `message`), answered yes or no.
+   */
+  question: string;
+  yes?: string;
+  no?: string;
+  threshold: number;
+  /**
+   * Personal data or spam: the published flag and the archiving reason.
+   */
+  reason?: "pii" | "spam";
+  [k: string]: unknown;
+}
+export interface DatasetCheckTryResult {
+  published: boolean;
+  excluded_by: string[];
+  categories: string[];
+  languages: string[];
+  scores: {
+    [k: string]: number;
+  };
+  latency_ms: number;
+  message?: string | null;
+  error?: string | null;
+}
+export interface DatasetCheckUpsert {
+  /**
+   * A decision model from OpenRouter. Empty, no conversation is analysed or published.
+   */
+  model?: string;
+  /**
+   * Left empty, the analysis uses the message check's key, then OPENROUTER_API_KEY.
+   */
+  api_key?: string | null;
+  /**
+   * The model reads it with every conversation. Say what the instance is and what is published.
+   */
+  description?: string;
+  /**
+   * A conversation that reaches the threshold of a criterion is not published.
+   *
+   * @maxItems 32
+   */
+  criteria?: DatasetCheckCriterion[];
+  /**
+   * A topic is given from this score. None reached: "Other".
+   */
+  category_threshold?: number;
+  /**
+   * A language is given from this score.
+   */
+  language_threshold?: number;
 }
 export interface InformationalLegalPage {
   mode?: "internal" | "external";
@@ -548,6 +626,22 @@ export interface LLMEndpointPublic {
   api_version?: string | null;
   has_api_key?: boolean;
 }
+export interface LLMHealth {
+  healthy: boolean;
+  latency_ms?: number | null;
+  error?:
+    | (
+        | "timeout"
+        | "key_rejected"
+        | "no_credits"
+        | "rate_limited"
+        | "model_not_found"
+        | "empty_response"
+        | "provider_error"
+        | "not_configured"
+      )
+    | null;
+}
 /**
  * LLM lab/organization metadata.
  */
@@ -634,25 +728,25 @@ export interface LegalStatus {
 export interface PromptCheckStatus {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
+   * When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.
    */
   required?: boolean;
   /**
-   * Un modèle de décision d'OpenRouter.
+   * A decision model from OpenRouter.
    */
   model?: string;
   has_api_key: boolean;
   /**
-   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   * The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.
    */
   description: string;
   criteria: PromptCheckCriterion[];
   /**
-   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   * Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.
    */
   conversations_per_ip_per_hour?: number | null;
   /**
-   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   * The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.
    */
   conversations_same_models_per_ip_per_hour?: number | null;
   updated_at: string;
@@ -669,12 +763,12 @@ export interface PromptCheckStatus {
 }
 export interface PromptCheckCriterion {
   /**
-   * Les statistiques sont comptées par identifiant : ne le changez plus une fois le critère en service.
+   * Stats are counted by key: do not change it once the criterion is in use.
    */
   key: string;
   label: string;
   /**
-   * Une question fermée sur le `message`, à laquelle on répond par oui ou non.
+   * A closed question about the `message`, answered yes or no.
    */
   question: string;
   yes?: string;
@@ -687,19 +781,19 @@ export interface PromptCheckCriterion {
 export interface PromptCheckUpsert {
   enabled?: boolean;
   /**
-   * Quand la vérification ne répond pas (délai dépassé, OpenRouter saturé, clé refusée), le message est refusé. Désactivée, il passe sans être vérifié. Dans les deux cas, après plusieurs échecs d'OpenRouter d'affilée, les messages passent sans vérification une minute à la fois.
+   * When the check cannot answer (timeout, OpenRouter busy, key refused), the message is refused. Off, it goes through unchecked. Either way, after several OpenRouter failures in a row, messages go through unchecked a minute at a time.
    */
   required?: boolean;
   /**
-   * Un modèle de décision d'OpenRouter.
+   * A decision model from OpenRouter.
    */
   model?: string;
   /**
-   * Laissée vide, la vérification utilise OPENROUTER_API_KEY.
+   * Left empty, the check uses OPENROUTER_API_KEY.
    */
   api_key?: string | null;
   /**
-   * Le modèle la lit avec chaque message. Dites ce qui est bienvenu ici, pour qu'une question de santé ne passe pas pour suspecte sur une arène santé.
+   * The model reads it with every message. Say what is welcome here, so a health question does not look suspicious on a health arena.
    */
   description?: string;
   /**
@@ -707,11 +801,11 @@ export interface PromptCheckUpsert {
    */
   criteria?: PromptCheckCriterion[];
   /**
-   * Sur une heure glissante, même quand la vérification est désactivée. Partagée par tous ceux qui sortent par la même IP (une école, un ministère) ; les cohortes partenaires (Pix) n'y sont pas soumises. 0 désactive la limite, vide revient à la valeur par défaut de l'instance.
+   * Over a sliding hour, even when the check is off. Shared by everyone behind the same IP (a school, a ministry); partner cohorts (Pix) are not counted. 0 turns the limit off, empty goes back to the instance default.
    */
   conversations_per_ip_per_hour?: number | null;
   /**
-   * La même limite, pour une même paire de modèles. 0 la désactive, vide revient à la valeur par défaut de l'instance.
+   * The same limit, for one pair of models. 0 turns it off, empty goes back to the instance default.
    */
   conversations_same_models_per_ip_per_hour?: number | null;
 }
@@ -722,7 +816,7 @@ export interface PromptCheckUpsert {
 export interface PublishDestinationUpsert {
   name: string;
   config: HuggingFaceConfigInput | S3ConfigInput;
-  datasets: ("normal" | "raw")[];
+  datasets: ("normal" | "raw" | "reserved")[];
   enabled?: boolean;
   publish_frequency?: "off" | "daily" | "weekly" | "monthly";
 }
@@ -756,7 +850,7 @@ export interface SuggestionArchiveUpdate {
   archived: boolean;
 }
 export interface SuggestionCategoryCreate {
-  locale: "fr" | "da" | "sv";
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
   title: string;
   description: string;
   icon: string;
@@ -800,6 +894,98 @@ export interface SurveyQuestionUpdate {
   };
   options: SurveyOptionWrite[];
   published: boolean;
+}
+/**
+ * What the admin panel is allowed to see: whether a credential is set,
+ * never the credential.
+ */
+export interface ToolAdmin {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor in the visitor picker. Their name and logo still label past comparisons.
+   */
+  enabled?: boolean;
+  has_secret?: boolean;
+  logo_url?: string | null;
+}
+export interface ToolUpsert {
+  id?: string;
+  created_at?: string;
+  updated_at?: string;
+  /**
+   * Stable identifier. For a built-in tool, the registry key (e.g. 'web_search').
+   */
+  key: string;
+  /**
+   * Name shown to visitors, in French.
+   */
+  label: string;
+  /**
+   * One line shown to visitors, in French.
+   */
+  description?: string | null;
+  /**
+   * How the tool is carried out.
+   */
+  kind?: "builtin" | "mcp";
+  /**
+   * For an MCP tool, the server address.
+   */
+  url?: string | null;
+  /**
+   * For an MCP tool, the server functions offered to models. Leave empty to offer every function the server lists.
+   */
+  allowed_functions?: string[] | null;
+  /**
+   * For web search, the only sites results may come from (e.g. 'service-public.fr'). Leave empty for the whole web.
+   */
+  allowed_domains?: string[] | null;
+  /**
+   * For web search, sites results never come from. Cannot be combined with allowed domains.
+   */
+  blocked_domains?: string[] | null;
+  /**
+   * Disabled tools are never offered to a model nor in the visitor picker. Their name and logo still label past comparisons.
+   */
+  enabled?: boolean;
+  /**
+   * For a built-in tool, its provider API key. For an MCP tool, a token sent as 'Authorization: Bearer', or a whole header as 'Name: value'. Stored encrypted and never shown again.
+   */
+  secret?: string | null;
 }
 export interface UserPublic {
   id?: string;

@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from utils.database.models.app_settings import AppSettingsPatch  # noqa: E402
 
-FIELDS = ("ranking_min_votes", "ranking_max_rank_spread")
+FIELDS = ("ranking_min_votes", "ranking_max_rank_spread", "ranking_grey_rank_spread")
 
 
 @pytest.mark.parametrize("field", FIELDS)

@@ -1,30 +1,23 @@
 import hashlib
 import json
-import re
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-from fastapi import Query
 from pydantic import BaseModel, Field, PlainSerializer, field_validator
 from pydantic_core import ValidationError
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, select
 
-from backend.utils.locale import BASE_LOCALE, pick_locale
+from backend.utils.locale import get_locales_settings, pick_translation
 from utils.database.models.auth import LegalDocument, LegalDocumentKind
 from utils.database.models.utils import utc_now
 from utils.database.session import get_session
 from utils.database.settings import get_app_settings
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.validation import Translatable
 
-DEFAULT_LEGAL_LANGUAGE = "fr"
 LEGAL_VERSION_MAX_LENGTH = 64
 LEGAL_CONTENT_MAX_LENGTH = 100_000
-LEGAL_LOCALE_PATTERN = re.compile(r"[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*")
-_LOCALE_QUERY = Query(
-    min_length=2, max_length=16, pattern=f"^{LEGAL_LOCALE_PATTERN.pattern}$"
-)
-LocaleQuery = Annotated[str, _LOCALE_QUERY]
 
 
 def _stamp_utc(value: datetime) -> datetime:
@@ -147,10 +140,6 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
 )
 
 
-def fallback_legal_presentation(locale: str = BASE_LOCALE) -> LegalPresentation:
-    return FALLBACK_PRESENTATIONS.root[pick_locale(locale, FALLBACK_PRESENTATIONS.root)]
-
-
 async def get_legal_presentations() -> LegalPresentationTranslatable:
     """Return all configured locales or default ones."""
     app_settings = await get_app_settings()
@@ -165,14 +154,14 @@ async def get_legal_presentations() -> LegalPresentationTranslatable:
     return FALLBACK_PRESENTATIONS
 
 
-async def get_legal_presentation(locale: str | None = None) -> LegalPresentation:
+async def get_legal_presentation(
+    locale: SupportedLocale | None = None,
+) -> LegalPresentation:
     """The admin's copy when there is one, else the default in `locale`, or in
     the instance's default language when the caller has none."""
-    app_settings = await get_app_settings()
+    locales = await get_locales_settings()
     presentations = await get_legal_presentations()
-    return (await get_legal_presentations()).root[
-        pick_locale(locale or app_settings.default_locale, presentations.root)
-    ]
+    return pick_translation(presentations.root, locale, locales)[1]
 
 
 class DuplicateLegalDocumentError(ValueError):
@@ -183,7 +172,7 @@ class InvalidEffectiveDateError(ValueError):
     pass
 
 
-def legal_document_hash(content: dict[str, str]) -> str:
+def legal_document_hash(content: TranslatableRaw[str]) -> str:
     dumped_content = json.dumps(
         content, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     )
@@ -239,7 +228,7 @@ async def publish_legal_document(
     *,
     kind: LegalDocumentKind,
     version: str,
-    content: dict[str, str],
+    content: TranslatableRaw[str],
     effective_at: datetime | None,
 ) -> LegalDocument:
     """Publish an immutable document and retire the active one when immediate.

@@ -8,9 +8,12 @@
     variant = 'normal',
     closeOnSelect = false,
     role = null,
+    disabled = false,
     maxHeight = 400,
     buttonClass = 'fr-select',
     buttonLabel,
+    onClose,
+    contentSnippet,
     children,
     ...props
   }: {
@@ -19,9 +22,12 @@
     closeOnSelect?: boolean
     variant?: 'light' | 'normal'
     role?: 'menu' | null
+    disabled?: boolean
     maxHeight?: number
     buttonClass?: ClassValue
     buttonLabel?: Snippet<[string]>
+    onClose?: () => void
+    contentSnippet?: Snippet<[close: (focusButton?: boolean) => void]>
     children?: Snippet
   } & SvelteHTMLElements['div'] = $props()
 
@@ -50,6 +56,7 @@
   function close(focusButton = true): void {
     open = false
     if (focusButton) buttonEl?.focus()
+    onClose?.()
   }
 
   function handleContentKeydown(e: KeyboardEvent): void {
@@ -195,7 +202,8 @@
     aria-haspopup={role ?? true}
     aria-expanded={open}
     aria-controls={id}
-    class={[buttonClass, { 'not-hover:bg-white': variant === 'light' }]}
+    {disabled}
+    class={[buttonClass, { 'not-hover:bg-white disabled:bg-white': variant === 'light' }]}
     onclick={toggle}
   >
     {#if buttonLabel}{@render buttonLabel(label)}{:else}{label}{/if}
@@ -217,6 +225,7 @@
     ]}
     {style}
   >
+    {@render contentSnippet?.(close)}
     {@render children?.()}
   </div>
 </div>

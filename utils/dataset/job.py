@@ -16,21 +16,21 @@ import logging
 from datetime import UTC, datetime
 
 import cyclopts
-from sqlalchemy.ext.asyncio import AsyncConnection, create_async_engine
-from sqlalchemy.pool import NullPool
+from sqlalchemy.ext.asyncio import AsyncConnection
 from sqlmodel import col, select
 
 from backend.config import settings
 from utils.database.models.publish import PublishDestination
 from utils.database.models.utils import as_naive_utc
 from utils.database.session import (
-    _async_url,
     get_engine,
     get_session,
+    own_connection,
     use_export_engine,
 )
 from utils.logger import configure_logger
 
+from .reservation import close_abandoned_sendings
 from .run import main as run
 from .runs import close_unfinished_run
 from .schedule import previous_run_at
@@ -103,24 +103,17 @@ async def tick(now: datetime | None = None) -> None:
         logger.warning("No database configured, nothing to publish")
         return
 
-    # Not the pool's: the export needs both of the pool's connections for
-    # itself, and this one has to outlive them all.
-    lock_engine = create_async_engine(
-        _async_url(settings.COMPARIA_DB_URI), poolclass=NullPool
-    )
-    try:
-        async with lock_engine.connect() as connection:
-            if not await _hold_lock(connection):
-                logger.info("Another publish job is running, leaving it to it")
-                return
-            try:
-                # With the lock ours, a run still open cannot be anyone's.
-                await close_unfinished_run(ORPHAN_RUN_ERROR)
-                await _run_due(now)
-            finally:
-                await _release_lock(connection)
-    finally:
-        await lock_engine.dispose()
+    async with own_connection() as connection:
+        if not await _hold_lock(connection):
+            logger.info("Another publish job is running, leaving it to it")
+            return
+        try:
+            # With the lock ours, a run still open cannot be anyone's.
+            await close_unfinished_run(ORPHAN_RUN_ERROR)
+            await close_abandoned_sendings()
+            await _run_due(now)
+        finally:
+            await _release_lock(connection)
 
 
 async def _run_due(now: datetime | None) -> None:

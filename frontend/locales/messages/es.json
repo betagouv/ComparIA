@@ -26,6 +26,13 @@
         "selectLanguage": "Seleccionar idioma"
     },
     "arenaHome": {
+        "tools": {
+            "contract": "Una vez activadas, las herramientas seleccionadas se ofrecen a los dos modelos comparados, que siguen siendo libres de usarlas o no.",
+            "count": "{count} herramientas",
+            "label": "Herramientas",
+            "locked": "Las herramientas quedan fijadas para toda la conversación.",
+            "none": "Ninguna herramienta"
+        },
         "compareModels": {
             "count": "{count}/2 modelos",
             "help": "Si elige solo uno, el segundo sera elegido al azar",
@@ -44,15 +51,13 @@
             "generateAnother": "Generar otro mensaje",
             "title": "Instrucciones sugeridas"
         },
-        "title": "¿Cómo puedo ayudarte el día de hoy?",
-        "webSearch": {
-            "disabled": "Búsqueda web desactivada",
-            "enabled": "Búsqueda web activada",
-            "label": "Búsqueda web",
-            "tooltip": "Activa la búsqueda web para que los modelos utilicen fuentes en línea y citen información más actualizada.<br><strong>Sin búsqueda web</strong>, los modelos responden basándose en lo que aprendieron durante su entrenamiento (sus datos de entrenamiento). No pueden verificar información en línea, por lo que los datos muy recientes o muy específicos pueden ser incompletos."
-        }
+        "title": "¿Cómo puedo ayudarte el día de hoy?"
     },
     "chatbot": {
+        "tools": {
+            "noResult": "Sin resultados",
+            "running": "Buscando…"
+        },
         "continuePrompt": "Continúa la discusión…",
         "conversation": "Conversación",
         "errors": {
@@ -72,10 +77,7 @@
             "finished": "Razonamiento completado",
             "inProgress": "Razonando…"
         },
-        "revealButton": "Termina y descubre los modelos",
-        "webSearch": {
-            "label": "Resultados de búsqueda web asociados."
-        }
+        "revealButton": "Termina y descubre los modelos"
     },
     "closeModal": "Cerrar ventana emergente",
     "components": {

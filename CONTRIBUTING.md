@@ -163,6 +163,9 @@ cd frontend && npx vitest --run
 # Frontend E2E tests (requires build first)
 cd frontend && yarn run build && npx playwright test
 
+# The same flows with the app served under a path (/fr): CI job e2e-instance-path,
+# by hand see frontend/README.md, "End-to-end under a path"
+
 # Lint & type check
 cd frontend && yarn run lint
 cd frontend && yarn run check
@@ -172,14 +175,11 @@ cd frontend && yarn run check
 
 ## Translating the platform
 
-The frontend uses [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) for i18n. Currently supported locales: **fr** (default), **da**, **en**, **lt**, **sv**.
+The frontend uses [@inlang/paraglide-js](https://inlang.com/m/gerre34r/library-inlang-paraglideJs) for i18n. Currently supported locales: **en** (default), **da**, **fr**, **it**, **lt**, **nb-NO**, **sv**.
 
-Translation files live in `frontend/locales/messages/`. There are more files there than there are supported locales, because a language only counts once it appears in two lists, which have to agree:
+Translation files live in `frontend/locales/messages/`. There are more files there than there are supported locales, because a language only counts once it is listed in `SupportedLocale` in `utils/i18n.py`. `./comparia-cli internal i18n` copies that list into `frontend/comparia.inlang/settings.json`.
 
-- `locales` in `frontend/comparia.inlang/settings.json`
-- `SUPPORTED_LOCALES` in `utils/utils.py`
-
-To add one: copy `fr.json`, translate it, add the code to both lists, then enable it for your instance at `/admin/locales`.
+To add one: copy `en.json`, translate it, add the code to `SupportedLocale`, run `./comparia-cli internal i18n`, then enable it for your instance at `/admin/locales`.
 
 ---
 
