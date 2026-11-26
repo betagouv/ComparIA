@@ -262,6 +262,7 @@
                 "switchLabel": "Afficher le bandeau cookies",
                 "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience.",
                 "switchNothingToAsk": "Aucune mesure d’audience, donc aucune question à poser.",
+                "switchExemption": "Une mesure d’audience sans bandeau n’est licite que si une exemption s’applique, comme celle de la CNIL en France.",
                 "switchedOn": "Bandeau cookies activé",
                 "switchedOff": "Bandeau cookies désactivé",
                 "formTitle": "Modifier le texte du bandeau",

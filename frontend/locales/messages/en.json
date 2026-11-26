@@ -264,6 +264,7 @@
                 "subtitle": "Audience measurement, the cookie banner and its text.",
                 "switchedOff": "Cookie banner turned off",
                 "switchedOn": "Cookie banner turned on",
+                "switchExemption": "Audience measurement without the banner is lawful only where an exemption applies, such as the CNIL's in France.",
                 "switchHelp": "Visitors are asked before audience measurement runs.",
                 "switchNothingToAsk": "No audience measurement, so there is nothing to ask.",
                 "switchLabel": "Show the cookie banner",

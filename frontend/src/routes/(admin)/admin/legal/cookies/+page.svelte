@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Button, Input, Textarea, Toggle } from '$components/dsfr'
+  import { Alert, Button, Input, Textarea, Toggle } from '$components/dsfr'
   import { FormRadioGroup } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
@@ -242,6 +242,15 @@
     groupClass="mb-8!"
     bind:value={() => enabled, (value) => setEnabled(value)}
   />
+
+  {#if measurement && !enabled}
+    <Alert
+      small
+      variant="warning"
+      title={m['admin.legal.cookies.switchExemption']()}
+      class="mb-8! max-w-[720px]"
+    />
+  {/if}
 
   <Form id="cookies" label={m['admin.legal.cookies.formTitle']()} {...form} stickyFooter>
     <FormTranslate id="cookies-form" bind:value={form.form} {isValid}>

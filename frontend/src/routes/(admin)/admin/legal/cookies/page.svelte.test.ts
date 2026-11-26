@@ -254,6 +254,37 @@ describe('cookie banner administration', () => {
     await waitFor(() => expect(toggle).toBeEnabled())
   })
 
+  const exemption =
+    'Une mesure d’audience sans bandeau n’est licite que si une exemption s’applique, comme celle de la CNIL en France.'
+
+  it('says an exemption must apply when measuring without the banner', () => {
+    const { getByText } = renderPage(false, null)
+
+    expect(getByText(exemption)).toBeInTheDocument()
+  })
+
+  it.each([
+    ['the banner is on', true, null, serverMatomo],
+    ['nothing is measured', false, false, serverMatomo],
+    ['the server has no Matomo', false, null, noServerMatomo]
+  ])('says nothing of an exemption when %s', (_case, enabled, matomoEnabled, server) => {
+    const { queryByText } = renderPage(enabled, matomoEnabled, ownMatomo, server)
+
+    expect(queryByText(exemption)).not.toBeInTheDocument()
+  })
+
+  it('still saves the banner text and switch under the exemption note', async () => {
+    const { getByRole, getByText, queryByText } = renderPage(false, null)
+    expect(getByText(exemption)).toBeInTheDocument()
+
+    await fireEvent.click(getByRole('button', { name: 'Enregistrer' }))
+    await waitFor(() => expect(bodyOf('put')).toEqual({ fr: frBanner }))
+
+    await fireEvent.click(getByRole('checkbox', { name: /Afficher le bandeau cookies/ }))
+    await waitFor(() => expect(bodyOf('PATCH')).toEqual({ cookie_banner_enabled: true }))
+    await waitFor(() => expect(queryByText(exemption)).not.toBeInTheDocument())
+  })
+
   it('previews the banner with its text and its two buttons', async () => {
     const { getByLabelText, getByTestId } = renderPage()
 
