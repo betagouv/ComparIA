@@ -11,8 +11,6 @@ import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
-const MATOMO_URL = env.MATOMO_URL || ''
-
 // Cookies the backend identifies a visitor by. Server-side requests go to the
 // API's internal origin, where the browser's cookies are not sent on their own.
 const FORWARDED_COOKIES = ['auth_session', 'anonymous_session']
@@ -55,20 +53,21 @@ function originOf(url: string): string | null {
   }
 }
 
-// Matomo lives on a host only known at runtime, and the API sits on another
-// origin in dev, so both are added to the build-time policy from svelte.config.js
-// instead of being hardcoded there.
-const EXTRA_CSP_SOURCES: Record<string, (string | null)[]> = {
-  'script-src': [originOf(MATOMO_URL)],
-  'connect-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')],
-  'img-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')]
-}
+// The API sits on another origin in dev, and Matomo on a host that can change
+// from one request to the next, so both are added to the build-time policy from
+// svelte.config.js instead of being hardcoded there.
+const API_ORIGIN = originOf(publicEnv.PUBLIC_API_URL || '')
 
-function withRuntimeOrigins(policy: string): string {
+function withRuntimeOrigins(policy: string, matomoOrigin: string | null): string {
+  const extraSources: Record<string, (string | null)[]> = {
+    'script-src': [matomoOrigin],
+    'connect-src': [matomoOrigin, API_ORIGIN],
+    'img-src': [matomoOrigin, API_ORIGIN]
+  }
   return policy
     .split('; ')
     .map((directive) => {
-      const extra = (EXTRA_CSP_SOURCES[directive.split(' ')[0]] ?? []).filter(
+      const extra = (extraSources[directive.split(' ')[0]] ?? []).filter(
         (origin): origin is string => !!origin && !directive.includes(origin)
       )
       return extra.length ? `${directive} ${extra.join(' ')}` : directive
@@ -76,16 +75,19 @@ function withRuntimeOrigins(policy: string): string {
     .join('; ')
 }
 
-const securityHeadersHandle: Handle = async ({ event, resolve }) => {
+export const securityHeadersHandle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event)
 
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
+  // Read after resolve, once cookieBannerHandle has worked out the measurement.
+  // A request stopped before it, by a redirect, trusts no Matomo origin.
   const policy = response.headers.get('content-security-policy')
   if (policy) {
-    response.headers.set('content-security-policy', withRuntimeOrigins(policy))
+    const matomoOrigin = event.locals.measurement ? originOf(event.locals.measurement.url) : null
+    response.headers.set('content-security-policy', withRuntimeOrigins(policy, matomoOrigin))
   }
 
   return response

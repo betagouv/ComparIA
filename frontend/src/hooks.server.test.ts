@@ -33,7 +33,8 @@ const {
   handleFetch,
   matomoHandle,
   metricsHandle,
-  paraglideHandle
+  paraglideHandle,
+  securityHeadersHandle
 } = await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
@@ -377,5 +378,86 @@ describe('language cookie', () => {
     const set = await languageCookie(true, undefined, 'fr')
 
     expect(set).not.toHaveBeenCalled()
+  })
+})
+
+describe('measurement in use', () => {
+  const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8').replaceAll(
+    '%sveltekit.nonce%',
+    'n0nce'
+  )
+  // A trimmed version of what svelte.config.js has SvelteKit send.
+  const builtPolicy = "script-src 'self' 'nonce-n0nce'; connect-src 'self'; img-src 'self' data:"
+  const now = Math.floor(Date.now() / 1000)
+
+  beforeEach(() => vi.useFakeTimers({ toFake: ['Date'] }))
+  afterEach(() => {
+    vi.useRealTimers()
+    privateEnv.MATOMO_URL = 'https://stats.test'
+    privateEnv.MATOMO_ID = '42'
+  })
+
+  // Runs the handles that touch measurement in the order the hook sequence does.
+  async function serve(switchOn: boolean, consent?: string) {
+    clock += 60_000
+    vi.setSystemTime(clock)
+    request.mockResolvedValue({ cookie_banner_enabled: switchOn })
+    const event = {
+      locals: {} as App.Locals,
+      cookies: { get: (name: string) => (name === 'comparia_cookie_consent' ? consent : undefined) }
+    }
+    const page = async (
+      _event: unknown,
+      opts?: { transformPageChunk?: (input: { html: string; done: boolean }) => string }
+    ) =>
+      new Response(opts?.transformPageChunk?.({ html: template, done: true }) ?? template, {
+        headers: { 'content-security-policy': builtPolicy }
+      })
+    const response = await securityHeadersHandle({
+      event,
+      resolve: () =>
+        cookieBannerHandle({
+          event,
+          resolve: () => matomoHandle({ event, resolve: page } as never)
+        } as never)
+    } as never)
+    return {
+      locals: event.locals,
+      html: await response.text(),
+      policy: response.headers.get('content-security-policy') ?? ''
+    }
+  }
+
+  describe('with Matomo set on the server', () => {
+    it.each([
+      ['the banner is off', false, undefined],
+      ['the visitor said yes', true, `1.1.${now}`]
+    ])('loads Matomo and trusts its origin when %s', async (_case, switchOn, consent) => {
+      const { locals, html, policy } = await serve(switchOn, consent)
+
+      expect(locals.measurement).toEqual({ url: 'https://stats.test', id: '42' })
+      expect(html).toContain("_paq.push(['setSiteId', '42'])")
+      expect(policy).toBe(
+        "script-src 'self' 'nonce-n0nce' https://stats.test; connect-src 'self' https://stats.test; img-src 'self' data: https://stats.test"
+      )
+    })
+
+    it('asks first, and still trusts the origin so a yes can start Matomo', async () => {
+      const { locals, html, policy } = await serve(true)
+
+      expect(locals.cookieConsent.showBanner).toBe(true)
+      expect(html).toContain('<template id="matomo-config"')
+      expect(policy).toContain("script-src 'self' 'nonce-n0nce' https://stats.test")
+    })
+  })
+
+  it('follows a change of address without a restart', async () => {
+    privateEnv.MATOMO_URL = 'https://other-stats.test'
+
+    const { html, policy } = await serve(false)
+
+    expect(html).toContain("var u = 'https://other-stats.test/'")
+    expect(policy).toContain('https://other-stats.test')
+    expect(policy).not.toContain('https://stats.test')
   })
 })
