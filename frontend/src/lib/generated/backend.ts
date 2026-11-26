@@ -25,6 +25,7 @@ export interface AuthConfig {
   oidc_button_label: string | null;
   oidc_has_button_logo: boolean;
   cookie_banner_enabled: boolean;
+  matomo_enabled: boolean | null;
 }
 export interface ComparisonPublic {
   id: string;

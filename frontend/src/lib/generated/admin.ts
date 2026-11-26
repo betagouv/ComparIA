@@ -325,6 +325,7 @@ export interface AppSettingsPatch {
   publish_timezone?: string | null;
   dataset_voter_ids?: boolean | null;
   cookie_banner_enabled?: boolean | null;
+  matomo_enabled?: boolean | null;
   auth_methods?: string[] | null;
   oidc_issuer?: string | null;
   oidc_client_id?: string | null;
@@ -351,6 +352,7 @@ export interface AppSettingsPublic {
   publish_timezone: string;
   dataset_voter_ids: boolean;
   cookie_banner_enabled: boolean;
+  matomo_enabled: boolean | null;
   has_custom_logo: boolean;
   logo_version?: string | null;
   enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
