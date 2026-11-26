@@ -26,8 +26,10 @@ describe('Matomo tracker', () => {
 })
 
 describe('measurement in use', () => {
+  const env = { MATOMO_URL: 'https://stats.test', MATOMO_ID: '1' }
+
   it('follows the Matomo address and site id the server was given', () => {
-    expect(measurementInUse({ MATOMO_URL: 'https://stats.test', MATOMO_ID: '1' })).toEqual({
+    expect(measurementInUse({ matomo_enabled: null }, env)).toEqual({
       url: 'https://stats.test',
       id: '1'
     })
@@ -38,6 +40,14 @@ describe('measurement in use', () => {
     ['no site id', { MATOMO_URL: 'https://stats.test', MATOMO_ID: '' }],
     ['neither', {}]
   ])('is none when the server has %s', (_case, env) => {
-    expect(measurementInUse(env)).toBeNull()
+    expect(measurementInUse({ matomo_enabled: null }, env)).toBeNull()
+  })
+
+  it('is none when the admin turned it off, whatever the server says', () => {
+    expect(measurementInUse({ matomo_enabled: false }, env)).toBeNull()
+  })
+
+  it('follows the server until the admin setting has been read once', () => {
+    expect(measurementInUse(null, env)).toEqual({ url: 'https://stats.test', id: '1' })
   })
 })

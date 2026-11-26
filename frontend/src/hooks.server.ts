@@ -5,7 +5,7 @@ import { COOKIE_CONSENT_NAME, decideCookieConsent } from '$lib/cookieConsent'
 import { cookieMaxAge, defineCustomServerStrategy, type Locale } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
-import { fillMatomoPlaceholder, measurementInUse } from '$lib/matomo'
+import { fillMatomoPlaceholder, measurementInUse, type MeasurementSetting } from '$lib/matomo'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
@@ -100,6 +100,9 @@ type InstanceConfig = {
   default_locale?: Locale
   // null until the backend has answered once.
   cookie_banner_enabled: boolean | null
+  // null until the backend has answered once, so a failed fetch is never
+  // mistaken for the admin's choice.
+  measurement: MeasurementSetting | null
 }
 
 // Cached per Node process (same rationale as maintenanceCache below). The
@@ -108,7 +111,8 @@ type InstanceConfig = {
 let instanceConfigCache: { promise: Promise<InstanceConfig>; checkedAt: number } | null = null
 let lastInstanceConfig: InstanceConfig = {
   enabled_locales: [],
-  cookie_banner_enabled: null
+  cookie_banner_enabled: null,
+  measurement: null
 }
 
 function getInstanceConfig(): Promise<InstanceConfig> {
@@ -117,12 +121,13 @@ function getInstanceConfig(): Promise<InstanceConfig> {
     instanceConfigCache = {
       checkedAt: now,
       promise: api
-        .request<Partial<InstanceConfig>>('/auth/config')
+        .request<Partial<Omit<InstanceConfig, 'measurement'> & MeasurementSetting>>('/auth/config')
         .then((config) => {
           lastInstanceConfig = {
             enabled_locales: config.enabled_locales ?? [],
             default_locale: config.default_locale,
-            cookie_banner_enabled: config.cookie_banner_enabled ?? null
+            cookie_banner_enabled: config.cookie_banner_enabled ?? null,
+            measurement: { matomo_enabled: config.matomo_enabled ?? null }
           }
           return lastInstanceConfig
         })
@@ -182,8 +187,9 @@ export const handleError: HandleServerError = async ({ error, event }) => {
 // the browser (through the root layout) all follow this one switch value and
 // this one measurement.
 export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
-  event.locals.cookieBannerEnabled = (await getInstanceConfig()).cookie_banner_enabled
-  event.locals.measurement = measurementInUse({
+  const config = await getInstanceConfig()
+  event.locals.cookieBannerEnabled = config.cookie_banner_enabled
+  event.locals.measurement = measurementInUse(config.measurement, {
     MATOMO_URL: env.MATOMO_URL,
     MATOMO_ID: env.MATOMO_ID
   })

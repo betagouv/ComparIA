@@ -398,10 +398,17 @@ describe('measurement in use', () => {
   })
 
   // Runs the handles that touch measurement in the order the hook sequence does.
-  async function serve(switchOn: boolean, consent?: string) {
+  async function serve(
+    switchOn: boolean,
+    consent?: string,
+    matomoEnabled: boolean | null = null,
+    backendDown = false
+  ) {
     clock += 60_000
     vi.setSystemTime(clock)
-    request.mockResolvedValue({ cookie_banner_enabled: switchOn })
+    if (backendDown) request.mockRejectedValue(new Error('backend down'))
+    else
+      request.mockResolvedValue({ cookie_banner_enabled: switchOn, matomo_enabled: matomoEnabled })
     const event = {
       locals: {} as App.Locals,
       cookies: { get: (name: string) => (name === 'comparia_cookie_consent' ? consent : undefined) }
@@ -467,6 +474,35 @@ describe('measurement in use', () => {
         expect(html).not.toContain('matomo-config')
         expect(policy).toBe(builtPolicy)
       }
+    })
+  })
+
+  describe('with the admin setting', () => {
+    it('follows the server when the admin left it to the server', async () => {
+      const { locals, html } = await serve(false, undefined, null)
+
+      expect(locals.measurement).toEqual({ url: 'https://stats.test', id: '42' })
+      expect(html).toContain("_paq.push(['setSiteId', '42'])")
+    })
+
+    it('neither asks nor loads Matomo when the admin turned it off', async () => {
+      for (const switchOn of [true, false]) {
+        const { locals, html, policy } = await serve(switchOn, `1.1.${now}`, false)
+
+        expect(locals.measurement).toBeNull()
+        expect(locals.cookieConsent).toEqual({ showBanner: false, loadMeasurement: false })
+        expect(html).not.toContain('_paq')
+        expect(html).not.toContain('matomo-config')
+        expect(policy).toBe(builtPolicy)
+      }
+    })
+
+    it('stays off when the backend goes down after the admin turned it off', async () => {
+      await serve(true, undefined, false)
+      const { locals, html } = await serve(true, undefined, false, true)
+
+      expect(locals.measurement).toBeNull()
+      expect(html).not.toContain('matomo-config')
     })
   })
 

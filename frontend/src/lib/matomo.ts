@@ -3,14 +3,25 @@
 // given mid-visit and stops it on a withdrawal.
 
 import { secureAttribute } from '$lib/cookies'
+import type { AuthConfig } from '$lib/generated/backend'
 import type { CookieConsentListener } from '$lib/stores/cookieConsent.svelte'
 
 export type MatomoConfig = { url: string; id: string }
 // The Matomo a request measures with, or null when nothing is measured.
 export type Measurement = MatomoConfig | null
 
-// For now the server's environment alone decides, and both values are needed.
-export function measurementInUse(env: { MATOMO_URL?: string; MATOMO_ID?: string }): Measurement {
+// The admin's setting from the instance config: false is Off, null follows
+// the server's environment.
+export type MeasurementSetting = Pick<AuthConfig, 'matomo_enabled'>
+
+// A setting never read, after a failed fetch on a cold process, is not taken
+// for Off: the server's environment decides, as it did before the setting
+// existed. The environment needs both values.
+export function measurementInUse(
+  setting: MeasurementSetting | null,
+  env: { MATOMO_URL?: string; MATOMO_ID?: string }
+): Measurement {
+  if (setting?.matomo_enabled === false) return null
   const url = env.MATOMO_URL || ''
   const id = env.MATOMO_ID || ''
   return url && id ? { url, id } : null
