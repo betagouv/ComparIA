@@ -147,3 +147,13 @@ class UnreserveUnconfirmedError(HTTPException):
 
     def __init__(self) -> None:
         super().__init__(status_code=status.HTTP_409_CONFLICT, detail=PARTNER_HAS_IT)
+
+
+class MatomoNeedsUrlAndSiteIdError(HTTPException):
+    """Audience measurement switched on without both an address and a site id."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail="matomo_needs_url_and_site_id",
+        )

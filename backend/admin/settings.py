@@ -12,6 +12,7 @@ from backend.auth.oidc import (
     oidc_config_fingerprint,
 )
 from backend.config import INSTANCE_LOGO_BOX, OIDC_LOGO_BOX
+from backend.errors import MatomoNeedsUrlAndSiteIdError
 from backend.utils.logos import read_logo
 from utils.database.models.app_settings import (
     AppSettings,
@@ -19,7 +20,13 @@ from utils.database.models.app_settings import (
     AppSettingsPublic,
     OIDCConnectionTest,
 )
-from utils.database.settings import get_app_settings, update_app_settings
+from utils.database.settings import (
+    MATOMO_FIELDS,
+    MatomoIncompleteError,
+    check_audience_measurement,
+    get_app_settings,
+    update_app_settings,
+)
 from utils.secrets import encrypt_secret
 
 logger = logging.getLogger("languia")
@@ -109,21 +116,11 @@ async def patch_settings(
                 detail="Default locale must be part of the enabled locales",
             )
     patch = body.model_dump(exclude_unset=True)
-    if patch.keys() & {"matomo_enabled", "matomo_url", "matomo_site_id"}:
-        current = await get_app_settings()
-        # Judged on the row as it will be saved, so On alone takes the stored
-        # address and id, and clearing one while On is refused.
-        effective = {
-            field: patch.get(field, getattr(current, field))
-            for field in ("matomo_enabled", "matomo_url", "matomo_site_id")
-        }
-        if effective["matomo_enabled"] is True and not (
-            effective["matomo_url"] and effective["matomo_site_id"]
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-                detail="matomo_needs_url_and_site_id",
-            )
+    if patch.keys() & set(MATOMO_FIELDS):
+        try:
+            check_audience_measurement(await get_app_settings(), patch)
+        except MatomoIncompleteError as exc:
+            raise MatomoNeedsUrlAndSiteIdError() from exc
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
         # Same key as every other secret at rest; the column holds bytes.

@@ -26,6 +26,25 @@ _DEFAULTS = AppSettings(
 )
 
 
+MATOMO_FIELDS = ("matomo_enabled", "matomo_url", "matomo_site_id")
+
+
+class MatomoIncompleteError(ValueError):
+    """Measurement switched on without both an address and a site id."""
+
+
+def check_audience_measurement(current: AppSettings, patch: dict) -> None:
+    # Judged on the row as it will be saved, so On alone takes the stored
+    # address and id, and clearing one while On is refused.
+    effective = {
+        field: patch.get(field, getattr(current, field)) for field in MATOMO_FIELDS
+    }
+    if effective["matomo_enabled"] is True and not (
+        effective["matomo_url"] and effective["matomo_site_id"]
+    ):
+        raise MatomoIncompleteError()
+
+
 @redis_cache(REDIS_APP_SETTINGS_KEY)
 async def get_app_settings() -> AppSettings:
     if not settings.COMPARIA_DB_URI:

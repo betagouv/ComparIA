@@ -20,6 +20,10 @@ import backend.auth.router as auth_router  # noqa: E402
 from tests.auth.test_oidc_settings import _settings_row  # noqa: E402
 from tests.settings.test_cookie_banner import settings_client  # noqa: E402
 from utils.database.models.app_settings import AppSettings  # noqa: E402
+from utils.database.settings import (  # noqa: E402
+    MatomoIncompleteError,
+    check_audience_measurement,
+)
 
 
 def test_a_new_instance_follows_the_server_setting():
@@ -176,6 +180,14 @@ def test_on_is_refused_without_both_an_address_and_a_site_id(stored, body):
     assert response.json()["detail"] == "matomo_needs_url_and_site_id"
     assert after["matomo_enabled"] == stored.get("matomo_enabled")
     assert after["matomo_url"] == stored.get("matomo_url")
+
+
+def test_the_rule_holds_outside_the_route():
+    stored = _settings_row(matomo_url="https://stats.example.org")
+
+    with pytest.raises(MatomoIncompleteError):
+        check_audience_measurement(stored, {"matomo_enabled": True})
+    check_audience_measurement(stored, {"matomo_enabled": True, "matomo_site_id": "12"})
 
 
 def test_off_keeps_the_address_and_site_id():
