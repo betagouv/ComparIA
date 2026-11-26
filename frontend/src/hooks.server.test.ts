@@ -190,6 +190,7 @@ describe('cookie banner switch on a cold process', () => {
     await fresh.cookieBannerHandle({ event, resolve } as never)
 
     expect(event.locals.cookieBannerEnabled).toBeNull()
+    expect(event.locals.measurement).toEqual({ url: 'https://stats.test', id: '42' })
     expect(event.locals.cookieConsent).toMatchObject({ showBanner: false, loadMeasurement: false })
   })
 })

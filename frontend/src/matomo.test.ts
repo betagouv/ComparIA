@@ -13,14 +13,11 @@ describe('Matomo tracker', () => {
     expect(page).not.toContain('setConsentGiven')
   })
 
-  it.each([
-    ['no address', { url: '', id: '1' }],
-    ['no site id', { url: 'https://stats.test', id: '' }]
-  ])('leaves the page free of Matomo when the instance has %s', (_case, config) => {
+  it('leaves the page free of Matomo when nothing is measured', () => {
     const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8')
 
     for (const load of [true, false]) {
-      const page = fillMatomoPlaceholder(template, config, load)
+      const page = fillMatomoPlaceholder(template, null, load)
       expect(page).not.toContain('_paq')
       expect(page).not.toContain('matomo-config')
       expect(page).not.toContain('<!-- matomo')

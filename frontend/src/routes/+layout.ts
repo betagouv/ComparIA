@@ -16,9 +16,9 @@ export const load: LayoutLoad = async ({ data: serverData, fetch, depends }) => 
   depends('survey:signup')
   const locale = getLocale()
 
-  // The switch the server rendered with, not a fresh read: the browser must
-  // ask exactly when the server held Matomo back.
-  const { cookieBannerEnabled } = serverData
+  // The switch and measurement the server rendered with, not a fresh read: the
+  // browser must ask exactly when the server held Matomo back.
+  const { cookieBannerEnabled, measurement } = serverData
   // Without its text the banner stays hidden, which only puts off the question.
   const cookieBannerRequest = cookieBannerEnabled
     ? api
@@ -61,6 +61,7 @@ export const load: LayoutLoad = async ({ data: serverData, fetch, depends }) => 
     informationalPagesLinks,
     survey,
     cookieBannerEnabled,
+    measurement,
     cookieBanner
   }
 }

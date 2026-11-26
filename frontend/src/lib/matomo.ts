@@ -64,10 +64,10 @@ function escapeAttribute(value: string): string {
 
 // Without consent the page still says where Matomo lives, in an inert element,
 // so the browser can start it if the visitor says yes later. An instance with
-// no Matomo gets neither.
-export function fillMatomoPlaceholder(html: string, config: MatomoConfig, load: boolean): string {
+// no measurement gets neither.
+export function fillMatomoPlaceholder(html: string, config: Measurement, load: boolean): string {
   return html.replace(PLACEHOLDER, (_match, nonce: string) => {
-    if (!config.url || !config.id) return ''
+    if (!config) return ''
     if (!load)
       return `<template id="${CONFIG_ID}" data-url="${escapeAttribute(config.url)}" data-id="${escapeAttribute(config.id)}"></template>`
     return MARKUP.replace('%nonce%', () => nonce)

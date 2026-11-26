@@ -9,15 +9,20 @@ vi.mock('$lib/fastapi-client', () => ({
 vi.mock('$lib/i18n/runtime', () => ({ getLocale: () => 'fr' }))
 
 const bannerText = { title: 'Cookies' }
+const stats = { url: 'https://stats.test', id: '42' }
 
-async function runLoad(serverSwitch: boolean, configSwitch: boolean) {
+async function runLoad(
+  serverSwitch: boolean,
+  configSwitch: boolean,
+  measurement: { url: string; id: string } | null = stats
+) {
   request.mockImplementation(async (path: string) => {
     if (path === '/auth/config') return { cookie_banner_enabled: configSwitch }
     if (path === '/settings/legal/cookies') return bannerText
     return {}
   })
   return (await load({
-    data: { cookieBannerEnabled: serverSwitch },
+    data: { cookieBannerEnabled: serverSwitch, measurement },
     depends: vi.fn(),
     fetch: vi.fn()
   } as unknown as Parameters<typeof load>[0])) as Record<string, unknown>
@@ -39,5 +44,10 @@ describe('root layout load', () => {
     expect(data.cookieBannerEnabled).toBe(false)
     expect(data.cookieBanner).toBeNull()
     expect(request).not.toHaveBeenCalledWith('/settings/legal/cookies', expect.anything())
+  })
+
+  it('passes on the measurement the server rendered with', async () => {
+    expect((await runLoad(true, true)).measurement).toEqual(stats)
+    expect((await runLoad(true, true, null)).measurement).toBeNull()
   })
 })

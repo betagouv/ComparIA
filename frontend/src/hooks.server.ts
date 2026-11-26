@@ -5,13 +5,12 @@ import { COOKIE_CONSENT_NAME, decideCookieConsent } from '$lib/cookieConsent'
 import { cookieMaxAge, defineCustomServerStrategy, type Locale } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
-import { fillMatomoPlaceholder } from '$lib/matomo'
+import { fillMatomoPlaceholder, measurementInUse } from '$lib/matomo'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 
-const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
 // Cookies the backend identifies a visitor by. Server-side requests go to the
@@ -177,10 +176,15 @@ export const handleError: HandleServerError = async ({ error, event }) => {
   console.error(error)
 }
 
-// Read once per request: the page, its Matomo tag and the
-// browser (through the root layout) all follow this one switch value.
+// Read once per request: the page, its Matomo tag, the security header and
+// the browser (through the root layout) all follow this one switch value and
+// this one measurement.
 export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
   event.locals.cookieBannerEnabled = (await getInstanceConfig()).cookie_banner_enabled
+  event.locals.measurement = measurementInUse({
+    MATOMO_URL: env.MATOMO_URL,
+    MATOMO_ID: env.MATOMO_ID
+  })
   event.locals.cookieConsent = decideCookieConsent(
     event.locals.cookieBannerEnabled,
     event.cookies.get(COOKIE_CONSENT_NAME)
@@ -192,10 +196,10 @@ export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
 // switched-off banner, allows it. A cold start with the backend down leaves it
 // out: the switch may be on, and nobody has been asked.
 export const matomoHandle: Handle = ({ event, resolve }) => {
-  const { loadMeasurement } = event.locals.cookieConsent
+  const { measurement, cookieConsent } = event.locals
   return resolve(event, {
     transformPageChunk: ({ html }) =>
-      fillMatomoPlaceholder(html, { url: MATOMO_URL, id: MATOMO_ID }, loadMeasurement)
+      fillMatomoPlaceholder(html, measurement, cookieConsent.loadMeasurement)
   })
 }
 
