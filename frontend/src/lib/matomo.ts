@@ -27,12 +27,10 @@ export function measurementInUse(
   env: { MATOMO_URL?: string; MATOMO_ID?: string }
 ): Measurement {
   if (setting?.matomo_enabled === false) return null
-  if (setting?.matomo_enabled === true) {
-    const { matomo_url: url, matomo_site_id: id } = setting
-    return url && id ? { url, id } : null
-  }
-  const url = env.MATOMO_URL || ''
-  const id = env.MATOMO_ID || ''
+  const [url, id] =
+    setting?.matomo_enabled === true
+      ? [setting.matomo_url, setting.matomo_site_id]
+      : [env.MATOMO_URL, env.MATOMO_ID]
   return url && id ? { url, id } : null
 }
 
