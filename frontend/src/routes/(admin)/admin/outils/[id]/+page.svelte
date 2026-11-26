@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { page } from '$app/state'
-  import { Alert, Button, Checkbox } from '$components/dsfr'
+  import { Alert, Button } from '$components/dsfr'
   import { FormInput, type FormInputProps } from '$components/form'
   import AnyFormItem from '$components/form/AnyFormItem.svelte'
   import Form from '$components/form/Form.svelte'
@@ -11,6 +11,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { onFormError, resetFormErrors, useFormSchema } from '$lib/stores/form.svelte'
+  import { FunctionChoice } from '../components'
   import type { PageProps } from './$types'
 
   type ToolTestResult = {
@@ -79,18 +80,12 @@
     return [...new Set([...listed, ...saved, ...(values.allowed_functions ?? [])])]
   })
 
-  // Servers write their descriptions for models, at length. The first
-  // sentence is enough to choose by.
-  function describe(name: string) {
-    const description = testResult?.functions?.find((f) => f.name === name)?.description ?? ''
-    return description.split(/(?<=\.)\s/)[0]
-  }
-
-  function toggleFunction(name: string, checked: boolean) {
-    const others = (values.allowed_functions ?? []).filter((n) => n !== name)
-    const next = checked ? [...others, name] : others
-    form.form.allowed_functions = next.length ? next : null
-  }
+  const functions = $derived(
+    functionNames.map((name) => ({
+      name,
+      description: testResult?.functions?.find((f) => f.name === name)?.description
+    }))
+  )
 
   async function removeSecret() {
     removing = true
@@ -189,19 +184,13 @@
               : m['admin.tools.functionsUntested']()}
           </span>
         </legend>
-        {#each functionNames as name (name)}
-          <div class="fr-fieldset__element">
-            <Checkbox
-              id="tool-function-{name}"
-              label={name}
-              help={describe(name)}
-              bind:checked={
-                () => values.allowed_functions?.includes(name) ?? false,
-                (checked) => toggleFunction(name, checked)
-              }
-            />
-          </div>
-        {/each}
+        <FunctionChoice
+          id="tool-function"
+          {functions}
+          bind:value={
+            () => values.allowed_functions ?? null, (value) => (form.form.allowed_functions = value)
+          }
+        />
       </fieldset>
     {/if}
   {/snippet}

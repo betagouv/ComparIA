@@ -2,7 +2,7 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import ToolCard from '$components/ToolCard.svelte'
-  import { Alert, Button, Checkbox, Input, Textarea, Toggle } from '$components/dsfr'
+  import { Alert, Button, Input, Textarea, Toggle } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
   import { api, ValidationError } from '$lib/fastapi-client'
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
@@ -10,6 +10,7 @@
   import { m } from '$lib/i18n/messages'
   import { tick } from 'svelte'
   import type { PageProps } from './$types'
+  import { FunctionChoice } from '../components'
   import { toKey, uniqueKey } from './keys'
 
   type ToolTestResult = {
@@ -44,7 +45,8 @@
   let secret = $state('')
   let testing = $state(false)
   let testResult = $state<ToolTestResult>()
-  let allowedFunctions = $state<string[]>([])
+  // No list offers every function, those the server adds later included.
+  let allowedFunctions = $state<string[] | null>(null)
   let label = $state('')
   let description = $state('')
   let enabled = $state(true)
@@ -55,9 +57,7 @@
   const key = $derived(uniqueKey(toKey(label), takenKeys))
   const functions = $derived(testResult?.functions ?? [])
 
-  const canContinue = $derived(
-    [!!testResult?.ok, allowedFunctions.length > 0, label.trim().length > 0, true][step]
-  )
+  const canContinue = $derived([!!testResult?.ok, true, label.trim().length > 0, true][step])
 
   async function goTo(index: number) {
     step = index
@@ -79,24 +79,12 @@
         method: 'post',
         body: JSON.stringify({ kind: 'mcp', url: url.trim(), secret: secret || null })
       })
-      // Everything the server offers starts ticked; unticking is the choice.
-      allowedFunctions = testResult.functions?.map((f) => f.name) ?? []
+      allowedFunctions = null
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')
     } finally {
       testing = false
     }
-  }
-
-  // Servers write their descriptions for models, at length. The first
-  // sentence is enough to choose by.
-  function firstSentence(text: string) {
-    return text.split(/(?<=\.)\s/)[0]
-  }
-
-  function toggleFunction(name: string, checked: boolean) {
-    const others = allowedFunctions.filter((n) => n !== name)
-    allowedFunctions = checked ? [...others, name] : others
   }
 
   async function create() {
@@ -108,9 +96,7 @@
       description: description.trim() || null,
       kind: 'mcp',
       url: url.trim(),
-      // All ticked is stored as no list, so functions the server adds later
-      // are offered too, as the step said.
-      allowed_functions: allowedFunctions.length === functions.length ? null : allowedFunctions,
+      allowed_functions: allowedFunctions,
       enabled,
       secret: secret.trim() || null
     }
@@ -210,47 +196,13 @@
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
       {m['admin.tools.wizard.limit.title']()}
     </h2>
-    <p class="mb-4! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
-    <div class="mb-2 gap-2 flex">
-      <Button
-        size="sm"
-        variant="tertiary-no-outline"
-        text={m['admin.tools.wizard.limit.all']()}
-        onclick={() => (allowedFunctions = functions.map((f) => f.name))}
-      />
-      <Button
-        size="sm"
-        variant="tertiary-no-outline"
-        text={m['admin.tools.wizard.limit.none']()}
-        onclick={() => (allowedFunctions = [])}
-      />
-    </div>
+    <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
     <fieldset class="fr-fieldset" aria-labelledby="wizard-functions-legend">
       <legend id="wizard-functions-legend" class="fr-sr-only">
         {m['admin.tools.functionsLegend']()}
       </legend>
-      {#each functions as fn (fn.name)}
-        <div class="fr-fieldset__element">
-          <Checkbox
-            id="wizard-function-{fn.name}"
-            label={fn.name}
-            help={firstSentence(fn.description)}
-            bind:checked={
-              () => allowedFunctions.includes(fn.name),
-              (checked) => toggleFunction(fn.name, checked)
-            }
-          />
-        </div>
-      {/each}
+      <FunctionChoice id="wizard-function" {functions} bind:value={allowedFunctions} />
     </fieldset>
-    <p class="fr-text--sm text-[--text-mention-grey]" aria-live="polite">
-      {allowedFunctions.length === 0
-        ? m['admin.tools.wizard.limit.needOne']()
-        : m['admin.tools.wizard.limit.count']({
-            count: allowedFunctions.length,
-            total: functions.length
-          })}
-    </p>
   {:else if step === 2}
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
       {m['admin.tools.wizard.present.title']()}
@@ -322,7 +274,7 @@
       )}
       {@render row(
         m['admin.tools.wizard.review.functions'](),
-        allowedFunctions.length === functions.length
+        allowedFunctions === null
           ? m['admin.tools.wizard.review.allFunctions']({ count: functions.length })
           : `${m['admin.tools.wizard.limit.count']({
               count: allowedFunctions.length,
