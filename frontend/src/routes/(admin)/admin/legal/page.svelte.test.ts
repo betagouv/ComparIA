@@ -19,7 +19,7 @@ describe('legal hub', () => {
   it('lists the cookies page as off, not to complete, while the switch is off', () => {
     const { getByRole } = render(Page, { data: { status } as unknown as PageData, params: {} })
 
-    const link = getByRole('link', { name: 'Cookies' })
+    const link = getByRole('link', { name: 'Cookies et mesure d’audience' })
     expect(link).toHaveAttribute('href', '/admin/legal/cookies')
     expect(within(link.closest('tr')!).getByText('Désactivé')).toBeInTheDocument()
     expect(within(link.closest('tr')!).queryByText('À compléter')).toBeNull()

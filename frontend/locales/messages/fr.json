@@ -242,8 +242,8 @@
             },
             "back": "Retour aux documents juridiques",
             "cookies": {
-                "title": "Cookies",
-                "subtitle": "Le bandeau cookies et son texte.",
+                "title": "Cookies et mesure d’audience",
+                "subtitle": "La mesure d’audience, le bandeau cookies et son texte.",
                 "switchLabel": "Afficher le bandeau cookies",
                 "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience.",
                 "switchedOn": "Bandeau cookies activé",

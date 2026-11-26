@@ -42,6 +42,12 @@ describe('cookie banner administration', () => {
     )
   })
 
+  it('names the page after both cookies and audience measurement', () => {
+    const { getByRole } = renderPage()
+
+    expect(getByRole('heading', { level: 1 })).toHaveTextContent('Cookies et mesure d’audience')
+  })
+
   it('turns the banner on through the instance settings', async () => {
     const { getByRole } = renderPage()
     const toggle = getByRole('checkbox', { name: /Afficher le bandeau cookies/ })

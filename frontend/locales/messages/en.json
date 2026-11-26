@@ -246,13 +246,13 @@
                 "clearLocale": "Clear this language",
                 "description": "Introductory text",
                 "formTitle": "Edit the banner text",
-                "subtitle": "The cookie banner and its text.",
+                "subtitle": "Audience measurement, the cookie banner and its text.",
                 "switchedOff": "Cookie banner turned off",
                 "switchedOn": "Cookie banner turned on",
                 "switchHelp": "Visitors are asked before audience measurement runs.",
                 "switchLabel": "Show the cookie banner",
                 "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
-                "title": "Cookies"
+                "title": "Cookies and audience measurement"
             },
             "document": {
                 "backToWriting": "Back to writing",
