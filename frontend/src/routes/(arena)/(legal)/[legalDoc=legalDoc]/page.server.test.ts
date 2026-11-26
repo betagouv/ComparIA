@@ -2,12 +2,8 @@ import type { LegalDocumentKeys } from '$lib/generated/constants'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { load } from './+page.server'
 
-const { request, env } = vi.hoisted(() => ({
-  request: vi.fn(),
-  env: { MATOMO_URL: 'https://stats.example.org' } as Record<string, string>
-}))
+const { request } = vi.hoisted(() => ({ request: vi.fn() }))
 
-vi.mock('$env/dynamic/private', () => ({ env }))
 vi.mock('$lib/fastapi-client', () => ({ api: { request } }))
 vi.mock('$lib/i18n/runtime', () => ({ getLocale: () => 'fr' }))
 
@@ -39,16 +35,12 @@ const event = (legalDoc: LegalDocumentKeys) =>
 describe('privacy policy page load', () => {
   beforeEach(() => {
     request.mockReset()
-    env.MATOMO_URL = 'https://stats.example.org'
   })
 
   it('asks the backend for the active document in the current locale', async () => {
     request.mockResolvedValue(documents.privacy_policy)
 
-    expect(await load(event('privacy_policy'))).toEqual({
-      doc: documents.privacy_policy,
-      matomoUrl: 'https://stats.example.org'
-    })
+    expect(await load(event('privacy_policy'))).toEqual({ doc: documents.privacy_policy })
     expect(request).toHaveBeenCalledWith('/settings/legal/privacy_policy', {
       fetch,
       searchParams: { locale: 'fr' }
@@ -58,17 +50,7 @@ describe('privacy policy page load', () => {
   it('falls back to the shipped policy when nothing is published', async () => {
     request.mockRejectedValue(new Error('not found'))
 
-    expect(await load(event('privacy_policy'))).toEqual({
-      doc: null,
-      matomoUrl: 'https://stats.example.org'
-    })
-  })
-
-  it('offers no opt-out when Matomo is not configured', async () => {
-    env.MATOMO_URL = ''
-    request.mockResolvedValue(documents.privacy_policy)
-
-    expect(await load(event('privacy_policy'))).toMatchObject({ matomoUrl: null })
+    expect(await load(event('privacy_policy'))).toEqual({ doc: null })
   })
 })
 
@@ -80,7 +62,7 @@ describe('terms page load', () => {
   it('asks the backend for the active document in the current locale', async () => {
     request.mockResolvedValue(documents.terms)
 
-    expect(await load(event('terms'))).toEqual({ doc: documents.terms, matomoUrl: null })
+    expect(await load(event('terms'))).toEqual({ doc: documents.terms })
     expect(request).toHaveBeenCalledWith('/settings/legal/terms', {
       fetch,
       searchParams: { locale: 'fr' }
@@ -90,6 +72,6 @@ describe('terms page load', () => {
   it('renders without a document when the backend is unavailable', async () => {
     request.mockRejectedValue(new Error('backend down'))
 
-    expect(await load(event('terms'))).toEqual({ doc: null, matomoUrl: null })
+    expect(await load(event('terms'))).toEqual({ doc: null })
   })
 })

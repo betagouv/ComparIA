@@ -38,10 +38,11 @@
         text={m['cookieBanner.manage']()}
         onclick={() => cookieConsent.reopen()}
       />
-    {:else if legalDocKey === 'privacy_policy' && data.matomoUrl}
-      <!-- The published policy is sanitized Markdown and cannot carry the script. -->
+    {:else if legalDocKey === 'privacy_policy' && data.measurement}
+      <!-- The published policy is sanitized Markdown and cannot carry the script.
+           The Matomo in use comes from the root layout. -->
       <h2 id="matomo-opt-out-title">{m['general.privacy_policy.optOutTitle']()}</h2>
-      <MatomoOptOut url={data.matomoUrl} />
+      <MatomoOptOut url={data.measurement.url} />
     {/if}
   </div>
 </div>
