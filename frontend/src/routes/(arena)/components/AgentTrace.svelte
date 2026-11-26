@@ -67,7 +67,11 @@
       if (item.type === 'tool_call') {
         return {
           type: item.isWebSearch ? 'web_search' : 'tool',
-          name: toolName(item.children[0].call),
+          // The trace keeps the name in the default language; the list has
+          // it in the visitor's.
+          name:
+            tools.all.find((tool) => tool.key === item.children[0].call.tool)?.label ??
+            toolName(item.children[0].call),
           key: item.children[0].call.tool,
           children: item.children.map((child) => ({
             request: toolRequest(child.call),
