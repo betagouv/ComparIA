@@ -50,7 +50,6 @@ export function parseCookieConsent(
 export type CookieConsentSettings = {
   // null when the server never managed to read the banner switch.
   switchOn: boolean | null
-  // Whether the instance runs audience measurement at all.
   measured: boolean
 }
 
