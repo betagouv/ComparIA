@@ -35,6 +35,15 @@ describe('Matomo tracker', () => {
     expect(pushed).toContainEqual(['setSiteId', id])
   })
 
+  it('leaves placeholder names in the address as they are', () => {
+    const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8')
+    const url = 'https://stats.test/%matomo_id_js%/%nonce%'
+    const page = fillMatomoPlaceholder(template, { url, id: '1' }, true)
+
+    expect(page).toContain(`var u = ${JSON.stringify(url)} + '/'`)
+    expect(page).toContain(`src="${url}/matomo.php?idsite=1&amp;rec=1"`)
+  })
+
   it('leaves the page free of Matomo when nothing is measured', () => {
     const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8')
 

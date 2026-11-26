@@ -94,11 +94,15 @@ export function fillMatomoPlaceholder(html: string, config: Measurement, load: b
     if (!config) return ''
     if (!load)
       return `<template id="${CONFIG_ID}" data-url="${escapeAttribute(config.url)}" data-id="${escapeAttribute(config.id)}"></template>`
-    return MARKUP.replace('%nonce%', () => nonce)
-      .replaceAll('%matomo_url_js%', () => scriptString(config.url))
-      .replaceAll('%matomo_id_js%', () => scriptString(config.id))
-      .replaceAll('%matomo_url_attr%', () => escapeAttribute(config.url))
-      .replaceAll('%matomo_id_attr%', () => escapeAttribute(config.id))
+    // One pass, so a value that looks like a placeholder is left as it is.
+    const values: Record<string, string> = {
+      nonce,
+      matomo_url_js: scriptString(config.url),
+      matomo_id_js: scriptString(config.id),
+      matomo_url_attr: escapeAttribute(config.url),
+      matomo_id_attr: escapeAttribute(config.id)
+    }
+    return MARKUP.replace(/%(\w+)%/g, (match, name: string) => values[name] ?? match)
   })
 }
 
