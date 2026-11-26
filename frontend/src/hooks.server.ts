@@ -188,7 +188,7 @@ export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
     MATOMO_ID: env.MATOMO_ID
   })
   event.locals.cookieConsent = decideCookieConsent(
-    event.locals.cookieBannerEnabled,
+    { switchOn: event.locals.cookieBannerEnabled, measured: event.locals.measurement !== null },
     event.cookies.get(COOKIE_CONSENT_NAME)
   )
   return resolve(event)

@@ -92,11 +92,4 @@ describe('privacy page with the cookie banner on', () => {
     await fireEvent.click(getByRole('button', { name: 'Gérer les cookies' }))
     expect(cookieConsent.reopen).toHaveBeenCalledOnce()
   })
-
-  it('offers the cookie choice even without Matomo', () => {
-    cookieConsent.enabled = true
-    const { getByRole } = renderPolicy({ privacyPolicy: policy, measurement: null })
-
-    expect(getByRole('button', { name: 'Gérer les cookies' })).toBeTruthy()
-  })
 })

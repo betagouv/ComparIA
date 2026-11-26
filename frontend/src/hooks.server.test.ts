@@ -451,6 +451,25 @@ describe('measurement in use', () => {
     })
   })
 
+  describe('with nothing measured', () => {
+    it.each([
+      ['MATOMO_URL', 'MATOMO_URL'],
+      ['MATOMO_ID', 'MATOMO_ID']
+    ])('neither asks nor loads Matomo without %s, whatever the switch says', async (_c, key) => {
+      privateEnv[key] = ''
+
+      for (const switchOn of [true, false]) {
+        const { locals, html, policy } = await serve(switchOn)
+
+        expect(locals.measurement).toBeNull()
+        expect(locals.cookieConsent).toEqual({ showBanner: false, loadMeasurement: false })
+        expect(html).not.toContain('_paq')
+        expect(html).not.toContain('matomo-config')
+        expect(policy).toBe(builtPolicy)
+      }
+    })
+  })
+
   it('follows a change of address without a restart', async () => {
     privateEnv.MATOMO_URL = 'https://other-stats.test'
 

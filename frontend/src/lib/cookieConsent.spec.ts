@@ -57,10 +57,23 @@ describe('cookie consent value', () => {
 
 describe('decideCookieConsent', () => {
   const answer = (measurement: boolean) => serializeCookieConsent({ measurement }, givenAt)
+  const measured = (switchOn: boolean | null) => ({ switchOn, measured: true })
+
+  it.each([true, false, null])(
+    'neither asks nor measures when nothing is measured, with the switch %s',
+    (switchOn) => {
+      for (const value of [undefined, answer(true)]) {
+        expect(decideCookieConsent({ switchOn, measured: false }, value, now)).toEqual({
+          showBanner: false,
+          loadMeasurement: false
+        })
+      }
+    }
+  )
 
   it('changes nothing when the switch is off, whatever the cookie says', () => {
     for (const value of [undefined, answer(false)]) {
-      expect(decideCookieConsent(false, value, now)).toEqual({
+      expect(decideCookieConsent(measured(false), value, now)).toEqual({
         showBanner: false,
         loadMeasurement: true
       })
@@ -69,7 +82,7 @@ describe('decideCookieConsent', () => {
 
   it('holds Matomo back without asking when the switch is unknown', () => {
     for (const value of [undefined, answer(true)]) {
-      expect(decideCookieConsent(null, value, now)).toEqual({
+      expect(decideCookieConsent(measured(null), value, now)).toEqual({
         showBanner: false,
         loadMeasurement: false
       })
@@ -77,18 +90,18 @@ describe('decideCookieConsent', () => {
   })
 
   it('asks and holds Matomo back when nobody has answered', () => {
-    expect(decideCookieConsent(true, undefined, now)).toEqual({
+    expect(decideCookieConsent(measured(true), undefined, now)).toEqual({
       showBanner: true,
       loadMeasurement: false
     })
   })
 
   it('asks again when the cookie is unreadable', () => {
-    expect(decideCookieConsent(true, 'garbage', now).showBanner).toBe(true)
+    expect(decideCookieConsent(measured(true), 'garbage', now).showBanner).toBe(true)
   })
 
   it.each([true, false])('follows an answer of %s', (measurement) => {
-    expect(decideCookieConsent(true, answer(measurement), now)).toEqual({
+    expect(decideCookieConsent(measured(true), answer(measurement), now)).toEqual({
       showBanner: false,
       loadMeasurement: measurement
     })

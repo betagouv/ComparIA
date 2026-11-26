@@ -20,17 +20,18 @@ export const load: LayoutLoad = async ({ data: serverData, fetch, depends }) => 
   // browser must ask exactly when the server held Matomo back.
   const { cookieBannerEnabled, measurement } = serverData
   // Without its text the banner stays hidden, which only puts off the question.
-  const cookieBannerRequest = cookieBannerEnabled
-    ? api
-        .request<PublicCookieBanner>('/settings/legal/cookies', {
-          fetch,
-          searchParams: { locale }
-        })
-        .catch((error: Error) => {
-          console.error(`Unable to load the cookie banner: ${error.message}`)
-          return null
-        })
-    : Promise.resolve(null)
+  const cookieBannerRequest =
+    cookieBannerEnabled && measurement
+      ? api
+          .request<PublicCookieBanner>('/settings/legal/cookies', {
+            fetch,
+            searchParams: { locale }
+          })
+          .catch((error: Error) => {
+            console.error(`Unable to load the cookie banner: ${error.message}`)
+            return null
+          })
+      : Promise.resolve(null)
 
   const [votes, data, authConfig, auth, informationalPagesLinks, survey] = await Promise.all([
     api.request<VotesData>('/counter', { fetch }),

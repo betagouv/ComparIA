@@ -15,8 +15,12 @@ function readCookie() {
     ?.split('=')[1]
 }
 
-function create(enabled: boolean | null = true) {
-  const consent = createCookieConsent({ enabled: () => enabled, now: () => now })
+function create(enabled: boolean | null = true, measured = true) {
+  const consent = createCookieConsent({
+    enabled: () => enabled,
+    measured: () => measured,
+    now: () => now
+  })
   consent.load()
   return consent
 }
@@ -27,7 +31,11 @@ describe('cookie consent store', () => {
   })
 
   it('keeps the banner closed until it has read the cookie', () => {
-    const consent = createCookieConsent({ enabled: () => true, now: () => now })
+    const consent = createCookieConsent({
+      enabled: () => true,
+      measured: () => true,
+      now: () => now
+    })
     expect(consent.bannerOpen).toBe(false)
     consent.load()
     expect(consent.bannerOpen).toBe(true)
@@ -35,7 +43,11 @@ describe('cookie consent store', () => {
 
   it('knows an earlier answer before the banner is allowed to open', () => {
     setCookie(serializeCookieConsent({ measurement: true }, now))
-    const consent = createCookieConsent({ enabled: () => true, now: () => now })
+    const consent = createCookieConsent({
+      enabled: () => true,
+      measured: () => true,
+      now: () => now
+    })
     expect(consent.bannerOpen).toBe(false)
     expect(consent.decision.loadMeasurement).toBe(true)
   })
@@ -43,6 +55,13 @@ describe('cookie consent store', () => {
   it('tells whether the switch is on', () => {
     expect(create(true).enabled).toBe(true)
     expect(create(false).enabled).toBe(false)
+  })
+
+  it('stays closed and offers no reopening when nothing is measured', () => {
+    const consent = create(true, false)
+    expect(consent.enabled).toBe(false)
+    expect(consent.bannerOpen).toBe(false)
+    expect(consent.decision.loadMeasurement).toBe(false)
   })
 
   it('stays closed and offers no reopening while the switch is unknown', () => {

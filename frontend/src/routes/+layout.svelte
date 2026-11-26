@@ -43,7 +43,8 @@
   const survey = provideSurveyContext(() => data.survey)
 
   const cookieConsent = provideCookieConsentContext({
-    enabled: () => data.cookieBannerEnabled
+    enabled: () => data.cookieBannerEnabled,
+    measured: () => data.measurement !== null
   })
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)

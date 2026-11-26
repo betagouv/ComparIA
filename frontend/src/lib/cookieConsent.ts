@@ -47,14 +47,22 @@ export function parseCookieConsent(
   return { measurement: measurement === '1', givenAt }
 }
 
-// A null switch means the server never managed to read it. The banner may be
-// on, so Matomo stays out, but without its text nothing can be asked.
+export type CookieConsentSettings = {
+  // null when the server never managed to read the banner switch.
+  switchOn: boolean | null
+  // Whether the instance runs audience measurement at all.
+  measured: boolean
+}
+
+// With nothing measured there is no question to ask. A null switch means the
+// banner may be on, so Matomo stays out, but without its text nothing can be
+// asked.
 export function decideCookieConsent(
-  switchOn: boolean | null,
+  { switchOn, measured }: CookieConsentSettings,
   value: string | null | undefined,
   now = new Date()
 ): CookieConsentDecision {
-  if (switchOn === null) return { showBanner: false, loadMeasurement: false }
+  if (!measured || switchOn === null) return { showBanner: false, loadMeasurement: false }
   if (!switchOn) return { showBanner: false, loadMeasurement: true }
 
   const consent = parseCookieConsent(value, now)

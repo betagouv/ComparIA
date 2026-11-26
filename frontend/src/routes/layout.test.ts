@@ -50,4 +50,11 @@ describe('root layout load', () => {
     expect((await runLoad(true, true)).measurement).toEqual(stats)
     expect((await runLoad(true, true, null)).measurement).toBeNull()
   })
+
+  it('leaves the banner out when nothing is measured, even with the switch on', async () => {
+    const data = await runLoad(true, true, null)
+
+    expect(data.cookieBanner).toBeNull()
+    expect(request).not.toHaveBeenCalledWith('/settings/legal/cookies', expect.anything())
+  })
 })

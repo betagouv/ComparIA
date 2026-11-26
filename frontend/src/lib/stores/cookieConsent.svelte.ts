@@ -21,10 +21,13 @@ function writeConsentCookie(value: string) {
 
 export function createCookieConsent({
   enabled,
+  measured,
   now = () => undefined
 }: {
   // null when the server could not read the switch.
   enabled: () => boolean | null
+  // Whether the page was rendered with audience measurement in use.
+  measured: () => boolean
   now?: () => Date | undefined
 }) {
   // The answer is known as soon as the browser creates the store, so nothing
@@ -41,7 +44,11 @@ export function createCookieConsent({
   const choice = $derived<CookieChoice | null>(
     consent ? { measurement: consent.measurement } : null
   )
-  const decision = $derived(decideCookieConsent(enabled(), value, now()))
+  const decision = $derived(
+    decideCookieConsent({ switchOn: enabled(), measured: measured() }, value, now())
+  )
+  // With nothing measured there is no question, so no banner to reopen either.
+  const asking = $derived(enabled() === true && measured())
 
   function hide() {
     if (!reopened) return
@@ -52,7 +59,7 @@ export function createCookieConsent({
 
   return {
     get enabled() {
-      return enabled() === true
+      return asking
     },
     get choice() {
       return choice
@@ -61,7 +68,7 @@ export function createCookieConsent({
       return decision
     },
     get bannerOpen() {
-      return loaded && enabled() === true && (decision.showBanner || reopened)
+      return loaded && asking && (decision.showBanner || reopened)
     },
     load() {
       value = readConsentCookie()
