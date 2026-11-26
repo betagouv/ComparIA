@@ -372,6 +372,7 @@ def test_cors_does_not_take_the_path_for_an_origin():
 
 
 def test_invitation_links_keep_the_instance_path():
+    import backend.admin.users.router as users_router
     from backend.admin import router as admin_router
 
     sent = []
@@ -396,7 +397,7 @@ def test_invitation_links_keep_the_instance_path():
     with (
         public_url(WITH_PATH),
         patched(
-            admin_router,
+            users_router,
             create_invite=create_invite,
             send_invite_link=send_invite_link,
             get_app_settings=get_app_settings,
