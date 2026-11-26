@@ -122,8 +122,11 @@ class AuthConfig(BaseModel):
     oidc_button_label: str | None
     oidc_has_button_logo: bool
     cookie_banner_enabled: bool
-    # None follows the frontend server's environment, False turns it off.
+    # None follows the frontend server's environment, False turns it off,
+    # True measures with the address and site id below.
     matomo_enabled: bool | None
+    matomo_url: str | None
+    matomo_site_id: str | None
 
 
 class EmailRequestBody(BaseModel):
@@ -305,6 +308,8 @@ async def get_config() -> AuthConfig:
         oidc_has_button_logo=app_settings.oidc_button_logo is not None,
         cookie_banner_enabled=app_settings.cookie_banner_enabled,
         matomo_enabled=app_settings.matomo_enabled,
+        matomo_url=app_settings.matomo_url,
+        matomo_site_id=app_settings.matomo_site_id,
     )
 
 

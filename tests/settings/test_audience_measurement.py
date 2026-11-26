@@ -194,8 +194,12 @@ def test_off_keeps_the_address_and_site_id():
 
 
 def test_public_config_reports_the_measurement_setting():
-    for setting in (None, False):
-        row = _settings_row(matomo_enabled=setting)
+    for setting in (None, False, True):
+        row = _settings_row(
+            matomo_enabled=setting,
+            matomo_url="https://stats.example.org",
+            matomo_site_id="12",
+        )
 
         async def get_app_settings(row=row):
             return row
@@ -204,3 +208,5 @@ def test_public_config_reports_the_measurement_setting():
             config = asyncio.run(auth_router.get_config())
 
         assert config.matomo_enabled is setting
+        assert config.matomo_url == "https://stats.example.org"
+        assert config.matomo_site_id == "12"
