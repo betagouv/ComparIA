@@ -4,13 +4,16 @@
   import ToolCard from '$components/ToolCard.svelte'
   import { Alert, Button, Input, Textarea, Toggle } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
+  import { FormTranslate } from '$components/form'
   import { api, ValidationError } from '$lib/fastapi-client'
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import { tick } from 'svelte'
   import type { PageProps } from './$types'
-  import { FunctionChoice } from '../components'
+  import { defaultText, FunctionChoice } from '../components'
   import { toKey, uniqueKey } from './keys'
 
   type ToolTestResult = {
@@ -30,6 +33,7 @@
   }
 
   const { data }: PageProps = $props()
+  const locales = getLocalesContext()
 
   const steps = [
     m['admin.tools.wizard.steps.connect'](),
@@ -47,17 +51,28 @@
   let testResult = $state<ToolTestResult>()
   // No list offers every function, those the server adds later included.
   let allowedFunctions = $state<string[] | null>(null)
-  let label = $state('')
-  let description = $state('')
+  // One name and description per language the instance serves.
+  let labels = $state<Record<string, string>>({})
+  let descriptions = $state<Record<string, string>>({})
+  let locale = $state<Locale>(locales.default)
   let enabled = $state(true)
   let saving = $state(false)
   let saveErrors = $state<string[]>([])
 
   const takenKeys = $derived((data.tools as ToolAdmin[]).map((tool) => tool.key))
+  // The key comes from the default language's name, which is required.
+  const label = $derived((labels[locales.default] ?? '').trim())
   const key = $derived(uniqueKey(toKey(label), takenKeys))
   const functions = $derived(testResult?.functions ?? [])
 
-  const canContinue = $derived([!!testResult?.ok, true, label.trim().length > 0, true][step])
+  const canContinue = $derived([!!testResult?.ok, true, label.length > 0, true][step])
+
+  function filled(texts: Record<string, string>) {
+    const kept = Object.entries(texts)
+      .map(([code, text]) => [code, text.trim()])
+      .filter(([, text]) => text)
+    return kept.length ? Object.fromEntries(kept) : null
+  }
 
   async function goTo(index: number) {
     step = index
@@ -92,8 +107,8 @@
     saveErrors = []
     const body: ToolUpsert = {
       key,
-      label: label.trim(),
-      description: description.trim() || null,
+      label: filled(labels) ?? {},
+      description: filled(descriptions),
       kind: 'mcp',
       url: url.trim(),
       allowed_functions: allowedFunctions,
@@ -105,7 +120,7 @@
         method: 'post',
         body: JSON.stringify(body)
       })
-      useToast(m['admin.tools.wizard.review.created']({ label: body.label }), 5000, 'success')
+      useToast(m['admin.tools.wizard.review.created']({ label }), 5000, 'success')
       await invalidate('admin:tools')
       await goto(resolve('/admin/outils'))
     } catch (error) {
@@ -210,32 +225,41 @@
     <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.present.hint']()}</p>
 
     <div class="gap-8 md:grid-cols-2 grid">
-      <div>
-        <Input
-          id="wizard-label"
-          label={m['admin.tools.wizard.present.label']()}
-          help={m['admin.tools.wizard.present.key']({ key })}
-          maxlength={40}
-          required
-          bind:value={label}
-        />
-        <Textarea
-          id="wizard-description"
-          rows={3}
-          maxlength={70}
-          label={m['admin.tools.wizard.present.description']()}
-          help={m['admin.tools.wizard.present.descriptionHint']()}
-          bind:value={description}
-        />
-      </div>
+      <FormTranslate
+        id="wizard-texts"
+        bind:value={labels}
+        bind:locale
+        isValid={(code) => !!labels[code]?.trim()}
+      >
+        {#snippet subSnippet(code)}
+          <Input
+            id="wizard-label-{code}"
+            label={m['admin.tools.wizard.present.label']()}
+            help={code === locales.default
+              ? m['admin.tools.wizard.present.key']({ key })
+              : undefined}
+            maxlength={40}
+            required={code === locales.default}
+            bind:value={labels[code]}
+          />
+          <Textarea
+            id="wizard-description-{code}"
+            rows={3}
+            maxlength={70}
+            label={m['admin.tools.wizard.present.description']()}
+            help={m['admin.tools.wizard.present.descriptionHint']()}
+            bind:value={descriptions[code]}
+          />
+        {/snippet}
+      </FormTranslate>
       <div>
         <p class="fr-text--sm font-bold mb-2!">{m['admin.tools.wizard.present.preview']()}</p>
         <div class="p-4 rounded-xl cg-border">
           <ToolCard
             tool={{
               key,
-              label: label.trim() || m['admin.tools.wizard.present.label'](),
-              description: description.trim(),
+              label: labels[locale]?.trim() || label || m['admin.tools.wizard.present.label'](),
+              description: descriptions[locale]?.trim() ?? '',
               icon: key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'
             }}
           />
@@ -282,10 +306,11 @@
             })} : ${allowedFunctions.join(', ')}`,
         1
       )}
-      {@render row(m['admin.tools.wizard.present.label'](), label.trim(), 2)}
+      {@render row(m['admin.tools.wizard.present.label'](), label, 2)}
       {@render row(
         m['admin.tools.wizard.present.description'](),
-        description.trim() || m['admin.tools.wizard.review.noDescription'](),
+        defaultText(filled(descriptions), locales.default) ||
+          m['admin.tools.wizard.review.noDescription'](),
         2
       )}
     </dl>
