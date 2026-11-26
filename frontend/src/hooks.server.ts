@@ -200,7 +200,7 @@ export const matomoHandle: Handle = ({ event, resolve }) => {
 }
 
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) => {
+export const paraglideHandle: Handle = ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
     event.request = localizedRequest
     if (locale !== event.cookies.get('PARAGLIDE_LOCALE')) {

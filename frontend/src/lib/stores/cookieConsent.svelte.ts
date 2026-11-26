@@ -39,7 +39,7 @@ export function createCookieConsent({
 
   const consent = $derived(parseCookieConsent(value, now()))
   const choice = $derived<CookieChoice | null>(
-    consent ? { measurement: consent.measurement, preferences: consent.preferences } : null
+    consent ? { measurement: consent.measurement } : null
   )
   const decision = $derived(decideCookieConsent(enabled(), value, now()))
 

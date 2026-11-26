@@ -13,10 +13,7 @@ function fakeConsent() {
       return () => (listener = null)
     },
     answer(choice: Partial<CookieChoice>, previous: Partial<CookieChoice> | null = null) {
-      listener?.(
-        { measurement: false, preferences: false, ...choice },
-        previous && { measurement: false, preferences: false, ...previous }
-      )
+      listener?.({ measurement: false, ...choice }, previous && { measurement: false, ...previous })
     }
   }
 }
@@ -89,7 +86,7 @@ describe('audience measurement in the browser', () => {
     const consent = fakeConsent()
     followMeasurementConsent(consent)
 
-    consent.answer({ preferences: true })
+    consent.answer({ measurement: false })
 
     expect(document.getElementById('matomo-config')).not.toBeNull()
     expect(matomoScripts()).toEqual([])
@@ -100,7 +97,7 @@ describe('audience measurement in the browser', () => {
     const consent = fakeConsent()
     followMeasurementConsent(consent)
 
-    consent.answer({ measurement: true, preferences: true }, { measurement: true })
+    consent.answer({ measurement: true }, { measurement: true })
 
     expect(matomoScripts()).toEqual([])
     expect(commands()).toEqual(['trackPageView'])
@@ -111,7 +108,7 @@ describe('audience measurement in the browser', () => {
     document.cookie = '_pk_id.42.abcd=visitor; Path=/'
     document.cookie = '_pk_ses.42.abcd=1; Path=/'
     document.cookie = 'mtm_consent_removed=1; Path=/'
-    document.cookie = 'comparia_cookie_consent=1.0.0.1; Path=/'
+    document.cookie = 'comparia_cookie_consent=1.0.1; Path=/'
     const consent = fakeConsent()
     followMeasurementConsent(consent)
 

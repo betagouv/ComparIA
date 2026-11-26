@@ -7,21 +7,15 @@ const seconds = (date: Date) => Math.floor(date.getTime() / 1000)
 
 describe('cookie consent value', () => {
   it('writes a value made of digits and dots only', () => {
-    expect(serializeCookieConsent({ measurement: true, preferences: false }, givenAt)).toBe(
-      `1.1.0.${seconds(givenAt)}`
-    )
+    expect(serializeCookieConsent({ measurement: true }, givenAt)).toBe(`1.1.${seconds(givenAt)}`)
   })
 
   it('reads back what it wrote', () => {
-    const value = serializeCookieConsent({ measurement: false, preferences: true }, givenAt)
-    expect(parseCookieConsent(value, now)).toEqual({
-      measurement: false,
-      preferences: true,
-      givenAt
-    })
+    const value = serializeCookieConsent({ measurement: false }, givenAt)
+    expect(parseCookieConsent(value, now)).toEqual({ measurement: false, givenAt })
   })
 
-  it.each([undefined, null, '', 'yes', '1.1.0', '1.2.0.1790000000', '1.1.0.abc', '1.1.0.-5'])(
+  it.each([undefined, null, '', 'yes', '1.1', '1.2.1790000000', '1.1.abc', '1.1.-5'])(
     'treats %s as not asked',
     (value) => {
       expect(parseCookieConsent(value, now)).toBeNull()
@@ -29,63 +23,63 @@ describe('cookie consent value', () => {
   )
 
   it('treats an older version as not asked', () => {
-    expect(parseCookieConsent(`0.1.1.${seconds(givenAt)}`, now)).toBeNull()
+    expect(parseCookieConsent(`0.1.${seconds(givenAt)}`, now)).toBeNull()
+  })
+
+  it('treats a value written before the banner asked one question as not asked', () => {
+    expect(parseCookieConsent(`1.1.1.${seconds(givenAt)}`, now)).toBeNull()
   })
 
   it('keeps a choice until six months have passed', () => {
-    const value = `1.1.1.${seconds(new Date('2026-05-28T12:00:00Z'))}`
+    const value = `1.1.${seconds(new Date('2026-05-28T12:00:00Z'))}`
     expect(parseCookieConsent(value, now)).not.toBeNull()
   })
 
   it('treats a choice older than six months as not asked', () => {
-    const value = `1.1.1.${seconds(new Date('2026-05-27T12:00:00Z'))}`
+    const value = `1.1.${seconds(new Date('2026-05-27T12:00:00Z'))}`
     expect(parseCookieConsent(value, now)).toBeNull()
   })
 
   it('treats a date too large to read as not asked', () => {
-    expect(parseCookieConsent(`1.1.1.${'9'.repeat(400)}`, now)).toBeNull()
+    expect(parseCookieConsent(`1.1.${'9'.repeat(400)}`, now)).toBeNull()
   })
 
   it('treats a choice dated in the future as not asked', () => {
-    const value = `1.1.1.${seconds(new Date('2026-11-27T12:00:00Z'))}`
+    const value = `1.1.${seconds(new Date('2026-11-27T12:00:00Z'))}`
     expect(parseCookieConsent(value, now)).toBeNull()
   })
 
   it('allows a clock a few hours ahead', () => {
-    const value = `1.1.1.${seconds(new Date('2026-11-25T18:00:00Z'))}`
+    const value = `1.1.${seconds(new Date('2026-11-25T18:00:00Z'))}`
     expect(parseCookieConsent(value, now)).not.toBeNull()
   })
 })
 
 describe('decideCookieConsent', () => {
-  const answer = (measurement: boolean, preferences: boolean) =>
-    serializeCookieConsent({ measurement, preferences }, givenAt)
+  const answer = (measurement: boolean) => serializeCookieConsent({ measurement }, givenAt)
 
   it('changes nothing when the switch is off, whatever the cookie says', () => {
-    for (const value of [undefined, answer(false, false)]) {
+    for (const value of [undefined, answer(false)]) {
       expect(decideCookieConsent(false, value, now)).toEqual({
         showBanner: false,
-        loadMeasurement: true,
-        keepSettings: true
+        loadMeasurement: true
       })
     }
   })
 
   it('holds Matomo back without asking when the switch is unknown', () => {
-    for (const value of [undefined, answer(true, true)]) {
+    for (const value of [undefined, answer(true)]) {
       expect(decideCookieConsent(null, value, now)).toEqual({
         showBanner: false,
-        loadMeasurement: false,
-        keepSettings: true
+        loadMeasurement: false
       })
     }
   })
 
-  it('asks and holds everything back when nobody has answered', () => {
+  it('asks and holds Matomo back when nobody has answered', () => {
     expect(decideCookieConsent(true, undefined, now)).toEqual({
       showBanner: true,
-      loadMeasurement: false,
-      keepSettings: false
+      loadMeasurement: false
     })
   })
 
@@ -93,16 +87,10 @@ describe('decideCookieConsent', () => {
     expect(decideCookieConsent(true, 'garbage', now).showBanner).toBe(true)
   })
 
-  it.each([
-    [true, true],
-    [true, false],
-    [false, true],
-    [false, false]
-  ])('follows an answer of measurement %s and settings %s', (measurement, preferences) => {
-    expect(decideCookieConsent(true, answer(measurement, preferences), now)).toEqual({
+  it.each([true, false])('follows an answer of %s', (measurement) => {
+    expect(decideCookieConsent(true, answer(measurement), now)).toEqual({
       showBanner: false,
-      loadMeasurement: measurement,
-      keepSettings: preferences
+      loadMeasurement: measurement
     })
   })
 })

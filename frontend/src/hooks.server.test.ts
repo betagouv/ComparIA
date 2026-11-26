@@ -14,16 +14,27 @@ const { request, countRequest, privateEnv } = vi.hoisted(() => ({
 vi.mock('$env/dynamic/private', () => ({ env: privateEnv }))
 vi.mock('$env/dynamic/public', () => ({ env: {} }))
 vi.mock('$lib/fastapi-client', () => ({ api: { request }, UnauthorizedError: class {} }))
-vi.mock('$lib/i18n/runtime', () => ({ defineCustomServerStrategy: () => {} }))
-vi.mock('$lib/i18n/server', () => ({ paraglideMiddleware: () => {} }))
+vi.mock('$lib/i18n/runtime', () => ({ cookieMaxAge: 1000, defineCustomServerStrategy: () => {} }))
+vi.mock('$lib/i18n/server', () => ({
+  paraglideMiddleware: (
+    request: Request,
+    resolve: (args: { request: Request; locale: string }) => unknown
+  ) => resolve({ request, locale: 'fr' })
+}))
 vi.mock('$lib/logger.server', () => ({ logger: { error: () => {}, info: () => {} } }))
 vi.mock('$lib/metrics', () => ({
   httpRequestCounter: { inc: countRequest },
   httpRequestDuration: { observe: () => {} }
 }))
 
-const { authWallHandle, cookieBannerHandle, handleFetch, matomoHandle, metricsHandle } =
-  await import('./hooks.server')
+const {
+  authWallHandle,
+  cookieBannerHandle,
+  handleFetch,
+  matomoHandle,
+  metricsHandle,
+  paraglideHandle
+} = await import('./hooks.server')
 
 const resolve = vi.fn(async () => new Response('page'))
 
@@ -225,14 +236,10 @@ describe('cookie banner switch', () => {
 
   it('decides the consent once for the rest of the request', async () => {
     const locals = await localsFor(true, {
-      comparia_cookie_consent: `1.1.0.${Math.floor(Date.now() / 1000)}`
+      comparia_cookie_consent: `1.1.${Math.floor(Date.now() / 1000)}`
     })
 
-    expect(locals.cookieConsent).toEqual({
-      showBanner: false,
-      loadMeasurement: true,
-      keepSettings: false
-    })
+    expect(locals.cookieConsent).toEqual({ showBanner: false, loadMeasurement: true })
   })
 })
 
@@ -308,14 +315,14 @@ describe('audience measurement', () => {
   })
 
   it('loads Matomo once the visitor accepts audience measurement', async () => {
-    const html = await render(true, `1.1.0.${now}`)
+    const html = await render(true, `1.1.${now}`)
 
     expect(html).toContain("_paq.push(['trackPageView'])")
     expect(html).toContain('matomo.php?idsite=42')
   })
 
   it('leaves Matomo out when the visitor refused audience measurement', async () => {
-    const html = await render(true, `1.0.1.${now}`)
+    const html = await render(true, `1.0.${now}`)
 
     expect(html).not.toContain('_paq')
     expect(html).not.toContain('matomo.php')
@@ -327,5 +334,47 @@ describe('audience measurement', () => {
     expect(html).toContain(
       '<template id="matomo-config" data-url="https://stats.test" data-id="42"></template>'
     )
+  })
+})
+
+describe('language cookie', () => {
+  const now = Math.floor(Date.now() / 1000)
+
+  beforeEach(() => vi.useFakeTimers({ toFake: ['Date'] }))
+  afterEach(() => vi.useRealTimers())
+
+  async function languageCookie(switchOn: boolean, consent?: string, current?: string) {
+    const set = vi.fn()
+    const jar: Record<string, string | undefined> = {
+      comparia_cookie_consent: consent,
+      PARAGLIDE_LOCALE: current
+    }
+    const event = {
+      request: new Request('http://arene.test/'),
+      locals: await localsFor(switchOn, jar),
+      cookies: { get: (name: string) => jar[name], set }
+    }
+    await paraglideHandle({ event, resolve } as never)
+    return set
+  }
+
+  it.each([
+    ['the banner is off', false, undefined],
+    ['nobody has answered', true, undefined],
+    ['the visitor refused measurement', true, `1.0.${now}`]
+  ])('lasts as long as today when %s', async (_case, switchOn, consent) => {
+    const set = await languageCookie(switchOn, consent)
+
+    expect(set).toHaveBeenCalledWith('PARAGLIDE_LOCALE', 'fr', {
+      path: '/',
+      httpOnly: false,
+      maxAge: 1000
+    })
+  })
+
+  it('leaves a cookie that already holds the locale alone', async () => {
+    const set = await languageCookie(true, undefined, 'fr')
+
+    expect(set).not.toHaveBeenCalled()
   })
 })

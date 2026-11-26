@@ -34,10 +34,10 @@ describe('cookie consent store', () => {
   })
 
   it('knows an earlier answer before the banner is allowed to open', () => {
-    setCookie(serializeCookieConsent({ measurement: true, preferences: true }, now))
+    setCookie(serializeCookieConsent({ measurement: true }, now))
     const consent = createCookieConsent({ enabled: () => true, now: () => now })
     expect(consent.bannerOpen).toBe(false)
-    expect(consent.decision.keepSettings).toBe(true)
+    expect(consent.decision.loadMeasurement).toBe(true)
   })
 
   it('tells whether the switch is on', () => {
@@ -58,16 +58,15 @@ describe('cookie consent store', () => {
     expect(consent.choice).toBeNull()
     expect(consent.decision).toEqual({
       showBanner: true,
-      loadMeasurement: false,
-      keepSettings: false
+      loadMeasurement: false
     })
   })
 
   it('reads an earlier answer from the cookie', () => {
-    setCookie(serializeCookieConsent({ measurement: true, preferences: false }, now))
+    setCookie(serializeCookieConsent({ measurement: true }, now))
     const consent = create()
     expect(consent.bannerOpen).toBe(false)
-    expect(consent.choice).toEqual({ measurement: true, preferences: false })
+    expect(consent.choice).toEqual({ measurement: true })
   })
 
   it('writes the answer, closes the banner and tells subscribers', () => {
@@ -75,26 +74,24 @@ describe('cookie consent store', () => {
     const listener = vi.fn()
     consent.onChange(listener)
 
-    consent.save({ measurement: false, preferences: true })
+    consent.save({ measurement: false })
 
-    expect(readCookie()).toBe(
-      serializeCookieConsent({ measurement: false, preferences: true }, now)
-    )
+    expect(readCookie()).toBe(serializeCookieConsent({ measurement: false }, now))
     expect(consent.bannerOpen).toBe(false)
-    expect(consent.decision.keepSettings).toBe(true)
-    expect(listener).toHaveBeenCalledWith({ measurement: false, preferences: true }, null)
+    expect(consent.decision.loadMeasurement).toBe(false)
+    expect(listener).toHaveBeenCalledWith({ measurement: false }, null)
   })
 
   it('stops telling a subscriber once it unsubscribes', () => {
     const consent = create()
     const listener = vi.fn()
     consent.onChange(listener)()
-    consent.save({ measurement: true, preferences: true })
+    consent.save({ measurement: true })
     expect(listener).not.toHaveBeenCalled()
   })
 
   it('reopens the banner on demand and closes it again', () => {
-    setCookie(serializeCookieConsent({ measurement: true, preferences: true }, now))
+    setCookie(serializeCookieConsent({ measurement: true }, now))
     const consent = create()
     consent.reopen()
     expect(consent.bannerOpen).toBe(true)
@@ -103,14 +100,14 @@ describe('cookie consent store', () => {
   })
 
   it('gives focus back to whatever reopened the banner', () => {
-    setCookie(serializeCookieConsent({ measurement: true, preferences: true }, now))
+    setCookie(serializeCookieConsent({ measurement: true }, now))
     const consent = create()
     const link = document.body.appendChild(document.createElement('button'))
     link.focus()
 
     consent.reopen()
     link.blur()
-    consent.save({ measurement: false, preferences: true })
+    consent.save({ measurement: false })
 
     expect(link).toHaveFocus()
     link.remove()
@@ -122,8 +119,7 @@ describe('cookie consent store', () => {
     expect(consent.bannerOpen).toBe(false)
     expect(consent.decision).toEqual({
       showBanner: false,
-      loadMeasurement: true,
-      keepSettings: true
+      loadMeasurement: true
     })
   })
 })
