@@ -1,7 +1,7 @@
 import type { CookieBanner } from '$lib/generated/admin'
 import { fireEvent, render, waitFor, within } from '@testing-library/svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import type { PageData } from './$types'
+import type { PageData, PageProps } from './$types'
 import Page from './+page.svelte'
 
 const mocks = vi.hoisted(() => ({ request: vi.fn(), toast: vi.fn() }))
@@ -37,7 +37,7 @@ function renderPage(
       banners: { fr: structuredClone(frBanner) }
     } as unknown as PageData,
     params: {}
-  })
+  } as PageProps)
 }
 
 function bodyOf(method: string) {
