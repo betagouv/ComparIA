@@ -258,6 +258,8 @@
                 "measurementOn": "On, with my own Matomo",
                 "measurementSaved": "Audience measurement setting saved",
                 "measurementServer": "Server setting",
+                "measurementServerNone": "Currently: no audience measurement",
+                "measurementServerOn": "Currently on: {address}, site {id}",
                 "measurementSwitchOn": "Turn audience measurement on",
                 "subtitle": "Audience measurement, the cookie banner and its text.",
                 "switchedOff": "Cookie banner turned off",

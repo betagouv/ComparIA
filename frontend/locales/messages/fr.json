@@ -255,6 +255,8 @@
                 "matomoMissing": "Renseignez l’adresse et l’identifiant du site pour activer la mesure d’audience.",
                 "measurementLabel": "Mesure d’audience",
                 "measurementServer": "Réglage du serveur",
+                "measurementServerOn": "Actuellement activée : {address}, site {id}",
+                "measurementServerNone": "Actuellement : aucune mesure d’audience",
                 "measurementOff": "Désactivée",
                 "measurementSaved": "Réglage de la mesure d’audience enregistré",
                 "switchLabel": "Afficher le bandeau cookies",

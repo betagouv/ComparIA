@@ -13,6 +13,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import type { Locale } from '$lib/i18n/runtime'
+  import { measurementInUse, type Measurement } from '$lib/matomo'
   import { useForm } from '$lib/stores/form.svelte'
   import { getKeys } from '$lib/utils/commons'
   import { CookieBannerPreview } from './components'
@@ -71,6 +72,23 @@
     matomo_url_invalid: m['admin.legal.cookies.matomoUrlInvalid'],
     matomo_site_id_invalid: m['admin.legal.cookies.matomoSiteIdInvalid']
   }
+
+  // The environment values are unchecked, so no URL parsing that could throw.
+  const describe = (measurement: Measurement) =>
+    measurement
+      ? m['admin.legal.cookies.measurementServerOn']({
+          address: measurement.url.replace(/^https?:\/\//, '').replace(/\/+$/, ''),
+          id: measurement.id
+        })
+      : m['admin.legal.cookies.measurementServerNone']()
+  const serverMeans = $derived(
+    describe(
+      measurementInUse(
+        { matomo_enabled: null, matomo_url: null, matomo_site_id: null },
+        data.serverMatomo
+      )
+    )
+  )
 
   async function saveMeasurement(body: AppSettingsPatch) {
     matomoErrors = {}
@@ -172,7 +190,11 @@
     id="matomo_enabled"
     label={m['admin.legal.cookies.measurementLabel']()}
     options={[
-      { value: 'server', label: m['admin.legal.cookies.measurementServer']() },
+      {
+        value: 'server',
+        label: m['admin.legal.cookies.measurementServer'](),
+        help: serverMeans
+      },
       { value: 'on', label: m['admin.legal.cookies.measurementOn']() },
       { value: 'off', label: m['admin.legal.cookies.measurementOff']() }
     ]}

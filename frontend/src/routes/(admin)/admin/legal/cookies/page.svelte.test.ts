@@ -19,11 +19,14 @@ const frBanner: CookieBanner = {
 }
 
 const ownMatomo = { matomo_url: 'https://stats.example.org/matomo', matomo_site_id: '12' }
+const serverMatomo = { MATOMO_URL: 'https://server-stats.example.org', MATOMO_ID: '3' }
+const noServerMatomo = { MATOMO_URL: '', MATOMO_ID: '' }
 
 function renderPage(
   enabled = false,
   matomoEnabled: boolean | null = null,
-  stored: { matomo_url?: string; matomo_site_id?: string } = {}
+  stored: { matomo_url?: string; matomo_site_id?: string } = {},
+  server: { MATOMO_URL: string; MATOMO_ID: string } = serverMatomo
 ) {
   return render(Page, {
     data: {
@@ -34,7 +37,8 @@ function renderPage(
         matomo_site_id: null,
         ...stored
       },
-      banners: { fr: structuredClone(frBanner) }
+      banners: { fr: structuredClone(frBanner) },
+      serverMatomo: server
     } as unknown as PageData,
     params: {}
   } as PageProps)
@@ -65,7 +69,7 @@ describe('cookie banner administration', () => {
   })
 
   it.each([
-    ['the server setting', null, 'Réglage du serveur'],
+    ['the server setting', null, /^Réglage du serveur/],
     ['on', true, 'Activée, avec mon Matomo'],
     ['off', false, 'Désactivée']
   ])('shows audience measurement on %s', (_case, matomoEnabled, checked) => {
@@ -74,6 +78,21 @@ describe('cookie banner administration', () => {
 
     expect(within(group).getAllByRole('radio')).toHaveLength(3)
     expect(within(group).getByRole('radio', { name: checked })).toBeChecked()
+  })
+
+  it.each([
+    [
+      'its address and site id',
+      serverMatomo,
+      'Actuellement activée : server-stats.example.org, site 3'
+    ],
+    ['no Matomo', noServerMatomo, 'Actuellement : aucune mesure d’audience']
+  ])('says what the server setting means when the server has %s', (_case, server, means) => {
+    const { getByRole } = renderPage(false, false, ownMatomo, server)
+
+    expect(getByRole('radio', { name: /^Réglage du serveur/ })).toHaveAccessibleName(
+      `Réglage du serveur ${means}`
+    )
   })
 
   it.each([
@@ -160,7 +179,7 @@ describe('cookie banner administration', () => {
 
   it.each([
     ['off', null, 'Désactivée', { matomo_enabled: false }],
-    ['back to the server setting', false, 'Réglage du serveur', { matomo_enabled: null }]
+    ['back to the server setting', false, /^Réglage du serveur/, { matomo_enabled: null }]
   ])('switches audience measurement %s', async (_case, matomoEnabled, choice, body) => {
     const { getByRole } = renderPage(false, matomoEnabled)
     const radio = getByRole('radio', { name: choice })
