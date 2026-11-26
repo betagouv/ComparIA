@@ -127,7 +127,12 @@ function parseSchema(
     }
     const format =
       schema.format && schema.format in types ? (schema.format as keyof typeof types) : 'default'
-    return { ...baseProps, component: 'input', type: types[format] }
+    return {
+      ...baseProps,
+      component: 'input',
+      type: types[format],
+      maxlength: schema.maxLength
+    }
   } else if (type === 'boolean') {
     return { ...baseProps, component: 'toggle' }
   } else if (type === 'integer' || type === 'number') {

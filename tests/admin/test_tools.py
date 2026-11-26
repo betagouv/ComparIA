@@ -115,6 +115,19 @@ def test_conflicting_domain_lists_are_refused(database):
     database(scenario)
 
 
+def test_a_name_or_description_too_long_for_the_picker_is_refused(database):
+    async def scenario():
+        async with client() as api:
+            long_label = await api.post("/tools/tool", json=MCP | {"label": "a" * 41})
+            long_description = await api.post(
+                "/tools/tool", json=MCP | {"description": "a" * 71}
+            )
+        assert long_label.status_code == 422
+        assert long_description.status_code == 422
+
+    database(scenario)
+
+
 def test_testing_an_mcp_server_lists_its_functions(database, monkeypatch):
     async def list_server_functions(row, remember=True):
         return [{"name": "search_datasets", "description": "Search."}]

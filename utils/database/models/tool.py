@@ -114,7 +114,18 @@ class Tool(ToolBase, table=True):
         return None
 
 
+# The picker lists tools in a narrow menu. Longer text wraps and pushes the
+# other entries down. Set on writes only, so rows saved before the limit load.
+LABEL_MAX_LENGTH = 40
+DESCRIPTION_MAX_LENGTH = 70
+
+
 class ToolUpsert(ToolBase):
+    label: Annotated[NonEmptyStr, Field(max_length=LABEL_MAX_LENGTH, **FIELDS["label"])]
+    description: Annotated[
+        str | None,
+        Field(max_length=DESCRIPTION_MAX_LENGTH, **FIELDS["description"]),
+    ] = None
     # Write-only: left empty, the stored credential is kept. Removing it has
     # its own route, so that clearing the field by accident never does.
     secret: Annotated[str | None, Field(**FIELDS["secret"])] = None

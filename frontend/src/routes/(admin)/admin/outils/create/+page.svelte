@@ -215,14 +215,14 @@
           id="wizard-label"
           label={m['admin.tools.wizard.present.label']()}
           help={m['admin.tools.wizard.present.key']({ key })}
-          maxlength={60}
+          maxlength={40}
           required
           bind:value={label}
         />
         <Textarea
           id="wizard-description"
           rows={3}
-          maxlength={160}
+          maxlength={70}
           label={m['admin.tools.wizard.present.description']()}
           help={m['admin.tools.wizard.present.descriptionHint']()}
           bind:value={description}
