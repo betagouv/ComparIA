@@ -18,10 +18,10 @@ const frBanner: CookieBanner = {
   description: 'Nous utilisons des cookies seulement si vous l’acceptez.'
 }
 
-function renderPage(enabled = false) {
+function renderPage(enabled = false, matomoEnabled: boolean | null = null) {
   return render(Page, {
     data: {
-      settings: { cookie_banner_enabled: enabled },
+      settings: { cookie_banner_enabled: enabled, matomo_enabled: matomoEnabled },
       banners: { fr: structuredClone(frBanner) }
     } as unknown as PageData,
     params: {}
@@ -38,7 +38,11 @@ describe('cookie banner administration', () => {
     mocks.request.mockReset()
     mocks.toast.mockReset()
     mocks.request.mockImplementation((_path: string, options?: RequestInit) =>
-      Promise.resolve(options?.method === 'PATCH' ? { cookie_banner_enabled: true } : {})
+      Promise.resolve(
+        options?.method === 'PATCH'
+          ? { cookie_banner_enabled: true, ...JSON.parse(options.body as string) }
+          : {}
+      )
     )
   })
 
@@ -46,6 +50,31 @@ describe('cookie banner administration', () => {
     const { getByRole } = renderPage()
 
     expect(getByRole('heading', { level: 1 })).toHaveTextContent('Cookies et mesure d’audience')
+  })
+
+  it.each([
+    ['the server setting', null, 'Réglage du serveur'],
+    ['off', false, 'Désactivée']
+  ])('shows audience measurement on %s', (_case, matomoEnabled, checked) => {
+    const { getByRole } = renderPage(false, matomoEnabled)
+    const group = getByRole('group', { name: /Mesure d’audience/ })
+
+    expect(within(group).getAllByRole('radio')).toHaveLength(2)
+    expect(within(group).getByRole('radio', { name: checked })).toBeChecked()
+  })
+
+  it.each([
+    ['off', null, 'Désactivée', { matomo_enabled: false }],
+    ['back to the server setting', false, 'Réglage du serveur', { matomo_enabled: null }]
+  ])('switches audience measurement %s', async (_case, matomoEnabled, choice, body) => {
+    const { getByRole } = renderPage(false, matomoEnabled)
+    const radio = getByRole('radio', { name: choice })
+
+    await fireEvent.click(radio)
+
+    await waitFor(() => expect(mocks.toast).toHaveBeenCalled())
+    expect(bodyOf('PATCH')).toEqual(body)
+    expect(radio).toBeChecked()
   })
 
   it('turns the banner on through the instance settings', async () => {

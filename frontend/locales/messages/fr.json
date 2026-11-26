@@ -244,6 +244,10 @@
             "cookies": {
                 "title": "Cookies et mesure d’audience",
                 "subtitle": "La mesure d’audience, le bandeau cookies et son texte.",
+                "measurementLabel": "Mesure d’audience",
+                "measurementServer": "Réglage du serveur",
+                "measurementOff": "Désactivée",
+                "measurementSaved": "Réglage de la mesure d’audience enregistré",
                 "switchLabel": "Afficher le bandeau cookies",
                 "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience.",
                 "switchedOn": "Bandeau cookies activé",

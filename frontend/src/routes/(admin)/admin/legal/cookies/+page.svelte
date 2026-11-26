@@ -2,6 +2,7 @@
   import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { Button, Textarea, Toggle } from '$components/dsfr'
+  import { FormRadioGroup } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
@@ -44,6 +45,33 @@
       useToast((error as Error).message, 6000, 'error')
     } finally {
       pending = undefined
+    }
+  }
+
+  // The radio group holds strings; null is the server setting, false is Off.
+  type MeasurementChoice = 'server' | 'off'
+  const toSetting = { server: null, off: false } as const
+  // Undefined until saved here: a saved null must win over the loaded value.
+  let savedMeasurement = $state<boolean | null>()
+  const measurementSetting = $derived(
+    savedMeasurement === undefined ? data.settings.matomo_enabled : savedMeasurement
+  )
+  let measurementChoice = $derived<MeasurementChoice>(
+    measurementSetting === false ? 'off' : 'server'
+  )
+
+  async function setMeasurement(choice: MeasurementChoice) {
+    measurementChoice = choice
+    try {
+      const settings = await api.request<AppSettingsPublic>('/admin/settings', {
+        method: 'PATCH',
+        body: JSON.stringify({ matomo_enabled: toSetting[choice] })
+      })
+      savedMeasurement = settings.matomo_enabled
+      useToast(m['admin.legal.cookies.measurementSaved'](), 4000, 'success')
+    } catch (error) {
+      measurementChoice = measurementSetting === false ? 'off' : 'server'
+      useToast((error as Error).message, 6000, 'error')
     }
   }
 
@@ -95,6 +123,18 @@
   backLink={{ href: resolve('/admin/legal'), text: m['admin.legal.back']() }}
   noPadding
 >
+  <FormRadioGroup
+    id="matomo_enabled"
+    label={m['admin.legal.cookies.measurementLabel']()}
+    options={[
+      { value: 'server', label: m['admin.legal.cookies.measurementServer']() },
+      { value: 'off', label: m['admin.legal.cookies.measurementOff']() }
+    ]}
+    bind:value={
+      () => measurementChoice, (value) => value && setMeasurement(value as MeasurementChoice)
+    }
+  />
+
   <Toggle
     id="cookie_banner_enabled"
     label={m['admin.legal.cookies.switchLabel']()}

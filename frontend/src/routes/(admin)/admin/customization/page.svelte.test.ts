@@ -41,6 +41,7 @@ const settings = (votesObjective: number): AppSettingsPublic => ({
   publish_timezone: 'UTC',
   dataset_voter_ids: false,
   cookie_banner_enabled: false,
+  matomo_enabled: null,
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',
