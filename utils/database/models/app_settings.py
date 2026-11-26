@@ -114,6 +114,9 @@ class AppSettings(SQLModel, table=True):
     # Off until an instance whose law asks for cookie consent turns it on.
     cookie_banner_enabled: bool = Field(default=False)
     cookie_banner: Annotated[dict | None, Field(sa_type=JSONB)] = None
+    # Audience measurement: None follows the MATOMO_URL and MATOMO_ID the
+    # frontend server was deployed with, False turns it off whatever they say.
+    matomo_enabled: bool | None = Field(default=None)
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
     primary_color_dark: str = Field(default=PRIMARY_COLOR_DARK_DEFAULT, max_length=7)
     secondary_color_light: str = Field(
@@ -193,6 +196,7 @@ class AppSettingsPublic(SQLModel):
     publish_timezone: str
     dataset_voter_ids: bool
     cookie_banner_enabled: bool
+    matomo_enabled: bool | None
     has_custom_logo: bool
     logo_version: str | None = None
     enabled_locales: list[SupportedLocale]
@@ -234,6 +238,7 @@ class AppSettingsPatch(SQLModel):
     publish_timezone: str | None = Field(default=None, max_length=64)
     dataset_voter_ids: bool | None = None
     cookie_banner_enabled: bool | None = None
+    matomo_enabled: bool | None = None
     auth_methods: list[str] | None = None
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -301,6 +306,14 @@ class AppSettingsPatch(SQLModel):
     def switch_not_null(cls, value: object, info: ValidationInfo) -> object:
         if value is None:
             raise ValueError(f"{info.field_name} cannot be null")
+        return value
+
+    @field_validator("matomo_enabled")
+    @classmethod
+    def matomo_not_on_yet(cls, value: bool | None) -> bool | None:
+        # On needs a Matomo address and site id, which cannot be set yet.
+        if value is True:
+            raise ValueError("matomo_enabled can only be off or null")
         return value
 
     @field_validator(

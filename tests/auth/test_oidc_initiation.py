@@ -90,6 +90,7 @@ def _settings_row(**overrides):
         logo=None,
         logo_version=None,
         cookie_banner_enabled=False,
+        matomo_enabled=None,
         enabled_locales=["fr"],
         default_locale="fr",
     )
