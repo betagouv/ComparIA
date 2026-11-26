@@ -60,6 +60,8 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         dataset_voter_ids=row.dataset_voter_ids,
         cookie_banner_enabled=row.cookie_banner_enabled,
         matomo_enabled=row.matomo_enabled,
+        matomo_url=row.matomo_url,
+        matomo_site_id=row.matomo_site_id,
         has_custom_logo=row.logo is not None,
         logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
@@ -107,6 +109,21 @@ async def patch_settings(
                 detail="Default locale must be part of the enabled locales",
             )
     patch = body.model_dump(exclude_unset=True)
+    if patch.keys() & {"matomo_enabled", "matomo_url", "matomo_site_id"}:
+        current = await get_app_settings()
+        # Judged on the row as it will be saved, so On alone takes the stored
+        # address and id, and clearing one while On is refused.
+        effective = {
+            field: patch.get(field, getattr(current, field))
+            for field in ("matomo_enabled", "matomo_url", "matomo_site_id")
+        }
+        if effective["matomo_enabled"] is True and not (
+            effective["matomo_url"] and effective["matomo_site_id"]
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail="matomo_needs_url_and_site_id",
+            )
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
         # Same key as every other secret at rest; the column holds bytes.

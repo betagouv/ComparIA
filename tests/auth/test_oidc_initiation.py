@@ -91,6 +91,8 @@ def _settings_row(**overrides):
         logo_version=None,
         cookie_banner_enabled=False,
         matomo_enabled=None,
+        matomo_url=None,
+        matomo_site_id=None,
         enabled_locales=["fr"],
         default_locale="fr",
     )

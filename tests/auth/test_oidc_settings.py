@@ -67,6 +67,8 @@ def _settings_row(**overrides):
         dataset_voter_ids=False,
         cookie_banner_enabled=False,
         matomo_enabled=None,
+        matomo_url=None,
+        matomo_site_id=None,
         enabled_locales=["fr"],
         default_locale="fr",
         auth_methods=["email_code"],
