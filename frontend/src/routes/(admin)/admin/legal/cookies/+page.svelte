@@ -49,18 +49,15 @@
     }
   }
 
-  // The radio group holds strings; null is the server setting, true is the
-  // admin's own Matomo, false is Off.
   type MeasurementChoice = 'server' | 'on' | 'off'
   const toChoice = (setting: boolean | null): MeasurementChoice =>
     setting === null ? 'server' : setting ? 'on' : 'off'
   // Undefined until saved here. The switch and its notes follow the saved
   // setting, what visitors get, not a choice or typing not yet saved.
-  let savedMatomo = $state<MeasurementSetting>()
-  const matomoSetting = $derived(savedMatomo ?? data.settings)
-  const measurementSetting = $derived(matomoSetting.matomo_enabled)
-  const measurement = $derived(measurementInUse(matomoSetting, data.serverMatomo))
-  let measurementChoice = $derived<MeasurementChoice>(toChoice(measurementSetting))
+  let savedSetting = $state<MeasurementSetting>()
+  const measurementSetting = $derived(savedSetting ?? data.settings)
+  const activeMatomo = $derived(measurementInUse(measurementSetting, data.serverMatomo))
+  let measurementChoice = $derived<MeasurementChoice>(toChoice(measurementSetting.matomo_enabled))
   // Off keeps the stored address and id, so On again shows them. Seeded once,
   // so that saving the banner text leaves unsaved typing alone.
   // svelte-ignore state_referenced_locally
@@ -75,21 +72,14 @@
   }
 
   // The environment values are unchecked, so no URL parsing that could throw.
-  const describe = (measurement: Measurement) =>
-    measurement
+  const describeServerMatomo = (matomo: Measurement) =>
+    matomo
       ? m['admin.legal.cookies.measurementServerOn']({
-          address: measurement.url.replace(/^https?:\/\//, '').replace(/\/+$/, ''),
-          id: measurement.id
+          address: matomo.url.replace(/^https?:\/\//, '').replace(/\/+$/, ''),
+          id: matomo.id
         })
       : m['admin.legal.cookies.measurementServerNone']()
-  const serverMeans = $derived(
-    describe(
-      measurementInUse(
-        { matomo_enabled: null, matomo_url: null, matomo_site_id: null },
-        data.serverMatomo
-      )
-    )
-  )
+  const serverMeans = $derived(describeServerMatomo(measurementInUse(null, data.serverMatomo)))
 
   async function saveMeasurement(body: AppSettingsPatch) {
     matomoErrors = {}
@@ -98,12 +88,11 @@
         method: 'PATCH',
         body: JSON.stringify(body)
       })
-      savedMatomo = {
+      savedSetting = {
         matomo_enabled: settings.matomo_enabled,
         matomo_url: settings.matomo_url,
         matomo_site_id: settings.matomo_site_id
       }
-      // As stored: a trailing slash is dropped.
       matomoUrl = settings.matomo_url ?? ''
       matomoSiteId = settings.matomo_site_id ?? ''
       useToast(m['admin.legal.cookies.measurementSaved'](), 4000, 'success')
@@ -124,7 +113,8 @@
       if (!Object.values(matomoErrors).some(Boolean)) {
         useToast((error as Error).message, 6000, 'error')
       }
-      if (body.matomo_enabled !== true) measurementChoice = toChoice(measurementSetting)
+      if (body.matomo_enabled !== true)
+        measurementChoice = toChoice(measurementSetting.matomo_enabled)
     }
   }
 
@@ -236,16 +226,16 @@
     <Toggle
       id="cookie_banner_enabled"
       label={m['admin.legal.cookies.switchLabel']()}
-      help={measurement
+      help={activeMatomo
         ? m['admin.legal.cookies.switchHelp']()
         : m['admin.legal.cookies.switchNothingToAsk']()}
-      disabled={!measurement}
+      disabled={!activeMatomo}
       labelPos="right"
       groupClass="mb-8!"
       bind:value={() => enabled, (value) => setEnabled(value)}
     />
 
-    {#if measurement && !enabled}
+    {#if activeMatomo && !enabled}
       <Alert
         small
         variant="warning"
