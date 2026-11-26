@@ -79,9 +79,9 @@
     },
     {
       label: m['admin.nav.tools'](),
-      href: '/admin/outils',
+      href: resolve('/admin/outils'),
       icon: 'i-ri-tools-line',
-      isCurrent: () => page.url.pathname.includes('/admin/outils')
+      isCurrent: () => page.url.pathname.includes(resolve('/admin/outils'))
     },
     {
       label: m['actions.returnArena'](),
