@@ -5,7 +5,7 @@ import type { PageData, PageProps } from './$types'
 import { load as loadRootLayout } from '../../../+layout.server'
 import Page from './+page.svelte'
 
-const cookieConsent = vi.hoisted(() => ({ enabled: false, reopen: vi.fn() }))
+const cookieConsent = vi.hoisted(() => ({ asking: false, reopen: vi.fn() }))
 vi.mock('$lib/stores/cookieConsent.svelte', () => ({
   getCookieConsentContext: () => cookieConsent
 }))
@@ -97,12 +97,12 @@ describe('privacy page', () => {
 
 describe('privacy page with the cookie banner on', () => {
   afterEach(() => {
-    cookieConsent.enabled = false
+    cookieConsent.asking = false
     cookieConsent.reopen.mockClear()
   })
 
   it('reopens the banner instead of loading the Matomo opt-out', async () => {
-    cookieConsent.enabled = true
+    cookieConsent.asking = true
     const { container, getByRole } = renderPolicy({
       privacyPolicy: policy,
       measurement: stats

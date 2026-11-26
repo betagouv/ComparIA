@@ -30,7 +30,7 @@
       <p class="fr-alert fr-alert--error" role="alert">{m['general.document.unavailable']()}</p>
     {/if}
 
-    {#if legalDocKey === 'privacy_policy' && cookieConsent.enabled}
+    {#if legalDocKey === 'privacy_policy' && cookieConsent.asking}
       <!-- The opt-out iframe would load Matomo before the visitor says yes. -->
       <h2 id="cookie-choice-title">{m['general.privacy_policy.cookiesTitle']()}</h2>
       <Button

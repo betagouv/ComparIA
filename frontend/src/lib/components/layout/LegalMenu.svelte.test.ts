@@ -8,7 +8,7 @@ import LegalMenu from './LegalMenu.svelte'
 vi.mock('$lib/fastapi-client', () => ({ api: { request: vi.fn() } }))
 
 const cookieConsent = vi.hoisted(() => ({
-  enabled: false,
+  asking: false,
   openedFrom: null as Element | null,
   reopen() {
     cookieConsent.openedFrom = document.activeElement
@@ -19,7 +19,7 @@ vi.mock('$lib/stores/cookieConsent.svelte', () => ({
 }))
 
 beforeEach(() => {
-  cookieConsent.enabled = false
+  cookieConsent.asking = false
   cookieConsent.openedFrom = null
 })
 
@@ -100,7 +100,7 @@ describe('LegalMenu', () => {
   })
 
   it('reopens the banner from the menu and leaves focus on the menu button', async () => {
-    cookieConsent.enabled = true
+    cookieConsent.asking = true
     const { getByRole } = getWrappedComponent()
     const button = getByRole('button', { name: /Légal/ })
 
@@ -114,7 +114,7 @@ describe('LegalMenu', () => {
   })
 
   it('reaches the cookies entry with the arrow keys', async () => {
-    cookieConsent.enabled = true
+    cookieConsent.asking = true
     const { getByRole } = getWrappedComponent()
 
     await fireEvent.click(getByRole('button', { name: /Légal/ }))
@@ -124,7 +124,7 @@ describe('LegalMenu', () => {
   })
 
   it('closes the mobile menu it sits in', async () => {
-    cookieConsent.enabled = true
+    cookieConsent.asking = true
     const { getByRole } = getWrappedComponent('legal-menu-mobile', { modalId: 'fr-modal-menu' })
 
     await fireEvent.click(getByRole('button', { name: /Légal/ }))

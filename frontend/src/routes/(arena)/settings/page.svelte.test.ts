@@ -54,7 +54,7 @@ vi.mock('$lib/survey.svelte', async (importOriginal) => {
   }
 })
 
-const cookieConsent = vi.hoisted(() => ({ enabled: false, reopen: vi.fn() }))
+const cookieConsent = vi.hoisted(() => ({ asking: false, reopen: vi.fn() }))
 vi.mock('$lib/stores/cookieConsent.svelte', () => ({
   getCookieConsentContext: () => cookieConsent
 }))
@@ -103,7 +103,7 @@ describe('Settings page', () => {
   })
 
   it('reopens the cookie banner from the useful links', async () => {
-    cookieConsent.enabled = true
+    cookieConsent.asking = true
     cookieConsent.reopen.mockClear()
     const { getByRole } = getWrappedComponent()
 
@@ -113,7 +113,7 @@ describe('Settings page', () => {
     await fireEvent.click(cookies)
 
     expect(cookieConsent.reopen).toHaveBeenCalledOnce()
-    cookieConsent.enabled = false
+    cookieConsent.asking = false
   })
 
   it('asks the backend for the export rather than building it in the page', async () => {

@@ -52,21 +52,21 @@ describe('cookie consent store', () => {
     expect(consent.decision.loadMeasurement).toBe(true)
   })
 
-  it('tells whether the switch is on', () => {
-    expect(create(true).enabled).toBe(true)
-    expect(create(false).enabled).toBe(false)
+  it('asks only when the switch is on', () => {
+    expect(create(true).asking).toBe(true)
+    expect(create(false).asking).toBe(false)
   })
 
   it('stays closed and offers no reopening when nothing is measured', () => {
     const consent = create(true, false)
-    expect(consent.enabled).toBe(false)
+    expect(consent.asking).toBe(false)
     expect(consent.bannerOpen).toBe(false)
     expect(consent.decision.loadMeasurement).toBe(false)
   })
 
   it('stays closed and offers no reopening while the switch is unknown', () => {
     const consent = create(null)
-    expect(consent.enabled).toBe(false)
+    expect(consent.asking).toBe(false)
     expect(consent.bannerOpen).toBe(false)
     expect(consent.decision.loadMeasurement).toBe(false)
   })

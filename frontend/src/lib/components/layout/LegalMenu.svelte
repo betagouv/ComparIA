@@ -58,7 +58,7 @@
           </a>
         </li>
       {/each}
-      {#if cookieConsent.enabled}
+      {#if cookieConsent.asking}
         <li class="fr-sidemenu__item">
           <button
             type="button"

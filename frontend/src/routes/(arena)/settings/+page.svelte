@@ -240,7 +240,7 @@
               {#each links.settingsMenuLinks as link (link.href)}
                 <li><Link href={link.href} text={link.label} /></li>
               {/each}
-              {#if cookieConsent.enabled}
+              {#if cookieConsent.asking}
                 <li>
                   <button type="button" class="fr-link" onclick={() => cookieConsent.reopen()}>
                     {m['cookieBanner.link']()}

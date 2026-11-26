@@ -58,7 +58,7 @@ export function createCookieConsent({
   }
 
   return {
-    get enabled() {
+    get asking() {
       return asking
     },
     get choice() {
