@@ -3,7 +3,7 @@
   import type { CookieChoice } from '$lib/cookieConsent'
   import type { PublicCookieBanner } from '$lib/generated/backend'
   import { m } from '$lib/i18n/messages'
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
 
   let {
     text,
@@ -17,33 +17,12 @@
     choice?: CookieChoice | null
     onChoice?: (choice: CookieChoice) => void
     onClose?: () => void
-    // Rendered in place, for the admin page, with the choice panel open.
+    // Rendered in place, for the admin page.
     preview?: boolean
   } = $props()
 
   const id = $props.id()
-  // svelte-ignore state_referenced_locally
-  let panelOpen = $state(preview || !!choice)
-  // svelte-ignore state_referenced_locally
-  let measurement = $state(choice?.measurement ?? false)
-  // svelte-ignore state_referenced_locally
-  let preferences = $state(choice?.preferences ?? false)
-
   let titleEl = $state<HTMLHeadingElement>()
-  let panelEl = $state<HTMLUListElement>()
-
-  const kinds = $derived([
-    {
-      key: 'measurement',
-      label: text.audience_measurement_label,
-      help: text.audience_measurement_description
-    },
-    {
-      key: 'preferences',
-      label: text.remembered_settings_label,
-      help: text.remembered_settings_description
-    }
-  ] as const)
 
   onMount(() => {
     // Someone who reopened the banner is sent into it. On a first visit it
@@ -51,28 +30,10 @@
     if (choice && !preview) titleEl?.focus()
   })
 
-  async function togglePanel() {
-    panelOpen = !panelOpen
-    if (panelOpen) {
-      await tick()
-      panelEl?.querySelector('input')?.focus()
-    }
-  }
-
-  function closePanel() {
-    panelOpen = false
-    document.getElementById(`${id}-choose`)?.focus()
-  }
-
   function handleKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Escape') return
-    if (panelOpen && panelEl?.contains(event.target as Node)) {
-      event.preventDefault()
-      closePanel()
-    } else if (onClose) {
-      event.preventDefault()
-      onClose()
-    }
+    if (event.key !== 'Escape' || !onClose) return
+    event.preventDefault()
+    onClose()
   }
 </script>
 
@@ -100,70 +61,20 @@
     </a>
   </p>
 
-  {#if panelOpen}
-    <ul id="{id}-panel" bind:this={panelEl} class="kinds">
-      {#each kinds as kind (kind.key)}
-        <li>
-          <span class="kind-text">
-            <label for="{id}-{kind.key}" id="{id}-{kind.key}-label">{kind.label}</label>
-            <span id="{id}-{kind.key}-help">{kind.help}</span>
-          </span>
-          {#if kind.key === 'measurement'}
-            <input
-              id="{id}-measurement"
-              type="checkbox"
-              class="switch"
-              aria-labelledby="{id}-measurement-label"
-              aria-describedby="{id}-measurement-help"
-              bind:checked={measurement}
-            />
-          {:else}
-            <input
-              id="{id}-preferences"
-              type="checkbox"
-              class="switch"
-              aria-labelledby="{id}-preferences-label"
-              aria-describedby="{id}-preferences-help"
-              bind:checked={preferences}
-            />
-          {/if}
-        </li>
-      {/each}
-    </ul>
+  {#if choice}
+    <p class="current">
+      {choice.measurement ? m['cookieBanner.currentYes']() : m['cookieBanner.currentNo']()}
+    </p>
   {/if}
 
+  <!-- Refusing looks exactly like accepting. -->
   <div class="actions">
-    <button
-      id="{id}-choose"
-      type="button"
-      class="text"
-      aria-expanded={panelOpen}
-      aria-controls="{id}-panel"
-      onclick={togglePanel}
-    >
-      {m['cookieBanner.choose']()}
+    <button type="button" class="choice" onclick={() => onChoice?.({ measurement: false })}>
+      {m['cookieBanner.refuse']()}
     </button>
-    <!-- Refusing looks exactly like accepting. -->
-    <button
-      type="button"
-      class="choice"
-      onclick={() => onChoice?.({ measurement: false, preferences: false })}
-    >
-      {m['cookieBanner.refuseAll']()}
+    <button type="button" class="choice" onclick={() => onChoice?.({ measurement: true })}>
+      {m['cookieBanner.accept']()}
     </button>
-    {#if panelOpen}
-      <button type="button" class="choice" onclick={() => onChoice?.({ measurement, preferences })}>
-        {m['cookieBanner.save']()}
-      </button>
-    {:else}
-      <button
-        type="button"
-        class="choice"
-        onclick={() => onChoice?.({ measurement: true, preferences: true })}
-      >
-        {m['cookieBanner.acceptAll']()}
-      </button>
-    {/if}
   </div>
 </section>
 
@@ -227,32 +138,10 @@
     text-underline-offset: 2px;
     background-image: none;
   }
-  .kinds {
+  .current {
     margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--border-default-grey);
-  }
-  .kinds li {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 0;
-    border-bottom: 1px solid var(--border-default-grey);
-  }
-  .kind-text {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-width: 0;
-    font-size: 0.75rem;
-    line-height: 1.4;
-    color: var(--text-mention-grey);
-  }
-  .kind-text label {
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--text-default-grey);
   }
   .actions {
     display: flex;
@@ -265,8 +154,7 @@
     font: inherit;
     cursor: pointer;
   }
-  button:focus-visible,
-  .switch:focus-visible {
+  button:focus-visible {
     outline: 2px solid var(--border-active-blue-france);
     outline-offset: 2px;
   }
@@ -283,16 +171,6 @@
   .choice:hover {
     background: var(--background-action-high-blue-france-hover);
   }
-  .text {
-    margin-right: auto;
-    padding: 0.25rem 0;
-    font-size: 0.8125rem;
-    color: var(--text-default-grey);
-    background: none;
-    border: 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
   .close {
     display: grid;
     place-items: center;
@@ -306,43 +184,5 @@
   }
   .close:hover {
     background: var(--background-default-grey-hover);
-  }
-  .switch {
-    appearance: none;
-    position: relative;
-    flex: none;
-    width: 2.25rem;
-    height: 1.25rem;
-    margin: 0;
-    cursor: pointer;
-    background: var(--background-contrast-grey);
-    border-radius: 999px;
-    box-shadow: inset 0 0 0 1px var(--border-default-grey);
-    transition: background 0.15s;
-  }
-  .switch::before {
-    content: '';
-    position: absolute;
-    top: 0.125rem;
-    left: 0.125rem;
-    width: 1rem;
-    height: 1rem;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
-    transition: transform 0.15s;
-  }
-  .switch:checked {
-    background: var(--background-action-high-blue-france);
-    box-shadow: none;
-  }
-  .switch:checked::before {
-    transform: translateX(1rem);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .switch,
-    .switch::before {
-      transition: none;
-    }
   }
 </style>

@@ -447,10 +447,6 @@ export interface PersonalRankingRow {
 export interface PublicCookieBanner {
   title: string;
   description: string;
-  audience_measurement_label: string;
-  audience_measurement_description: string;
-  remembered_settings_label: string;
-  remembered_settings_description: string;
   locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
 }
 export interface PublicLegalDocument {

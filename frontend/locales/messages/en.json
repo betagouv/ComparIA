@@ -242,21 +242,17 @@
             },
             "back": "Back to legal documents",
             "cookies": {
-                "title": "Cookies",
-                "subtitle": "The cookie banner and its text.",
-                "switchLabel": "Show the cookie banner",
-                "switchHelp": "Visitors are asked before audience measurement runs and before their settings are kept.",
-                "switchedOn": "Cookie banner turned on",
-                "switchedOff": "Cookie banner turned off",
-                "formTitle": "Edit the banner text",
-                "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
-                "clearLocale": "Clear this language",
                 "bannerTitle": "Banner title",
+                "clearLocale": "Clear this language",
                 "description": "Introductory text",
-                "audienceMeasurementLabel": "Name of audience measurement",
-                "audienceMeasurementDescription": "What audience measurement does",
-                "rememberedSettingsLabel": "Name of remembered settings",
-                "rememberedSettingsDescription": "What remembered settings keep"
+                "formTitle": "Edit the banner text",
+                "subtitle": "The cookie banner and its text.",
+                "switchedOff": "Cookie banner turned off",
+                "switchedOn": "Cookie banner turned on",
+                "switchHelp": "Visitors are asked before audience measurement runs.",
+                "switchLabel": "Show the cookie banner",
+                "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
+                "title": "Cookies"
             },
             "document": {
                 "backToWriting": "Back to writing",
@@ -1336,13 +1332,13 @@
         "saving": "Saving…"
     },
     "cookieBanner": {
-        "acceptAll": "Accept all",
-        "refuseAll": "Refuse all",
-        "choose": "Choose",
+        "accept": "Accept",
         "close": "Close",
-        "save": "Save my choices",
+        "currentNo": "Your current answer: no",
+        "currentYes": "Your current answer: yes",
         "link": "Cookies",
-        "manage": "Manage cookies"
+        "manage": "Manage cookies",
+        "refuse": "Refuse"
     },
     "errors": {
         "404": {
@@ -1394,8 +1390,8 @@
             "version": "Version {version}, in effect since {date}."
         },
         "privacy_policy": {
-            "optOutTitle": "Opting out of audience measurement",
             "cookiesTitle": "Your cookie choices",
+            "optOutTitle": "Opting out of audience measurement",
             "title": "Privacy policy"
         },
         "terms": {

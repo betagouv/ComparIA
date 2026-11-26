@@ -19,11 +19,7 @@ vi.mock('$app/state', () => ({ page }))
 
 const text = {
   title: 'Cookies on this site',
-  description: 'We ask before setting cookies we do not need.',
-  audience_measurement_label: 'Audience measurement',
-  audience_measurement_description: 'Counts visits anonymously.',
-  remembered_settings_label: 'Remembered settings',
-  remembered_settings_description: 'Keeps your language and theme.'
+  description: 'We ask before setting cookies we do not need.'
 }
 
 describe('CookieBannerHost', () => {

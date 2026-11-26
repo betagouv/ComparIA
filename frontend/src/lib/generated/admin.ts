@@ -382,10 +382,6 @@ export interface TranslatableCookieBanner {
 export interface CookieBanner {
   title: string;
   description: string;
-  audience_measurement_label: string;
-  audience_measurement_description: string;
-  remembered_settings_label: string;
-  remembered_settings_description: string;
 }
 export interface DatasetCheckPublic {
   /**

@@ -14,12 +14,8 @@ vi.mock('$lib/authContext.svelte', () => ({
 }))
 
 const frBanner: CookieBanner = {
-  title: 'Cookies sur ce site',
-  description: 'Nous utilisons des cookies seulement si vous l’acceptez.',
-  audience_measurement_label: 'Mesure d’audience',
-  audience_measurement_description: 'Compter les visites.',
-  remembered_settings_label: 'Réglages mémorisés',
-  remembered_settings_description: 'Garder la langue et le thème.'
+  title: 'Mesure d’audience',
+  description: 'Nous utilisons des cookies seulement si vous l’acceptez.'
 }
 
 function renderPage(enabled = false) {
@@ -63,7 +59,7 @@ describe('cookie banner administration', () => {
     await waitFor(() => expect(toggle).toBeChecked())
   })
 
-  it('previews the banner with its text, both kinds and its buttons', async () => {
+  it('previews the banner with its text and its two buttons', async () => {
     const { getByLabelText, getByTestId } = renderPage()
 
     await fireEvent.input(getByLabelText('Titre du bandeau'), {
@@ -72,23 +68,10 @@ describe('cookie banner administration', () => {
 
     const preview = getByTestId('cookie-banner-preview')
     await waitFor(() => expect(preview).toHaveTextContent('Vos cookies'))
-    expect(preview).toHaveTextContent('Mesure d’audience')
-    expect(preview).toHaveTextContent('Réglages mémorisés')
-    for (const name of ['Tout refuser', 'Enregistrer mes choix', 'Choisir']) {
+    expect(preview).toHaveTextContent(frBanner.description)
+    for (const name of ['Refuser', 'Accepter']) {
       expect(within(preview).getByRole('button', { name })).toBeInTheDocument()
     }
-  })
-
-  it('previews both kinds of cookie when they share a name', async () => {
-    const { getByLabelText, getByTestId } = renderPage()
-
-    await fireEvent.input(getByLabelText('Nom des réglages mémorisés'), {
-      target: { value: 'Mesure d’audience' }
-    })
-
-    const items = getByTestId('cookie-banner-preview').querySelectorAll('li')
-    await waitFor(() => expect(items[1]).toHaveTextContent('Mesure d’audience'))
-    expect(items).toHaveLength(2)
   })
 
   it('saves the text and drops languages left empty', async () => {

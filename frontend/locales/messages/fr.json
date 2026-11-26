@@ -245,18 +245,14 @@
                 "title": "Cookies",
                 "subtitle": "Le bandeau cookies et son texte.",
                 "switchLabel": "Afficher le bandeau cookies",
-                "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience et avant que leurs réglages soient gardés.",
+                "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience.",
                 "switchedOn": "Bandeau cookies activé",
                 "switchedOff": "Bandeau cookies désactivé",
                 "formTitle": "Modifier le texte du bandeau",
                 "textDescription": "Le bandeau s’affiche sur la première page ouverte, jusqu’à ce que la personne réponde.",
                 "clearLocale": "Vider cette langue",
                 "bannerTitle": "Titre du bandeau",
-                "description": "Texte introductif",
-                "audienceMeasurementLabel": "Nom de la mesure d’audience",
-                "audienceMeasurementDescription": "Ce que fait la mesure d’audience",
-                "rememberedSettingsLabel": "Nom des réglages mémorisés",
-                "rememberedSettingsDescription": "Ce que gardent les réglages mémorisés"
+                "description": "Texte introductif"
             },
             "document": {
                 "backToWriting": "Revenir à la rédaction",
@@ -1336,13 +1332,13 @@
         "saving": "Enregistrement…"
     },
     "cookieBanner": {
-        "acceptAll": "Tout accepter",
-        "refuseAll": "Tout refuser",
-        "choose": "Choisir",
+        "accept": "Accepter",
+        "refuse": "Refuser",
         "close": "Fermer",
-        "save": "Enregistrer mes choix",
         "link": "Cookies",
-        "manage": "Gérer les cookies"
+        "manage": "Gérer les cookies",
+        "currentYes": "Votre réponse actuelle : oui",
+        "currentNo": "Votre réponse actuelle : non"
     },
     "errors": {
         "404": {

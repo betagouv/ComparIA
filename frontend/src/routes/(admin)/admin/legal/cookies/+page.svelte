@@ -84,31 +84,7 @@
 
   const fields = [
     { key: 'title', label: m['admin.legal.cookies.bannerTitle'](), rows: 2, maxlength: 200 },
-    { key: 'description', label: m['admin.legal.cookies.description'](), rows: 4, maxlength: 2000 },
-    {
-      key: 'audience_measurement_label',
-      label: m['admin.legal.cookies.audienceMeasurementLabel'](),
-      rows: 2,
-      maxlength: 200
-    },
-    {
-      key: 'audience_measurement_description',
-      label: m['admin.legal.cookies.audienceMeasurementDescription'](),
-      rows: 4,
-      maxlength: 2000
-    },
-    {
-      key: 'remembered_settings_label',
-      label: m['admin.legal.cookies.rememberedSettingsLabel'](),
-      rows: 2,
-      maxlength: 200
-    },
-    {
-      key: 'remembered_settings_description',
-      label: m['admin.legal.cookies.rememberedSettingsDescription'](),
-      rows: 4,
-      maxlength: 2000
-    }
+    { key: 'description', label: m['admin.legal.cookies.description'](), rows: 4, maxlength: 2000 }
   ] as const
 </script>
 
