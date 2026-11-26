@@ -17,6 +17,8 @@
   <components.FormFieldsetItem {...props} bind:value />
 {:else if props.component === 'fieldset-list'}
   <components.FormFieldsetList {...props} bind:value />
+{:else if props.component === 'translate'}
+  <components.FormTranslate {...props} bind:value />
 {:else}
   ERROR: Cannot render component {JSON.stringify(props)}
 {/if}

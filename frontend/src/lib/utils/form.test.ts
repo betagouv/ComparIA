@@ -16,6 +16,28 @@ describe('JSON-schema form fields', () => {
     expect(field.help).toBe(m['generated.prompt_check_upsert.model.help']())
   })
 
+  it('gives a text kept per language one field per language, with its length limit', () => {
+    const [field] = getFormFields(
+      {
+        type: 'object',
+        properties: {
+          label: {
+            type: 'object',
+            title: 'Label',
+            additionalProperties: { type: 'string', maxLength: 40 },
+            propertyNames: { enum: ['en', 'fr'] }
+          }
+        }
+      },
+      'tool_upsert'
+    )
+
+    expect(field.component).toBe('translate')
+    expect(field).toMatchObject({
+      subProps: { component: 'input', maxlength: 40, label: field.label, required: false }
+    })
+  })
+
   it('falls back to the schema when no message exists', () => {
     const [field] = getFormFields(
       { type: 'object', properties: { nope: { type: 'string', title: 'Schema title' } } },

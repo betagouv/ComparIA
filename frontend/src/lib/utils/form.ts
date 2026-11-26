@@ -6,7 +6,8 @@ import type {
   FormInputProps,
   FormRadioGroupProps,
   FormSelectProps,
-  FormToggleProps
+  FormToggleProps,
+  FormTranslateProps
 } from '$components/form'
 import { getKeys, tryI18n } from '$lib/utils/commons'
 import type { JSONSchema7 as BaseJSONSchema } from 'json-schema'
@@ -32,7 +33,7 @@ export type AnyFormItemComponent =
   | 'fieldset'
   | 'fieldset-item'
   | 'fieldset-list'
-  | 'translate' // FIXME To fully integrate
+  | 'translate'
   | 'upload' // FIXME To fully integrate
 
 export type BaseFormFieldProps<C extends AnyFormItemComponent> = {
@@ -57,12 +58,17 @@ export type AnyFormItemProps =
   | FormRadioGroupProps
   | FormFieldsetItemProps
   | FormFieldsetListProps
+  | FormTranslateProps
 
 export type FormItemSnippetProps = {
   'aria-describedby': string
   'aria-invalid'?: 'true'
   id: string
   required?: boolean
+}
+
+function isSchema(value: unknown): value is JSONSchema {
+  return !!value && typeof value === 'object'
 }
 
 function parseSchema(
@@ -82,7 +88,20 @@ function parseSchema(
     hidden
   }
 
-  if (type === 'object') {
+  if (type === 'object' && !properties && isSchema(schema.additionalProperties)) {
+    // One value per language: a map keyed by locale.
+    return {
+      ...baseProps,
+      component: 'translate',
+      subProps: {
+        ...(parseSchema({ ...schema.additionalProperties, $defs }, id) as AnyFormItemProps),
+        label,
+        help,
+        // Each language is optional on its own; the server says what is missing.
+        required: false
+      }
+    }
+  } else if (type === 'object') {
     if (!properties) throw new Error('no properties')
 
     const subProps = getKeys(properties).map((k) => {
