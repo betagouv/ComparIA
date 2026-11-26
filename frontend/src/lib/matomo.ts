@@ -169,7 +169,10 @@ export function followMeasurementConsent(consent: {
       if (config) {
         startMatomo(config)
       } else {
-        // Only reached after a withdrawal earlier in this visit.
+        // Only reached after a withdrawal earlier in this visit. Matomo kept
+        // every request made since and would send them on setConsentGiven;
+        // trackPageView drops them and counts this page instead.
+        window._paq?.push(['trackPageView'])
         window._paq?.push(['setConsentGiven'])
       }
     }

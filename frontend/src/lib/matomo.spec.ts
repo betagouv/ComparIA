@@ -79,7 +79,7 @@ describe('audience measurement in the browser', () => {
     consent.answer({ measurement: true }, { measurement: false })
 
     expect(matomoScripts()).toHaveLength(1)
-    expect(commands().at(-1)).toBe('setConsentGiven')
+    expect(commands().slice(-2)).toEqual(['trackPageView', 'setConsentGiven'])
   })
 
   it('does nothing on a refusal before any yes', () => {
@@ -120,7 +120,9 @@ describe('audience measurement in the browser', () => {
     expect(commands()).toContain('requireConsent')
   })
 
-  it('resumes tracking when the visitor says yes again in the same visit', () => {
+  // Matomo keeps what it would have sent while consent was withdrawn and sends
+  // it on setConsentGiven; only trackPageView empties that queue.
+  it('resumes tracking without what was collected during the refusal', () => {
     serverLoadedMatomo()
     const consent = fakeConsent()
     followMeasurementConsent(consent)
@@ -128,7 +130,7 @@ describe('audience measurement in the browser', () => {
     consent.answer({ measurement: false }, { measurement: true })
     consent.answer({ measurement: true }, { measurement: false })
 
-    expect(commands().at(-1)).toBe('setConsentGiven')
+    expect(commands().slice(-2)).toEqual(['trackPageView', 'setConsentGiven'])
     expect(matomoScripts()).toEqual([])
   })
 })
