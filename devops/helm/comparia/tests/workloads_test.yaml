@@ -245,3 +245,45 @@ tests:
       - equal:
           path: spec.selector["app.kubernetes.io/component"]
           value: backend
+
+  - it: sets no topology spread constraint by default
+    asserts:
+      - notExists:
+          path: spec.template.spec.topologySpreadConstraints
+        template: backend-deployment.yaml
+      - notExists:
+          path: spec.template.spec.topologySpreadConstraints
+        template: frontend-deployment.yaml
+
+  - it: spreads the backend pods with the constraints set, on its own selector
+    template: backend-deployment.yaml
+    set:
+      topologySpreadConstraints.backend:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints
+          value:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: comparia
+                  app.kubernetes.io/instance: RELEASE-NAME
+                  app.kubernetes.io/component: backend
+
+  - it: spreads the frontend pods with the constraints set, on its own selector
+    template: frontend-deployment.yaml
+    set:
+      topologySpreadConstraints.frontend:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+    asserts:
+      - equal:
+          path: spec.template.spec.topologySpreadConstraints[0].labelSelector.matchLabels["app.kubernetes.io/component"]
+          value: frontend
+

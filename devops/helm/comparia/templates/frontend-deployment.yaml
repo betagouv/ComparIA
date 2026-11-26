@@ -38,6 +38,16 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints.frontend }}
+      topologySpreadConstraints:
+        {{- range . }}
+        - {{- toYaml . | nindent 10 }}
+          labelSelector:
+            matchLabels:
+              {{- include "comparia.selectorLabels" $ | nindent 14 }}
+              app.kubernetes.io/component: frontend
+        {{- end }}
+      {{- end }}
       containers:
         - name: frontend
           image: {{ include "comparia.frontendImage" . | quote }}

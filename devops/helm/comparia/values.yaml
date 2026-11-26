@@ -23,6 +23,13 @@ replicaCount:
   backend: 1
   frontend: 1
 
+## -- How the pods of a component are spread over the cluster, for example one per node when
+## possible: `[{maxSkew: 1, topologyKey: kubernetes.io/hostname, whenUnsatisfiable: ScheduleAnyway}]`.
+## The chart adds the labelSelector of the component, do not set one.
+topologySpreadConstraints:
+  backend: []
+  frontend: []
+
 service:
   backend:
     port: 80

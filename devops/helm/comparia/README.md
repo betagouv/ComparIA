@@ -53,6 +53,8 @@ at least one LLM provider key, unless `secrets.existingSecret` is set (see
 | ------------------------- | ------- | ------------------------------------- |
 | `replicaCount.backend`    | `1`     | Backend replica count                 |
 | `replicaCount.frontend`   | `1`     | Frontend replica count                |
+| `topologySpreadConstraints.backend` | `[]` | Spread of the backend pods over the cluster; the chart adds the `labelSelector` |
+| `topologySpreadConstraints.frontend` | `[]` | Same for the frontend pods |
 | `service.backend.port`    | `80`    | Backend Service port                  |
 | `service.frontend.port`   | `80`    | Frontend Service port                 |
 | `resources.backend`       | see `values.yaml` | Backend requests/limits    |
