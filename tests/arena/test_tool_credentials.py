@@ -12,16 +12,34 @@ from pydantic import ValidationError
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from backend.tools import mcp_tools, services, web_search
+from backend.tools import mcp_tools, router, services, web_search
 from backend.tools.models import read_secret
+from backend.utils.locale import LocalesSettings
 from tests.arena.test_mcp_tools import SERVER_SCHEMAS, FakeRedis, _listing, _with_redis
 from utils.database.models import Tool, ToolUpsert
 from utils.secrets import encrypt_secret
 
+MODULES = [services, router]
+
+
+@pytest.fixture(autouse=True)
+def _locales(monkeypatch):
+    """Stand in for the app settings: French and English, French first."""
+
+    async def locales() -> LocalesSettings:
+        return LocalesSettings(default="fr", enabled=["fr", "en"])
+
+    for module in MODULES:
+        monkeypatch.setattr(module, "get_locales_settings", locales)
+
 
 def _web_search_row(**fields) -> Tool:
     return Tool(
-        key="web_search", label="Recherche web", kind="builtin", enabled=True, **fields
+        key="web_search",
+        label={"fr": "Recherche web"},
+        kind="builtin",
+        enabled=True,
+        **fields,
     )
 
 
@@ -107,7 +125,7 @@ def test_an_allowlist_offers_only_the_functions_it_names():
 async def _test_an_allowlist_offers_only_the_functions_it_names():
     row = Tool(
         key="datagouv",
-        label="Données publiques",
+        label={"fr": "Données publiques"},
         kind="mcp",
         url="https://mcp.data.gouv.fr/mcp",
         allowed_functions=["get_dataset"],
@@ -124,7 +142,9 @@ def test_no_allowlist_offers_every_function():
 
 
 async def _test_no_allowlist_offers_every_function():
-    row = Tool(key="datagouv", label="Données", kind="mcp", url="https://x.fr/mcp")
+    row = Tool(
+        key="datagouv", label={"fr": "Données"}, kind="mcp", url="https://x.fr/mcp"
+    )
     with _with_redis(FakeRedis()), _listing(SERVER_SCHEMAS):
         specs = await mcp_tools.resolve_mcp_tools(row)
 
@@ -134,7 +154,7 @@ async def _test_no_allowlist_offers_every_function():
 def test_the_server_is_sent_the_decrypted_credential():
     row = Tool(
         key="private",
-        label="Privé",
+        label={"fr": "Privé"},
         kind="mcp",
         url="https://x.fr/mcp",
         secret_encrypted=encrypt_secret("X-API-Key: s3cret"),
@@ -144,9 +164,11 @@ def test_the_server_is_sent_the_decrypted_credential():
 
 
 def test_an_mcp_row_without_an_address_cannot_run():
-    assert services.can_run(Tool(key="m", label="M", kind="mcp")) is False
+    assert services.can_run(Tool(key="m", label={"fr": "M"}, kind="mcp")) is False
     assert (
-        services.can_run(Tool(key="m", label="M", kind="mcp", url="https://x.fr"))
+        services.can_run(
+            Tool(key="m", label={"fr": "M"}, kind="mcp", url="https://x.fr")
+        )
         is True
     )
 
@@ -154,7 +176,7 @@ def test_an_mcp_row_without_an_address_cannot_run():
 def test_domains_are_normalised_from_what_an_admin_pastes():
     body = ToolUpsert(
         key="web_search",
-        label="Recherche web",
+        label={"fr": "Recherche web"},
         allowed_domains=[
             "https://www.Service-Public.fr/particuliers",
             " ",
@@ -169,7 +191,7 @@ def test_allowed_and_blocked_domains_cannot_both_be_set():
     with pytest.raises(ValidationError, match="not both"):
         ToolUpsert(
             key="web_search",
-            label="Recherche web",
+            label={"fr": "Recherche web"},
             allowed_domains=["a.fr"],
             blocked_domains=["b.fr"],
         )
@@ -178,16 +200,21 @@ def test_allowed_and_blocked_domains_cannot_both_be_set():
 def test_a_domain_that_is_not_one_is_refused():
     with pytest.raises(ValidationError, match="not a domain"):
         ToolUpsert(
-            key="web_search", label="Recherche web", blocked_domains=["localhost"]
+            key="web_search",
+            label={"fr": "Recherche web"},
+            blocked_domains=["localhost"],
         )
 
 
 def test_blank_function_names_are_dropped():
-    body = ToolUpsert(key="m", label="M", kind="mcp", allowed_functions=[" ", "a "])
+    body = ToolUpsert(
+        key="m", label={"fr": "M"}, kind="mcp", allowed_functions=[" ", "a "]
+    )
 
     assert body.allowed_functions == ["a"]
     assert (
-        ToolUpsert(key="m", label="M", allowed_functions=[""]).allowed_functions is None
+        ToolUpsert(key="m", label={"fr": "M"}, allowed_functions=[""]).allowed_functions
+        is None
     )
 
 
@@ -203,16 +230,16 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
         _web_search_row(),
         Tool(
             key="datagouv",
-            label="Données",
-            description="Jeux de données publics.",
+            label={"fr": "Données", "en": "Data"},
+            description={"fr": "Jeux de données publics."},
             kind="mcp",
             url="https://x.fr/mcp",
             enabled=True,
         ),
         Tool(
             key="half_done",
-            label="Pas fini",
-            description="Brouillon de l'admin.",
+            label={"fr": "Pas fini"},
+            description={"fr": "Brouillon de l'admin."},
             kind="mcp",
         ),
     ]
@@ -227,7 +254,8 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
         patch.object(router, "can_run", can_run),
         patch.object(router, "get_all_tools", get_all_tools),
     ):
-        offered = await router.get_tools()
+        offered = await router.get_tools("fr")
+        in_english = await router.get_tools("en")
 
     assert offered[0].key == "web_search" and offered[0].enabled == False
     assert offered[1].key == "datagouv" and offered[1].enabled == True
@@ -235,6 +263,9 @@ async def _test_the_picker_leaves_out_tools_that_cannot_run():
     # Kept to name past comparisons, without what only the picker shows.
     assert offered[1].description == "Jeux de données publics."
     assert offered[2].label == "Pas fini" and offered[2].description is None
+    # Each text in the visitor's language, else in the default one.
+    assert in_english[1].label == "Data"
+    assert in_english[1].description == "Jeux de données publics."
 
 
 def test_a_comparison_keeps_only_tools_on_offer():
@@ -244,8 +275,10 @@ def test_a_comparison_keeps_only_tools_on_offer():
 async def _test_a_comparison_keeps_only_tools_on_offer():
     """The keys come from the request and are published with the dataset."""
     rows = [
-        Tool(key="datagouv", label="Données", kind="mcp", url="https://x.fr/mcp"),
-        Tool(key="half_done", label="Pas fini", kind="mcp"),
+        Tool(
+            key="datagouv", label={"fr": "Données"}, kind="mcp", url="https://x.fr/mcp"
+        ),
+        Tool(key="half_done", label={"fr": "Pas fini"}, kind="mcp"),
     ]
 
     async def get_enabled_tools() -> list[Tool]:

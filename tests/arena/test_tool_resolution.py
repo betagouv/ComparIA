@@ -5,16 +5,32 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.tools import services, web_search
+from backend.utils.locale import LocalesSettings
 from utils.database.models import Tool
+
+MODULES = [services]
+
+
+@pytest.fixture(autouse=True)
+def _locales(monkeypatch):
+    """Stand in for the app settings: French and English, French first."""
+
+    async def locales() -> LocalesSettings:
+        return LocalesSettings(default="fr", enabled=["fr", "en"])
+
+    for module in MODULES:
+        monkeypatch.setattr(module, "get_locales_settings", locales)
 
 
 def _rows(*specs: tuple[str, bool]) -> list[Tool]:
     """Tool rows as the database would hand them over."""
     return [
-        Tool(key=key, label=key, kind="builtin", enabled=enabled)
+        Tool(key=key, label={"fr": key}, kind="builtin", enabled=enabled)
         for key, enabled in specs
     ]
 
@@ -110,13 +126,15 @@ def test_public_shape_never_carries_server_credentials():
 
     row = Tool(
         key="datagouv",
-        label="Données publiques",
+        label={"fr": "Données publiques"},
         kind="mcp",
         url="https://mcp.data.gouv.fr/mcp",
         secret_encrypted="encrypted-secret-token",
         enabled=True,
     )
-    served = ToolPublic.model_validate(row, from_attributes=True).model_dump()
+    served = ToolPublic.model_validate(
+        row.model_dump() | {"label": "Données publiques"}
+    ).model_dump()
 
     assert set(served) == {"key", "label", "description", "enabled", "logo_url"}
     assert "secret-token" not in str(served)

@@ -3,7 +3,8 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, Response
 
-from backend.tools.services import can_run, get_all_tools
+from backend.tools.services import can_run, get_all_tools, tool_text
+from backend.utils.locale import LocaleQuery, get_locales_settings
 from backend.utils.logos import logo_response
 from utils.database.models import Tool, ToolPublic
 from utils.database.session import get_session
@@ -14,19 +15,23 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 
 
 @router.get("")
-async def get_tools() -> list[ToolPublic]:
+async def get_tools(locale: LocaleQuery) -> list[ToolPublic]:
     """
     Every tool, on offer or not: a past comparison still names the tools it
     used once they are switched off. Only tools on offer reach the picker, so
     the others are served without the description the picker shows.
     """
+    locales = await get_locales_settings()
     served = []
     for tool in await get_all_tools():
         on_offer = tool.enabled and can_run(tool)
         served.append(
             ToolPublic(
-                **tool.model_dump(exclude={"enabled", "description"}),
-                description=tool.description if on_offer else None,
+                **tool.model_dump(exclude={"enabled", "label", "description"}),
+                label=tool_text(tool.label, locale, locales) or tool.key,
+                description=(
+                    tool_text(tool.description, locale, locales) if on_offer else None
+                ),
                 enabled=on_offer,
                 logo_url=tool.logo_url,
             )

@@ -17,14 +17,34 @@ from backend.config import TOOL_REJECTION_TTL
 from backend.tools.mcp_tools import resolve_mcp_tools
 from backend.tools.models import ToolSpec
 from backend.tools.web_search import web_search_tool_spec
+from backend.utils.locale import (
+    DEFAULT_LOCALES_SETTINGS,
+    LocalesSettings,
+    get_locales_settings,
+    pick_translation,
+)
 from utils.database.models import Tool
 from utils.database.session import get_session
+from utils.i18n import SupportedLocale, TranslatableRaw
 from utils.storage.redis import REDIS_TOOLS_REJECTED_KEY, get_redis_client, hash_content
 
 if TYPE_CHECKING:
     from utils.database.models import Tool
 
+from utils.i18n import SupportedLocale, TranslatableRaw
+
 logger = logging.getLogger("languia")
+
+
+def tool_text(
+    texts: TranslatableRaw[str] | None,
+    locale: SupportedLocale | None = None,
+    locales: LocalesSettings = DEFAULT_LOCALES_SETTINGS,
+) -> str | None:
+    """A tool's name or description in the closest language it was written in."""
+    if not texts:
+        return None
+    return pick_translation(texts, locale, locales)[1]
 
 
 def _rejection_key(model: str) -> str:
@@ -157,18 +177,24 @@ async def resolve_tools(keys: Iterable[str]) -> list[ToolSpec]:
         return []
     selected = [tool for tool in await get_enabled_tools() if tool.key in wanted]
 
-    labels = {tool.key: tool.label for tool in selected}
-    specs = [
-        replace(spec, label=labels.get(spec.name, spec.label))
-        for spec in resolve_builtin_tools(
-            [tool for tool in selected if tool.kind == "builtin"]
-        )
-    ]
+    # The trace keeps the name in the instance's default language: it is
+    # published with the dataset, and the page shows the visitor's own.
+    locales = await get_locales_settings()
+    labels = {tool.key: tool_text(tool.label, None, locales) or "" for tool in selected}
+    specs = resolve_builtin_tools([tool for tool in selected if tool.kind == "builtin"])
     # Servers are listed side by side: waiting on them in turn would multiply the
     # discovery timeout by the number of rows the visitor picked.
     discovered = await asyncio.gather(
-        *(resolve_mcp_tools(tool) for tool in selected if tool.kind == "mcp")
+        *(
+            resolve_mcp_tools(tool, labels[tool.key])
+            for tool in selected
+            if tool.kind == "mcp"
+        )
     )
     for server_specs in discovered:
         specs.extend(server_specs)
+    specs = [
+        replace(spec, label=labels.get(spec.tool or spec.name) or spec.label)
+        for spec in specs
+    ]
     return _first_of_each_name(specs)

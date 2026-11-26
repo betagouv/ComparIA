@@ -8,6 +8,7 @@ from typing import Any
 from unittest.mock import patch
 
 import litellm
+import pytest
 from linkup import LinkupSearchTextResult
 from pydantic import BaseModel
 
@@ -15,12 +16,26 @@ from backend.arena import litellm as integration
 from backend.tools import services, web_search
 from backend.tools.models import ToolResult, ToolSpec
 from backend.tools.services import resolve_builtin_tools
+from backend.utils.locale import LocalesSettings
 from utils.database.models import (
     AgentTraceToolCall,
     AgentTraceToolResult,
     LLMMessageCreate,
     Tool,
 )
+
+MODULES = [services]
+
+
+@pytest.fixture(autouse=True)
+def _locales(monkeypatch):
+    """Stand in for the app settings: French and English, French first."""
+
+    async def locales() -> LocalesSettings:
+        return LocalesSettings(default="fr", enabled=["fr", "en"])
+
+    for module in MODULES:
+        monkeypatch.setattr(module, "get_locales_settings", locales)
 
 
 class FakeRedis:
@@ -39,7 +54,14 @@ class FakeRedis:
 def _web_search_tools():
     """Resolve web search the way the arena does when the user enables it."""
     return resolve_builtin_tools(
-        [Tool(key="web_search", label="Recherche web", kind="builtin", enabled=True)]
+        [
+            Tool(
+                key="web_search",
+                label={"fr": "Recherche web"},
+                kind="builtin",
+                enabled=True,
+            )
+        ]
     )
 
 
