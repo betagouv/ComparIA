@@ -44,7 +44,8 @@
 
   const cookieConsent = provideCookieConsentContext({
     enabled: () => data.cookieBannerEnabled,
-    measured: () => data.measurement !== null
+    measured: () => data.measurement !== null,
+    hasText: () => data.cookieBanner !== null
   })
 
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)

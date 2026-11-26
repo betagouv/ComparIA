@@ -22,12 +22,15 @@ function writeConsentCookie(value: string) {
 export function createCookieConsent({
   enabled,
   measured,
+  hasText,
   now = () => undefined
 }: {
   // null when the server could not read the switch.
   enabled: () => boolean | null
   // Whether the page was rendered with audience measurement in use.
   measured: () => boolean
+  // False when the banner text failed to load, so the banner cannot show.
+  hasText: () => boolean
   now?: () => Date | undefined
 }) {
   // The answer is known as soon as the browser creates the store, so nothing
@@ -47,8 +50,9 @@ export function createCookieConsent({
   const decision = $derived(
     decideCookieConsent({ switchOn: enabled(), measured: measured() }, value, now())
   )
-  // With nothing measured there is no question, so no banner to reopen either.
-  const asking = $derived(enabled() === true && measured())
+  // With nothing measured there is no question, and without its text no
+  // banner, so nothing to reopen either.
+  const asking = $derived(enabled() === true && measured() && hasText())
 
   function hide() {
     if (!reopened) return

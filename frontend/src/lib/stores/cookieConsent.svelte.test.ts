@@ -15,10 +15,11 @@ function readCookie() {
     ?.split('=')[1]
 }
 
-function create(enabled: boolean | null = true, measured = true) {
+function create(enabled: boolean | null = true, measured = true, hasText = true) {
   const consent = createCookieConsent({
     enabled: () => enabled,
     measured: () => measured,
+    hasText: () => hasText,
     now: () => now
   })
   consent.load()
@@ -34,6 +35,7 @@ describe('cookie consent store', () => {
     const consent = createCookieConsent({
       enabled: () => true,
       measured: () => true,
+      hasText: () => true,
       now: () => now
     })
     expect(consent.bannerOpen).toBe(false)
@@ -46,6 +48,7 @@ describe('cookie consent store', () => {
     const consent = createCookieConsent({
       enabled: () => true,
       measured: () => true,
+      hasText: () => true,
       now: () => now
     })
     expect(consent.bannerOpen).toBe(false)
@@ -69,6 +72,15 @@ describe('cookie consent store', () => {
     expect(consent.asking).toBe(false)
     expect(consent.bannerOpen).toBe(false)
     expect(consent.decision.loadMeasurement).toBe(false)
+  })
+
+  it('offers no reopening when the banner text could not be loaded', () => {
+    setCookie(serializeCookieConsent({ measurement: true }, now))
+    const consent = create(true, true, false)
+    expect(consent.asking).toBe(false)
+    consent.reopen()
+    expect(consent.bannerOpen).toBe(false)
+    expect(consent.decision.loadMeasurement).toBe(true)
   })
 
   it('opens the banner when nobody has answered', () => {
