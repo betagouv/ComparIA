@@ -1,14 +1,14 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
-  import { Button, Textarea, Toggle } from '$components/dsfr'
+  import { Button, Input, Textarea, Toggle } from '$components/dsfr'
   import { FormRadioGroup } from '$components/form'
   import Form from '$components/form/Form.svelte'
   import FormTranslate from '$components/form/FormTranslate.svelte'
   import { PageLayout } from '$components/layout'
   import UserPreview from '$components/UserPreview.svelte'
-  import { api } from '$lib/fastapi-client'
-  import type { AppSettingsPublic, CookieBanner } from '$lib/generated/admin'
+  import { api, type ApiError } from '$lib/fastapi-client'
+  import type { AppSettingsPatch, AppSettingsPublic, CookieBanner } from '$lib/generated/admin'
   import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
@@ -48,31 +48,76 @@
     }
   }
 
-  // The radio group holds strings; null is the server setting, false is Off.
-  type MeasurementChoice = 'server' | 'off'
-  const toSetting = { server: null, off: false } as const
+  // The radio group holds strings; null is the server setting, true is the
+  // admin's own Matomo, false is Off.
+  type MeasurementChoice = 'server' | 'on' | 'off'
+  const toChoice = (setting: boolean | null): MeasurementChoice =>
+    setting === null ? 'server' : setting ? 'on' : 'off'
   // Undefined until saved here: a saved null must win over the loaded value.
   let savedMeasurement = $state<boolean | null>()
   const measurementSetting = $derived(
     savedMeasurement === undefined ? data.settings.matomo_enabled : savedMeasurement
   )
-  let measurementChoice = $derived<MeasurementChoice>(
-    measurementSetting === false ? 'off' : 'server'
-  )
+  let measurementChoice = $derived<MeasurementChoice>(toChoice(measurementSetting))
+  // Off keeps the stored address and id, so On again shows them. Seeded once,
+  // so that saving the banner text leaves unsaved typing alone.
+  // svelte-ignore state_referenced_locally
+  let matomoUrl = $state(data.settings.matomo_url ?? '')
+  // svelte-ignore state_referenced_locally
+  let matomoSiteId = $state(data.settings.matomo_site_id ?? '')
+  let matomoErrors = $state<{ matomo_url?: string; matomo_site_id?: string }>({})
 
-  async function setMeasurement(choice: MeasurementChoice) {
-    measurementChoice = choice
+  const fieldErrors: Record<string, () => string> = {
+    matomo_url_invalid: m['admin.legal.cookies.matomoUrlInvalid'],
+    matomo_site_id_invalid: m['admin.legal.cookies.matomoSiteIdInvalid']
+  }
+
+  async function saveMeasurement(body: AppSettingsPatch) {
+    matomoErrors = {}
     try {
       const settings = await api.request<AppSettingsPublic>('/admin/settings', {
         method: 'PATCH',
-        body: JSON.stringify({ matomo_enabled: toSetting[choice] })
+        body: JSON.stringify(body)
       })
       savedMeasurement = settings.matomo_enabled
+      // As stored: a trailing slash is dropped.
+      matomoUrl = settings.matomo_url ?? ''
+      matomoSiteId = settings.matomo_site_id ?? ''
       useToast(m['admin.legal.cookies.measurementSaved'](), 4000, 'success')
     } catch (error) {
-      measurementChoice = measurementSetting === false ? 'off' : 'server'
-      useToast((error as Error).message, 6000, 'error')
+      const { detail } = error as ApiError
+      if (detail === 'matomo_needs_url_and_site_id') {
+        const missing = m['admin.legal.cookies.matomoMissing']()
+        matomoErrors = {
+          matomo_url: matomoUrl.trim() ? undefined : missing,
+          matomo_site_id: matomoSiteId.trim() ? undefined : missing
+        }
+      } else if (Array.isArray(detail)) {
+        for (const { loc, type } of detail as { loc: string[]; type: string }[]) {
+          const field = loc.at(-1) as keyof typeof matomoErrors
+          if (fieldErrors[type]) matomoErrors[field] = fieldErrors[type]()
+        }
+      }
+      if (!Object.values(matomoErrors).some(Boolean)) {
+        useToast((error as Error).message, 6000, 'error')
+      }
+      if (body.matomo_enabled !== true) measurementChoice = toChoice(measurementSetting)
     }
+  }
+
+  // On waits for the address and site id; the other two save at once.
+  function setMeasurement(choice: MeasurementChoice) {
+    measurementChoice = choice
+    if (choice !== 'on') saveMeasurement({ matomo_enabled: choice === 'off' ? false : null })
+  }
+
+  function switchOn(event: SubmitEvent) {
+    event.preventDefault()
+    saveMeasurement({
+      matomo_enabled: true,
+      matomo_url: matomoUrl.trim(),
+      matomo_site_id: matomoSiteId.trim()
+    })
   }
 
   const form = useForm({
@@ -128,12 +173,36 @@
     label={m['admin.legal.cookies.measurementLabel']()}
     options={[
       { value: 'server', label: m['admin.legal.cookies.measurementServer']() },
+      { value: 'on', label: m['admin.legal.cookies.measurementOn']() },
       { value: 'off', label: m['admin.legal.cookies.measurementOff']() }
     ]}
     bind:value={
       () => measurementChoice, (value) => value && setMeasurement(value as MeasurementChoice)
     }
   />
+
+  {#if measurementChoice === 'on'}
+    <form onsubmit={switchOn} class="mb-8! max-w-[720px]">
+      <Input
+        id="matomo_url"
+        type="url"
+        label={m['admin.legal.cookies.matomoUrlLabel']()}
+        help={m['admin.legal.cookies.matomoUrlHint']()}
+        placeholder="https://stats.example.org"
+        bind:value={matomoUrl}
+        error={matomoErrors.matomo_url}
+      />
+      <Input
+        id="matomo_site_id"
+        inputmode="numeric"
+        label={m['admin.legal.cookies.matomoSiteIdLabel']()}
+        help={m['admin.legal.cookies.matomoSiteIdHint']()}
+        bind:value={matomoSiteId}
+        error={matomoErrors.matomo_site_id}
+      />
+      <Button type="submit" text={m['admin.legal.cookies.measurementSwitchOn']()} />
+    </form>
+  {/if}
 
   <Toggle
     id="cookie_banner_enabled"

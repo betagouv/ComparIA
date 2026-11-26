@@ -37,6 +37,8 @@ const base: AppSettingsPublic = {
   dataset_voter_ids: false,
   cookie_banner_enabled: false,
   matomo_enabled: null,
+  matomo_url: null,
+  matomo_site_id: null,
   has_custom_logo: false,
   enabled_locales: ['fr'],
   default_locale: 'fr',

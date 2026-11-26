@@ -18,10 +18,22 @@ const frBanner: CookieBanner = {
   description: 'Nous utilisons des cookies seulement si vous l’acceptez.'
 }
 
-function renderPage(enabled = false, matomoEnabled: boolean | null = null) {
+const ownMatomo = { matomo_url: 'https://stats.example.org/matomo', matomo_site_id: '12' }
+
+function renderPage(
+  enabled = false,
+  matomoEnabled: boolean | null = null,
+  stored: { matomo_url?: string; matomo_site_id?: string } = {}
+) {
   return render(Page, {
     data: {
-      settings: { cookie_banner_enabled: enabled, matomo_enabled: matomoEnabled },
+      settings: {
+        cookie_banner_enabled: enabled,
+        matomo_enabled: matomoEnabled,
+        matomo_url: null,
+        matomo_site_id: null,
+        ...stored
+      },
       banners: { fr: structuredClone(frBanner) }
     } as unknown as PageData,
     params: {}
@@ -54,13 +66,96 @@ describe('cookie banner administration', () => {
 
   it.each([
     ['the server setting', null, 'Réglage du serveur'],
+    ['on', true, 'Activée, avec mon Matomo'],
     ['off', false, 'Désactivée']
   ])('shows audience measurement on %s', (_case, matomoEnabled, checked) => {
-    const { getByRole } = renderPage(false, matomoEnabled)
+    const { getByRole } = renderPage(false, matomoEnabled, ownMatomo)
     const group = getByRole('group', { name: /Mesure d’audience/ })
 
-    expect(within(group).getAllByRole('radio')).toHaveLength(2)
+    expect(within(group).getAllByRole('radio')).toHaveLength(3)
     expect(within(group).getByRole('radio', { name: checked })).toBeChecked()
+  })
+
+  it.each([
+    ['the server setting', null],
+    ['off', false]
+  ])('hides the Matomo address and site id on %s', (_case, matomoEnabled) => {
+    const { queryByLabelText } = renderPage(false, matomoEnabled, ownMatomo)
+
+    expect(queryByLabelText(/Adresse de Matomo/)).not.toBeInTheDocument()
+    expect(queryByLabelText(/Identifiant du site/)).not.toBeInTheDocument()
+  })
+
+  it('shows the stored address and site id when on', () => {
+    const { getByLabelText } = renderPage(false, true, ownMatomo)
+
+    expect(getByLabelText(/Adresse de Matomo/)).toHaveValue('https://stats.example.org/matomo')
+    expect(getByLabelText(/Identifiant du site/)).toHaveValue('12')
+  })
+
+  it('switches on with the address and site id typed in', async () => {
+    const { getByRole, getByLabelText } = renderPage()
+
+    await fireEvent.click(getByRole('radio', { name: 'Activée, avec mon Matomo' }))
+    expect(mocks.request).not.toHaveBeenCalled()
+    await fireEvent.input(getByLabelText(/Adresse de Matomo/), {
+      target: { value: 'https://stats.example.org/matomo/' }
+    })
+    await fireEvent.input(getByLabelText(/Identifiant du site/), { target: { value: '12' } })
+    mocks.request.mockResolvedValueOnce({ matomo_enabled: true, ...ownMatomo })
+    await fireEvent.click(getByRole('button', { name: 'Activer la mesure d’audience' }))
+
+    await waitFor(() => expect(mocks.toast).toHaveBeenCalled())
+    expect(bodyOf('PATCH')).toEqual({
+      matomo_enabled: true,
+      matomo_url: 'https://stats.example.org/matomo/',
+      matomo_site_id: '12'
+    })
+    expect(getByLabelText(/Adresse de Matomo/)).toHaveValue('https://stats.example.org/matomo')
+    expect(getByRole('radio', { name: 'Activée, avec mon Matomo' })).toBeChecked()
+  })
+
+  it('keeps the stored address and site id when switched off', async () => {
+    const { getByRole } = renderPage(false, true, ownMatomo)
+
+    await fireEvent.click(getByRole('radio', { name: 'Désactivée' }))
+
+    await waitFor(() => expect(mocks.toast).toHaveBeenCalled())
+    expect(bodyOf('PATCH')).toEqual({ matomo_enabled: false })
+  })
+
+  it.each([
+    [
+      'a bad address',
+      [{ loc: ['body', 'matomo_url'], type: 'matomo_url_invalid', msg: '' }],
+      /Adresse de Matomo/,
+      'L’adresse doit commencer par https:// et ne contenir ni ?, ni #, ni identifiant. http:// ne marche que pour localhost.'
+    ],
+    [
+      'a bad site id',
+      [{ loc: ['body', 'matomo_site_id'], type: 'matomo_site_id_invalid', msg: '' }],
+      /Identifiant du site/,
+      'L’identifiant du site ne contient que des chiffres.'
+    ],
+    [
+      'a missing site id',
+      'matomo_needs_url_and_site_id',
+      /Identifiant du site/,
+      'Renseignez l’adresse et l’identifiant du site pour activer la mesure d’audience.'
+    ]
+  ])('shows why the backend refused %s', async (_case, detail, field, message) => {
+    mocks.request.mockRejectedValue(
+      Object.assign(new Error('Error in form'), { status: 422, detail })
+    )
+    const { getByRole, getByLabelText } = renderPage()
+
+    await fireEvent.click(getByRole('radio', { name: 'Activée, avec mon Matomo' }))
+    await fireEvent.input(getByLabelText(/Adresse de Matomo/), {
+      target: { value: 'https://stats.example.org' }
+    })
+    await fireEvent.click(getByRole('button', { name: 'Activer la mesure d’audience' }))
+
+    await waitFor(() => expect(getByLabelText(field)).toHaveAccessibleDescription(message))
   })
 
   it.each([
