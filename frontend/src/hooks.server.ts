@@ -127,7 +127,11 @@ function getInstanceConfig(): Promise<InstanceConfig> {
             enabled_locales: config.enabled_locales ?? [],
             default_locale: config.default_locale,
             cookie_banner_enabled: config.cookie_banner_enabled ?? null,
-            measurement: { matomo_enabled: config.matomo_enabled ?? null }
+            measurement: {
+              matomo_enabled: config.matomo_enabled ?? null,
+              matomo_url: config.matomo_url ?? null,
+              matomo_site_id: config.matomo_site_id ?? null
+            }
           }
           return lastInstanceConfig
         })

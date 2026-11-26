@@ -303,8 +303,8 @@ describe('audience measurement', () => {
 
     expect(html).toContain('<script nonce="n0nce">\n      var _paq')
     expect(html).toContain("_paq.push(['trackPageView'])")
-    expect(html).toContain("var u = 'https://stats.test/'")
-    expect(html).toContain("_paq.push(['setSiteId', '42'])")
+    expect(html).toContain('var u = "https://stats.test" + \'/\'')
+    expect(html).toContain('_paq.push([\'setSiteId\', "42"])')
     expect(html).toContain('src="https://stats.test/matomo.php?idsite=42&amp;rec=1"')
     expect(html).toContain("location.origin + '/invite/<redacted>'")
   })
@@ -402,13 +402,18 @@ describe('measurement in use', () => {
     switchOn: boolean,
     consent?: string,
     matomoEnabled: boolean | null = null,
-    backendDown = false
+    backendDown = false,
+    own: { matomo_url?: string; matomo_site_id?: string } = {}
   ) {
     clock += 60_000
     vi.setSystemTime(clock)
     if (backendDown) request.mockRejectedValue(new Error('backend down'))
     else
-      request.mockResolvedValue({ cookie_banner_enabled: switchOn, matomo_enabled: matomoEnabled })
+      request.mockResolvedValue({
+        cookie_banner_enabled: switchOn,
+        matomo_enabled: matomoEnabled,
+        ...own
+      })
     const event = {
       locals: {} as App.Locals,
       cookies: { get: (name: string) => (name === 'comparia_cookie_consent' ? consent : undefined) }
@@ -443,7 +448,7 @@ describe('measurement in use', () => {
       const { locals, html, policy } = await serve(switchOn, consent)
 
       expect(locals.measurement).toEqual({ url: 'https://stats.test', id: '42' })
-      expect(html).toContain("_paq.push(['setSiteId', '42'])")
+      expect(html).toContain('_paq.push([\'setSiteId\', "42"])')
       expect(policy).toBe(
         "script-src 'self' 'nonce-n0nce' https://stats.test; connect-src 'self' https://stats.test; img-src 'self' data: https://stats.test"
       )
@@ -482,7 +487,7 @@ describe('measurement in use', () => {
       const { locals, html } = await serve(false, undefined, null)
 
       expect(locals.measurement).toEqual({ url: 'https://stats.test', id: '42' })
-      expect(html).toContain("_paq.push(['setSiteId', '42'])")
+      expect(html).toContain('_paq.push([\'setSiteId\', "42"])')
     })
 
     it('neither asks nor loads Matomo when the admin turned it off', async () => {
@@ -495,6 +500,42 @@ describe('measurement in use', () => {
         expect(html).not.toContain('matomo-config')
         expect(policy).toBe(builtPolicy)
       }
+    })
+
+    describe('on, with their own Matomo', () => {
+      const own = { matomo_url: 'https://own-stats.test/matomo', matomo_site_id: '7' }
+
+      it.each([
+        ['set', 'https://stats.test'],
+        ['empty', '']
+      ])('loads it and trusts only its origin with the server env %s', async (_c, envUrl) => {
+        privateEnv.MATOMO_URL = envUrl
+
+        const { locals, html, policy } = await serve(false, undefined, true, false, own)
+
+        expect(locals.measurement).toEqual({ url: 'https://own-stats.test/matomo', id: '7' })
+        expect(html).toContain('var u = "https://own-stats.test/matomo" + \'/\'')
+        expect(html).toContain('_paq.push([\'setSiteId\', "7"])')
+        expect(policy).toBe(
+          "script-src 'self' 'nonce-n0nce' https://own-stats.test; connect-src 'self' https://own-stats.test; img-src 'self' data: https://own-stats.test"
+        )
+      })
+
+      it('asks first when the banner is on, and keeps its address for a yes', async () => {
+        const { locals, html, policy } = await serve(true, undefined, true, false, own)
+
+        expect(locals.cookieConsent).toEqual({ showBanner: true, loadMeasurement: false })
+        expect(html).toContain('data-url="https://own-stats.test/matomo" data-id="7"')
+        expect(html).not.toContain('_paq')
+        expect(policy).toContain("script-src 'self' 'nonce-n0nce' https://own-stats.test")
+      })
+
+      it('does not load it after a refusal', async () => {
+        const { locals, html } = await serve(true, `1.0.${now}`, true, false, own)
+
+        expect(locals.cookieConsent).toEqual({ showBanner: false, loadMeasurement: false })
+        expect(html).not.toContain('_paq')
+      })
     })
 
     it('stays off when the backend goes down after the admin turned it off', async () => {
@@ -511,7 +552,7 @@ describe('measurement in use', () => {
 
     const { html, policy } = await serve(false)
 
-    expect(html).toContain("var u = 'https://other-stats.test/'")
+    expect(html).toContain('var u = "https://other-stats.test" + \'/\'')
     expect(policy).toContain('https://other-stats.test')
     expect(policy).not.toContain('https://stats.test')
   })

@@ -13,6 +13,28 @@ describe('Matomo tracker', () => {
     expect(page).not.toContain('setConsentGiven')
   })
 
+  it('keeps a hostile address and site id inside the tracker script', () => {
+    const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8')
+    const url = `https://stats.test/a'"\\\`</script><script>alert(1)//`
+    const id = `1'</script><img src=x onerror=alert(2)>`
+    const page = fillMatomoPlaceholder(template, { url, id }, true)
+
+    expect(page).not.toContain('<script>alert(1)')
+    expect(page).not.toContain('<img src=x')
+    const script = page.match(/<!-- Matomo -->\s*<script nonce="[^"]*">([\s\S]*?)<\/script>/)![1]
+    const pushed: unknown[][] = []
+    const scripts = [{ parentNode: { insertBefore: () => {} } }]
+    const document = {
+      createElement: () => ({}),
+      getElementsByTagName: () => scripts
+    }
+    const window: { _paq?: unknown } = {}
+    new Function('window', 'document', 'location', script)(window, document, { pathname: '/' })
+    pushed.push(...(window._paq as unknown[][]))
+    expect(pushed).toContainEqual(['setTrackerUrl', `${url}/matomo.php`])
+    expect(pushed).toContainEqual(['setSiteId', id])
+  })
+
   it('leaves the page free of Matomo when nothing is measured', () => {
     const template = readFileSync(new URL('./app.html', import.meta.url), 'utf8')
 
@@ -27,9 +49,10 @@ describe('Matomo tracker', () => {
 
 describe('measurement in use', () => {
   const env = { MATOMO_URL: 'https://stats.test', MATOMO_ID: '1' }
+  const own = { matomo_url: 'https://own-stats.test/matomo', matomo_site_id: '7' }
 
   it('follows the Matomo address and site id the server was given', () => {
-    expect(measurementInUse({ matomo_enabled: null }, env)).toEqual({
+    expect(measurementInUse({ matomo_enabled: null, ...own }, env)).toEqual({
       url: 'https://stats.test',
       id: '1'
     })
@@ -40,14 +63,24 @@ describe('measurement in use', () => {
     ['no site id', { MATOMO_URL: 'https://stats.test', MATOMO_ID: '' }],
     ['neither', {}]
   ])('is none when the server has %s', (_case, env) => {
-    expect(measurementInUse({ matomo_enabled: null }, env)).toBeNull()
+    expect(measurementInUse({ matomo_enabled: null, ...own }, env)).toBeNull()
   })
 
   it('is none when the admin turned it off, whatever the server says', () => {
-    expect(measurementInUse({ matomo_enabled: false }, env)).toBeNull()
+    expect(measurementInUse({ matomo_enabled: false, ...own }, env)).toBeNull()
   })
 
   it('follows the server until the admin setting has been read once', () => {
     expect(measurementInUse(null, env)).toEqual({ url: 'https://stats.test', id: '1' })
+  })
+
+  it.each([
+    ['the server has its own', env],
+    ['the server has none', {}]
+  ])('measures with the admin’s address and site id when on and %s', (_case, env) => {
+    expect(measurementInUse({ matomo_enabled: true, ...own }, env)).toEqual({
+      url: 'https://own-stats.test/matomo',
+      id: '7'
+    })
   })
 })

@@ -10,18 +10,27 @@ export type MatomoConfig = { url: string; id: string }
 // The Matomo a request measures with, or null when nothing is measured.
 export type Measurement = MatomoConfig | null
 
-// The admin's setting from the instance config: false is Off, null follows
-// the server's environment.
-export type MeasurementSetting = Pick<AuthConfig, 'matomo_enabled'>
+// The admin's setting from the instance config: true measures with the
+// admin's address and site id, false is Off, null follows the server's
+// environment.
+export type MeasurementSetting = Pick<
+  AuthConfig,
+  'matomo_enabled' | 'matomo_url' | 'matomo_site_id'
+>
 
 // A setting never read, after a failed fetch on a cold process, is not taken
 // for Off: the server's environment decides, as it did before the setting
-// existed. The environment needs both values.
+// existed. The environment needs both values; the backend refuses On without
+// both.
 export function measurementInUse(
   setting: MeasurementSetting | null,
   env: { MATOMO_URL?: string; MATOMO_ID?: string }
 ): Measurement {
   if (setting?.matomo_enabled === false) return null
+  if (setting?.matomo_enabled === true) {
+    const { matomo_url: url, matomo_site_id: id } = setting
+    return url && id ? { url, id } : null
+  }
   const url = env.MATOMO_URL || ''
   const id = env.MATOMO_ID || ''
   return url && id ? { url, id } : null
@@ -45,9 +54,9 @@ const MARKUP = `<!-- Matomo -->
       }
       _paq.push(['trackPageView'])
       ;(function () {
-        var u = '%matomo_url%/'
+        var u = %matomo_url_js% + '/'
         _paq.push(['setTrackerUrl', u + 'matomo.php'])
-        _paq.push(['setSiteId', '%matomo_id%'])
+        _paq.push(['setSiteId', %matomo_id_js%])
         var d = document,
           g = d.createElement('script'),
           s = d.getElementsByTagName('script')[0]
@@ -60,7 +69,7 @@ const MARKUP = `<!-- Matomo -->
       ><p>
         <img
           referrerpolicy="no-referrer-when-downgrade"
-          src="%matomo_url%/matomo.php?idsite=%matomo_id%&amp;rec=1"
+          src="%matomo_url_attr%/matomo.php?idsite=%matomo_id_attr%&amp;rec=1"
           style="border: 0"
           alt=""
         /></p
@@ -73,6 +82,12 @@ function escapeAttribute(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;')
 }
 
+// A string literal that cannot close the inline script it sits in. The
+// environment values reach here unchecked.
+function scriptString(value: string): string {
+  return JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('>', '\\u003e')
+}
+
 // Without consent the page still says where Matomo lives, in an inert element,
 // so the browser can start it if the visitor says yes later. An instance with
 // no measurement gets neither.
@@ -82,8 +97,10 @@ export function fillMatomoPlaceholder(html: string, config: Measurement, load: b
     if (!load)
       return `<template id="${CONFIG_ID}" data-url="${escapeAttribute(config.url)}" data-id="${escapeAttribute(config.id)}"></template>`
     return MARKUP.replace('%nonce%', () => nonce)
-      .replaceAll('%matomo_url%', () => config.url)
-      .replaceAll('%matomo_id%', () => config.id)
+      .replaceAll('%matomo_url_js%', () => scriptString(config.url))
+      .replaceAll('%matomo_id_js%', () => scriptString(config.id))
+      .replaceAll('%matomo_url_attr%', () => escapeAttribute(config.url))
+      .replaceAll('%matomo_id_attr%', () => escapeAttribute(config.id))
   })
 }
 
