@@ -22,7 +22,7 @@
   {#snippet formItem({ id })}
     {#each options as opt (opt.value)}
       <div class="fr-fieldset__element fr-fieldset__element--inline">
-        <FormField id={`${id}-${opt.value}`} label={opt.label} component="radio">
+        <FormField id={`${id}-${opt.value}`} label={opt.label} help={opt.help} component="radio">
           {#snippet formItem({ id })}
             <input name={id} {id} type="radio" bind:group={value} value={opt.value} {disabled} />
           {/snippet}

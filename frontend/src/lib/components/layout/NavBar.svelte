@@ -169,7 +169,11 @@
 
     <div class="gap-2 flex items-center">
       <div class="min-w-0 flex-1">
-        <LegalMenu id="legal-menu-{mode}" {expanded} />
+        <LegalMenu
+          id="legal-menu-{mode}"
+          {expanded}
+          modalId={mode === 'mobile' ? 'fr-modal-menu' : undefined}
+        />
       </div>
       <LanguageSelector id="translate-{mode}" class={{ 'lg:hidden': !expanded }} />
     </div>

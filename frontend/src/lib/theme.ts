@@ -1,3 +1,11 @@
+// The color schemes DSFR knows, as stored in data-fr-scheme.
+export const SCHEMES = ['light', 'dark', 'system'] as const
+export type Scheme = (typeof SCHEMES)[number]
+
+export function isScheme(value: unknown): value is Scheme {
+  return SCHEMES.some((scheme) => scheme === value)
+}
+
 export type BrandThemeConfig = {
   primary_color_light?: string | null
   primary_color_dark?: string | null

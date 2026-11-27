@@ -9,6 +9,7 @@
     value: boolean
     label?: string
     help?: string
+    disabled?: boolean
     tooltip?: string
     labelPos?: 'left' | 'right'
     hideCheckLabel?: boolean
@@ -26,6 +27,7 @@
     value = $bindable(),
     label,
     help,
+    disabled,
     tooltip,
     labelPos = 'left',
     hideCheckLabel = false,
@@ -53,6 +55,7 @@
     class="fr-toggle__input"
     {id}
     bind:checked={value}
+    {disabled}
     aria-describedby={help ? `toggle-hint-${id}` : undefined}
   />
   {#if !inline}

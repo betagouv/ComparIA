@@ -13,11 +13,13 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLegalLinksContext } from '$lib/informational-pages.svelte'
+  import { getCookieConsentContext } from '$lib/stores/cookieConsent.svelte'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const links = getLegalLinksContext()
   const auth = getAuthContext()
   const comparisons = getComparisonsContext()
+  const cookieConsent = getCookieConsentContext()
   const tabs = [
     { id: 'account', label: m['auth.settings.tabAccount']() },
     { id: 'about', label: m['auth.settings.tabAbout']() }
@@ -238,6 +240,13 @@
               {#each links.settingsMenuLinks as link (link.href)}
                 <li><Link href={link.href} text={link.label} /></li>
               {/each}
+              {#if cookieConsent.asking}
+                <li>
+                  <button type="button" class="fr-link" onclick={() => cookieConsent.reopen()}>
+                    {m['cookieBanner.link']()}
+                  </button>
+                </li>
+              {/if}
               <li>
                 <Link
                   href="https://github.com/betagouv/ComparIA"

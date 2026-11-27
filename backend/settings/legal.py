@@ -75,8 +75,11 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Avant de commencer",
                     "introduction": (
-                        "Vos messages sont transmis aux modèles d’IA comparés. Ne saisissez "
-                        "aucune donnée sensible ou permettant d’identifier une personne."
+                        "Vos messages sont transmis aux modèles d’IA comparés, hébergés par "
+                        "des fournisseurs extérieurs, dont certains hors de l’Union "
+                        "européenne. Ne saisissez aucune donnée sensible ou permettant "
+                        "d’identifier une personne. Les conversations et les votes alimentent "
+                        "des jeux de données publiés en accès libre."
                     ),
                     "checkbox_label": (
                         "J’ai lu et j’accepte les conditions générales d’utilisation. Je "
@@ -97,8 +100,10 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Before you start",
                     "introduction": (
-                        "Your messages are sent to the AI models being compared. Do not "
-                        "enter sensitive data or anything that identifies a person."
+                        "Your messages are sent to the AI models being compared, which "
+                        "outside providers run, some of them outside the European Union. Do "
+                        "not enter sensitive data or anything that identifies a person. "
+                        "Conversations and votes feed datasets that are published openly."
                     ),
                     "checkbox_label": (
                         "I have read and accept the terms of use. I understand that taking "
@@ -117,9 +122,10 @@ FALLBACK_PRESENTATIONS: LegalPresentationTranslatable = (
                 "arena": {
                     "title": "Før du starter",
                     "introduction": (
-                        "Dine beskeder sendes til de AI-modeller, der sammenlignes. Skriv "
-                        "ikke følsomme oplysninger eller noget, der kan identificere en "
-                        "person."
+                        "Dine beskeder sendes til de AI-modeller, der sammenlignes, og som "
+                        "drives af eksterne udbydere, nogle af dem uden for EU. Skriv ikke "
+                        "følsomme oplysninger eller noget, der kan identificere en person. "
+                        "Samtaler og stemmer indgår i datasæt, der offentliggøres frit."
                     ),
                     "checkbox_label": (
                         "Jeg har læst og accepterer vilkårene for brug. Jeg forstår, at "
@@ -162,6 +168,86 @@ async def get_legal_presentation(
     locales = await get_locales_settings()
     presentations = await get_legal_presentations()
     return pick_translation(presentations.root, locale, locales)[1]
+
+
+class CookieBanner(BaseModel, extra="forbid"):
+    title: str = Field(min_length=1, max_length=200)
+    description: str = Field(min_length=1, max_length=2_000)
+
+    @field_validator("title", "description")
+    @classmethod
+    def normalize_copy(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("cookie banner copy cannot be blank")
+        return value
+
+
+CookieBannerTranslatable = Translatable[CookieBanner]
+
+# What visitors read until an admin writes their own banner text. The banner
+# asks about audience measurement only: language, theme and arena choices are
+# settings people pick themselves, which need no consent.
+FALLBACK_COOKIE_BANNERS: CookieBannerTranslatable = (
+    CookieBannerTranslatable.model_validate(
+        {
+            "fr": {
+                "title": "Mesure d’audience",
+                "description": (
+                    "Nous aimerions compter les visites et les pages vues, sans "
+                    "vous identifier, pour améliorer le site. Cela dépose un "
+                    "cookie. Refuser ne vous empêche pas d’utiliser le site."
+                ),
+            },
+            "en": {
+                "title": "Audience measurement",
+                "description": (
+                    "We would like to count visits and page views, without "
+                    "identifying you, to improve the site. This sets a cookie. "
+                    "Refusing does not stop you using the site."
+                ),
+            },
+            "da": {
+                "title": "Besøgsstatistik",
+                "description": (
+                    "Vi vil gerne tælle besøg og sidevisninger, uden at "
+                    "identificere dig, for at forbedre webstedet. Det sætter en "
+                    "cookie. Du kan bruge webstedet, selv om du siger nej."
+                ),
+            },
+        }
+    )
+)
+
+
+async def get_written_cookie_banners() -> CookieBannerTranslatable:
+    """Return the admin's banner text, or the default when there is none or it
+    no longer validates."""
+    app_settings = await get_app_settings()
+    if app_settings.cookie_banner:
+        try:
+            return CookieBannerTranslatable.model_validate(app_settings.cookie_banner)
+        except ValidationError:
+            pass
+
+    return FALLBACK_COOKIE_BANNERS
+
+
+async def get_cookie_banners() -> CookieBannerTranslatable:
+    """The admin's banner text, with the default in every language they have
+    not written."""
+    written = await get_written_cookie_banners()
+    return CookieBannerTranslatable.model_validate(
+        {**FALLBACK_COOKIE_BANNERS.root, **written.root}
+    )
+
+
+async def get_cookie_banner(
+    locale: SupportedLocale | None = None,
+) -> tuple[SupportedLocale, CookieBanner]:
+    locales = await get_locales_settings()
+    banners = await get_cookie_banners()
+    return pick_translation(banners.root, locale, locales)
 
 
 class DuplicateLegalDocumentError(ValueError):

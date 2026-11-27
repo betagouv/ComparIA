@@ -249,6 +249,7 @@
                     "status": "Status",
                     "title": "Element"
                 },
+                "off": "Slået fra",
                 "published": "Publiceret",
                 "subtitle": "Hvert indhold har sit eget område til administration og udgivelse.",
                 "title": "Juridiske dokumenter og forløb",
@@ -299,6 +300,36 @@
                 "emptyDescription": "Publicér brugsvilkårene før åbning af arenaen for offentligheden.",
                 "subtitle": "Dokument, hvis accept er obligatorisk.",
                 "title": "Vilkår"
+            },
+            "cookies": {
+                "bannerTitle": "Bannerets titel",
+                "clearLocale": "Ryd dette sprog",
+                "description": "Indledende tekst",
+                "formTitle": "Rediger bannerets tekst",
+                "matomoMissing": "Angiv adressen og site-id'et for at slå målingen af besøg til.",
+                "matomoSiteIdHint": "Det nummer, Matomo har givet dette site.",
+                "matomoSiteIdInvalid": "Site-id'et må kun indeholde tal.",
+                "matomoSiteIdLabel": "Site-id",
+                "matomoUrlHint": "For eksempel https://stats.example.org eller https://stats.example.org/matomo",
+                "matomoUrlInvalid": "Adressen skal begynde med https:// og må ikke indeholde ?, # eller et brugernavn. http:// virker kun for localhost.",
+                "matomoUrlLabel": "Matomo-adresse",
+                "measurementLabel": "Måling af besøg",
+                "measurementOff": "Fra",
+                "measurementOn": "Til, med min egen Matomo",
+                "measurementSaved": "Indstillingen for måling af besøg er gemt",
+                "measurementServer": "Serverens indstilling",
+                "measurementServerNone": "Lige nu: ingen måling af besøg",
+                "measurementServerOn": "Lige nu til: {address}, site {id}",
+                "measurementSwitchOn": "Slå måling af besøg til",
+                "subtitle": "Måling af besøg, cookiebanneret og dets tekst.",
+                "switchedOff": "Cookiebanneret er slået fra",
+                "switchedOn": "Cookiebanneret er slået til",
+                "switchExemption": "Måling af besøg uden banneret er kun lovlig, hvor en undtagelse gælder, som CNIL's i Frankrig.",
+                "switchHelp": "Besøgende bliver spurgt, før måling af besøg går i gang.",
+                "switchNothingToAsk": "Ingen måling af besøg, så der er intet at spørge om.",
+                "switchLabel": "Vis cookiebanneret",
+                "textDescription": "Banneret vises på den første side, en besøgende åbner, indtil vedkommende svarer.",
+                "title": "Cookies og måling af besøg"
             }
         },
         "llms": {
@@ -1156,7 +1187,8 @@
         },
         "privacy_policy": {
             "optOutTitle": "Fravælg måling af besøg",
-            "title": "Privatlivspolitik"
+            "title": "Privatlivspolitik",
+            "cookiesTitle": "Dine valg om cookies"
         },
         "terms": {
             "title": "Brugsvilkår"
@@ -2434,5 +2466,14 @@
         "tooltip": "Tip",
         "validate": "Validér",
         "yes": "Ja"
+    },
+    "cookieBanner": {
+        "accept": "Accepter",
+        "close": "Luk",
+        "currentNo": "Dit nuværende svar: nej",
+        "currentYes": "Dit nuværende svar: ja",
+        "link": "Cookies",
+        "manage": "Administrer cookies",
+        "refuse": "Afvis"
     }
 }

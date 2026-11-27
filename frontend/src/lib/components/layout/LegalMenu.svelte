@@ -4,10 +4,24 @@
   import { Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLegalLinksContext } from '$lib/informational-pages.svelte'
+  import { getCookieConsentContext } from '$lib/stores/cookieConsent.svelte'
+  import { tick } from 'svelte'
 
-  const { id, expanded = true }: { id: string; expanded?: boolean } = $props()
+  const {
+    id,
+    expanded = true,
+    modalId
+  }: { id: string; expanded?: boolean; modalId?: string } = $props()
 
   const links = getLegalLinksContext()
+  const cookieConsent = getCookieConsentContext()
+
+  async function reopenCookieBanner() {
+    // Let the menu close and hand focus back to its button first, so the
+    // banner returns focus there rather than to a hidden item.
+    await tick()
+    cookieConsent.reopen()
+  }
 </script>
 
 <nav class="legal-menu" aria-label={m['header.legal.title']()}>
@@ -44,6 +58,19 @@
           </a>
         </li>
       {/each}
+      {#if cookieConsent.asking}
+        <li class="fr-sidemenu__item">
+          <button
+            type="button"
+            class="fr-sidemenu__link py-2! text-sm! font-normal! w-full"
+            aria-controls={modalId}
+            data-fr-js-modal-button={modalId ? 'true' : undefined}
+            onclick={reopenCookieBanner}
+          >
+            {m['cookieBanner.link']()}
+          </button>
+        </li>
+      {/if}
     </ul>
   </Dropdown>
 </nav>

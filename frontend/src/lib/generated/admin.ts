@@ -324,6 +324,10 @@ export interface AppSettingsPatch {
   publish_hour?: number | null;
   publish_timezone?: string | null;
   dataset_voter_ids?: boolean | null;
+  cookie_banner_enabled?: boolean | null;
+  matomo_enabled?: boolean | null;
+  matomo_url?: string | null;
+  matomo_site_id?: string | null;
   auth_methods?: string[] | null;
   oidc_issuer?: string | null;
   oidc_client_id?: string | null;
@@ -349,6 +353,10 @@ export interface AppSettingsPublic {
   publish_hour: number;
   publish_timezone: string;
   dataset_voter_ids: boolean;
+  cookie_banner_enabled: boolean;
+  matomo_enabled: boolean | null;
+  matomo_url: string | null;
+  matomo_site_id: string | null;
   has_custom_logo: boolean;
   logo_version?: string | null;
   enabled_locales: ("da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv")[];
@@ -373,6 +381,13 @@ export interface OIDCConnectionTest {
   reason?: string | null;
   tested_at: string;
   [k: string]: unknown;
+}
+export interface TranslatableCookieBanner {
+  [k: string]: CookieBanner;
+}
+export interface CookieBanner {
+  title: string;
+  description: string;
 }
 export interface DatasetCheckPublic {
   /**
@@ -710,6 +725,7 @@ export interface SignInLegalPresentation {
 }
 export interface LegalStatuses {
   participation: LegalStatus;
+  cookies: LegalStatus;
   terms: LegalStatus;
   privacy_policy: LegalStatus;
   legal_notice: LegalStatus;

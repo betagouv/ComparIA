@@ -241,6 +241,36 @@
                 "title": "Accessibility statement"
             },
             "back": "Back to legal documents",
+            "cookies": {
+                "bannerTitle": "Banner title",
+                "clearLocale": "Clear this language",
+                "description": "Introductory text",
+                "formTitle": "Edit the banner text",
+                "matomoMissing": "Enter the address and the site id to turn audience measurement on.",
+                "matomoSiteIdHint": "The number Matomo gives this site.",
+                "matomoSiteIdInvalid": "The site id holds digits only.",
+                "matomoSiteIdLabel": "Site id",
+                "matomoUrlHint": "For example https://stats.example.org or https://stats.example.org/matomo",
+                "matomoUrlInvalid": "The address must start with https:// and hold no ?, # or user name. http:// works only for localhost.",
+                "matomoUrlLabel": "Matomo address",
+                "measurementLabel": "Audience measurement",
+                "measurementOff": "Off",
+                "measurementOn": "On, with my own Matomo",
+                "measurementSaved": "Audience measurement setting saved",
+                "measurementServer": "Server setting",
+                "measurementServerNone": "Currently: no audience measurement",
+                "measurementServerOn": "Currently on: {address}, site {id}",
+                "measurementSwitchOn": "Turn audience measurement on",
+                "subtitle": "Audience measurement, the cookie banner and its text.",
+                "switchedOff": "Cookie banner turned off",
+                "switchedOn": "Cookie banner turned on",
+                "switchExemption": "Audience measurement without the banner is lawful only where an exemption applies, such as the CNIL's in France.",
+                "switchHelp": "Visitors are asked before audience measurement runs.",
+                "switchNothingToAsk": "No audience measurement, so there is nothing to ask.",
+                "switchLabel": "Show the cookie banner",
+                "textDescription": "The banner shows on the first page a visitor opens, until they answer.",
+                "title": "Cookies and audience measurement"
+            },
             "document": {
                 "backToWriting": "Back to writing",
                 "confirm": "I have reread the document and understand that this version can no longer be changed.",
@@ -274,6 +304,7 @@
                     "status": "Status",
                     "title": "Item"
                 },
+                "off": "Off",
                 "published": "Published",
                 "subtitle": "Each piece of content has its own space for editing and publishing.",
                 "title": "Legal documents and journeys",
@@ -1316,6 +1347,15 @@
         "saveFailed": "Your choice could not be saved. Check your connection, then try again.",
         "saving": "Saving…"
     },
+    "cookieBanner": {
+        "accept": "Accept",
+        "close": "Close",
+        "currentNo": "Your current answer: no",
+        "currentYes": "Your current answer: yes",
+        "link": "Cookies",
+        "manage": "Manage cookies",
+        "refuse": "Refuse"
+    },
     "errors": {
         "404": {
             "desc": "If you typed the URL into your browser, check if it's correct. The page may no longer be available.<br />You can continue by visiting our homepage.<br />If you struggle to find a page you are looking for, contact us so we can redirect you to the correct URL.",
@@ -1366,6 +1406,7 @@
             "version": "Version {version}, in effect since {date}."
         },
         "privacy_policy": {
+            "cookiesTitle": "Your cookie choices",
             "optOutTitle": "Opting out of audience measurement",
             "title": "Privacy policy"
         },

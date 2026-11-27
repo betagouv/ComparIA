@@ -1,9 +1,11 @@
+import re
 import uuid
 from typing import Annotated, Literal
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import ValidationInfo, field_validator
+from pydantic_core import PydanticCustomError
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
@@ -25,6 +27,11 @@ SECONDARY_COLOR_DARK_DEFAULT = "#FFCC00"
 
 _HEX_COLOR_LENGTH = 7
 _HOMEPAGE_URL_MAX_LENGTH = 2_048
+_MATOMO_URL_MAX_LENGTH = 2_048
+_MATOMO_SITE_ID_MAX_LENGTH = 32
+_MATOMO_URL_FORBIDDEN = set("'\"<>\\`")
+# Plain http is only for a Matomo on the admin's own machine.
+_MATOMO_LOCAL_HOSTS = {"localhost", "127.0.0.1", "::1"}
 # Largest value a Postgres INTEGER column holds; past it the update fails.
 _INT_MAX = 2_147_483_647
 
@@ -83,6 +90,67 @@ def _normalize_homepage_url(value: object) -> str | None:
     return url
 
 
+def _empty_as_none(value: object) -> object:
+    if isinstance(value, str):
+        value = value.strip()
+    return value or None
+
+
+def _normalize_matomo_url(value: object) -> str | None:
+    url = _empty_as_none(value)
+    if url is None:
+        return None
+    invalid = PydanticCustomError(
+        "matomo_url_invalid",
+        "The Matomo address must be https with a host and an optional path, "
+        "with no query, fragment, user name or password (http only on localhost)",
+    )
+    if (
+        not isinstance(url, str)
+        or len(url) > _MATOMO_URL_MAX_LENGTH
+        or any(character.isspace() or ord(character) < 32 for character in url)
+        # The address is written into an inline script and an HTML attribute
+        # on every page, so it carries nothing that could close either.
+        or any(character in _MATOMO_URL_FORBIDDEN for character in url)
+    ):
+        raise invalid
+    try:
+        parsed = urlsplit(url)
+        hostname = parsed.hostname
+        parsed.port
+    except ValueError:
+        raise invalid
+    secure = parsed.scheme == "https" or (
+        parsed.scheme == "http" and hostname in _MATOMO_LOCAL_HOSTS
+    )
+    # A bare "?" or "#" leaves query and fragment empty, so look for them too.
+    if (
+        not secure
+        or not hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or "?" in url
+        or "#" in url
+    ):
+        raise invalid
+    return url.rstrip("/")
+
+
+def _normalize_matomo_site_id(value: object) -> str | None:
+    site_id = _empty_as_none(value)
+    if site_id is None:
+        return None
+    if (
+        not isinstance(site_id, str)
+        or len(site_id) > _MATOMO_SITE_ID_MAX_LENGTH
+        or not re.fullmatch(r"[0-9]+", site_id)
+    ):
+        raise PydanticCustomError(
+            "matomo_site_id_invalid", "The Matomo site id must be digits only"
+        )
+    return site_id
+
+
 class AppSettings(SQLModel, table=True):
     """Singleton row (id=1) holding product settings editable from the admin panel."""
 
@@ -111,6 +179,18 @@ class AppSettings(SQLModel, table=True):
     informational_legal_pages: Annotated[
         dict, Field(sa_type=JSONB, default_factory=dict)
     ]
+    # Off until an instance whose law asks for cookie consent turns it on.
+    cookie_banner_enabled: bool = Field(default=False)
+    cookie_banner: Annotated[dict | None, Field(sa_type=JSONB)] = None
+    # Audience measurement: None follows the MATOMO_URL and MATOMO_ID the
+    # frontend server was deployed with, False turns it off whatever they say,
+    # True measures with the address and site id below. Off keeps them, so On
+    # again needs no retyping.
+    matomo_enabled: bool | None = Field(default=None)
+    matomo_url: str | None = Field(default=None, max_length=_MATOMO_URL_MAX_LENGTH)
+    matomo_site_id: str | None = Field(
+        default=None, max_length=_MATOMO_SITE_ID_MAX_LENGTH
+    )
     primary_color_light: str = Field(default=PRIMARY_COLOR_LIGHT_DEFAULT, max_length=7)
     primary_color_dark: str = Field(default=PRIMARY_COLOR_DARK_DEFAULT, max_length=7)
     secondary_color_light: str = Field(
@@ -189,6 +269,10 @@ class AppSettingsPublic(SQLModel):
     publish_hour: int
     publish_timezone: str
     dataset_voter_ids: bool
+    cookie_banner_enabled: bool
+    matomo_enabled: bool | None
+    matomo_url: str | None
+    matomo_site_id: str | None
     has_custom_logo: bool
     logo_version: str | None = None
     enabled_locales: list[SupportedLocale]
@@ -229,6 +313,10 @@ class AppSettingsPatch(SQLModel):
     publish_hour: int | None = Field(default=None, ge=0, le=23)
     publish_timezone: str | None = Field(default=None, max_length=64)
     dataset_voter_ids: bool | None = None
+    cookie_banner_enabled: bool | None = None
+    matomo_enabled: bool | None = None
+    matomo_url: str | None = None
+    matomo_site_id: str | None = None
     auth_methods: list[str] | None = None
     oidc_issuer: str | None = None
     oidc_client_id: str | None = None
@@ -291,12 +379,22 @@ class AppSettingsPatch(SQLModel):
             raise ValueError("Leaderboard thresholds cannot be null")
         return value
 
-    @field_validator("dataset_voter_ids", mode="before")
+    @field_validator("dataset_voter_ids", "cookie_banner_enabled", mode="before")
     @classmethod
-    def dataset_voter_ids_not_null(cls, value: object) -> object:
+    def switch_not_null(cls, value: object, info: ValidationInfo) -> object:
         if value is None:
-            raise ValueError("dataset_voter_ids cannot be null")
+            raise ValueError(f"{info.field_name} cannot be null")
         return value
+
+    @field_validator("matomo_url", mode="before")
+    @classmethod
+    def normalize_matomo_url(cls, value: object) -> str | None:
+        return _normalize_matomo_url(value)
+
+    @field_validator("matomo_site_id", mode="before")
+    @classmethod
+    def normalize_matomo_site_id(cls, value: object) -> str | None:
+        return _normalize_matomo_site_id(value)
 
     @field_validator(
         "primary_color_light",

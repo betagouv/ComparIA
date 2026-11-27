@@ -1,6 +1,7 @@
 <script lang="ts">
   import { afterNavigate } from '$app/navigation'
   import { resolve } from '$app/paths'
+  import CookieBannerHost from '$components/CookieBannerHost.svelte'
   import { NavBar } from '$components/layout'
   import SurveyModalRequired from '$components/SurveyModalRequired.svelte'
   import { getAuthContext, userAllowed } from '$lib/auth.svelte.js'
@@ -52,6 +53,8 @@
 </script>
 
 <a href="#contenu" class="cl-skip-link">{m['a11y.skipToContent']()}</a>
+
+<CookieBannerHost />
 
 <div class="lg:flex min-h-screen">
   <NavBar {navLinks} />

@@ -1,16 +1,16 @@
 import { env } from '$env/dynamic/private'
 import { env as publicEnv } from '$env/dynamic/public'
 import { TOTP_SETUP_PATH, UnauthorizedError, api, isTotpSetupRequired } from '$lib/fastapi-client'
-import { cookieMaxAge, defineCustomServerStrategy } from '$lib/i18n/runtime'
+import { COOKIE_CONSENT_NAME, decideCookieConsent } from '$lib/cookieConsent'
+import { cookieMaxAge, defineCustomServerStrategy, type Locale } from '$lib/i18n/runtime'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import { logger } from '$lib/logger.server'
+import { fillMatomoPlaceholder, measurementInUse, type MeasurementSetting } from '$lib/matomo'
 import { httpRequestCounter, httpRequestDuration } from '$lib/metrics'
+import { serverMatomo } from '$lib/server/matomo'
 import type { Handle, HandleFetch, HandleServerError } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
-
-const MATOMO_ID = env.MATOMO_ID || ''
-const MATOMO_URL = env.MATOMO_URL || ''
 
 // Cookies the backend identifies a visitor by. Server-side requests go to the
 // API's internal origin, where the browser's cookies are not sent on their own.
@@ -54,20 +54,21 @@ function originOf(url: string): string | null {
   }
 }
 
-// Matomo lives on a host only known at runtime, and the API sits on another
-// origin in dev, so both are added to the build-time policy from svelte.config.js
-// instead of being hardcoded there.
-const EXTRA_CSP_SOURCES: Record<string, (string | null)[]> = {
-  'script-src': [originOf(MATOMO_URL)],
-  'connect-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')],
-  'img-src': [originOf(MATOMO_URL), originOf(publicEnv.PUBLIC_API_URL || '')]
-}
+// The API sits on another origin in dev, and Matomo on a host that can change
+// from one request to the next, so both are added to the build-time policy from
+// svelte.config.js instead of being hardcoded there.
+const API_ORIGIN = originOf(publicEnv.PUBLIC_API_URL || '')
 
-function withRuntimeOrigins(policy: string): string {
+function withRuntimeOrigins(policy: string, matomoOrigin: string | null): string {
+  const extraSources: Record<string, (string | null)[]> = {
+    'script-src': [matomoOrigin],
+    'connect-src': [matomoOrigin, API_ORIGIN],
+    'img-src': [matomoOrigin, API_ORIGIN]
+  }
   return policy
     .split('; ')
     .map((directive) => {
-      const extra = (EXTRA_CSP_SOURCES[directive.split(' ')[0]] ?? []).filter(
+      const extra = (extraSources[directive.split(' ')[0]] ?? []).filter(
         (origin): origin is string => !!origin && !directive.includes(origin)
       )
       return extra.length ? `${directive} ${extra.join(' ')}` : directive
@@ -75,54 +76,75 @@ function withRuntimeOrigins(policy: string): string {
     .join('; ')
 }
 
-const securityHeadersHandle: Handle = async ({ event, resolve }) => {
+export const securityHeadersHandle: Handle = async ({ event, resolve }) => {
   const response = await resolve(event)
 
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
+  // Read after resolve, once cookieBannerHandle has worked out the measurement.
+  // A request stopped before it, by a redirect, trusts no Matomo origin.
   const policy = response.headers.get('content-security-policy')
   if (policy) {
-    response.headers.set('content-security-policy', withRuntimeOrigins(policy))
+    const matomoOrigin = event.locals.measurement ? originOf(event.locals.measurement.url) : null
+    response.headers.set('content-security-policy', withRuntimeOrigins(policy, matomoOrigin))
   }
 
   return response
 }
 
-const LOCALE_SETTINGS_TTL_MS = 20_000
+const INSTANCE_CONFIG_TTL_MS = 20_000
 
-type LocaleSettings = { enabled_locales: string[]; default_locale: string }
+type InstanceConfig = {
+  enabled_locales: Locale[]
+  default_locale?: Locale
+  // null until the backend has answered once.
+  cookie_banner_enabled: boolean | null
+  // null until the backend has answered once, so a failed fetch is never
+  // mistaken for the admin's choice.
+  measurement: MeasurementSetting | null
+}
 
 // Cached per Node process (same rationale as maintenanceCache below). The
 // in-flight promise is cached rather than its result, so a cold process fires
 // one request instead of one per concurrent render.
-let localeSettingsCache: { promise: Promise<LocaleSettings>; checkedAt: number } | null = null
-let lastLocaleSettings: LocaleSettings = { enabled_locales: [], default_locale: '' }
+let instanceConfigCache: { promise: Promise<InstanceConfig>; checkedAt: number } | null = null
+let lastInstanceConfig: InstanceConfig = {
+  enabled_locales: [],
+  cookie_banner_enabled: null,
+  measurement: null
+}
 
-function getLocaleSettings(): Promise<LocaleSettings> {
+function getInstanceConfig(): Promise<InstanceConfig> {
   const now = Date.now()
-  if (!localeSettingsCache || now - localeSettingsCache.checkedAt >= LOCALE_SETTINGS_TTL_MS) {
-    localeSettingsCache = {
+  if (!instanceConfigCache || now - instanceConfigCache.checkedAt >= INSTANCE_CONFIG_TTL_MS) {
+    instanceConfigCache = {
       checkedAt: now,
       promise: api
-        .request<Partial<LocaleSettings>>('/auth/config')
+        .request<Partial<Omit<InstanceConfig, 'measurement'> & MeasurementSetting>>('/auth/config')
         .then((config) => {
-          lastLocaleSettings = {
+          lastInstanceConfig = {
             enabled_locales: config.enabled_locales ?? [],
-            default_locale: config.default_locale ?? ''
+            default_locale: config.default_locale,
+            cookie_banner_enabled: config.cookie_banner_enabled ?? null,
+            measurement: {
+              matomo_enabled: config.matomo_enabled ?? null,
+              matomo_url: config.matomo_url ?? null,
+              matomo_site_id: config.matomo_site_id ?? null
+            }
           }
-          return lastLocaleSettings
+          return lastInstanceConfig
         })
         .catch((error) => {
           // Fail open: keep serving the last known settings, and let Paraglide's
           // own strategies decide if we never managed to read any.
-          logger.error('Locale settings fetch failed', { error: `${error}` })
-          return lastLocaleSettings
+          logger.error('Instance config fetch failed', { error: `${error}` })
+          return lastInstanceConfig
         })
     }
   }
-  return localeSettingsCache.promise
+  return instanceConfigCache.promise
 }
 
 defineCustomServerStrategy('custom-url', {
@@ -136,7 +158,7 @@ defineCustomServerStrategy('custom-url', {
   // we want when the backend is unreachable and we have nothing to enforce.
   getLocale: async (request) => {
     if (!request) return
-    const { enabled_locales, default_locale } = await getLocaleSettings()
+    const { enabled_locales, default_locale } = await getInstanceConfig()
     if (!enabled_locales.length) return
 
     const cookieLocale = request.headers
@@ -147,10 +169,11 @@ defineCustomServerStrategy('custom-url', {
 
     const requested = new URL(request.url).searchParams.get('locale')
     for (const candidate of [requested, cookieLocale]) {
-      if (candidate && enabled_locales.includes(candidate)) return candidate
+      const enabled = enabled_locales.find((locale) => locale === candidate)
+      if (enabled) return enabled
     }
 
-    return default_locale || undefined
+    return default_locale
   }
 })
 
@@ -165,8 +188,33 @@ export const handleError: HandleServerError = async ({ error, event }) => {
   console.error(error)
 }
 
+// Read once per request: the page, its Matomo tag, the security header and
+// the browser (through the root layout) all follow this one switch value and
+// this one measurement.
+export const cookieBannerHandle: Handle = async ({ event, resolve }) => {
+  const config = await getInstanceConfig()
+  event.locals.cookieBannerEnabled = config.cookie_banner_enabled
+  event.locals.measurement = measurementInUse(config.measurement, serverMatomo())
+  event.locals.cookieConsent = decideCookieConsent(
+    { switchOn: event.locals.cookieBannerEnabled, measured: event.locals.measurement !== null },
+    event.cookies.get(COOKIE_CONSENT_NAME)
+  )
+  return resolve(event)
+}
+
+// Audience measurement reaches the page only when the visitor's consent, or a
+// switched-off banner, allows it. A cold start with the backend down leaves it
+// out: the switch may be on, and nobody has been asked.
+export const matomoHandle: Handle = ({ event, resolve }) => {
+  const { measurement, cookieConsent } = event.locals
+  return resolve(event, {
+    transformPageChunk: ({ html }) =>
+      fillMatomoPlaceholder(html, measurement, cookieConsent.loadMeasurement)
+  })
+}
+
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) => {
+export const paraglideHandle: Handle = ({ event, resolve }) => {
   return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
     event.request = localizedRequest
     if (locale !== event.cookies.get('PARAGLIDE_LOCALE')) {
@@ -184,8 +232,6 @@ const paraglideHandle: Handle = ({ event, resolve }) => {
           .replaceAll('%lang%', locale)
           .replace('%scheme%', event.cookies.get('scheme') || 'system')
           .replace('%theme%', event.cookies.get('theme') || 'system')
-          .replaceAll('%matomo_id%', MATOMO_ID)
-          .replaceAll('%matomo_url%', MATOMO_URL)
       }
     })
   })
@@ -304,5 +350,7 @@ export const handle = sequence(
   maintenanceHandle,
   authWallHandle,
   metricsHandle,
+  cookieBannerHandle,
+  matomoHandle,
   paraglideHandle
 )

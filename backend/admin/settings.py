@@ -12,6 +12,7 @@ from backend.auth.oidc import (
     oidc_config_fingerprint,
 )
 from backend.config import INSTANCE_LOGO_BOX, OIDC_LOGO_BOX
+from backend.errors import MatomoNeedsUrlAndSiteIdError
 from backend.utils.logos import read_logo
 from utils.database.models.app_settings import (
     AppSettings,
@@ -19,7 +20,13 @@ from utils.database.models.app_settings import (
     AppSettingsPublic,
     OIDCConnectionTest,
 )
-from utils.database.settings import get_app_settings, update_app_settings
+from utils.database.settings import (
+    MATOMO_FIELDS,
+    MatomoIncompleteError,
+    check_audience_measurement,
+    get_app_settings,
+    update_app_settings,
+)
 from utils.secrets import encrypt_secret
 
 logger = logging.getLogger("languia")
@@ -58,6 +65,10 @@ def _to_app_settings_public(row: AppSettings) -> AppSettingsPublic:
         publish_hour=row.publish_hour,
         publish_timezone=row.publish_timezone,
         dataset_voter_ids=row.dataset_voter_ids,
+        cookie_banner_enabled=row.cookie_banner_enabled,
+        matomo_enabled=row.matomo_enabled,
+        matomo_url=row.matomo_url,
+        matomo_site_id=row.matomo_site_id,
         has_custom_logo=row.logo is not None,
         logo_version=row.logo_version,
         enabled_locales=row.enabled_locales,
@@ -105,6 +116,11 @@ async def patch_settings(
                 detail="Default locale must be part of the enabled locales",
             )
     patch = body.model_dump(exclude_unset=True)
+    if patch.keys() & set(MATOMO_FIELDS):
+        try:
+            check_audience_measurement(await get_app_settings(), patch)
+        except MatomoIncompleteError as exc:
+            raise MatomoNeedsUrlAndSiteIdError() from exc
     if "oidc_client_secret" in patch:
         secret = patch.pop("oidc_client_secret")
         # Same key as every other secret at rest; the column holds bytes.

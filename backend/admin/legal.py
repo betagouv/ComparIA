@@ -17,12 +17,14 @@ from backend.settings.informational_legal import (
 from backend.settings.legal import (
     LEGAL_CONTENT_MAX_LENGTH,
     LEGAL_VERSION_MAX_LENGTH,
+    CookieBannerTranslatable,
     DuplicateLegalDocumentError,
     InvalidEffectiveDateError,
     LegalPresentationTranslatable,
     UtcTimestamp,
     get_active_legal_document,
     get_legal_presentations,
+    get_written_cookie_banners,
     list_legal_documents,
     publish_legal_document,
 )
@@ -67,6 +69,7 @@ class LegalStatuses(BaseModel, extra="forbid"):
         missing_locales: bool
 
     participation: LegalStatus
+    cookies: LegalStatus
     terms: LegalStatus
     privacy_policy: LegalStatus
     legal_notice: LegalStatus
@@ -84,6 +87,12 @@ async def get_admin_legal_pages_status() -> LegalStatuses:
     status["participation"] = {
         "published": settings.default_locale in participation_locales,
         "missing_locales": enabled_locales != participation_locales,
+    }
+
+    cookie_banner_locales = set((await get_written_cookie_banners()).root)
+    status["cookies"] = {
+        "published": settings.cookie_banner_enabled,
+        "missing_locales": not enabled_locales <= cookie_banner_locales,
     }
 
     for k, page in await get_informational_legal_pages():
@@ -210,6 +219,24 @@ async def put_participation_presentation(
 ) -> LegalPresentationTranslatable:
     await update_app_settings(
         {"legal_presentation": body.model_dump(mode="json")},
+        updated_by=current_user.id,
+    )
+    return body
+
+
+@router.get("/cookies", response_model=CookieBannerTranslatable)
+async def get_cookie_banner() -> CookieBannerTranslatable:
+    # What the admin wrote, not the public text: the form saves it back whole.
+    return await get_written_cookie_banners()
+
+
+@router.put("/cookies", response_model=CookieBannerTranslatable)
+async def put_cookie_banner(
+    body: CookieBannerTranslatable,
+    current_user: RequiredAdmin,
+) -> CookieBannerTranslatable:
+    await update_app_settings(
+        {"cookie_banner": body.model_dump(mode="json")},
         updated_by=current_user.id,
     )
     return body

@@ -54,6 +54,11 @@ vi.mock('$lib/survey.svelte', async (importOriginal) => {
   }
 })
 
+const cookieConsent = vi.hoisted(() => ({ asking: false, reopen: vi.fn() }))
+vi.mock('$lib/stores/cookieConsent.svelte', () => ({
+  getCookieConsentContext: () => cookieConsent
+}))
+
 function getWrappedComponent() {
   return render(ContextWrapper, { props: { Component: Page } })
 }
@@ -87,6 +92,28 @@ describe('Settings page', () => {
     expect(container.querySelector('#tab-account-panel')).not.toHaveClass(
       'fr-tabs__panel--selected'
     )
+  })
+
+  it('has no cookies entry while the banner is off', async () => {
+    const { getByRole, queryByRole } = getWrappedComponent()
+
+    await fireEvent.click(getByRole('tab', { name: 'À propos' }))
+
+    expect(queryByRole('button', { name: 'Cookies' })).toBeNull()
+  })
+
+  it('reopens the cookie banner from the useful links', async () => {
+    cookieConsent.asking = true
+    cookieConsent.reopen.mockClear()
+    const { getByRole } = getWrappedComponent()
+
+    await fireEvent.click(getByRole('tab', { name: 'À propos' }))
+    const cookies = getByRole('button', { name: 'Cookies' })
+    expect(cookies.closest('ul')).toContainElement(getByRole('link', { name: 'Écoconception' }))
+    await fireEvent.click(cookies)
+
+    expect(cookieConsent.reopen).toHaveBeenCalledOnce()
+    cookieConsent.asking = false
   })
 
   it('asks the backend for the export rather than building it in the page', async () => {

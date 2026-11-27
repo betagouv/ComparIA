@@ -24,6 +24,10 @@ export interface AuthConfig {
   oidc_enabled: boolean;
   oidc_button_label: string | null;
   oidc_has_button_logo: boolean;
+  cookie_banner_enabled: boolean;
+  matomo_enabled: boolean | null;
+  matomo_url: string | null;
+  matomo_site_id: string | null;
 }
 export interface ComparisonPublic {
   id: string;
@@ -442,6 +446,11 @@ export interface PersonalRankingRow {
   losses: number;
   ties: number;
   [k: string]: unknown;
+}
+export interface PublicCookieBanner {
+  title: string;
+  description: string;
+  locale: "da" | "en" | "fr" | "it" | "lt" | "nb-NO" | "sv";
 }
 export interface PublicLegalDocument {
   version: string;

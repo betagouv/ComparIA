@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation'
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
+  import CookieBannerHost from '$components/CookieBannerHost.svelte'
   import Toaster from '$components/Toaster.svelte'
   import { env } from '$env/dynamic/public'
   import { setAuthContext } from '$lib/auth.svelte'
@@ -16,8 +17,10 @@
   import { setVotesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { provideLegalLinksContext } from '$lib/informational-pages.svelte'
+  import { followMeasurementConsent } from '$lib/matomo'
   import { setModelsContext } from '$lib/models'
   import { setCohortContext } from '$lib/stores/cohortStore.svelte'
+  import { provideCookieConsentContext } from '$lib/stores/cookieConsent.svelte'
   import { provideSurveyContext } from '$lib/survey.svelte'
   import { createBrandThemeStyle } from '$lib/theme'
   import { onMount } from 'svelte'
@@ -39,15 +42,26 @@
   setCohortContext()
   const survey = provideSurveyContext(() => data.survey)
 
+  const cookieConsent = provideCookieConsentContext({
+    enabled: () => data.cookieBannerEnabled,
+    measured: () => data.measurement !== null,
+    hasText: () => data.cookieBanner !== null
+  })
+
   if (env.PUBLIC_GIT_COMMIT) console.log(`Git commit: ${env.PUBLIC_GIT_COMMIT}`)
 
   onMount(() => {
+    cookieConsent.load()
+    const stopFollowingConsent = followMeasurementConsent(cookieConsent)
+
     // Remove locale param to avoid locale changes override problems
     const params = new SvelteURLSearchParams(page.url.searchParams)
     if (params.get('locale')) {
       params.delete('locale')
       goto(resolve(`${page.url.pathname}?${params}${page.url.hash}`))
     }
+
+    return stopFollowingConsent
   })
 
   // svelte-ignore state_referenced_locally
@@ -76,6 +90,11 @@
 </svelte:head>
 
 <svelte:window on:unhandledrejection={handleError} />
+
+<!-- The arena layout renders it after its skip link. -->
+{#if !page.route.id?.startsWith('/(arena)') || page.error}
+  <CookieBannerHost />
+{/if}
 
 <Toaster />
 

@@ -241,6 +241,36 @@
                 "title": "Déclaration d’accessibilité"
             },
             "back": "Retour aux documents juridiques",
+            "cookies": {
+                "title": "Cookies et mesure d’audience",
+                "subtitle": "La mesure d’audience, le bandeau cookies et son texte.",
+                "measurementOn": "Activée, avec mon Matomo",
+                "matomoUrlLabel": "Adresse de Matomo",
+                "matomoUrlHint": "Par exemple https://stats.example.org ou https://stats.example.org/matomo",
+                "matomoSiteIdLabel": "Identifiant du site",
+                "matomoSiteIdHint": "Le numéro que Matomo donne à ce site.",
+                "measurementSwitchOn": "Activer la mesure d’audience",
+                "matomoUrlInvalid": "L’adresse doit commencer par https:// et ne contenir ni ?, ni #, ni identifiant. http:// ne marche que pour localhost.",
+                "matomoSiteIdInvalid": "L’identifiant du site ne contient que des chiffres.",
+                "matomoMissing": "Renseignez l’adresse et l’identifiant du site pour activer la mesure d’audience.",
+                "measurementLabel": "Mesure d’audience",
+                "measurementServer": "Réglage du serveur",
+                "measurementServerOn": "Actuellement activée : {address}, site {id}",
+                "measurementServerNone": "Actuellement : aucune mesure d’audience",
+                "measurementOff": "Désactivée",
+                "measurementSaved": "Réglage de la mesure d’audience enregistré",
+                "switchLabel": "Afficher le bandeau cookies",
+                "switchHelp": "Les visiteurs sont consultés avant toute mesure d’audience.",
+                "switchNothingToAsk": "Aucune mesure d’audience, donc aucune question à poser.",
+                "switchExemption": "Une mesure d’audience sans bandeau n’est licite que si une exemption s’applique, comme celle de la CNIL en France.",
+                "switchedOn": "Bandeau cookies activé",
+                "switchedOff": "Bandeau cookies désactivé",
+                "formTitle": "Modifier le texte du bandeau",
+                "textDescription": "Le bandeau s’affiche sur la première page ouverte, jusqu’à ce que la personne réponde.",
+                "clearLocale": "Vider cette langue",
+                "bannerTitle": "Titre du bandeau",
+                "description": "Texte introductif"
+            },
             "document": {
                 "backToWriting": "Revenir à la rédaction",
                 "confirm": "J’ai relu le document et je comprends que cette version ne pourra plus être modifiée.",
@@ -274,6 +304,7 @@
                     "status": "Status",
                     "title": "Élement"
                 },
+                "off": "Désactivé",
                 "published": "Publié",
                 "subtitle": "Chaque contenu dispose de son propre espace de gestion et de publication.",
                 "title": "Documents et parcours juridiques",
@@ -1316,6 +1347,15 @@
         "saveFailed": "Votre choix n’a pas pu être enregistré. Vérifiez votre connexion puis réessayez.",
         "saving": "Enregistrement…"
     },
+    "cookieBanner": {
+        "accept": "Accepter",
+        "refuse": "Refuser",
+        "close": "Fermer",
+        "link": "Cookies",
+        "manage": "Gérer les cookies",
+        "currentYes": "Votre réponse actuelle : oui",
+        "currentNo": "Votre réponse actuelle : non"
+    },
     "errors": {
         "404": {
             "desc": "Si vous avez tapé l'adresse web dans le navigateur, vérifiez qu'elle est correcte. La page n’est peut-être plus disponible.<br />Dans ce cas, pour continuer votre visite vous pouvez consulter notre page d’accueil.<br />Sinon contactez-nous pour que l’on puisse vous rediriger vers la bonne information.",
@@ -1367,6 +1407,7 @@
         },
         "privacy_policy": {
             "optOutTitle": "Vous opposer à la mesure d’audience",
+            "cookiesTitle": "Vos choix de cookies",
             "title": "Politique de confidentialité"
         },
         "terms": {
