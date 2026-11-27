@@ -24,10 +24,10 @@ from utils.database.models import Tool  # noqa: E402
 from utils.database.session import get_session  # noqa: E402
 from utils.secrets import decrypt_secret  # noqa: E402
 
-WEB_SEARCH = {"key": "web_search", "label": "Recherche web", "kind": "builtin"}
+WEB_SEARCH = {"key": "web_search", "label": {"fr": "Recherche web"}, "kind": "builtin"}
 MCP = {
     "key": "datagouv",
-    "label": "Données publiques",
+    "label": {"fr": "Données publiques"},
     "kind": "mcp",
     "url": "https://mcp.example.org/mcp",
 }
@@ -77,10 +77,11 @@ def test_saving_with_the_field_empty_keeps_the_credential(database):
         async with client() as api:
             saved = await save(api, WEB_SEARCH | {"secret": "linkup-key-123"})
             again = await save(
-                api, WEB_SEARCH | {"id": saved["id"], "label": "Web", "secret": ""}
+                api,
+                WEB_SEARCH | {"id": saved["id"], "label": {"fr": "Web"}, "secret": ""},
             )
 
-        assert again["label"] == "Web"
+        assert again["label"] == {"fr": "Web"}
         assert again["has_secret"] is True
         row = await stored(saved["id"])
         assert decrypt_secret(row.secret_encrypted) == "linkup-key-123"
@@ -111,6 +112,40 @@ def test_conflicting_domain_lists_are_refused(database):
                 | {"allowed_domains": ["a.fr"], "blocked_domains": ["b.fr"]},
             )
         assert response.status_code == 422
+
+    database(scenario)
+
+
+def test_a_name_or_description_too_long_for_the_picker_is_refused(database):
+    async def scenario():
+        async with client() as api:
+            long_label = await api.post(
+                "/tools/tool", json=MCP | {"label": {"fr": "a" * 41}}
+            )
+            long_description = await api.post(
+                "/tools/tool", json=MCP | {"description": {"fr": "a" * 71}}
+            )
+        assert long_label.status_code == 422
+        assert long_description.status_code == 422
+
+    database(scenario)
+
+
+def test_a_tool_needs_a_name_and_blank_translations_are_dropped(database):
+    async def scenario():
+        async with client() as api:
+            unnamed = await api.post("/tools/tool", json=MCP | {"label": {"fr": " "}})
+            saved = await save(
+                api,
+                MCP
+                | {
+                    "label": {"fr": "Données", "en": ""},
+                    "description": {"fr": "", "en": " "},
+                },
+            )
+        assert unnamed.status_code == 422
+        assert saved["label"] == {"fr": "Données"}
+        assert saved["description"] is None
 
     database(scenario)
 
@@ -293,7 +328,10 @@ class _Rows:
 
 
 def test_usage_is_counted_by_key_then_by_label_for_older_calls():
-    datagouv = Tool(id=uuid.uuid4(), **MCP)
+    datagouv = Tool(
+        id=uuid.uuid4(),
+        **MCP | {"label": {"fr": "Données publiques", "en": "Public data"}},
+    )
     web = Tool(id=uuid.uuid4(), **WEB_SEARCH)
     rows = _Rows(
         [
@@ -301,6 +339,8 @@ def test_usage_is_counted_by_key_then_by_label_for_older_calls():
             ("datagouv", "Données publiques", "search_datasets", 5, 1),
             # Recorded before calls carried the key.
             ("", "Données publiques", "get_dataset", 2, 0),
+            # The name in another of its languages.
+            ("", "Public data", "get_dataset", 1, 0),
             ("", "web_search", "web_search", 3, 2),
             # A function the model made up: nobody's.
             ("", "invented", "invented", 4, 4),
@@ -310,7 +350,7 @@ def test_usage_is_counted_by_key_then_by_label_for_older_calls():
     usage = asyncio.run(services.tool_usage([datagouv, web], rows))
 
     counts = {u.id: (u.calls, u.failures) for u in usage}
-    assert counts == {datagouv.id: (7, 1), web.id: (3, 2)}
+    assert counts == {datagouv.id: (8, 1), web.id: (3, 2)}
 
 
 class _Redis:

@@ -1,12 +1,13 @@
 import re
 from typing import Annotated, Literal
 
-from pydantic import model_validator
+from pydantic import StringConstraints, model_validator
 from pydantic_core import PydanticCustomError
 from sqlalchemy import LargeBinary
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel, String
 
+from utils.i18n import TranslatableRaw
 from utils.validation import NonEmptyStr
 
 from .utils import BaseDBModel, logo_version
@@ -23,8 +24,8 @@ FIELDS = {
             "(e.g. 'web_search')."
         )
     },
-    "label": {"description": "Name shown to visitors, in French."},
-    "description": {"description": "One line shown to visitors, in French."},
+    "label": {"description": "Name shown to visitors, in each language."},
+    "description": {"description": "One line shown to visitors, in each language."},
     "kind": {"description": "How the tool is carried out."},
     "url": {"description": "For an MCP tool, the server address."},
     "allowed_functions": {
@@ -79,8 +80,10 @@ def _normalize_domain(value: str) -> str:
 
 class ToolBase(BaseDBModel):
     key: Annotated[NonEmptyStr, Field(index=True, unique=True, **FIELDS["key"])]
-    label: Annotated[NonEmptyStr, Field(**FIELDS["label"])]
-    description: Annotated[str | None, Field(**FIELDS["description"])] = None
+    label: Annotated[TranslatableRaw[str], Field(sa_type=JSONB, **FIELDS["label"])]
+    description: Annotated[
+        TranslatableRaw[str] | None, Field(sa_type=JSONB, **FIELDS["description"])
+    ] = None
     kind: Annotated[ToolKind, Field(sa_type=String, **FIELDS["kind"])] = "builtin"
     url: Annotated[str | None, Field(**FIELDS["url"])] = None
     allowed_functions: Annotated[
@@ -114,7 +117,19 @@ class Tool(ToolBase, table=True):
         return None
 
 
+# The picker lists tools in a narrow menu. Longer text wraps and pushes the
+# other entries down. Set on writes only, so rows saved before the limit load.
+ToolLabel = Annotated[str, StringConstraints(strip_whitespace=True, max_length=40)]
+ToolDescription = Annotated[
+    str, StringConstraints(strip_whitespace=True, max_length=70)
+]
+
+
 class ToolUpsert(ToolBase):
+    label: Annotated[TranslatableRaw[ToolLabel], Field(**FIELDS["label"])]
+    description: Annotated[
+        TranslatableRaw[ToolDescription] | None, Field(**FIELDS["description"])
+    ] = None
     # Write-only: left empty, the stored credential is kept. Removing it has
     # its own route, so that clearing the field by accident never does.
     secret: Annotated[str | None, Field(**FIELDS["secret"])] = None
@@ -122,6 +137,13 @@ class ToolUpsert(ToolBase):
     @model_validator(mode="after")
     def check_lists(self):
         """Drop blank entries, normalise domains, refuse both domain lists."""
+        self.label = {locale: text for locale, text in self.label.items() if text}
+        if not self.label:
+            raise PydanticCustomError("label_required", "Name the tool.")
+        if self.description is not None:
+            self.description = {
+                locale: text for locale, text in self.description.items() if text
+            } or None
         if self.allowed_functions is not None:
             self.allowed_functions = [
                 name.strip() for name in self.allowed_functions if name.strip()

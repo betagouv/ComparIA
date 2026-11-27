@@ -860,6 +860,8 @@
             "validation": "Enter a suggestion and choose a category."
         },
         "tools": {
+            "allFunctions": "All functions",
+            "allFunctionsHint": "Including the ones the server adds later.",
             "errors": {
                 "invalid_credential": "The provider refuses the credential.",
                 "no_credential": "No key: neither on the tool nor on the server.",
@@ -869,7 +871,7 @@
                 "unknown_builtin": "No built-in tool has this key.",
                 "unreachable": "The server does not answer or returns an error."
             },
-            "functionsHint": "None ticked: every function is offered, including ones the server adds later. Tick some to offer only those.",
+            "functionsHint": "Choose the functions models will be able to use.",
             "functionsLegend": "Functions offered to models",
             "functionsUntested": "Test the tool to list the server's functions.",
             "list": {
@@ -924,11 +926,8 @@
                     "urlHint": "The MCP server's HTTP address, often ending in /mcp."
                 },
                 "limit": {
-                    "all": "Tick all",
                     "count": "{count} of {total}",
-                    "hint": "Models only see ticked functions. Leaving them all ticked also offers the ones the server adds later.",
-                    "needOne": "Tick at least one function.",
-                    "none": "Untick all",
+                    "hint": "Choose the functions models will be able to use.",
                     "title": "Choose the functions"
                 },
                 "next": "Continue",
@@ -1720,7 +1719,7 @@
                 "label": "Created At"
             },
             "description": {
-                "help": "One line shown to visitors, in French.",
+                "help": "One line shown to visitors, in each language.",
                 "label": "Description"
             },
             "enabled": {
@@ -1739,7 +1738,7 @@
                 "label": "Kind"
             },
             "label": {
-                "help": "Name shown to visitors, in French.",
+                "help": "Name shown to visitors, in each language.",
                 "label": "Label"
             },
             "secret": {

@@ -1,7 +1,7 @@
 <script module lang="ts">
-  export type FormFieldsetItemProps = {
+  export type FormTranslateProps = {
     subProps?: AnyFormItemProps
-  } & Omit<BaseFormFieldProps<'translate'>, 'label'>
+  } & BaseFormFieldProps<'translate'>
 </script>
 
 <script lang="ts">
@@ -21,15 +21,22 @@
     value = $bindable({}),
     locale = $bindable(locales.default),
     subProps,
-    isValid = (locale) => !!value[locale],
+    isValid = (locale) => !!value?.[locale],
     subSnippet,
     ...props
-  }: Omit<FormFieldsetItemProps, 'component'> & {
-    value: Record<string, unknown>
+  }: Omit<FormTranslateProps, 'component' | 'label'> & {
+    // Optional: the field inside each language carries its own.
+    label?: string
+    value: Record<string, unknown> | null
     locale?: Locale
     isValid?: (locale: Locale) => boolean
     subSnippet?: Snippet<[locale: Locale, label: string]>
   } = $props()
+
+  // An optional field arrives as null until something is typed in it.
+  $effect.pre(() => {
+    if (value == null) value = {}
+  })
 
   const label = $derived(locales.getLabel(locale))
   const options = $derived(
@@ -51,7 +58,9 @@
     class="mb-3!"
   />
 
-  {#if subProps}
+  {#if !value}
+    <!-- Filled in by the effect above. -->
+  {:else if subProps}
     <AnyFormItem
       {...subProps}
       id="{id}-{subProps.id}"

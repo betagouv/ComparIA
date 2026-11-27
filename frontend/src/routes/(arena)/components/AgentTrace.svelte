@@ -67,7 +67,11 @@
       if (item.type === 'tool_call') {
         return {
           type: item.isWebSearch ? 'web_search' : 'tool',
-          name: toolName(item.children[0].call),
+          // The trace keeps the name in the default language; the list has
+          // it in the visitor's.
+          name:
+            tools.all.find((tool) => tool.key === item.children[0].call.tool)?.label ??
+            toolName(item.children[0].call),
           key: item.children[0].call.tool,
           children: item.children.map((child) => ({
             request: toolRequest(child.call),
@@ -142,12 +146,14 @@
   {#if typeof content === 'string'}
     <div class={{ 'max-h-36 overflow-hidden mask-b-from-55%': !full }}>
       {#if markdown}
-        <Markdown message={content} chatbot />
+        <div class="trace-markdown">
+          <Markdown message={content} chatbot />
+        </div>
       {:else}
-        <p class={['mb-0! text-sm! break-words whitespace-pre-line']}>
+        <p class={['mb-0! text-xs! break-words whitespace-pre-line']}>
           {#each linkify(content) as segment, segmentIndex (segmentIndex)}
             {#if segment.url}
-              <Link href={segment.url} text={segment.text} class="text-sm!" />
+              <Link href={segment.url} text={segment.text} class="text-xs!" />
             {:else}
               {segment.text}
             {/if}
@@ -164,7 +170,7 @@
             href={source.url}
             text={source.name}
             hideExternalIcon
-            class="text-grey! gap-2 text-sm! flex! w-full items-center bg-none!"
+            class="text-grey! gap-2 text-xs! flex! w-full items-center bg-none!"
           >
             <Icon src={source.favicon} icon="i-ri-global-line" size="xs" />
             <span class="truncate">{source.name}</span>
@@ -227,7 +233,7 @@
   label={m['chatbot.activity.reasoning']()}
   labelClass="font-bold"
   expanded={true}
-  class="px-3! py-4! mb-3 text-sm rounded-md bg-[#FBFBFB]"
+  class="px-3! py-4! mb-3 text-xs rounded-md bg-[--background-alt-grey]"
 >
   {#snippet content()}
     <ol class="ms-4! b-s-1 border-[--grey-925-125]">
@@ -237,7 +243,7 @@
           <Expandable
             id={itemId}
             class="text-black"
-            labelClass="bg-[#FBFBFB]"
+            labelClass="bg-[--background-alt-grey]"
             contentClass="text-grey ps-5"
           >
             {#snippet label()}
@@ -287,6 +293,13 @@
         content: none;
       }
     }
+  }
+
+  /* Reasoning reads smaller than the answer it leads to. */
+  .trace-markdown :global(.md),
+  .trace-markdown :global(.md p),
+  .trace-markdown :global(.md li) {
+    font-size: 12px;
   }
 
   /* A light band crossing the grey text while the model works, as ChatGPT

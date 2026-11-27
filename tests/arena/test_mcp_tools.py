@@ -9,16 +9,19 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.config import MCP_SCHEMA_TTL
 from backend.tools import mcp_tools, services
 from backend.tools.models import ToolSpec
+from backend.utils.locale import LocalesSettings
 from utils.database.models import Tool
 
 DATAGOUV = Tool(
     key="datagouv",
-    label="Données publiques",
+    label={"fr": "Données publiques"},
     kind="mcp",
     url="https://mcp.data.gouv.fr/mcp",
     enabled=True,
@@ -61,6 +64,20 @@ class FakeRedis:
             entry = json.loads(raw)
             entry["fetched_at"] -= seconds
             self.values[key] = json.dumps(entry)
+
+
+MODULES = [services]
+
+
+@pytest.fixture(autouse=True)
+def _locales(monkeypatch):
+    """Stand in for the app settings: French and English, French first."""
+
+    async def locales() -> LocalesSettings:
+        return LocalesSettings(default="fr", enabled=["fr", "en"])
+
+    for module in MODULES:
+        monkeypatch.setattr(module, "get_locales_settings", locales)
 
 
 def _with_redis(client: FakeRedis):
@@ -109,7 +126,12 @@ async def _test_both_kinds_resolve_to_one_uniform_list():
     from backend.tools import web_search
 
     rows = [
-        Tool(key="web_search", label="Recherche web", kind="builtin", enabled=True),
+        Tool(
+            key="web_search",
+            label={"fr": "Recherche web"},
+            kind="builtin",
+            enabled=True,
+        ),
         DATAGOUV,
     ]
     with (
@@ -212,7 +234,7 @@ def test_a_row_without_an_address_yields_nothing():
 
 
 async def _test_a_row_without_an_address_yields_nothing():
-    row = Tool(key="broken", label="Cassé", kind="mcp", enabled=True)
+    row = Tool(key="broken", label={"fr": "Cassé"}, kind="mcp", enabled=True)
     assert await mcp_tools.resolve_mcp_tools(row) == []
 
 
@@ -269,7 +291,7 @@ async def _test_a_successful_call_records_what_came_back():
     assert specs[0].tool == DATAGOUV.key
     assert result.status == "success"
     assert [(source.name, source.content) for source in result.results] == [
-        (DATAGOUV.label, "Trois jeux de données correspondent.")
+        ("Données publiques", "Trois jeux de données correspondent.")
     ]
     assert result.results[0].url is None
 

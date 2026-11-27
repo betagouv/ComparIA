@@ -869,7 +869,7 @@
                 "unknown_builtin": "Aucun outil intégré ne porte cette clé.",
                 "unreachable": "Le serveur ne répond pas ou renvoie une erreur."
             },
-            "functionsHint": "Aucune case cochée : toutes les fonctions sont proposées, y compris celles que le serveur ajoutera plus tard. Cochez-en pour ne proposer que celles-là.",
+            "functionsHint": "Définissez les fonctions que les modèles pourront utiliser.",
             "functionsLegend": "Fonctions proposées aux modèles",
             "functionsUntested": "Testez l'outil pour lister les fonctions du serveur.",
             "list": {
@@ -924,11 +924,8 @@
                     "urlHint": "L'adresse HTTP du serveur MCP, souvent terminée par /mcp."
                 },
                 "limit": {
-                    "all": "Tout cocher",
                     "count": "{count} sur {total}",
-                    "hint": "Les modèles ne voient que les fonctions cochées. Tout laisser coché propose aussi celles que le serveur ajoutera plus tard.",
-                    "needOne": "Cochez au moins une fonction.",
-                    "none": "Tout décocher",
+                    "hint": "Définissez les fonctions que les modèles pourront utiliser.",
                     "title": "Choisir les fonctions"
                 },
                 "next": "Continuer",
@@ -963,7 +960,9 @@
                     "review": "Créer"
                 },
                 "stepState": "Étape {current} sur {total}"
-            }
+            },
+            "allFunctions": "Toutes les fonctions",
+            "allFunctionsHint": "Y compris celles que le serveur ajoutera plus tard."
         },
         "voteTags": {
             "active": "Active",

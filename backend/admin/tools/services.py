@@ -177,7 +177,7 @@ async def check_draft(draft: ToolDraft) -> ToolTestResult:
     secret = draft.secret.strip() if draft.secret else ""
     row = Tool(
         key=draft.key or (WEB_SEARCH_TOOL_NAME if draft.kind == "builtin" else "draft"),
-        label=draft.key or "draft",
+        label={"en": draft.key or "draft"},
         kind=draft.kind,
         url=draft.url.strip() if draft.url else None,
         secret_encrypted=encrypt_secret(secret) if secret else None,
@@ -226,7 +226,10 @@ _USAGE = text("""
 async def tool_usage(rows: list[Tool], session: AsyncSession) -> list[ToolUsage]:
     since = datetime.now() - timedelta(days=TOOL_USAGE_DAYS)
     by_key = {row.key: ToolUsage(id=row.id) for row in rows}
-    by_label = {row.label: by_key[row.key] for row in rows}
+    # Older calls carry the name the visitor saw, in any of its languages.
+    by_label = {
+        text: by_key[row.key] for row in rows for text in (row.label or {}).values()
+    }
     for tool, label, name, calls, failures in await session.execute(
         _USAGE, {"since": since}
     ):

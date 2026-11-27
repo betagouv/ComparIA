@@ -2,14 +2,18 @@
   import { goto, invalidate } from '$app/navigation'
   import { resolve } from '$app/paths'
   import ToolCard from '$components/ToolCard.svelte'
-  import { Alert, Button, Checkbox, Input, Textarea, Toggle } from '$components/dsfr'
+  import { Alert, Button, Input, Textarea, Toggle } from '$components/dsfr'
   import Link from '$components/dsfr/Link.svelte'
+  import { FormTranslate } from '$components/form'
   import { api, ValidationError } from '$lib/fastapi-client'
   import type { ToolAdmin, ToolUpsert } from '$lib/generated/admin'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { Locale } from '$lib/i18n/runtime'
   import { tick } from 'svelte'
   import type { PageProps } from './$types'
+  import { defaultText, FunctionChoice } from '../components'
   import { toKey, uniqueKey } from './keys'
 
   type ToolTestResult = {
@@ -29,6 +33,7 @@
   }
 
   const { data }: PageProps = $props()
+  const locales = getLocalesContext()
 
   const steps = [
     m['admin.tools.wizard.steps.connect'](),
@@ -44,20 +49,30 @@
   let secret = $state('')
   let testing = $state(false)
   let testResult = $state<ToolTestResult>()
-  let allowedFunctions = $state<string[]>([])
-  let label = $state('')
-  let description = $state('')
+  // No list offers every function, those the server adds later included.
+  let allowedFunctions = $state<string[] | null>(null)
+  // One name and description per language the instance serves.
+  let labels = $state<Record<string, string>>({})
+  let descriptions = $state<Record<string, string>>({})
+  let locale = $state<Locale>(locales.default)
   let enabled = $state(true)
   let saving = $state(false)
   let saveErrors = $state<string[]>([])
 
   const takenKeys = $derived((data.tools as ToolAdmin[]).map((tool) => tool.key))
+  // The key comes from the default language's name, which is required.
+  const label = $derived((labels[locales.default] ?? '').trim())
   const key = $derived(uniqueKey(toKey(label), takenKeys))
   const functions = $derived(testResult?.functions ?? [])
 
-  const canContinue = $derived(
-    [!!testResult?.ok, allowedFunctions.length > 0, label.trim().length > 0, true][step]
-  )
+  const canContinue = $derived([!!testResult?.ok, true, label.length > 0, true][step])
+
+  function filled(texts: Record<string, string>) {
+    const kept = Object.entries(texts)
+      .map(([code, text]) => [code, text.trim()])
+      .filter(([, text]) => text)
+    return kept.length ? Object.fromEntries(kept) : null
+  }
 
   async function goTo(index: number) {
     step = index
@@ -79,8 +94,7 @@
         method: 'post',
         body: JSON.stringify({ kind: 'mcp', url: url.trim(), secret: secret || null })
       })
-      // Everything the server offers starts ticked; unticking is the choice.
-      allowedFunctions = testResult.functions?.map((f) => f.name) ?? []
+      allowedFunctions = null
     } catch (error) {
       useToast((error as Error).message, 6000, 'error')
     } finally {
@@ -88,29 +102,16 @@
     }
   }
 
-  // Servers write their descriptions for models, at length. The first
-  // sentence is enough to choose by.
-  function firstSentence(text: string) {
-    return text.split(/(?<=\.)\s/)[0]
-  }
-
-  function toggleFunction(name: string, checked: boolean) {
-    const others = allowedFunctions.filter((n) => n !== name)
-    allowedFunctions = checked ? [...others, name] : others
-  }
-
   async function create() {
     saving = true
     saveErrors = []
     const body: ToolUpsert = {
       key,
-      label: label.trim(),
-      description: description.trim() || null,
+      label: filled(labels) ?? {},
+      description: filled(descriptions),
       kind: 'mcp',
       url: url.trim(),
-      // All ticked is stored as no list, so functions the server adds later
-      // are offered too, as the step said.
-      allowed_functions: allowedFunctions.length === functions.length ? null : allowedFunctions,
+      allowed_functions: allowedFunctions,
       enabled,
       secret: secret.trim() || null
     }
@@ -119,7 +120,7 @@
         method: 'post',
         body: JSON.stringify(body)
       })
-      useToast(m['admin.tools.wizard.review.created']({ label: body.label }), 5000, 'success')
+      useToast(m['admin.tools.wizard.review.created']({ label }), 5000, 'success')
       await invalidate('admin:tools')
       await goto(resolve('/admin/outils'))
     } catch (error) {
@@ -210,47 +211,13 @@
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
       {m['admin.tools.wizard.limit.title']()}
     </h2>
-    <p class="mb-4! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
-    <div class="mb-2 gap-2 flex">
-      <Button
-        size="sm"
-        variant="tertiary-no-outline"
-        text={m['admin.tools.wizard.limit.all']()}
-        onclick={() => (allowedFunctions = functions.map((f) => f.name))}
-      />
-      <Button
-        size="sm"
-        variant="tertiary-no-outline"
-        text={m['admin.tools.wizard.limit.none']()}
-        onclick={() => (allowedFunctions = [])}
-      />
-    </div>
+    <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.limit.hint']()}</p>
     <fieldset class="fr-fieldset" aria-labelledby="wizard-functions-legend">
       <legend id="wizard-functions-legend" class="fr-sr-only">
         {m['admin.tools.functionsLegend']()}
       </legend>
-      {#each functions as fn (fn.name)}
-        <div class="fr-fieldset__element">
-          <Checkbox
-            id="wizard-function-{fn.name}"
-            label={fn.name}
-            help={firstSentence(fn.description)}
-            bind:checked={
-              () => allowedFunctions.includes(fn.name),
-              (checked) => toggleFunction(fn.name, checked)
-            }
-          />
-        </div>
-      {/each}
+      <FunctionChoice id="wizard-function" {functions} bind:value={allowedFunctions} />
     </fieldset>
-    <p class="fr-text--sm text-[--text-mention-grey]" aria-live="polite">
-      {allowedFunctions.length === 0
-        ? m['admin.tools.wizard.limit.needOne']()
-        : m['admin.tools.wizard.limit.count']({
-            count: allowedFunctions.length,
-            total: functions.length
-          })}
-    </p>
   {:else if step === 2}
     <h2 bind:this={heading} tabindex="-1" class="fr-h4 mb-2!">
       {m['admin.tools.wizard.present.title']()}
@@ -258,32 +225,41 @@
     <p class="mb-6! text-[--text-mention-grey]">{m['admin.tools.wizard.present.hint']()}</p>
 
     <div class="gap-8 md:grid-cols-2 grid">
-      <div>
-        <Input
-          id="wizard-label"
-          label={m['admin.tools.wizard.present.label']()}
-          help={m['admin.tools.wizard.present.key']({ key })}
-          maxlength={60}
-          required
-          bind:value={label}
-        />
-        <Textarea
-          id="wizard-description"
-          rows={3}
-          maxlength={160}
-          label={m['admin.tools.wizard.present.description']()}
-          help={m['admin.tools.wizard.present.descriptionHint']()}
-          bind:value={description}
-        />
-      </div>
+      <FormTranslate
+        id="wizard-texts"
+        bind:value={labels}
+        bind:locale
+        isValid={(code) => !!labels[code]?.trim()}
+      >
+        {#snippet subSnippet(code)}
+          <Input
+            id="wizard-label-{code}"
+            label={m['admin.tools.wizard.present.label']()}
+            help={code === locales.default
+              ? m['admin.tools.wizard.present.key']({ key })
+              : undefined}
+            maxlength={40}
+            required={code === locales.default}
+            bind:value={labels[code]}
+          />
+          <Textarea
+            id="wizard-description-{code}"
+            rows={3}
+            maxlength={70}
+            label={m['admin.tools.wizard.present.description']()}
+            help={m['admin.tools.wizard.present.descriptionHint']()}
+            bind:value={descriptions[code]}
+          />
+        {/snippet}
+      </FormTranslate>
       <div>
         <p class="fr-text--sm font-bold mb-2!">{m['admin.tools.wizard.present.preview']()}</p>
         <div class="p-4 rounded-xl cg-border">
           <ToolCard
             tool={{
               key,
-              label: label.trim() || m['admin.tools.wizard.present.label'](),
-              description: description.trim(),
+              label: labels[locale]?.trim() || label || m['admin.tools.wizard.present.label'](),
+              description: descriptions[locale]?.trim() ?? '',
               icon: key === 'web_search' ? 'i-ri-global-line' : 'i-ri-tools-line'
             }}
           />
@@ -322,7 +298,7 @@
       )}
       {@render row(
         m['admin.tools.wizard.review.functions'](),
-        allowedFunctions.length === functions.length
+        allowedFunctions === null
           ? m['admin.tools.wizard.review.allFunctions']({ count: functions.length })
           : `${m['admin.tools.wizard.limit.count']({
               count: allowedFunctions.length,
@@ -330,10 +306,11 @@
             })} : ${allowedFunctions.join(', ')}`,
         1
       )}
-      {@render row(m['admin.tools.wizard.present.label'](), label.trim(), 2)}
+      {@render row(m['admin.tools.wizard.present.label'](), label, 2)}
       {@render row(
         m['admin.tools.wizard.present.description'](),
-        description.trim() || m['admin.tools.wizard.review.noDescription'](),
+        defaultText(filled(descriptions), locales.default) ||
+          m['admin.tools.wizard.review.noDescription'](),
         2
       )}
     </dl>

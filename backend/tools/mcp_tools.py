@@ -180,7 +180,7 @@ def _result_text(result: Any) -> str:
     return "\n\n".join(part for part in parts if part)[:MCP_MAX_RESULT_LENGTH]
 
 
-def _run(row: "Tool", name: str) -> Callable[[str], Awaitable[ToolResult]]:
+def _run(row: "Tool", name: str, label: str) -> Callable[[str], Awaitable[ToolResult]]:
     """Build the callable the loop invokes for one of the server's functions."""
 
     async def run(arguments_json: str) -> ToolResult:
@@ -215,13 +215,13 @@ def _run(row: "Tool", name: str) -> Callable[[str], Awaitable[ToolResult]]:
             status="success",
             # Recorded as a source with no address: the trace shows the visitor
             # what came back, and an MCP server rarely returns links.
-            results=[ToolSource(name=row.label, content=text)],
+            results=[ToolSource(name=label, content=text)],
         )
 
     return run
 
 
-async def resolve_mcp_tools(row: "Tool") -> list[ToolSpec]:
+async def resolve_mcp_tools(row: "Tool", label: str = "") -> list[ToolSpec]:
     """Turn one MCP row into one specification per function its server exposes."""
     if not row.url:
         logger.warning("MCP tool '%s' has no server address", row.key)
@@ -241,8 +241,8 @@ async def resolve_mcp_tools(row: "Tool") -> list[ToolSpec]:
                 ToolSpec(
                     name=name,
                     schema=schema,
-                    run=_run(row, name),
-                    label=row.label,
+                    run=_run(row, name, label),
+                    label=label,
                     tool=row.key,
                 )
             )

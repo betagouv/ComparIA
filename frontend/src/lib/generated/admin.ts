@@ -908,13 +908,17 @@ export interface ToolAdmin {
    */
   key: string;
   /**
-   * Name shown to visitors, in French.
+   * Name shown to visitors, in each language.
    */
-  label: string;
+  label: {
+    [k: string]: string;
+  };
   /**
-   * One line shown to visitors, in French.
+   * One line shown to visitors, in each language.
    */
-  description?: string | null;
+  description?: {
+    [k: string]: string;
+  } | null;
   /**
    * How the tool is carried out.
    */
@@ -951,13 +955,17 @@ export interface ToolUpsert {
    */
   key: string;
   /**
-   * Name shown to visitors, in French.
+   * Name shown to visitors, in each language.
    */
-  label: string;
+  label: {
+    [k: string]: string;
+  };
   /**
-   * One line shown to visitors, in French.
+   * One line shown to visitors, in each language.
    */
-  description?: string | null;
+  description?: {
+    [k: string]: string;
+  } | null;
   /**
    * How the tool is carried out.
    */

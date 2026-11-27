@@ -5,15 +5,18 @@
   import Link from '$components/dsfr/Link.svelte'
   import { api } from '$lib/fastapi-client'
   import { useToast } from '$lib/helpers/useToast.svelte'
+  import { getLocalesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import type { OrderingMethod, TableCol } from '$lib/utils/data'
   import { sortRows, toSearchString } from '$lib/utils/data'
 
   import type { PageProps } from './$types'
+  import { defaultText } from './components'
   import type { ToolHealth } from './+page'
 
   let { data }: PageProps = $props()
   const baseRoute = '/admin/outils' as const
+  const locales = getLocalesContext()
 
   const healthLabels = {
     no_credential: m['admin.tools.list.health.no_credential'],
@@ -36,17 +39,17 @@
 
   const tools = $derived(
     data.tools.map((tool) => {
-      const usage = data.usage.find((u) => u.id === tool.id)
+      const label = defaultText(tool.label, locales.default)
+      const description = defaultText(tool.description, locales.default)
       return {
         ...tool,
         id: tool.id!,
+        label,
         address: tool.kind === 'mcp' ? (tool.url ?? '') : m['admin.tools.list.builtin'](),
-        calls: usage?.calls ?? 0,
-        failures: usage?.failures ?? 0,
         // The column needs a key; its cells come from the health check.
         health: 0,
         enabled: tool.enabled ?? false,
-        search: toSearchString([tool.label, tool.key, tool.url ?? '', tool.description ?? ''])
+        search: toSearchString([label, tool.key, tool.url ?? '', description])
       }
     })
   )
@@ -54,7 +57,6 @@
   const cols = [
     { id: 'label', label: m['admin.tools.list.label'](), orderable: true },
     { id: 'health', label: m['admin.tools.list.health.title']() },
-    { id: 'calls', label: m['admin.tools.list.calls'](), kind: 'number', orderable: true },
     { id: 'enabled', label: m['admin.tools.list.enabled'](), orderable: true }
   ] satisfies TableCol<DataKey>[]
   type ColKey = (typeof cols)[number]['id']
@@ -172,13 +174,6 @@
           {m['admin.tools.list.health.unknown']()}
         </span>
       {/await}
-    {:else if col.id === 'calls'}
-      <span class="font-bold">{tool.calls}</span>
-      {#if tool.failures}
-        <span class="fr-text--xs mb-0! block text-[--text-default-error]">
-          {m['admin.tools.list.failures']({ count: tool.failures })}
-        </span>
-      {/if}
     {:else if col.id === 'enabled'}
       <Toggle
         id="tool-enabled-{tool.id}"

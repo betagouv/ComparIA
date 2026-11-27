@@ -21,6 +21,7 @@
     placeholder,
     step,
     list,
+    maxlength,
     children,
     ...props
   }: Omit<FormInputProps, 'component'> & {
@@ -38,6 +39,7 @@
         {disabled}
         {step}
         {list}
+        {maxlength}
         bind:value
         class="fr-input"
       />

@@ -2,7 +2,6 @@ import { browser } from '$app/environment'
 import { api } from '$lib/fastapi-client'
 import type { PageLoad } from './$types'
 
-export type ToolUsage = { id: string; calls: number; failures: number }
 export type ToolHealth = {
   id: string
   ok: boolean
@@ -21,7 +20,6 @@ export type ToolHealth = {
 export const load: PageLoad = async ({ fetch, depends }) => {
   depends('admin:tools')
   return {
-    usage: await api.request<ToolUsage[]>('/admin/tools/usage', { fetch }),
     // Not awaited: checking every server can take seconds, and the list
     // should not wait for it. Left to the browser, since a check the server
     // started would be dropped unfinished and run a second time.
